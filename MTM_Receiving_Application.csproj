@@ -1,0 +1,143 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>MTM_Receiving_Application</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+    <WinUISDKReferences>false</WinUISDKReferences>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!-- Documentation Files -->
+  <ItemGroup>
+    <None Include="SETUP_INSTRUCTIONS.md" />
+    <None Include="SETUP_PHASE_1_INFRASTRUCTURE.md" />
+    <None Include="SETUP_PHASE_2_MVVM_FEATURES.md" />
+    <None Include="Documentation\DUNNAGELABELLOGIC-GOOGLEAPPSCRIPTS.md" />
+    <None Include="Documentation\NEW_APP_DATA_MODEL.md" />
+    <None Include="Documentation\NEW_APP_LABEL_TYPES.md" />
+    <None Include="Documentation\NEW_APP_MOCKUP.html" />
+    <None Include="Documentation\NEW_APP_OVERVIEW.md" />
+    <None Include="Documentation\NEW_APP_USER_WORKFLOW.md" />
+    <None Include="Documentation\RECEIVINGLABELLOGIC-GOOGLEAPPSCRIPTS.MD" />
+    <None Include="Documentation\REUSABLE_SERVICES.md" />
+    <None Include="Documentation\REUSABLE_SERVICES_SETUP.md" />
+    <None Include="Documentation\UPSFEDEXLABELLOGIC-GOOGLEAPPSCRIPTS.md" />
+  </ItemGroup>
+
+  <!-- Template Files -->
+  <ItemGroup>
+    <None Include="Data\_TEMPLATE_Dao_Inventory.txt" />
+    <None Include="Data\_TEMPLATE_Dao_User.txt" />
+    <None Include="Helpers\_TEMPLATE_Helper_ExportManager.txt" />
+    <None Include="Helpers\Database\_TEMPLATE_Helper_Database_StoredProcedure.txt" />
+    <None Include="Helpers\Database\_TEMPLATE_Helper_Database_Variables.txt" />
+    <None Include="Helpers\Validation\_TEMPLATE_Helper_Validation_ValidatedTextBox.txt" />
+    <None Include="Models\_TEMPLATE_Model_Application_Variables.txt" />
+    <None Include="Models\_TEMPLATE_Model_Dao_Result.txt" />
+    <None Include="Models\Enums\_TEMPLATE_Enum_ErrorSeverity.txt" />
+    <None Include="Services\_TEMPLATE_Service_ErrorHandler.txt" />
+  </ItemGroup>
+
+  <!-- GitHub Workflow Files -->
+  <ItemGroup>
+    <None Include=".github\agents\speckit.analyze.agent.md" />
+    <None Include=".github\agents\speckit.checklist.agent.md" />
+    <None Include=".github\agents\speckit.clarify.agent.md" />
+    <None Include=".github\agents\speckit.constitution.agent.md" />
+    <None Include=".github\agents\speckit.implement.agent.md" />
+    <None Include=".github\agents\speckit.plan.agent.md" />
+    <None Include=".github\agents\speckit.specify.agent.md" />
+    <None Include=".github\agents\speckit.tasks.agent.md" />
+    <None Include=".github\agents\speckit.taskstoissues.agent.md" />
+    <None Include=".github\instructions\database-layer.instructions.md" />
+    <None Include=".github\instructions\mvvm-pattern.instructions.md" />
+    <None Include=".github\prompts\speckit.analyze.prompt.md" />
+    <None Include=".github\prompts\speckit.checklist.prompt.md" />
+    <None Include=".github\prompts\speckit.clarify.prompt.md" />
+    <None Include=".github\prompts\speckit.constitution.prompt.md" />
+    <None Include=".github\prompts\speckit.implement.prompt.md" />
+    <None Include=".github\prompts\speckit.plan.prompt.md" />
+    <None Include=".github\prompts\speckit.specify.prompt.md" />
+    <None Include=".github\prompts\speckit.tasks.prompt.md" />
+    <None Include=".github\prompts\speckit.taskstoissues.prompt.md" />
+  </ItemGroup>
+
+  <!-- Specify Configuration Files -->
+  <ItemGroup>
+    <None Include=".specify\memory\constitution.md" />
+    <None Include=".specify\scripts\powershell\check-prerequisites.ps1" />
+    <None Include=".specify\scripts\powershell\common.ps1" />
+    <None Include=".specify\scripts\powershell\create-new-feature.ps1" />
+    <None Include=".specify\scripts\powershell\setup-plan.ps1" />
+    <None Include=".specify\scripts\powershell\update-agent-context.ps1" />
+    <None Include=".specify\templates\agent-file-template.md" />
+    <None Include=".specify\templates\checklist-template.md" />
+    <None Include=".specify\templates\plan-template.md" />
+    <None Include=".specify\templates\spec-template.md" />
+    <None Include=".specify\templates\tasks-template.md" />
+  </ItemGroup>
+
+  <!-- VS Code Settings -->
+  <ItemGroup>
+    <None Include=".vscode\settings.json" />
+  </ItemGroup>
+
+  <!-- Properties Files -->
+  <ItemGroup>
+    <None Include="Properties\launchSettings.json" />
+    <None Include="Properties\PublishProfiles\win-arm64.pubxml" />
+    <None Include="Properties\PublishProfiles\win-x64.pubxml" />
+    <None Include="Properties\PublishProfiles\win-x86.pubxml" />
+  </ItemGroup>
+
+  <!--
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+  </ItemGroup>
+
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
+  <!-- Publish Properties -->
+  <PropertyGroup>
+    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
+    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
+    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
+    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+  </PropertyGroup>
+</Project>
