@@ -1,0 +1,60 @@
+using System;
+
+namespace MTM_Receiving_Application.Models.Receiving;
+
+/// <summary>
+/// Represents a routing label for internal package delivery
+/// Maps to routing_labels database table
+/// </summary>
+public class Model_RoutingLabel
+{
+    /// <summary>
+    /// Auto-increment primary key
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Destination person or department name
+    /// </summary>
+    public string DeliverTo { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Department identifier
+    /// </summary>
+    public string Department { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Description of package contents
+    /// </summary>
+    public string PackageDescription { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Purchase order number (optional)
+    /// </summary>
+    public int? PONumber { get; set; }
+
+    /// <summary>
+    /// Work order number (optional)
+    /// </summary>
+    public string WorkOrderNumber { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Employee number who created the label
+    /// </summary>
+    public int EmployeeNumber { get; set; }
+
+    /// <summary>
+    /// Label number for multiple labels
+    /// </summary>
+    public int LabelNumber { get; set; } = 1;
+
+    /// <summary>
+    /// Transaction date
+    /// </summary>
+    public DateTime Date { get; set; } = DateTime.Now;
+
+    /// <summary>
+    /// Record creation timestamp
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+}

@@ -1,4 +1,7 @@
+using System;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Contracts.Services;
 
@@ -18,7 +21,7 @@ public interface IService_ErrorHandler
     /// <returns>Task for async operation</returns>
     Task HandleErrorAsync(
         string errorMessage,
-        Models.Enums.Enum_ErrorSeverity severity,
+        Enum_ErrorSeverity severity,
         Exception? exception = null,
         bool showDialog = true
     );
@@ -32,7 +35,7 @@ public interface IService_ErrorHandler
     /// <returns>Task for async operation</returns>
     Task LogErrorAsync(
         string errorMessage,
-        Models.Enums.Enum_ErrorSeverity severity,
+        Enum_ErrorSeverity severity,
         Exception? exception = null
     );
 
@@ -46,7 +49,7 @@ public interface IService_ErrorHandler
     Task ShowErrorDialogAsync(
         string title,
         string message,
-        Models.Enums.Enum_ErrorSeverity severity
+        Enum_ErrorSeverity severity
     );
 
     /// <summary>
@@ -57,7 +60,7 @@ public interface IService_ErrorHandler
     /// <param name="showDialog">Whether to show a user-facing dialog</param>
     /// <returns>Task for async operation</returns>
     Task HandleDaoErrorAsync(
-        Models.Receiving.Model_Dao_Result result,
+        Model_Dao_Result result,
         string operationName,
         bool showDialog = true
     );
