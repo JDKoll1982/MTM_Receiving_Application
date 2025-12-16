@@ -1,20 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Contracts.Services;
 
 namespace MTM_Receiving_Application
 {
@@ -23,9 +9,53 @@ namespace MTM_Receiving_Application
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindowViewModel ViewModel { get; }
+        private readonly IService_SessionManager _sessionManager;
+
+        public MainWindow(MainWindowViewModel viewModel, IService_SessionManager sessionManager)
         {
             InitializeComponent();
+            ViewModel = viewModel;
+            _sessionManager = sessionManager;
+
+            // Set user display from current session
+            if (_sessionManager.CurrentSession != null)
+            {
+                var user = _sessionManager.CurrentSession.User;
+                UserDisplayTextBlock.Text = user.DisplayName;
+                UserPicture.DisplayName = user.DisplayName;
+            }
+
+            // Wire up activity tracking
+            if (Content is UIElement rootElement)
+            {
+                rootElement.PointerMoved += (s, e) => _sessionManager.UpdateLastActivity();
+                rootElement.KeyDown += (s, e) => _sessionManager.UpdateLastActivity();
+            }
+            
+            this.Activated += MainWindow_Activated;
+        }
+
+        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+        {
+            if (args.WindowActivationState != WindowActivationState.Deactivated)
+            {
+                _sessionManager.UpdateLastActivity();
+            }
+        }
+
+        /// <summary>
+        /// Update user display from current session
+        /// Call this after session is created during startup
+        /// </summary>
+        public void UpdateUserDisplay()
+        {
+            if (_sessionManager.CurrentSession != null)
+            {
+                var user = _sessionManager.CurrentSession.User;
+                UserDisplayTextBlock.Text = user.DisplayName;
+                UserPicture.DisplayName = user.DisplayName;
+            }
         }
     }
 }

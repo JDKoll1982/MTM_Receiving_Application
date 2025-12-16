@@ -10,23 +10,23 @@ using MTM_Receiving_Application.ViewModels.Shared;
 namespace MTM_Receiving_Application.ViewModels.Receiving;
 
 /// <summary>
-/// ViewModel for Routing Label entry page
+/// ViewModel for Carrier Delivery Label entry page (UPS/FedEx/USPS shipping info)
 /// </summary>
-public partial class RoutingLabelViewModel : BaseViewModel
+public partial class CarrierDeliveryLabelViewModel : BaseViewModel
 {
-    public RoutingLabelViewModel(
+    public CarrierDeliveryLabelViewModel(
         IService_ErrorHandler errorHandler,
         ILoggingService logger)
         : base(errorHandler, logger)
     {
-        RoutingLabels = new ObservableCollection<Model_RoutingLabel>();
-        _currentLabel = new Model_RoutingLabel();
+        CarrierDeliveryLabels = new ObservableCollection<Model_CarrierDeliveryLabel>();
+        _currentLabel = new Model_CarrierDeliveryLabel();
     }
 
-    public ObservableCollection<Model_RoutingLabel> RoutingLabels { get; }
+    public ObservableCollection<Model_CarrierDeliveryLabel> CarrierDeliveryLabels { get; }
 
     [ObservableProperty]
-    private Model_RoutingLabel _currentLabel;
+    private Model_CarrierDeliveryLabel _currentLabel;
 
     [RelayCommand]
     private async Task AddLabelAsync()

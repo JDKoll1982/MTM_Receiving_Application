@@ -4,8 +4,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Services.Database;
+using MTM_Receiving_Application.Services.Authentication;
+using MTM_Receiving_Application.Data.Authentication;
+using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.ViewModels.Receiving;
+using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.Views.Receiving;
+
+using MTM_Receiving_Application.Services.Startup;
 
 namespace MTM_Receiving_Application;
 
@@ -19,7 +25,7 @@ public partial class App : Application
     /// <summary>
     /// Gets the main window for the application
     /// </summary>
-    public static Window? MainWindow { get; private set; }
+    public static Window? MainWindow { get; internal set; }
 
     /// <summary>
     /// Initializes the singleton application object and sets up dependency injection
@@ -31,21 +37,46 @@ public partial class App : Application
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                // Services
+                // Core Services
                 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
                 services.AddSingleton<ILoggingService, LoggingUtility>();
 
+                // Authentication Services
+                services.AddSingleton(sp => new Dao_User(Helper_Database_Variables.GetConnectionString()));
+                services.AddSingleton<IService_Authentication>(sp =>
+                {
+                    var daoUser = sp.GetRequiredService<Dao_User>();
+                    var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
+                    return new Service_Authentication(daoUser, errorHandler);
+                });
+                services.AddSingleton<IService_SessionManager>(sp =>
+                {
+                    var daoUser = sp.GetRequiredService<Dao_User>();
+                    var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                    return new Service_SessionManager(daoUser, dispatcherQueue);
+                });
+
+                // Startup Service
+                services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
+
                 // ViewModels
+                services.AddTransient<MainWindowViewModel>();
+                services.AddTransient<SplashScreenViewModel>();
+                services.AddTransient<SharedTerminalLoginViewModel>();
+                services.AddTransient<NewUserSetupViewModel>();
                 services.AddTransient<ReceivingLabelViewModel>();
                 services.AddTransient<DunnageLabelViewModel>();
-                services.AddTransient<RoutingLabelViewModel>();
+                services.AddTransient<CarrierDeliveryLabelViewModel>();
 
                 // Views
                 services.AddTransient<ReceivingLabelPage>();
                 services.AddTransient<DunnageLabelPage>();
-                services.AddTransient<RoutingLabelPage>();
+                services.AddTransient<CarrierDeliveryLabelPage>();
 
-                // Main Window
+                // Windows
+                services.AddTransient<Views.Shared.SplashScreenWindow>();
+                services.AddTransient<Views.Shared.SharedTerminalLoginDialog>();
+                services.AddTransient<Views.Shared.NewUserSetupDialog>();
                 services.AddSingleton<MainWindow>();
             })
             .Build();
@@ -54,11 +85,32 @@ public partial class App : Application
     /// <summary>
     /// Invoked when the application is launched
     /// </summary>
-    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
-        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-        MainWindow = mainWindow;
-        mainWindow.Activate();
+        var startupService = _host.Services.GetRequiredService<IService_OnStartup_AppLifecycle>();
+        await startupService.StartAsync();
+
+        // Subscribe to session events
+        var sessionManager = _host.Services.GetRequiredService<IService_SessionManager>();
+        sessionManager.SessionTimedOut += OnSessionTimedOut;
+
+        if (MainWindow != null)
+        {
+            MainWindow.Closed += OnMainWindowClosed;
+        }
+    }
+
+    private void OnSessionTimedOut(object? sender, SessionTimedOutEventArgs e)
+    {
+        // Close application on timeout
+        // In a real app, we might show a dialog or navigate to login
+        MainWindow?.Close();
+    }
+
+    private async void OnMainWindowClosed(object sender, WindowEventArgs args)
+    {
+        var sessionManager = _host.Services.GetRequiredService<IService_SessionManager>();
+        await sessionManager.EndSessionAsync("manual_close");
     }
 
     /// <summary>

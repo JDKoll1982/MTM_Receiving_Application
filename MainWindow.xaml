@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    x:Name="MainWindowRoot"
     Title="MTM_Receiving_Application">
 
     <Window.SystemBackdrop>
@@ -14,6 +15,62 @@
     </Window.SystemBackdrop>
 
     <Grid>
+        <NavigationView x:Name="NavView"
+                        PaneDisplayMode="Left"
+                        IsSettingsVisible="True">
+            <NavigationView.PaneHeader>
+                <TextBlock Text="MTM Receiving" 
+                           Style="{StaticResource TitleTextBlockStyle}"
+                           Margin="12,0,0,0"/>
+            </NavigationView.PaneHeader>
+            
+            <NavigationView.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Dashboard" 
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               VerticalAlignment="Center"
+                               Margin="16,0"/>
+                               
+                    <StackPanel Grid.Column="1" 
+                                Orientation="Horizontal" 
+                                Spacing="12" 
+                                Margin="0,0,24,0"
+                                VerticalAlignment="Center">
+                        <PersonPicture x:Name="UserPicture"
+                                       Height="32"
+                                       Width="32"/>
+                        <TextBlock x:Name="UserDisplayTextBlock"
+                                   Text="Not Logged In"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </NavigationView.Header>
 
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Receiving Labels" Tag="ReceivingLabelPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8A5;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Dunnage Labels" Tag="DunnageLabelPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7B8;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE707;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" />
+        </NavigationView>
     </Grid>
 </Window>

@@ -1,12 +1,12 @@
 -- Phase 1 Infrastructure: Stored Procedure
--- Procedure: routing_label_Insert
--- Purpose: Insert a new routing label record with error handling
+-- Procedure: carrier_delivery_label_Insert
+-- Purpose: Insert a new carrier delivery label record (UPS/FedEx/USPS shipping info) with error handling
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS routing_label_Insert $$
+DROP PROCEDURE IF EXISTS carrier_delivery_label_Insert $$
 
-CREATE PROCEDURE routing_label_Insert(
+CREATE PROCEDURE carrier_delivery_label_Insert(
     IN p_DeliverTo VARCHAR(255),
     IN p_Department VARCHAR(100),
     IN p_PackageDescription VARCHAR(500),
@@ -39,8 +39,8 @@ BEGIN
         SET p_ErrorMsg = 'Employee Number must be greater than 0';
         ROLLBACK;
     ELSE
-        -- Insert the routing label record
-        INSERT INTO routing_labels (
+        -- Insert the carrier delivery label record
+        INSERT INTO carrier_delivery_lines (
             deliver_to,
             department,
             package_description,

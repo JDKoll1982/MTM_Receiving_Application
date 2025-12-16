@@ -1,0 +1,158 @@
+# Database Deployment Script for MTM Receiving Application
+# This script deploys all schemas, stored procedures, and initial data
+
+param(
+    [string]$Server = "localhost",
+    [string]$Port = "3306",
+    [string]$Database = "mtm_receiving_db",
+    [string]$User = "root",
+    [string]$Password = "root"
+)
+
+$ErrorActionPreference = "Stop"
+
+# Connection string
+$ConnectionString = "Server=$Server;Port=$Port;Database=$Database;Uid=$User;Pwd=$Password;"
+
+Write-Host "=" * 80
+Write-Host "MTM Receiving Application - Database Deployment"
+Write-Host "=" * 80
+Write-Host ""
+Write-Host "Connection: $Server`:$Port"
+Write-Host "Database: $Database"
+Write-Host ""
+
+# Function to execute SQL file using MAMP MySQL
+function Execute-SqlFile {
+    param(
+        [string]$FilePath,
+        [string]$Description
+    )
+    
+    Write-Host "Executing: $Description" -ForegroundColor Cyan
+    Write-Host "File: $FilePath"
+    
+    if (-not (Test-Path $FilePath)) {
+        Write-Host "  ERROR: File not found!" -ForegroundColor Red
+        return $false
+    }
+    
+    try {
+        # Try common MAMP MySQL paths
+        $mampPaths = @(
+            "C:\MAMP\bin\mysql\bin\mysql.exe",
+            "C:\MAMP\bin\mysql\mysql8\bin\mysql.exe",
+            "mysql"  # Fallback to PATH
+        )
+        
+        $mysqlCmd = $null
+        foreach ($path in $mampPaths) {
+            if (Test-Path $path -ErrorAction SilentlyContinue) {
+                $mysqlCmd = $path
+                break
+            }
+            if ($path -eq "mysql") {
+                try {
+                    $null = Get-Command mysql -ErrorAction Stop
+                    $mysqlCmd = "mysql"
+                    break
+                } catch { }
+            }
+        }
+        
+        if (-not $mysqlCmd) {
+            Write-Host "  ERROR: MySQL command not found. Please check MAMP installation." -ForegroundColor Red
+            Write-Host "  Tried paths: $($mampPaths -join ', ')" -ForegroundColor Yellow
+            return $false
+        }
+        
+        # Execute using mysql command with source
+        $arguments = "-h$Server -P$Port -u$User -p$Password $Database -e `"source $FilePath`""
+        
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $mysqlCmd
+        $psi.Arguments = $arguments
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $psi
+        $process.Start() | Out-Null
+        
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        
+        if ($process.ExitCode -eq 0) {
+            Write-Host "  SUCCESS" -ForegroundColor Green
+            if ($stdout) { Write-Host "  Output: $stdout" -ForegroundColor Gray }
+            Write-Host ""
+            return $true
+        } else {
+            Write-Host "  ERROR: MySQL returned exit code $($process.ExitCode)" -ForegroundColor Red
+            if ($stderr) { Write-Host "  Error: $stderr" -ForegroundColor Red }
+            Write-Host ""
+            return $false
+        }
+    }
+    catch {
+        Write-Host "  ERROR: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host ""
+        return $false
+    }
+}
+
+# Get project root
+$ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+
+# Step 1: Deploy Schema Files
+Write-Host "STEP 1: Deploying Database Schemas" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$schemaFiles = @(
+    "$ProjectRoot\Database\Schemas\01_create_receiving_tables.sql",
+    "$ProjectRoot\Database\Schemas\02_create_authentication_tables.sql"
+)
+
+foreach ($file in $schemaFiles) {
+    $fileName = Split-Path $file -Leaf
+    if (-not (Execute-SqlFile -FilePath $file -Description $fileName)) {
+        Write-Host "Schema deployment failed. Stopping." -ForegroundColor Red
+        exit 1
+    }
+}
+
+# Step 2: Deploy Stored Procedures
+Write-Host "STEP 2: Deploying Stored Procedures" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$storedProcDirs = @(
+    "$ProjectRoot\Database\StoredProcedures\Authentication",
+    "$ProjectRoot\Database\StoredProcedures\Receiving",
+    "$ProjectRoot\Database\StoredProcedures\Labels"
+)
+
+foreach ($dir in $storedProcDirs) {
+    if (Test-Path $dir) {
+        $spFiles = Get-ChildItem -Path $dir -Filter "*.sql" | Sort-Object Name
+        foreach ($file in $spFiles) {
+            $description = "SP: $($file.Name)"
+            if (-not (Execute-SqlFile -FilePath $file.FullName -Description $description)) {
+                Write-Host "Stored procedure deployment failed. Stopping." -ForegroundColor Red
+                exit 1
+            }
+        }
+    }
+}
+
+Write-Host "=" * 80
+Write-Host "Database Deployment Complete!" -ForegroundColor Green
+Write-Host "=" * 80
+Write-Host ""
+Write-Host "Next steps:"
+Write-Host "1. Verify tables exist in your database"
+Write-Host "2. Insert test user data if needed"
+Write-Host "3. Run the application"
+Write-Host ""

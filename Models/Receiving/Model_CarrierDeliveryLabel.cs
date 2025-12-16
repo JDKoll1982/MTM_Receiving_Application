@@ -3,10 +3,11 @@ using System;
 namespace MTM_Receiving_Application.Models.Receiving;
 
 /// <summary>
-/// Represents a routing label for internal package delivery
-/// Maps to routing_labels database table
+/// Represents a carrier delivery label with shipping information (UPS/FedEx/USPS)
+/// Used by receiving clerk to determine package routing and delivery destination
+/// Maps to carrier_delivery_lines database table
 /// </summary>
-public class Model_RoutingLabel
+public class Model_CarrierDeliveryLabel
 {
     /// <summary>
     /// Auto-increment primary key

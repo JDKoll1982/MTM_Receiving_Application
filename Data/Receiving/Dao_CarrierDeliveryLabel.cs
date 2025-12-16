@@ -8,10 +8,11 @@ using MTM_Receiving_Application.Contracts.Services;
 namespace MTM_Receiving_Application.Data.Receiving;
 
 /// <summary>
-/// Data Access Object for routing_labels table
+/// Data Access Object for carrier_delivery_lines table
+/// Handles carrier delivery label records (UPS/FedEx/USPS shipping info)
 /// Provides CRUD operations using stored procedures
 /// </summary>
-public static class Dao_RoutingLabel
+public static class Dao_CarrierDeliveryLabel
 {
     private static IService_ErrorHandler? _errorHandler;
 
@@ -24,11 +25,11 @@ public static class Dao_RoutingLabel
     }
 
     /// <summary>
-    /// Inserts a new routing label record into the database
+    /// Inserts a new carrier delivery label record into the database
     /// </summary>
-    /// <param name="label">RoutingLabel model to insert</param>
+    /// <param name="label">CarrierDeliveryLabel model to insert</param>
     /// <returns>Model_Dao_Result with success status and affected rows</returns>
-    public static async Task<Model_Dao_Result> InsertRoutingLabelAsync(Model_RoutingLabel label)
+    public static async Task<Model_Dao_Result> InsertCarrierDeliveryLabelAsync(Model_CarrierDeliveryLabel label)
     {
         try
         {
@@ -62,7 +63,7 @@ public static class Dao_RoutingLabel
 
             // Execute stored procedure
             var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-                "routing_label_Insert",
+                "carrier_delivery_label_Insert",
                 parameters,
                 connectionString
             );
@@ -74,7 +75,7 @@ public static class Dao_RoutingLabel
             var errorResult = new Model_Dao_Result
             {
                 Success = false,
-                ErrorMessage = $"Unexpected error inserting routing label: {ex.Message}",
+                ErrorMessage = $"Unexpected error inserting carrier delivery label: {ex.Message}",
                 Severity = Models.Enums.Enum_ErrorSeverity.Error
             };
 

@@ -1,5 +1,5 @@
 <Page
-    x:Class="MTM_Receiving_Application.Views.Receiving.RoutingLabelPage"
+    x:Class="MTM_Receiving_Application.Views.Receiving.CarrierDeliveryLabelPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

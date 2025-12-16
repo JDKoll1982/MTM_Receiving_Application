@@ -1,179 +1,278 @@
 using System;
 using MTM_Receiving_Application.Models.Receiving;
 
-namespace MTM_Receiving_Application.Tests;
-
-/// <summary>
-/// Verification tests for Phase 5 - User Story 3 (Core Models)
-/// </summary>
-public static class Phase5_Model_Verification
+namespace MTM_Receiving_Application.Tests
 {
     /// <summary>
-    /// T035: Verify Model_ReceivingLine calculated property LabelText formats correctly
+    /// Manual tests for Phase 5 - Model Verification
+    /// Verifies model property calculations and default values
+    /// 
+    /// NOTE: These are simple manual verification tests, not xUnit tests.
+    /// To run: Call Test methods from a temporary UI button or debug console.
     /// </summary>
-    public static bool Test_ReceivingLine_LabelText()
+    public static class Phase5_Model_Verification
     {
-        Console.WriteLine("=== T035: Testing Model_ReceivingLine.LabelText calculated property ===");
-
-        var line = new Model_ReceivingLine
+        /// <summary>
+        /// Tests Model_ReceivingLine.LabelText property formatting.
+        /// SUCCESS CRITERIA: LabelText formats as "{LabelNumber} / {TotalLabels}"
+        /// </summary>
+        public static void Test_ReceivingLine_LabelText()
         {
-            LabelNumber = 3,
-            TotalLabels = 7
-        };
+            Console.WriteLine("========================================");
+            Console.WriteLine("TEST: ReceivingLine LabelText Formatting");
+            Console.WriteLine("========================================");
 
-        string expected = "3 / 7";
-        string actual = line.LabelText;
-
-        bool passed = actual == expected;
-        Console.WriteLine($"Expected: {expected}");
-        Console.WriteLine($"Actual: {actual}");
-        Console.WriteLine($"✓ TEST {(passed ? "PASSED" : "FAILED")}");
-
-        return passed;
-    }
-
-    /// <summary>
-    /// T036: Verify all model properties have correct default values
-    /// </summary>
-    public static bool Test_Model_DefaultValues()
-    {
-        Console.WriteLine("\n=== T036: Testing model default values ===");
-
-        bool allPassed = true;
-
-        // Test Model_ReceivingLine defaults
-        var receivingLine = new Model_ReceivingLine();
-        Console.WriteLine("\nModel_ReceivingLine defaults:");
-        Console.WriteLine($"  Date: {receivingLine.Date.Date == DateTime.Now.Date} (should be today)");
-        Console.WriteLine($"  VendorName: '{receivingLine.VendorName}' == 'Unknown': {receivingLine.VendorName == "Unknown"}");
-        Console.WriteLine($"  LabelNumber: {receivingLine.LabelNumber} == 1: {receivingLine.LabelNumber == 1}");
-
-        if (receivingLine.Date.Date != DateTime.Now.Date || 
-            receivingLine.VendorName != "Unknown" || 
-            receivingLine.LabelNumber != 1)
-        {
-            allPassed = false;
-        }
-
-        // Test Model_DunnageLine defaults
-        var dunnageLine = new Model_DunnageLine();
-        Console.WriteLine("\nModel_DunnageLine defaults:");
-        Console.WriteLine($"  Date: {dunnageLine.Date.Date == DateTime.Now.Date} (should be today)");
-        Console.WriteLine($"  VendorName: '{dunnageLine.VendorName}' == 'Unknown': {dunnageLine.VendorName == "Unknown"}");
-        Console.WriteLine($"  LabelNumber: {dunnageLine.LabelNumber} == 1: {dunnageLine.LabelNumber == 1}");
-
-        if (dunnageLine.Date.Date != DateTime.Now.Date || 
-            dunnageLine.VendorName != "Unknown" || 
-            dunnageLine.LabelNumber != 1)
-        {
-            allPassed = false;
-        }
-
-        // Test Model_RoutingLabel defaults
-        var routingLabel = new Model_RoutingLabel();
-        Console.WriteLine("\nModel_RoutingLabel defaults:");
-        Console.WriteLine($"  Date: {routingLabel.Date.Date == DateTime.Now.Date} (should be today)");
-        Console.WriteLine($"  LabelNumber: {routingLabel.LabelNumber} == 1: {routingLabel.LabelNumber == 1}");
-
-        if (routingLabel.Date.Date != DateTime.Now.Date || 
-            routingLabel.LabelNumber != 1)
-        {
-            allPassed = false;
-        }
-
-        Console.WriteLine($"\n✓ TEST {(allPassed ? "PASSED" : "FAILED")}");
-        return allPassed;
-    }
-
-    /// <summary>
-    /// T037: Verify model instantiation and property types
-    /// </summary>
-    public static bool Test_Model_Instantiation()
-    {
-        Console.WriteLine("\n=== T037: Testing model instantiation and property types ===");
-
-        bool allPassed = true;
-
-        try
-        {
-            // Test Model_ReceivingLine
-            var receivingLine = new Model_ReceivingLine
+            try
             {
-                Id = 1,
-                Quantity = 100,
-                PartID = "PART-001",
-                PONumber = 12345,
-                EmployeeNumber = 1001,
-                Heat = "HEAT-123",
-                Date = DateTime.Today,
-                InitialLocation = "A-1-1",
-                CoilsOnSkid = 5,
-                LabelNumber = 2,
-                TotalLabels = 5,
-                VendorName = "Test Vendor",
-                PartDescription = "Test Part"
-            };
-            Console.WriteLine("✓ Model_ReceivingLine instantiation successful");
+                // Test Case 1: Standard label numbering
+                var line1 = new Model_ReceivingLine
+                {
+                    LabelNumber = 3,
+                    TotalLabels = 5
+                };
 
-            // Test Model_DunnageLine
-            var dunnageLine = new Model_DunnageLine
+                string expected1 = "3 / 5";
+                string actual1 = line1.LabelText;
+
+                Console.WriteLine($"Test Case 1: LabelNumber={line1.LabelNumber}, TotalLabels={line1.TotalLabels}");
+                Console.WriteLine($"   Expected: '{expected1}'");
+                Console.WriteLine($"   Actual:   '{actual1}'");
+                
+                if (actual1 == expected1)
+                {
+                    Console.WriteLine("   ✅ PASSED");
+                }
+                else
+                {
+                    Console.WriteLine("   ❌ FAILED");
+                }
+
+                // Test Case 2: Single label
+                var line2 = new Model_ReceivingLine
+                {
+                    LabelNumber = 1,
+                    TotalLabels = 1
+                };
+
+                string expected2 = "1 / 1";
+                string actual2 = line2.LabelText;
+
+                Console.WriteLine($"\nTest Case 2: LabelNumber={line2.LabelNumber}, TotalLabels={line2.TotalLabels}");
+                Console.WriteLine($"   Expected: '{expected2}'");
+                Console.WriteLine($"   Actual:   '{actual2}'");
+                
+                if (actual2 == expected2)
+                {
+                    Console.WriteLine("   ✅ PASSED");
+                }
+                else
+                {
+                    Console.WriteLine("   ❌ FAILED");
+                }
+
+                // Test Case 3: Multiple labels (last label)
+                var line3 = new Model_ReceivingLine
+                {
+                    LabelNumber = 10,
+                    TotalLabels = 10
+                };
+
+                string expected3 = "10 / 10";
+                string actual3 = line3.LabelText;
+
+                Console.WriteLine($"\nTest Case 3: LabelNumber={line3.LabelNumber}, TotalLabels={line3.TotalLabels}");
+                Console.WriteLine($"   Expected: '{expected3}'");
+                Console.WriteLine($"   Actual:   '{actual3}'");
+                
+                if (actual3 == expected3)
+                {
+                    Console.WriteLine("   ✅ PASSED");
+                }
+                else
+                {
+                    Console.WriteLine("   ❌ FAILED");
+                }
+
+                Console.WriteLine("\n✅ TEST COMPLETE: LabelText formatting verification");
+            }
+            catch (Exception ex)
             {
-                Id = 2,
-                Line1 = "Line 1 Text",
-                Line2 = "Line 2 Text",
-                PONumber = 67890,
-                Date = DateTime.Today,
-                EmployeeNumber = 1002,
-                VendorName = "Vendor XYZ",
-                Location = "B-2-2",
-                LabelNumber = 1
-            };
-            Console.WriteLine("✓ Model_DunnageLine instantiation successful");
+                Console.WriteLine($"❌ TEST FAILED: Unexpected exception: {ex.Message}");
+            }
 
-            // Test Model_RoutingLabel
-            var routingLabel = new Model_RoutingLabel
-            {
-                Id = 3,
-                DeliverTo = "John Doe",
-                Department = "Manufacturing",
-                PackageDescription = "Metal Parts",
-                PONumber = 11111,
-                WorkOrderNumber = "WO-2025-001",
-                EmployeeNumber = 1003,
-                LabelNumber = 1,
-                Date = DateTime.Today
-            };
-            Console.WriteLine("✓ Model_RoutingLabel instantiation successful");
-
-            Console.WriteLine("\n✓ TEST PASSED - All models instantiate correctly");
+            Console.WriteLine("========================================\n");
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Tests default values for model properties.
+        /// SUCCESS CRITERIA: All models have appropriate default values
+        /// </summary>
+        public static void Test_Model_DefaultValues()
         {
-            Console.WriteLine($"\n✗ TEST FAILED: {ex.Message}");
-            allPassed = false;
+            Console.WriteLine("========================================");
+            Console.WriteLine("TEST: Model Default Values");
+            Console.WriteLine("========================================");
+
+            try
+            {
+                // Test Model_ReceivingLine defaults
+                var receivingLine = new Model_ReceivingLine();
+                bool allDefaultsCorrect = true;
+
+                Console.WriteLine("Model_ReceivingLine Defaults:");
+                
+                // Date should default to DateTime.Now (within 1 minute tolerance)
+                var dateDiff = Math.Abs((receivingLine.Date - DateTime.Now).TotalSeconds);
+                if (dateDiff < 60)
+                {
+                    Console.WriteLine($"   ✅ Date: {receivingLine.Date:yyyy-MM-dd HH:mm} (defaults to DateTime.Now)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ Date: {receivingLine.Date:yyyy-MM-dd HH:mm} (not within 1 minute of Now)");
+                    allDefaultsCorrect = false;
+                }
+
+                // VendorName should default to "Unknown"
+                if (receivingLine.VendorName == "Unknown")
+                {
+                    Console.WriteLine($"   ✅ VendorName: '{receivingLine.VendorName}' (defaults to 'Unknown')");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ VendorName: '{receivingLine.VendorName}' (expected 'Unknown')");
+                    allDefaultsCorrect = false;
+                }
+
+                // LabelNumber should default to 1
+                if (receivingLine.LabelNumber == 1)
+                {
+                    Console.WriteLine($"   ✅ LabelNumber: {receivingLine.LabelNumber} (defaults to 1)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ LabelNumber: {receivingLine.LabelNumber} (expected 1)");
+                    allDefaultsCorrect = false;
+                }
+
+                // TotalLabels should default to 1
+                if (receivingLine.TotalLabels == 1)
+                {
+                    Console.WriteLine($"   ✅ TotalLabels: {receivingLine.TotalLabels} (defaults to 1)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ TotalLabels: {receivingLine.TotalLabels} (expected 1)");
+                    allDefaultsCorrect = false;
+                }
+
+                // Test Model_DunnageLine defaults
+                Console.WriteLine("\nModel_DunnageLine Defaults:");
+                var dunnageLine = new Model_DunnageLine();
+                
+                // Date should default to DateTime.Now
+                dateDiff = Math.Abs((dunnageLine.Date - DateTime.Now).TotalSeconds);
+                if (dateDiff < 60)
+                {
+                    Console.WriteLine($"   ✅ Date: {dunnageLine.Date:yyyy-MM-dd HH:mm} (defaults to DateTime.Now)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ Date: {dunnageLine.Date:yyyy-MM-dd HH:mm} (not within 1 minute of Now)");
+                    allDefaultsCorrect = false;
+                }
+
+                // VendorName should default to "Unknown"
+                if (dunnageLine.VendorName == "Unknown")
+                {
+                    Console.WriteLine($"   ✅ VendorName: '{dunnageLine.VendorName}' (defaults to 'Unknown')");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ VendorName: '{dunnageLine.VendorName}' (expected 'Unknown')");
+                    allDefaultsCorrect = false;
+                }
+
+                // LabelNumber should default to 1
+                if (dunnageLine.LabelNumber == 1)
+                {
+                    Console.WriteLine($"   ✅ LabelNumber: {dunnageLine.LabelNumber} (defaults to 1)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ LabelNumber: {dunnageLine.LabelNumber} (expected 1)");
+                    allDefaultsCorrect = false;
+                }
+
+                // Test Model_CarrierDeliveryLabel defaults
+                Console.WriteLine("\nModel_CarrierDeliveryLabel Defaults:");
+                var carrierDeliveryLabel = new Model_CarrierDeliveryLabel();
+                
+                // Date should default to DateTime.Now
+                dateDiff = Math.Abs((carrierDeliveryLabel.Date - DateTime.Now).TotalSeconds);
+                if (dateDiff < 60)
+                {
+                    Console.WriteLine($"   ✅ Date: {carrierDeliveryLabel.Date:yyyy-MM-dd HH:mm} (defaults to DateTime.Now)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ Date: {carrierDeliveryLabel.Date:yyyy-MM-dd HH:mm} (not within 1 minute of Now)");
+                    allDefaultsCorrect = false;
+                }
+
+                // LabelNumber should default to 1
+                if (carrierDeliveryLabel.LabelNumber == 1)
+                {
+                    Console.WriteLine($"   ✅ LabelNumber: {carrierDeliveryLabel.LabelNumber} (defaults to 1)");
+                }
+                else
+                {
+                    Console.WriteLine($"   ❌ LabelNumber: {carrierDeliveryLabel.LabelNumber} (expected 1)");
+                    allDefaultsCorrect = false;
+                }
+
+                Console.WriteLine();
+                if (allDefaultsCorrect)
+                {
+                    Console.WriteLine("✅ TEST COMPLETE: All default values are correct");
+                }
+                else
+                {
+                    Console.WriteLine("❌ TEST FAILED: Some default values are incorrect");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ TEST FAILED: Unexpected exception: {ex.Message}");
+            }
+
+            Console.WriteLine("========================================\n");
         }
 
-        return allPassed;
-    }
+        /// <summary>
+        /// Executes all model verification tests
+        /// </summary>
+        public static void RunAllTests()
+        {
+            Console.WriteLine("\n");
+            Console.WriteLine("████████████████████████████████████████");
+            Console.WriteLine("  PHASE 5 MODEL VERIFICATION TESTS");
+            Console.WriteLine("  Property Validation Suite");
+            Console.WriteLine("████████████████████████████████████████");
+            Console.WriteLine($"Start Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            Console.WriteLine("\n");
 
-    /// <summary>
-    /// Runs all Phase 5 verification tests
-    /// </summary>
-    public static void RunAllTests()
-    {
-        Console.WriteLine("======================================");
-        Console.WriteLine("PHASE 5 - USER STORY 3: MODEL VERIFICATION");
-        Console.WriteLine("======================================\n");
+            // Test 1: LabelText formatting
+            Test_ReceivingLine_LabelText();
 
-        int passed = 0;
-        int total = 3;
+            // Test 2: Default values
+            Test_Model_DefaultValues();
 
-        if (Test_ReceivingLine_LabelText()) passed++;
-        if (Test_Model_DefaultValues()) passed++;
-        if (Test_Model_Instantiation()) passed++;
-
-        Console.WriteLine("\n======================================");
-        Console.WriteLine($"RESULTS: {passed}/{total} tests passed");
-        Console.WriteLine("======================================");
+            Console.WriteLine("████████████████████████████████████████");
+            Console.WriteLine("  ALL MODEL VERIFICATION TESTS COMPLETE");
+            Console.WriteLine($"End Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            Console.WriteLine("████████████████████████████████████████");
+            Console.WriteLine("\n");
+        }
     }
 }

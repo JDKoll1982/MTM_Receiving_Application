@@ -4,16 +4,16 @@ using MTM_Receiving_Application.ViewModels.Receiving;
 namespace MTM_Receiving_Application.Views.Receiving;
 
 /// <summary>
-/// Page for routing label entry
+/// Page for carrier delivery label entry (UPS/FedEx/USPS shipping information)
 /// </summary>
-public sealed partial class RoutingLabelPage : Page
+public sealed partial class CarrierDeliveryLabelPage : Page
 {
-    public RoutingLabelViewModel ViewModel { get; }
+    public CarrierDeliveryLabelViewModel ViewModel { get; }
 
-    public RoutingLabelPage()
+    public CarrierDeliveryLabelPage()
     {
         InitializeComponent();
-        ViewModel = App.GetService<RoutingLabelViewModel>();
+        ViewModel = App.GetService<CarrierDeliveryLabelViewModel>();
         DataContext = ViewModel;
     }
 }
