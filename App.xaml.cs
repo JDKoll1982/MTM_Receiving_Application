@@ -1,56 +1,72 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Services.Database;
+using MTM_Receiving_Application.ViewModels.Receiving;
+using MTM_Receiving_Application.Views.Receiving;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace MTM_Receiving_Application;
 
-namespace MTM_Receiving_Application
+/// <summary>
+/// Provides application-specific behavior with dependency injection support
+/// </summary>
+public partial class App : Application
 {
+    private IHost _host;
+
     /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
+    /// Gets the main window for the application
     /// </summary>
-    public partial class App : Application
+    public static Window? MainWindow { get; private set; }
+
+    /// <summary>
+    /// Initializes the singleton application object and sets up dependency injection
+    /// </summary>
+    public App()
     {
-        private Window? _window;
+        InitializeComponent();
 
-        /// <summary>
-        /// Gets the main window for the application
-        /// </summary>
-        public static Window? MainWindow { get; private set; }
+        _host = Host.CreateDefaultBuilder()
+            .ConfigureServices((context, services) =>
+            {
+                // Services
+                services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
+                services.AddSingleton<ILoggingService, LoggingUtility>();
 
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
-        public App()
-        {
-            InitializeComponent();
-        }
+                // ViewModels
+                services.AddTransient<ReceivingLabelViewModel>();
+                services.AddTransient<DunnageLabelViewModel>();
+                services.AddTransient<RoutingLabelViewModel>();
 
-        /// <summary>
-        /// Invoked when the application is launched.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
-        {
-            _window = new MainWindow();
-            MainWindow = _window;
-            _window.Activate();
-        }
+                // Views
+                services.AddTransient<ReceivingLabelPage>();
+                services.AddTransient<DunnageLabelPage>();
+                services.AddTransient<RoutingLabelPage>();
+
+                // Main Window
+                services.AddSingleton<MainWindow>();
+            })
+            .Build();
+    }
+
+    /// <summary>
+    /// Invoked when the application is launched
+    /// </summary>
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+        MainWindow = mainWindow;
+        mainWindow.Activate();
+    }
+
+    /// <summary>
+    /// Gets a service from the dependency injection container
+    /// </summary>
+    public static T GetService<T>() where T : class
+    {
+        return ((App)Current)._host.Services.GetService<T>()
+            ?? throw new InvalidOperationException($"Service {typeof(T)} not found");
     }
 }

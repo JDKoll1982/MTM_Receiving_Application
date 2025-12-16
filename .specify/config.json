@@ -1,0 +1,20 @@
+{
+  "project": {
+    "name": "MTM Receiving Application",
+    "type": "winui3",
+    "framework": ".NET 8.0",
+    "pattern": "MVVM"
+  },
+  "templates": {
+    "spec": ".specify/templates/spec-template.md",
+    "tasks": ".specify/templates/tasks-template.md",
+    "checklist": ".specify/templates/checklist-template.md"
+  },
+  "branches": {
+    "prefix": "",
+    "format": "{number}-{shortName}"
+  },
+  "specs": {
+    "directory": "specs"
+  }
+}

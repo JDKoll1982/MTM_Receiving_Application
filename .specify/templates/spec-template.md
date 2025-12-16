@@ -113,3 +113,34 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+
+## Assumptions *(optional)*
+
+<!--
+  Document any assumptions made when filling out the specification.
+  These are reasonable defaults used when specifics weren't provided.
+-->
+
+- [Assumption 1 about data retention, authentication, performance, etc.]
+- [Assumption 2 about user behavior, system constraints, etc.]
+
+## Dependencies *(optional)*
+
+<!--
+  List any dependencies on other features, systems, or infrastructure.
+-->
+
+- **Phase 1 Infrastructure**: [Status - Complete/In Progress/Not Started]
+- **Database Tables**: [List required tables]
+- **Stored Procedures**: [List required stored procedures]
+- **External Systems**: [List any external integrations]
+- **Other Features**: [List any feature dependencies]
+
+## Out of Scope *(optional)*
+
+<!--
+  Explicitly state what is NOT included in this feature to prevent scope creep.
+-->
+
+- [Item 1 that is explicitly not included]
+- [Item 2 that is explicitly not included]
