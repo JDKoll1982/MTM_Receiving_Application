@@ -131,6 +131,9 @@ namespace MTM_Receiving_Application.Services.Startup
                 else if (workstationConfig.IsSharedTerminal)
                 {
                     // Shared terminal - require PIN authentication
+                    // Clear any pre-authenticated user (from Windows auth) to ensure PIN is required
+                    authenticatedUser = null;
+
                     SetSplashIndeterminate("Shared terminal detected. Waiting for PIN login...");
                     
                     // Show PIN login dialog as child of splash screen
@@ -172,6 +175,17 @@ namespace MTM_Receiving_Application.Services.Startup
                         // User cancelled login - close app
                         await _errorHandler.HandleErrorAsync(
                             "User cancelled login. Application closing.",
+                            Models.Enums.Enum_ErrorSeverity.Info,
+                            showDialog: false);
+                        
+                        System.Environment.Exit(0);
+                        return;
+                    }
+                    else
+                    {
+                        // Fallback for unexpected dialog closure (e.g. Esc key if not handled)
+                        await _errorHandler.HandleErrorAsync(
+                            "Login dialog closed unexpectedly. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
                             showDialog: false);
                         

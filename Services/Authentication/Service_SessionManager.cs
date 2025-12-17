@@ -9,24 +9,24 @@ namespace MTM_Receiving_Application.Services.Authentication
 {
     /// <summary>
     /// Service implementation for session management and timeout monitoring.
-    /// Uses DispatcherTimer to check for session timeouts every 60 seconds.
+    /// Uses IDispatcherService to check for session timeouts every 60 seconds.
     /// </summary>
     public class Service_SessionManager : IService_SessionManager
     {
         private readonly Dao_User _daoUser;
-        private readonly DispatcherQueue _dispatcherQueue;
-        private DispatcherQueueTimer? _timeoutTimer;
+        private readonly IDispatcherService _dispatcherService;
+        private IDispatcherTimer? _timeoutTimer;
         private const int TimerIntervalSeconds = 60;
 
         /// <summary>
         /// Constructor with dependency injection.
         /// </summary>
         /// <param name="daoUser">User data access object for activity logging</param>
-        /// <param name="dispatcherQueue">UI dispatcher for timer operations</param>
-        public Service_SessionManager(Dao_User daoUser, DispatcherQueue dispatcherQueue)
+        /// <param name="dispatcherService">Dispatcher service for timer operations</param>
+        public Service_SessionManager(Dao_User daoUser, IDispatcherService dispatcherService)
         {
             _daoUser = daoUser ?? throw new ArgumentNullException(nameof(daoUser));
-            _dispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
+            _dispatcherService = dispatcherService ?? throw new ArgumentNullException(nameof(dispatcherService));
         }
 
         // ====================================================================
@@ -88,7 +88,7 @@ namespace MTM_Receiving_Application.Services.Authentication
             StopTimeoutMonitoring();
 
             // Create new timer
-            _timeoutTimer = _dispatcherQueue.CreateTimer();
+            _timeoutTimer = _dispatcherService.CreateTimer();
             _timeoutTimer.Interval = TimeSpan.FromSeconds(TimerIntervalSeconds);
             _timeoutTimer.IsRepeating = true;
             _timeoutTimer.Tick += OnTimerTick;
@@ -158,7 +158,7 @@ namespace MTM_Receiving_Application.Services.Authentication
         /// <summary>
         /// Timer tick handler - checks for session timeout.
         /// </summary>
-        private void OnTimerTick(DispatcherQueueTimer sender, object args)
+        private void OnTimerTick(object? sender, object args)
         {
             if (CurrentSession == null) return;
 

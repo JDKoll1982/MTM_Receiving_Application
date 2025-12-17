@@ -11,6 +11,7 @@ using MTM_Receiving_Application.ViewModels.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.Views.Receiving;
 
+using MTM_Receiving_Application.Services;
 using MTM_Receiving_Application.Services.Startup;
 
 namespace MTM_Receiving_Application;
@@ -43,6 +44,11 @@ public partial class App : Application
 
                 // Authentication Services
                 services.AddSingleton(sp => new Dao_User(Helper_Database_Variables.GetConnectionString()));
+                services.AddSingleton<IDispatcherService>(sp => 
+                {
+                    var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                    return new DispatcherService(dispatcherQueue);
+                });
                 services.AddSingleton<IService_Authentication>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();
@@ -52,8 +58,8 @@ public partial class App : Application
                 services.AddSingleton<IService_SessionManager>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();
-                    var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-                    return new Service_SessionManager(daoUser, dispatcherQueue);
+                    var dispatcherService = sp.GetRequiredService<IDispatcherService>();
+                    return new Service_SessionManager(daoUser, dispatcherService);
                 });
 
                 // Startup Service

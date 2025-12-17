@@ -90,15 +90,15 @@ Each user story is independently testable and delivers incremental value.
 - [X] T035 [P] Implement GetSharedTerminalNamesAsync method in Dao_User using sp_GetSharedTerminalNames
 - [X] T036 [P] Implement GetActiveDepartmentsAsync method in Dao_User using sp_GetDepartments
 - [X] T037 Add proper exception handling to all Dao_User methods (MySqlException, generic Exception)
-- [ ] T038 Create UserDaoTests unit test class in Tests/Unit/UserDaoTests.cs **BLOCKED: Test project structure needs setup**
-  - [ ] T038.1 Create separate test project (Tests.Project) outside main WinUI project to avoid XAML compiler conflicts
-  - [ ] T038.2 Reference main application DLL (not project reference) in test project
-  - [ ] T038.3 Create UserDaoTests class with xUnit test framework
-- [ ] T039 [P] Write unit tests for GetUserByWindowsUsernameAsync (success, not found, database error) **BLOCKED by T038**
-- [ ] T040 [P] Write unit tests for ValidateUserPinAsync (valid, invalid, inactive user) **BLOCKED by T038**
-- [ ] T041 [P] Write unit tests for CreateNewUserAsync with validation scenarios **BLOCKED by T038**
-- [ ] T042 [P] Write unit tests for PIN uniqueness validation **BLOCKED by T038**
-- [ ] T043 Run all DAO unit tests and verify they pass **BLOCKED by T038**
+- [X] T038 Create UserDaoTests unit test class in Tests/Unit/UserDaoTests.cs
+  - [X] T038.1 Create separate test project (Tests.Project) outside main WinUI project to avoid XAML compiler conflicts
+  - [X] T038.2 Reference main application DLL (not project reference) in test project
+  - [X] T038.3 Create UserDaoTests class with xUnit test framework
+- [X] T039 [P] Write unit tests for GetUserByWindowsUsernameAsync (success, not found, database error)
+- [X] T040 [P] Write unit tests for ValidateUserPinAsync (valid, invalid, inactive user)
+- [X] T041 [P] Write unit tests for CreateNewUserAsync with validation scenarios
+- [X] T042 [P] Write unit tests for PIN uniqueness validation
+- [X] T043 Run all DAO unit tests and verify they pass
 
 ### Tasks - Service Contracts
 
@@ -139,15 +139,15 @@ Each user story is independently testable and delivers incremental value.
 - [X] T075 Implement SessionTimedOut event and raise when timeout detected in Service_SessionManager
 - [X] T076 Register IService_Authentication and Service_Authentication in DI container in App.xaml.cs
 - [X] T077 Register IService_SessionManager and Service_SessionManager as singleton in DI container in App.xaml.cs
-- [ ] T078 Create AuthenticationServiceTests unit test class in Tests/Unit/AuthenticationServiceTests.cs **BLOCKED by T038**
-- [ ] T079 Create SessionManagerTests unit test class in Tests/Unit/SessionManagerTests.cs **BLOCKED by T038**
-- [ ] T080 [P] Write unit tests for authentication methods (Windows username, PIN validation) **BLOCKED by T038**
-- [ ] T081 [P] Write unit tests for session timeout logic (CreateSession, UpdateLastActivity, IsTimedOut) **BLOCKED by T038**
-- [ ] T082 Run all service unit tests and verify they pass **BLOCKED by T038**
+- [X] T078 Create AuthenticationServiceTests unit test class in Tests/Unit/AuthenticationServiceTests.cs
+- [X] T079 Create SessionManagerTests unit test class in Tests/Unit/SessionManagerTests.cs
+- [X] T080 [P] Write unit tests for authentication methods (Windows username, PIN validation)
+- [X] T081 [P] Write unit tests for session timeout logic (CreateSession, UpdateLastActivity, IsTimedOut)
+- [X] T082 Run all service unit tests and verify they pass
 
-**Phase 2 Status**: ⚠️ **Core infrastructure complete - Unit tests pending (blocked by test project setup)**
+**Phase 2 Status**: ✅ **Core infrastructure complete - Unit tests passing**
 
-**Note**: All code implementation is complete and functional. Unit tests require separate test project outside WinUI to avoid XAML compiler conflicts. See T038.1-T038.3 for test project setup tasks.
+**Note**: All code implementation is complete and functional. Unit tests are implemented and passing.
 
 ---
 
@@ -166,13 +166,11 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T083 [US1] Create SplashScreenWindow.xaml with MTM branding, ProgressBar, status TextBlock in Views/Shared/SplashScreenWindow.xaml **DEFERRED: Using MainWindow instead**
-  - **Reason**: WinUI 3 multi-window support has complexity; startup flow works without splash screen
-  - **Alternative**: Status messages are logged and app launches directly to MainWindow
-- [ ] T084 [US1] Style splash screen (600x400px, centered, no chrome/borders) in SplashScreenWindow.xaml **DEFERRED by T083**
-- [ ] T085 [US1] Create SplashScreenViewModel with ProgressPercentage and StatusMessage properties in ViewModels/Shared/SplashScreenViewModel.cs **DEFERRED by T083**
-- [ ] T086 [US1] Implement UpdateProgress method in SplashScreenViewModel **DEFERRED by T083**
-- [ ] T087 [US1] Wire up code-behind with IProgress handler and Dispatcher marshalling in SplashScreenWindow.xaml.cs **DEFERRED by T083**
+- [X] T083 [US1] Create SplashScreenWindow.xaml with MTM branding, ProgressBar, status TextBlock in Views/Shared/SplashScreenWindow.xaml ✅
+- [X] T084 [US1] Style splash screen (centered 850×700, custom title bar with transparent buttons) in SplashScreenWindow.xaml ✅
+- [X] T085 [US1] Create SplashScreenViewModel with ProgressPercentage, StatusMessage, and IsIndeterminate properties in ViewModels/Shared/SplashScreenViewModel.cs ✅
+- [X] T086 [US1] Implement UpdateProgress and SetIndeterminate methods in SplashScreenViewModel ✅
+- [X] T087 [US1] Wire up code-behind with ViewModel_PropertyChanged handler using DispatcherQueue in SplashScreenWindow.xaml.cs ✅
 - [X] T088 [US1] Update Service_OnStartup_AppLifecycle to show splash screen at step 20% in Services/Startup/Service_OnStartup_AppLifecycle.cs (Logic implemented, UI pending)
 - [X] T089 [US1] Implement step 40% workstation detection in Service_OnStartup_AppLifecycle
 - [X] T090 [US1] Implement step 45% Windows username authentication branch in Service_OnStartup_AppLifecycle
@@ -183,9 +181,9 @@ Each user story is independently testable and delivers incremental value.
 - [X] T095 [US1] Wire up activity tracking events (PointerMoved, KeyDown, Activated) in MainWindow.xaml.cs
 - [X] T096 [US1] Subscribe to SessionTimedOut event in App.xaml.cs to close application on timeout
 - [X] T097 [US1] Call EndSessionAsync in App.xaml.cs OnClosed event
-- [ ] T098 [US1] Create WindowsAuthenticationFlowTests integration test in Tests/Integration/WindowsAuthenticationFlowTests.cs **BLOCKED by T038**
-- [ ] T099 [US1] Write integration test: personal workstation + existing user → auto-login success **BLOCKED by T038**
-- [ ] T100 [US1] Write integration test: personal workstation + database error → retry dialog shown **BLOCKED by T038**
+- [X] T098 [US1] Create WindowsAuthenticationFlowTests integration test in Tests/Integration/WindowsAuthenticationFlowTests.cs
+- [X] T099 [US1] Write integration test: personal workstation + existing user → auto-login success
+- [X] T100 [US1] Write integration test: personal workstation + database error → retry dialog shown
 - [X] T101 [US1] Manual test: Launch on personal workstation with existing username → verify auto-login and user header display ✅ **VERIFIED: App boots, authenticates johnk, shows MainWindow with user display in header**
 - [ ] T102 [US1] Manual test: Session timeout after 30 minutes → verify app closes and event logged **PENDING: Requires 30-minute wait for natural test**
   - [ ] T102.1 Alternatively, reduce timeout to 2 minutes for testing, verify timeout works
@@ -270,13 +268,13 @@ Each user story is independently testable and delivers incremental value.
 - [X] T110 [US2] Wire up PrimaryButtonClick (Login) and CloseButtonClick (Cancel) handlers in SharedTerminalLoginDialog.xaml.cs
 - [X] T111 [US2] Implement PIN field clearing and attempt counter update on error in SharedTerminalLoginDialog.xaml.cs
 - [X] T112 [US2] Integrate dialog display at step 45% for shared terminals in Service_OnStartup_AppLifecycle.cs
-- [ ] T113 [US2] Implement pulsing progress animation at 45% while waiting for login in SplashScreenViewModel.cs **DEFERRED: No splash screen window**
+- [X] T113 [US2] Implement pulsing progress animation at 45% while waiting for login in SplashScreenViewModel.cs
 - [X] T114 [US2] Implement 3-attempt lockout logic (show error for 5 seconds, then close app) in Service_OnStartup_AppLifecycle.cs
 - [X] T115 [US2] Log failed login attempts via LogUserActivityAsync in Service_OnStartup_AppLifecycle.cs (Logging handled in Service_Authentication)
-- [ ] T116 [US2] Create PinAuthenticationFlowTests integration test in Tests/Integration/PinAuthenticationFlowTests.cs
-- [ ] T117 [US2] Write integration test: shared terminal + valid credentials → login success
-- [ ] T118 [US2] Write integration test: shared terminal + invalid credentials → retry allowed
-- [ ] T119 [US2] Write integration test: shared terminal + 3 failures → lockout and close
+- [X] T116 [US2] Create PinAuthenticationFlowTests integration test in Tests/Integration/PinAuthenticationFlowTests.cs
+- [X] T117 [US2] Write integration test: shared terminal + valid credentials → login success
+- [X] T118 [US2] Write integration test: shared terminal + invalid credentials → retry allowed
+- [X] T119 [US2] Write integration test: shared terminal + 3 failures → lockout and close
 - [X] T120 [US2] Manual test: Launch on shared terminal → verify PIN dialog appears over splash screen ✅ **VERIFIED: PIN dialog displays correctly on shared terminals**
 - [X] T121 [US2] Manual test: Enter valid credentials → verify authentication and main window loads ✅ **VERIFIED: Valid PIN authenticates and loads MainWindow with user info**
 - [X] T122 [US2] Manual test: Enter invalid PIN 3 times → verify lockout message and app closes after 5 seconds ✅ **VERIFIED: Lockout after 3 failed attempts, app closes gracefully**
@@ -308,9 +306,9 @@ Each user story is independently testable and delivers incremental value.
 - [X] T125 [US3] Verify timeout durations: 30 min for personal, 15 min for shared terminals in Model_UserSession ✅ **VERIFIED: TimeoutDuration property in Model_WorkstationConfig**
 - [X] T126 [US3] Verify SessionTimedOut event handler in App.xaml.cs closes application ✅ **VERIFIED: OnSessionTimedOut calls MainWindow.Close()**
 - [X] T127 [US3] Verify EndSessionAsync logs timeout event via sp_LogUserActivity ✅ **VERIFIED: EndSessionAsync calls Dao_User.LogUserActivityAsync**
-- [ ] T128 [US3] Write unit test: IsSessionTimedOut returns true after timeout duration exceeded **BLOCKED by T038**
-- [ ] T129 [US3] Write unit test: UpdateLastActivity resets timer and IsSessionTimedOut returns false **BLOCKED by T038**
-- [ ] T130 [US3] Write integration test: Create session, wait for timeout → SessionTimedOut event fires **BLOCKED by T038**
+- [X] T128 [US3] Write unit test: IsSessionTimedOut returns true after timeout duration exceeded
+- [X] T129 [US3] Write unit test: UpdateLastActivity resets timer and IsSessionTimedOut returns false
+- [X] T130 [US3] Write integration test: Create session, wait for timeout → SessionTimedOut event fires
 - [ ] T131 [US3] Manual test: Personal workstation + 30 min idle → verify app closes
 - [ ] T132 [US3] Manual test: Shared terminal + 15 min idle → verify app closes
 - [ ] T133 [US3] Manual test: Mouse movement during idle → verify timer resets and app stays open
@@ -361,13 +359,13 @@ Each user story is independently testable and delivers incremental value.
 - [X] T155 [US4] Implement success state (show InfoBar with employee number, then close dialog) in NewUserSetupDialog.xaml.cs
 - [X] T156 [US4] Handle cancel button with confirmation prompt in NewUserSetupDialog.xaml.cs
 - [X] T157 [US4] Integrate dialog display at step 45% when Windows username not found in Service_OnStartup_AppLifecycle.cs
-- [ ] T158 [US4] Implement pulsing progress animation at 45% while dialog is open in SplashScreenViewModel.cs **DEFERRED: No splash screen window**
+- [X] T158 [US4] Implement pulsing progress animation at 45% while dialog is open in SplashScreenViewModel.cs
 - [X] T159 [US4] Resume splash screen progress (47% → 50%) after successful account creation in Service_OnStartup_AppLifecycle.cs
 - [X] T160 [US4] Log user_created event via sp_LogUserActivity with creator's Windows username in Service_OnStartup_AppLifecycle.cs (Handled by Service_Authentication)
-- [ ] T161 [US4] Create NewUserCreationFlowTests integration test in Tests/Integration/NewUserCreationFlowTests.cs
-- [ ] T162 [US4] Write integration test: New username → dialog appears → create account → success
-- [ ] T163 [US4] Write integration test: Duplicate PIN → error message shown
-- [ ] T164 [US4] Write integration test: Cancel dialog → app closes
+- [X] T161 [US4] Create NewUserCreationFlowTests integration test in Tests/Integration/NewUserCreationFlowTests.cs
+- [X] T162 [US4] Write integration test: New username → dialog appears → create account → success
+- [X] T163 [US4] Write integration test: Duplicate PIN → error message shown
+- [X] T164 [US4] Write integration test: Cancel dialog → app closes
 - [X] T165 [US4] Manual test: Launch with new Windows username → verify dialog appears with username pre-filled ✅ **VERIFIED: Dialog appears with Windows username auto-filled and read-only**
 - [X] T166 [US4] Manual test: Fill all required fields → verify account created and employee number shown ✅ **VERIFIED: User-provided employee number is saved correctly, account created successfully**
 - [X] T167 [US4] Manual test: Try duplicate PIN → verify error message and retry works ✅ **VERIFIED: Duplicate PIN shows error, user can retry with different PIN**
@@ -429,7 +427,7 @@ Each user story is independently testable and delivers incremental value.
 - [ ] T187 Measure and verify dialog display < 200ms from trigger
 - [ ] T188 Verify splash screen progress updates every 200-500ms
 - [ ] T189 Profile and optimize any performance bottlenecks identified
-- [X] T190 Verify UI thread never blocked > 100ms (all async operations correct) ✅ **VERIFIED: No .Wait(), .Result, or Thread.Sleep calls found**
+- [ ] T190 Verify UI thread never blocked > 100ms (all async operations correct) ✅ **VERIFIED: No .Wait(), .Result, or Thread.Sleep calls found**
 
 ### Tasks - Accessibility
 
@@ -447,7 +445,7 @@ Each user story is independently testable and delivers incremental value.
 - [ ] T199 Test network timeout scenarios → verify appropriate error handling
 - [ ] T200 Test corrupt database data → verify graceful degradation
 - [ ] T201 Add additional logging to all critical authentication paths
-- [X] T202 Verify all error messages are user-friendly (no SQL or stack traces in UI) ✅ **VERIFIED: All exceptions handled, converted to user-friendly messages**
+- [ ] T202 Verify all error messages are user-friendly (no SQL or stack traces in UI) ✅ **VERIFIED: All exceptions handled, converted to user-friendly messages**
 
 ### Tasks - Comprehensive Testing
 
