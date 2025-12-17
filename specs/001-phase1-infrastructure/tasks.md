@@ -51,7 +51,7 @@
 
 ### Database Schema for User Story 1
 
-- [X] T013 [P] [US1] Create SQL script Database/Schemas/01_create_receiving_tables.sql with receiving_lines table (id, quantity, part_id, po_number, employee_number, heat, transaction_date, initial_location, coils_on_skid, label_number, vendor_name, part_description, created_at) and indexes on part_id, po_number, transaction_date, employee_number
+- [X] T013 [P] [US1] Create SQL script Database/Schemas/01_create_receiving_tables.sql with label_table_receiving table (id, quantity, part_id, po_number, employee_number, heat, transaction_date, initial_location, coils_on_skid, label_number, vendor_name, part_description, created_at) and indexes on part_id, po_number, transaction_date, employee_number
 - [X] T014 [US1] Execute 01_create_receiving_tables.sql against mtm_receiving_application database using MAMP mysql.exe
 - [X] T015 [P] [US1] Create SQL script Database/StoredProcedures/Receiving/receiving_line_Insert.sql with procedure receiving_line_Insert(IN parameters, OUT p_Status INT, OUT p_ErrorMsg VARCHAR(500)) per research.md stored procedure template
 - [X] T016 [US1] Execute receiving_line_Insert.sql stored procedure script
@@ -130,7 +130,7 @@
 
 ### Additional Database Tables
 
-- [X] T038 [P] [US4] Add dunnage_lines table definition to Database/Schemas/01_create_receiving_tables.sql with columns: id, line1, line2, po_number, transaction_date, employee_number, vendor_name, location, label_number, created_at, and indexes on po_number, transaction_date
+- [X] T038 [P] [US4] Add label_table_dunnage table definition to Database/Schemas/01_create_receiving_tables.sql with columns: id, line1, line2, po_number, transaction_date, employee_number, vendor_name, location, label_number, created_at, and indexes on po_number, transaction_date
 - [X] T039 [P] [US4] Add routing_labels table definition to Database/Schemas/01_create_receiving_tables.sql with columns: id, deliver_to, department, package_description, po_number, work_order_number, employee_number, label_number, transaction_date, created_at, and indexes on deliver_to, department, transaction_date
 - [X] T040 [US4] Re-execute updated 01_create_receiving_tables.sql or execute ALTER TABLE statements for new tables
 
@@ -263,7 +263,7 @@
 
 ```bash
 # Developer 1: Database schema
-# T013 - Create receiving_lines table SQL
+# T013 - Create label_table_receiving table SQL
 # T014 - Execute table creation
 # T015 - Create stored procedure SQL
 # T016 - Execute stored procedure

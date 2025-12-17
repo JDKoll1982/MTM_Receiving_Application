@@ -8,7 +8,7 @@ using MTM_Receiving_Application.Contracts.Services;
 namespace MTM_Receiving_Application.Data.Receiving;
 
 /// <summary>
-/// Data Access Object for receiving_lines table
+/// Data Access Object for label_table_receiving table
 /// Provides CRUD operations using stored procedures
 /// </summary>
 public static class Dao_ReceivingLine

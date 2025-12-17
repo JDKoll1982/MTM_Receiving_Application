@@ -40,7 +40,7 @@ BEGIN
         ROLLBACK;
     ELSE
         -- Insert the carrier delivery label record
-        INSERT INTO carrier_delivery_lines (
+        INSERT INTO label_table_parcel (
             deliver_to,
             department,
             package_description,

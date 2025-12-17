@@ -598,29 +598,29 @@ LIMIT 10;
 
 **Full Database Backup**:
 ```bash
-mysqldump -u root -p mtm_receiving_db > mtm_receiving_backup_$(date +%Y%m%d).sql
+mysqldump -u root -p mtm_receiving_application > mtm_receiving_backup_$(date +%Y%m%d).sql
 ```
 
 **Tables Only (no data)**:
 ```bash
-mysqldump -u root -p --no-data mtm_receiving_db > mtm_receiving_schema.sql
+mysqldump -u root -p --no-data mtm_receiving_application > mtm_receiving_schema.sql
 ```
 
 **Authentication Tables Only**:
 ```bash
-mysqldump -u root -p mtm_receiving_db users workstation_config departments user_activity_log > auth_backup.sql
+mysqldump -u root -p mtm_receiving_application users workstation_config departments user_activity_log > auth_backup.sql
 ```
 
 ### Restore Commands
 
 **Full Restore**:
 ```bash
-mysql -u root -p mtm_receiving_db < mtm_receiving_backup_20251216.sql
+mysql -u root -p mtm_receiving_application < mtm_receiving_backup_20251216.sql
 ```
 
 **Selective Table Restore**:
 ```bash
-mysql -u root -p mtm_receiving_db < auth_backup.sql
+mysql -u root -p mtm_receiving_application < auth_backup.sql
 ```
 
 ---

@@ -1,9 +1,9 @@
 -- Phase 1 Infrastructure: Database Schema
--- Tables: receiving_lines, dunnage_lines, carrier_delivery_lines
+-- Tables: label_table_receiving, label_table_dunnage, label_table_parcel
 -- Purpose: Store all label types matching Google Sheets structure
 
 -- Table 1: Receiving Lines
-CREATE TABLE IF NOT EXISTS receiving_lines (
+CREATE TABLE IF NOT EXISTS label_table_receiving (
     id INT AUTO_INCREMENT PRIMARY KEY,
     quantity INT NOT NULL,
     part_id VARCHAR(50) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS receiving_lines (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table 2: Dunnage Lines
-CREATE TABLE IF NOT EXISTS dunnage_lines (
+CREATE TABLE IF NOT EXISTS label_table_dunnage (
     id INT AUTO_INCREMENT PRIMARY KEY,
     line1 VARCHAR(255) NOT NULL,
     line2 VARCHAR(255),
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS dunnage_lines (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table 3: Carrier Delivery Labels (UPS/FedEx/USPS shipping information)
-CREATE TABLE IF NOT EXISTS carrier_delivery_lines (
+CREATE TABLE IF NOT EXISTS label_table_parcel (
     id INT AUTO_INCREMENT PRIMARY KEY,
     deliver_to VARCHAR(255) NOT NULL,
     department VARCHAR(100),

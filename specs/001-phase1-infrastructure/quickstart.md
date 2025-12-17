@@ -122,7 +122,7 @@ public class Model_ReceivingLine
 Create `Database/Schemas/01_create_receiving_tables.sql`:
 
 ```sql
-CREATE TABLE IF NOT EXISTS receiving_lines (
+CREATE TABLE IF NOT EXISTS label_table_receiving (
   id INT AUTO_INCREMENT PRIMARY KEY,
   quantity INT NOT NULL,
   part_id VARCHAR(50) NOT NULL,
@@ -179,7 +179,7 @@ BEGIN
 
     START TRANSACTION;
 
-    INSERT INTO receiving_lines (
+    INSERT INTO label_table_receiving (
         quantity, part_id, po_number, employee_number, heat,
         transaction_date, initial_location, coils_on_skid
     ) VALUES (
@@ -207,7 +207,7 @@ After quick setup, verify:
 - [ ] Project builds without errors (`dotnet build`)
 - [ ] MySql.Data package installed and referenced
 - [ ] Database `mtm_receiving_application` exists
-- [ ] Table `receiving_lines` exists with proper structure
+- [ ] Table `label_table_receiving` exists with proper structure
 - [ ] Stored procedure `receiving_line_Insert` exists
 - [ ] Model_Dao_Result.cs exists in Models/Receiving/
 - [ ] Model_ReceivingLine.cs exists in Models/Receiving/

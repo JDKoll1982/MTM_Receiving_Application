@@ -141,7 +141,7 @@ END
 - No need for dependency injection at data layer (services handle that)
 - Model_Dao_Result provides consistent response structure
 - One DAO per entity prevents bloated classes
-- Clear separation: Dao_ReceivingLine handles receiving_lines table only
+- Clear separation: Dao_ReceivingLine handles label_table_receiving table only
 
 **DAO Method Naming**:
 - Insert operations: `InsertReceivingLineAsync(Model_ReceivingLine line)`
@@ -194,8 +194,8 @@ END
 **Decision**: Index all foreign keys and frequently-queried columns
 
 **Indexed Columns**:
-- **receiving_lines**: part_id, po_number, employee_number, transaction_date
-- **dunnage_lines**: po_number, transaction_date
+- **label_table_receiving**: part_id, po_number, employee_number, transaction_date
+- **label_table_dunnage**: po_number, transaction_date
 - **routing_labels**: deliver_to, department, transaction_date
 
 **Rationale**:

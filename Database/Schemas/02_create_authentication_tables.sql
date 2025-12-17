@@ -11,7 +11,7 @@
 --   4. user_activity_log - Audit trail for authentication events
 -- ============================================================================
 
-USE mtm_receiving_db;
+USE mtm_receiving_application;
 
 -- ============================================================================
 -- Table: departments

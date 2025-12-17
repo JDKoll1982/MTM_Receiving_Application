@@ -427,7 +427,7 @@ Date,EmployeeNumber,Heat,PartID,PONumber,Quantity,PackagesOnSkid,LabelNumber,Ven
 
 See [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) for complete MySQL table definitions.
 
-**Primary Table**: `receiving_lines`
+**Primary Table**: `label_table_receiving`
 
 **Key Columns**:
 - `id` (INT, AUTO_INCREMENT, PRIMARY KEY)

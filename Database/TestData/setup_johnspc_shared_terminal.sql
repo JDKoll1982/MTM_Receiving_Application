@@ -1,5 +1,5 @@
 -- Configure JOHNSPC as shared terminal for PIN login testing
-USE mtm_receiving_db;
+USE mtm_receiving_application;
 
 -- Insert or update workstation configuration
 INSERT INTO workstation_config (computer_name, workstation_type, description)

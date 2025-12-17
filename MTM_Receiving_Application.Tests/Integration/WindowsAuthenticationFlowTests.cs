@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Tests.Integration
 {
     public class WindowsAuthenticationFlowTests
     {
-        private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_db;Uid=root;Pwd=root;";
+        private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
         private readonly Dao_User _daoUser;
         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
         private readonly Mock<IDispatcherService> _mockDispatcherService;

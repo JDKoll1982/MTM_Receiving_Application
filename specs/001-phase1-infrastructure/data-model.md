@@ -272,10 +272,10 @@ Department
 
 ## Database Schema Mapping
 
-### receiving_lines Table
+### label_table_receiving Table
 
 ```sql
-CREATE TABLE receiving_lines (
+CREATE TABLE label_table_receiving (
   id INT AUTO_INCREMENT PRIMARY KEY,
   quantity INT NOT NULL,
   part_id VARCHAR(50) NOT NULL,
@@ -300,10 +300,10 @@ CREATE TABLE receiving_lines (
 
 ---
 
-### dunnage_lines Table
+### label_table_dunnage Table
 
 ```sql
-CREATE TABLE dunnage_lines (
+CREATE TABLE label_table_dunnage (
   id INT AUTO_INCREMENT PRIMARY KEY,
   line1 VARCHAR(100) NOT NULL,
   line2 VARCHAR(100),

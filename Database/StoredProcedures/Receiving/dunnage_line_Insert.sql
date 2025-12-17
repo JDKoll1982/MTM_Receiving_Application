@@ -44,7 +44,7 @@ BEGIN
         ROLLBACK;
     ELSE
         -- Insert the dunnage line record
-        INSERT INTO dunnage_lines (
+        INSERT INTO label_table_dunnage (
             line1,
             line2,
             po_number,

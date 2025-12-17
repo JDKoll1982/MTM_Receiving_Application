@@ -112,7 +112,7 @@ BEGIN
     END IF;
 
     -- Insert operation
-    INSERT INTO receiving_lines (
+    INSERT INTO label_table_receiving (
         quantity, part_id, po_number, employee_number, heat,
         transaction_date, initial_location, coils_on_skid
     ) VALUES (

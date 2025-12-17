@@ -320,7 +320,7 @@ public class Dao_ReceivingLine
 
 ```sql
 -- Receiving Lines Table
-CREATE TABLE IF NOT EXISTS `receiving_lines` (
+CREATE TABLE IF NOT EXISTS `label_table_receiving` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `quantity` INT NOT NULL,
   `part_id` VARCHAR(50) NOT NULL,
@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS `receiving_lines` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Dunnage Lines Table
-CREATE TABLE IF NOT EXISTS `dunnage_lines` (
+CREATE TABLE IF NOT EXISTS `label_table_dunnage` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `line1` VARCHAR(100) NOT NULL,
   `line2` VARCHAR(100),
@@ -405,7 +405,7 @@ BEGIN
 
     START TRANSACTION;
 
-    INSERT INTO receiving_lines (
+    INSERT INTO label_table_receiving (
         quantity, part_id, po_number, employee_number, heat,
         transaction_date, initial_location, coils_on_skid
     ) VALUES (
@@ -472,7 +472,7 @@ Before proceeding to Phase 2 (MVVM Features), verify:
 - [ ] Contracts/interfaces created
 - [ ] DAO pattern established (at least one DAO created)
 - [ ] MySQL database created (`mtm_receiving_application`)
-- [ ] Tables created (receiving_lines, dunnage_lines, routing_labels)
+- [ ] Tables created (label_table_receiving, label_table_dunnage, routing_labels)
 - [ ] At least one stored procedure created and tested
 - [ ] GitHub instruction files created (4 minimum)
 - [ ] Project builds without errors

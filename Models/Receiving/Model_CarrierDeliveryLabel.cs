@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Models.Receiving;
 /// <summary>
 /// Represents a carrier delivery label with shipping information (UPS/FedEx/USPS)
 /// Used by receiving clerk to determine package routing and delivery destination
-/// Maps to carrier_delivery_lines database table
+/// Maps to label_table_parcel database table
 /// </summary>
 public class Model_CarrierDeliveryLabel
 {

@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Database.Deploy
     /// </summary>
     public class DeployAuthenticationSchema
     {
-        private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_db;Uid=root;Pwd=root;";
+        private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
         
         public static async Task DeployAsync()
         {
@@ -102,7 +102,7 @@ namespace MTM_Receiving_Application.Database.Deploy
             // Check tables
             var tablesSql = @"
                 SELECT COUNT(*) FROM information_schema.tables 
-                WHERE table_schema = 'mtm_receiving_db' 
+                WHERE table_schema = 'mtm_receiving_application' 
                 AND table_name IN ('users', 'workstation_config', 'departments', 'user_activity_log')";
             
             using var cmd1 = new MySqlCommand(tablesSql, connection);
@@ -112,7 +112,7 @@ namespace MTM_Receiving_Application.Database.Deploy
             // Check stored procedures
             var procsSql = @"
                 SELECT COUNT(*) FROM information_schema.routines 
-                WHERE routine_schema = 'mtm_receiving_db' 
+                WHERE routine_schema = 'mtm_receiving_application' 
                 AND routine_name IN ('sp_GetUserByWindowsUsername', 'sp_ValidateUserPin', 
                                      'sp_CreateNewUser', 'sp_LogUserActivity',
                                      'sp_GetSharedTerminalNames', 'sp_GetDepartments')";

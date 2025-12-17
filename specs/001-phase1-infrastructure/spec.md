@@ -65,7 +65,7 @@ A developer setting up a new environment needs to create database tables and sto
 
 **Acceptance Scenarios**:
 
-1. **Given** an empty database, **When** schema scripts are executed, **Then** three tables (receiving_lines, dunnage_lines, routing_labels) are created with proper structure
+1. **Given** an empty database, **When** schema scripts are executed, **Then** three tables (label_table_receiving, label_table_dunnage, routing_labels) are created with proper structure
 2. **Given** tables need performance optimization, **When** examining table definitions, **Then** appropriate indexes exist on frequently-queried columns (part_id, po_number, date, employee_number)
 3. **Given** data integrity is required, **When** inserting records, **Then** stored procedures validate input and return status codes with error messages
 

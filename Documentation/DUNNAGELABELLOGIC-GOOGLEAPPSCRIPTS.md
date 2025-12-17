@@ -234,7 +234,7 @@ Task<Model_Dao_Result<string>> GenerateDunnageSummaryAsync(DateTime date);
 ## MySQL Database Schema
 
 ```sql
-CREATE TABLE `dunnage_lines` (
+CREATE TABLE `label_table_dunnage` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `line1` VARCHAR(100) NOT NULL,
   `line2` VARCHAR(100),

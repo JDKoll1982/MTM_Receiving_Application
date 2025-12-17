@@ -8,7 +8,7 @@ using MTM_Receiving_Application.Contracts.Services;
 namespace MTM_Receiving_Application.Data.Receiving;
 
 /// <summary>
-/// Data Access Object for carrier_delivery_lines table
+/// Data Access Object for label_table_parcel table
 /// Handles carrier delivery label records (UPS/FedEx/USPS shipping info)
 /// Provides CRUD operations using stored procedures
 /// </summary>

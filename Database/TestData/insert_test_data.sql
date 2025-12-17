@@ -1,7 +1,7 @@
 -- Insert Test Data for MTM Receiving Application
 -- This creates initial user and configuration data for testing
 
-USE mtm_receiving_db;
+USE mtm_receiving_application;
 
 -- Insert test departments
 INSERT INTO departments (department_name, is_active, sort_order) VALUES

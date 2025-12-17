@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Models.Receiving;
 
 /// <summary>
 /// Represents a dunnage/packing material label entry
-/// Maps to dunnage_lines database table
+/// Maps to label_table_dunnage database table
 /// </summary>
 public class Model_DunnageLine
 {

@@ -216,7 +216,7 @@ Step 3: Background Initialization (Async)
     │
     ├─ [75%] Verify Required Database Tables
     │   Purpose: Check that all required tables and stored procedures exist
-    │   Tables: users, receiving_lines, dunnage_lines, routing_labels, user_activity_log
+    │   Tables: users, label_table_receiving, label_table_dunnage, routing_labels, user_activity_log
     │   Stored Procedures: sp_GetUserByWindowsUsername, sp_ValidateUserPin, etc.
     │   Failure Impact: HIGH - Missing tables will cause runtime errors
     │

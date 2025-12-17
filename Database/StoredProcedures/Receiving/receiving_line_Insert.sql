@@ -51,7 +51,7 @@ BEGIN
         ROLLBACK;
     ELSE
         -- Insert the receiving line record
-        INSERT INTO receiving_lines (
+        INSERT INTO label_table_receiving (
             quantity,
             part_id,
             po_number,
