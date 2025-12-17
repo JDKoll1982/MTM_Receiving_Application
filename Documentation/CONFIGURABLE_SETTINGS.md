@@ -88,6 +88,14 @@ These settings are global and can only be changed by administrators. They should
 | `SplashScreenWindow.xaml` | Copyright Text | "© 2025 MTM Manufacturing. All rights reserved." | Copyright notice | `system_settings.branding` |
 | `MainWindow.xaml` | Navigation Pane Header | "MTM Receiving" | Title shown in navigation pane | `system_settings.branding` |
 
+### File Paths and Data Storage
+
+| File | Variable/Value | Current Value | Description | Database Table |
+|------|---------------|---------------|-------------|----------------|
+| `ReceivingPage` (001-receiving-workflow) | Local CSV Path | %APPDATA%\ReceivingData.csv | Path to local CSV file for receiving data | `system_settings.file_paths` |
+| `ReceivingPage` (001-receiving-workflow) | Network CSV Path | \\\\mtmanu-fs01\\...\\JKOLL\\ReceivingData.csv | Path to network CSV file for receiving data backup | `system_settings.file_paths` |
+| `App` (001-receiving-workflow) | Session JSON Path | %APPDATA%\\MTM_Receiving_Application\\session.json | Path to session state JSON file | `system_settings.file_paths` |
+
 ---
 
 ## Implementation Plan
@@ -106,6 +114,7 @@ These settings are global and can only be changed by administrators. They should
    - `system_settings.validation`
    - `system_settings.ui`
    - `system_settings.branding`
+   - `system_settings.file_paths`
 2. Create `SystemSettings` service to load from database
 3. Add admin-only settings page (requires elevated permissions)
 4. Implement setting change auditing
@@ -195,6 +204,24 @@ INSERT INTO system_settings_branding VALUES
 ('copyright_text', '© 2025 MTM Manufacturing. All rights reserved.', 'string', 'Copyright notice', NOW(), 'system');
 ```
 
+### system_settings.file_paths
+```sql
+CREATE TABLE system_settings_file_paths (
+    setting_key VARCHAR(100) PRIMARY KEY,
+    setting_value VARCHAR(500) NOT NULL,
+    data_type VARCHAR(20) NOT NULL,
+    description TEXT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100)
+);
+
+-- Example data
+INSERT INTO system_settings_file_paths VALUES
+('local_csv_path', '%APPDATA%\\ReceivingData.csv', 'string', 'Local CSV file path for receiving data', NOW(), 'system'),
+('network_csv_path', '\\\\mtmanu-fs01\\...\\JKOLL\\ReceivingData.csv', 'string', 'Network CSV file path for receiving data backup', NOW(), 'system'),
+('session_json_path', '%APPDATA%\\MTM_Receiving_Application\\session.json', 'string', 'Session state JSON file path', NOW(), 'system');
+```
+
 ---
 
 ## Notes
@@ -205,6 +232,9 @@ INSERT INTO system_settings_branding VALUES
 - System settings changes should be logged for audit purposes
 - Consider caching frequently accessed settings
 - IT support email from `REUSABLE_SERVICES_SETUP.md` should also be system setting
+- CSV file paths added for 001-receiving-workflow feature (initially hard-coded, to be made configurable)
+- File paths support environment variables like %APPDATA% for dynamic path resolution
+- Network paths should be validated for accessibility when settings are saved
 
 ---
 
