@@ -62,7 +62,7 @@
 
 ### Helpers for User Story 1
 
-- [X] T018 [P] [US1] Convert _TEMPLATE_Helper_Database_Variables.txt to Helpers/Database/Helper_Database_Variables.cs, update namespace to MTM_Receiving_Application.Helpers.Database, set ProductionConnectionString to Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;
+- [X] T018 [P] [US1] Convert _TEMPLATE_Helper_Database_Variables.txt to Helpers/Database/Helper_Database_Variables.cs, update namespace to MTM_Receiving_Application.Helpers.Database, set ProductionConnectionString to Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;
 - [X] T019 [US1] Convert _TEMPLATE_Helper_Database_StoredProcedure.txt to Helpers/Database/Helper_Database_StoredProcedure.cs, update namespace, remove WinForms dependencies, keep retry logic and performance monitoring
 
 ### DAO for User Story 1

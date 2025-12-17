@@ -16,17 +16,29 @@ namespace MTM_Receiving_Application.Services.Database
     /// </summary>
     public class Service_InforVisual : IService_InforVisual
     {
-        private readonly string _connectionString;
+        private readonly IService_UserSessionManager _sessionManager;
         private readonly ILoggingService? _logger;
         private const string DefaultServer = "VISUAL";
         private const string DefaultDatabase = "MTMFG";
         private const string DefaultUsername = "SHOP2";
         private const string DefaultPassword = "SHOP";
 
-        public Service_InforVisual(string connectionString, ILoggingService? logger = null)
+        public Service_InforVisual(IService_UserSessionManager sessionManager, ILoggingService? logger = null)
         {
-            _connectionString = connectionString ?? BuildDefaultConnectionString();
+            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _logger = logger;
+        }
+
+        /// <summary>
+        /// Builds connection string dynamically based on current user session.
+        /// </summary>
+        private string GetConnectionString()
+        {
+            var user = _sessionManager.CurrentSession?.User;
+            var username = !string.IsNullOrWhiteSpace(user?.VisualUsername) ? user.VisualUsername : DefaultUsername;
+            var password = !string.IsNullOrWhiteSpace(user?.VisualPassword) ? user.VisualPassword : DefaultPassword;
+
+            return $"Server={DefaultServer};Database={DefaultDatabase};User Id={username};Password={password};TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
         }
 
         /// <summary>
@@ -45,7 +57,7 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Querying Infor Visual for PO: {poNumber}");
-                using var connection = new SqlConnection(_connectionString);
+                using var connection = new SqlConnection(GetConnectionString());
                 
                 const string query = @"
                     SELECT 
@@ -58,14 +70,14 @@ namespace MTM_Receiving_Application.Services.Database
                         pol.TOTAL_RECEIVED_QTY AS TotalReceivedQty
                     FROM 
                         dbo.PURC_ORDER_LINE pol
-                    INNER JOIN 
+                    LEFT JOIN 
                         dbo.PART p ON pol.PART_ID = p.ID
                     INNER JOIN
                         dbo.PURCHASE_ORDER po ON pol.PURC_ORDER_ID = po.ID
                     WHERE 
                         po.ID = @PONumber
-                        AND pol.LINE_STATUS != 'X'  -- X = Cancelled/Closed in Visual
-                        AND po.STATUS IN ('O', 'P')  -- O=Open, P=Partial
+                        -- AND pol.LINE_STATUS != 'X'  -- Relaxed for testing
+                        -- AND po.STATUS IN ('O', 'P')  -- Relaxed to allow Closed POs
                     ORDER BY 
                         pol.LINE_NO;";
 
@@ -134,7 +146,7 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Querying Infor Visual for Part: {partID}");
-                using var connection = new SqlConnection(_connectionString);
+                using var connection = new SqlConnection(GetConnectionString());
                 
                 const string query = @"
                     SELECT 
@@ -198,7 +210,7 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Checking same-day receiving for PO: {poNumber}, Part: {partID}, Date: {date:yyyy-MM-dd}");
-                using var connection = new SqlConnection(_connectionString);
+                using var connection = new SqlConnection(GetConnectionString());
                 
                 const string query = @"
                     SELECT 
@@ -257,7 +269,7 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo("Testing Infor Visual connection...");
-                using var connection = new SqlConnection(_connectionString);
+                using var connection = new SqlConnection(GetConnectionString());
                 await connection.OpenAsync();
                 bool isOpen = connection.State == ConnectionState.Open;
                 _logger?.LogInfo($"Infor Visual connection test result: {isOpen}");

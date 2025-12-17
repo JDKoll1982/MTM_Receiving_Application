@@ -67,8 +67,7 @@ public partial class App : Application
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
                 // Receiving Workflow Services (001-receiving-workflow)
-                services.AddSingleton<IService_InforVisual>(sp => 
-                    new Service_InforVisual(Service_InforVisual.BuildDefaultConnectionString()));
+                services.AddSingleton<IService_InforVisual, Service_InforVisual>();
                 services.AddSingleton<IService_MySQL_Receiving>(sp =>
                 {
                     var logger = sp.GetRequiredService<ILoggingService>();

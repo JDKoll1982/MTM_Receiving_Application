@@ -2,7 +2,7 @@
 # This script deploys all schemas, stored procedures, and initial data
 
 param(
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -135,8 +135,7 @@ Write-Host "-" * 80
 
 $storedProcDirs = @(
     "$ProjectRoot\Database\StoredProcedures\Authentication",
-    "$ProjectRoot\Database\StoredProcedures\Receiving",
-    "$ProjectRoot\Database\StoredProcedures\Labels"
+    "$ProjectRoot\Database\StoredProcedures\Receiving"
 )
 
 foreach ($dir in $storedProcDirs) {

@@ -92,7 +92,7 @@ public class Service_ErrorHandler : IService_ErrorHandler
             // Using dynamic to avoid direct dependency on App class which might not be visible here
             // or simply checking Application.Current
             
-            var xamlRoot = (Microsoft.UI.Xaml.Application.Current as dynamic)?.MainWindow?.Content?.XamlRoot;
+            var xamlRoot = MTM_Receiving_Application.App.MainWindow?.Content?.XamlRoot;
 
             if (xamlRoot == null)
             {

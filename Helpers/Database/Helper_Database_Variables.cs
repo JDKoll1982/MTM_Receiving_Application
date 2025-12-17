@@ -7,16 +7,16 @@ public static class Helper_Database_Variables
 {
     /// <summary>
     /// Production MySQL connection string
-    /// Server: localhost, Port: 3306, Database: mtm_receiving_application
+    /// Server: 172.16.1.104, Port: 3306, Database: mtm_receiving_application
     /// </summary>
     public static string ProductionConnectionString { get; } = 
-        "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
+        "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
 
     /// <summary>
     /// Test MySQL connection string (same as production for now)
     /// </summary>
     public static string TestConnectionString { get; } = 
-        "Server=localhost;Port=3306;Database=mtm_receiving_application_test;Uid=root;Pwd=root;";
+        "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application_test;Uid=root;Pwd=root;";
 
     /// <summary>
     /// Gets the connection string based on current environment

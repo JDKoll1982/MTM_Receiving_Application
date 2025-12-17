@@ -67,7 +67,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
                 else
                 {
-                    await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? "PO not found or contains no parts.", Enum_ErrorSeverity.Error);
+                    var errorMessage = !string.IsNullOrWhiteSpace(result.ErrorMessage) 
+                        ? result.ErrorMessage 
+                        : "PO not found or contains no parts.";
+                    await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
                     Parts.Clear();
                 }
             }

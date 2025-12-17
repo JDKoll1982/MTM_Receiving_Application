@@ -200,7 +200,7 @@ public static string GetConnectionString(string? server, string? database, strin
 // AFTER
 public static string GetConnectionString(string? server, string? database, string? uid, string? password)
 {
-    server ??= "{YOUR_DEFAULT_SERVER}";     // e.g., "localhost"
+    server ??= "{YOUR_DEFAULT_SERVER}";     // e.g., "172.16.1.104"
     database ??= "{YOUR_DATABASE_NAME}";    // e.g., "my_application_db"
     uid ??= "{YOUR_DB_USERNAME}";           // e.g., "root"
     password ??= "{YOUR_DB_PASSWORD}";      // e.g., "password"
@@ -606,7 +606,7 @@ public static string GetConnectionString(string? server, string? database, strin
 public static string GetConnectionString(string? server, string? database, string? uid, string? password)
 {
     // Read from config file or environment variables
-    server ??= ConfigurationManager.AppSettings["DatabaseServer"] ?? "localhost";
+    server ??= ConfigurationManager.AppSettings["DatabaseServer"] ?? "172.16.1.104";
     database ??= ConfigurationManager.AppSettings["DatabaseName"] ?? "{YourDatabaseName}";
     uid ??= ConfigurationManager.AppSettings["DatabaseUser"] ?? "root";
     password ??= ConfigurationManager.AppSettings["DatabasePassword"] ?? "password";
@@ -647,7 +647,7 @@ public static IServiceProvider? ServiceProvider { get; set; }
 public static string AppVersion { get; set; }
 
 // ADD: Your application-specific variables
-public static string DatabaseServer { get; set; } = "localhost";
+public static string DatabaseServer { get; set; } = "172.16.1.104";
 public static string DatabaseName { get; set; } = "{YourDatabaseName}";
 public static string LogDirectory { get; set; } = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),

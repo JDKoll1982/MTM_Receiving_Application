@@ -145,7 +145,7 @@ A developer needs to execute stored procedures with retry logic, performance mon
 - **SC-010**: Database schema scripts are idempotent (can be run multiple times without errors or data loss)
 ## Assumptions *(mandatory)*
 
-- MySQL 5.7.24 is installed and accessible at localhost:3306 with root/root credentials
+- MySQL 5.7.24 is installed and accessible at 172.16.1.104:3306 with root/root credentials
 - MAMP is installed at C:\MAMP\ providing MySQL binaries
 - .NET 8.0 SDK is installed and WinUI 3 project is already created
 - MTM_WIP_Application_WinForms exists at C:\Users\johnk\source\repos\MTM_WIP_Application_WinForms as the template source
