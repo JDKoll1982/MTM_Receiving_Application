@@ -6,13 +6,13 @@ namespace MTM_Receiving_Application.ViewModels.Shared;
 
 public partial class MainWindowViewModel : BaseViewModel
 {
-    private readonly IService_SessionManager _sessionManager;
+    private readonly IService_UserSessionManager _sessionManager;
 
     [ObservableProperty]
     private string _userDisplayText = "Not Logged In";
 
     public MainWindowViewModel(
-        IService_SessionManager sessionManager,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         ILoggingService logger) 
         : base(errorHandler, logger)

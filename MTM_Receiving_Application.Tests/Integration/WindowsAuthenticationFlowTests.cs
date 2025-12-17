@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.Tests.Integration
         private readonly Mock<IDispatcherService> _mockDispatcherService;
         private readonly Mock<IDispatcherTimer> _mockTimer;
         private readonly Service_Authentication _authService;
-        private readonly Service_SessionManager _sessionManager;
+        private readonly Service_UserSessionManager _sessionManager;
 
         public WindowsAuthenticationFlowTests()
         {
@@ -29,7 +29,7 @@ namespace MTM_Receiving_Application.Tests.Integration
             _mockDispatcherService.Setup(d => d.CreateTimer()).Returns(_mockTimer.Object);
 
             _authService = new Service_Authentication(_daoUser, _mockErrorHandler.Object);
-            _sessionManager = new Service_SessionManager(_daoUser, _mockDispatcherService.Object);
+            _sessionManager = new Service_UserSessionManager(_daoUser, _mockDispatcherService.Object);
         }
 
         [Fact]

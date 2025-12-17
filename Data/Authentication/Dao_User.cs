@@ -38,36 +38,17 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <returns>Result containing user data or error</returns>
         public async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
         {
-            try
+            var parameters = new Dictionary<string, object>
             {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
+                { "@p_windows_username", windowsUsername }
+            };
 
-                using var command = new MySqlCommand("sp_GetUserByWindowsUsername", connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                command.Parameters.AddWithValue("@p_windows_username", windowsUsername);
-
-                using var reader = await command.ExecuteReaderAsync();
-                
-                if (await reader.ReadAsync())
-                {
-                    var user = MapReaderToUser((MySqlDataReader)reader);
-                    return Model_Dao_Result<Model_User>.SuccessResult(user);
-                }
-
-                return Model_Dao_Result<Model_User>.ErrorResult("User not found in database");
-            }
-            catch (MySqlException ex)
-            {
-                return Model_Dao_Result<Model_User>.ErrorResult($"Database error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                return Model_Dao_Result<Model_User>.ErrorResult($"Unexpected error: {ex.Message}");
-            }
+            return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+                _connectionString,
+                "sp_GetUserByWindowsUsername",
+                MapReaderToUser,
+                parameters
+            );
         }
 
         /// <summary>
@@ -78,37 +59,18 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <returns>Result containing user data or error</returns>
         public async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(string username, string pin)
         {
-            try
+            var parameters = new Dictionary<string, object>
             {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
+                { "@p_username", username },
+                { "@p_pin", pin }
+            };
 
-                using var command = new MySqlCommand("sp_ValidateUserPin", connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                command.Parameters.AddWithValue("@p_username", username);
-                command.Parameters.AddWithValue("@p_pin", pin);
-
-                using var reader = await command.ExecuteReaderAsync();
-                
-                if (await reader.ReadAsync())
-                {
-                    var user = MapReaderToUser((MySqlDataReader)reader);
-                    return Model_Dao_Result<Model_User>.SuccessResult(user);
-                }
-
-                return Model_Dao_Result<Model_User>.ErrorResult("Invalid username or PIN");
-            }
-            catch (MySqlException ex)
-            {
-                return Model_Dao_Result<Model_User>.ErrorResult($"Database error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                return Model_Dao_Result<Model_User>.ErrorResult($"Unexpected error: {ex.Message}");
-            }
+            return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+                _connectionString,
+                "sp_ValidateUserPin",
+                MapReaderToUser,
+                parameters
+            );
         }
 
         // ====================================================================
@@ -157,7 +119,7 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var errorMessage = errorMessageParam.Value?.ToString();
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    return Model_Dao_Result<int>.ErrorResult(errorMessage);
+                    return Model_Dao_Result<int>.Failure(errorMessage);
                 }
 
                 // Return the employee number that was provided
@@ -165,11 +127,11 @@ namespace MTM_Receiving_Application.Data.Authentication
             }
             catch (MySqlException ex)
             {
-                return Model_Dao_Result<int>.ErrorResult($"Database error: {ex.Message}");
+                return Model_Dao_Result<int>.Failure($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result<int>.ErrorResult($"Unexpected error: {ex.Message}");
+                return Model_Dao_Result<int>.Failure($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -209,11 +171,11 @@ namespace MTM_Receiving_Application.Data.Authentication
             }
             catch (MySqlException ex)
             {
-                return Model_Dao_Result<bool>.ErrorResult($"Database error: {ex.Message}");
+                return Model_Dao_Result<bool>.Failure($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result<bool>.ErrorResult($"Unexpected error: {ex.Message}");
+                return Model_Dao_Result<bool>.Failure($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -249,11 +211,11 @@ namespace MTM_Receiving_Application.Data.Authentication
             }
             catch (MySqlException ex)
             {
-                return Model_Dao_Result<bool>.ErrorResult($"Database error: {ex.Message}");
+                return Model_Dao_Result<bool>.Failure($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result<bool>.ErrorResult($"Unexpected error: {ex.Message}");
+                return Model_Dao_Result<bool>.Failure($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -275,30 +237,27 @@ namespace MTM_Receiving_Application.Data.Authentication
             string workstationName, 
             string details)
         {
-            try
+            var parameters = new Dictionary<string, object>
             {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
+                { "@p_event_type", eventType },
+                { "@p_username", username ?? (object)DBNull.Value },
+                { "@p_workstation_name", workstationName ?? (object)DBNull.Value },
+                { "@p_details", details ?? (object)DBNull.Value }
+            };
 
-                using var command = new MySqlCommand("sp_LogUserActivity", connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
+            var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_LogUserActivity",
+                parameters
+            );
 
-                command.Parameters.AddWithValue("@p_event_type", eventType);
-                command.Parameters.AddWithValue("@p_username", username ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@p_workstation_name", workstationName ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@p_details", details ?? (object)DBNull.Value);
-
-                await command.ExecuteNonQueryAsync();
-
+            if (result.Success)
+            {
                 return Model_Dao_Result<bool>.SuccessResult(true);
             }
-            catch (Exception ex)
+            else
             {
-                // Log errors but don't block application flow
-                System.Diagnostics.Debug.WriteLine($"Failed to log activity: {ex.Message}");
-                return Model_Dao_Result<bool>.ErrorResult($"Logging failed: {ex.Message}");
+                return Model_Dao_Result<bool>.Failure(result.ErrorMessage, result.Exception);
             }
         }
 
@@ -312,34 +271,11 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <returns>Result containing list of workstation names</returns>
         public async Task<Model_Dao_Result<List<string>>> GetSharedTerminalNamesAsync()
         {
-            try
-            {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
-
-                using var command = new MySqlCommand("sp_GetSharedTerminalNames", connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                using var reader = await command.ExecuteReaderAsync();
-                
-                var names = new List<string>();
-                while (await reader.ReadAsync())
-                {
-                    names.Add(reader.GetString("workstation_name"));
-                }
-
-                return Model_Dao_Result<List<string>>.SuccessResult(names);
-            }
-            catch (MySqlException ex)
-            {
-                return Model_Dao_Result<List<string>>.ErrorResult($"Database error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                return Model_Dao_Result<List<string>>.ErrorResult($"Unexpected error: {ex.Message}");
-            }
+            return await Helper_Database_StoredProcedure.ExecuteListAsync(
+                _connectionString,
+                "sp_GetSharedTerminalNames",
+                reader => reader.GetString(reader.GetOrdinal("workstation_name"))
+            );
         }
 
         /// <summary>
@@ -348,34 +284,11 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <returns>Result containing list of department names</returns>
         public async Task<Model_Dao_Result<List<string>>> GetActiveDepartmentsAsync()
         {
-            try
-            {
-                using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
-
-                using var command = new MySqlCommand("sp_GetDepartments", connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                using var reader = await command.ExecuteReaderAsync();
-                
-                var departments = new List<string>();
-                while (await reader.ReadAsync())
-                {
-                    departments.Add(reader.GetString("department_name"));
-                }
-
-                return Model_Dao_Result<List<string>>.SuccessResult(departments);
-            }
-            catch (MySqlException ex)
-            {
-                return Model_Dao_Result<List<string>>.ErrorResult($"Database error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                return Model_Dao_Result<List<string>>.ErrorResult($"Unexpected error: {ex.Message}");
-            }
+            return await Helper_Database_StoredProcedure.ExecuteListAsync(
+                _connectionString,
+                "sp_GetDepartments",
+                reader => reader.GetString(reader.GetOrdinal("department_name"))
+            );
         }
 
         // ====================================================================
@@ -383,53 +296,31 @@ namespace MTM_Receiving_Application.Data.Authentication
         // ====================================================================
 
         /// <summary>
-        /// Maps a MySqlDataReader row to a Model_User object.
+        /// Maps a IDataReader row to a Model_User object.
         /// </summary>
-        private Model_User MapReaderToUser(MySqlDataReader reader)
+        private Model_User MapReaderToUser(IDataReader reader)
         {
             return new Model_User
             {
-                EmployeeNumber = reader.GetInt32("employee_number"),
-                WindowsUsername = reader.GetString("windows_username"),
-                FullName = reader.GetString("full_name"),
-                Pin = reader.GetString("pin"),
-                Department = reader.GetString("department"),
-                Shift = reader.GetString("shift"),
-                IsActive = reader.GetBoolean("is_active"),
+                EmployeeNumber = reader.GetInt32(reader.GetOrdinal("employee_number")),
+                WindowsUsername = reader.GetString(reader.GetOrdinal("windows_username")),
+                FullName = reader.GetString(reader.GetOrdinal("full_name")),
+                Pin = reader.GetString(reader.GetOrdinal("pin")),
+                Department = reader.GetString(reader.GetOrdinal("department")),
+                Shift = reader.GetString(reader.GetOrdinal("shift")),
+                IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
                 VisualUsername = reader.IsDBNull(reader.GetOrdinal("visual_username")) 
                     ? null 
-                    : reader.GetString("visual_username"),
+                    : reader.GetString(reader.GetOrdinal("visual_username")),
                 VisualPassword = reader.IsDBNull(reader.GetOrdinal("visual_password")) 
                     ? null 
-                    : reader.GetString("visual_password"),
-                CreatedDate = reader.GetDateTime("created_date"),
+                    : reader.GetString(reader.GetOrdinal("visual_password")),
+                CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
                 CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by")) 
                     ? null 
-                    : reader.GetString("created_by"),
-                ModifiedDate = reader.GetDateTime("modified_date")
+                    : reader.GetString(reader.GetOrdinal("created_by")),
+                ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
             };
         }
-    }
-
-    /// <summary>
-    /// Generic result wrapper for DAO operations with typed data.
-    /// </summary>
-    public class Model_Dao_Result<T>
-    {
-        public bool Success { get; set; }
-        public T? Data { get; set; }
-        public string ErrorMessage { get; set; } = string.Empty;
-
-        public static Model_Dao_Result<T> SuccessResult(T data) => new()
-        {
-            Success = true,
-            Data = data
-        };
-
-        public static Model_Dao_Result<T> ErrorResult(string message) => new()
-        {
-            Success = false,
-            ErrorMessage = message
-        };
     }
 }

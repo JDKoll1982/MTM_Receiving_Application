@@ -249,3 +249,43 @@ With multiple developers:
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+
+---
+
+## Quality Gates
+
+**Before marking feature complete, verify:**
+
+### Code Quality
+- [ ] All compilation errors resolved
+- [ ] No warnings in build output
+- [ ] Code follows existing patterns and conventions
+
+### Constitution Compliance (see [.specify/memory/constitution.md](.specify/memory/constitution.md))
+- [ ] **MVVM Architecture**: ViewModels contain logic, Views are markup-only, no logic in code-behind
+- [ ] **Database Layer**: All DAO methods return Model_Dao_Result, use stored procedures, are async
+- [ ] **Dependency Injection**: All services registered in App.xaml.cs with interfaces
+- [ ] **Error Handling**: IService_ErrorHandler used for all errors, ILoggingService for logging
+- [ ] **Security**: Authentication requirements met, audit trail if applicable
+- [ ] **WinUI 3**: x:Bind used, ObservableCollection for lists, async/await for I/O
+- [ ] **Infor Visual**: If querying VISUAL/MTMFG, connection is READ ONLY with ApplicationIntent=ReadOnly
+- [ ] **Forbidden Practices**: No direct SQL, no DAO exceptions, no service locator, no static service access
+
+### Testing
+- [ ] Unit tests pass (if applicable)
+- [ ] Integration tests pass (if applicable)
+- [ ] Manual UI testing completed
+- [ ] All user scenarios from spec.md tested
+- [ ] Edge cases handled gracefully
+
+### Documentation
+- [ ] README.md updated if user-facing changes
+- [ ] Code comments added for complex logic
+- [ ] Service contracts documented in contracts/ folder
+- [ ] quickstart.md validated (if exists)
+
+### Deployment Readiness
+- [ ] Feature branch merged to main/master
+- [ ] Database migrations tested
+- [ ] No impact on existing features
+- [ ] Performance acceptable (no significant degradation)

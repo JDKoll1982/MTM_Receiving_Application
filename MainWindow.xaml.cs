@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.Contracts.Services;
 
@@ -10,9 +11,9 @@ namespace MTM_Receiving_Application
     public sealed partial class MainWindow : Window
     {
         public MainWindowViewModel ViewModel { get; }
-        private readonly IService_SessionManager _sessionManager;
+        private readonly IService_UserSessionManager _sessionManager;
 
-        public MainWindow(MainWindowViewModel viewModel, IService_SessionManager sessionManager)
+        public MainWindow(MainWindowViewModel viewModel, IService_UserSessionManager sessionManager)
         {
             InitializeComponent();
             ViewModel = viewModel;
@@ -47,6 +48,22 @@ namespace MTM_Receiving_Application
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
                 _sessionManager.UpdateLastActivity();
+            }
+        }
+
+        private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.IsSettingsSelected)
+            {
+                // ContentFrame.Navigate(typeof(SettingsPage));
+            }
+            else if (args.SelectedItem is NavigationViewItem item)
+            {
+                var tag = item.Tag?.ToString();
+                if (tag == "ReceivingWorkflowView")
+                {
+                    ContentFrame.Navigate(typeof(Views.Receiving.ReceivingWorkflowView));
+                }
             }
         }
 

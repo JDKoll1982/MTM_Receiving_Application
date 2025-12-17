@@ -42,6 +42,18 @@ The application implements a comprehensive authentication system that automatica
 - Graceful session termination with audit logging
 - Comprehensive activity log for security auditing
 
+### Receiving Workflow
+
+A guided, step-by-step workflow for receiving materials:
+- **PO Entry**: Validate PO numbers against Infor Visual ERP.
+- **Part Selection**: Select parts from PO or enter non-PO items.
+- **Load Entry**: Specify number of loads/pallets.
+- **Weight & Quantity**: Enter weight and quantity per load.
+- **Heat/Lot Entry**: Track heat and lot numbers for traceability.
+- **Package Type**: Select package types with user preferences.
+- **Review**: Verify all data before saving.
+- **Persistence**: Saves to local CSV, network CSV, and MySQL database.
+
 ### Label Generation
 
 _(Coming soon)_
@@ -53,9 +65,29 @@ _(Coming soon)_
 
 - **Framework**: WinUI 3 (.NET 8.0)
 - **Architecture**: MVVM with CommunityToolkit.Mvvm
-- **Database**: MySQL 8.0+
+- **Database**: MySQL 8.0+ (application data), SQL Server (Infor Visual - READ ONLY)
 - **Dependency Injection**: Microsoft.Extensions.DependencyInjection
 - **UI Toolkit**: Windows App SDK 1.8
+
+## Development Guidelines
+
+This project follows a formal constitution that defines core principles and development standards:
+
+📋 **[Project Constitution](.specify/memory/constitution.md)** - Required reading for all contributors
+
+**Key Principles**:
+1. **MVVM Architecture** - Strict separation of concerns (ViewModels, Views, Models, Services)
+2. **Database Layer Consistency** - Model_Dao_Result pattern, stored procedures only, async operations
+3. **Dependency Injection** - All services registered with interfaces, constructor injection
+4. **Error Handling & Logging** - Centralized error handling and CSV-based logging
+5. **Security & Authentication** - Multi-tier auth with audit trails
+6. **WinUI 3 Modern Practices** - x:Bind, ObservableCollection, async/await
+7. **Specification-Driven Development** - Speckit workflow for all features
+
+**Critical Constraints**:
+- ⚠️ **Infor Visual Database is STRICTLY READ ONLY** - No writes allowed
+- MySQL 5.7.24+ compatibility required (no JSON functions, CTEs, window functions)
+- See constitution for complete guidelines
 
 ## Prerequisites
 

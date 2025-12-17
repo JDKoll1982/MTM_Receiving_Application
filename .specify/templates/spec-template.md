@@ -144,3 +144,31 @@
 
 - [Item 1 that is explicitly not included]
 - [Item 2 that is explicitly not included]
+
+---
+
+## Constitution Compliance Check *(mandatory)*
+
+<!--
+  Verify this specification aligns with project constitution principles.
+  See .specify/memory/constitution.md for full details.
+-->
+
+### Principle Alignment
+
+- [ ] **MVVM Architecture**: UI requirements clearly separate presentation from logic
+- [ ] **Database Layer**: Data persistence requirements specify entities without implementation details
+- [ ] **Dependency Injection**: Service dependencies identified (will be registered in DI)
+- [ ] **Error Handling**: Error scenarios and edge cases documented
+- [ ] **Security & Authentication**: Authentication/authorization requirements specified if applicable
+- [ ] **WinUI 3 Practices**: UI/UX requirements are WinUI 3-appropriate (no platform-specific assumptions)
+- [ ] **Specification-Driven**: This spec is technology-agnostic and user-focused
+
+### Special Constraints
+
+- [ ] **Infor Visual Integration**: If feature queries Infor Visual, explicitly marked as READ ONLY
+- [ ] **MySQL 5.7.24 Compatibility**: No requirements for JSON functions, CTEs, window functions, or CHECK constraints
+- [ ] **Async Operations**: Any I/O-heavy operations noted for async implementation
+
+### Notes
+[Document any constitutional considerations or exceptions here]

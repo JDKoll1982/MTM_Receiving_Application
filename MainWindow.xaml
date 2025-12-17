@@ -17,7 +17,8 @@
     <Grid>
         <NavigationView x:Name="NavView"
                         PaneDisplayMode="Left"
-                        IsSettingsVisible="True">
+                        IsSettingsVisible="True"
+                        SelectionChanged="NavView_SelectionChanged">
             <NavigationView.PaneHeader>
                 <TextBlock Text="MTM Receiving" 
                            Style="{StaticResource TitleTextBlockStyle}"
@@ -66,6 +67,11 @@
                 <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE707;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Receiving Workflow" Tag="ReceivingWorkflowView">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>

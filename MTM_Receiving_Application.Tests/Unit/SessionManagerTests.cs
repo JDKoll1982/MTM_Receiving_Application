@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Tests.Unit
         private readonly Dao_User _daoUser;
         private readonly Mock<IDispatcherService> _mockDispatcherService;
         private readonly Mock<IDispatcherTimer> _mockTimer;
-        private readonly Service_SessionManager _sessionManager;
+        private readonly Service_UserSessionManager _sessionManager;
 
         public SessionManagerTests()
         {
@@ -24,7 +24,7 @@ namespace MTM_Receiving_Application.Tests.Unit
 
             _mockDispatcherService.Setup(d => d.CreateTimer()).Returns(_mockTimer.Object);
 
-            _sessionManager = new Service_SessionManager(_daoUser, _mockDispatcherService.Object);
+            _sessionManager = new Service_UserSessionManager(_daoUser, _mockDispatcherService.Object);
         }
 
         [Fact]

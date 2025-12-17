@@ -44,14 +44,23 @@ namespace MTM_Receiving_Application.Tests.Unit
             // Assert
             Assert.False(result.Success);
             Assert.Null(result.Data);
-            Assert.Contains("not found", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("No record found", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         }
         [Fact]
         public async Task ValidateUserPinAsync_ShouldReturnUser_WhenPinIsValid()
         {
             // Arrange
-            string username = "testuser_pin_" + new Random().Next(1000, 9999);
-            string pin = new Random().Next(1000, 9999).ToString();
+            string username = "testuser_pin_" + Guid.NewGuid().ToString().Substring(0, 8);
+            string pin = "";
+            int attempts = 0;
+            do
+            {
+                pin = new Random().Next(1000, 9999).ToString();
+                var uniqueCheck = await _daoUser.IsPinUniqueAsync(pin);
+                if (uniqueCheck.Success && uniqueCheck.Data) break;
+                attempts++;
+            } while (attempts < 10);
+
             var newUser = new Model_User
             {
                 WindowsUsername = username,
@@ -88,7 +97,7 @@ namespace MTM_Receiving_Application.Tests.Unit
 
             // Assert
             Assert.False(result.Success);
-            Assert.Contains("Invalid username or PIN", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("No record found", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]

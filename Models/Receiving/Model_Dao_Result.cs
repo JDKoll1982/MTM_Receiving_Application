@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Models.Enums;
+using System;
 
 namespace MTM_Receiving_Application.Models.Receiving;
 
@@ -12,6 +13,11 @@ public class Model_Dao_Result
     /// Indicates whether the database operation succeeded
     /// </summary>
     public bool Success { get; set; } = false;
+
+    /// <summary>
+    /// Alias for Success to match some usage patterns
+    /// </summary>
+    public bool IsSuccess => Success;
 
     /// <summary>
     /// Error message if operation failed, empty string if successful
@@ -37,4 +43,62 @@ public class Model_Dao_Result
     /// Optional return value from the database operation (e.g., generated ID)
     /// </summary>
     public object? ReturnValue { get; set; } = null;
+
+    /// <summary>
+    /// Exception that caused the failure, if any
+    /// </summary>
+    public Exception? Exception { get; set; }
+
+    public static Model_Dao_Result Failure(string message, Exception? ex = null)
+    {
+        return new Model_Dao_Result
+        {
+            Success = false,
+            ErrorMessage = message,
+            Exception = ex,
+            Severity = Enum_ErrorSeverity.Error
+        };
+    }
+
+    public static Model_Dao_Result SuccessResult(int affectedRows = 0)
+    {
+        return new Model_Dao_Result
+        {
+            Success = true,
+            AffectedRows = affectedRows
+        };
+    }
+}
+
+/// <summary>
+/// Generic version of Model_Dao_Result for returning data
+/// </summary>
+/// <typeparam name="T">Type of data returned</typeparam>
+public class Model_Dao_Result<T> : Model_Dao_Result
+{
+    /// <summary>
+    /// Data returned by the operation
+    /// </summary>
+    public T? Data { get; set; }
+
+    public static new Model_Dao_Result<T> Failure(string message, Exception? ex = null)
+    {
+        return new Model_Dao_Result<T>
+        {
+            Success = false,
+            ErrorMessage = message,
+            Exception = ex,
+            Severity = Enum_ErrorSeverity.Error
+        };
+    }
+
+    public static Model_Dao_Result<T> SuccessResult(T data, int affectedRows = 0)
+    {
+        return new Model_Dao_Result<T>
+        {
+            Success = true,
+            Data = data,
+            AffectedRows = affectedRows
+        };
+    }
 }

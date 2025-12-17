@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Services.Authentication;
+using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Data.Authentication;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.ViewModels.Receiving;
@@ -55,15 +56,30 @@ public partial class App : Application
                     var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
                     return new Service_Authentication(daoUser, errorHandler);
                 });
-                services.AddSingleton<IService_SessionManager>(sp =>
+                services.AddSingleton<IService_UserSessionManager>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();
                     var dispatcherService = sp.GetRequiredService<IDispatcherService>();
-                    return new Service_SessionManager(daoUser, dispatcherService);
+                    return new Service_UserSessionManager(daoUser, dispatcherService);
                 });
 
                 // Startup Service
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
+
+                // Receiving Workflow Services (001-receiving-workflow)
+                services.AddSingleton<IService_InforVisual>(sp => 
+                    new Service_InforVisual(Service_InforVisual.BuildDefaultConnectionString()));
+                services.AddSingleton<IService_MySQL_Receiving>(sp =>
+                {
+                    var logger = sp.GetRequiredService<ILoggingService>();
+                    return new Service_MySQL_Receiving(Helper_Database_Variables.GetConnectionString(), logger);
+                });
+                services.AddSingleton<IService_MySQL_PackagePreferences>(sp =>
+                    new Service_MySQL_PackagePreferences(Helper_Database_Variables.GetConnectionString()));
+                services.AddSingleton<IService_SessionManager, Service_SessionManager>();
+                services.AddSingleton<IService_CSVWriter, Service_CSVWriter>();
+                services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
+                services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
 
                 // ViewModels
                 services.AddTransient<MainWindowViewModel>();
@@ -73,6 +89,15 @@ public partial class App : Application
                 services.AddTransient<ReceivingLabelViewModel>();
                 services.AddTransient<DunnageLabelViewModel>();
                 services.AddTransient<CarrierDeliveryLabelViewModel>();
+                
+                // Receiving Workflow ViewModels
+                services.AddTransient<ReceivingWorkflowViewModel>();
+                services.AddTransient<POEntryViewModel>();
+                services.AddTransient<LoadEntryViewModel>();
+                services.AddTransient<WeightQuantityViewModel>();
+                services.AddTransient<HeatLotViewModel>();
+                services.AddTransient<PackageTypeViewModel>();
+                services.AddTransient<ReviewGridViewModel>();
 
                 // Views
                 services.AddTransient<ReceivingLabelPage>();
@@ -97,7 +122,7 @@ public partial class App : Application
         await startupService.StartAsync();
 
         // Subscribe to session events
-        var sessionManager = _host.Services.GetRequiredService<IService_SessionManager>();
+        var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
         sessionManager.SessionTimedOut += OnSessionTimedOut;
 
         if (MainWindow != null)
@@ -115,7 +140,7 @@ public partial class App : Application
 
     private async void OnMainWindowClosed(object sender, WindowEventArgs args)
     {
-        var sessionManager = _host.Services.GetRequiredService<IService_SessionManager>();
+        var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
         await sessionManager.EndSessionAsync("manual_close");
     }
 

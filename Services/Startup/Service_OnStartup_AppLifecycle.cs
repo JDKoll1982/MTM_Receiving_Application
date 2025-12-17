@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Dispatching;
 using Microsoft.Extensions.DependencyInjection;
+using CommunityToolkit.WinUI;
 using MTM_Receiving_Application.Contracts.Services;
 // using MTM_Receiving_Application.Views;
 using MTM_Receiving_Application.Models;
@@ -12,20 +13,23 @@ namespace MTM_Receiving_Application.Services.Startup
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IService_Authentication _authService;
-        private readonly IService_SessionManager _sessionManager;
+        private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_ErrorHandler _errorHandler;
+        private readonly IService_CSVWriter _csvWriter;
         private Views.Shared.SplashScreenWindow? _splashScreen;
 
         public Service_OnStartup_AppLifecycle(
             IServiceProvider serviceProvider,
             IService_Authentication authService,
-            IService_SessionManager sessionManager,
-            IService_ErrorHandler errorHandler)
+            IService_UserSessionManager sessionManager,
+            IService_ErrorHandler errorHandler,
+            IService_CSVWriter csvWriter)
         {
             _serviceProvider = serviceProvider;
             _authService = authService;
             _sessionManager = sessionManager;
             _errorHandler = errorHandler;
+            _csvWriter = csvWriter;
         }
 
         public async Task StartAsync()
@@ -226,6 +230,9 @@ namespace MTM_Receiving_Application.Services.Startup
                 App.MainWindow?.Activate();
                 _splashScreen?.Close();
                 _splashScreen = null;
+
+                // Check for existing CSV files and prompt for reset
+                await CheckAndResetCSVFilesAsync();
             }
             catch (Exception ex)
             {
@@ -243,6 +250,40 @@ namespace MTM_Receiving_Application.Services.Startup
         private void SetSplashIndeterminate(string message)
         {
             _splashScreen?.ViewModel.SetIndeterminate(message);
+        }
+
+        private async Task CheckAndResetCSVFilesAsync()
+        {
+            // Only check if files exist
+            // We don't have a method to check existence in interface, but DeleteCSVFilesAsync handles it?
+            // Or we should just ask every time?
+            // The requirement says "Warehouse supervisor can optionally reset CSV files on application startup".
+            // It implies we should ask.
+            
+            // We need to show a ContentDialog.
+            // Since we are in a service, we need to create it on the UI thread and attach to MainWindow.
+            
+            if (App.MainWindow == null) return;
+
+            await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+            {
+                var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+                {
+                    Title = "Reset CSV Files?",
+                    Content = "Do you want to delete existing CSV files to start fresh? This cannot be undone.",
+                    PrimaryButtonText = "Yes, Reset",
+                    CloseButtonText = "No, Continue",
+                    DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                    XamlRoot = App.MainWindow.Content.XamlRoot
+                };
+
+                var result = await dialog.ShowAsync();
+
+                if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                {
+                    await _csvWriter.DeleteCSVFilesAsync();
+                }
+            });
         }
     }
 }

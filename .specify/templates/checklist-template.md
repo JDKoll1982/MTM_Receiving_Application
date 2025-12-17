@@ -32,9 +32,36 @@
 - [ ] CHK005 Item with specific criteria
 - [ ] CHK006 Final item in this category
 
+## Constitution Compliance Review
+
+**Required before PR approval**: Verify alignment with [Project Constitution](.specify/memory/constitution.md)
+
+### Core Principles
+- [ ] CONST001 MVVM Architecture: ViewModels have logic, Views are markup-only, no business logic in code-behind
+- [ ] CONST002 Database Layer: All DAOs return Model_Dao_Result, use stored procedures, are async
+- [ ] CONST003 Dependency Injection: Services registered in App.xaml.cs with interfaces
+- [ ] CONST004 Error Handling: IService_ErrorHandler and ILoggingService used consistently
+- [ ] CONST005 Security: Authentication/authorization properly implemented with audit trail
+- [ ] CONST006 WinUI 3: x:Bind used, ObservableCollection, async/await for I/O
+- [ ] CONST007 Specification-Driven: Feature follows Speckit workflow (spec → plan → tasks)
+
+### Critical Constraints
+- [ ] CONST008 Infor Visual: If querying VISUAL/MTMFG, connection is READ ONLY (ApplicationIntent=ReadOnly)
+- [ ] CONST009 Infor Visual: No INSERT/UPDATE/DELETE/DDL operations on Infor Visual
+- [ ] CONST010 MySQL 5.7.24: No JSON functions, CTEs, window functions, CHECK constraints
+
+### Forbidden Practices
+- [ ] CONST011 No direct SQL queries in C# code
+- [ ] CONST012 No exceptions thrown from DAO layer
+- [ ] CONST013 No service locator pattern or static service access
+- [ ] CONST014 No `{Binding}` used instead of `x:Bind`
+
+---
+
 ## Notes
 
 - Check items off as completed: `[x]`
 - Add comments or findings inline
 - Link to relevant resources or documentation
 - Items are numbered sequentially for easy reference
+- Constitution compliance is MANDATORY before PR merge

@@ -82,7 +82,17 @@ public class Service_ErrorHandler : IService_ErrorHandler
         try
         {
             // Get the main window's XamlRoot for dialog display
-            var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+            // Note: App.MainWindow is static but might not be accessible in all contexts (e.g. tests)
+            // We use a safe access pattern or dependency injection for window provider in a real app
+            // For now, we assume App.MainWindow is available as it's a static property of the App class
+            // However, since 'App' is in the root namespace, we might need to qualify it or ensure it's accessible.
+            // If 'App' is not found, it might be because we are in a library or test context where App is not defined or accessible.
+            // In WinUI 3, (Application.Current as App)?.MainWindow is a common pattern.
+            
+            // Using dynamic to avoid direct dependency on App class which might not be visible here
+            // or simply checking Application.Current
+            
+            var xamlRoot = (Microsoft.UI.Xaml.Application.Current as dynamic)?.MainWindow?.Content?.XamlRoot;
 
             if (xamlRoot == null)
             {

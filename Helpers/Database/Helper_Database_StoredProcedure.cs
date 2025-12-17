@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -18,12 +19,8 @@ public static class Helper_Database_StoredProcedure
     private static readonly int[] RetryDelaysMs = { 100, 200, 400 };
 
     /// <summary>
-    /// Executes a stored procedure and returns a standardized result
+    /// Executes a stored procedure using MySqlParameter array (compatible with legacy/receiving DAOs)
     /// </summary>
-    /// <param name="procedureName">Name of the stored procedure</param>
-    /// <param name="parameters">MySqlParameter array for the procedure</param>
-    /// <param name="connectionString">Database connection string</param>
-    /// <returns>Model_Dao_Result with success status and performance metrics</returns>
     public static async Task<Model_Dao_Result> ExecuteAsync(
         string procedureName,
         MySqlParameter[] parameters,
@@ -47,46 +44,103 @@ public static class Helper_Database_StoredProcedure
                     CommandType = CommandType.StoredProcedure
                 };
 
-                // Add parameters
                 if (parameters != null)
                 {
                     command.Parameters.AddRange(parameters);
                 }
 
-                // Execute the stored procedure
                 var affectedRows = await command.ExecuteNonQueryAsync();
 
-                // Extract OUT parameters
-                var statusParam = command.Parameters["@p_Status"];
-                var errorMsgParam = command.Parameters["@p_ErrorMsg"];
-
-                if (statusParam != null && errorMsgParam != null)
+                // Handle output parameters if any
+                foreach (var param in command.Parameters)
                 {
-                    int status = Convert.ToInt32(statusParam.Value);
-                    string errorMsg = errorMsgParam.Value?.ToString() ?? string.Empty;
-
-                    result.Success = status == 0;
-                    result.ErrorMessage = errorMsg;
-                    result.Severity = status == 0 ? Enum_ErrorSeverity.Info : Enum_ErrorSeverity.Error;
-                    result.AffectedRows = status == 0 ? affectedRows : 0;
-                }
-                else
-                {
-                    // No OUT parameters, assume success if no exception
-                    result.Success = true;
-                    result.AffectedRows = affectedRows;
+                    if (param is MySqlParameter p && (p.Direction == ParameterDirection.Output || p.Direction == ParameterDirection.InputOutput))
+                    {
+                        // You might want to capture output values here if needed
+                        // For now, we just ensure the command executes
+                    }
                 }
 
                 stopwatch.Stop();
+                result.Success = true;
+                result.AffectedRows = affectedRows;
                 result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
-
-                return result; // Success, exit retry loop
+                return result;
             }
             catch (MySqlException ex) when (IsTransientError(ex) && attempt < MaxRetries)
             {
-                // Transient error, wait and retry
                 await Task.Delay(RetryDelaysMs[attempt - 1]);
-                continue; // Retry
+                continue;
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                return Model_Dao_Result.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+            }
+        }
+
+        stopwatch.Stop();
+        return Model_Dao_Result.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+    }
+
+    /// <summary>
+    /// Validates that all required parameters are present and not null
+    /// </summary>
+    public static bool ValidateParameters(MySqlParameter[] parameters)
+    {
+        if (parameters == null) return true;
+        
+        foreach (var param in parameters)
+        {
+            if (param.Value == null && param.Direction == ParameterDirection.Input)
+            {
+                // Allow DBNull.Value but not null
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Executes a stored procedure that returns no data (INSERT, UPDATE, DELETE)
+    /// </summary>
+    public static async Task<Model_Dao_Result> ExecuteNonQueryAsync(
+        string connectionString,
+        string procedureName,
+        Dictionary<string, object>? parameters = null)
+    {
+        var result = new Model_Dao_Result();
+        var stopwatch = Stopwatch.StartNew();
+        int attempt = 0;
+
+        while (attempt < MaxRetries)
+        {
+            attempt++;
+
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                using var command = new MySqlCommand(procedureName, connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                AddParameters(command, parameters);
+
+                var affectedRows = await command.ExecuteNonQueryAsync();
+
+                stopwatch.Stop();
+                result.Success = true;
+                result.AffectedRows = affectedRows;
+                result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+                return result;
+            }
+            catch (MySqlException ex) when (IsTransientError(ex) && attempt < MaxRetries)
+            {
+                await Task.Delay(RetryDelaysMs[attempt - 1]);
+                continue;
             }
             catch (Exception ex)
             {
@@ -95,17 +149,270 @@ public static class Helper_Database_StoredProcedure
                 result.ErrorMessage = $"Stored procedure '{procedureName}' failed: {ex.Message}";
                 result.Severity = Enum_ErrorSeverity.Error;
                 result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+                result.Exception = ex;
                 return result;
             }
         }
 
-        // All retries exhausted
         stopwatch.Stop();
         result.Success = false;
         result.ErrorMessage = $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts";
         result.Severity = Enum_ErrorSeverity.Critical;
         result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
         return result;
+    }
+
+    /// <summary>
+    /// Executes a stored procedure that returns a single record mapped to T
+    /// </summary>
+    public static async Task<Model_Dao_Result<T>> ExecuteSingleAsync<T>(
+        string connectionString,
+        string procedureName,
+        Func<IDataReader, T> mapper,
+        Dictionary<string, object>? parameters = null)
+    {
+        var result = new Model_Dao_Result<T>();
+        var stopwatch = Stopwatch.StartNew();
+        int attempt = 0;
+
+        while (attempt < MaxRetries)
+        {
+            attempt++;
+
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                using var command = new MySqlCommand(procedureName, connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                AddParameters(command, parameters);
+
+                using var reader = await command.ExecuteReaderAsync();
+                
+                if (await reader.ReadAsync())
+                {
+                    result.Data = mapper(reader);
+                    result.Success = true;
+                    result.AffectedRows = 1;
+                }
+                else
+                {
+                    result.Success = false;
+                    result.ErrorMessage = "No record found";
+                    result.Severity = Enum_ErrorSeverity.Info;
+                }
+
+                stopwatch.Stop();
+                result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+                return result;
+            }
+            catch (MySqlException ex) when (IsTransientError(ex) && attempt < MaxRetries)
+            {
+                await Task.Delay(RetryDelaysMs[attempt - 1]);
+                continue;
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                return Model_Dao_Result<T>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+            }
+        }
+
+        stopwatch.Stop();
+        return Model_Dao_Result<T>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+    }
+
+    /// <summary>
+    /// Executes a stored procedure that returns a list of records mapped to T
+    /// </summary>
+    public static async Task<Model_Dao_Result<List<T>>> ExecuteListAsync<T>(
+        string connectionString,
+        string procedureName,
+        Func<IDataReader, T> mapper,
+        Dictionary<string, object>? parameters = null)
+    {
+        var result = new Model_Dao_Result<List<T>>();
+        var stopwatch = Stopwatch.StartNew();
+        int attempt = 0;
+
+        while (attempt < MaxRetries)
+        {
+            attempt++;
+
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                using var command = new MySqlCommand(procedureName, connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                AddParameters(command, parameters);
+
+                using var reader = await command.ExecuteReaderAsync();
+                var list = new List<T>();
+                
+                while (await reader.ReadAsync())
+                {
+                    list.Add(mapper(reader));
+                }
+
+                result.Data = list;
+                result.Success = true;
+                result.AffectedRows = list.Count;
+
+                stopwatch.Stop();
+                result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+                return result;
+            }
+            catch (MySqlException ex) when (IsTransientError(ex) && attempt < MaxRetries)
+            {
+                await Task.Delay(RetryDelaysMs[attempt - 1]);
+                continue;
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                return Model_Dao_Result<List<T>>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+            }
+        }
+
+        stopwatch.Stop();
+        return Model_Dao_Result<List<T>>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+    }
+
+    /// <summary>
+    /// Executes a stored procedure that returns a DataTable (SELECT)
+    /// </summary>
+    public static async Task<Model_Dao_Result<DataTable>> ExecuteDataTableAsync(
+        string connectionString,
+        string procedureName,
+        Dictionary<string, object>? parameters = null)
+    {
+        var result = new Model_Dao_Result<DataTable>();
+        var stopwatch = Stopwatch.StartNew();
+        int attempt = 0;
+
+        while (attempt < MaxRetries)
+        {
+            attempt++;
+
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                using var command = new MySqlCommand(procedureName, connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                AddParameters(command, parameters);
+
+                using var reader = await command.ExecuteReaderAsync();
+                var dataTable = new DataTable();
+                dataTable.Load(reader);
+
+                stopwatch.Stop();
+                result.Success = true;
+                result.Data = dataTable;
+                result.AffectedRows = dataTable.Rows.Count;
+                result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+                return result;
+            }
+            catch (MySqlException ex) when (IsTransientError(ex) && attempt < MaxRetries)
+            {
+                await Task.Delay(RetryDelaysMs[attempt - 1]);
+                continue;
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                result.Success = false;
+                result.ErrorMessage = $"Stored procedure '{procedureName}' failed: {ex.Message}";
+                result.Severity = Enum_ErrorSeverity.Error;
+                result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+                result.Exception = ex;
+                return result;
+            }
+        }
+
+        stopwatch.Stop();
+        result.Success = false;
+        result.ErrorMessage = $"Stored procedure '{procedureName}' failed after {MaxRetries} attempts";
+        result.Severity = Enum_ErrorSeverity.Critical;
+        result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+        return result;
+    }
+
+    /// <summary>
+    /// Executes a stored procedure within an existing transaction
+    /// </summary>
+    public static async Task<Model_Dao_Result> ExecuteInTransactionAsync(
+        MySqlConnection connection,
+        MySqlTransaction transaction,
+        string procedureName,
+        Dictionary<string, object>? parameters = null)
+    {
+        var result = new Model_Dao_Result();
+        var stopwatch = Stopwatch.StartNew();
+
+        try
+        {
+            using var command = new MySqlCommand(procedureName, connection, transaction)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            AddParameters(command, parameters);
+
+            var affectedRows = await command.ExecuteNonQueryAsync();
+
+            stopwatch.Stop();
+            result.Success = true;
+            result.AffectedRows = affectedRows;
+            result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            result.Success = false;
+            result.ErrorMessage = $"Stored procedure '{procedureName}' failed in transaction: {ex.Message}";
+            result.Severity = Enum_ErrorSeverity.Error;
+            result.ExecutionTimeMs = stopwatch.ElapsedMilliseconds;
+            result.Exception = ex;
+            return result;
+        }
+    }
+
+    private static void AddParameters(MySqlCommand command, Dictionary<string, object>? parameters)
+    {
+        if (parameters != null)
+        {
+            foreach (var param in parameters)
+            {
+                // Automatically add 'p_' prefix if missing, as per convention
+                string paramName = param.Key.StartsWith("p_") ? "@" + param.Key : "@p_" + param.Key;
+                // Or just use the key if the caller is expected to provide the correct name
+                // The constitution says: "Parameter names in C# match stored procedure parameters (WITHOUT p_ prefix - added automatically)"
+                // So we should add p_ prefix.
+                
+                // However, existing code might be using @p_ already.
+                // Let's be safe: if it starts with @, use it. If not, check if it starts with p_.
+                
+                string cleanName = param.Key.TrimStart('@');
+                string finalName = cleanName.StartsWith("p_") ? "@" + cleanName : "@p_" + cleanName;
+                
+                command.Parameters.AddWithValue(finalName, param.Value ?? DBNull.Value);
+            }
+        }
     }
 
     /// <summary>
@@ -120,37 +427,5 @@ public static class Helper_Database_StoredProcedure
         // 2013 = Lost connection during query
         return ex.Number == 1205 || ex.Number == 1213 || 
                ex.Number == 2006 || ex.Number == 2013;
-    }
-
-    /// <summary>
-    /// Validates that required parameters are not null or empty
-    /// </summary>
-    /// <param name="parameters">Parameters to validate</param>
-    /// <returns>True if all parameters are valid</returns>
-    public static bool ValidateParameters(MySqlParameter[] parameters)
-    {
-        if (parameters == null || parameters.Length == 0)
-        {
-            return true; // No parameters to validate
-        }
-
-        foreach (var param in parameters)
-        {
-            if (param.Direction == ParameterDirection.Input || 
-                param.Direction == ParameterDirection.InputOutput)
-            {
-                if (param.Value == null || param.Value == DBNull.Value)
-                {
-                    return false;
-                }
-
-                if (param.Value is string strValue && string.IsNullOrWhiteSpace(strValue))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }

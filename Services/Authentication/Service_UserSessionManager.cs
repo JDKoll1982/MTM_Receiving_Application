@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Services.Authentication
     /// Service implementation for session management and timeout monitoring.
     /// Uses IDispatcherService to check for session timeouts every 60 seconds.
     /// </summary>
-    public class Service_SessionManager : IService_SessionManager
+    public class Service_UserSessionManager : IService_UserSessionManager
     {
         private readonly Dao_User _daoUser;
         private readonly IDispatcherService _dispatcherService;
@@ -23,7 +23,7 @@ namespace MTM_Receiving_Application.Services.Authentication
         /// </summary>
         /// <param name="daoUser">User data access object for activity logging</param>
         /// <param name="dispatcherService">Dispatcher service for timer operations</param>
-        public Service_SessionManager(Dao_User daoUser, IDispatcherService dispatcherService)
+        public Service_UserSessionManager(Dao_User daoUser, IDispatcherService dispatcherService)
         {
             _daoUser = daoUser ?? throw new ArgumentNullException(nameof(daoUser));
             _dispatcherService = dispatcherService ?? throw new ArgumentNullException(nameof(dispatcherService));

@@ -67,6 +67,9 @@ function Execute-SqlFile {
         }
         
         # Execute using mysql command with source
+        # Note: SQL Server stored procedures (Infor Visual) are not deployed to MySQL
+        # We only deploy MySQL-compatible scripts here
+
         $arguments = "-h$Server -P$Port -u$User -p$Password $Database -e `"source $FilePath`""
         
         $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -113,7 +116,9 @@ Write-Host "-" * 80
 
 $schemaFiles = @(
     "$ProjectRoot\Database\Schemas\01_create_receiving_tables.sql",
-    "$ProjectRoot\Database\Schemas\02_create_authentication_tables.sql"
+    "$ProjectRoot\Database\Schemas\02_create_authentication_tables.sql",
+    "$ProjectRoot\Database\Schemas\03_create_receiving_tables.sql",
+    "$ProjectRoot\Database\Schemas\04_create_package_preferences.sql"
 )
 
 foreach ($file in $schemaFiles) {

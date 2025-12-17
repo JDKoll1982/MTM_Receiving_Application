@@ -1,77 +1,49 @@
 using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
     /// <summary>
-    /// Service contract for session management and timeout monitoring.
-    /// Tracks active user sessions and handles inactivity timeouts.
+    /// Service for persisting and restoring session state to/from JSON file.
+    /// Session file location: %APPDATA%\MTM_Receiving_Application\session.json
     /// </summary>
     public interface IService_SessionManager
     {
         /// <summary>
-        /// Gets the current active user session.
-        /// Null if no user is logged in.
+        /// Saves the current session to JSON file.
+        /// Automatically creates directory if it doesn't exist.
         /// </summary>
-        Model_UserSession? CurrentSession { get; }
+        /// <param name="session">Session to persist</param>
+        /// <exception cref="ArgumentNullException">If session is null</exception>
+        /// <exception cref="InvalidOperationException">If file write fails</exception>
+        Task SaveSessionAsync(Model_ReceivingSession session);
 
         /// <summary>
-        /// Creates a new user session after successful authentication.
-        /// Sets timeout duration based on workstation type (30 min personal, 15 min shared).
+        /// Loads the persisted session from JSON file.
+        /// Returns null if no session file exists or if file is corrupted.
+        /// Corrupted files are automatically deleted.
         /// </summary>
-        /// <param name="user">Authenticated user</param>
-        /// <param name="workstationConfig">Workstation configuration</param>
-        /// <param name="authenticationMethod">Authentication method used (windows_auto, pin_login)</param>
-        /// <returns>Created session</returns>
-        Model_UserSession CreateSession(Model_User user, Model_WorkstationConfig workstationConfig, string authenticationMethod);
+        /// <returns>Restored session or null</returns>
+        Task<Model_ReceivingSession?> LoadSessionAsync();
 
         /// <summary>
-        /// Updates the last activity timestamp to current time.
-        /// Called on any user interaction (mouse, keyboard, window focus).
-        /// Resets the inactivity timer.
+        /// Deletes the persisted session file.
+        /// Called after successful save to prevent stale data.
         /// </summary>
-        void UpdateLastActivity();
+        /// <returns>True if deleted, false if file didn't exist</returns>
+        Task<bool> ClearSessionAsync();
 
         /// <summary>
-        /// Starts monitoring for session timeout.
-        /// Checks every 60 seconds if session has exceeded timeout duration.
-        /// Raises SessionTimedOut event when timeout detected.
+        /// Checks if a persisted session file exists.
         /// </summary>
-        void StartTimeoutMonitoring();
+        /// <returns>True if session file exists, false otherwise</returns>
+        bool SessionExists();
 
         /// <summary>
-        /// Stops timeout monitoring and cleans up resources.
-        /// Called during application shutdown.
+        /// Gets the full path to the session JSON file.
         /// </summary>
-        void StopTimeoutMonitoring();
-
-        /// <summary>
-        /// Checks if the current session has timed out.
-        /// </summary>
-        /// <returns>True if session exceeded timeout duration</returns>
-        bool IsSessionTimedOut();
-
-        /// <summary>
-        /// Ends the current session and logs the activity.
-        /// Called when user closes application or session times out.
-        /// </summary>
-        /// <param name="reason">Reason for session end (manual_close, session_timeout)</param>
-        Task EndSessionAsync(string reason);
-
-        /// <summary>
-        /// Event raised when session timeout is detected.
-        /// Application should close when this event fires.
-        /// </summary>
-        event EventHandler<SessionTimedOutEventArgs>? SessionTimedOut;
-    }
-
-    /// <summary>
-    /// Event arguments for SessionTimedOut event.
-    /// </summary>
-    public class SessionTimedOutEventArgs : EventArgs
-    {
-        public Model_UserSession Session { get; set; } = null!;
-        public TimeSpan IdleDuration { get; set; }
+        /// <returns>Absolute file path</returns>
+        string GetSessionFilePath();
     }
 }

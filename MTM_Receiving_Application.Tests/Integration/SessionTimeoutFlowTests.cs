@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Tests.Integration
         private readonly Dao_User _daoUser;
         private readonly Mock<IDispatcherService> _mockDispatcherService;
         private readonly Mock<IDispatcherTimer> _mockTimer;
-        private readonly Service_SessionManager _sessionManager;
+        private readonly Service_UserSessionManager _sessionManager;
 
         public SessionTimeoutFlowTests()
         {
@@ -25,7 +25,7 @@ namespace MTM_Receiving_Application.Tests.Integration
 
             _mockDispatcherService.Setup(d => d.CreateTimer()).Returns(_mockTimer.Object);
 
-            _sessionManager = new Service_SessionManager(_daoUser, _mockDispatcherService.Object);
+            _sessionManager = new Service_UserSessionManager(_daoUser, _mockDispatcherService.Object);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace MTM_Receiving_Application.Tests.Integration
 
             // Act
             // Simulate timer tick
-            _mockTimer.Raise(t => t.Tick += null, _mockTimer.Object, null);
+            _mockTimer.Raise(t => t.Tick += null, _mockTimer.Object, new object());
 
             // Assert
             Assert.True(eventFired);
