@@ -81,15 +81,15 @@ namespace MTM_Receiving_Application.Services.Receiving
             return ReceivingValidationResult.Success();
         }
 
-        public async Task<ReceivingValidationResult> ValidateAgainstPOQuantityAsync(decimal totalQuantity, decimal orderedQuantity, string partID)
+        public Task<ReceivingValidationResult> ValidateAgainstPOQuantityAsync(decimal totalQuantity, decimal orderedQuantity, string partID)
         {
             if (totalQuantity > orderedQuantity)
             {
-                return ReceivingValidationResult.Warning(
-                    $"Total quantity ({totalQuantity:F2}) exceeds PO ordered quantity ({orderedQuantity:F2}) for part {partID}. Do you want to continue?");
+                return Task.FromResult(ReceivingValidationResult.Warning(
+                    $"Total quantity ({totalQuantity:F2}) exceeds PO ordered quantity ({orderedQuantity:F2}) for part {partID}. Do you want to continue?"));
             }
 
-            return ReceivingValidationResult.Success();
+            return Task.FromResult(ReceivingValidationResult.Success());
         }
 
         public async Task<ReceivingValidationResult> CheckSameDayReceivingAsync(string poNumber, string partID, decimal userEnteredQuantity)

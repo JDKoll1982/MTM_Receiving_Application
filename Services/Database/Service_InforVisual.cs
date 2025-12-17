@@ -102,11 +102,11 @@ namespace MTM_Receiving_Application.Services.Database
                 {
                     po.Parts.Add(new Model_InforVisualPart
                     {
-                        PartID = reader.GetString(reader.GetOrdinal("PartID")),
-                        POLineNumber = reader.GetString(reader.GetOrdinal("POLineNumber")),
-                        PartType = reader.GetString(reader.GetOrdinal("PartType")),
-                        QtyOrdered = reader.GetDecimal(reader.GetOrdinal("QtyOrdered")),
-                        Description = reader.GetString(reader.GetOrdinal("Description"))
+                        PartID = !reader.IsDBNull(reader.GetOrdinal("PartID")) ? reader.GetString(reader.GetOrdinal("PartID")) : string.Empty,
+                        POLineNumber = !reader.IsDBNull(reader.GetOrdinal("POLineNumber")) ? reader.GetString(reader.GetOrdinal("POLineNumber")) : string.Empty,
+                        PartType = !reader.IsDBNull(reader.GetOrdinal("PartType")) ? reader.GetString(reader.GetOrdinal("PartType")) : "UNKNOWN",
+                        QtyOrdered = !reader.IsDBNull(reader.GetOrdinal("QtyOrdered")) ? reader.GetDecimal(reader.GetOrdinal("QtyOrdered")) : 0m,
+                        Description = !reader.IsDBNull(reader.GetOrdinal("Description")) ? reader.GetString(reader.GetOrdinal("Description")) : string.Empty
                     });
 
                     if (po.Vendor == string.Empty && !reader.IsDBNull(reader.GetOrdinal("VendorID")))
@@ -180,9 +180,9 @@ namespace MTM_Receiving_Application.Services.Database
                 {
                     var part = new Model_InforVisualPart
                     {
-                        PartID = reader.GetString(reader.GetOrdinal("PartID")),
-                        PartType = reader.GetString(reader.GetOrdinal("PartType")),
-                        Description = reader.GetString(reader.GetOrdinal("Description")),
+                        PartID = !reader.IsDBNull(reader.GetOrdinal("PartID")) ? reader.GetString(reader.GetOrdinal("PartID")) : string.Empty,
+                        PartType = !reader.IsDBNull(reader.GetOrdinal("PartType")) ? reader.GetString(reader.GetOrdinal("PartType")) : "UNKNOWN",
+                        Description = !reader.IsDBNull(reader.GetOrdinal("Description")) ? reader.GetString(reader.GetOrdinal("Description")) : string.Empty,
                         POLineNumber = "N/A",
                         QtyOrdered = 0
                     };

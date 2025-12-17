@@ -40,6 +40,16 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _validationService = validationService;
             _inforVisualService = inforVisualService;
+
+            _workflowService.StepChanged += OnStepChanged;
+        }
+
+        private void OnStepChanged(object? sender, EventArgs e)
+        {
+            if (_workflowService.CurrentStep == WorkflowStep.WeightQuantityEntry)
+            {
+                _ = OnNavigatedToAsync();
+            }
         }
 
         public async Task OnNavigatedToAsync()

@@ -44,6 +44,16 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _preferencesService = preferencesService;
             _validationService = validationService;
+
+            _workflowService.StepChanged += OnStepChanged;
+        }
+
+        private void OnStepChanged(object? sender, System.EventArgs e)
+        {
+            if (_workflowService.CurrentStep == WorkflowStep.PackageTypeEntry)
+            {
+                _ = OnNavigatedToAsync();
+            }
         }
 
         public async Task OnNavigatedToAsync()

@@ -31,9 +31,19 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             _workflowService = workflowService;
             _validationService = validationService;
+
+            _workflowService.StepChanged += OnStepChanged;
         }
 
-        public async Task OnNavigatedToAsync()
+        private void OnStepChanged(object? sender, System.EventArgs e)
+        {
+            if (_workflowService.CurrentStep == WorkflowStep.HeatLotEntry)
+            {
+                _ = OnNavigatedToAsync();
+            }
+        }
+
+        public Task OnNavigatedToAsync()
         {
             Loads.Clear();
             UniqueHeatNumbers.Clear();
@@ -49,6 +59,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
             
             UpdateUniqueHeatNumbers();
+            return Task.CompletedTask;
         }
 
         private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -121,11 +132,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         }
         
         [RelayCommand]
-        private async Task ValidateAndContinueAsync()
+        private Task ValidateAndContinueAsync()
         {
             // Validation logic is handled by Service_ReceivingWorkflow when advancing
             // But we can do a quick check here if we want to show specific UI feedback
             // For now, we rely on the service validation which is triggered by the Next button in parent view
+            return Task.CompletedTask;
         }
     }
 }

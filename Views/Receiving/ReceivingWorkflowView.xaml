@@ -59,14 +59,14 @@
                 <FontIcon Glyph="&#xE930;" FontSize="64" Foreground="{ThemeResource SystemFillColorSuccessBrush}" 
                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <FontIcon Glyph="&#xE783;" FontSize="64" Foreground="{ThemeResource SystemFillColorCriticalBrush}" 
-                          Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                          Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
 
                 <TextBlock Text="Success!" 
                            Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"
                            Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <TextBlock Text="Save Failed" 
                            Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"
-                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
 
                 <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" HorizontalAlignment="Center">
                     <Run Text="{x:Bind ViewModel.LastSaveResult.LoadsSaved, Mode=OneWay}"/>
@@ -79,19 +79,19 @@
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="Local CSV:"/>
                         <TextBlock Text="Saved" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="Network CSV:"/>
                         <TextBlock Text="Saved" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="Database:"/>
                         <TextBlock Text="Saved" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
                 </StackPanel>
                 

@@ -30,8 +30,24 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
             _localCSVPath = Path.Combine(appDir, "ReceivingData.csv");
             
-            // Network path - will be made configurable in future
-            _networkCSVPath = @"\\mtmanu-fs01\Shared\JKOLL\ReceivingData.csv";
+            // Network path
+            try
+            {
+                var userName = Environment.UserName;
+                var networkBase = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files";
+                var userDir = Path.Combine(networkBase, userName);
+                
+                if (!Directory.Exists(userDir))
+                {
+                    Directory.CreateDirectory(userDir);
+                }
+                _networkCSVPath = Path.Combine(userDir, "ReceivingData.csv");
+            }
+            catch
+            {
+                // Fallback if network is inaccessible during startup
+                _networkCSVPath = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\UnknownUser\ReceivingData.csv";
+            }
         }
 
         public async Task<CSVWriteResult> WriteToCSVAsync(List<Model_ReceivingLoad> loads)

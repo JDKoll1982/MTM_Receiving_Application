@@ -79,6 +79,7 @@ namespace MTM_Receiving_Application.Services.Receiving
 
             // Start fresh
             CurrentSession = new Model_ReceivingSession();
+            NumberOfLoads = 1;
             CurrentStep = WorkflowStep.POEntry;
             return false; // New session
         }
@@ -361,6 +362,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         public async Task ResetWorkflowAsync()
         {
             CurrentSession = new Model_ReceivingSession();
+            NumberOfLoads = 1;
             CurrentStep = WorkflowStep.POEntry;
             await _sessionManager.ClearSessionAsync();
         }
