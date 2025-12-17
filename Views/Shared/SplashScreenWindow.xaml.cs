@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using MTM_Receiving_Application.Helpers.UI;
 using MTM_Receiving_Application.ViewModels.Shared;
 
 namespace MTM_Receiving_Application.Views.Shared
@@ -6,9 +7,13 @@ namespace MTM_Receiving_Application.Views.Shared
     /// <summary>
     /// Splash screen window displayed during application startup
     /// Shows branding, progress, and status messages during initialization
+    /// Window size: 500x450 pixels (optimized for dialog display)
     /// </summary>
     public sealed partial class SplashScreenWindow : Window
     {
+        private const int WindowWidth = 850;
+        private const int WindowHeight = 700;
+
         public SplashScreenViewModel ViewModel { get; }
 
         public SplashScreenWindow(SplashScreenViewModel viewModel)
@@ -19,26 +24,31 @@ namespace MTM_Receiving_Application.Views.Shared
             // Subscribe to ViewModel property changes
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             
-            // Extend content into title bar area BEFORE centering/other operations
-            ExtendsContentIntoTitleBar = true;
-            SetTitleBar(null);
-            
-            // Configure title bar appearance
-            var titleBar = AppWindow.TitleBar;
-            titleBar.IconShowOptions = Microsoft.UI.Windowing.IconShowOptions.HideIconAndSystemMenu;
-            titleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonForegroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonInactiveForegroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonHoverBackgroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonHoverForegroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonPressedBackgroundColor = Microsoft.UI.Colors.Transparent;
-            titleBar.ButtonPressedForegroundColor = Microsoft.UI.Colors.Transparent;
-            
-            // Center window on screen after title bar configuration
-            CenterWindow();
+            // Configure window appearance and size
+            ConfigureWindow();
         }
 
+        /// <summary>
+        /// Configure window appearance, size, and position
+        /// </summary>
+        private void ConfigureWindow()
+        {
+            // Use custom title bar with transparent styling
+            this.UseCustomTitleBar();
+            this.HideTitleBarIcon();
+            this.MakeTitleBarTransparent();
+            
+            // Set fixed window size
+            this.SetWindowSize(WindowWidth, WindowHeight);
+            this.SetFixedSize(disableMaximize: true, disableMinimize: true);
+            
+            // Center on screen
+            this.CenterOnScreen();
+        }
+
+        /// <summary>
+        /// Handle ViewModel property changes and update UI
+        /// </summary>
         private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
@@ -48,23 +58,6 @@ namespace MTM_Receiving_Application.Views.Shared
                 MainProgressBar.IsIndeterminate = ViewModel.IsIndeterminate;
                 ProgressPercentageTextBlock.Text = ViewModel.IsIndeterminate ? "" : $"{ViewModel.ProgressPercentage}%";
             });
-        }
-
-        /// <summary>
-        /// Center the splash screen window on the display
-        /// </summary>
-        private void CenterWindow()
-        {
-            // Get the display area
-            var displayArea = Microsoft.UI.Windowing.DisplayArea.Primary;
-            var workArea = displayArea.WorkArea;
-
-            // Calculate center position
-            var centerX = (workArea.Width - 600) / 2;
-            var centerY = (workArea.Height - 400) / 2;
-
-            // Move window to center
-            AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(centerX, centerY, 600, 400));
         }
     }
 }

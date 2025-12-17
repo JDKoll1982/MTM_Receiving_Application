@@ -8,7 +8,7 @@
     SecondaryButtonText="Cancel"
     DefaultButton="Primary"
     PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
-    Width="600">
+    Width="480">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header with Icon and Welcome -->
-        <StackPanel Grid.Row="0" Spacing="12" Padding="24,20,24,16" Background="{ThemeResource LayerFillColorDefaultBrush}">
+        <StackPanel Grid.Row="0" Spacing="8" Padding="20,16,20,12" Background="{ThemeResource LayerFillColorDefaultBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -48,8 +48,8 @@
         <ScrollViewer Grid.Row="1" 
                       VerticalScrollBarVisibility="Auto" 
                       HorizontalScrollBarVisibility="Disabled"
-                      MaxHeight="500">
-            <Grid Padding="24,16" RowSpacing="16" ColumnSpacing="16">
+                      MaxHeight="480">
+            <Grid Padding="20,12" RowSpacing="12" ColumnSpacing="12">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -262,7 +262,7 @@
         </ScrollViewer>
 
         <!-- Footer: Status Bar & Progress -->
-        <StackPanel Grid.Row="2" Spacing="8" Padding="24,12,24,20">
+        <StackPanel Grid.Row="2" Spacing="6" Padding="20,8,20,16">
             <ProgressBar x:Name="LoadingProgressBar" 
                          IsIndeterminate="True" 
                          Visibility="Collapsed"

@@ -3,9 +3,10 @@
     x:Class="MTM_Receiving_Application.Views.Shared.SplashScreenWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="MTM Receiving Application">
+    Title="MTM Receiving Application"   
+    >
 
-    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="40">
+    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -15,10 +16,10 @@
         </Grid.RowDefinitions>
 
         <!-- Logo and Branding -->
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Spacing="16">
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Spacing="12">
             <FontIcon FontFamily="Segoe Fluent Icons" 
                       Glyph="&#xE8F1;" 
-                      FontSize="72"
+                      FontSize="64"
                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                       HorizontalAlignment="Center"/>
             
@@ -39,7 +40,7 @@
         </StackPanel>
 
         <!-- Progress Section -->
-        <StackPanel Grid.Row="2" Margin="0,48,0,0" Spacing="12">
+        <StackPanel Grid.Row="2" Margin="0,40,0,0" Spacing="12">
             <TextBlock x:Name="StatusMessageTextBlock"
                        Text="Initializing..."
                        Style="{StaticResource BodyTextBlockStyle}"
@@ -67,6 +68,6 @@
                    Style="{StaticResource CaptionTextBlockStyle}"
                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                    HorizontalAlignment="Center"
-                   Margin="0,32,0,0"/>
+                   Margin="0,28,0,0"/>
     </Grid>
 </Window>

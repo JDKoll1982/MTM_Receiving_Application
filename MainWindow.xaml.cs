@@ -18,6 +18,12 @@ namespace MTM_Receiving_Application
             ViewModel = viewModel;
             _sessionManager = sessionManager;
 
+            // Set initial window size (1200x800 recommended for main application window)
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 800));
+            
+            // Center window on screen
+            CenterWindow();
+
             // Set user display from current session
             if (_sessionManager.CurrentSession != null)
             {
@@ -56,6 +62,20 @@ namespace MTM_Receiving_Application
                 UserDisplayTextBlock.Text = user.DisplayName;
                 UserPicture.DisplayName = user.DisplayName;
             }
+        }
+
+        /// <summary>
+        /// Center the window on the primary display
+        /// </summary>
+        private void CenterWindow()
+        {
+            var displayArea = Microsoft.UI.Windowing.DisplayArea.Primary;
+            var workArea = displayArea.WorkArea;
+            
+            var centerX = (workArea.Width - 1200) / 2;
+            var centerY = (workArea.Height - 800) / 2;
+            
+            AppWindow.Move(new Windows.Graphics.PointInt32(centerX, centerY));
         }
     }
 }
