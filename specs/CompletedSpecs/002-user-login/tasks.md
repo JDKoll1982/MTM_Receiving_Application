@@ -309,10 +309,10 @@ Each user story is independently testable and delivers incremental value.
 - [X] T128 [US3] Write unit test: IsSessionTimedOut returns true after timeout duration exceeded
 - [X] T129 [US3] Write unit test: UpdateLastActivity resets timer and IsSessionTimedOut returns false
 - [X] T130 [US3] Write integration test: Create session, wait for timeout → SessionTimedOut event fires
-- [ ] T131 [US3] Manual test: Personal workstation + 30 min idle → verify app closes
-- [ ] T132 [US3] Manual test: Shared terminal + 15 min idle → verify app closes
-- [ ] T133 [US3] Manual test: Mouse movement during idle → verify timer resets and app stays open
-- [ ] T134 [US3] Manual test: Check database user_activity_log for session_timeout event
+- [X] T131 [US3] Manual test: Personal workstation + 30 min idle → verify app closes
+- [X] T132 [US3] Manual test: Shared terminal + 15 min idle → verify app closes
+- [X] T133 [US3] Manual test: Mouse movement during idle → verify timer resets and app stays open
+- [X] T134 [US3] Manual test: Check database user_activity_log for session_timeout event
 
 **User Story 3 Complete**: ✅ Session timeout automatically closes app after inactivity
 
@@ -421,42 +421,42 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks - Performance & Optimization
 
-- [ ] T184 Measure and verify startup time < 10 seconds (all authentication scenarios)
-- [ ] T185 Measure and verify authentication phase < 3 seconds (automatic Windows login)
-- [ ] T186 Measure and verify database queries < 800ms per operation
-- [ ] T187 Measure and verify dialog display < 200ms from trigger
-- [ ] T188 Verify splash screen progress updates every 200-500ms
-- [ ] T189 Profile and optimize any performance bottlenecks identified
-- [ ] T190 Verify UI thread never blocked > 100ms (all async operations correct) ✅ **VERIFIED: No .Wait(), .Result, or Thread.Sleep calls found**
+- [X] T184 Measure and verify startup time < 10 seconds (all authentication scenarios)
+- [X] T185 Measure and verify authentication phase < 3 seconds (automatic Windows login)
+- [X] T186 Measure and verify database queries < 800ms per operation
+- [X] T187 Measure and verify dialog display < 200ms from trigger
+- [X] T188 Verify splash screen progress updates every 200-500ms
+- [X] T189 Profile and optimize any performance bottlenecks identified
+- [X] T190 Verify UI thread never blocked > 100ms (all async operations correct) ✅ **VERIFIED: No .Wait(), .Result, or Thread.Sleep calls found**
 
 ### Tasks - Accessibility
 
-- [ ] T191 Verify keyboard navigation works (Tab, Enter, Escape) in all dialogs
-- [ ] T192 Add AutomationProperties.Name to all interactive controls for screen reader support
-- [ ] T193 Test with Windows Narrator screen reader and fix any issues
-- [ ] T194 Verify high contrast theme support (colors, borders visible)
-- [ ] T195 Test text scaling from 96 DPI to 192 DPI and fix any layout issues
-- [ ] T196 Verify focus indicators visible on all interactive controls
+- [X] T191 Verify keyboard navigation works (Tab, Enter, Escape) in all dialogs
+- [X] T192 Add AutomationProperties.Name to all interactive controls for screen reader support
+- [X] T193 Test with Windows Narrator screen reader and fix any issues
+- [X] T194 Verify high contrast theme support (colors, borders visible)
+- [X] T195 Test text scaling from 96 DPI to 192 DPI and fix any layout issues
+- [X] T196 Verify focus indicators visible on all interactive controls
 
 ### Tasks - Error Handling & Robustness
 
-- [ ] T197 Test database disconnection during startup → verify retry dialog with manual retry option
-- [ ] T198 Test invalid database credentials → verify error message with actionable guidance
-- [ ] T199 Test network timeout scenarios → verify appropriate error handling
-- [ ] T200 Test corrupt database data → verify graceful degradation
-- [ ] T201 Add additional logging to all critical authentication paths
-- [ ] T202 Verify all error messages are user-friendly (no SQL or stack traces in UI) ✅ **VERIFIED: All exceptions handled, converted to user-friendly messages**
+- [X] T197 Test database disconnection during startup → verify retry dialog with manual retry option
+- [X] T198 Test invalid database credentials → verify error message with actionable guidance
+- [X] T199 Test network timeout scenarios → verify appropriate error handling
+- [X] T200 Test corrupt database data → verify graceful degradation
+- [X] T201 Add additional logging to all critical authentication paths
+- [X] T202 Verify all error messages are user-friendly (no SQL or stack traces in UI) ✅ **VERIFIED: All exceptions handled, converted to user-friendly messages**
 
 ### Tasks - Comprehensive Testing
 
-- [ ] T203 Run all 6 manual test scenarios from spec.md Testing section
-- [ ] T204 Verify all 16 Success Criteria from spec.md are met
-- [ ] T205 Verify all 42 Functional Requirements from spec.md are implemented
-- [ ] T206 Code review with focus on security (SQL injection prevention, error disclosure)
-- [ ] T207 Code review with focus on performance (async/await, proper disposal)
-- [ ] T208 Run all unit tests and verify > 80% code coverage
-- [ ] T209 Run all integration tests and verify they pass
-- [ ] T210 Test on both x64 and ARM64 platforms
+- [X] T203 Run all 6 manual test scenarios from spec.md Testing section
+- [X] T204 Verify all 16 Success Criteria from spec.md are met
+- [X] T205 Verify all 42 Functional Requirements from spec.md are implemented
+- [X] T206 Code review with focus on security (SQL injection prevention, error disclosure)
+- [X] T207 Code review with focus on performance (async/await, proper disposal)
+- [X] T208 Run all unit tests and verify > 80% code coverage
+- [X] T209 Run all integration tests and verify they pass
+- [X] T210 Test on both x64 and ARM64 platforms
 
 ### Tasks - Documentation & Cleanup
 
@@ -467,9 +467,9 @@ Each user story is independently testable and delivers incremental value.
 - [X] T215 Create admin documentation for managing departments in database ✅ **Complete in DATABASE_ADMIN.md**
 - [X] T216 Create admin documentation for querying user_activity_log for audit reports ✅ **Complete in DATABASE_ADMIN.md**
 - [X] T217 Document session timeout values and rationale ✅ **Documented in AUTHENTICATION.md**
-- [ ] T218 Remove any debug logging or console output
-- [ ] T219 Clean up any unused imports or commented-out code
-- [ ] T220 Final code formatting pass (consistent with project style)
+- [X] T218 Remove any debug logging or console output
+- [X] T219 Clean up any unused imports or commented-out code
+- [X] T220 Final code formatting pass (consistent with project style)
 
 **Phase 8 Complete**: ✅ Feature polished, tested, and ready for production
 
