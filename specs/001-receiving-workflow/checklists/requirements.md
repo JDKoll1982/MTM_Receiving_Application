@@ -68,6 +68,17 @@ All checklist items passed validation. The specification is complete, clear, and
 - Smart package type naming with MMC/MMF defaults and user customization
 
 **Recent Updates** (December 16, 2025):
+
+**MAJOR TERMINOLOGY UPDATE** - Updated workflow step names and added review grid editing:
+- "Part selection" → "Part/PO-Line#"
+- "Skid information" → "Load Number/Skid Amount"
+- "Quantities" → "Weight/Quantity"
+- "Heat numbers" → "Heat/Lot#"
+- "Packages" → "Package Type per Load"
+- "Lines/Skids" → "Loads" throughout
+- Enhanced Review step with editable data grid and cascading updates (edit part# or PO# updates all matching loads)
+
+**Previous Updates**:
 - Added package type naming feature with smart defaults (MMC→Coils, MMF→Sheets)
 - Added dropdown selection with Custom option for package types
 - Added database persistence for package type preferences per part ID
@@ -77,14 +88,14 @@ All checklist items passed validation. The specification is complete, clear, and
 - **Added same-day receiving detection**: Checks Infor Visual for same-day receipts and warns of discrepancies
 - **Added non-PO item support**: Users can enter customer-supplied materials with direct part lookup from Infor Visual (new User Story 2 - Priority P1)
 - Part ID validation still occurs for non-PO items via direct Visual database query
-- Updated functional requirements (now 40 total: FR-002 to FR-008 for non-PO items with part validation, FR-013 to FR-014 for PO quantity validation, FR-018+ for package types)
+- Updated functional requirements (now 42 total: FR-002 to FR-008 for non-PO items, FR-013 to FR-014 for PO validation, FR-024 to FR-029 for review grid with cascading updates, FR-018+ for package types)
 - Added 4 new acceptance scenarios to User Story 1 for non-PO workflow (scenarios 2-4 added)
 - Added new User Story 2 (Priority P1) for non-PO items with 5 acceptance scenarios including part validation via Visual lookup
 - Renumbered User Stories 2-5 to 3-6
 - Added PackageTypePreference entity for storing user preferences
-- Updated ReceivingLine entity with IsNonPOItem flag and nullable PONumber
+- Renamed ReceivingLine to ReceivingLoad entity with POLineNumber, LoadNumber, WeightQuantity, HeatLotNumber, PackagesPerLoad attributes
 - Added 9 new edge cases (3 for package types, 2 for JSON persistence, 2 for quantity validation, 2 for non-PO validation)
-- Added 6 new success criteria (SC-009, SC-010 for package types, SC-011 for session restoration, SC-012, SC-013 for validation accuracy, SC-014 for non-PO items)
+- Added 9 new success criteria (SC-009, SC-010 for package types, SC-011 for session restoration, SC-012, SC-013 for validation accuracy, SC-014 for non-PO items, SC-015 to SC-017 for review grid editing)
 - Added System.Text.Json/Newtonsoft.Json to NuGet dependencies
 - Added Infor Visual receiving records query to stored procedures dependencies
 - CSV file paths made configurable per CONFIGURABLE_SETTINGS.md (initially hard-coded)

@@ -17,22 +17,25 @@ A warehouse receiving clerk enters a single PO with one part, specifying quantit
 
 **Acceptance Scenarios**:
 
-1. **Given** the application is open to the receiving entry page, **When** the user enters a valid 6-digit PO number and clicks "Load PO", **Then** the system queries Infor Visual database and displays all parts associated with that PO
-2. **Given** the application is open to the receiving entry page, **When** the user clicks "Non-PO Item" button, **Then** the system displays a manual part entry form for customer-supplied items without PO lookup
-3. **Given** the user is entering a non-PO item, **When** the user enters part ID manually and clicks "Continue", **Then** the system advances to skid information entry without validating against Infor Visual
-4. **Given** parts are displayed from the PO, **When** the user selects a part and clicks "Select Part", **Then** the system advances to skid information entry showing the selected part details
-3. **Given** skid information entry is displayed, **When** the user enters the number of lines (skids) between 1-99 and clicks "Continue", **Then** the system creates that many line entries and advances to quantity entry
-4. **Given** line entries are created, **When** the user enters a quantity for each line and all quantities are greater than 0, **Then** the "Continue to Heat Numbers" button becomes enabled
-5. **Given** quantities are entered, **When** the sum of quantities exceeds the PO ordered quantity, **Then** the system displays a warning allowing the user to proceed or revise quantities
-6. **Given** quantities are entered, **When** the part was already received today in Infor Visual, **Then** the system displays a comparison warning showing Visual's received quantity vs. user's entered total
-7. **Given** quantities are entered for all lines, **When** the user enters heat/lot numbers for each line and clicks "Continue", **Then** the system advances to package entry
-8. **Given** package entry is displayed, **When** the user sees each line, **Then** the system automatically sets package type to "Coils" for part IDs starting with MMC, "Sheets" for part IDs starting with MMF, and shows a dropdown for other part IDs
-9. **Given** a line has a default package type, **When** the user clicks the package type dropdown, **Then** the system displays options: "Coils", "Sheets", "Boxes", "Custom", allowing the user to change the default
-10. **Given** the user selects "Custom" from the package type dropdown, **When** the user enters a custom package type name, **Then** the system accepts the custom name and uses it for that line
-11. **Given** the user changes a package type for a part ID, **When** the data is saved, **Then** the system persists the package type preference for that part ID to the MySQL database for future use
-12. **Given** package type is set and packages per skid is entered for each line, **When** the user enters the package count, **Then** the system calculates and displays weight per package (Quantity ÷ Packages) with the appropriate package type label
-13. **Given** all line data is complete, **When** the user clicks "Save to CSV & Database", **Then** the system saves data to local CSV, network CSV, and MySQL database, showing progress indicators for each step
-14. **Given** save is complete, **When** the system displays save confirmation, **Then** the user sees file locations and success counts, with options to start new entry, view history, or print labels
+1. **Given** the application is open to the receiving entry page, **When** the user enters a valid 6-digit PO number and clicks "Load PO", **Then** the system queries Infor Visual database and displays all parts with their PO line numbers
+2. **Given** the application is open to the receiving entry page, **When** the user clicks "Non-PO Item" button, **Then** the system displays a manual entry form with a Part ID field
+3. **Given** the manual entry form is displayed, **When** the user enters a valid Part ID and clicks "Look Up Part", **Then** the system queries Infor Visual database directly for part information (Part Type, Description) and displays it
+4. **Given** parts are displayed from the PO, **When** the user selects a part/PO-line# and clicks "Select Part", **Then** the system advances to Load Number/Skid Amount entry showing the selected part details
+5. **Given** Load Number/Skid Amount entry is displayed, **When** the user enters the number of loads (skids) between 1-99 and clicks "Continue", **Then** the system creates that many load entries and advances to Weight/Quantity entry
+6. **Given** load entries are created, **When** the user enters weight/quantity for each load and all values are greater than 0, **Then** the "Continue to Heat/Lot#" button becomes enabled
+7. **Given** weights/quantities are entered, **When** the sum of quantities exceeds the PO ordered quantity, **Then** the system displays a warning allowing the user to proceed or revise quantities
+8. **Given** weights/quantities are entered, **When** the part was already received today in Infor Visual, **Then** the system displays a comparison warning showing Visual's received quantity vs. user's entered total
+9. **Given** weights/quantities are entered for all loads, **When** the user enters heat/lot numbers for each load and clicks "Continue", **Then** the system advances to Package Type per Load entry
+10. **Given** Package Type per Load entry is displayed, **When** the user sees each load, **Then** the system automatically sets package type to "Coils" for part IDs starting with MMC, "Sheets" for part IDs starting with MMF, and shows a dropdown for other part IDs
+11. **Given** a load has a default package type, **When** the user clicks the package type dropdown, **Then** the system displays options: "Coils", "Sheets", "Boxes", "Custom", allowing the user to change the default
+12. **Given** the user selects "Custom" from the package type dropdown, **When** the user enters a custom package type name, **Then** the system accepts the custom name and uses it for that load
+13. **Given** the user changes a package type for a part ID, **When** the data is saved, **Then** the system persists the package type preference for that part ID to the MySQL database for future use
+14. **Given** package type is set and package count per load is entered, **When** the user enters the package count, **Then** the system calculates and displays weight per package (Weight/Quantity ÷ Packages) with the appropriate package type label
+15. **Given** all load data is complete, **When** the user clicks "Continue to Review", **Then** the system displays a data grid showing all loads with columns for Part#, PO#, PO-Line#, Load#, Weight/Quantity, Heat/Lot#, Packages, Package Type, and calculated Weight per Package
+16. **Given** the review grid is displayed, **When** the user edits a part number in any row, **Then** the system updates the part number for all loads with the original part number
+17. **Given** the review grid is displayed, **When** the user edits a PO number for a specific part, **Then** the system updates the PO number for all loads of that part
+18. **Given** the user reviews and finalizes the data, **When** the user clicks "Save to CSV & Database", **Then** the system saves data to local CSV, network CSV, and MySQL database, showing progress indicators for each step
+19. **Given** save is complete, **When** the system displays save confirmation, **Then** the user sees file locations and success counts, with options to start new entry, view history, or print labels
 
 ---
 
@@ -64,26 +67,26 @@ A warehouse clerk receives a shipment with multiple different parts on the same 
 
 **Acceptance Scenarios**:
 
-1. **Given** the user has completed entering data for one part (through Step 6), **When** the user is shown the review screen and clicks "Add Another Part/PO", **Then** the system stores the current part's lines and returns to Step 1 for PO entry
+1. **Given** the user has completed entering data for one part (through the Package Type per Load step), **When** the user is shown the review screen and clicks "Add Another Part/PO", **Then** the system stores the current part's loads and returns to Step 1 for PO entry
 2. **Given** the user has data for multiple parts stored in the session, **When** the user completes the final part and clicks "Save to CSV & Database", **Then** all parts' data saves together in one operation
-3. **Given** multiple parts are in the current session, **When** the save completes, **Then** the system shows the total count of all lines saved across all parts
+3. **Given** multiple parts are in the current session, **When** the save completes, **Then** the system shows the total count of all loads saved across all parts
 
 ---
 
-### User Story 4 - Smart Heat Number Selection (Priority: P2)
+### User Story 4 - Smart Heat/Lot# Selection (Priority: P2)
 
-A warehouse clerk receives multiple skids of the same part with the same heat/lot number and wants to quickly apply that heat number to multiple lines without retyping.
+A warehouse clerk receives multiple loads of the same part with the same heat/lot number and wants to quickly apply that heat/lot number to multiple loads without retyping.
 
-**Why this priority**: Significantly improves data entry speed and reduces errors when multiple skids share the same heat number, which is a common scenario in receiving operations.
+**Why this priority**: Significantly improves data entry speed and reduces errors when multiple loads share the same heat/lot number, which is a common scenario in receiving operations.
 
-**Independent Test**: Can be tested by entering a heat number for Line 1, verifying it appears in the quick-select list, then checking that heat number's checkbox and verifying it applies to other lines. Delivers value by reducing repetitive typing.
+**Independent Test**: Can be tested by entering a heat/lot number for Load 1, verifying it appears in the quick-select list, then checking that heat/lot number's checkbox and verifying it applies to other loads. Delivers value by reducing repetitive typing.
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is on the heat number entry step, **When** the user enters a heat number for Line 1, **Then** that heat number appears in the "Quick Select Heat Numbers" list with an unchecked checkbox
-2. **Given** a heat number exists in the quick-select list, **When** the user checks the checkbox for that heat number, **Then** that heat number is applied to all lines that don't already have a heat number entered
-3. **Given** the user enters a heat number for Line 2 that matches Line 1's heat number, **When** the entry is complete, **Then** the existing heat number in the quick-select list shows as checked
-4. **Given** multiple different heat numbers are entered across lines, **When** the quick-select list is displayed, **Then** all unique heat numbers appear in the list with their corresponding line numbers
+1. **Given** the user is on the Heat/Lot# entry step, **When** the user enters a heat/lot number for Load 1, **Then** that heat/lot number appears in the "Quick Select Heat/Lot Numbers" list with an unchecked checkbox
+2. **Given** a heat/lot number exists in the quick-select list, **When** the user checks the checkbox for that heat/lot number, **Then** that heat/lot number is applied to all loads that don't already have a heat/lot number entered
+3. **Given** the user enters a heat/lot number for Load 2 that matches Load 1's heat/lot number, **When** the entry is complete, **Then** the existing heat/lot number in the quick-select list shows as checked
+4. **Given** multiple different heat/lot numbers are entered across loads, **When** the quick-select list is displayed, **Then** all unique heat/lot numbers appear in the list with their corresponding load numbers
 
 ---
 
@@ -114,9 +117,9 @@ A warehouse clerk wants to see their current progress through the multi-step wor
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is at any step in the workflow, **When** the step is displayed, **Then** the current step number and title are clearly shown (e.g., "[Step 3] Skid Information for PART-001")
+1. **Given** the user is at any step in the workflow, **When** the step is displayed, **Then** the current step number and title are clearly shown (e.g., "[Step 3] Load Number/Skid Amount for PART-001")
 2. **Given** the user performs an action (e.g., loads PO, selects part), **When** the action completes, **Then** a status message displays the result (e.g., "PO 123456 loaded. 5 parts found.")
-3. **Given** the user is at Step 7 (Review), **When** the review screen displays, **Then** the system shows a summary including part name, number of lines entered, and total quantity
+3. **Given** the user is at the Review step, **When** the review data grid displays, **Then** the system shows all loads in an editable grid with columns for part name, load numbers, and total weight/quantity
 4. **Given** the user is at the save step (Step 8-9), **When** saving is in progress, **Then** a progress bar shows percentage complete and current operation (local CSV, network CSV, database)
 
 ---
@@ -129,8 +132,10 @@ A warehouse clerk wants to see their current progress through the multi-step wor
 - **What happens if user enters a non-PO item with a part ID that matches an existing PO part?** System retrieves part details from Visual successfully and proceeds; saves with null PO number to indicate customer-supplied.
 - **What happens when network CSV path is unavailable?** System attempts to save to local CSV and database, displays warning "Network CSV location unavailable. Data saved locally and to database. Network sync required later."
 - **What happens when database save fails?** System displays error with specific message, keeps data in JSON file and CSV files as backup, and offers "Retry" option. User can close application without losing entered data.
-- **What happens if user enters 0 for number of lines?** "Continue" button remains disabled and status message displays "Number of lines must be greater than 0."
+- **What happens if user enters 0 for number of loads?** "Continue" button remains disabled and status message displays "Number of loads must be greater than 0."
 - **What happens if user enters invalid characters in NumberBox controls?** WinUI 3 NumberBox automatically rejects non-numeric input.
+- **What happens when user edits a part number in the review grid that doesn't exist in Visual?** System validates the new part number against Infor Visual and displays error if not found, preventing save until corrected.
+- **What happens when user edits data in the review grid?** All edits are applied immediately to the in-memory session data; user must click "Save to CSV & Database" to persist changes.
 - **What happens if the sum of all quantities for a part ID exceeds the PO ordered quantity?** System displays warning dialog: "Total quantity ([sum]) exceeds PO ordered quantity ([ordered qty]) for part [part ID]. Do you want to continue?" with Yes/No options. User can proceed if intentional over-receiving.
 - **What happens if the same part on the same PO was already received today in Infor Visual?** System queries Infor Visual for same-day receipts, displays warning: "Part [part ID] was already received today. Visual shows [qty] received. Your entry totals [sum]. Please verify." User can choose to proceed or review their entry.
 - **What happens if user navigates away mid-entry?** System keeps progress saved in a JSON file so if the applicaiton is closed it will retain its current progress.
@@ -139,12 +144,14 @@ A warehouse clerk wants to see their current progress through the multi-step wor
 - **What happens when a part ID has a saved package type preference that differs from the default?** System uses the saved preference instead of the default (e.g., if user previously set MMC-12345 to "Sheets", it shows "Sheets" instead of "Coils").
 - **What happens if the session JSON file is corrupted or unreadable?** System displays warning "Unable to restore previous session. Starting fresh.", deletes the corrupted file, and starts with a clean session.
 - **What happens if user starts application and has unsaved work from previous session?** System automatically loads the previous session state and displays an info bar: "Previous session restored. You can continue your work or start fresh."
+- **What happens when user edits a part number in the review grid that doesn't exist in Visual?** System validates the new part number against Infor Visual and displays error if not found, preventing save until corrected.
+- **What happens when user edits data in the review grid?** All edits are applied immediately to the in-memory session data; user must click "Save to CSV & Database" to persist changes.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a multi-step guided workflow with 9 distinct steps: startup reset prompt, PO entry, part selection, skid information, quantities, heat numbers, packages, review, and save
+- **FR-001**: System MUST provide a multi-step guided workflow with 9 distinct steps: startup reset prompt, PO entry, Part/PO-Line#, Load Number/Skid Amount, Weight/Quantity, Heat/Lot#, Package Type per Load, Review (data grid with inline editing), and save. Review step MUST display data in grid format allowing manual edits where changing a part number updates all instances of that part across all loads, and changing a PO number for a part updates all loads for that part
 - **FR-002**: System MUST provide a "Non-PO Item" option on the PO entry screen allowing users to enter customer-supplied items without PO lookup
 - **FR-003**: System MUST display manual entry form for non-PO items with Part ID field and "Look Up Part" button that queries Infor Visual database directly for part information (Part Type, Description)
 - **FR-004**: System MUST validate that the entered Part ID exists in Infor Visual database for non-PO items and display error if part not found
@@ -152,44 +159,48 @@ A warehouse clerk wants to see their current progress through the multi-step wor
 - **FR-006**: System MUST validate that PO numbers are numeric and up to 6 digits in length when PO entry is used
 - **FR-007**: System MUST skip PO quantity validation (FR-013) and same-day receiving checks (FR-014) for non-PO items while still validating part ID existence
 - **FR-008**: System MUST save non-PO item records with null or "N/A" PO number indicator in all destinations (CSV, database)
-- **FR-009**: System MUST allow users to select one part at a time from the loaded PO parts list
-- **FR-010**: System MUST allow users to specify the number of lines (skids) between 1 and 99 for each part
-- **FR-011**: System MUST create one receiving line entry for each skid, each capable of holding quantity, heat/lot number, and package count
-- **FR-012**: System MUST validate that all line quantities are greater than 0 before allowing progression to heat number entry
+- **FR-009**: System MUST allow users to select one part with PO-line# at a time from the loaded PO parts list
+- **FR-010**: System MUST allow users to specify the number of loads (skids) between 1 and 99 for each part
+- **FR-011**: System MUST create one receiving load entry for each skid, each capable of holding weight/quantity, heat/lot number, and package count
+- **FR-012**: System MUST validate that all load weights/quantities are greater than 0 before allowing progression to Heat/Lot# entry
 - **FR-013**: System MUST validate the sum of all quantities for a part ID against the PO ordered quantity from Infor Visual and display warning if exceeded, allowing user to override (applies only to PO items)
 - **FR-014**: System MUST query Infor Visual for same-day receipts (matching PO number, part ID, and current date) and warn user if discrepancies exist between Visual's received quantity and the user's entered total (applies only to PO items)
-- **FR-015**: System MUST allow users to enter alphanumeric heat/lot numbers for each line
-- **FR-016**: System MUST provide a quick-select mechanism showing all unique heat numbers entered in the current part, allowing users to apply a heat number to multiple lines via checkbox selection
-- **FR-017**: System MUST allow users to enter packages per skid for each line (numeric, greater than 0)
+- **FR-015**: System MUST allow users to enter alphanumeric heat/lot numbers for each load
+- **FR-016**: System MUST provide a quick-select mechanism showing all unique heat/lot numbers entered in the current part, allowing users to apply a heat/lot number to multiple loads via checkbox selection
+- **FR-017**: System MUST allow users to enter package count per load for each load (numeric, greater than 0)
 - **FR-018**: System MUST automatically determine package type based on part ID prefix: "Coils" for part IDs starting with "MMC", "Sheets" for part IDs starting with "MMF"
-- **FR-019**: System MUST display a package type dropdown for all lines, allowing users to override default package types with options: "Coils", "Sheets", "Boxes", "Custom"
+- **FR-019**: System MUST display a package type dropdown for all loads, allowing users to override default package types with options: "Coils", "Sheets", "Boxes", "Custom"
 - **FR-020**: System MUST allow users to enter a custom package type name when "Custom" is selected from the package type dropdown
 - **FR-021**: System MUST persist package type preferences per part ID to MySQL database when user changes from the default
 - **FR-022**: System MUST retrieve and apply saved package type preferences for part IDs that have been previously customized
 - **FR-023**: System MUST calculate and display weight per package as (Quantity ÷ Packages) with the package type name (e.g., "50 lbs per Coil", "25 lbs per Sheet")
-- **FR-024**: System MUST provide a review screen showing total lines entered, total quantity, and part identification before saving
-- **FR-025**: System MUST allow users to add multiple parts to the current session before saving (via "Add Another Part/PO" option)
-- **FR-026**: System MUST save receiving line data to three destinations: local CSV file (%APPDATA%\ReceivingData.csv), network CSV file (\\mtmanu-fs01\...\JKOLL\ReceivingData.csv), and MySQL database (Note: CSV paths will be made configurable in future settings feature per CONFIGURABLE_SETTINGS.md)
-- **FR-027**: System MUST display progress indicators during save operations showing percentage complete and current operation (local CSV, network CSV, database)
-- **FR-028**: System MUST display save confirmation with file locations and record counts upon successful save
-- **FR-024**: System MUST provide a startup ContentDialog asking whether to reset CSV files with warning that reset makes previous work unprintable
-- **FR-025**: System MUST delete both local and network CSV files when user chooses "Yes, Reset" on the startup dialog
-- **FR-026**: System MUST preserve existing CSV files when user chooses "No, Continue" on the startup dialog
-- **FR-027**: System MUST display the receiving workflow UI within the MainWindow.xaml NavigationView content frame (not separate windows)
-- **FR-028**: System MUST display only actual dialog boxes (like CSV reset prompt) as ContentDialog elements, not main workflow steps
-- **FR-029**: System MUST persist session state to a JSON file in %APPDATA% allowing users to navigate away, close the application, and return without losing entered data
-- **FR-030**: System MUST automatically load persisted session state from JSON file when application starts if in-progress session exists
-- **FR-031**: System MUST clear persisted session state (delete JSON file) after successful save operation
-- **FR-032**: System MUST display status messages throughout the workflow to guide users and confirm actions
-- **FR-033**: System MUST enable/disable buttons contextually based on data validity (e.g., "Continue" button disabled until required data entered)
+- **FR-024**: System MUST provide a review screen displaying all loads in an editable data grid with columns: Part#, PO#, PO-Line#, Load#, Weight/Quantity, Heat/Lot#, Packages, Package Type, Weight per Package (calculated)
+- **FR-025**: System MUST allow inline editing of all fields in the review grid except calculated fields (Weight per Package)
+- **FR-026**: System MUST implement cascading updates where editing a part number in the review grid updates all loads with the original part number
+- **FR-027**: System MUST implement cascading updates where editing a PO number for a specific part updates all loads of that part
+- **FR-028**: System MUST validate edited part numbers against Infor Visual database before allowing save
+- **FR-029**: System MUST allow users to add multiple parts to the current session before saving (via "Add Another Part/PO" option)
+- **FR-030**: System MUST save receiving load data to three destinations: local CSV file (%APPDATA%\ReceivingData.csv), network CSV file (\\mtmanu-fs01\...\JKOLL\ReceivingData.csv), and MySQL database (Note: CSV paths will be made configurable in future settings feature per CONFIGURABLE_SETTINGS.md)
+- **FR-031**: System MUST display progress indicators during save operations showing percentage complete and current operation (local CSV, network CSV, database)
+- **FR-032**: System MUST display save confirmation with file locations and record counts upon successful save
+- **FR-033**: System MUST provide a startup ContentDialog asking whether to reset CSV files with warning that reset makes previous work unprintable
+- **FR-034**: System MUST delete both local and network CSV files when user chooses "Yes, Reset" on the startup dialog
+- **FR-035**: System MUST preserve existing CSV files when user chooses "No, Continue" on the startup dialog
+- **FR-036**: System MUST display the receiving workflow UI within the MainWindow.xaml NavigationView content frame (not separate windows)
+- **FR-037**: System MUST display only actual dialog boxes (like CSV reset prompt) as ContentDialog elements, not main workflow steps
+- **FR-038**: System MUST persist session state to a JSON file in %APPDATA% allowing users to navigate away, close the application, and return without losing entered data
+- **FR-039**: System MUST automatically load persisted session state from JSON file when application starts if in-progress session exists
+- **FR-040**: System MUST clear persisted session state (delete JSON file) after successful save operation
+- **FR-041**: System MUST display status messages throughout the workflow to guide users and confirm actions
+- **FR-042**: System MUST enable/disable buttons contextually based on data validity (e.g., "Continue" button disabled until required data entered)
 
 ### Key Entities
 
-- **ReceivingLine**: Represents one skid of received material with attributes: PartID, PartType, PONumber (nullable for non-PO items), IsNonPOItem (boolean flag), Quantity, HeatNumber (lot number), PackagesOnSkid, PackageTypeName (e.g., "Coils", "Sheets", "Boxes"), WeightPerPackage (calculated), LineNumber
+- **ReceivingLoad**: Represents one load/skid of received material with attributes: PartID, PartType, PONumber (nullable for non-PO items), POLineNumber, IsNonPOItem (boolean flag), LoadNumber, WeightQuantity, HeatLotNumber, PackagesPerLoad, PackageTypeName (e.g., "Coils", "Sheets", "Boxes"), WeightPerPackage (calculated)
 - **InforVisualPO**: Represents a purchase order from Infor Visual with attributes: PONumber, Parts (collection of InforVisualPart)
 - **InforVisualPart**: Represents a part on a PO with attributes: PartID, PartType, QuantityOrdered, Description
-- **ReceivingSession**: Represents the current data entry session with collection of ReceivingLines, allowing accumulation of multiple parts before saving
-- **HeatCheckboxItem**: UI helper entity representing a selectable heat number with attributes: HeatNumber, IsChecked, LineNumber (where first entered)
+- **ReceivingSession**: Represents the current data entry session with collection of ReceivingLoads, allowing accumulation of multiple parts before saving
+- **HeatCheckboxItem**: UI helper entity representing a selectable heat/lot number with attributes: HeatLotNumber, IsChecked, LoadNumber (where first entered)
 - **PackageTypePreference**: Represents a saved package type preference with attributes: PartID, PackageTypeName (user's preferred package type for this part), LastModified (timestamp)
 
 ## Success Criteria *(mandatory)*
@@ -198,10 +209,10 @@ A warehouse clerk wants to see their current progress through the multi-step wor
 
 - **SC-001**: Users can complete a single-part receiving entry (all 9 steps) in under 3 minutes with typical data
 - **SC-002**: System successfully queries Infor Visual database and returns PO data within 2 seconds for 95% of requests
-- **SC-003**: System saves receiving data to all three destinations (local CSV, network CSV, MySQL) within 5 seconds for entries with up to 50 lines
-- **SC-004**: Data entry error rate (invalid quantities, missing heat numbers) reduces by 60% compared to manual paper-based entry due to validation and guided workflow
+- **SC-003**: System saves receiving data to all three destinations (local CSV, network CSV, MySQL) within 5 seconds for entries with up to 50 loads
+- **SC-004**: Data entry error rate (invalid weights/quantities, missing heat/lot numbers) reduces by 60% compared to manual paper-based entry due to validation and guided workflow
 - **SC-005**: Users successfully complete receiving entry on first attempt without errors for 90% of standard receiving operations (PO exists, network available, valid data)
-- **SC-006**: Quick-select heat number feature reduces total keystrokes by 40% when entering multiple skids with the same heat number
+- **SC-006**: Quick-select heat/lot# feature reduces total keystrokes by 40% when entering multiple loads with the same heat/lot number
 - **SC-007**: System handles PO queries that return up to 100 parts without performance degradation
 - **SC-008**: Progress indicators update smoothly during save operations, never appearing frozen to users
 - **SC-009**: Package type defaults are correctly applied based on part ID prefix for 100% of MMC (Coils) and MMF (Sheets) parts
@@ -210,6 +221,10 @@ A warehouse clerk wants to see their current progress through the multi-step wor
 - **SC-012**: System correctly identifies and warns users when entered quantities exceed PO ordered quantities for 100% of over-receiving scenarios (PO items only)
 - **SC-013**: System correctly detects same-day receiving transactions in Infor Visual and displays accurate discrepancy warnings for 100% of applicable cases (PO items only)
 - **SC-014**: Users can successfully enter and save non-PO items without PO validation for 100% of customer-supplied material scenarios
+- **SC-015**: Review grid cascading updates correctly apply part number changes to all matching loads for 100% of edit operations
+- **SC-016**: Review grid cascading updates correctly apply PO number changes to all loads of the edited part for 100% of edit operations
+- **SC-017**: Review grid inline editing allows users to make corrections in under 30 seconds per field without leaving the review screen
+- **SC-017**: Review grid inline editing allows users to make corrections in under 30 seconds per field without leaving the review screen
 
 ## Assumptions *(optional)*
 

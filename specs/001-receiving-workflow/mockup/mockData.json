@@ -1,0 +1,166 @@
+{
+  "purchaseOrders": [
+    {
+      "poNumber": "123456",
+      "vendor": "Steel Supplier Inc",
+      "parts": [
+        {
+          "partID": "MMC-12345",
+          "poLineNumber": "001",
+          "partType": "Steel Coil",
+          "qtyOrdered": 5000,
+          "description": "Cold Rolled Steel Coil - 48in x 0.036in"
+        },
+        {
+          "partID": "MMF-67890",
+          "poLineNumber": "002",
+          "partType": "Steel Sheet",
+          "qtyOrdered": 2500,
+          "description": "Galvanized Steel Sheet - 48in x 96in x 0.024in"
+        },
+        {
+          "partID": "ABC-11111",
+          "poLineNumber": "003",
+          "partType": "Component",
+          "qtyOrdered": 1000,
+          "description": "Custom Bracket Assembly"
+        }
+      ]
+    },
+    {
+      "poNumber": "789012",
+      "vendor": "Aluminum Products Co",
+      "parts": [
+        {
+          "partID": "MMC-54321",
+          "poLineNumber": "001",
+          "partType": "Aluminum Coil",
+          "qtyOrdered": 3000,
+          "description": "Aluminum Coil - 36in x 0.040in"
+        }
+      ]
+    },
+    {
+      "poNumber": "345678",
+      "vendor": "Parts Warehouse",
+      "parts": [
+        {
+          "partID": "XYZ-99999",
+          "poLineNumber": "001",
+          "partType": "Hardware",
+          "qtyOrdered": 500,
+          "description": "Fastener Kit - Assorted"
+        },
+        {
+          "partID": "MMF-22222",
+          "poLineNumber": "002",
+          "partType": "Steel Sheet",
+          "qtyOrdered": 1800,
+          "description": "Hot Rolled Steel Sheet - 60in x 120in x 0.125in"
+        }
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "partID": "MMC-12345",
+      "partType": "Steel Coil",
+      "description": "Cold Rolled Steel Coil - 48in x 0.036in",
+      "defaultPackageType": "Coils"
+    },
+    {
+      "partID": "MMF-67890",
+      "partType": "Steel Sheet",
+      "description": "Galvanized Steel Sheet - 48in x 96in x 0.024in",
+      "defaultPackageType": "Sheets"
+    },
+    {
+      "partID": "MMC-54321",
+      "partType": "Aluminum Coil",
+      "description": "Aluminum Coil - 36in x 0.040in",
+      "defaultPackageType": "Coils"
+    },
+    {
+      "partID": "MMF-22222",
+      "partType": "Steel Sheet",
+      "description": "Hot Rolled Steel Sheet - 60in x 120in x 0.125in",
+      "defaultPackageType": "Sheets"
+    },
+    {
+      "partID": "ABC-11111",
+      "partType": "Component",
+      "description": "Custom Bracket Assembly",
+      "defaultPackageType": "Boxes"
+    },
+    {
+      "partID": "XYZ-99999",
+      "partType": "Hardware",
+      "description": "Fastener Kit - Assorted",
+      "defaultPackageType": "Boxes"
+    },
+    {
+      "partID": "CUST-00001",
+      "partType": "Customer Supplied",
+      "description": "Customer Provided Material - Special Order",
+      "defaultPackageType": "Boxes"
+    },
+    {
+      "partID": "MMC-77777",
+      "partType": "Steel Coil",
+      "description": "Stainless Steel Coil - 42in x 0.028in",
+      "defaultPackageType": "Coils"
+    }
+  ],
+  "receivingHistory": [
+    {
+      "poNumber": "123456",
+      "partID": "MMC-12345",
+      "receiveDate": "2025-12-16",
+      "quantityReceived": 2000,
+      "user": "John Doe"
+    }
+  ],
+  "packageTypePreferences": [
+    {
+      "partID": "MMC-12345",
+      "preferredPackageType": "Coils",
+      "lastModified": "2025-12-10T10:30:00Z"
+    },
+    {
+      "partID": "ABC-11111",
+      "preferredPackageType": "Custom",
+      "customTypeName": "Crates",
+      "lastModified": "2025-12-15T14:20:00Z"
+    }
+  ],
+  "mockLoadData": {
+    "exampleLoads": [
+      {
+        "partID": "MMC-12345",
+        "partType": "Steel Coil",
+        "poNumber": "123456",
+        "poLineNumber": "001",
+        "loadNumber": 1,
+        "weightQuantity": 1250.5,
+        "heatLotNumber": "H12345A",
+        "packagesPerLoad": 25,
+        "packageType": "Coils",
+        "weightPerPackage": 50.02,
+        "isNonPOItem": false
+      },
+      {
+        "partID": "MMC-12345",
+        "partType": "Steel Coil",
+        "poNumber": "123456",
+        "poLineNumber": "001",
+        "loadNumber": 2,
+        "weightQuantity": 1300.0,
+        "heatLotNumber": "H12345A",
+        "packagesPerLoad": 26,
+        "packageType": "Coils",
+        "weightPerPackage": 50.0,
+        "isNonPOItem": false
+      }
+    ]
+  }
+}
