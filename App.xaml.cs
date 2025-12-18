@@ -99,8 +99,8 @@ public partial class App : Application
                 services.AddTransient<CarrierDeliveryLabelViewModel>();
                 
                 // Receiving Workflow ViewModels
-                services.AddTransient<ReceivingWorkflowViewModel>();
-                services.AddTransient<POEntryViewModel>();
+                services.AddTransient<ReceivingWorkflowViewModel>();                services.AddTransient<ModeSelectionViewModel>();
+                services.AddTransient<ManualEntryViewModel>();                services.AddTransient<POEntryViewModel>();
                 services.AddTransient<LoadEntryViewModel>();
                 services.AddTransient<WeightQuantityViewModel>();
                 services.AddTransient<HeatLotViewModel>();

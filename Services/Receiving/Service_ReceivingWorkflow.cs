@@ -29,7 +29,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             StatusMessageRaised?.Invoke(this, message);
         }
 
-        private WorkflowStep _currentStep = WorkflowStep.POEntry;
+        private WorkflowStep _currentStep = WorkflowStep.ModeSelection;
         public WorkflowStep CurrentStep
         {
             get => _currentStep;
@@ -82,7 +82,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             // Start fresh
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
-            CurrentStep = WorkflowStep.POEntry;
+            CurrentStep = WorkflowStep.ModeSelection;
             return false; // New session
         }
 
@@ -93,6 +93,16 @@ namespace MTM_Receiving_Application.Services.Receiving
 
             switch (CurrentStep)
             {
+                case WorkflowStep.ModeSelection:
+                    // Transition handled by GoToStep
+                    return WorkflowStepResult.SuccessResult(CurrentStep);
+
+                case WorkflowStep.ManualEntry:
+                    // Manual entry goes directly to saving/review
+                    // Validation happens on save
+                    CurrentStep = WorkflowStep.Saving;
+                    return WorkflowStepResult.SuccessResult(CurrentStep);
+
                 case WorkflowStep.POEntry:
                     if (string.IsNullOrEmpty(CurrentPONumber) && !IsNonPOItem)
                     {
@@ -367,7 +377,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Errors.Add($"Save operation failed: {ex.Message}");
+                result.Errors.Add($"SavModeSelectiontion failed: {ex.Message}");
                 _logger.LogError("Save operation failed", ex);
                 return result;
             }
@@ -378,7 +388,19 @@ namespace MTM_Receiving_Application.Services.Receiving
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
             CurrentStep = WorkflowStep.POEntry;
+            CurrentPONumber = null;
+            CurrentPart = null;
+            IsNonPOItem = false;
+            _currentBatchLoads.Clear();
+            
             await _sessionManager.ClearSessionAsync();
+            StepChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public async Task<CSVDeleteResult> ResetCSVFilesAsync()
+        {
+            _logger.LogInfo("Resetting CSV files requested.");
+            return await _csvWriter.DeleteCSVFilesAsync();
         }
 
         public async Task PersistSessionAsync()

@@ -1,0 +1,55 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Views.Receiving.ModeSelectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Receiving"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Text="Select Data Entry Mode" 
+                   Style="{StaticResource TitleTextBlockStyle}" 
+                   HorizontalAlignment="Center"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="32">
+            <!-- Guided Mode Button -->
+            <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
+                    Width="250" Height="200"
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                    <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Step-by-step process for standard receiving workflow." 
+                               Style="{StaticResource BodyTextBlockStyle}" 
+                               TextWrapping="Wrap" 
+                               TextAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Manual Mode Button -->
+            <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
+                    Width="250" Height="200"
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                    <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Customizable grid for bulk data entry and editing." 
+                               Style="{StaticResource BodyTextBlockStyle}" 
+                               TextWrapping="Wrap" 
+                               TextAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

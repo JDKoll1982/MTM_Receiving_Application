@@ -101,6 +101,11 @@ namespace MTM_Receiving_Application.Contracts.Services
         Task ResetWorkflowAsync();
 
         /// <summary>
+        /// Resets the CSV files (deletes them).
+        /// </summary>
+        Task<CSVDeleteResult> ResetCSVFilesAsync();
+
+        /// <summary>
         /// Persists current session state to JSON.
         /// </summary>
         Task PersistSessionAsync();
@@ -111,16 +116,17 @@ namespace MTM_Receiving_Application.Contracts.Services
     /// </summary>
     public enum WorkflowStep
     {
-        CSVReset = 0,
-        POEntry = 1,
-        PartSelection = 2,
-        LoadEntry = 3,
-        WeightQuantityEntry = 4,
-        HeatLotEntry = 5,
-        PackageTypeEntry = 6,
-        Review = 7,
-        Saving = 8,
-        Complete = 9
+        ModeSelection = 0,
+        ManualEntry = 1,
+        POEntry = 2,
+        PartSelection = 3,
+        LoadEntry = 4,
+        WeightQuantityEntry = 5,
+        HeatLotEntry = 6,
+        PackageTypeEntry = 7,
+        Review = 8,
+        Saving = 9,
+        Complete = 10
     }
 
     /// <summary>

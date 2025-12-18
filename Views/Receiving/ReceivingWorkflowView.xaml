@@ -34,6 +34,12 @@
 
         <!-- Content Area -->
         <Grid Grid.Row="1" Margin="24,0,24,24">
+            <!-- Mode Selection View -->
+            <views:ModeSelectionView Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            
+            <!-- Manual Entry View -->
+            <views:ManualEntryView Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
             <!-- PO Entry View -->
             <views:POEntryView Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <views:LoadEntryView Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -95,7 +101,10 @@
                     </StackPanel>
                 </StackPanel>
                 
-                <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                    <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}"/>
+                    <Button Content="Reset CSV" Command="{x:Bind ViewModel.ResetCSVCommand}"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
 
@@ -104,6 +113,13 @@
             <!--
                     Visibility="{x:Bind ViewModel.IsNavigationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
             -->
+            <Button Content="Reset CSV" 
+                    Command="{x:Bind ViewModel.ResetCSVCommand}" 
+                    Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Margin="0,0,12,0" 
+                    Background="Transparent" 
+                    BorderBrush="Transparent" 
+                    Foreground="Red"/>
             <Button Content="Back" Command="{x:Bind ViewModel.PreviousStepCommand}" Margin="0,0,12,0"/>
             <Button Content="Next" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
         </StackPanel>

@@ -17,6 +17,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private string _currentStepTitle = "Receiving Workflow";
 
         [ObservableProperty]
+        private bool _isModeSelectionVisible;
+
+        [ObservableProperty]
+        private bool _isManualEntryVisible;
+
+        [ObservableProperty]
         private bool _isPOEntryVisible;
 
         [ObservableProperty]
@@ -207,6 +213,41 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
         }
 
         [RelayCommand]
+        private async Task ResetCSVAsync()
+        {
+            if (App.MainWindow?.Content?.XamlRoot == null)
+            {
+                _logger.LogError("Cannot show dialog: XamlRoot is null");
+                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                return;
+            }
+
+            var dialog = new ContentDialog
+            {
+                Title = "Reset CSV Files",
+                Content = "Are you sure you want to delete the local and network CSV files? This action cannot be undone.",
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = App.MainWindow.Content.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var deleteResult = await _workflowService.ResetCSVFilesAsync();
+                if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
+                {
+                    ShowStatus("CSV files deleted successfully.", InfoBarSeverity.Success);
+                }
+                else
+                {
+                    ShowStatus("Failed to delete CSV files or files not found.", InfoBarSeverity.Warning);
+                }
+            }
+        }
+
+        [RelayCommand]
         private void PreviousStep()
         {
             var result = _workflowService.GoToPreviousStep();
@@ -220,6 +261,8 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
         {
             var step = _workflowService.CurrentStep;
 
+            IsModeSelectionVisible = step == WorkflowStep.ModeSelection;
+            IsManualEntryVisible = step == WorkflowStep.ManualEntry;
             IsPOEntryVisible = step == WorkflowStep.POEntry;
             IsPartSelectionVisible = step == WorkflowStep.PartSelection;
             IsLoadEntryVisible = step == WorkflowStep.LoadEntry;
@@ -233,6 +276,8 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             // Update title based on step
             CurrentStepTitle = step switch
             {
+                WorkflowStep.ModeSelection => "Select Mode",
+                WorkflowStep.ManualEntry => "Manual Entry",
                 WorkflowStep.POEntry => "Enter PO Number",
                 WorkflowStep.PartSelection => "Select Part",
                 WorkflowStep.LoadEntry => "Enter Number of Loads",
