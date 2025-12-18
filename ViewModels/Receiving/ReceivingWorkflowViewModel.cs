@@ -133,8 +133,8 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
                 if (_workflowService.CurrentStep == WorkflowStep.Saving)
                 {
                     _logger.LogInfo("Current step is Saving. Calling PerformSaveAsync...");
-                    // Add a small delay to allow UI to render the "Saving" view
-                    await Task.Delay(500);
+                    // Remove delay to start immediately
+                    // await Task.Delay(500);
                     await PerformSaveAsync();
                 }
             }
@@ -151,32 +151,39 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
 
         private async Task PerformSaveAsync()
         {
-            // Yield to UI thread to allow "Initializing..." to be replaced or at least UI to update
-            await Task.Delay(100);
-            
-            _logger.LogInfo("PerformSaveAsync started.");
-            SaveProgressMessage = "Saving to local and network CSV...";
-            SaveProgressValue = 30;
-
-            // Perform save
-            var messageProgress = new Progress<string>(msg => 
+            try
             {
-                _logger.LogInfo($"Save progress message: {msg}");
-                SaveProgressMessage = msg;
-            });
-            var percentProgress = new Progress<int>(pct => 
+                _logger.LogInfo("PerformSaveAsync started.");
+                
+                // Update UI immediately
+                SaveProgressMessage = "Saving to local and network CSV...";
+                SaveProgressValue = 30;
+
+                // Perform save
+                var messageProgress = new Progress<string>(msg => 
+                {
+                    _logger.LogInfo($"Save progress message: {msg}");
+                    SaveProgressMessage = msg;
+                });
+                var percentProgress = new Progress<int>(pct => 
+                {
+                    _logger.LogInfo($"Save progress percent: {pct}");
+                    SaveProgressValue = pct;
+                });
+
+                _logger.LogInfo("Calling _workflowService.SaveSessionAsync...");
+                LastSaveResult = await _workflowService.SaveSessionAsync(messageProgress, percentProgress);
+                _logger.LogInfo($"SaveSessionAsync returned. Success: {LastSaveResult.Success}");
+
+                // Advance to Complete step
+                await _workflowService.AdvanceToNextStepAsync();
+                UpdateStepVisibility();
+            }
+            catch (Exception ex)
             {
-                _logger.LogInfo($"Save progress percent: {pct}");
-                SaveProgressValue = pct;
-            });
-
-            _logger.LogInfo("Calling _workflowService.SaveSessionAsync...");
-            LastSaveResult = await _workflowService.SaveSessionAsync(messageProgress, percentProgress);
-            _logger.LogInfo($"SaveSessionAsync returned. Success: {LastSaveResult.Success}");
-
-            // Advance to Complete step
-            await _workflowService.AdvanceToNextStepAsync();
-            UpdateStepVisibility();
+                _logger.LogError($"Error in PerformSaveAsync: {ex.Message}", ex);
+                await _errorHandler.HandleErrorAsync($"Save failed: {ex.Message}", Enum_ErrorSeverity.Error);
+            }
         }
 
         [RelayCommand]

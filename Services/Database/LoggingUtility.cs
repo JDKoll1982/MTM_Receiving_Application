@@ -13,6 +13,7 @@ public class LoggingUtility : ILoggingService
 {
     private readonly string _logDirectory;
     private readonly object _lockObject = new object();
+    private readonly System.Collections.Concurrent.BlockingCollection<string> _logQueue = new();
 
     public LoggingUtility()
     {
@@ -23,6 +24,31 @@ public class LoggingUtility : ILoggingService
         );
 
         EnsureLogDirectoryExists();
+        
+        // Start background logging thread
+        System.Threading.Tasks.Task.Factory.StartNew(ProcessLogQueue, 
+            System.Threading.CancellationToken.None, 
+            System.Threading.Tasks.TaskCreationOptions.LongRunning, 
+            System.Threading.Tasks.TaskScheduler.Default);
+    }
+
+    private void ProcessLogQueue()
+    {
+        foreach (var logEntry in _logQueue.GetConsumingEnumerable())
+        {
+            try
+            {
+                string logFilePath = GetCurrentLogFilePath();
+                lock (_lockObject)
+                {
+                    File.AppendAllText(logFilePath, logEntry, Encoding.UTF8);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Background logging failed: {ex.Message}");
+            }
+        }
     }
 
     /// <summary>
@@ -185,11 +211,8 @@ public class LoggingUtility : ILoggingService
 
             logEntry.AppendLine(); // Blank line between entries
 
-            // Thread-safe file writing
-            lock (_lockObject)
-            {
-                File.AppendAllText(logFilePath, logEntry.ToString(), Encoding.UTF8);
-            }
+            // Queue for background writing
+            _logQueue.Add(logEntry.ToString());
             
             // Also write to Debug output for development
             System.Diagnostics.Debug.Write(logEntry.ToString());
