@@ -89,6 +89,20 @@ public partial class App : Application
                 services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
                 services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
 
+                // Receiving Workflow Step Validators (Phase 1 Step 3)
+                services.AddSingleton<Contracts.Services.Validation.IStepValidator<Models.Receiving.StepData.POEntryData>, 
+                    Services.Receiving.Validators.PONumberValidator>();
+                services.AddSingleton<Contracts.Services.Validation.IStepValidator<Models.Receiving.StepData.LoadEntryData>, 
+                    Services.Receiving.Validators.LoadCountValidator>();
+                services.AddSingleton<Contracts.Services.Validation.IStepValidator<Models.Receiving.StepData.WeightQuantityData>, 
+                    Services.Receiving.Validators.WeightQuantityValidator>();
+                services.AddSingleton<Contracts.Services.Validation.IStepValidator<Models.Receiving.StepData.HeatLotData>, 
+                    Services.Receiving.Validators.HeatLotValidator>();
+                services.AddSingleton<Contracts.Services.Validation.IStepValidator<Models.Receiving.StepData.PackageTypeData>, 
+                    Services.Receiving.Validators.PackageTypeValidator>();
+                services.AddSingleton<Contracts.Services.Validation.IStepValidator<System.Collections.Generic.List<Models.Receiving.Model_ReceivingLoad>>, 
+                    Services.Receiving.Validators.SessionValidator>();
+
                 // ViewModels
                 services.AddTransient<MainWindowViewModel>();
                 services.AddTransient<SplashScreenViewModel>();
