@@ -1,8 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.Models.Receiving.StepData;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,9 +10,12 @@ using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
-    public partial class HeatLotViewModel : BaseViewModel
+    /// <summary>
+    /// ViewModel for Heat/Lot Entry step.
+    /// Allows user to enter heat/lot numbers for all loads with quick-fill checkboxes.
+    /// </summary>
+    public partial class HeatLotViewModel : BaseStepViewModel<HeatLotData>
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
 
         [ObservableProperty]
@@ -27,39 +29,39 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ReceivingValidation validationService,
             IService_ErrorHandler errorHandler,
             ILoggingService logger)
-            : base(errorHandler, logger)
+            : base(workflowService, errorHandler, logger)
         {
-            _workflowService = workflowService;
             _validationService = validationService;
-
-            _workflowService.StepChanged += OnStepChanged;
         }
 
-        private void OnStepChanged(object? sender, System.EventArgs e)
-        {
-            if (_workflowService.CurrentStep == WorkflowStep.HeatLotEntry)
-            {
-                _ = OnNavigatedToAsync();
-            }
-        }
+        /// <summary>
+        /// Gets the workflow step this ViewModel represents.
+        /// </summary>
+        protected override WorkflowStep ThisStep => WorkflowStep.HeatLotEntry;
 
-        public Task OnNavigatedToAsync()
+        /// <summary>
+        /// Called when this step becomes active. Load loads from session and set up heat number tracking.
+        /// </summary>
+        protected override Task OnNavigatedToAsync()
         {
             Loads.Clear();
             UniqueHeatNumbers.Clear();
+            StepData.Loads.Clear();
+            StepData.UniqueHeatNumbers.Clear();
 
             if (_workflowService.CurrentSession?.Loads != null)
             {
                 foreach (var load in _workflowService.CurrentSession.Loads)
                 {
                     Loads.Add(load);
-                    load.PropertyChanged -= Load_PropertyChanged; // Unsubscribe first to be safe
+                    StepData.Loads.Add(load);
+                    load.PropertyChanged -= Load_PropertyChanged;
                     load.PropertyChanged += Load_PropertyChanged;
                 }
             }
             
             UpdateUniqueHeatNumbers();
-            return Task.CompletedTask;
+            return base.OnNavigatedToAsync();
         }
 
         private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -86,6 +88,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 {
                     item.PropertyChanged -= HeatCheckboxItem_PropertyChanged;
                     UniqueHeatNumbers.RemoveAt(i);
+                    StepData.UniqueHeatNumbers.RemoveAt(i);
                 }
             }
 
@@ -102,6 +105,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     };
                     newItem.PropertyChanged += HeatCheckboxItem_PropertyChanged;
                     UniqueHeatNumbers.Add(newItem);
+                    StepData.UniqueHeatNumbers.Add(newItem);
                 }
             }
         }
@@ -113,9 +117,6 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 if (sender is Model_HeatCheckboxItem item && item.IsChecked)
                 {
                     ApplyHeatToEmptyLoads(item.HeatLotNumber);
-                    // Optional: Uncheck after applying? 
-                    // Or keep checked to indicate "this is the active heat"?
-                    // Let's keep it checked for now.
                 }
             }
         }
@@ -130,14 +131,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
             }
         }
-        
-        [RelayCommand]
-        private Task ValidateAndContinueAsync()
+
+        /// <summary>
+        /// Validates all heat/lot numbers before advancing.
+        /// </summary>
+        protected override Task<(bool IsValid, string ErrorMessage)> ValidateStepAsync()
         {
-            // Validation logic is handled by Service_ReceivingWorkflow when advancing
-            // But we can do a quick check here if we want to show specific UI feedback
-            // For now, we rely on the service validation which is triggered by the Next button in parent view
-            return Task.CompletedTask;
+            foreach (var load in StepData.Loads)
+            {
+                var result = _validationService.ValidateHeatLotNumber(load.HeatLotNumber);
+                if (!result.IsValid)
+                {
+                    return Task.FromResult((false, $"Load {load.LoadNumber}: {result.Message}"));
+                }
+            }
+
+            return Task.FromResult((true, string.Empty));
         }
     }
 }

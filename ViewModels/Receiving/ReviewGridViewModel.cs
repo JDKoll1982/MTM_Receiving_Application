@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.Models.Receiving.StepData;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,92 +10,79 @@ using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
-    public partial class ReviewGridViewModel : BaseViewModel
+    /// <summary>
+    /// ViewModel for Review step.
+    /// Allows user to review and edit all loads before final submission.
+    /// </summary>
+    public partial class ReviewGridViewModel : BaseStepViewModel<ReviewData>
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_ReceivingValidation _validationService;
-
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
 
         public ReviewGridViewModel(
             IService_ReceivingWorkflow workflowService,
-            IService_ReceivingValidation validationService,
             IService_ErrorHandler errorHandler,
             ILoggingService logger)
-            : base(errorHandler, logger)
+            : base(workflowService, errorHandler, logger)
         {
-            _workflowService = workflowService;
-            _validationService = validationService;
-
-            _workflowService.StepChanged += OnStepChanged;
         }
 
-        private void OnStepChanged(object? sender, System.EventArgs e)
-        {
-            if (_workflowService.CurrentStep == WorkflowStep.Review)
-            {
-                _ = OnNavigatedToAsync();
-            }
-        }
+        /// <summary>
+        /// Gets the workflow step this ViewModel represents.
+        /// </summary>
+        protected override WorkflowStep ThisStep => WorkflowStep.Review;
 
-        public async Task OnNavigatedToAsync()
+        /// <summary>
+        /// Called when this step becomes active. Load all loads for final review.
+        /// </summary>
+        protected override Task OnNavigatedToAsync()
         {
             Loads.Clear();
+            StepData.Loads.Clear();
+            
             if (_workflowService.CurrentSession?.Loads != null)
             {
                 foreach (var load in _workflowService.CurrentSession.Loads)
                 {
                     Loads.Add(load);
+                    StepData.Loads.Add(load);
                 }
             }
-            await Task.CompletedTask;
+            
+            return base.OnNavigatedToAsync();
         }
 
         [RelayCommand]
         private async Task AddAnotherPartAsync()
         {
-            // This will be implemented fully in User Story 3
-            // For now, it should probably just reset to PO Entry or Part Selection
-            // But we need to make sure current loads are saved/accumulated in session.
-            
-            // The workflow service should handle "AddCurrentPartToSessionAsync"
+            // Add current loads to session and reset for next part entry
             await _workflowService.AddCurrentPartToSessionAsync();
             
-            // Navigate to PO Entry (or Part Selection if same PO?)
-            // For MVP US1, we might not fully support this yet, but the button is requested.
-            // Let's assume we go back to PO Entry.
+            // Navigate back to PO Entry for next part
             _workflowService.GoToStep(WorkflowStep.POEntry);
         }
 
         [RelayCommand]
         private async Task SaveAsync()
         {
-            // Trigger the save workflow
-            // This moves to "Saving" step
+            // Advance to Saving step
             await _workflowService.AdvanceToNextStepAsync();
         }
 
+        /// <summary>
+        /// Handles cascading updates when a load property changes in the review grid.
+        /// Updates all other loads with the same value for PO# and Part# fields.
+        /// </summary>
         public void HandleCascadingUpdate(Model_ReceivingLoad changedLoad, string propertyName)
         {
             if (changedLoad == null) return;
 
-            // Logic for cascading updates
-            // If user changes a value in row X, should it update X+1, X+2...?
-            // Spec says: "Review Grid with Cascading Updates"
-            // Usually this means if I change Heat# on Load 1, it might ask to update others, 
-            // or if I change PO# it updates all for that part?
-            
-            // T044 says: "cascading update logic for Part# and PO#"
-            
             var index = Loads.IndexOf(changedLoad);
             if (index < 0) return;
 
+            // Cascade PO Number changes to all loads
             if (propertyName == nameof(Model_ReceivingLoad.PoNumber))
             {
-                // Update all subsequent loads? Or all loads for this part?
-                // If we are reviewing the current session, and it's a single part (US1), 
-                // changing PO probably implies changing it for all loads of this part.
                 foreach (var load in Loads)
                 {
                     if (load != changedLoad)
@@ -104,10 +91,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     }
                 }
             }
+            // Cascade Part ID changes to all loads
             else if (propertyName == nameof(Model_ReceivingLoad.PartID))
             {
-                // If PartID changes, we might need to re-validate or update description?
-                // For now, let's assume we update all loads to match if it's the same "group".
                 foreach (var load in Loads)
                 {
                     if (load != changedLoad)
@@ -116,7 +102,6 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     }
                 }
             }
-            // Add other cascading logic if needed (e.g. Heat Number cascading downwards)
         }
     }
 }
