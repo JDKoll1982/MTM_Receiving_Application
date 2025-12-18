@@ -190,6 +190,9 @@ public class LoggingUtility : ILoggingService
             {
                 File.AppendAllText(logFilePath, logEntry.ToString(), Encoding.UTF8);
             }
+            
+            // Also write to Debug output for development
+            System.Diagnostics.Debug.Write(logEntry.ToString());
         }
         catch (Exception ex)
         {

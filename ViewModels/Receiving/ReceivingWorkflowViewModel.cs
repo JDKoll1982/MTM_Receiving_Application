@@ -70,9 +70,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _workflowService.StepChanged += (s, e) => 
             {
-                // Ensure UI update runs on UI thread if needed, but usually property changes are fine.
-                // Since this is triggered by command (UI thread), it should be fine.
+                _logger.LogInfo("StepChanged event received in ViewModel. Updating visibility.");
                 UpdateStepVisibility();
+                _logger.LogInfo("Visibility updated.");
             };
             _workflowService.StatusMessageRaised += (s, message) => ShowStatus(message);
             
@@ -116,13 +116,25 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
         [RelayCommand]
         private async Task NextStepAsync()
         {
+            _logger.LogInfo("NextStepAsync command triggered.");
+            
+            // Force yield to ensure UI is responsive before starting
+            await Task.Yield();
+
             var result = await _workflowService.AdvanceToNextStepAsync();
+            _logger.LogInfo($"AdvanceToNextStepAsync returned. Success: {result.Success}, Step: {_workflowService.CurrentStep}");
+            
             if (result.Success)
             {
+                // Ensure UI update happens on UI thread
+                // Although RelayCommand should be on UI thread, let's be safe
                 UpdateStepVisibility();
 
                 if (_workflowService.CurrentStep == WorkflowStep.Saving)
                 {
+                    _logger.LogInfo("Current step is Saving. Calling PerformSaveAsync...");
+                    // Add a small delay to allow UI to render the "Saving" view
+                    await Task.Delay(500);
                     await PerformSaveAsync();
                 }
             }
@@ -139,14 +151,28 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
 
         private async Task PerformSaveAsync()
         {
+            // Yield to UI thread to allow "Initializing..." to be replaced or at least UI to update
+            await Task.Delay(100);
+            
+            _logger.LogInfo("PerformSaveAsync started.");
             SaveProgressMessage = "Saving to local and network CSV...";
             SaveProgressValue = 30;
 
             // Perform save
-            var messageProgress = new Progress<string>(msg => SaveProgressMessage = msg);
-            var percentProgress = new Progress<int>(pct => SaveProgressValue = pct);
+            var messageProgress = new Progress<string>(msg => 
+            {
+                _logger.LogInfo($"Save progress message: {msg}");
+                SaveProgressMessage = msg;
+            });
+            var percentProgress = new Progress<int>(pct => 
+            {
+                _logger.LogInfo($"Save progress percent: {pct}");
+                SaveProgressValue = pct;
+            });
 
+            _logger.LogInfo("Calling _workflowService.SaveSessionAsync...");
             LastSaveResult = await _workflowService.SaveSessionAsync(messageProgress, percentProgress);
+            _logger.LogInfo($"SaveSessionAsync returned. Success: {LastSaveResult.Success}");
 
             // Advance to Complete step
             await _workflowService.AdvanceToNextStepAsync();

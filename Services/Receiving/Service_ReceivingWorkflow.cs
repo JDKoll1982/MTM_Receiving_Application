@@ -37,8 +37,10 @@ namespace MTM_Receiving_Application.Services.Receiving
             {
                 if (_currentStep != value)
                 {
+                    _logger.LogInfo($"Changing step from {_currentStep} to {value}");
                     _currentStep = value;
                     StepChanged?.Invoke(this, EventArgs.Empty);
+                    _logger.LogInfo($"Step changed to {value} (event fired)");
                 }
             }
         }
@@ -173,6 +175,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                     break;
 
                 case WorkflowStep.Review:
+                    _logger.LogInfo("Transitioning from Review to Saving...");
                     CurrentStep = WorkflowStep.Saving;
                     break;
 
@@ -186,7 +189,9 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
 
             // Persist session after step change
+            _logger.LogInfo("Persisting session...");
             await PersistSessionAsync();
+            _logger.LogInfo("Session persisted.");
 
             return WorkflowStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
         }
@@ -279,9 +284,11 @@ namespace MTM_Receiving_Application.Services.Receiving
             percentProgress?.Report(10);
 
             // Validate session
+            _logger.LogInfo("Validating session before save...");
             var validation = _validation.ValidateSession(CurrentSession.Loads);
             if (!validation.IsValid)
             {
+                _logger.LogWarning($"Session validation failed: {string.Join(", ", validation.Errors)}");
                 result.Success = false;
                 result.Errors = validation.Errors;
                 return result;
@@ -289,11 +296,15 @@ namespace MTM_Receiving_Application.Services.Receiving
 
             try
             {
+                _logger.LogInfo("Reporting progress: Saving to local CSV...");
                 messageProgress?.Report("Saving to local CSV...");
                 percentProgress?.Report(30);
 
                 // Save to CSV
+                _logger.LogInfo("Calling _csvWriter.WriteToCSVAsync...");
                 var csvResult = await _csvWriter.WriteToCSVAsync(CurrentSession.Loads);
+                _logger.LogInfo($"CSV Write completed. Local: {csvResult.LocalSuccess}, Network: {csvResult.NetworkSuccess}");
+                
                 result.LocalCSVSuccess = csvResult.LocalSuccess;
                 result.NetworkCSVSuccess = csvResult.NetworkSuccess;
                 result.LocalCSVPath = _csvWriter.GetLocalCSVPath();
@@ -312,12 +323,14 @@ namespace MTM_Receiving_Application.Services.Receiving
                     _logger.LogWarning(msg);
                 }
 
+                _logger.LogInfo("Reporting progress: Saving to database...");
                 messageProgress?.Report("Saving to database...");
                 percentProgress?.Report(60);
 
                 // Save to database
                 try
                 {
+                    _logger.LogInfo("Calling _mysqlReceiving.SaveReceivingLoadsAsync...");
                     int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(CurrentSession.Loads);
                     result.DatabaseSuccess = true;
                     result.LoadsSaved = savedCount;
@@ -330,6 +343,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                     _logger.LogError("Database save failed", ex);
                 }
 
+                _logger.LogInfo("Reporting progress: Finalizing...");
                 messageProgress?.Report("Finalizing...");
                 percentProgress?.Report(90);
 

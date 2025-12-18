@@ -14,9 +14,11 @@ namespace MTM_Receiving_Application.Services.Receiving
     public class Service_SessionManager : IService_SessionManager
     {
         private readonly string _sessionPath;
+        private readonly ILoggingService _logger;
 
-        public Service_SessionManager()
+        public Service_SessionManager(ILoggingService logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var appFolder = Path.Combine(appDataPath, "MTM_Receiving_Application");
             
@@ -31,6 +33,7 @@ namespace MTM_Receiving_Application.Services.Receiving
 
         public async Task SaveSessionAsync(Model_ReceivingSession session)
         {
+            _logger.LogInfo("SaveSessionAsync started.");
             if (session == null)
                 throw new ArgumentNullException(nameof(session));
 
@@ -42,11 +45,15 @@ namespace MTM_Receiving_Application.Services.Receiving
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
+                _logger.LogInfo("Serializing session...");
                 var json = JsonSerializer.Serialize(session, options);
+                _logger.LogInfo($"Writing session to file: {_sessionPath}");
                 await File.WriteAllTextAsync(_sessionPath, json);
+                _logger.LogInfo("Session saved successfully.");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Failed to save session to file: {ex.Message}", ex);
                 throw new InvalidOperationException("Failed to save session to file", ex);
             }
         }

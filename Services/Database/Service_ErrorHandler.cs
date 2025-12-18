@@ -92,7 +92,13 @@ public class Service_ErrorHandler : IService_ErrorHandler
             // Using dynamic to avoid direct dependency on App class which might not be visible here
             // or simply checking Application.Current
             
-            var xamlRoot = (Microsoft.UI.Xaml.Application.Current as dynamic)?.MainWindow?.Content?.XamlRoot;
+            // Fix: Use Application.Current to get the window, but we need to cast it to App
+            // Since we are in the same assembly, we can cast.
+            // However, App.MainWindow is a static property on App class, not an instance property on Application.
+            // The error "Member 'MTM_Receiving_Application.App.MainWindow.get' cannot be accessed with an instance reference"
+            // means we were trying to access a static property via an instance.
+            
+            var xamlRoot = App.MainWindow?.Content?.XamlRoot;
 
             if (xamlRoot == null)
             {
