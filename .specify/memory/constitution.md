@@ -1,10 +1,14 @@
 <!--
 CONSTITUTION SYNC IMPACT REPORT
-Generated: 2025-12-17
+Generated: 2025-12-18
 
-VERSION CHANGE: NEW → 1.0.0 (MAJOR - Initial Constitution)
+VERSION CHANGE: 1.0.0 → 1.1.0 (MINOR - Added Testing & Code Quality Principles)
 
-PRINCIPLES ADDED:
+PRINCIPLES ADDED IN v1.1.0:
+✅ VIII. Testing & Quality Assurance
+✅ IX. Code Quality & Maintainability
+
+PRINCIPLES FROM v1.0.0:
 ✅ I. MVVM Architecture (NON-NEGOTIABLE)
 ✅ II. Database Layer Consistency
 ✅ III. Dependency Injection Everywhere
@@ -40,6 +44,13 @@ RATIONALE FOR VERSION 1.0.0:
 - Documents critical Infor Visual READ ONLY constraint
 - Establishes MVVM, DI, and error handling as non-negotiable
 - Formalizes Speckit workflow integration
+
+RATIONALE FOR VERSION 1.1.0 (2025-12-18):
+- Formalized testing standards (xUnit, Moq, coverage requirements)
+- Elevated code quality practices to constitutional principles
+- Documented performance and UI responsiveness mandates
+- Codified naming conventions as non-negotiable standards
+- Integrated performance-and-stability.instructions.md guidance
 
 STAKEHOLDER ALIGNMENT:
 - Based on existing code patterns in codebase
@@ -230,6 +241,110 @@ specs/
 
 ---
 
+### VIII. Testing & Quality Assurance
+
+**Testing Framework Standards**:
+- xUnit as the primary testing framework
+- Moq for service mocking and isolation
+- Separate test project: `MTM_Receiving_Application.Tests`
+- Test organization: `Unit/` and `Integration/` folders
+- ALL service logic MUST have unit tests
+- ALL database operations MUST have integration tests
+
+**Test Coverage Requirements**:
+- ViewModels: Test command logic, property changes, validation
+- Services: Test business logic, error handling, edge cases
+- DAOs: Integration tests with test database (NOT production)
+- Minimum coverage: 80% for service and ViewModel layers
+- Critical paths: 100% coverage (authentication, data persistence)
+
+**Test-Driven Development (TDD)**:
+- Write tests BEFORE implementation for new features
+- Ensure tests FAIL before implementing functionality
+- Red-Green-Refactor cycle for complex logic
+- Contract tests for service interfaces
+- Integration tests for cross-service interactions
+
+**Testing Best Practices**:
+- Use descriptive test names: `MethodName_Scenario_ExpectedBehavior`
+- Arrange-Act-Assert pattern for test structure
+- One assertion focus per test (avoid multiple concerns)
+- Mock external dependencies (database, file system, network)
+- Test data must NOT affect production Infor Visual database
+- Clean up test resources in Dispose/teardown methods
+
+**Manual Testing Requirements**:
+- UI testing for all user-facing features
+- Acceptance criteria validation from spec.md
+- Cross-platform testing (x64, ARM64 when applicable)
+- Accessibility testing (keyboard navigation, screen readers)
+- Performance testing for database-heavy operations (<500ms target)
+
+**Rationale**: Comprehensive testing prevents regressions, validates requirements, and enables confident refactoring. Test-first approach ensures code is inherently testable and meets specifications.
+
+---
+
+### IX. Code Quality & Maintainability
+
+**Naming Conventions (MANDATORY)**:
+- **Classes**: PascalCase with prefixes
+  - ViewModels: `{Feature}ViewModel` (e.g., `ReceivingWorkflowViewModel`)
+  - Services: `Service_{Feature}` with interface `IService_{Feature}`
+  - DAOs: `Dao_{EntityName}` (static or instance based on pattern)
+  - Models: `Model_{EntityName}`
+  - Enums: `Enum_{Name}`
+- **Methods**: PascalCase, async methods end with `Async`
+- **Properties**: PascalCase for public, `_camelCase` for private fields
+- **Parameters**: camelCase
+- **Constants**: PascalCase in static classes (NOT UPPER_SNAKE_CASE)
+
+**File Organization**:
+- Match namespace to folder structure
+- One public class per file (nested classes allowed)
+- File name matches primary class name
+- Use file-scoped namespaces (preferred)
+- Group related classes in feature folders
+
+**Performance & UI Responsiveness (NON-NEGOTIABLE)**:
+- **Never block the UI thread** - all I/O operations MUST be async
+- File operations: `await File.WriteAllTextAsync()`, NOT `File.WriteAllText()`
+- Network operations: Wrap in `Task.Run()` or use native async APIs
+- Database operations: ALL DAO methods MUST be async
+- Immediate UI feedback: Update status BEFORE awaiting long operations
+- Use `DispatcherQueue.TryEnqueue()` for UI updates from background threads
+- Target: Database operations <500ms, UI interactions <100ms response
+
+**Logging Standards**:
+- Non-blocking logging with background queue processing
+- Logging failures MUST NOT crash the application
+- Use try-catch around logging operations
+- Structured log entries with timestamp, severity, context
+- CSV format for easy troubleshooting without database dependencies
+
+**Code Documentation**:
+- XML comments for ALL public APIs (classes, methods, properties)
+- Inline comments for complex logic or non-obvious decisions
+- README.md updates for user-facing feature changes
+- Update REUSABLE_SERVICES.md when adding new service patterns
+- Document breaking changes in CHANGELOG.md
+
+**Build Optimization**:
+- Disable expensive build steps in Debug configuration
+- Use `EnableMsixTooling=false` for Debug builds during development
+- Fast iteration: Debug builds should complete in <30 seconds
+- Release builds may include full packaging and signing
+
+**Data Integrity**:
+- Validate data lengths against database schema BEFORE insert
+- Sanitize input in service layer (ViewModel → Service → DAO)
+- Match C# model properties to database column types
+- Default values in models MUST match database defaults
+- Truncate or reject data exceeding VARCHAR limits with clear error messages
+
+**Rationale**: Consistent code quality enables team productivity, reduces bugs, and ensures maintainability. Performance standards prevent UI freezing and poor user experience. Naming conventions reduce cognitive load and enable predictable code navigation.
+
+---
+
 ## Technology Constraints
 
 ### Platform & Framework
@@ -362,4 +477,4 @@ specs/
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-17
+**Version**: 1.1.0 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-18
