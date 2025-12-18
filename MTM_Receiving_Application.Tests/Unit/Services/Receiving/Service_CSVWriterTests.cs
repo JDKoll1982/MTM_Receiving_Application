@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
+using Moq;
 using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.Contracts.Services;
 
 namespace MTM_Receiving_Application.Tests.Unit.Services.Receiving
 {
@@ -12,10 +14,12 @@ namespace MTM_Receiving_Application.Tests.Unit.Services.Receiving
     {
         private readonly Service_CSVWriter _service;
         private readonly string _localPath;
+        private readonly Mock<IService_UserSessionManager> _mockSessionManager;
 
         public Service_CSVWriterTests()
         {
-            _service = new Service_CSVWriter();
+            _mockSessionManager = new Mock<IService_UserSessionManager>();
+            _service = new Service_CSVWriter(_mockSessionManager.Object);
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             _localPath = Path.Combine(appDataPath, "MTM_Receiving_Application", "ReceivingData.csv");
         }

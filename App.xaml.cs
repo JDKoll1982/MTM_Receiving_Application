@@ -76,7 +76,11 @@ public partial class App : Application
                 services.AddSingleton<IService_MySQL_PackagePreferences>(sp =>
                     new Service_MySQL_PackagePreferences(Helper_Database_Variables.GetConnectionString()));
                 services.AddSingleton<IService_SessionManager, Service_SessionManager>();
-                services.AddSingleton<IService_CSVWriter, Service_CSVWriter>();
+                services.AddSingleton<IService_CSVWriter>(sp =>
+                {
+                    var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
+                    return new Service_CSVWriter(sessionManager);
+                });
                 services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
                 services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
 

@@ -17,10 +17,12 @@ namespace MTM_Receiving_Application.Services.Receiving
     public class Service_CSVWriter : IService_CSVWriter
     {
         private readonly string _localCSVPath;
-        private readonly string _networkCSVPath;
+        private readonly IService_UserSessionManager _sessionManager;
 
-        public Service_CSVWriter()
+        public Service_CSVWriter(IService_UserSessionManager sessionManager)
         {
+            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             // Ensure directory exists
             var appDir = Path.Combine(appDataPath, "MTM_Receiving_Application");
@@ -29,24 +31,35 @@ namespace MTM_Receiving_Application.Services.Receiving
                 Directory.CreateDirectory(appDir);
             }
             _localCSVPath = Path.Combine(appDir, "ReceivingData.csv");
-            
-            // Network path
+        }
+
+        private string GetNetworkCSVPathInternal()
+        {
             try
             {
-                var userName = Environment.UserName;
+                string userName;
+                if (_sessionManager.CurrentSession?.User != null)
+                {
+                    userName = _sessionManager.CurrentSession.User.WindowsUsername;
+                }
+                else
+                {
+                    userName = Environment.UserName;
+                }
+
                 var networkBase = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files";
                 var userDir = Path.Combine(networkBase, userName);
                 
+                // Ensure directory exists
                 if (!Directory.Exists(userDir))
                 {
-                    Directory.CreateDirectory(userDir);
+                    try { Directory.CreateDirectory(userDir); } catch { }
                 }
-                _networkCSVPath = Path.Combine(userDir, "ReceivingData.csv");
+                return Path.Combine(userDir, "ReceivingData.csv");
             }
             catch
             {
-                // Fallback if network is inaccessible during startup
-                _networkCSVPath = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\UnknownUser\ReceivingData.csv";
+                return @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\UnknownUser\ReceivingData.csv";
             }
         }
 
@@ -73,7 +86,8 @@ namespace MTM_Receiving_Application.Services.Receiving
             // Attempt network CSV (optional - failure is not critical)
             try
             {
-                await WriteToFileAsync(_networkCSVPath, loads);
+                var networkPath = GetNetworkCSVPathInternal();
+                await WriteToFileAsync(networkPath, loads);
                 result.NetworkSuccess = true;
             }
             catch (Exception ex)
@@ -136,11 +150,12 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
 
             // Delete network CSV
-            if (File.Exists(_networkCSVPath))
+            var networkPath = GetNetworkCSVPathInternal();
+            if (File.Exists(networkPath))
             {
                 try
                 {
-                    await Task.Run(() => File.Delete(_networkCSVPath));
+                    await Task.Run(() => File.Delete(networkPath));
                     result.NetworkDeleted = true;
                 }
                 catch (Exception ex)
@@ -163,7 +178,8 @@ namespace MTM_Receiving_Application.Services.Receiving
 
                 try
                 {
-                    result.NetworkExists = File.Exists(_networkCSVPath);
+                    var networkPath = GetNetworkCSVPathInternal();
+                    result.NetworkExists = File.Exists(networkPath);
                     result.NetworkAccessible = true;
                 }
                 catch
@@ -178,6 +194,6 @@ namespace MTM_Receiving_Application.Services.Receiving
 
         public string GetLocalCSVPath() => _localCSVPath;
 
-        public string GetNetworkCSVPath() => _networkCSVPath;
+        public string GetNetworkCSVPath() => GetNetworkCSVPathInternal();
     }
 }
