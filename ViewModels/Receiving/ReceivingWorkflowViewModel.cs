@@ -61,6 +61,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private InfoBarSeverity _statusSeverity = InfoBarSeverity.Informational;
 
+        private bool _isSaving = false;
+
         public ReceivingWorkflowViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_ErrorHandler errorHandler,
@@ -71,6 +73,15 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService.StepChanged += (s, e) => 
             {
                 _logger.LogInfo("StepChanged event received in ViewModel. Updating visibility.");
+
+                if (_workflowService.CurrentStep == WorkflowStep.Saving)
+                {
+                    _logger.LogInfo("Step is Saving. Enqueuing PerformSaveAsync via Dispatcher.");
+                    App.MainWindow?.DispatcherQueue?.TryEnqueue(async () => 
+                    {
+                        await PerformSaveAsync();
+                    });
+                }
                 UpdateStepVisibility();
                 _logger.LogInfo("Visibility updated.");
             };
@@ -105,52 +116,50 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             }
         }
 
-        
-        [RelayCommand]
-        private async Task StartWorkflowAsync()
-        {
-            await _workflowService.StartWorkflowAsync();
-            UpdateStepVisibility();
-        }
-
         [RelayCommand]
         private async Task NextStepAsync()
         {
-            _logger.LogInfo("NextStepAsync command triggered.");
-            
-            // Force yield to ensure UI is responsive before starting
-            await Task.Yield();
-
-            var result = await _workflowService.AdvanceToNextStepAsync();
-            _logger.LogInfo($"AdvanceToNextStepAsync returned. Success: {result.Success}, Step: {_workflowService.CurrentStep}");
-            
-            if (result.Success)
+            try
             {
-                // Ensure UI update happens on UI thread
-                // Although RelayCommand should be on UI thread, let's be safe
-                UpdateStepVisibility();
+                _logger.LogInfo("NextStepAsync command triggered.");
+                
+                // Removed Task.Yield() to avoid context switching issues
+                // await Task.Yield();
 
-                if (_workflowService.CurrentStep == WorkflowStep.Saving)
+                var result = await _workflowService.AdvanceToNextStepAsync();
+                _logger.LogInfo($"AdvanceToNextStepAsync returned. Success: {result.Success}, Step: {_workflowService.CurrentStep}");
+                
+                if (result.Success)
                 {
-                    _logger.LogInfo("Current step is Saving. Calling PerformSaveAsync...");
-                    // Remove delay to start immediately
-                    // await Task.Delay(500);
-                    await PerformSaveAsync();
+                    UpdateStepVisibility();
+                    // PerformSaveAsync is now triggered by the StepChanged event handler
+                }
+                else
+                {
+                    if (result.ValidationErrors.Count > 0)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            string.Join("\n", result.ValidationErrors),
+                            Enum_ErrorSeverity.Error);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (result.ValidationErrors.Count > 0)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        string.Join("\n", result.ValidationErrors),
-                        Enum_ErrorSeverity.Error);
-                }
+                _logger.LogError($"Error in NextStepAsync: {ex.Message}", ex);
+                await _errorHandler.HandleErrorAsync($"An error occurred: {ex.Message}", Enum_ErrorSeverity.Error);
             }
         }
 
         private async Task PerformSaveAsync()
         {
+            if (_isSaving)
+            {
+                _logger.LogInfo("PerformSaveAsync called but already saving. Ignoring.");
+                return;
+            }
+            _isSaving = true;
+
             try
             {
                 _logger.LogInfo("PerformSaveAsync started.");
@@ -183,6 +192,10 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             {
                 _logger.LogError($"Error in PerformSaveAsync: {ex.Message}", ex);
                 await _errorHandler.HandleErrorAsync($"Save failed: {ex.Message}", Enum_ErrorSeverity.Error);
+            }
+            finally
+            {
+                _isSaving = false;
             }
         }
 
