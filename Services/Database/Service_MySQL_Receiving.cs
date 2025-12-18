@@ -23,6 +23,13 @@ namespace MTM_Receiving_Application.Services.Database
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        private string? CleanPONumber(string? poNumber)
+        {
+            if (string.IsNullOrEmpty(poNumber)) return null;
+            // Remove "PO-" prefix if present to fit in VARCHAR(6) database column
+            return poNumber.Replace("PO-", "", StringComparison.OrdinalIgnoreCase).Trim();
+        }
+
         public async Task<int> SaveReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
         {
             _logger.LogInfo($"Saving {loads?.Count ?? 0} loads to database.");
@@ -44,7 +51,7 @@ namespace MTM_Receiving_Application.Services.Database
                         { "LoadID", load.LoadID.ToString() },
                         { "PartID", load.PartID },
                         { "PartType", load.PartType },
-                        { "PONumber", load.PoNumber ?? (object)DBNull.Value },
+                        { "PONumber", CleanPONumber(load.PoNumber) ?? (object)DBNull.Value },
                         { "POLineNumber", load.PoLineNumber },
                         { "LoadNumber", load.LoadNumber },
                         { "WeightQuantity", load.WeightQuantity },

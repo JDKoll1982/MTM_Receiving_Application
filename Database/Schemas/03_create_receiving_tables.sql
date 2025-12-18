@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS receiving_loads (
     LoadID CHAR(36) PRIMARY KEY,
     PartID VARCHAR(50) NOT NULL,
     PartType VARCHAR(50) NOT NULL,
-    PONumber VARCHAR(6) NULL,  -- Nullable for non-PO items
+    PONumber VARCHAR(20) NULL,  -- Nullable for non-PO items
     POLineNumber VARCHAR(10) NOT NULL,
     LoadNumber INT NOT NULL,
     WeightQuantity DECIMAL(10,2) NOT NULL CHECK (WeightQuantity > 0),
