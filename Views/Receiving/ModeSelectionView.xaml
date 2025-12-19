@@ -9,47 +9,67 @@
 
     <Grid>
         <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel Orientation="Horizontal" Spacing="24">
-            <!-- Guided Mode Button -->
-            <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    AutomationProperties.Name="Guided Wizard Mode">
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <!-- Guided Mode Column -->
                 <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                    <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Step-by-step process for standard receiving workflow." 
-                               Style="{StaticResource BodyTextBlockStyle}" 
-                               TextWrapping="Wrap" 
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
+                            Width="280" Height="180"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Guided Wizard Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Step-by-step process for standard receiving workflow." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Guided Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
+                              CommandParameter="{x:Bind ViewModel.IsGuidedModeDefault, Mode=OneWay}"
+                              HorizontalAlignment="Center"
+                              ToolTipService.ToolTip="Skip mode selection and go directly to Guided Wizard"/>
                 </StackPanel>
-            </Button>
 
-            <!-- Manual Mode Button -->
-            <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    AutomationProperties.Name="Manual Entry Mode">
+                <!-- Manual Mode Column -->
                 <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                    <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Customizable grid for bulk data entry and editing." 
-                               Style="{StaticResource BodyTextBlockStyle}" 
-                               TextWrapping="Wrap" 
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
+                            Width="280" Height="180"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Manual Entry Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Customizable grid for bulk data entry and editing." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Manual Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
+                              CommandParameter="{x:Bind ViewModel.IsManualModeDefault, Mode=OneWay}"
+                              HorizontalAlignment="Center"
+                              ToolTipService.ToolTip="Skip mode selection and go directly to Manual Entry"/>
                 </StackPanel>
-            </Button>
-        </StackPanel>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

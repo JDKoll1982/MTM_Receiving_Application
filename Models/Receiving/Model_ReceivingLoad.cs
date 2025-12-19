@@ -37,7 +37,7 @@ namespace MTM_Receiving_Application.Models.Receiving
         private int _remainingQuantity;
 
         [ObservableProperty]
-        private int _packagesPerLoad;
+        private int _packagesPerLoad = 1;  // Default to 1 package per load
 
         [ObservableProperty]
         private string _packageTypeName = string.Empty;

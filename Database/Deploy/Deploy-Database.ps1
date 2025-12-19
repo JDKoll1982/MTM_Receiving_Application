@@ -118,7 +118,8 @@ $schemaFiles = @(
     "$ProjectRoot\Database\Schemas\01_create_receiving_tables.sql",
     "$ProjectRoot\Database\Schemas\02_create_authentication_tables.sql",
     "$ProjectRoot\Database\Schemas\03_create_receiving_tables.sql",
-    "$ProjectRoot\Database\Schemas\04_create_package_preferences.sql"
+    "$ProjectRoot\Database\Schemas\04_create_package_preferences.sql",
+    "$ProjectRoot\Database\Schemas\05_add_default_mode_to_users.sql"
 )
 
 foreach ($file in $schemaFiles) {

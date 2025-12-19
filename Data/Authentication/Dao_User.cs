@@ -315,12 +315,33 @@ namespace MTM_Receiving_Application.Data.Authentication
                 VisualPassword = reader.IsDBNull(reader.GetOrdinal("visual_password")) 
                     ? null 
                     : reader.GetString(reader.GetOrdinal("visual_password")),
+                DefaultReceivingMode = reader.IsDBNull(reader.GetOrdinal("default_receiving_mode"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("default_receiving_mode")),
                 CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
                 CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by")) 
                     ? null 
                     : reader.GetString(reader.GetOrdinal("created_by")),
                 ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
             };
+        }
+        
+        /// <summary>
+        /// Updates user's default receiving mode preference
+        /// </summary>
+        public async Task<Model_Dao_Result> UpdateDefaultModeAsync(int userId, string? defaultMode)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "@p_user_id", userId },
+                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
+            };
+            
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_update_user_default_mode",
+                parameters
+            );
         }
     }
 }

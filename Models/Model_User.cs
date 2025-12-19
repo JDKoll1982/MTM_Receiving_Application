@@ -60,6 +60,11 @@ namespace MTM_Receiving_Application.Models
         public string? VisualPassword { get; set; }
         
         /// <summary>
+        /// Default receiving workflow mode: "guided", "manual", or null (show selection)
+        /// </summary>
+        public string? DefaultReceivingMode { get; set; }
+        
+        /// <summary>
         /// Account creation timestamp
         /// </summary>
         public DateTime CreatedDate { get; set; }
