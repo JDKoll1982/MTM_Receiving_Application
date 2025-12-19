@@ -28,6 +28,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private Model_ReceivingLoad? _currentEntry;
 
         /// <summary>
+        /// Display index (1-based) for UI
+        /// </summary>
+        public int DisplayIndex => CurrentEntryIndex + 1;
+
+        /// <summary>
         /// Indicates if the Previous button should be enabled
         /// </summary>
         public bool CanGoBack => CurrentEntryIndex > 0;
@@ -83,6 +88,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             
             OnPropertyChanged(nameof(CanGoBack));
             OnPropertyChanged(nameof(CanGoNext));
+            OnPropertyChanged(nameof(DisplayIndex));
             await Task.CompletedTask;
         }
 
@@ -95,6 +101,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 CurrentEntry = Loads[CurrentEntryIndex];
                 OnPropertyChanged(nameof(CanGoBack));
                 OnPropertyChanged(nameof(CanGoNext));
+                OnPropertyChanged(nameof(DisplayIndex));
             }
         }
 
@@ -107,6 +114,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 CurrentEntry = Loads[CurrentEntryIndex];
                 OnPropertyChanged(nameof(CanGoBack));
                 OnPropertyChanged(nameof(CanGoNext));
+                OnPropertyChanged(nameof(DisplayIndex));
             }
         }
 

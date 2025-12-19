@@ -127,6 +127,25 @@
                         Foreground="Red"/>
             </StackPanel>
             
+            <!-- Center help button -->
+            <Button Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Canvas.ZIndex="1000"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Padding="12,8"
+                    ToolTipService.ToolTip="Click for help about current step">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE946;" FontSize="16"/>
+                    <TextBlock Text="Help"/>
+                </StackPanel>
+                <Button.Flyout>
+                    <Flyout>
+                        <ContentControl Content="{x:Bind ViewModel.HelpContent, Mode=OneWay}"/>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            
             <!-- Right-aligned navigation buttons -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
                 <Button Content="Back" Command="{x:Bind ViewModel.PreviousStepCommand}"/>

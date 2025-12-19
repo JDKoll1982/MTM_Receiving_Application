@@ -18,8 +18,7 @@
             </StackPanel>
             <Button.Flyout>
                 <Flyout>
-                    <ScrollViewer MaxWidth="450" MaxHeight="650">
-                        <StackPanel Spacing="20" Padding="4">
+                    <StackPanel Spacing="20" Padding="4" MaxWidth="450">
                             <StackPanel Spacing="8">
                                 <TextBlock Text="Dunnage Labels" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
@@ -43,7 +42,6 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
-                    </ScrollViewer>
                 </Flyout>
             </Button.Flyout>
         </Button>

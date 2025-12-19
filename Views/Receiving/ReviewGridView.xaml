@@ -20,80 +20,20 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Button x:Name="HelpButton"
-                Grid.Row="0"
-                Canvas.ZIndex="1000"
-                Style="{StaticResource AccentButtonStyle}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="16"
-                Padding="12,8"
-                ToolTipService.ToolTip="Click for help about review and save">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <FontIcon Glyph="&#xE946;" FontSize="16"/>
-                <TextBlock Text="Help"/>
-            </StackPanel>
-            <Button.Flyout>
-                <Flyout>
-                    <ScrollViewer MaxWidth="450" MaxHeight="650">
-                        <StackPanel Spacing="20" Padding="4">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Review &amp; Save" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
-                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Review all entries before saving to the system.</TextBlock>
-                            </StackPanel>
-                            
-                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                <StackPanel Spacing="8">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE8A1;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                        <TextBlock Text="Single Entry View" FontWeight="SemiBold" FontSize="14"/>
-                                    </StackPanel>
-                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Review one load at a time. Use Previous/Next to navigate. All fields displayed clearly.</TextBlock>
-                                </StackPanel>
-                            </Border>
-                            
-                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                <StackPanel Spacing="8">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE7C7;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                        <TextBlock Text="Table View" FontWeight="SemiBold" FontSize="14"/>
-                                    </StackPanel>
-                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">See all loads at once. Quick overview of all data. Switch views with Table View button.</TextBlock>
-                                </StackPanel>
-                            </Border>
-                            
-                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="What Gets Saved" FontWeight="SemiBold" FontSize="14"/>
-                                    <StackPanel Spacing="4">
-                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Database record (permanent)</TextBlock>
-                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Local CSV backup</TextBlock>
-                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Network CSV (if accessible)</TextBlock>
-                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Printable receiving labels</TextBlock>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Flyout>
-            </Button.Flyout>
-        </Button>
-
         <!-- Content Section with View Toggle -->
         <Grid Grid.Row="1">
             <!-- Single Entry View -->
             <Grid Visibility="{x:Bind ViewModel.IsSingleView, Mode=OneWay}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Entry Counter -->
                 <Border Grid.Row="0" 
                        Background="{ThemeResource AccentFillColorDefaultBrush}"
-                       Padding="16,8"
+                       Padding="12,6"
                        CornerRadius="8,8,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                         <FontIcon Glyph="&#xE8FD;" 
@@ -102,7 +42,7 @@
                         <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                   Foreground="White">
                             <Run Text="Entry"/>
-                            <Run Text="{x:Bind ViewModel.CurrentEntryIndex, Mode=OneWay}" 
+                            <Run Text="{x:Bind ViewModel.DisplayIndex, Mode=OneWay}" 
                                  FontWeight="Bold"/>
                             <Run Text="of"/>
                             <Run Text="{x:Bind ViewModel.Loads.Count, Mode=OneWay}" 
@@ -112,18 +52,23 @@
                 </Border>
 
                 <!-- Single Entry Form -->
-                <ScrollViewer Grid.Row="1">
+                <Grid Grid.Row="1">
                     <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                            BorderThickness="1,0,1,1"
                            CornerRadius="0,0,8,8"
-                           Padding="24">
-                        <StackPanel Spacing="20" MaxWidth="600">
+                           Padding="20">
+                        <Grid MaxWidth="900">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Spacing="12" Margin="0,0,12,0">
                             <!-- Load Number (Read-only) -->
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE7B8;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorSecondaryBrush}"/>
                                     <TextBlock Text="Load Number" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -137,7 +82,7 @@
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8A5;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                     <TextBlock Text="Purchase Order Number" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -150,7 +95,7 @@
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8B7;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                     <TextBlock Text="Part ID" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -163,7 +108,7 @@
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE9F9;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                     <TextBlock Text="Remaining Quantity" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -178,7 +123,7 @@
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xEA8B;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                     <TextBlock Text="Weight/Quantity" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -186,12 +131,14 @@
                                 <TextBox Text="{x:Bind ViewModel.CurrentEntry.WeightQuantity, Mode=OneWay}" 
                                         IsReadOnly="True"/>
                             </StackPanel>
+                        </StackPanel>
 
+                        <StackPanel Grid.Column="1" Spacing="12" Margin="12,0,0,0">
                             <!-- Heat/Lot Number -->
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8B4;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                     <TextBlock Text="Heat/Lot Number" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -204,7 +151,7 @@
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE7B8;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                     <TextBlock Text="Packages Per Load" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -217,7 +164,7 @@
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE7B8;" 
-                                             FontSize="16"
+                                             FontSize="14"
                                              Foreground="{ThemeResource AccentTextFillColorSecondaryBrush}"/>
                                     <TextBlock Text="Package Type" 
                                               Style="{ThemeResource BodyStrongTextBlockStyle}"/>
@@ -226,11 +173,12 @@
                                         IsReadOnly="True"/>
                             </StackPanel>
                         </StackPanel>
+                        </Grid>
                     </Border>
-                </ScrollViewer>
+                </Grid>
 
                 <!-- Navigation Bar for Single View -->
-                <CommandBar Grid.Row="2" DefaultLabelPosition="Right" Margin="0,16,0,0">
+                <CommandBar Grid.Row="2" DefaultLabelPosition="Right" Margin="0,12,0,0">
                     <AppBarButton Icon="Back" 
                                  Label="Previous" 
                                  Command="{x:Bind ViewModel.PreviousEntryCommand}"

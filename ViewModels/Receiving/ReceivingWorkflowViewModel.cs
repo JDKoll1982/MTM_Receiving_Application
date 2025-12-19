@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Helpers.UI;
 using System;
 using System.Threading.Tasks;
 
@@ -66,6 +67,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         [ObservableProperty]
         private InfoBarSeverity _statusSeverity = InfoBarSeverity.Informational;
+
+        [ObservableProperty]
+        private Microsoft.UI.Xaml.UIElement? _helpContent;
 
         private bool _isSaving = false;
 
@@ -313,6 +317,9 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
                 WorkflowStep.Complete => "Complete",
                 _ => "Receiving Workflow"
             };
+
+            // Update help content based on step
+            HelpContent = WorkflowHelpContentGenerator.GenerateHelpContent(step);
         }
     }
 }
