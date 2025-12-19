@@ -10,9 +10,130 @@ This file defines MVVM patterns and standards for WinUI 3 development in the MTM
 
 1. **Separation of Concerns**: ViewModels contain logic, Views contain UI
 2. **Data Binding**: Use `x:Bind` for compile-time binding (not `Binding`)
-3. **CommunityToolkit.Mvvm**: Use `ObservableObject`, `RelayCommand`, `Observable` Property` attributes
+3. **CommunityToolkit.Mvvm**: Use `ObservableObject`, `RelayCommand`, `ObservableProperty` attributes
 4. **Dependency Injection**: ALL ViewModels registered in DI container
 5. **No Business Logic in Code-Behind**: Only UI-specific logic in `.xaml.cs`
+6. **Modular Architecture (MANDATORY)**: For workflows, use `BaseStepViewModel<TStepData>` pattern
+
+---
+
+## Modular ViewModel Pattern (REQUIRED FOR WORKFLOWS)
+
+**For workflow steps, you MUST use the modular pattern to eliminate boilerplate and ensure consistency.**
+
+### Workflow Step ViewModel Template
+
+```csharp
+using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Receiving.StepData;
+using MTM_Receiving_Application.ViewModels.Shared;
+using System.Threading.Tasks;
+
+namespace MTM_Receiving_Application.ViewModels.Receiving;
+
+/// <summary>
+/// ViewModel for [StepName] step in receiving workflow.
+/// Uses BaseStepViewModel for automatic navigation and validation.
+/// </summary>
+public partial class MyStepViewModel : BaseStepViewModel<MyStepData>
+{
+    private readonly IMyService _myService;
+
+    public MyStepViewModel(
+        IService_ReceivingWorkflow workflowService,
+        IMyService myService,
+        IService_ErrorHandler errorHandler,
+        ILoggingService logger)
+        : base(workflowService, errorHandler, logger)
+    {
+        _myService = myService;
+    }
+
+    /// <summary>
+    /// Identifies this step in the workflow.
+    /// </summary>
+    protected override WorkflowStep ThisStep => WorkflowStep.MyStep;
+
+    /// <summary>
+    /// Called when this step becomes active. Load data here.
+    /// </summary>
+    protected override async Task OnNavigatedToAsync()
+    {
+        // Load data from workflow service
+        StepData.SomeProperty = _workflowService.CurrentValue;
+        
+        // Load from external service if needed
+        var result = await _myService.GetDataAsync();
+        if (result.IsSuccess)
+        {
+            StepData.Items = result.Data;
+        }
+        
+        await base.OnNavigatedToAsync();
+    }
+
+    /// <summary>
+    /// Validates step data before advancing to next step.
+    /// </summary>
+    protected override Task<(bool IsValid, string ErrorMessage)> ValidateStepAsync()
+    {
+        if (string.IsNullOrEmpty(StepData.RequiredField))
+        {
+            return Task.FromResult((false, "Required field cannot be empty"));
+        }
+
+        if (StepData.NumberOfItems < 1)
+        {
+            return Task.FromResult((false, "Must have at least 1 item"));
+        }
+
+        return Task.FromResult((true, string.Empty));
+    }
+
+    /// <summary>
+    /// Called before advancing to next step. Save data to workflow service.
+    /// </summary>
+    protected override Task OnBeforeAdvanceAsync()
+    {
+        _workflowService.SomeProperty = StepData.SomeProperty;
+        return Task.CompletedTask;
+    }
+}
+```
+
+**Benefits of BaseStepViewModel Pattern**:
+- ✅ Automatic navigation command handling (Next, Previous, Cancel)
+- ✅ Automatic StepChanged event subscription/cleanup
+- ✅ Integrated validation before navigation
+- ✅ Lifecycle hooks for data loading/saving
+- ✅ Eliminates ~40% boilerplate code
+- ✅ Consistent patterns across all steps
+
+**Step Data DTO Pattern**:
+```csharp
+namespace MTM_Receiving_Application.Models.Receiving.StepData;
+
+/// <summary>
+/// Data contract for MyStep in receiving workflow.
+/// </summary>
+public class MyStepData
+{
+    public string RequiredField { get; set; } = string.Empty;
+    public int NumberOfItems { get; set; } = 1;
+    public List<MyModel> Items { get; set; } = new();
+    public string DisplayMessage { get; set; } = string.Empty;
+}
+```
+
+**When to Use BaseStepViewModel**:
+- ✅ All workflow step ViewModels (receiving, shipping, etc.)
+- ✅ Any sequential process with navigation
+- ✅ Multi-step forms or wizards
+
+**When to Use Standard BaseViewModel**:
+- Main window ViewModels
+- Standalone pages without workflow
+- Dialogs and popups
 
 ---
 

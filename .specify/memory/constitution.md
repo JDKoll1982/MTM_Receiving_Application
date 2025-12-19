@@ -2,9 +2,12 @@
 CONSTITUTION SYNC IMPACT REPORT
 Generated: 2025-12-18
 
-VERSION CHANGE: 1.0.0 → 1.1.0 (MINOR - Added Testing & Code Quality Principles)
+VERSION CHANGE: 1.1.0 → 1.2.0 (MINOR - Added Modular Architecture Principle)
 
-PRINCIPLES ADDED IN v1.1.0:
+PRINCIPLES ADDED IN v1.2.0:
+✅ X. Modular Architecture (MANDATORY)
+
+PRINCIPLES FROM v1.1.0:
 ✅ VIII. Testing & Quality Assurance
 ✅ IX. Code Quality & Maintainability
 
@@ -51,6 +54,14 @@ RATIONALE FOR VERSION 1.1.0 (2025-12-18):
 - Documented performance and UI responsiveness mandates
 - Codified naming conventions as non-negotiable standards
 - Integrated performance-and-stability.instructions.md guidance
+
+RATIONALE FOR VERSION 1.2.0 (2025-12-18):
+- Elevated modular architecture to constitutional principle (MANDATORY)
+- Documented workflow modularization patterns from Phase 1 implementation
+- Established BaseStepViewModel<T> pattern as standard for workflows
+- Mandated validator extraction and independent testing
+- Prohibited hardcoded switch statements and duplicated navigation logic
+- Codified Open/Closed Principle for feature extensibility
 
 STAKEHOLDER ALIGNMENT:
 - Based on existing code patterns in codebase
@@ -342,6 +353,72 @@ specs/
 - Truncate or reject data exceeding VARCHAR limits with clear error messages
 
 **Rationale**: Consistent code quality enables team productivity, reduces bugs, and ensures maintainability. Performance standards prevent UI freezing and poor user experience. Naming conventions reduce cognitive load and enable predictable code navigation.
+
+---
+
+### X. Modular Architecture (MANDATORY)
+
+**Modularity Principle**:
+- ALL features, workflows, and components MUST be developed with modularity as a core design constraint
+- Code MUST be structured to minimize coupling and maximize reusability
+- New features MUST NOT require modifications to existing code (Open/Closed Principle)
+- Components MUST be independently testable and replaceable
+
+**Implementation Requirements**:
+- **Base Classes**: Use generic base classes (e.g., `BaseStepViewModel<TStepData>`) to eliminate code duplication
+- **Data Contracts**: Define explicit DTOs for data transfer between components (e.g., step data classes)
+- **Validators**: Extract validation logic into composable, independently testable validators implementing `IStepValidator<T>`
+- **Service Interfaces**: ALL services MUST be interface-based for dependency injection and testability
+- **Plugin Architecture**: Design workflows and features to support runtime configuration and extension
+
+**Workflow Modularization Standards**:
+- Workflow steps MUST be self-contained with clear input/output contracts
+- Step ViewModels MUST inherit from `BaseStepViewModel<TStepData>`
+- Step data MUST be encapsulated in strongly-typed DTO classes
+- Step validation MUST be extracted into independent validator classes
+- Navigation logic MUST be centralized, NOT scattered across ViewModels
+- Lifecycle hooks (OnNavigatedTo, OnNavigatedFrom) MUST be used for state management
+
+**Prohibited Patterns**:
+- ❌ Hardcoded switch statements for workflow transitions (use engine-based navigation)
+- ❌ Duplicated navigation/event subscription logic across ViewModels
+- ❌ Tightly coupled validation logic in ViewModels or services
+- ❌ Direct dependencies between workflow steps
+- ❌ Global mutable state (use immutable context objects)
+
+**Modularity Benefits**:
+- **Reduced Duplication**: Base classes eliminate ~40% boilerplate code
+- **Improved Testability**: Independent validators enable focused unit testing
+- **Better Maintainability**: Navigation changes in one place, not scattered across files
+- **Easy Extension**: Add new steps/features without modifying existing code
+- **Team Productivity**: Consistent patterns reduce learning curve for new developers
+
+**Enforcement**:
+- Code reviews MUST verify modularity compliance
+- Pull requests MUST demonstrate reduced coupling
+- New workflow steps MUST use `BaseStepViewModel<T>` pattern
+- Validators MUST be registered in DI container and independently tested
+- Architecture decisions MUST document modularity considerations
+
+**Examples of Modular Design**:
+```csharp
+// ✅ CORRECT: Modular step ViewModel with explicit contract
+public partial class LoadEntryViewModel : BaseStepViewModel<LoadEntryData>
+{
+    protected override WorkflowStep ThisStep => WorkflowStep.LoadEntry;
+    protected override Task<(bool IsValid, string ErrorMessage)> ValidateStepAsync() { ... }
+}
+
+// ❌ WRONG: Tightly coupled ViewModel with manual navigation
+public partial class LoadEntryViewModel : BaseViewModel
+{
+    private void OnStepChanged(object? sender, EventArgs e) { ... } // Boilerplate
+    [RelayCommand]
+    private async Task ValidateAndContinue() { ... } // Duplicate logic
+}
+```
+
+**Rationale**: Modular architecture is essential for long-term maintainability, team scalability, and feature extensibility. It prevents technical debt accumulation and enables rapid feature development without risk of breaking existing functionality. The receiving workflow modularization (Phase 1) demonstrates the concrete benefits: 131 lines eliminated, 32 independent unit tests added, and architecture prepared for future enhancements.
 
 ---
 

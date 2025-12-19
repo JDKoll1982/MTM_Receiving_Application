@@ -4,7 +4,9 @@
 
 WinUI 3 manufacturing receiving application using strict MVVM architecture with MySQL (application data) and SQL Server (Infor Visual ERP - READ ONLY). Built on .NET 8 with CommunityToolkit.Mvvm and dependency injection.
 
-**Critical Constraint**: ⚠️ **Infor Visual database is STRICTLY READ ONLY** - no INSERT/UPDATE/DELETE operations allowed on SQL Server database.
+**Critical Constraints**: 
+- ⚠️ **Infor Visual database is STRICTLY READ ONLY** - no INSERT/UPDATE/DELETE operations allowed on SQL Server database
+- ⚠️ **Modular architecture is MANDATORY** - all features must follow modular design patterns
 
 ## Architecture Overview
 
@@ -61,9 +63,77 @@ Data/
 Helpers/Database/                  # Database utilities
 ```
 
+## Modular Architecture (MANDATORY)
+
+**ALL features must follow modular design patterns to prevent code duplication and enable extensibility.**
+
+### Workflow Step ViewModels (REQUIRED PATTERN)
+
+For workflow steps, use `BaseStepViewModel<TStepData>` pattern:
+
+```csharp
+public partial class MyStepViewModel : BaseStepViewModel<MyStepData>
+{
+    public MyStepViewModel(
+        IService_ReceivingWorkflow workflowService,
+        IService_ErrorHandler errorHandler,
+        ILoggingService logger) : base(workflowService, errorHandler, logger) { }
+    
+    protected override WorkflowStep ThisStep => WorkflowStep.MyStep;
+    
+    protected override async Task OnNavigatedToAsync()
+    {
+        // Load data when step becomes active
+        StepData.SomeProperty = _workflowService.GetCurrentValue();
+        await base.OnNavigatedToAsync();
+    }
+    
+    protected override Task<(bool IsValid, string ErrorMessage)> ValidateStepAsync()
+    {
+        // Validation integrated with navigation
+        if (string.IsNullOrEmpty(StepData.RequiredField))
+            return Task.FromResult((false, "Required field is missing"));
+        return Task.FromResult((true, string.Empty));
+    }
+}
+```
+
+**Benefits**: Eliminates ~40% boilerplate, centralizes navigation, enables consistent validation.
+
+### Step Data DTOs (REQUIRED FOR WORKFLOWS)
+
+Define explicit contracts for step data:
+
+```csharp
+public class MyStepData
+{
+    public string RequiredField { get; set; } = string.Empty;
+    public int NumberOfItems { get; set; } = 1;
+    public List<MyModel> Items { get; set; } = new();
+}
+```
+
+### Independent Validators (REQUIRED)
+
+Extract validation logic into composable validators:
+
+```csharp
+public class MyStepValidator : IStepValidator<MyStepData>
+{
+    public Task<ValidationResult> ValidateAsync(MyStepData input)
+    {
+        if (input.NumberOfItems < 1)
+            return Task.FromResult(ValidationResult.Failure("Must have at least 1 item"));
+        return Task.FromResult(ValidationResult.Success());
+    }
+}
+```
+
+Register in DI container and add unit tests for each validator.
+
 ## Development Patterns
 
-### Creating a ViewModel
+### Creating a Standard ViewModel (Non-Workflow)
 ```csharp
 public partial class MyFeatureViewModel : BaseViewModel
 {

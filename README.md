@@ -83,11 +83,33 @@ This project follows a formal constitution that defines core principles and deve
 5. **Security & Authentication** - Multi-tier auth with audit trails
 6. **WinUI 3 Modern Practices** - x:Bind, ObservableCollection, async/await
 7. **Specification-Driven Development** - Speckit workflow for all features
+8. **Testing & Quality Assurance** - xUnit tests, 80%+ coverage, TDD approach
+9. **Code Quality & Maintainability** - Performance standards, naming conventions, documentation
+10. **Modular Architecture (MANDATORY)** - Base classes, validators, explicit contracts, independent components
 
 **Critical Constraints**:
 - ⚠️ **Infor Visual Database is STRICTLY READ ONLY** - No writes allowed
 - MySQL 5.7.24+ compatibility required (no JSON functions, CTEs, window functions)
+- ⚠️ **Modularity is MANDATORY** - All features must use modular architecture patterns
 - See constitution for complete guidelines
+
+### Modularity Standards
+
+**This application mandates modular architecture for all development.** Features must be designed with:
+
+- **Generic Base Classes**: Use `BaseStepViewModel<TStepData>` for workflows to eliminate boilerplate
+- **Explicit Data Contracts**: Define DTOs for step data (e.g., `POEntryData`, `LoadEntryData`)
+- **Independent Validators**: Extract validation into `IStepValidator<T>` implementations
+- **Composable Services**: Interface-based services registered in DI container
+- **No Tight Coupling**: Steps must not directly depend on each other
+
+**Benefits Demonstrated** (Receiving Workflow Phase 1):
+- 131 lines of boilerplate eliminated (~40% reduction)
+- 32 independent unit tests added
+- Consistent patterns across all workflow steps
+- Easy to add new steps without modifying existing code
+
+See `Documentation/WORKFLOW_MODULARIZATION_PHASE1_COMPLETE.md` for complete modularization guide.
 
 ## Prerequisites
 
