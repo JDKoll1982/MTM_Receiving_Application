@@ -26,11 +26,14 @@ namespace MTM_Receiving_Application.Models.Receiving
         /// </summary>
         public string StatusDescription => Status switch
         {
+            "R" => "Open",
             "C" => "Closed",
             "O" => "Open",
-            "P" => "Partial",
+            "P" => "Partially Received",
             "X" => "Cancelled",
-            _ => Status
+            "F" => "Firm",
+            "" => "Unknown",
+            _ => $"Status: {Status}"
         };
         
         /// <summary>
