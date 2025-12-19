@@ -10,7 +10,7 @@ BEGIN
     
     SELECT default_receiving_mode
     FROM users
-    WHERE id = p_user_id;
+    WHERE employee_number = p_user_id;
 END$$
 
 DELIMITER ;

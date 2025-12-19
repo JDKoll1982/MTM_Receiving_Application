@@ -11,9 +11,8 @@ BEGIN
     -- p_default_mode can be 'guided', 'manual', or NULL
     
     UPDATE users
-    SET default_receiving_mode = p_default_mode,
-        updated_at = NOW()
-    WHERE id = p_user_id;
+    SET default_receiving_mode = p_default_mode
+    WHERE employee_number = p_user_id;
     
     SELECT ROW_COUNT() AS affected_rows;
 END$$
