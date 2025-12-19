@@ -67,7 +67,8 @@ namespace MTM_Receiving_Application.Services.Database
                         pol.ORDER_QTY AS QtyOrdered,
                         ISNULL(p.DESCRIPTION, '') AS Description,
                         po.VENDOR_ID AS VendorID,
-                        pol.TOTAL_RECEIVED_QTY AS TotalReceivedQty
+                        pol.TOTAL_RECEIVED_QTY AS TotalReceivedQty,
+                        po.STATUS AS POStatus
                     FROM 
                         dbo.PURC_ORDER_LINE pol
                     LEFT JOIN 
@@ -77,7 +78,7 @@ namespace MTM_Receiving_Application.Services.Database
                     WHERE 
                         po.ID = @PONumber
                         -- AND pol.LINE_STATUS != 'X'  -- Relaxed for testing
-                        -- AND po.STATUS IN ('O', 'P')  -- Relaxed to allow Closed POs
+                        -- Allow all PO statuses including Closed
                     ORDER BY 
                         pol.LINE_NO;";
 
@@ -112,6 +113,11 @@ namespace MTM_Receiving_Application.Services.Database
                     if (po.Vendor == string.Empty && !reader.IsDBNull(reader.GetOrdinal("VendorID")))
                     {
                         po.Vendor = reader.GetString(reader.GetOrdinal("VendorID"));
+                    }
+                    
+                    if (po.Status == string.Empty && !reader.IsDBNull(reader.GetOrdinal("POStatus")))
+                    {
+                        po.Status = reader.GetString(reader.GetOrdinal("POStatus"));
                     }
                 }
 

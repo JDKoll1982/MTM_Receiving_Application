@@ -7,20 +7,17 @@
     xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Receiving"
     mc:Ignorable="d">
 
-    <StackPanel Spacing="24" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Text="Select Data Entry Mode" 
-                   Style="{StaticResource TitleTextBlockStyle}" 
-                   HorizontalAlignment="Center"/>
-
-        <StackPanel Orientation="Horizontal" Spacing="32">
+    <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="24">
             <!-- Guided Mode Button -->
             <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
-                    Width="250" Height="200"
-                    Padding="16"
+                    Width="280" Height="180"
+                    Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
+                    CornerRadius="8"
+                    AutomationProperties.Name="Guided Wizard Mode">
                 <StackPanel Spacing="12">
                     <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                     <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
@@ -34,12 +31,13 @@
 
             <!-- Manual Mode Button -->
             <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
-                    Width="250" Height="200"
-                    Padding="16"
+                    Width="280" Height="180"
+                    Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
+                    CornerRadius="8"
+                    AutomationProperties.Name="Manual Entry Mode">
                 <StackPanel Spacing="12">
                     <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                     <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>

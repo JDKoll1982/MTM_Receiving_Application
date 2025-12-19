@@ -55,6 +55,7 @@ namespace MTM_Receiving_Application
         {
             if (args.IsSettingsSelected)
             {
+                PageTitleTextBlock.Text = "Settings";
                 // ContentFrame.Navigate(typeof(SettingsPage));
             }
             else if (args.SelectedItem is NavigationViewItem item)
@@ -63,14 +64,41 @@ namespace MTM_Receiving_Application
                 switch (tag)
                 {
                     case "ReceivingWorkflowView":
+                        PageTitleTextBlock.Text = "Receiving Workflow";
                         ContentFrame.Navigate(typeof(Views.Receiving.ReceivingWorkflowView));
+                        ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "DunnageLabelPage":
+                        PageTitleTextBlock.Text = "Dunnage Labels";
                         ContentFrame.Navigate(typeof(Views.Receiving.DunnageLabelPage));
                         break;
                     case "CarrierDeliveryLabelPage":
+                        PageTitleTextBlock.Text = "Carrier Delivery";
                         ContentFrame.Navigate(typeof(Views.Receiving.CarrierDeliveryLabelPage));
                         break;
+                }
+            }
+        }
+
+        private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+        {
+            // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
+            if (ContentFrame.Content is Views.Receiving.ReceivingWorkflowView receivingView)
+            {
+                var viewModel = receivingView.ViewModel;
+                if (viewModel != null)
+                {
+                    // Update header with current step title
+                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    
+                    // Subscribe to property changes to keep header updated
+                    viewModel.PropertyChanged += (s, args) =>
+                    {
+                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
+                        {
+                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                        }
+                    };
                 }
             }
         }

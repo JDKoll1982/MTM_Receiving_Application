@@ -43,6 +43,15 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private string _packageType = "Skids";  // Default package type
 
+        [ObservableProperty]
+        private string _poStatus = string.Empty;
+
+        [ObservableProperty]
+        private string _poStatusDescription = string.Empty;
+
+        [ObservableProperty]
+        private bool _isPOClosed = false;
+
         public POEntryViewModel(
             IService_InforVisual inforVisualService,
             IService_ReceivingWorkflow workflowService,
@@ -58,11 +67,28 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void PoTextBoxLostFocus()
         {
             // Auto-correction only on LostFocus (not TextChanged)
-            if (!string.IsNullOrWhiteSpace(PoNumber))
+            if (string.IsNullOrWhiteSpace(PoNumber))
+                return;
+
+            // Trim and uppercase first
+            string value = PoNumber.Trim().ToUpper();
+            
+            // Format the PO number
+            if (value.StartsWith("PO-", StringComparison.OrdinalIgnoreCase))
             {
-                PoNumber = PoNumber.Trim().ToUpper();
-                // Trigger validation through OnPoNumberChanged
+                // Extract number part and reformat
+                string numberPart = value.Substring(3);
+                if (numberPart.All(char.IsDigit) && numberPart.Length <= 6)
+                {
+                    PoNumber = $"PO-{numberPart.PadLeft(6, '0')}";
+                }
             }
+            else if (value.All(char.IsDigit) && value.Length <= 6)
+            {
+                // Just numbers - add PO- prefix and pad
+                PoNumber = $"PO-{value.PadLeft(6, '0')}";
+            }
+            // If invalid format, leave as-is and let validation message show
         }
 
         [RelayCommand]
@@ -81,6 +107,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 if (result.IsSuccess && result.Data != null)
                 {
                     Parts.Clear();
+                    
+                    // Set PO status
+                    PoStatus = result.Data.Status;
+                    PoStatusDescription = result.Data.StatusDescription;
+                    IsPOClosed = result.Data.IsClosed;
                     
                     // Load parts and populate remaining quantity for each
                     foreach (var part in result.Data.Parts)
@@ -251,6 +282,19 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         partial void OnSelectedPartChanged(Model_InforVisualPart? value)
         {
             _workflowService.CurrentPart = value;
+            
+            // Auto-detect package type when a part is selected from PO
+            if (value != null && !string.IsNullOrWhiteSpace(value.PartID))
+            {
+                var upperPart = value.PartID.Trim().ToUpper();
+                
+                if (upperPart.StartsWith("MMC"))
+                    PackageType = "Coils";
+                else if (upperPart.StartsWith("MMF"))
+                    PackageType = "Sheets";
+                else
+                    PackageType = "Skids";
+            }
         }
     }
 }

@@ -20,17 +20,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="8">
-            <TextBlock Text="Review Receiving Entries" 
-                       Style="{ThemeResource TitleTextBlockStyle}"/>
-            <TextBlock Text="Review and verify all entries before saving to the system" 
-                       Style="{ThemeResource BodyTextBlockStyle}"
-                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-        </StackPanel>
-
         <!-- Content Section with View Toggle -->
-        <Grid Grid.Row="1" Margin="0,16,0,0">
+        <Grid Grid.Row="1">
             <!-- Single Entry View -->
             <Grid Visibility="{x:Bind ViewModel.IsSingleView, Mode=OneWay}">
                 <Grid.RowDefinitions>

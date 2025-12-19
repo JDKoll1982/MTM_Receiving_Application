@@ -13,26 +13,9 @@
         <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid Padding="24" RowSpacing="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="8">
-            <TextBlock Text="Heat/Lot Numbers" 
-                       Style="{ThemeResource TitleTextBlockStyle}"/>
-            <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
-                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                <Run Text="Enter heat or lot numbers for each load."/>
-                <Run Text="This field is optional - blank entries will be marked as 'Not Entered'." 
-                     FontStyle="Italic"/>
-            </TextBlock>
-        </StackPanel>
-
+    <Grid Padding="16">
         <!-- Content Section -->
-        <Grid Grid.Row="1" Margin="0,16,0,0">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="1*"/>

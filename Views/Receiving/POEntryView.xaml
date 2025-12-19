@@ -19,17 +19,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="8">
-            <TextBlock Text="Purchase Order Entry" 
-                       Style="{ThemeResource TitleTextBlockStyle}"/>
-            <TextBlock Text="Enter receiving information for vendor shipment" 
-                       Style="{ThemeResource BodyTextBlockStyle}"
-                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-        </StackPanel>
-
         <!-- Content Section -->
-        <ScrollViewer Grid.Row="1" Margin="0,16,0,0">
+        <ScrollViewer Grid.Row="1">
             <StackPanel Spacing="20" MaxWidth="800">
                 
                 <!-- PO Entry Mode -->
@@ -66,6 +57,20 @@
                                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                           FontSize="12"
                                           Visibility="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                                
+                                <!-- PO Status Display -->
+                                <StackPanel Orientation="Horizontal" 
+                                           Spacing="8"
+                                           Margin="0,4,0,0"
+                                           Visibility="{x:Bind ViewModel.IsPOClosed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <FontIcon Glyph="&#xE7BA;" 
+                                             FontSize="14"
+                                             Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.PoStatusDescription, Mode=OneWay}" 
+                                              FontSize="12"
+                                              Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                              FontWeight="SemiBold"/>
+                                </StackPanel>
                             </StackPanel>
 
                             <!-- Action Buttons -->

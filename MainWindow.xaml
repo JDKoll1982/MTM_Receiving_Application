@@ -32,7 +32,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Text="Dashboard" 
+                    <TextBlock x:Name="PageTitleTextBlock"
+                               Text="Dashboard" 
                                Style="{StaticResource TitleTextBlockStyle}"
                                VerticalAlignment="Center"
                                Margin="16,0"/>
