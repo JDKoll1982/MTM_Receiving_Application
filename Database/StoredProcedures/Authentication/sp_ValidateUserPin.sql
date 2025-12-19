@@ -29,6 +29,7 @@ BEGIN
         is_active,
         visual_username,
         visual_password,
+        default_receiving_mode,
         created_date,
         created_by,
         modified_date

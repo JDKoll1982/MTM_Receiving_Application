@@ -315,9 +315,7 @@ namespace MTM_Receiving_Application.Data.Authentication
                 VisualPassword = reader.IsDBNull(reader.GetOrdinal("visual_password")) 
                     ? null 
                     : reader.GetString(reader.GetOrdinal("visual_password")),
-                DefaultReceivingMode = reader.IsDBNull(reader.GetOrdinal("default_receiving_mode"))
-                    ? null
-                    : reader.GetString(reader.GetOrdinal("default_receiving_mode")),
+                DefaultReceivingMode = TryGetDefaultReceivingMode(reader),
                 CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
                 CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by")) 
                     ? null 
@@ -342,6 +340,23 @@ namespace MTM_Receiving_Application.Data.Authentication
                 "sp_update_user_default_mode",
                 parameters
             );
+        }
+        
+        /// <summary>
+        /// Safely attempts to read default_receiving_mode column, returns null if column doesn't exist
+        /// </summary>
+        private static string? TryGetDefaultReceivingMode(IDataReader reader)
+        {
+            try
+            {
+                var ordinal = reader.GetOrdinal("default_receiving_mode");
+                return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                // Column doesn't exist yet (migration not run) - return null
+                return null;
+            }
         }
     }
 }
