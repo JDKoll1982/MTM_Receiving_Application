@@ -9,6 +9,7 @@
 
     <Grid>
         <Button x:Name="HelpButton"
+                Canvas.ZIndex="1000"
                 Style="{StaticResource AccentButtonStyle}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
