@@ -21,24 +21,31 @@ namespace MTM_Receiving_Application.Views.Receiving
             base.OnNavigatedTo(e);
             
             // Check for default mode and skip mode selection if set
+            // Only do this if we're starting fresh (on ModeSelection step)
             var sessionManager = App.GetService<IService_UserSessionManager>();
             var workflowService = App.GetService<IService_ReceivingWorkflow>();
             
-            var defaultMode = sessionManager.CurrentSession?.User?.DefaultReceivingMode;
-            
-            if (!string.IsNullOrEmpty(defaultMode))
+            // Only apply default mode if we're on the mode selection screen
+            // and there's a valid user session
+            if (workflowService.CurrentStep == WorkflowStep.ModeSelection && 
+                sessionManager.CurrentSession?.User != null)
             {
-                // User has a default mode set - go directly to that mode
-                if (defaultMode == "guided")
+                var defaultMode = sessionManager.CurrentSession.User.DefaultReceivingMode;
+                
+                if (!string.IsNullOrEmpty(defaultMode))
                 {
-                    workflowService.GoToStep(WorkflowStep.POEntry);
-                }
-                else if (defaultMode == "manual")
-                {
-                    workflowService.GoToStep(WorkflowStep.ManualEntry);
+                    // User has a default mode set - go directly to that mode
+                    if (defaultMode == "guided")
+                    {
+                        workflowService.GoToStep(WorkflowStep.POEntry);
+                    }
+                    else if (defaultMode == "manual")
+                    {
+                        workflowService.GoToStep(WorkflowStep.ManualEntry);
+                    }
                 }
             }
-            // If defaultMode is null, stay on ModeSelection (default behavior)
+            // If defaultMode is null or conditions not met, stay on current step
         }
     }
 }
