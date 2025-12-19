@@ -285,18 +285,12 @@ namespace MTM_Receiving_Application.Services.Database
                 
                 const string query = @"
                     SELECT 
-                        pol.ORDER_QTY - ISNULL(SUM(rl.QTY_RECEIVED), 0) AS RemainingQuantity
+                        pol.ORDER_QTY - ISNULL(pol.TOTAL_RECEIVED_QTY, 0) AS RemainingQuantity
                     FROM 
                         dbo.PURC_ORDER_LINE pol
-                    LEFT JOIN 
-                        dbo.RECEIVER_LINE rl 
-                        ON pol.PURC_ORDER_ID = rl.PURC_ORDER_ID 
-                        AND pol.LINE_NO = rl.PURC_ORDER_LINE_NO
                     WHERE 
                         pol.PURC_ORDER_ID = @PONumber 
-                        AND pol.PART_ID = @PartID
-                    GROUP BY 
-                        pol.ORDER_QTY;";
+                        AND pol.PART_ID = @PartID;";
 
                 using var command = new SqlCommand(query, connection)
                 {
