@@ -200,6 +200,58 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         }
 
         /// <summary>
+        /// Command to return to mode selection, clearing current workflow progress.
+        /// Shows a confirmation dialog before resetting.
+        /// </summary>
+        [RelayCommand]
+        protected virtual async Task ReturnToModeSelectionAsync()
+        {
+            if (IsBusy) return;
+
+            if (App.MainWindow?.Content?.XamlRoot == null)
+            {
+                _logger.LogError("Cannot show dialog: XamlRoot is null");
+                await _errorHandler.HandleErrorAsync("Unable to display dialog", Models.Enums.Enum_ErrorSeverity.Error);
+                return;
+            }
+
+            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+            {
+                Title = "Return to Mode Selection?",
+                Content = "This will clear all current workflow progress. Do you want to continue?",
+                PrimaryButtonText = "Yes, Clear Workflow",
+                CloseButtonText = "No, Continue",
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                XamlRoot = App.MainWindow.Content.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                try
+                {
+                    IsBusy = true;
+                    StatusMessage = "Returning to mode selection...";
+                    
+                    await _workflowService.ResetWorkflowAsync();
+                    
+                    StatusMessage = "Workflow cleared. Please select a mode.";
+                }
+                catch (Exception ex)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        "Failed to return to mode selection",
+                        Models.Enums.Enum_ErrorSeverity.Error,
+                        ex);
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Called before advancing to next step. Override to persist step-specific data.
         /// </summary>
         protected virtual Task OnBeforeAdvanceAsync()

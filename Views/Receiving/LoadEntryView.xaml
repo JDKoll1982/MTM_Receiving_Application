@@ -8,6 +8,12 @@
     mc:Ignorable="d">
 
     <StackPanel Spacing="24" MaxWidth="600" HorizontalAlignment="Left">
+        <!-- Return to Mode Selection Button -->
+        <Button Content="← Return to Mode Selection" 
+                Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                Style="{StaticResource SubtleButtonStyle}"
+                Margin="0,0,0,8"/>
+        
         <TextBlock Text="Enter Number of Loads" Style="{StaticResource SubtitleTextBlockStyle}"/>
         
         <TextBlock Text="{x:Bind ViewModel.StepData.SelectedPartInfo, Mode=OneWay}" 

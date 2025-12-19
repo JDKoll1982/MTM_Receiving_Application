@@ -20,6 +20,12 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Spacing="16" Margin="0,0,24,0">
+            <!-- Return to Mode Selection Button -->
+            <Button Content="← Return to Mode Selection" 
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    Margin="0,0,0,8"/>
+            
             <TextBlock Text="Enter Heat/Lot Numbers" Style="{StaticResource SubtitleTextBlockStyle}"/>
             
             <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="500">

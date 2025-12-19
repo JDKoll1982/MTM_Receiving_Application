@@ -39,14 +39,50 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// </summary>
         protected override WorkflowStep ThisStep => WorkflowStep.POEntry;
 
+        /// <summary>
+        /// Formats and validates PO number input.
+        /// Converts various formats to PO-XXXXXX (6 digits, zero-padded).
+        /// </summary>
+        /// <returns>Tuple indicating if valid and the formatted PO number</returns>
+        private (bool IsValid, string FormattedPO) FormatAndValidatePONumber(string input)
+        {
+            input = input?.Trim() ?? string.Empty;
+            
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return (false, string.Empty);
+            }
+
+            // Remove "PO-" or "po-" prefix if present
+            if (input.StartsWith("PO-", System.StringComparison.OrdinalIgnoreCase))
+            {
+                input = input.Substring(3);
+            }
+
+            // Check if remaining part is a valid number
+            if (int.TryParse(input, out int poNumber) && poNumber > 0)
+            {
+                // Format as PO-XXXXXX (6 digits, zero-padded)
+                return (true, $"PO-{poNumber:D6}");
+            }
+
+            return (false, string.Empty);
+        }
+
         [RelayCommand]
         private async Task LoadPOAsync()
         {
-            if (string.IsNullOrWhiteSpace(StepData.PONumber))
+            // Validate and format PO number
+            var (isValid, formatted) = FormatAndValidatePONumber(StepData.PONumber ?? string.Empty);
+            
+            if (!isValid)
             {
-                await _errorHandler.HandleErrorAsync("Please enter a PO number.", Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync("Invalid PO number format. Please enter a valid PO number (e.g., 123456 or PO-123456).", Enum_ErrorSeverity.Warning);
                 return;
             }
+
+            // Update with formatted version
+            StepData.PONumber = formatted;
 
             IsLoading = true;
             try

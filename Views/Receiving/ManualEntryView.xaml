@@ -16,8 +16,14 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
-            <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}">
+        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,12">
+            <!-- Return to Mode Selection Button -->
+            <Button Content="← Return to Mode Selection" 
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Style="{StaticResource SubtleButtonStyle}"/>
+            
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE710;"/>
                     <TextBlock Text="Add Row"/>
@@ -29,6 +35,7 @@
                     <TextBlock Text="Remove Row"/>
                 </StackPanel>
             </Button>
+            </StackPanel>
         </StackPanel>
 
         <!-- Data Grid -->

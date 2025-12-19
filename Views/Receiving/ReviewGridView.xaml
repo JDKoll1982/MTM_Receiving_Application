@@ -15,6 +15,12 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+            <!-- Return to Mode Selection Button -->
+            <Button Content="← Return to Mode Selection" 
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    Margin="0,0,0,8"/>
+            
             <TextBlock Text="Review and Edit Loads" Style="{StaticResource SubtitleTextBlockStyle}"/>
             <TextBlock Text="Edit values in the grid below. Changes to PO or Part # will update all loads." 
                        Style="{StaticResource CaptionTextBlockStyle}" 
