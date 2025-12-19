@@ -40,6 +40,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private Model_InforVisualPart? _selectedPart;
 
+        [ObservableProperty]
+        private string _packageType = "Skids";  // Default package type
+
         public POEntryViewModel(
             IService_InforVisual inforVisualService,
             IService_ReceivingWorkflow workflowService,
@@ -49,6 +52,17 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
+        }
+
+        [RelayCommand]
+        private void PoTextBoxLostFocus()
+        {
+            // Auto-correction only on LostFocus (not TextChanged)
+            if (!string.IsNullOrWhiteSpace(PoNumber))
+            {
+                PoNumber = PoNumber.Trim().ToUpper();
+                // Trigger validation through OnPoNumberChanged
+            }
         }
 
         [RelayCommand]
@@ -67,10 +81,20 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 if (result.IsSuccess && result.Data != null)
                 {
                     Parts.Clear();
+                    
+                    // Load parts and populate remaining quantity for each
                     foreach (var part in result.Data.Parts)
                     {
+                        // Get remaining quantity for this part
+                        var remainingQtyResult = await _inforVisualService.GetRemainingQuantityAsync(PoNumber, part.PartID);
+                        if (remainingQtyResult.IsSuccess)
+                        {
+                            part.RemainingQuantity = remainingQtyResult.Data;
+                        }
+                        
                         Parts.Add(part);
                     }
+                    
                     _workflowService.RaiseStatusMessage($"PO {PoNumber} loaded with {Parts.Count} parts.");
                 }
                 else
@@ -136,9 +160,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         partial void OnPoNumberChanged(string value)
         {
-            // Auto-correct PO number format: PO-NNNNNN (6 digits)
-            // Accept: 66868 -> PO-066868, 066868 -> PO-066868, po-066868 -> PO-066868
-            // Reject invalid formats
+            // Validate PO number format (validation only, no auto-correction)
+            // Auto-correction happens only on LostFocus
             
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -148,30 +171,25 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 return;
             }
 
-            string correctedPO = string.Empty;
+            string validatedPO = value.Trim();
             bool isValid = false;
 
-            // Remove any whitespace
-            value = value.Trim();
-
             // Check if value starts with "po-" or "PO-" (case insensitive)
-            if (value.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
+            if (validatedPO.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
             {
                 // Extract the number part after "PO-"
-                string numberPart = value.Substring(3);
+                string numberPart = validatedPO.Substring(3);
                 
                 // Check if it's all digits and validate length
                 if (numberPart.All(char.IsDigit))
                 {
                     if (numberPart.Length <= 6)
                     {
-                        // Pad with leading zeros to make it 6 digits
-                        correctedPO = $"PO-{numberPart.PadLeft(6, '0')}";
+                        validatedPO = $"PO-{numberPart.PadLeft(6, '0')}";
                         isValid = true;
                     }
                     else
                     {
-                        // Too many digits
                         PoValidationMessage = "PO number must be 6 digits or less";
                         IsLoadPOEnabled = false;
                         return;
@@ -179,18 +197,17 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
                 else
                 {
-                    // Contains non-numeric characters after PO-
                     PoValidationMessage = "Invalid PO format. Use: PO-NNNNNN (6 digits)";
                     IsLoadPOEnabled = false;
                     return;
                 }
             }
-            else if (value.All(char.IsDigit))
+            else if (validatedPO.All(char.IsDigit))
             {
                 // Just numbers, no prefix
-                if (value.Length <= 6)
+                if (validatedPO.Length <= 6)
                 {
-                    correctedPO = $"PO-{value.PadLeft(6, '0')}";
+                    validatedPO = $"PO-{validatedPO.PadLeft(6, '0')}";
                     isValid = true;
                 }
                 else
@@ -202,21 +219,33 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
             else
             {
-                // Invalid format (contains letters or special chars in wrong places)
                 PoValidationMessage = "Invalid PO format. Enter: 66868 or PO-066868";
                 IsLoadPOEnabled = false;
                 return;
             }
-
-            // If valid, update the field with corrected format
-            if (isValid && correctedPO != value)
-            {
-                PoNumber = correctedPO;
-            }
             
-            _workflowService.CurrentPONumber = correctedPO;
+            _workflowService.CurrentPONumber = validatedPO;
             IsLoadPOEnabled = isValid;
             PoValidationMessage = isValid ? string.Empty : "Invalid PO number format";
+        }
+
+        partial void OnPartIDChanged(string value)
+        {
+            // Auto-detect package type based on Part ID prefix
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                PackageType = "Skids"; // Default
+                return;
+            }
+            
+            var upperPart = value.Trim().ToUpper();
+            
+            if (upperPart.StartsWith("MMC"))
+                PackageType = "Coils";
+            else if (upperPart.StartsWith("MMF"))
+                PackageType = "Sheets";
+            else
+                PackageType = "Skids";
         }
 
         partial void OnSelectedPartChanged(Model_InforVisualPart? value)

@@ -264,6 +264,72 @@ namespace MTM_Receiving_Application.Services.Database
             }
         }
 
+        public async Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID)
+        {
+            if (string.IsNullOrWhiteSpace(poNumber))
+                return Model_Dao_Result<int>.Failure("PO number cannot be null or empty");
+            
+            if (string.IsNullOrWhiteSpace(partID))
+                return Model_Dao_Result<int>.Failure("Part ID cannot be null or empty");
+
+            try
+            {
+                _logger?.LogInfo($"Calculating remaining quantity for PO: {poNumber}, Part: {partID}");
+                using var connection = new SqlConnection(GetConnectionString());
+                
+                const string query = @"
+                    SELECT 
+                        pol.ORDER_QTY - ISNULL(SUM(rl.QTY_RECEIVED), 0) AS RemainingQuantity
+                    FROM 
+                        dbo.PURC_ORDER_LINE pol
+                    LEFT JOIN 
+                        dbo.RECEIVER_LINE rl 
+                        ON pol.PURC_ORDER_ID = rl.PURC_ORDER_ID 
+                        AND pol.LINE_NO = rl.PURC_ORDER_LINE_NO
+                    WHERE 
+                        pol.PURC_ORDER_ID = @PONumber 
+                        AND pol.PART_ID = @PartID
+                    GROUP BY 
+                        pol.ORDER_QTY;";
+
+                using var command = new SqlCommand(query, connection)
+                {
+                    CommandType = CommandType.Text,
+                    CommandTimeout = 30
+                };
+
+                command.Parameters.AddWithValue("@PONumber", poNumber);
+                command.Parameters.AddWithValue("@PartID", partID);
+
+                await connection.OpenAsync();
+                var result = await command.ExecuteScalarAsync();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    decimal remainingQty = Convert.ToDecimal(result);
+                    int remainingQtyInt = (int)Math.Floor(remainingQty); // Whole numbers only
+                    
+                    _logger?.LogInfo($"Remaining quantity for PO {poNumber}, Part {partID}: {remainingQtyInt}");
+                    return Model_Dao_Result<int>.SuccessResult(remainingQtyInt);
+                }
+                else
+                {
+                    _logger?.LogWarning($"No data found for PO {poNumber}, Part {partID}");
+                    return Model_Dao_Result<int>.Failure($"No data found for PO {poNumber}, Part {partID}");
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger?.LogError($"SQL Error calculating remaining quantity for PO {poNumber}, Part {partID}: {ex.Message}", ex);
+                return Model_Dao_Result<int>.Failure($"Failed to calculate remaining quantity: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
+                return Model_Dao_Result<int>.Failure($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
+            }
+        }
+
         public async Task<bool> TestConnectionAsync()
         {
             try

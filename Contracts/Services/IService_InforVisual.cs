@@ -36,6 +36,16 @@ namespace MTM_Receiving_Application.Contracts.Services
         Task<Model_Dao_Result<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date);
 
         /// <summary>
+        /// Calculates remaining quantity for a specific PO and Part.
+        /// Remaining Quantity = Quantity Ordered - Quantity Received.
+        /// Returns whole number only (no decimals).
+        /// </summary>
+        /// <param name="poNumber">PO number</param>
+        /// <param name="partID">Part identifier</param>
+        /// <returns>Result containing remaining quantity as integer</returns>
+        Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID);
+
+        /// <summary>
         /// Validates that the Infor Visual database connection is available.
         /// </summary>
         /// <returns>True if connection successful, false otherwise</returns>

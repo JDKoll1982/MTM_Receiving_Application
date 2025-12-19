@@ -13,60 +13,109 @@
         <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Spacing="16" Margin="0,0,24,0">
-            <TextBlock Text="Enter Heat/Lot Numbers" Style="{StaticResource SubtitleTextBlockStyle}"/>
-            
-            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="500">
-                <ItemsControl ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,0,0,12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="12" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Width="100">
-                                    <TextBlock Text="{Binding LoadNumber, Converter={StaticResource StringFormatConverter}, ConverterParameter='Load #{0}'}" 
-                                               Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                </StackPanel>
-                                
-                                <TextBox Grid.Column="1"
-                                         Header="Heat/Lot #"
-                                         Text="{Binding HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         PlaceholderText="Enter heat number"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Spacing="8">
+            <TextBlock Text="Heat/Lot Numbers" 
+                       Style="{ThemeResource TitleTextBlockStyle}"/>
+            <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                <Run Text="Enter heat or lot numbers for each load."/>
+                <Run Text="This field is optional - blank entries will be marked as 'Not Entered'." 
+                     FontStyle="Italic"/>
+            </TextBlock>
         </StackPanel>
 
-        <!-- Quick Select Sidebar -->
-        <StackPanel Grid.Column="1" Spacing="12" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8">
-            <TextBlock Text="Quick Select" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-            <TextBlock Text="Check to apply to empty loads" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        <!-- Content Section -->
+        <Grid Grid.Row="1" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Spacing="16" Margin="0,0,24,0">
+                <TextBlock Text="Load Entries" Style="{StaticResource SubtitleTextBlockStyle}"/>
             
-            <ItemsControl ItemsSource="{x:Bind ViewModel.UniqueHeatNumbers, Mode=OneWay}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <CheckBox Content="{Binding DisplayText}" 
-                                  IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                  Margin="0,4,0,4"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            
-            <TextBlock Text="No heat numbers entered yet." 
-                       Visibility="{x:Bind ViewModel.UniqueHeatNumbers.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"
-                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                       FontStyle="Italic"/>
-        </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="500">
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,12" 
+                                       Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                       Padding="16" 
+                                       CornerRadius="8" 
+                                       BorderThickness="1" 
+                                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                    <Grid ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Width="100">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <FontIcon Glyph="&#xE7B8;" 
+                                                         FontSize="16"
+                                                         Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding LoadNumber, Converter={StaticResource StringFormatConverter}, ConverterParameter='Load #{0}'}" 
+                                                          Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        
+                                        <TextBox Grid.Column="1"
+                                                Header="Heat/Lot Number (Optional)"
+                                                Text="{Binding HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                PlaceholderText="Enter heat/lot number or leave blank"
+                                                AutomationProperties.Name="Heat Lot Number"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+
+            <!-- Quick Select Sidebar -->
+            <Border Grid.Column="1" 
+                   Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                   BorderThickness="1"
+                   CornerRadius="8"
+                   Padding="16">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE73A;" 
+                                 FontSize="16"
+                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                        <TextBlock Text="Quick Select" 
+                                  Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                    </StackPanel>
+                    
+                    <TextBlock Text="Check to apply to empty loads" 
+                              Style="{ThemeResource CaptionTextBlockStyle}" 
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.UniqueHeatNumbers, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding DisplayText}" 
+                                         IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                         Margin="0,4,0,4"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    
+                    <TextBlock Text="No heat numbers entered yet." 
+                              Visibility="{x:Bind ViewModel.UniqueHeatNumbers.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                              FontStyle="Italic"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

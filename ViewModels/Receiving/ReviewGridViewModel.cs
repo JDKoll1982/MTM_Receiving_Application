@@ -18,6 +18,30 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
 
+        [ObservableProperty]
+        private bool _isSingleView = true;  // Default to single entry view
+
+        [ObservableProperty]
+        private int _currentEntryIndex = 0;
+
+        [ObservableProperty]
+        private Model_ReceivingLoad? _currentEntry;
+
+        /// <summary>
+        /// Indicates if the Previous button should be enabled
+        /// </summary>
+        public bool CanGoBack => CurrentEntryIndex > 0;
+
+        /// <summary>
+        /// Indicates if the Next button should be enabled
+        /// </summary>
+        public bool CanGoNext => Loads.Count > 0 && CurrentEntryIndex < Loads.Count - 1;
+
+        /// <summary>
+        /// Inverse of IsSingleView for binding table view visibility
+        /// </summary>
+        public bool IsTableView => !IsSingleView;
+
         public ReviewGridViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
@@ -48,8 +72,56 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 {
                     Loads.Add(load);
                 }
+                
+                // Set current entry to first load if available
+                if (Loads.Count > 0)
+                {
+                    CurrentEntryIndex = 0;
+                    CurrentEntry = Loads[0];
+                }
             }
+            
+            OnPropertyChanged(nameof(CanGoBack));
+            OnPropertyChanged(nameof(CanGoNext));
             await Task.CompletedTask;
+        }
+
+        [RelayCommand]
+        private void PreviousEntry()
+        {
+            if (CurrentEntryIndex > 0)
+            {
+                CurrentEntryIndex--;
+                CurrentEntry = Loads[CurrentEntryIndex];
+                OnPropertyChanged(nameof(CanGoBack));
+                OnPropertyChanged(nameof(CanGoNext));
+            }
+        }
+
+        [RelayCommand]
+        private void NextEntry()
+        {
+            if (CurrentEntryIndex < Loads.Count - 1)
+            {
+                CurrentEntryIndex++;
+                CurrentEntry = Loads[CurrentEntryIndex];
+                OnPropertyChanged(nameof(CanGoBack));
+                OnPropertyChanged(nameof(CanGoNext));
+            }
+        }
+
+        [RelayCommand]
+        private void SwitchToTableView()
+        {
+            IsSingleView = false;
+            OnPropertyChanged(nameof(IsTableView));
+        }
+
+        [RelayCommand]
+        private void SwitchToSingleView()
+        {
+            IsSingleView = true;
+            OnPropertyChanged(nameof(IsTableView));
         }
 
         [RelayCommand]

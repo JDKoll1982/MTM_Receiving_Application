@@ -17,6 +17,12 @@ namespace MTM_Receiving_Application.Models.Receiving
         public string Description { get; set; } = string.Empty;
         
         /// <summary>
+        /// Remaining quantity available to receive (Ordered - Received).
+        /// Whole number only (no decimals).
+        /// </summary>
+        public int RemainingQuantity { get; set; }
+        
+        /// <summary>
         /// Display text for UI showing part ID, description, and line number.
         /// </summary>
         public string DisplayText => 

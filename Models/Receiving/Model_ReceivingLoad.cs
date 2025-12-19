@@ -31,7 +31,10 @@ namespace MTM_Receiving_Application.Models.Receiving
         private decimal _weightQuantity;
 
         [ObservableProperty]
-        private string _heatLotNumber = string.Empty;
+        private string _heatLotNumber = "Not Entered";  // Default for optional field
+
+        [ObservableProperty]
+        private int _remainingQuantity;
 
         [ObservableProperty]
         private int _packagesPerLoad;

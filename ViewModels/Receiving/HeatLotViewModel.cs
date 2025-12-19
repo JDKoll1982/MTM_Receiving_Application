@@ -134,10 +134,25 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [RelayCommand]
         private Task ValidateAndContinueAsync()
         {
+            // Set "Not Entered" for any blank heat/lot fields before advancing
+            PrepareHeatLotFields();
+            
             // Validation logic is handled by Service_ReceivingWorkflow when advancing
-            // But we can do a quick check here if we want to show specific UI feedback
-            // For now, we rely on the service validation which is triggered by the Next button in parent view
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Ensures all heat/lot fields have a value. Sets "Not Entered" for blank fields.
+        /// </summary>
+        private void PrepareHeatLotFields()
+        {
+            foreach (var load in Loads)
+            {
+                if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
+                {
+                    load.HeatLotNumber = "Not Entered";
+                }
+            }
         }
     }
 }
