@@ -15,11 +15,11 @@
     <StackPanel Spacing="16" MaxWidth="600" HorizontalAlignment="Left">
         
         <!-- PO Entry Mode -->
-        <StackPanel Visibility="{x:Bind ViewModel.IsNonPOItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" Spacing="16">
+        <StackPanel Visibility="{x:Bind ViewModel.StepData.IsNonPOItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" Spacing="16">
             <TextBlock Text="Enter Purchase Order Number" Style="{StaticResource SubtitleTextBlockStyle}"/>
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <TextBox Header="PO Number" 
-                         Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         Text="{x:Bind ViewModel.StepData.PONumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                          Width="200"
                          PlaceholderText="e.g. 123456"/>
                 <Button Content="Load PO" 
@@ -32,11 +32,11 @@
         </StackPanel>
 
         <!-- Non-PO Entry Mode -->
-        <StackPanel Visibility="{x:Bind ViewModel.IsNonPOItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Spacing="16">
+        <StackPanel Visibility="{x:Bind ViewModel.StepData.IsNonPOItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" Spacing="16">
             <TextBlock Text="Enter Non-PO Item Details" Style="{StaticResource SubtitleTextBlockStyle}"/>
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <TextBox Header="Part ID" 
-                         Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         Text="{x:Bind ViewModel.StepData.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                          Width="200"
                          PlaceholderText="e.g. PART-123"/>
                 <Button Content="Look Up Part" 
@@ -51,7 +51,7 @@
         <ProgressBar IsIndeterminate="True" Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
         <controls:DataGrid ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
-                          SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                          SelectedItem="{x:Bind ViewModel.StepData.SelectedPart, Mode=TwoWay}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           Height="300">

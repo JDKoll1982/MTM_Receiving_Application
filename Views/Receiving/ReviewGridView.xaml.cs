@@ -15,13 +15,6 @@ namespace MTM_Receiving_Application.Views.Receiving
         {
             ViewModel = App.GetService<ReviewGridViewModel>();
             this.InitializeComponent();
-            
-            this.Loaded += ReviewGridView_Loaded;
-        }
-
-        private async void ReviewGridView_Loaded(object sender, RoutedEventArgs e)
-        {
-            await ViewModel.OnNavigatedToAsync();
         }
 
         private void ReviewDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)

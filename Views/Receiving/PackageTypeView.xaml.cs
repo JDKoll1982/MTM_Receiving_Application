@@ -13,13 +13,6 @@ namespace MTM_Receiving_Application.Views.Receiving
         {
             ViewModel = App.GetService<PackageTypeViewModel>();
             this.InitializeComponent();
-            
-            this.Loaded += PackageTypeView_Loaded;
-        }
-
-        private async void PackageTypeView_Loaded(object sender, RoutedEventArgs e)
-        {
-            await ViewModel.OnNavigatedToAsync();
         }
     }
 }

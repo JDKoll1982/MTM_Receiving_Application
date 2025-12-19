@@ -22,18 +22,18 @@
             
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <ComboBox Header="Type"
-                          ItemsSource="{x:Bind ViewModel.PackageTypes, Mode=OneWay}"
-                          SelectedItem="{x:Bind ViewModel.SelectedPackageType, Mode=TwoWay}"
+                          ItemsSource="{x:Bind ViewModel.StepData.AvailablePackageTypes, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.StepData.SelectedPackageType, Mode=TwoWay}"
                           Width="200"/>
                 
                 <TextBox Header="Custom Name"
-                         Text="{x:Bind ViewModel.CustomPackageTypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Visibility="{x:Bind ViewModel.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                         Text="{x:Bind ViewModel.StepData.CustomPackageTypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{x:Bind ViewModel.StepData.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                          Width="200"/>
             </StackPanel>
             
             <CheckBox Content="Save as default for this part" 
-                      IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}"/>
+                      IsChecked="{x:Bind ViewModel.StepData.IsSaveAsDefault, Mode=TwoWay}"/>
         </StackPanel>
 
         <!-- Loads List -->

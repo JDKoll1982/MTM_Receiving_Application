@@ -13,13 +13,6 @@ namespace MTM_Receiving_Application.Views.Receiving
         {
             ViewModel = App.GetService<HeatLotViewModel>();
             this.InitializeComponent();
-            
-            this.Loaded += HeatLotView_Loaded;
-        }
-
-        private async void HeatLotView_Loaded(object sender, RoutedEventArgs e)
-        {
-            await ViewModel.OnNavigatedToAsync();
         }
     }
 }

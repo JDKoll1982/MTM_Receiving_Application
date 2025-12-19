@@ -19,15 +19,15 @@
         
         <!-- Info Header -->
         <StackPanel Orientation="Horizontal" Spacing="24">
-            <TextBlock Text="{x:Bind ViewModel.PoQuantityInfo, Mode=OneWay}" 
+            <TextBlock Text="{x:Bind ViewModel.StepData.POQuantityInfo, Mode=OneWay}" 
                        Style="{StaticResource BodyStrongTextBlockStyle}"
                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
         </StackPanel>
 
         <!-- Warning Banner -->
-        <InfoBar IsOpen="{x:Bind ViewModel.HasWarning, Mode=OneWay}"
+        <InfoBar IsOpen="{x:Bind ViewModel.StepData.HasWarning, Mode=OneWay}"
                  Severity="Warning"
-                 Message="{x:Bind ViewModel.WarningMessage, Mode=OneWay}"
+                 Message="{x:Bind ViewModel.StepData.WarningMessage, Mode=OneWay}"
                  IsClosable="False" />
 
         <!-- Loads List -->

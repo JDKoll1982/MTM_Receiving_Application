@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Models.Receiving.StepData;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System;

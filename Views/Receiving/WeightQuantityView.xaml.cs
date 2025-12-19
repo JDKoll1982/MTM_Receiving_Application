@@ -13,13 +13,6 @@ namespace MTM_Receiving_Application.Views.Receiving
         {
             ViewModel = App.GetService<WeightQuantityViewModel>();
             this.InitializeComponent();
-            
-            this.Loaded += WeightQuantityView_Loaded;
-        }
-
-        private async void WeightQuantityView_Loaded(object sender, RoutedEventArgs e)
-        {
-            await ViewModel.OnNavigatedToAsync();
         }
     }
 }

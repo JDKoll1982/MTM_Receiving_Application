@@ -10,12 +10,12 @@
     <StackPanel Spacing="24" MaxWidth="600" HorizontalAlignment="Left">
         <TextBlock Text="Enter Number of Loads" Style="{StaticResource SubtitleTextBlockStyle}"/>
         
-        <TextBlock Text="{x:Bind ViewModel.SelectedPartInfo, Mode=OneWay}" 
+        <TextBlock Text="{x:Bind ViewModel.StepData.SelectedPartInfo, Mode=OneWay}" 
                    Style="{StaticResource BodyStrongTextBlockStyle}"
                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
 
         <NumberBox Header="Number of Loads (1-99)"
-                   Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                   Value="{x:Bind ViewModel.StepData.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                    Minimum="1"
                    Maximum="99"
                    SpinButtonPlacementMode="Inline"
