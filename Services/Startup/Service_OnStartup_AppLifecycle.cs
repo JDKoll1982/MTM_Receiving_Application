@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.WinUI;
 using MTM_Receiving_Application.Contracts.Services;
@@ -98,13 +99,23 @@ namespace MTM_Receiving_Application.Services.Startup
                     }
                     else if (newUserViewModel.IsCancelled)
                     {
-                        // User cancelled account creation - close app
+                        // User cancelled account creation - close app properly
                         await _errorHandler.HandleErrorAsync(
                             "User account creation cancelled. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
                             showDialog: false);
                         
-                        System.Environment.Exit(0);
+                        // Close splash screen
+                        _splashScreen?.Close();
+                        
+                        // Close main window if it exists
+                        if (App.MainWindow != null)
+                        {
+                            App.MainWindow.Close();
+                        }
+                        
+                        // Exit application properly
+                        Application.Current.Exit();
                         return;
                     }
                 }

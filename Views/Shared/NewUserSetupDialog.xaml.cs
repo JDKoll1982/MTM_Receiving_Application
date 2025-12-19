@@ -25,7 +25,20 @@ namespace MTM_Receiving_Application.Views.Shared
             // Wire up event handlers
             PrimaryButtonClick += OnCreateAccountButtonClick;
             CloseButtonClick += OnCancelButtonClick;
+            Closing += OnDialogClosing;
             Loaded += OnDialogLoaded;
+        }
+        
+        /// <summary>
+        /// Handle dialog closing event (including X button)
+        /// </summary>
+        private void OnDialogClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            // If user closes with X or Cancel button, mark as cancelled
+            if (args.Result != ContentDialogResult.Primary)
+            {
+                ViewModel.IsCancelled = true;
+            }
         }
 
         /// <summary>
