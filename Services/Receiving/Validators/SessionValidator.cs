@@ -1,8 +1,8 @@
-using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Contracts.Services.Validation;
 using MTM_Receiving_Application.Models.Receiving;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IService_ReceivingValidation = MTM_Receiving_Application.Contracts.Services.IService_ReceivingValidation;
 
 namespace MTM_Receiving_Application.Services.Receiving.Validators
 {
