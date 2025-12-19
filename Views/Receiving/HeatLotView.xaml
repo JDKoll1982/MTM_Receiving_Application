@@ -27,19 +27,39 @@
             </StackPanel>
             <Button.Flyout>
                 <Flyout>
-                    <ScrollViewer MaxWidth="400" MaxHeight="600">
-                        <StackPanel Spacing="16">
-                            <TextBlock Text="Heat/Lot Numbers" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock TextWrapping="Wrap">Enter heat or lot numbers for traceability.</TextBlock>
+                    <ScrollViewer MaxWidth="450" MaxHeight="650">
+                        <StackPanel Spacing="20" Padding="4">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Heat/Lot Numbers" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Enter heat or lot numbers for traceability.</TextBlock>
+                            </StackPanel>
                             
-                            <TextBlock Text="Heat Number (for coils/sheets)" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Mill-assigned identifier. Usually found on coil tag. Example: H123456789</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Heat Number (for coils/sheets)" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Mill-assigned identifier. Usually found on coil tag.</TextBlock>
+                                    <TextBlock Text="Example: H123456789" FontSize="12" Foreground="{ThemeResource TextFillColorTertiaryBrush}" FontStyle="Italic"/>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Lot Number (for bars/parts)" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Batch identifier from vendor. Found on packing slip or bundle tag. Example: LOT-2024-1234</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Lot Number (for bars/parts)" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Batch identifier from vendor. Found on packing slip or bundle tag.</TextBlock>
+                                    <TextBlock Text="Example: LOT-2024-1234" FontSize="12" Foreground="{ThemeResource TextFillColorTertiaryBrush}" FontStyle="Italic"/>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Optional Field" FontWeight="SemiBold" Foreground="{ThemeResource SystemFillColorSuccessBrush}" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">If blank, will be recorded as 'Not Entered'.</TextBlock>
+                            <Border Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource SystemFillColorSuccessBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE73E;" FontSize="14" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                        <TextBlock Text="Optional Field" FontWeight="SemiBold" FontSize="14" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12">If blank, will be recorded as 'Not Entered'.</TextBlock>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </Flyout>

@@ -34,19 +34,34 @@
             </StackPanel>
             <Button.Flyout>
                 <Flyout>
-                    <ScrollViewer MaxWidth="400" MaxHeight="600">
-                        <StackPanel Spacing="16">
-                            <TextBlock Text="Purchase Order Entry" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock TextWrapping="Wrap">Enter the PO number from your vendor shipment.</TextBlock>
+                    <ScrollViewer MaxWidth="450" MaxHeight="650">
+                        <StackPanel Spacing="20" Padding="4">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Purchase Order Entry" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Enter the PO number from your vendor shipment.</TextBlock>
+                            </StackPanel>
                             
-                            <TextBlock Text="Accepted Formats" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">6 digits (e.g., 66868) or with prefix (e.g., PO-066868). Auto-formats on tab/enter.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Accepted Formats" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">6 digits (e.g., 66868) or with prefix (e.g., PO-066868). Auto-formats on tab/enter.</TextBlock>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="What Happens" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">System validates PO exists in Infor Visual, shows all parts on the PO, displays remaining quantities. Select a part to receive.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="What Happens" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">System validates PO exists in Infor Visual, shows all parts on the PO, displays remaining quantities. Select a part to receive.</TextBlock>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Non-PO Entry" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Use for items without a PO. Enter part number manually (e.g., MMC0000123 or MMF0000456).</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Non-PO Entry" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Use for items without a PO. Enter part number manually (e.g., MMC0000123 or MMF0000456).</TextBlock>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </Flyout>

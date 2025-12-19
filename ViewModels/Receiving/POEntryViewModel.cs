@@ -126,7 +126,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         Parts.Add(part);
                     }
                     
-                    _workflowService.RaiseStatusMessage($"PO {PoNumber} loaded with {Parts.Count} parts.");
+                    _workflowService.RaiseStatusMessage($"Purchase Order {PoNumber} loaded with {Parts.Count} parts.");
                 }
                 else
                 {

@@ -35,19 +35,37 @@
             </StackPanel>
             <Button.Flyout>
                 <Flyout>
-                    <ScrollViewer MaxWidth="400" MaxHeight="600">
-                        <StackPanel Spacing="16">
-                            <TextBlock Text="Weight/Quantity Entry" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock TextWrapping="Wrap">Enter the weight or quantity for each load.</TextBlock>
+                    <ScrollViewer MaxWidth="450" MaxHeight="650">
+                        <StackPanel Spacing="20" Padding="4">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Weight/Quantity Entry" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Enter the weight or quantity for each load.</TextBlock>
+                            </StackPanel>
                             
-                            <TextBlock Text="For Coils/Sheets (by weight)" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Enter weight in pounds (lbs). Example: 2500 for 2,500 lbs. Decimals NOT allowed.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="For Coils/Sheets (by weight)" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Enter weight in pounds (lbs). Example: 2500 for 2,500 lbs. Whole numbers only - decimals NOT allowed.</TextBlock>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="For Bars/Pieces (by count)" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Enter piece count. Example: 48 for 48 pieces. Whole numbers only.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="For Bars/Pieces (by count)" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Enter piece count. Example: 48 for 48 pieces. Whole numbers only.</TextBlock>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Warning" FontWeight="SemiBold" Foreground="{ThemeResource SystemFillColorCautionBrush}" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Total entered should not exceed PO quantity. System will alert if over.</TextBlock>
+                            <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource SystemFillColorCautionBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE7BA;" FontSize="14" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                        <TextBlock Text="Warning" FontWeight="SemiBold" FontSize="14" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12">Total entered should not exceed PO quantity. System will alert if over.</TextBlock>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </Flyout>

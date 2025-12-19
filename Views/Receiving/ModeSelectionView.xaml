@@ -21,16 +21,33 @@
             </StackPanel>
             <Button.Flyout>
                 <Flyout>
-                    <ScrollViewer MaxWidth="400" MaxHeight="600">
-                        <StackPanel Spacing="16">
-                            <TextBlock Text="Entry Mode Selection" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock TextWrapping="Wrap">Choose how you want to enter receiving data.</TextBlock>
+                    <ScrollViewer MaxWidth="450" MaxHeight="650">
+                        <StackPanel Spacing="20" Padding="4">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Entry Mode Selection" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Choose how you want to enter receiving data.</TextBlock>
+                            </StackPanel>
                             
-                            <TextBlock Text="Guided Wizard" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Step-by-step process for standard receiving. Ideal for one PO or part at a time. Validates data at each step. Best for beginners or infrequent users.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE771;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                        <TextBlock Text="Guided Wizard" FontWeight="SemiBold" FontSize="14"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Step-by-step process for standard receiving. Ideal for one PO or part at a time. Validates data at each step. Best for beginners or infrequent users.</TextBlock>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Manual Entry" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Grid-based bulk data entry. Enter multiple loads at once. Best for experienced users. Faster for large shipments.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE7F0;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                        <TextBlock Text="Manual Entry" FontWeight="SemiBold" FontSize="14"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Grid-based bulk data entry. Enter multiple loads at once. Best for experienced users. Faster for large shipments.</TextBlock>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </Flyout>

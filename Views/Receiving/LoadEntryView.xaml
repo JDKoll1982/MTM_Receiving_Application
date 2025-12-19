@@ -21,19 +21,41 @@
             </StackPanel>
             <Button.Flyout>
                 <Flyout>
-                    <ScrollViewer MaxWidth="400" MaxHeight="600">
-                        <StackPanel Spacing="16">
-                            <TextBlock Text="Number of Loads" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock TextWrapping="Wrap">How many skids/loads are you receiving for this part?</TextBlock>
+                    <ScrollViewer MaxWidth="450" MaxHeight="650">
+                        <StackPanel Spacing="20" Padding="4">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Number of Loads" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">How many skids/loads are you receiving for this part?</TextBlock>
+                            </StackPanel>
                             
-                            <TextBlock Text="Examples" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Coils: Each Skid of Coils = 1 load. Sheets: Each skid of sheets = 1 load. Bars: Each bundle = 1 load.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Examples" FontWeight="SemiBold" FontSize="14"/>
+                                    <StackPanel Spacing="6">
+                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Coils: Each coil = 1 load</TextBlock>
+                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Sheets: Each skid of sheets = 1 load</TextBlock>
+                                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Bars: Each bundle = 1 load</TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Valid Range" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Enter between 1 and 99 loads.</TextBlock>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Valid Range" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Enter between 1 and 99 loads.</TextBlock>
+                                </StackPanel>
+                            </Border>
                             
-                            <TextBlock Text="Note" FontWeight="SemiBold" Foreground="{ThemeResource SystemFillColorCautionBrush}" Margin="0,8,0,4"/>
-                            <TextBlock TextWrapping="Wrap">Each load will be labeled separately for tracking.</TextBlock>
+                            <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource SystemFillColorCautionBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE7BA;" FontSize="14" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                        <TextBlock Text="Note" FontWeight="SemiBold" FontSize="14" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12">Each load will be labeled separately for tracking.</TextBlock>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </Flyout>

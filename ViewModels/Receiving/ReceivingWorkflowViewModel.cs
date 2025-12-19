@@ -102,22 +102,15 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             StatusSeverity = severity;
             IsStatusOpen = true;
 
-            // Auto-dismiss after 3 seconds if informational or success
+            // Auto-dismiss after 5 seconds if informational or success
             if (severity == InfoBarSeverity.Informational || severity == InfoBarSeverity.Success)
             {
-                Task.Delay(3000).ContinueWith(_ => 
+                Task.Delay(5000).ContinueWith(_ => 
                 {
-                    // Ensure UI update runs on UI thread if needed
-                    // Since we are in ViewModel, we rely on binding.
-                    // But Task.Delay runs on thread pool.
-                    // We should use DispatcherQueue if possible, but ViewModel doesn't have it directly.
-                    // However, ObservableProperty usually handles property change on any thread?
-                    // No, UI updates must be on UI thread.
-                    // We can ignore auto-dismiss for now or assume the binding engine handles it (it doesn't always).
-                    // Or we can expose a method to close it.
-                    // Let's just set it to false, and hope for the best or use a timer.
-                    // Better: Don't auto-dismiss here to avoid threading issues without Dispatcher.
-                    // Or use a Timer.
+                    App.MainWindow?.DispatcherQueue?.TryEnqueue(() => 
+                    {
+                        IsStatusOpen = false;
+                    });
                 });
             }
         }
