@@ -20,6 +20,39 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <Button x:Name="HelpButton"
+                Grid.Row="0"
+                Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="16"
+                Padding="12,8"
+                ToolTipService.ToolTip="Click for help about review and save">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE946;" FontSize="16"/>
+                <TextBlock Text="Help"/>
+            </StackPanel>
+            <Button.Flyout>
+                <Flyout>
+                    <ScrollViewer MaxWidth="400" MaxHeight="600">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Review &amp; Save" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock TextWrapping="Wrap">Review all entries before saving.</TextBlock>
+                            
+                            <TextBlock Text="Single Entry View" FontWeight="SemiBold" Margin="0,8,0,4"/>
+                            <TextBlock TextWrapping="Wrap">Review one load at a time. Use Previous/Next to navigate. All fields displayed clearly.</TextBlock>
+                            
+                            <TextBlock Text="Table View" FontWeight="SemiBold" Margin="0,8,0,4"/>
+                            <TextBlock TextWrapping="Wrap">See all loads at once. Quick overview of all data. Switch views with Table View button.</TextBlock>
+                            
+                            <TextBlock Text="What Gets Saved" FontWeight="SemiBold" Margin="0,8,0,4"/>
+                            <TextBlock TextWrapping="Wrap">Database record (permanent), local CSV backup, network CSV (if accessible), and printable receiving labels.</TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+
         <!-- Content Section with View Toggle -->
         <Grid Grid.Row="1">
             <!-- Single Entry View -->

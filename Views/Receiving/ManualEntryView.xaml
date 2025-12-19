@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="MTM_Receiving_Application.Views.Receiving.ManualEntryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
