@@ -54,9 +54,9 @@
             </NavigationView.Header>
 
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Receiving Labels" Tag="ReceivingLabelPage">
+                <NavigationViewItem Content="Receiving Labels" Tag="ReceivingWorkflowView">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8A5;" />
+                        <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Dunnage Labels" Tag="DunnageLabelPage">
@@ -67,11 +67,6 @@
                 <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE707;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem Content="Receiving Workflow" Tag="ReceivingWorkflowView">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>

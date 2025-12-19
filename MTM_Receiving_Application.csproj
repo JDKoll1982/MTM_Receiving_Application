@@ -7,7 +7,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>false</WinUISDKReferences>
     <EnableMsixTooling>true</EnableMsixTooling>
@@ -106,9 +105,6 @@
   <!-- Properties Files -->
   <ItemGroup>
     <None Include="Properties\launchSettings.json" />
-    <None Include="Properties\PublishProfiles\win-arm64.pubxml" />
-    <None Include="Properties\PublishProfiles\win-x64.pubxml" />
-    <None Include="Properties\PublishProfiles\win-x86.pubxml" />
   </ItemGroup>
 
   <!--

@@ -60,9 +60,17 @@ namespace MTM_Receiving_Application
             else if (args.SelectedItem is NavigationViewItem item)
             {
                 var tag = item.Tag?.ToString();
-                if (tag == "ReceivingWorkflowView")
+                switch (tag)
                 {
-                    ContentFrame.Navigate(typeof(Views.Receiving.ReceivingWorkflowView));
+                    case "ReceivingWorkflowView":
+                        ContentFrame.Navigate(typeof(Views.Receiving.ReceivingWorkflowView));
+                        break;
+                    case "DunnageLabelPage":
+                        ContentFrame.Navigate(typeof(Views.Receiving.DunnageLabelPage));
+                        break;
+                    case "CarrierDeliveryLabelPage":
+                        ContentFrame.Navigate(typeof(Views.Receiving.CarrierDeliveryLabelPage));
+                        break;
                 }
             }
         }

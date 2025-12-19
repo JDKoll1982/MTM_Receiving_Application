@@ -16,20 +16,34 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
-            <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE710;"/>
-                    <TextBlock Text="Add Row"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{x:Bind ViewModel.RemoveRowCommand}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE74D;"/>
-                    <TextBlock Text="Remove Row"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE710;"/>
+                        <TextBlock Text="Add Row"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{x:Bind ViewModel.RemoveRowCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE74D;"/>
+                        <TextBlock Text="Remove Row"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            
+            <Button Grid.Column="1" 
+                    Content="Mode Selection" 
+                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                    Background="Transparent" 
+                    BorderBrush="{ThemeResource SystemAccentColor}"/>
+        </Grid>
 
         <!-- Data Grid -->
         <controls:DataGrid Grid.Row="1"

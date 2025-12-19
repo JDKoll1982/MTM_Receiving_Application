@@ -109,19 +109,32 @@
         </Grid>
 
         <!-- Navigation Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="24">
-            <!--
-                    Visibility="{x:Bind ViewModel.IsNavigationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            -->
-            <Button Content="Reset CSV" 
-                    Command="{x:Bind ViewModel.ResetCSVCommand}" 
-                    Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Margin="0,0,12,0" 
-                    Background="Transparent" 
-                    BorderBrush="Transparent" 
-                    Foreground="Red"/>
-            <Button Content="Back" Command="{x:Bind ViewModel.PreviousStepCommand}" Margin="0,0,12,0"/>
-            <Button Content="Next" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
-        </StackPanel>
+        <Grid Grid.Row="2" Margin="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left-aligned buttons -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12">
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Background="Transparent" 
+                        BorderBrush="{ThemeResource SystemAccentColor}"/>
+                <Button Content="Reset CSV" 
+                        Command="{x:Bind ViewModel.ResetCSVCommand}" 
+                        Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Background="Transparent" 
+                        BorderBrush="Transparent" 
+                        Foreground="Red"/>
+            </StackPanel>
+            
+            <!-- Right-aligned navigation buttons -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                <Button Content="Back" Command="{x:Bind ViewModel.PreviousStepCommand}"/>
+                <Button Content="Next" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

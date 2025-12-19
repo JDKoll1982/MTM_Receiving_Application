@@ -4,7 +4,9 @@ using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
@@ -25,6 +27,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         [ObservableProperty]
         private bool _isNonPOItem;
+
+        [ObservableProperty]
+        private bool _isLoadPOEnabled = false;
+
+        [ObservableProperty]
+        private string _poValidationMessage = string.Empty;
 
         [ObservableProperty]
         private ObservableCollection<Model_InforVisualPart> _parts = new();
@@ -128,7 +136,87 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         partial void OnPoNumberChanged(string value)
         {
-            _workflowService.CurrentPONumber = value;
+            // Auto-correct PO number format: PO-NNNNNN (6 digits)
+            // Accept: 66868 -> PO-066868, 066868 -> PO-066868, po-066868 -> PO-066868
+            // Reject invalid formats
+            
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _workflowService.CurrentPONumber = string.Empty;
+                IsLoadPOEnabled = false;
+                PoValidationMessage = string.Empty;
+                return;
+            }
+
+            string correctedPO = string.Empty;
+            bool isValid = false;
+
+            // Remove any whitespace
+            value = value.Trim();
+
+            // Check if value starts with "po-" or "PO-" (case insensitive)
+            if (value.StartsWith("po-", StringComparison.OrdinalIgnoreCase))
+            {
+                // Extract the number part after "PO-"
+                string numberPart = value.Substring(3);
+                
+                // Check if it's all digits and validate length
+                if (numberPart.All(char.IsDigit))
+                {
+                    if (numberPart.Length <= 6)
+                    {
+                        // Pad with leading zeros to make it 6 digits
+                        correctedPO = $"PO-{numberPart.PadLeft(6, '0')}";
+                        isValid = true;
+                    }
+                    else
+                    {
+                        // Too many digits
+                        PoValidationMessage = "PO number must be 6 digits or less";
+                        IsLoadPOEnabled = false;
+                        return;
+                    }
+                }
+                else
+                {
+                    // Contains non-numeric characters after PO-
+                    PoValidationMessage = "Invalid PO format. Use: PO-NNNNNN (6 digits)";
+                    IsLoadPOEnabled = false;
+                    return;
+                }
+            }
+            else if (value.All(char.IsDigit))
+            {
+                // Just numbers, no prefix
+                if (value.Length <= 6)
+                {
+                    correctedPO = $"PO-{value.PadLeft(6, '0')}";
+                    isValid = true;
+                }
+                else
+                {
+                    PoValidationMessage = "PO number must be 6 digits or less";
+                    IsLoadPOEnabled = false;
+                    return;
+                }
+            }
+            else
+            {
+                // Invalid format (contains letters or special chars in wrong places)
+                PoValidationMessage = "Invalid PO format. Enter: 66868 or PO-066868";
+                IsLoadPOEnabled = false;
+                return;
+            }
+
+            // If valid, update the field with corrected format
+            if (isValid && correctedPO != value)
+            {
+                PoNumber = correctedPO;
+            }
+            
+            _workflowService.CurrentPONumber = correctedPO;
+            IsLoadPOEnabled = isValid;
+            PoValidationMessage = isValid ? string.Empty : "Invalid PO number format";
         }
 
         partial void OnSelectedPartChanged(Model_InforVisualPart? value)

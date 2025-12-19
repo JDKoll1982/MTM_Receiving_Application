@@ -231,8 +231,7 @@ namespace MTM_Receiving_Application.Services.Startup
                 _splashScreen?.Close();
                 _splashScreen = null;
 
-                // Check for existing CSV files and prompt for reset
-                await CheckAndResetCSVFilesAsync();
+                // CSV reset dialog removed - only appears when user explicitly clicks Reset CSV button
             }
             catch (Exception ex)
             {

@@ -257,6 +257,37 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             }
         }
 
+        [RelayCommand]
+        private async Task ReturnToModeSelectionAsync()
+        {
+            if (App.MainWindow?.Content?.XamlRoot == null)
+            {
+                _logger.LogError("Cannot show dialog: XamlRoot is null");
+                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                return;
+            }
+
+            var dialog = new ContentDialog
+            {
+                Title = "Change Mode?",
+                Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+                PrimaryButtonText = "Yes, Change Mode",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = App.MainWindow.Content.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                // Reset workflow and return to mode selection
+                await _workflowService.ResetWorkflowAsync();
+                _workflowService.GoToStep(WorkflowStep.ModeSelection);
+                UpdateStepVisibility();
+                ShowStatus("Workflow cleared. Please select a mode.", InfoBarSeverity.Informational);
+            }
+        }
+
         private void UpdateStepVisibility()
         {
             var step = _workflowService.CurrentStep;

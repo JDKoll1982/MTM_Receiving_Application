@@ -18,12 +18,20 @@
         <StackPanel Visibility="{x:Bind ViewModel.IsNonPOItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" Spacing="16">
             <TextBlock Text="Enter Purchase Order Number" Style="{StaticResource SubtitleTextBlockStyle}"/>
             <StackPanel Orientation="Horizontal" Spacing="12">
-                <TextBox Header="PO Number" 
-                         Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                         Width="200"
-                         PlaceholderText="e.g. 123456"/>
+                <StackPanel>
+                    <TextBox Header="PO Number" 
+                             Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                             Width="200"
+                             PlaceholderText="e.g. 66868 or PO-066868"/>
+                    <TextBlock Text="{x:Bind ViewModel.PoValidationMessage, Mode=OneWay}" 
+                               Foreground="Red" 
+                               FontSize="12"
+                               Margin="0,4,0,0"
+                               Visibility="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                </StackPanel>
                 <Button Content="Load PO" 
                         Command="{x:Bind ViewModel.LoadPOCommand}" 
+                        IsEnabled="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay}"
                         VerticalAlignment="Bottom" Style="{StaticResource AccentButtonStyle}"/>
                 <Button Content="Switch to Non-PO" 
                         Command="{x:Bind ViewModel.ToggleNonPOCommand}" 
