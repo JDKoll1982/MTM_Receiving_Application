@@ -99,8 +99,10 @@
                                        Header="Weight/Quantity"
                                        Value="{Binding WeightQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToDecimalConverter}}"
                                        Minimum="0"
+                                       SmallChange="1"
+                                       LargeChange="10"
                                        SpinButtonPlacementMode="Inline"
-                                       PlaceholderText="Enter amount"
+                                       PlaceholderText="Enter whole number"
                                        AutomationProperties.Name="Weight Quantity"/>
                         </Grid>
                     </DataTemplate>

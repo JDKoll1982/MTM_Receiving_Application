@@ -109,6 +109,8 @@
                                        Header="Packages per Load"
                                        Value="{Binding PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                        Minimum="1"
+                                       SmallChange="1"
+                                       LargeChange="5"
                                        SpinButtonPlacementMode="Inline"
                                        AutomationProperties.Name="Packages per Load"/>
                                        

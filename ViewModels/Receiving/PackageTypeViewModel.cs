@@ -1,3 +1,4 @@
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
@@ -92,19 +93,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
             else
             {
-                // Apply smart defaults
-                var partType = _workflowService.CurrentPart?.PartType;
-                if (partType == "MMC")
+                // Apply smart defaults based on PartID prefix
+                var partID = _workflowService.CurrentPart?.PartID ?? string.Empty;
+                if (partID.StartsWith("MMC", StringComparison.OrdinalIgnoreCase))
                 {
                     SelectedPackageType = "Coils";
+                    _logger?.LogInfo($"Auto-set package type to Coils for part {partID}");
                 }
-                else if (partType == "MMF")
+                else if (partID.StartsWith("MMF", StringComparison.OrdinalIgnoreCase))
                 {
                     SelectedPackageType = "Sheets";
+                    _logger?.LogInfo($"Auto-set package type to Sheets for part {partID}");
                 }
                 else
                 {
                     SelectedPackageType = "Skids"; // Default fallback
+                    _logger?.LogInfo($"Auto-set package type to Skids (default) for part {partID}");
                 }
             }
         }

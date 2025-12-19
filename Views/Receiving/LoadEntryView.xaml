@@ -63,6 +63,8 @@
                            Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            Minimum="1"
                            Maximum="99"
+                           SmallChange="1"
+                           LargeChange="10"
                            SpinButtonPlacementMode="Inline"
                            Width="250"
                            HorizontalAlignment="Center"
