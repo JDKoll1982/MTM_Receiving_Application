@@ -5,11 +5,87 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Padding="24">
-        <StackPanel>
-            <TextBlock Text="Routing Label Entry" Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock Text="This page will be fully implemented with /speckit.specify" 
-                       Style="{StaticResource BodyTextBlockStyle}" 
-                       Margin="0,12,0,0"/>
+        <Button x:Name="HelpButton"
+                Canvas.ZIndex="1000"
+                Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="12,8"
+                ToolTipService.ToolTip="Click for help about carrier delivery labels">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE946;" FontSize="16"/>
+                <TextBlock Text="Help"/>
+            </StackPanel>
+            <Button.Flyout>
+                <Flyout>
+                    <ScrollViewer MaxWidth="450" MaxHeight="650">
+                        <StackPanel Spacing="20" Padding="4">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Carrier Delivery Labels" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Create routing labels for carrier deliveries and shipments.</TextBlock>
+                            </StackPanel>
+                            
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Purpose" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Carrier delivery labels contain routing information, tracking numbers, and delivery instructions for outbound shipments and inter-facility transfers.</TextBlock>
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource SystemFillColorAttentionBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE946;" FontSize="14" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                                        <TextBlock Text="Coming Soon" FontWeight="SemiBold" FontSize="14" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12">This feature will be implemented with full carrier integration and routing capabilities.</TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="600" Spacing="24">
+            <FontIcon Glyph="&#xE707;" FontSize="64" Foreground="{ThemeResource SystemFillColorAttentionBrush}" HorizontalAlignment="Center"/>
+            
+            <TextBlock Text="Carrier Delivery Labels" 
+                       Style="{StaticResource TitleTextBlockStyle}" 
+                       HorizontalAlignment="Center"/>
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="24">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Feature Under Development" 
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Foreground="{ThemeResource SystemFillColorAttentionBrush}"
+                               HorizontalAlignment="Center"/>
+                    
+                    <TextBlock TextWrapping="Wrap" 
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        This page will allow you to create and print carrier delivery routing labels for outbound shipments and inter-facility transfers.
+                    </TextBlock>
+                    
+                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}" 
+                            Padding="16" 
+                            CornerRadius="4">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Planned Features:" FontWeight="SemiBold"/>
+                            <TextBlock Text="• Carrier selection and routing" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Tracking number generation" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Delivery instructions" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Label printing with barcodes" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </Grid>
 </Page>
