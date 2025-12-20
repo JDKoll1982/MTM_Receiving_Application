@@ -1,0 +1,29 @@
+{
+  "features": [
+    "fdata/path-data",
+    "design-tokens/v1",
+    "variants/v1",
+    "layout/grid",
+    "components/v2",
+    "fdata/shape-data-type"
+  ],
+  "teamId": "3046d1ce-471a-4214-bd97-6a3504c55726",
+  "hasMediaTrimmed": false,
+  "name": "POEntryView",
+  "revn": 1,
+  "modifiedAt": "2025-12-20T17:03:14.201987Z",
+  "vern": 0,
+  "id": "fb67b1dc-9978-4672-955d-9bd384736868",
+  "isShared": false,
+  "options": {
+    "componentsV2": true,
+    "baseFontSize": "16px"
+  },
+  "migrations": [
+    "0001-remove-tokens-from-groups",
+    "0002-normalize-bool-content-v2"
+  ],
+  "version": 67,
+  "projectId": "b3a0ac22-971b-4006-a5e1-6b93838c5a2e",
+  "createdAt": "2025-12-20T17:03:14.201987Z"
+}
