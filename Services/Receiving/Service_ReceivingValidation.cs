@@ -26,8 +26,9 @@ namespace MTM_Receiving_Application.Services.Receiving
             if (string.IsNullOrWhiteSpace(poNumber))
                 return ReceivingValidationResult.Error("PO number is required");
 
-            if (!Regex.IsMatch(poNumber, @"^\d{1,6}$"))
-                return ReceivingValidationResult.Error("PO number must be numeric and up to 6 digits");
+            // Allow optional "PO-" prefix followed by 1-6 digits
+            if (!Regex.IsMatch(poNumber, @"^(PO-)?\d{1,6}$", RegexOptions.IgnoreCase))
+                return ReceivingValidationResult.Error("PO number must be numeric (up to 6 digits) or in PO-###### format");
 
             return ReceivingValidationResult.Success();
         }

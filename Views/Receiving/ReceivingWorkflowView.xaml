@@ -32,10 +32,13 @@
         <!-- Content Area -->
         <Grid Grid.Row="1" Margin="16,12,16,16">
             <!-- Mode Selection View -->
-            <views:ModeSelectionView Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <views:ReceivingModeSelectionView Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             
             <!-- Manual Entry View -->
             <views:ManualEntryView Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <!-- Edit Mode View -->
+            <views:EditModeView Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <!-- PO Entry View -->
             <views:POEntryView Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>

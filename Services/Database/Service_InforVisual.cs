@@ -54,9 +54,47 @@ namespace MTM_Receiving_Application.Services.Database
             if (string.IsNullOrWhiteSpace(poNumber))
                 return Model_Dao_Result<Model_InforVisualPO?>.Failure("PO number cannot be null or empty");
 
+            // Strip "PO-" prefix if present for database querying/debug logic
+            string cleanPoNumber = poNumber;
+            if (poNumber.StartsWith("PO-", StringComparison.OrdinalIgnoreCase))
+            {
+                cleanPoNumber = poNumber.Substring(3);
+            }
+
+#if DEBUG
+            _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual query for PO: {poNumber} (Clean: {cleanPoNumber})");
+            var debugPO = new Model_InforVisualPO
+            {
+                PONumber = cleanPoNumber, // Return the clean number
+                Vendor = "DEBUG_VENDOR",
+                Status = "O", // Open
+                Parts = new List<Model_InforVisualPart>
+                {
+                    new Model_InforVisualPart
+                    {
+                        PartID = "DEBUG-PART-001",
+                        POLineNumber = "1",
+                        PartType = "RAW",
+                        QtyOrdered = 100,
+                        Description = "Debug Part 1 Description",
+                        RemainingQuantity = 50
+                    },
+                    new Model_InforVisualPart
+                    {
+                        PartID = "DEBUG-PART-002",
+                        POLineNumber = "2",
+                        PartType = "FG",
+                        QtyOrdered = 50,
+                        Description = "Debug Part 2 Description",
+                        RemainingQuantity = 10
+                    }
+                }
+            };
+            return Model_Dao_Result<Model_InforVisualPO?>.SuccessResult(debugPO);
+#else
             try
             {
-                _logger?.LogInfo($"Querying Infor Visual for PO: {poNumber}");
+                _logger?.LogInfo($"Querying Infor Visual for PO: {poNumber} (Clean: {cleanPoNumber})");
                 using var connection = new SqlConnection(GetConnectionString());
                 
                 const string query = @"
@@ -88,14 +126,14 @@ namespace MTM_Receiving_Application.Services.Database
                     CommandTimeout = 30
                 };
 
-                command.Parameters.AddWithValue("@PONumber", poNumber);
+                command.Parameters.AddWithValue("@PONumber", cleanPoNumber);
 
                 await connection.OpenAsync();
                 using var reader = await command.ExecuteReaderAsync();
 
                 var po = new Model_InforVisualPO
                 {
-                    PONumber = poNumber,
+                    PONumber = cleanPoNumber,
                     Parts = new List<Model_InforVisualPart>()
                 };
 
@@ -142,6 +180,7 @@ namespace MTM_Receiving_Application.Services.Database
                 _logger?.LogError($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
                 return Model_Dao_Result<Model_InforVisualPO?>.Failure($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
             }
+#endif
         }
 
         public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
@@ -149,6 +188,18 @@ namespace MTM_Receiving_Application.Services.Database
             if (string.IsNullOrWhiteSpace(partID))
                 return Model_Dao_Result<Model_InforVisualPart?>.Failure("Part ID cannot be null or empty");
 
+#if DEBUG
+            _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual query for Part: {partID}");
+            var debugPart = new Model_InforVisualPart
+            {
+                PartID = partID,
+                PartType = "DEBUG_TYPE",
+                Description = "Debug Part Description",
+                POLineNumber = "N/A",
+                QtyOrdered = 0
+            };
+            return Model_Dao_Result<Model_InforVisualPart?>.SuccessResult(debugPart);
+#else
             try
             {
                 _logger?.LogInfo($"Querying Infor Visual for Part: {partID}");
@@ -209,10 +260,15 @@ namespace MTM_Receiving_Application.Services.Database
                 _logger?.LogError($"Unexpected error querying Part {partID}: {ex.Message}", ex);
                 return Model_Dao_Result<Model_InforVisualPart?>.Failure($"Unexpected error querying Part {partID}: {ex.Message}", ex);
             }
+#endif
         }
 
         public async Task<Model_Dao_Result<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date)
         {
+#if DEBUG
+            _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual same-day receiving check for PO: {poNumber}, Part: {partID}");
+            return Model_Dao_Result<decimal>.SuccessResult(0);
+#else
             try
             {
                 _logger?.LogInfo($"Checking same-day receiving for PO: {poNumber}, Part: {partID}, Date: {date:yyyy-MM-dd}");
@@ -268,6 +324,7 @@ namespace MTM_Receiving_Application.Services.Database
                 _logger?.LogError($"Unexpected error checking same-day receiving: {ex.Message}", ex);
                 return Model_Dao_Result<decimal>.Failure($"Unexpected error querying same-day receiving: {ex.Message}", ex);
             }
+#endif
         }
 
         public async Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID)
@@ -278,6 +335,10 @@ namespace MTM_Receiving_Application.Services.Database
             if (string.IsNullOrWhiteSpace(partID))
                 return Model_Dao_Result<int>.Failure("Part ID cannot be null or empty");
 
+#if DEBUG
+            _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual remaining quantity check for PO: {poNumber}, Part: {partID}");
+            return Model_Dao_Result<int>.SuccessResult(100);
+#else
             try
             {
                 _logger?.LogInfo($"Calculating remaining quantity for PO: {poNumber}, Part: {partID}");
@@ -328,10 +389,15 @@ namespace MTM_Receiving_Application.Services.Database
                 _logger?.LogError($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
                 return Model_Dao_Result<int>.Failure($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
             }
+#endif
         }
 
         public async Task<bool> TestConnectionAsync()
         {
+#if DEBUG
+            _logger?.LogInfo("[DEBUG MODE] Bypassing Infor Visual connection test");
+            return true;
+#else
             try
             {
                 _logger?.LogInfo("Testing Infor Visual connection...");
@@ -346,6 +412,7 @@ namespace MTM_Receiving_Application.Services.Database
                 _logger?.LogError($"Infor Visual connection test failed: {ex.Message}", ex);
                 return false;
             }
+#endif
         }
     }
 }

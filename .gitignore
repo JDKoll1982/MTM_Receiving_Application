@@ -15,13 +15,7 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-# Visual Studio cache/options
-.vs/
-.vscode/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
+
 
 # Visual Studio profiler
 *.psess

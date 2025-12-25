@@ -19,11 +19,34 @@ namespace MTM_Receiving_Application
             ViewModel = viewModel;
             _sessionManager = sessionManager;
 
-            // Set initial window size (1200x800 recommended for main application window)
-            AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 800));
+            // Set initial window size (1200x825 recommended for main application window)
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 860));
             
             // Center window on screen
             CenterWindow();
+
+#if DEBUG
+            // Visual indicator for Debug mode - InforVisual Disabled
+            try
+            {
+                if (AppWindow.TitleBar != null)
+                {
+                    var redColor = Windows.UI.Color.FromArgb(255, 220, 53, 69); // Bootstrap Danger Red
+                    var whiteColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                    
+                    AppWindow.TitleBar.ForegroundColor = whiteColor;
+                    AppWindow.TitleBar.BackgroundColor = redColor;
+                    AppWindow.TitleBar.ButtonForegroundColor = whiteColor;
+                    AppWindow.TitleBar.ButtonBackgroundColor = redColor;
+                    AppWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(255, 200, 35, 51);
+                    AppWindow.TitleBar.ButtonHoverForegroundColor = whiteColor;
+                    AppWindow.TitleBar.InactiveForegroundColor = Windows.UI.Color.FromArgb(255, 200, 200, 200);
+                    AppWindow.TitleBar.InactiveBackgroundColor = Windows.UI.Color.FromArgb(255, 150, 0, 0);
+                }
+                this.Title = "MTM Receiving Application (DEBUG MODE - InforVisual Disabled)";
+            }
+            catch { /* Ignore styling errors in debug mode */ }
+#endif
 
             // Set user display from current session
             if (_sessionManager.CurrentSession != null)
@@ -41,6 +64,13 @@ namespace MTM_Receiving_Application
             }
             
             this.Activated += MainWindow_Activated;
+            this.Closed += MainWindow_Closed;
+        }
+
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
+        {
+            // Ensure the application process terminates when the main window is closed
+            Application.Current.Exit();
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -126,7 +156,7 @@ namespace MTM_Receiving_Application
             var workArea = displayArea.WorkArea;
             
             var centerX = (workArea.Width - 1200) / 2;
-            var centerY = (workArea.Height - 800) / 2;
+            var centerY = (workArea.Height - 860) / 2;
             
             AppWindow.Move(new Windows.Graphics.PointInt32(centerX, centerY));
         }

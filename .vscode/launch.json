@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Standard C#)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-x64",
+            "program": "${workspaceFolder}/bin/x64/Debug/net8.0-windows10.0.19041.0/MTM_Receiving_Application.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/bin/x64/Debug/net8.0-windows10.0.19041.0",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "justMyCode": true,
+            "symbolOptions": {
+                "searchPaths": [],
+                "searchMicrosoftSymbolServers": false,
+                "searchNuGetOrgSymbolServers": false
+            },
+            "logging": {
+                "moduleLoad": false,
+                "programOutput": true,
+                "browserStdOut": false,
+                "elapsedTiming": false,
+                "threadExit": false,
+                "processExit": false
+            }
+        },
+        {
+            "name": "Debug (.Net Meteor)",
+            "type": "dotnet-meteor.debugger",
+            "request": "launch",
+            "preLaunchTask": "build-x64",
+            "program": "${workspaceFolder}/bin/x64/Debug/net8.0-windows10.0.19041.0/MTM_Receiving_Application.exe"
+        }
+    ]
+}

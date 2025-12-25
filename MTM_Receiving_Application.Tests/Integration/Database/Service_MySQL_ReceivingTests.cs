@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Tests.Integration.Database
 {
     public class Service_MySQL_ReceivingTests
     {
-        private readonly string _connectionString = "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;"; // Use main DB for now as test DB might not exist
+        private readonly string _connectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;"; // Use main DB for now as test DB might not exist
         private readonly Service_MySQL_Receiving _service;
         private readonly Mock<ILoggingService> _mockLogger;
 

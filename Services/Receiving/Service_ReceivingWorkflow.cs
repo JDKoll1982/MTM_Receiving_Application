@@ -103,6 +103,11 @@ namespace MTM_Receiving_Application.Services.Receiving
                     CurrentStep = WorkflowStep.Saving;
                     return WorkflowStepResult.SuccessResult(CurrentStep);
 
+                case WorkflowStep.EditMode:
+                    // Edit mode goes to saving/review
+                    CurrentStep = WorkflowStep.Saving;
+                    return WorkflowStepResult.SuccessResult(CurrentStep);
+
                 case WorkflowStep.POEntry:
                     if (string.IsNullOrEmpty(CurrentPONumber) && !IsNonPOItem)
                     {

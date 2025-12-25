@@ -16,6 +16,12 @@ namespace MTM_Receiving_Application.Views.Shared
 
         public SplashScreenViewModel ViewModel { get; }
 
+        /// <summary>
+        /// Flag to indicate if the window is being closed programmatically by the application logic.
+        /// If false (default), it means the user closed the window manually, which should exit the application.
+        /// </summary>
+        public bool IsProgrammaticClose { get; set; } = false;
+
         public SplashScreenWindow(SplashScreenViewModel viewModel)
         {
             ViewModel = viewModel;
@@ -26,6 +32,19 @@ namespace MTM_Receiving_Application.Views.Shared
             
             // Configure window appearance and size
             ConfigureWindow();
+
+            // Handle manual closure
+            this.Closed += SplashScreenWindow_Closed;
+        }
+
+        private void SplashScreenWindow_Closed(object sender, WindowEventArgs args)
+        {
+            // If the user manually closes the splash screen (e.g. via Alt+F4 or taskbar),
+            // we must ensure the application process terminates.
+            if (!IsProgrammaticClose)
+            {
+                Application.Current.Exit();
+            }
         }
 
         /// <summary>

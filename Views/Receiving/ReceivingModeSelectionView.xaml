@@ -1,5 +1,5 @@
 <UserControl
-    x:Class="MTM_Receiving_Application.Views.Receiving.ModeSelectionView"
+    x:Class="MTM_Receiving_Application.Views.Receiving.ReceivingModeSelectionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -68,6 +68,36 @@
                               CommandParameter="{x:Bind ViewModel.IsManualModeDefault, Mode=OneWay}"
                               HorizontalAlignment="Center"
                               ToolTipService.ToolTip="Skip mode selection and go directly to Manual Entry"/>
+                </StackPanel>
+
+                <!-- Edit Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectEditModeCommand}"
+                            Width="280" Height="180"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Edit Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE70F;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Edit Mode" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Edit existing loads without adding new ones." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Edit Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
+                              CommandParameter="{x:Bind ViewModel.IsEditModeDefault, Mode=OneWay}"
+                              HorizontalAlignment="Center"
+                              ToolTipService.ToolTip="Skip mode selection and go directly to Edit Mode"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -239,7 +239,11 @@ namespace MTM_Receiving_Application.Services.Startup
 
                 // Show main window and hide splash screen
                 App.MainWindow?.Activate();
-                _splashScreen?.Close();
+                if (_splashScreen != null)
+                {
+                    _splashScreen.IsProgrammaticClose = true;
+                    _splashScreen.Close();
+                }
                 _splashScreen = null;
 
                 // CSV reset dialog removed - only appears when user explicitly clicks Reset CSV button

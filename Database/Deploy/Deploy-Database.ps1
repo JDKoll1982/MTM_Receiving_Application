@@ -2,7 +2,7 @@
 # This script deploys all schemas, stored procedures, and initial data
 
 param(
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",

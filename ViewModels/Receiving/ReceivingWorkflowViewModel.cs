@@ -24,6 +24,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private bool _isManualEntryVisible;
 
         [ObservableProperty]
+        private bool _isEditModeVisible;
+
+        [ObservableProperty]
         private bool _isPOEntryVisible;
 
         [ObservableProperty]
@@ -291,6 +294,7 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
 
             IsModeSelectionVisible = step == WorkflowStep.ModeSelection;
             IsManualEntryVisible = step == WorkflowStep.ManualEntry;
+            IsEditModeVisible = step == WorkflowStep.EditMode;
             IsPOEntryVisible = step == WorkflowStep.POEntry;
             IsPartSelectionVisible = step == WorkflowStep.PartSelection;
             IsLoadEntryVisible = step == WorkflowStep.LoadEntry;
@@ -306,6 +310,7 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             {
                 WorkflowStep.ModeSelection => "Select Mode",
                 WorkflowStep.ManualEntry => "Manual Entry",
+                WorkflowStep.EditMode => "Edit Mode",
                 WorkflowStep.POEntry => "Enter PO Number",
                 WorkflowStep.PartSelection => "Select Part",
                 WorkflowStep.LoadEntry => "Enter Number of Loads",

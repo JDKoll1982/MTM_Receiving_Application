@@ -199,3 +199,9 @@ Features follow Speckit workflow in `specs/001-receiving-workflow/`:
 6. Create DAOs returning Model_Dao_Result
 7. Add tests in `MTM_Receiving_Application.Tests/`
 8. Verify build and run: `dotnet build && dotnet test`
+
+## Mandatory Workflow
+
+- **Build & Fix**: When changing any code, you are to **ALWAYS** build and fix any errors and warnings before completing the current chat session.
+- **File Replacement**: To completely replace an existing file, **DO NOT** use `create_file`. You must either delete and recreate the file first, or use a console command to overwrite the data.
+- **Automated Builds**: Run build commands so they do not require user interaction (e.g. pressing Enter) to retrieve output.

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
-    public partial class ModeSelectionViewModel : BaseViewModel
+    public partial class ReceivingModeSelectionViewModel : BaseViewModel
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_UserSessionManager _sessionManager;
@@ -21,7 +21,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private bool _isManualModeDefault;
 
-        public ModeSelectionViewModel(
+        [ObservableProperty]
+        private bool _isEditModeDefault;
+
+        public ReceivingModeSelectionViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_UserSessionManager sessionManager,
             IService_ErrorHandler errorHandler,
@@ -42,6 +45,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             {
                 IsGuidedModeDefault = currentUser.DefaultReceivingMode == "guided";
                 IsManualModeDefault = currentUser.DefaultReceivingMode == "manual";
+                IsEditModeDefault = currentUser.DefaultReceivingMode == "edit";
             }
         }
 
@@ -57,6 +61,13 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             _logger.LogInfo("User selected Manual Mode.");
             _workflowService.GoToStep(WorkflowStep.ManualEntry);
+        }
+
+        [RelayCommand]
+        private void SelectEditMode()
+        {
+            _logger.LogInfo("User selected Edit Mode.");
+            _workflowService.GoToStep(WorkflowStep.EditMode);
         }
 
         [RelayCommand]
@@ -84,6 +95,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     if (isChecked)
                     {
                         IsManualModeDefault = false;
+                        IsEditModeDefault = false;
                     }
                     
                     _logger.LogInfo($"Default mode set to: {newMode ?? "none"}");
@@ -130,6 +142,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     if (isChecked)
                     {
                         IsGuidedModeDefault = false;
+                        IsEditModeDefault = false;
                     }
                     
                     _logger.LogInfo($"Default mode set to: {newMode ?? "none"}");
@@ -148,6 +161,53 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     Enum_ErrorSeverity.Error, ex, true);
                 // Revert checkbox
                 IsManualModeDefault = !isChecked;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SetEditAsDefaultAsync(bool isChecked)
+        {
+            try
+            {
+                var currentUser = _sessionManager.CurrentSession?.User;
+                if (currentUser == null) return;
+
+                string? newMode = isChecked ? "edit" : null;
+                
+                // Update database
+                var connectionString = Helper_Database_Variables.GetConnectionString();
+                var dao = new Dao_User(connectionString);
+                var result = await dao.UpdateDefaultModeAsync(currentUser.EmployeeNumber, newMode);
+                
+                if (result.IsSuccess)
+                {
+                    // Update in-memory user object
+                    currentUser.DefaultReceivingMode = newMode;
+                    
+                    // Update UI state
+                    IsEditModeDefault = isChecked;
+                    if (isChecked)
+                    {
+                        IsGuidedModeDefault = false;
+                        IsManualModeDefault = false;
+                    }
+                    
+                    _logger.LogInfo($"Default mode set to: {newMode ?? "none"}");
+                    StatusMessage = isChecked ? "Edit mode set as default" : "Default mode cleared";
+                }
+                else
+                {
+                    await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                    // Revert checkbox
+                    IsEditModeDefault = !isChecked;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _errorHandler.HandleErrorAsync($"Failed to set default mode: {ex.Message}", 
+                    Enum_ErrorSeverity.Error, ex, true);
+                // Revert checkbox
+                IsEditModeDefault = !isChecked;
             }
         }
     }

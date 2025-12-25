@@ -4,13 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MTM_Receiving_Application.Views.Receiving
 {
-    public sealed partial class ModeSelectionView : UserControl
+    public sealed partial class ReceivingModeSelectionView : UserControl
     {
-        public ModeSelectionViewModel ViewModel { get; }
+        public ReceivingModeSelectionViewModel ViewModel { get; }
 
-        public ModeSelectionView()
+        public ReceivingModeSelectionView()
         {
-            ViewModel = App.GetService<ModeSelectionViewModel>();
+            ViewModel = App.GetService<ReceivingModeSelectionViewModel>();
             this.InitializeComponent();
         }
     }

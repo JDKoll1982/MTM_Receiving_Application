@@ -27,8 +27,18 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// </summary>
         /// <param name="filePath">Absolute path to CSV file</param>
         /// <param name="loads">Loads to write</param>
+        /// <param name="append">Whether to append to existing file (default true)</param>
         /// <exception cref="InvalidOperationException">If write fails</exception>
-        Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads);
+        Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads, bool append = true);
+
+        /// <summary>
+        /// Reads receiving loads from a CSV file.
+        /// </summary>
+        /// <param name="filePath">Absolute path to CSV file</param>
+        /// <returns>List of receiving loads</returns>
+        /// <exception cref="FileNotFoundException">If file does not exist</exception>
+        /// <exception cref="InvalidOperationException">If read fails</exception>
+        Task<List<Model_ReceivingLoad>> ReadFromCSVAsync(string filePath);
 
         /// <summary>
         /// Deletes CSV files (used for reset on startup).

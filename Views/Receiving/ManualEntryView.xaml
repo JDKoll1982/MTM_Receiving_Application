@@ -6,7 +6,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Receiving"
-    mc:Ignorable="d">
+    xmlns:enums="using:MTM_Receiving_Application.Models.Enums"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    mc:Ignorable="d"
+    x:Name="Root">
+
+    <UserControl.Resources>
+        <converters:DecimalToStringConverter x:Key="DecimalToStringConverter"/>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -29,10 +36,22 @@
                         <TextBlock Text="Add Row"/>
                     </StackPanel>
                 </Button>
+                <Button Command="{x:Bind ViewModel.AddMultipleRowsCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE710;"/>
+                        <TextBlock Text="Add Multiple"/>
+                    </StackPanel>
+                </Button>
                 <Button Command="{x:Bind ViewModel.RemoveRowCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
                         <TextBlock Text="Remove Row"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{x:Bind ViewModel.AutoFillCommand}" ToolTipService.ToolTip="Auto-fill from last entry for this Part ID">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE74E;"/>
+                        <TextBlock Text="Auto-Fill"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -47,26 +66,26 @@
 
         <!-- Data Grid -->
         <controls:DataGrid Grid.Row="1"
-                          ItemsSource="{Binding Loads}"
-                          SelectedItem="{Binding SelectedLoad, Mode=TwoWay}"
+                          x:Name="ManualEntryDataGrid"
+                          ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.SelectedLoad, Mode=TwoWay}"
                           AutoGenerateColumns="False"
                           IsReadOnly="False"
                           CanUserSortColumns="True"
                           GridLinesVisibility="All"
                           HeadersVisibility="Column"
-                          SelectionMode="Single">
+                          SelectionMode="Single"
+                          KeyDown="ManualEntryDataGrid_KeyDown"
+                          CurrentCellChanged="ManualEntryDataGrid_CurrentCellChanged"
+                          Tapped="ManualEntryDataGrid_Tapped">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="PO Number" Binding="{Binding PoNumber}"/>
-                <controls:DataGridTextColumn Header="Line #" Binding="{Binding PoLineNumber}"/>
-                <controls:DataGridTextColumn Header="Part ID" Binding="{Binding PartID}"/>
-                <controls:DataGridTextColumn Header="Part Type" Binding="{Binding PartType}"/>
-                <controls:DataGridTextColumn Header="Load #" Binding="{Binding LoadNumber}"/>
-                <controls:DataGridTextColumn Header="Weight/Qty" Binding="{Binding WeightQuantity}"/>
+                <controls:DataGridTextColumn Header="Load #" Binding="{Binding LoadNumber}" IsReadOnly="True"/>
+                <controls:DataGridTextColumn Header="Part ID" Binding="{Binding PartID}" Width="*"/>
+                <controls:DataGridTextColumn Header="Weight/Qty" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"/>
                 <controls:DataGridTextColumn Header="Heat/Lot" Binding="{Binding HeatLotNumber}"/>
+                <controls:DataGridTextColumn Header="Pkg Type" Binding="{Binding PackageType}" IsReadOnly="True"/>
                 <controls:DataGridTextColumn Header="Pkgs/Load" Binding="{Binding PackagesPerLoad}"/>
-                <controls:DataGridTextColumn Header="Pkg Type" Binding="{Binding PackageTypeName}"/>
-                <controls:DataGridTextColumn Header="Wt/Pkg" Binding="{Binding WeightPerPackage}"/>
-                <controls:DataGridCheckBoxColumn Header="Non-PO" Binding="{Binding IsNonPOItem}"/>
+                <controls:DataGridTextColumn Header="Wt/Pkg" Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}" IsReadOnly="True"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

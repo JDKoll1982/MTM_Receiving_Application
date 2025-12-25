@@ -121,14 +121,14 @@ namespace MTM_Receiving_Application.Services.Receiving
             return result;
         }
 
-        public async Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads)
+        public async Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads, bool append = true)
         {
-            _logger.LogInfo($"WriteToFileAsync called for: {filePath}");
+            _logger.LogInfo($"WriteToFileAsync called for: {filePath}, Append: {append}");
             await Task.Run(async () =>
             {
                 try
                 {
-                    bool isNewFile = !File.Exists(filePath);
+                    bool isNewFile = !File.Exists(filePath) || !append;
                     _logger.LogInfo($"File exists check for {filePath}: {!isNewFile}");
                     
                     var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -136,7 +136,8 @@ namespace MTM_Receiving_Application.Services.Receiving
                         // We handle header manually
                     };
 
-                    using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+                    var fileMode = append ? FileMode.Append : FileMode.Create;
+                    using var stream = new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
                     using var writer = new StreamWriter(stream);
                     using var csv = new CsvWriter(writer, config);
 
@@ -158,6 +159,41 @@ namespace MTM_Receiving_Application.Services.Receiving
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error writing to file {filePath}: {ex.Message}");
+                    throw;
+                }
+            });
+        }
+
+        public async Task<List<Model_ReceivingLoad>> ReadFromCSVAsync(string filePath)
+        {
+            _logger.LogInfo($"ReadFromCSVAsync called for: {filePath}");
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    if (!File.Exists(filePath))
+                    {
+                        throw new FileNotFoundException($"CSV file not found: {filePath}");
+                    }
+
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        HeaderValidated = null,
+                        MissingFieldFound = null
+                    };
+
+                    using var reader = new StreamReader(filePath);
+                    using var csv = new CsvReader(reader, config);
+                    
+                    var records = csv.GetRecords<Model_ReceivingLoad>();
+                    var loads = new List<Model_ReceivingLoad>(records);
+                    
+                    _logger.LogInfo($"Successfully read {loads.Count} records from {filePath}");
+                    return loads;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error reading from file {filePath}: {ex.Message}");
                     throw;
                 }
             });
