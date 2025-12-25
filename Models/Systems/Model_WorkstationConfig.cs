@@ -1,6 +1,6 @@
 using System;
 
-namespace MTM_Receiving_Application.Models
+namespace MTM_Receiving_Application.Models.Systems
 {
     /// <summary>
     /// Represents workstation detection and configuration logic.

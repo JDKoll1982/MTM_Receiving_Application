@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Models.Systems;
 using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.ViewModels.Shared

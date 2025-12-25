@@ -24,18 +24,16 @@
 
         <!-- Toolbar -->
         <Grid Grid.Row="0" Margin="0,0,0,12">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
-            <!-- Load Data Buttons -->
-            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
-                <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+            <!-- Main Toolbar Area -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <!-- Load Data Section -->
+                <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
+                
                 <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8A7;"/>
@@ -54,10 +52,17 @@
                         <TextBlock Text="History"/>
                     </StackPanel>
                 </Button>
-            </StackPanel>
-            
-            <!-- Edit Actions -->
-            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="12">
+
+                <!-- Separator -->
+                <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
+
+                <!-- Edit Actions Section -->
+                <Button Command="{x:Bind ViewModel.SelectAllCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE8B3;"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectAllButtonText, Mode=OneWay}"/>
+                    </StackPanel>
+                </Button>
                 <Button Command="{x:Bind ViewModel.RemoveRowCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
@@ -66,7 +71,8 @@
                 </Button>
             </StackPanel>
             
-            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" 
+            <!-- Mode Selection (Right Aligned) -->
+            <Button Grid.Column="1" 
                     Content="Mode Selection" 
                     Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                     ToolTipService.ToolTip="Return to mode selection (clears current work)"

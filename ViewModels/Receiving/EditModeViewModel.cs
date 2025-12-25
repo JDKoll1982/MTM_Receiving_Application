@@ -34,6 +34,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private DataSourceType _currentDataSource = DataSourceType.Memory;
 
+        [ObservableProperty]
+        private string _selectAllButtonText = "Select All";
+
         private string? _currentCsvPath;
         private readonly List<Model_ReceivingLoad> _deletedLoads = new();
 
@@ -51,8 +54,44 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _mysqlService = mysqlService;
             _csvWriter = csvWriter;
             _loads = new ObservableCollection<Model_ReceivingLoad>();
+            _loads.CollectionChanged += Loads_CollectionChanged;
             
             _logger.LogInfo("Edit Mode initialized");
+        }
+
+        private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (Model_ReceivingLoad item in e.NewItems)
+                {
+                    item.PropertyChanged += Load_PropertyChanged;
+                }
+            }
+            if (e.OldItems != null)
+            {
+                foreach (Model_ReceivingLoad item in e.OldItems)
+                {
+                    item.PropertyChanged -= Load_PropertyChanged;
+                }
+            }
+            
+            NotifyCommands();
+        }
+
+        private void Load_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Model_ReceivingLoad.IsSelected))
+            {
+                RemoveRowCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private void NotifyCommands()
+        {
+            SaveCommand.NotifyCanExecuteChanged();
+            RemoveRowCommand.NotifyCanExecuteChanged();
+            SelectAllCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]
@@ -83,6 +122,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 StatusMessage = $"Loaded {Loads.Count} loads from current session";
                 _logger.LogInfo($"Successfully loaded {Loads.Count} loads from current memory");
                 CurrentDataSource = DataSourceType.Memory;
+                SelectAllButtonText = "Select All";
             }
             catch (Exception ex)
             {
@@ -110,50 +150,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     return;
                 }
 
-                StatusMessage = "Opening file picker...";
-
-                // Create file picker
-                var picker = new FileOpenPicker();
-                picker.FileTypeFilter.Add(".csv");
-                picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-
-                // Initialize with window handle
-                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-                WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
-
-                var file = await picker.PickSingleFileAsync();
-                if (file == null)
-                {
-                    _logger.LogInfo("User cancelled file selection");
-                    StatusMessage = string.Empty;
-                    return;
-                }
-
-                _logger.LogInfo($"Loading label file: {file.Path}");
-                StatusMessage = "Reading label file...";
-                _deletedLoads.Clear();
-
-                var loadedData = await _csvWriter.ReadFromCSVAsync(file.Path);
-
-                if (loadedData.Count == 0)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        "No valid data found in label file. Please check the file format.",
-                        Enum_ErrorSeverity.Warning);
-                    return;
-                }
-
-                Loads.Clear();
-                foreach (var load in loadedData)
-                {
-                    Loads.Add(load);
-                    _workflowService.CurrentSession.Loads.Add(load);
-                }
-
-                StatusMessage = $"Loaded {Loads.Count} loads from labels";
-                _logger.LogInfo($"Successfully loaded {Loads.Count} loads from label file: {file.Name}");
-                CurrentDataSource = DataSourceType.CurrentLabels;
-                _currentCsvPath = file.Path;
+                // If we get here, no file was found or loaded
+                await _errorHandler.ShowErrorDialogAsync(
+                    "No Labels Found", 
+                    "Could not find any current label files in the default locations.", 
+                    Enum_ErrorSeverity.Warning);
             }
             catch (Exception ex)
             {
@@ -190,6 +191,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         _logger.LogInfo($"Successfully loaded {Loads.Count} loads from local labels");
                         CurrentDataSource = DataSourceType.CurrentLabels;
                         _currentCsvPath = localPath;
+                        SelectAllButtonText = "Select All";
                         return true;
                     }
                 }
@@ -221,6 +223,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         _logger.LogInfo($"Successfully loaded {Loads.Count} loads from network labels");
                         CurrentDataSource = DataSourceType.CurrentLabels;
                         _currentCsvPath = networkPath;
+                        SelectAllButtonText = "Select All";
                         return true;
                     }
                 }
@@ -276,6 +279,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 StatusMessage = $"Loaded {Loads.Count} loads from history";
                 _logger.LogInfo($"Successfully loaded {Loads.Count} loads from history");
                 CurrentDataSource = DataSourceType.History;
+                SelectAllButtonText = "Select All";
             }
             catch (Exception ex)
             {
@@ -288,7 +292,27 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanSelectAll))]
+        private void SelectAll()
+        {
+            // If any are unselected, we select all. Otherwise (all are selected), we deselect all.
+            bool anyUnselected = Loads.Any(l => !l.IsSelected);
+            
+            if (anyUnselected)
+            {
+                foreach (var load in Loads) load.IsSelected = true;
+                SelectAllButtonText = "Deselect All";
+            }
+            else
+            {
+                foreach (var load in Loads) load.IsSelected = false;
+                SelectAllButtonText = "Select All";
+            }
+        }
+
+        private bool CanSelectAll() => Loads.Count > 0;
+
+        [RelayCommand(CanExecute = nameof(CanRemoveRow))]
         private void RemoveRow()
         {
             var selectedLoads = Loads.Where(l => l.IsSelected).ToList();
@@ -314,9 +338,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             {
                 _logger.LogWarning("RemoveRow called with no selected load(s)");
             }
+            SaveCommand.NotifyCanExecuteChanged(); // Update save command state after removal
         }
 
-        [RelayCommand]
+        private bool CanRemoveRow() => Loads.Any(l => l.IsSelected);
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
         private async Task SaveAsync()
         {
             try
@@ -392,6 +419,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             {
                 IsBusy = false;
             }
+        }
+
+        private bool CanSave()
+        {
+            // Can save if there are loads OR if we have deleted loads (to save the deletions)
+            return Loads.Count > 0 || _deletedLoads.Count > 0;
         }
 
         [RelayCommand]

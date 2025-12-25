@@ -19,8 +19,8 @@ namespace MTM_Receiving_Application
             ViewModel = viewModel;
             _sessionManager = sessionManager;
 
-            // Set initial window size (1200x825 recommended for main application window)
-            AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 860));
+            // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(1450, 900));
             
             // Center window on screen
             CenterWindow();
@@ -155,8 +155,8 @@ namespace MTM_Receiving_Application
             var displayArea = Microsoft.UI.Windowing.DisplayArea.Primary;
             var workArea = displayArea.WorkArea;
             
-            var centerX = (workArea.Width - 1200) / 2;
-            var centerY = (workArea.Height - 860) / 2;
+            var centerX = (workArea.Width - 1450) / 2;
+            var centerY = (workArea.Height - 900) / 2;
             
             AppWindow.Move(new Windows.Graphics.PointInt32(centerX, centerY));
         }

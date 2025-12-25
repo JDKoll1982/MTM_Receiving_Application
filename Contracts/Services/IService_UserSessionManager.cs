@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Models.Systems;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
