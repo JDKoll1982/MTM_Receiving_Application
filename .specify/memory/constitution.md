@@ -223,6 +223,10 @@ STAKEHOLDER ALIGNMENT:
 - Tasks must be specific, testable, and include file paths
 - Contracts define service interfaces before implementation
 - Data models documented with relationships
+- **All diagrams MUST use PlantUML** (no ASCII art)
+- Database schemas use PlantUML ERD with legends
+- File structures use PlantUML WBS or component diagrams
+- See [markdown-documentation.instructions.md](../../.github/instructions/markdown-documentation.instructions.md)
 
 **Feature Structure**:
 ```
@@ -232,12 +236,12 @@ specs/
     plan.md               # Technical approach
     tasks.md              # Implementation tasks
     research.md           # Technical decisions
-    data-model.md         # Database schema
+    data-model.md         # Database schema (PlantUML ERD)
     contracts/            # Service interfaces
     checklists/           # Validation
 ```
 
-**Rationale**: Structured approach prevents scope creep, ensures stakeholder alignment, and provides clear implementation roadmap.
+**Rationale**: Structured approach prevents scope creep, ensures stakeholder alignment, and provides clear implementation roadmap. PlantUML diagrams are easier for AI agents to parse and produce professional visualizations for human readers.
 
 ---
 

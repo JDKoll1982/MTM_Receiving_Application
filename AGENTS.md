@@ -223,6 +223,27 @@ private void Button_Click(object sender, RoutedEventArgs e)
 - **Properties:** PascalCase for public, `_camelCase` for private fields
 - **Constants:** PascalCase in static class (not UPPER_SNAKE_CASE)
 
+### Documentation Standards
+
+**PlantUML for All Diagrams**:
+- Database ERDs use PlantUML entity diagrams with crow's foot notation
+- File structures use PlantUML WBS or component diagrams
+- Architecture uses PlantUML component/sequence diagrams
+- **Never use ASCII art** for visualizations
+
+**Why PlantUML**:
+- More structured and parseable for AI agents
+- Professional rendering for human readers
+- Better git diffs and version control
+- IDE and GitHub support
+
+**Examples**:
+- ✅ PlantUML ERD: [specs/001-database-foundation/data-model.md](specs/001-database-foundation/data-model.md)
+- ✅ PlantUML file structure: [specs/001-database-foundation/plan.md](specs/001-database-foundation/plan.md)
+- ❌ ASCII box drawings, manual tree structures
+
+See [.github/instructions/markdown-documentation.instructions.md](.github/instructions/markdown-documentation.instructions.md) for complete standards.
+
 ### Dependency Injection Registration
 All services must be registered in `App.xaml.cs` ConfigureServices:
 ```csharp
