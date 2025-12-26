@@ -8,11 +8,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Enums;
-using Windows.Storage.Pickers;
-using Windows.Storage;
 using System.Collections.Generic;
 using System.IO;
-using MTM_Receiving_Application.Models;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
@@ -24,6 +21,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
         private readonly IService_CSVWriter _csvWriter;
+        private readonly IService_Pagination _paginationService;
+
+        private List<Model_ReceivingLoad> _allLoads = new();
+        private List<Model_ReceivingLoad> _filteredLoads = new();
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
@@ -37,15 +38,40 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [ObservableProperty]
         private string _selectAllButtonText = "Select All";
 
+        [ObservableProperty]
+        private DateTimeOffset _filterStartDate = DateTimeOffset.Now.AddDays(-7);
+
+        [ObservableProperty]
+        private DateTimeOffset _filterEndDate = DateTimeOffset.Now;
+
+        [ObservableProperty]
+        private string _thisMonthButtonText = DateTime.Now.ToString("MMMM");
+
+        [ObservableProperty]
+        private string _thisQuarterButtonText = GetQuarterText(DateTime.Now);
+
+        [ObservableProperty]
+        private int _currentPage = 1;
+
+        [ObservableProperty]
+        private int _totalPages = 1;
+
+        [ObservableProperty]
+        private int _gotoPageNumber = 1;
+
         private string? _currentCsvPath;
         private readonly List<Model_ReceivingLoad> _deletedLoads = new();
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
 
+        /// <summary>
+        /// Initializes a new instance of the EditModeViewModel class.
+        /// </summary>
         public EditModeViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
             IService_CSVWriter csvWriter,
+            IService_Pagination paginationService,
             IService_ErrorHandler errorHandler,
             ILoggingService logger)
             : base(errorHandler, logger)
@@ -53,12 +79,77 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _mysqlService = mysqlService;
             _csvWriter = csvWriter;
+            _paginationService = paginationService;
+            
             _loads = new ObservableCollection<Model_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
             
+            _paginationService.PageChanged += OnPageChanged;
+            _paginationService.PageSize = 20;
+
             _logger.LogInfo("Edit Mode initialized");
         }
 
+        /// <summary>
+        /// Gets the text representation of the quarter for a given date.
+        /// </summary>
+        private static string GetQuarterText(DateTime date)
+        {
+            int quarter = (date.Month - 1) / 3 + 1;
+            return quarter switch
+            {
+                1 => "Jan-Mar",
+                2 => "Apr-Jun",
+                3 => "Jul-Sep",
+                4 => "Oct-Dec",
+                _ => "Quarter"
+            };
+        }
+
+        /// <summary>
+        /// Handles the pagination page changed event.
+        /// </summary>
+        private void OnPageChanged(object? sender, EventArgs e)
+        {
+            UpdatePagedDisplay();
+        }
+
+        /// <summary>
+        /// Updates the displayed loads based on the current page.
+        /// </summary>
+        private void UpdatePagedDisplay()
+        {
+            var pageItems = _paginationService.GetCurrentPageItems<Model_ReceivingLoad>();
+            
+            Loads.Clear();
+            foreach (var item in pageItems)
+            {
+                Loads.Add(item);
+            }
+
+            CurrentPage = _paginationService.CurrentPage;
+            TotalPages = _paginationService.TotalPages;
+            GotoPageNumber = CurrentPage;
+
+            NotifyPaginationCommands();
+            NotifyCommands();
+        }
+
+        /// <summary>
+        /// Notifies that pagination command execution status has changed.
+        /// </summary>
+        private void NotifyPaginationCommands()
+        {
+            NextPageCommand.NotifyCanExecuteChanged();
+            PreviousPageCommand.NotifyCanExecuteChanged();
+            FirstPageCommand.NotifyCanExecuteChanged();
+            LastPageCommand.NotifyCanExecuteChanged();
+            GoToPageCommand.NotifyCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Handles changes to the Loads collection to attach/detach property change listeners.
+        /// </summary>
         private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -79,6 +170,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             NotifyCommands();
         }
 
+        /// <summary>
+        /// Handles property changes on individual load items.
+        /// </summary>
         private void Load_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Model_ReceivingLoad.IsSelected))
@@ -87,6 +181,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
+        /// <summary>
+        /// Notifies that command execution status has changed.
+        /// </summary>
         private void NotifyCommands()
         {
             SaveCommand.NotifyCanExecuteChanged();
@@ -94,6 +191,167 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             SelectAllCommand.NotifyCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Handles changes to the filter start date.
+        /// </summary>
+        partial void OnFilterStartDateChanged(DateTimeOffset value) => ApplyDateFilter();
+
+        /// <summary>
+        /// Handles changes to the filter end date.
+        /// </summary>
+        partial void OnFilterEndDateChanged(DateTimeOffset value) => ApplyDateFilter();
+
+        /// <summary>
+        /// Applies the date filter to the loaded data.
+        /// </summary>
+        private void ApplyDateFilter()
+        {
+            if (_allLoads.Count == 0) return;
+
+            FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Filters the master list and updates pagination.
+        /// </summary>
+        private void FilterAndPaginate()
+        {
+            var start = FilterStartDate.Date;
+            var end = FilterEndDate.Date.AddDays(1).AddTicks(-1);
+
+            if (CurrentDataSource == DataSourceType.History)
+            {
+                _filteredLoads = _allLoads.Where(l => l.ReceivedDate >= start && l.ReceivedDate <= end).ToList();
+            }
+            else
+            {
+                _filteredLoads = _allLoads.Where(l => l.ReceivedDate >= start && l.ReceivedDate <= end).ToList();
+            }
+
+            _paginationService.SetSource(_filteredLoads);
+        }
+
+        /// <summary>
+        /// Sets the date filter to the last 7 days.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterLastWeek()
+        {
+            FilterStartDate = DateTime.Today.AddDays(-7);
+            FilterEndDate = DateTime.Today;
+            if (CurrentDataSource == DataSourceType.History) await LoadFromHistoryAsync();
+            else FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Sets the date filter to today.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterToday()
+        {
+            FilterStartDate = DateTime.Today;
+            FilterEndDate = DateTime.Today;
+            if (CurrentDataSource == DataSourceType.History) await LoadFromHistoryAsync();
+            else FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Sets the date filter to the current week.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterThisWeek()
+        {
+            var today = DateTime.Today;
+            var start = today.AddDays(-(int)today.DayOfWeek);
+            var end = start.AddDays(6);
+            FilterStartDate = start;
+            FilterEndDate = end;
+            if (CurrentDataSource == DataSourceType.History) await LoadFromHistoryAsync();
+            else FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Sets the date filter to the current month.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterThisMonth()
+        {
+            var today = DateTime.Today;
+            FilterStartDate = new DateTime(today.Year, today.Month, 1);
+            FilterEndDate = FilterStartDate.AddMonths(1).AddDays(-1);
+            if (CurrentDataSource == DataSourceType.History) await LoadFromHistoryAsync();
+            else FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Sets the date filter to the current quarter.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterThisQuarter()
+        {
+            var today = DateTime.Today;
+            int quarter = (today.Month - 1) / 3 + 1;
+            FilterStartDate = new DateTime(today.Year, 3 * quarter - 2, 1);
+            FilterEndDate = FilterStartDate.AddMonths(3).AddDays(-1);
+            if (CurrentDataSource == DataSourceType.History) await LoadFromHistoryAsync();
+            else FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Sets the date filter to show all records (last year).
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterShowAll()
+        {
+            FilterStartDate = DateTime.Today.AddYears(-1);
+            FilterEndDate = DateTime.Today;
+            if (CurrentDataSource == DataSourceType.History) await LoadFromHistoryAsync();
+            else FilterAndPaginate();
+        }
+
+        /// <summary>
+        /// Navigates to the previous page.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+        private void PreviousPage() => _paginationService.PreviousPage();
+
+        /// <summary>
+        /// Navigates to the next page.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanGoNext))]
+        private void NextPage() => _paginationService.NextPage();
+
+        /// <summary>
+        /// Navigates to the first page.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanGoPrevious))]
+        private void FirstPage() => _paginationService.FirstPage();
+
+        /// <summary>
+        /// Navigates to the last page.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanGoNext))]
+        private void LastPage() => _paginationService.LastPage();
+
+        /// <summary>
+        /// Navigates to a specific page number.
+        /// </summary>
+        [RelayCommand]
+        private void GoToPage() => _paginationService.GoToPage(GotoPageNumber);
+
+        /// <summary>
+        /// Determines if navigation to the next page is possible.
+        /// </summary>
+        private bool CanGoNext() => _paginationService.HasNextPage;
+
+        /// <summary>
+        /// Determines if navigation to the previous page is possible.
+        /// </summary>
+        private bool CanGoPrevious() => _paginationService.HasPreviousPage;
+
+        /// <summary>
+        /// Loads data from the current in-memory session.
+        /// </summary>
         [RelayCommand]
         private async Task LoadFromCurrentMemoryAsync()
         {
@@ -113,16 +371,21 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     return;
                 }
 
-                Loads.Clear();
+                _allLoads.Clear();
                 foreach (var load in currentLoads)
                 {
-                    Loads.Add(load);
+                    _allLoads.Add(load);
                 }
 
-                StatusMessage = $"Loaded {Loads.Count} loads from current session";
-                _logger.LogInfo($"Successfully loaded {Loads.Count} loads from current memory");
+                StatusMessage = $"Loaded {_allLoads.Count} loads from current session";
+                _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from current memory");
                 CurrentDataSource = DataSourceType.Memory;
                 SelectAllButtonText = "Select All";
+                
+                FilterStartDate = DateTimeOffset.Now.AddYears(-1);
+                FilterEndDate = DateTimeOffset.Now;
+                
+                FilterAndPaginate();
             }
             catch (Exception ex)
             {
@@ -135,6 +398,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
+        /// <summary>
+        /// Loads data from current label CSV files.
+        /// </summary>
         [RelayCommand]
         private async Task LoadFromCurrentLabelsAsync()
         {
@@ -144,13 +410,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 IsBusy = true;
                 StatusMessage = "Checking for existing label files...";
 
-                // Try to load from default locations first
                 if (await TryLoadFromDefaultCsvAsync())
                 {
                     return;
                 }
 
-                // If we get here, no file was found or loaded
                 await _errorHandler.ShowErrorDialogAsync(
                     "No Labels Found", 
                     "Could not find any current label files in the default locations.", 
@@ -167,9 +431,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
+        /// <summary>
+        /// Attempts to load data from default CSV locations (local or network).
+        /// </summary>
         private async Task<bool> TryLoadFromDefaultCsvAsync()
         {
-            // Try local path first
             string localPath = _csvWriter.GetLocalCSVPath();
             if (File.Exists(localPath))
             {
@@ -181,17 +447,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     if (loadedData.Count > 0)
                     {
                         _deletedLoads.Clear();
-                        Loads.Clear();
+                        _allLoads.Clear();
                         foreach (var load in loadedData)
                         {
-                            Loads.Add(load);
+                            _allLoads.Add(load);
                             _workflowService.CurrentSession.Loads.Add(load);
                         }
-                        StatusMessage = $"Loaded {Loads.Count} loads from local labels";
-                        _logger.LogInfo($"Successfully loaded {Loads.Count} loads from local labels");
+                        StatusMessage = $"Loaded {_allLoads.Count} loads from local labels";
+                        _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from local labels");
                         CurrentDataSource = DataSourceType.CurrentLabels;
                         _currentCsvPath = localPath;
                         SelectAllButtonText = "Select All";
+                        
+                        FilterStartDate = DateTimeOffset.Now.AddYears(-1);
+                        FilterEndDate = DateTimeOffset.Now;
+                        
+                        FilterAndPaginate();
                         return true;
                     }
                 }
@@ -201,7 +472,6 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
             }
 
-            // Try network path
             try
             {
                 string networkPath = _csvWriter.GetNetworkCSVPath();
@@ -213,17 +483,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     if (loadedData.Count > 0)
                     {
                         _deletedLoads.Clear();
-                        Loads.Clear();
+                        _allLoads.Clear();
                         foreach (var load in loadedData)
                         {
-                            Loads.Add(load);
+                            _allLoads.Add(load);
                             _workflowService.CurrentSession.Loads.Add(load);
                         }
-                        StatusMessage = $"Loaded {Loads.Count} loads from network labels";
-                        _logger.LogInfo($"Successfully loaded {Loads.Count} loads from network labels");
+                        StatusMessage = $"Loaded {_allLoads.Count} loads from network labels";
+                        _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from network labels");
                         CurrentDataSource = DataSourceType.CurrentLabels;
                         _currentCsvPath = networkPath;
                         SelectAllButtonText = "Select All";
+                        
+                        FilterStartDate = DateTimeOffset.Now.AddYears(-1);
+                        FilterEndDate = DateTimeOffset.Now;
+                        
+                        FilterAndPaginate();
                         return true;
                     }
                 }
@@ -236,6 +511,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             return false;
         }
 
+        /// <summary>
+        /// Loads historical data from the database.
+        /// </summary>
         [RelayCommand]
         private async Task LoadFromHistoryAsync()
         {
@@ -245,9 +523,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 IsBusy = true;
                 StatusMessage = "Loading from history...";
 
-                // Get date range from user
-                var endDate = DateTime.Now;
-                var startDate = endDate.AddMonths(-1); // Default to last month
+                var startDate = FilterStartDate.Date;
+                var endDate = FilterEndDate.Date;
 
                 _logger.LogInfo($"Loading receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
                 var result = await _mysqlService.GetAllReceivingLoadsAsync(startDate, endDate);
@@ -269,17 +546,19 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
 
                 _deletedLoads.Clear();
-                Loads.Clear();
+                _allLoads.Clear();
                 foreach (var load in result.Data)
                 {
-                    Loads.Add(load);
+                    _allLoads.Add(load);
                     _workflowService.CurrentSession.Loads.Add(load);
                 }
 
-                StatusMessage = $"Loaded {Loads.Count} loads from history";
-                _logger.LogInfo($"Successfully loaded {Loads.Count} loads from history");
+                StatusMessage = $"Loaded {_allLoads.Count} loads from history";
+                _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from history");
                 CurrentDataSource = DataSourceType.History;
                 SelectAllButtonText = "Select All";
+                
+                FilterAndPaginate();
             }
             catch (Exception ex)
             {
@@ -292,10 +571,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
+        /// <summary>
+        /// Selects or deselects all currently displayed loads.
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanSelectAll))]
         private void SelectAll()
         {
-            // If any are unselected, we select all. Otherwise (all are selected), we deselect all.
             bool anyUnselected = Loads.Any(l => !l.IsSelected);
             
             if (anyUnselected)
@@ -310,8 +591,14 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
+        /// <summary>
+        /// Determines if the Select All command can be executed.
+        /// </summary>
         private bool CanSelectAll() => Loads.Count > 0;
 
+        /// <summary>
+        /// Removes the selected row(s) from the collection.
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanRemoveRow))]
         private void RemoveRow()
         {
@@ -324,36 +611,59 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 {
                     _deletedLoads.Add(load);
                     _workflowService.CurrentSession.Loads.Remove(load);
+                    _allLoads.Remove(load);
+                    _filteredLoads.Remove(load);
                     Loads.Remove(load);
                 }
+                
+                FilterAndPaginate();
             }
             else if (SelectedLoad != null)
             {
                 _logger.LogInfo($"Removing load {SelectedLoad.LoadNumber} (Part ID: {SelectedLoad.PartID})");
                 _deletedLoads.Add(SelectedLoad);
                 _workflowService.CurrentSession.Loads.Remove(SelectedLoad);
+                _allLoads.Remove(SelectedLoad);
+                _filteredLoads.Remove(SelectedLoad);
                 Loads.Remove(SelectedLoad);
+                
+                FilterAndPaginate();
             }
             else
             {
                 _logger.LogWarning("RemoveRow called with no selected load(s)");
             }
-            SaveCommand.NotifyCanExecuteChanged(); // Update save command state after removal
+            SaveCommand.NotifyCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Determines if the Remove Row command can be executed.
+        /// </summary>
         private bool CanRemoveRow() => Loads.Any(l => l.IsSelected);
 
+        /// <summary>
+        /// Saves the changes made to the loads.
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanSave))]
         private async Task SaveAsync()
         {
             try
             {
-                _logger.LogInfo($"Validating and saving {Loads.Count} loads from edit mode");
+                _logger.LogInfo($"Validating and saving {_filteredLoads.Count} loads from edit mode");
                 IsBusy = true;
                 StatusMessage = "Validating loads...";
 
-                // Validate all loads
-                var validationErrors = ValidateLoads();
+                // Set default Heat/Lot if empty for all loads being processed
+                // We update _allLoads to ensure consistency across all data sources
+                foreach (var load in _allLoads)
+                {
+                    if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
+                    {
+                        load.HeatLotNumber = "Nothing Entered";
+                    }
+                }
+
+                var validationErrors = ValidateLoads(_filteredLoads);
                 if (validationErrors.Any())
                 {
                     var errorMessage = string.Join("\n", validationErrors);
@@ -369,8 +679,6 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 switch (CurrentDataSource)
                 {
                     case DataSourceType.Memory:
-                        // For memory, we proceed with the standard workflow which will eventually save to DB/CSV
-                        // as new records.
                         await _workflowService.AdvanceToNextStepAsync();
                         break;
 
@@ -382,7 +690,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         }
                         
                         _logger.LogInfo($"Overwriting label file: {_currentCsvPath}");
-                        await _csvWriter.WriteToFileAsync(_currentCsvPath, Loads.ToList(), append: false);
+                        await _csvWriter.WriteToFileAsync(_currentCsvPath, _allLoads, append: false);
                         StatusMessage = "Label file updated successfully";
                         await _errorHandler.ShowErrorDialogAsync("Success", "Label file updated successfully.", Enum_ErrorSeverity.Info);
                         break;
@@ -397,9 +705,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         }
 
                         int updated = 0;
-                        if (Loads.Count > 0)
+                        if (_filteredLoads.Count > 0)
                         {
-                            updated = await _mysqlService.UpdateReceivingLoadsAsync(Loads.ToList());
+                            updated = await _mysqlService.UpdateReceivingLoadsAsync(_filteredLoads);
                         }
                         
                         StatusMessage = $"History updated ({updated} updated, {deleted} deleted)";
@@ -408,7 +716,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
 
                 _logger.LogInfo($"Edit mode save completed successfully for source: {CurrentDataSource}");
-                _deletedLoads.Clear(); // Clear deleted list after successful save
+                _deletedLoads.Clear();
             }
             catch (Exception ex)
             {
@@ -421,12 +729,17 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
+        /// <summary>
+        /// Determines if the Save command can be executed.
+        /// </summary>
         private bool CanSave()
         {
-            // Can save if there are loads OR if we have deleted loads (to save the deletions)
-            return Loads.Count > 0 || _deletedLoads.Count > 0;
+            return _filteredLoads.Count > 0 || _deletedLoads.Count > 0;
         }
 
+        /// <summary>
+        /// Returns to the mode selection screen after confirmation.
+        /// </summary>
         [RelayCommand]
         private async Task ReturnToModeSelectionAsync()
         {
@@ -453,10 +766,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 try
                 {
                     _logger.LogInfo("User confirmed return to mode selection, resetting workflow");
-                    // Reset workflow and return to mode selection
                     await _workflowService.ResetWorkflowAsync();
                     _workflowService.GoToStep(WorkflowStep.ModeSelection);
-                    // The ReceivingWorkflowViewModel will handle the visibility update through StepChanged event
                 }
                 catch (Exception ex)
                 {
@@ -470,18 +781,20 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             }
         }
 
-        private System.Collections.Generic.List<string> ValidateLoads()
+        /// <summary>
+        /// Validates the list of loads before saving.
+        /// </summary>
+        private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate)
         {
             var errors = new System.Collections.Generic.List<string>();
 
-            // Allow empty loads if we have deleted items (user wants to delete everything)
-            if (Loads.Count == 0 && _deletedLoads.Count == 0)
+            if (!loadsToValidate.Any() && _deletedLoads.Count == 0)
             {
                 errors.Add("No loads to save");
                 return errors;
             }
 
-            foreach (var load in Loads)
+            foreach (var load in loadsToValidate)
             {
                 if (string.IsNullOrWhiteSpace(load.PartID))
                 {

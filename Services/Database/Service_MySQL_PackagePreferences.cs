@@ -1,10 +1,8 @@
-using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Helpers.Database;
 using System;
 using System.Threading.Tasks;
-using System.Data;
 using System.Collections.Generic;
 
 namespace MTM_Receiving_Application.Services.Database

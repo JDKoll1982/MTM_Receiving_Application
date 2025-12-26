@@ -2,7 +2,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.ViewModels.Receiving;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MTM_Receiving_Application.Views.Receiving
 {

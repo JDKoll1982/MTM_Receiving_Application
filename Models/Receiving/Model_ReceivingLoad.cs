@@ -35,13 +35,13 @@ namespace MTM_Receiving_Application.Models.Receiving
         private decimal _weightQuantity;
 
         [ObservableProperty]
-        private string _heatLotNumber = "Not Entered";  // Default for optional field
+        private string _heatLotNumber = string.Empty;  // Default to empty, set to "Nothing Entered" on save if blank
 
         [ObservableProperty]
         private int _remainingQuantity;
 
         [ObservableProperty]
-        private int _packagesPerLoad = 1;  // Default to 1 package per load
+        private int _packagesPerLoad = 0;  // Default to 0 (blank)
 
         [ObservableProperty]
         private string _packageTypeName = Enum_PackageType.Skid.ToString();
@@ -58,9 +58,18 @@ namespace MTM_Receiving_Application.Models.Receiving
         [ObservableProperty]
         private DateTime _receivedDate = DateTime.Now;
 
+        [ObservableProperty]
+        private string? _userId;
+
         partial void OnPartIDChanged(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return;
+
+            // If PackagesPerLoad is 0 (default/blank), set it to 1 when PartID is entered
+            if (PackagesPerLoad == 0)
+            {
+                PackagesPerLoad = 1;
+            }
 
             try
             {
@@ -119,7 +128,8 @@ namespace MTM_Receiving_Application.Models.Receiving
         {
             if (PackagesPerLoad > 0)
             {
-                WeightPerPackage = Math.Round(WeightQuantity / PackagesPerLoad, 2);
+                // Round to whole number as requested
+                WeightPerPackage = Math.Round(WeightQuantity / PackagesPerLoad, 0);
             }
             else
             {
@@ -131,7 +141,7 @@ namespace MTM_Receiving_Application.Models.Receiving
         /// Display property for review grid showing weight per package with unit.
         /// </summary>
         public string WeightPerPackageDisplay => 
-            $"{WeightPerPackage:F2} lbs per {PackageTypeName}";
+            $"{WeightPerPackage:F0} lbs per {PackageTypeName}";
 
         /// <summary>
         /// Display property for PO number handling null values.

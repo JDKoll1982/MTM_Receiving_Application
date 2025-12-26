@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MTM_Receiving_Application.Models.Systems;
 
 namespace MTM_Receiving_Application.Models.Receiving
 {
@@ -19,6 +20,8 @@ namespace MTM_Receiving_Application.Models.Receiving
         public bool IsNonPO { get; set; }
 
         public string? PoNumber { get; set; }
+
+        public Model_User? User { get; set; }
         
         // Transient properties (not persisted to JSON)
         

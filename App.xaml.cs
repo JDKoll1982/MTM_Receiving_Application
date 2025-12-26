@@ -88,6 +88,7 @@ public partial class App : Application
                 });
                 services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
                 services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
+                services.AddTransient<IService_Pagination, Service_Pagination>();
 
                 // ViewModels
                 services.AddTransient<MainWindowViewModel>();

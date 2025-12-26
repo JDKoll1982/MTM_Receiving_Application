@@ -8,7 +8,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Enums;
-using Windows.Foundation;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
@@ -40,63 +39,122 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [RelayCommand]
         private async Task AutoFillAsync()
         {
-            if (SelectedLoad == null)
-            {
-                _logger.LogWarning("AutoFill attempted with no selected load");
-                await _errorHandler.HandleErrorAsync("Please select a row to auto-fill.", Enum_ErrorSeverity.Warning);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(SelectedLoad.PartID))
-            {
-                _logger.LogWarning($"AutoFill attempted with empty PartID for LoadNumber {SelectedLoad.LoadNumber}");
-                await _errorHandler.HandleErrorAsync("Please enter a Part ID first.", Enum_ErrorSeverity.Warning);
-                return;
-            }
-
             try
             {
                 IsBusy = true;
-                StatusMessage = "Searching history...";
-                _logger.LogInfo($"Auto-filling data for Part ID: {SelectedLoad.PartID}");
+                StatusMessage = "Filling blank spaces...";
+                _logger.LogInfo("Starting Auto-Fill Blank Spaces operation");
 
-                // Look back 1 year for history
-                var endDate = DateTime.Now;
-                var startDate = endDate.AddYears(-1);
+                int filledCount = 0;
 
-                var history = await _mysqlService.GetReceivingHistoryAsync(SelectedLoad.PartID, startDate, endDate);
-
-                if (history != null && history.Count > 0)
+                // Iterate through all loads in the grid
+                for (int i = 0; i < Loads.Count; i++)
                 {
-                    // Get the most recent entry (assuming list is sorted or we sort it)
-                    // The service contract doesn't specify sort order, so let's sort by date descending
-                    var lastEntry = history.OrderByDescending(h => h.ReceivedDate).First();
+                    var currentLoad = Loads[i];
 
-                    // Auto-fill fields
-                    SelectedLoad.PoNumber = lastEntry.PoNumber;
-                    SelectedLoad.HeatLotNumber = lastEntry.HeatLotNumber;
-                    SelectedLoad.WeightQuantity = lastEntry.WeightQuantity;
-                    SelectedLoad.PackagesPerLoad = lastEntry.PackagesPerLoad;
-                    SelectedLoad.PackageTypeName = lastEntry.PackageTypeName;
-                    SelectedLoad.PartType = lastEntry.PartType;
-                    
-                    // If it was a non-PO item before, assume it still is? 
-                    // Or check if PO exists? Let's just copy the flag if we have it, 
-                    // but Model_ReceivingLoad has IsNonPOItem.
-                    SelectedLoad.IsNonPOItem = lastEntry.IsNonPOItem;
+                    // 1. Part ID (Material ID) - Fill Down Logic
+                    // If blank, copy from immediate predecessor
+                    if (string.IsNullOrWhiteSpace(currentLoad.PartID))
+                    {
+                        if (i > 0)
+                        {
+                            var prev = Loads[i - 1];
+                            if (!string.IsNullOrWhiteSpace(prev.PartID))
+                            {
+                                currentLoad.PartID = prev.PartID;
+                                filledCount++;
+                            }
+                        }
+                    }
 
-                    StatusMessage = "Auto-filled from last entry.";
-                    _logger.LogInfo($"Successfully auto-filled Part ID {SelectedLoad.PartID} from history dated {lastEntry.ReceivedDate}");
+                    // 2. Other Fields - Copy from nearest previous row with SAME PartID
+                    if (!string.IsNullOrWhiteSpace(currentLoad.PartID))
+                    {
+                        // Find source load (nearest previous row with same PartID)
+                        Model_ReceivingLoad? sourceLoad = null;
+                        for (int j = i - 1; j >= 0; j--)
+                        {
+                            if (Loads[j].PartID == currentLoad.PartID)
+                            {
+                                sourceLoad = Loads[j];
+                                break;
+                            }
+                        }
+
+                        if (sourceLoad != null)
+                        {
+                            // PO Number: If blank, use PO from previous row with same Material ID
+                            if (string.IsNullOrWhiteSpace(currentLoad.PoNumber) && !string.IsNullOrWhiteSpace(sourceLoad.PoNumber))
+                            {
+                                currentLoad.PoNumber = sourceLoad.PoNumber;
+                                filledCount++;
+                            }
+
+                            // Quantity: If blank (0), use Quantity from previous row with same Material ID
+                            if (currentLoad.WeightQuantity <= 0 && sourceLoad.WeightQuantity > 0)
+                            {
+                                currentLoad.WeightQuantity = sourceLoad.WeightQuantity;
+                                filledCount++;
+                            }
+
+                            // Heat: If blank, use Heat from previous row with same Material ID
+                            if (string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber) && !string.IsNullOrWhiteSpace(sourceLoad.HeatLotNumber))
+                            {
+                                currentLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
+                                filledCount++;
+                            }
+                            
+                            // Also copy other useful fields if blank, consistent with "same material" logic
+                            if (currentLoad.PackagesPerLoad <= 0 && sourceLoad.PackagesPerLoad > 0)
+                            {
+                                currentLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
+                            }
+                            
+                            if (string.IsNullOrWhiteSpace(currentLoad.PackageTypeName) && !string.IsNullOrWhiteSpace(sourceLoad.PackageTypeName))
+                            {
+                                currentLoad.PackageTypeName = sourceLoad.PackageTypeName;
+                            }
+                        }
+                    }
+
+                    // Date: If blank (default/min value), use current date
+                    // Note: Model_ReceivingLoad initializes ReceivedDate to DateTime.Now usually, but let's ensure it.
+                    if (currentLoad.ReceivedDate == default || currentLoad.ReceivedDate == DateTime.MinValue)
+                    {
+                        currentLoad.ReceivedDate = DateTime.Now;
+                    }
+
+                    // Employee: If blank, use employee from first row
+                    // Assuming "Employee" maps to UserId or similar. 
+                    // Model_ReceivingLoad has UserId.
+                    if (string.IsNullOrWhiteSpace(currentLoad.UserId))
+                    {
+                        // Try previous row first (propagation)
+                        if (i > 0 && !string.IsNullOrWhiteSpace(Loads[i-1].UserId))
+                        {
+                            currentLoad.UserId = Loads[i-1].UserId;
+                        }
+                        else if (Loads.Count > 0 && !string.IsNullOrWhiteSpace(Loads[0].UserId))
+                        {
+                            currentLoad.UserId = Loads[0].UserId;
+                        }
+                        // If first row is also blank, maybe use current session user?
+                        else if (_workflowService.CurrentSession.User != null)
+                        {
+                            currentLoad.UserId = _workflowService.CurrentSession.User.WindowsUsername;
+                        }
+                    }
                 }
-                else
-                {
-                    _logger.LogWarning($"No receiving history found for Part ID: {SelectedLoad.PartID}");
-                    await _errorHandler.HandleErrorAsync($"No history found for Part ID: {SelectedLoad.PartID}", Enum_ErrorSeverity.Info);
-                }
+
+                StatusMessage = $"Auto-fill complete. Updated {filledCount} fields.";
+                _logger.LogInfo($"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows.");
+                
+                // Force UI update if needed (ObservableCollection updates properties automatically if INPC is fired)
+                // Model_ReceivingLoad implements ObservableObject so it should be fine.
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Auto-fill failed for Part ID {SelectedLoad?.PartID}: {ex.Message}");
+                _logger.LogError($"Auto-fill failed: {ex.Message}");
                 await _errorHandler.HandleErrorAsync("Auto-fill failed", Enum_ErrorSeverity.Error, ex);
             }
             finally
@@ -191,6 +249,16 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             try
             {
                 _logger.LogInfo($"Saving {Loads.Count} loads from manual entry");
+                
+                // Set default Heat/Lot if empty
+                foreach (var load in Loads)
+                {
+                    if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
+                    {
+                        load.HeatLotNumber = "Nothing Entered";
+                    }
+                }
+
                 // In manual mode, we skip step-by-step validation and go straight to saving
                 // The workflow service will handle the actual save logic
                 await _workflowService.AdvanceToNextStepAsync();

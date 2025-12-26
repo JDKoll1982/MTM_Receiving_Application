@@ -1,13 +1,11 @@
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.ViewModels.Receiving;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Input;
 using Windows.System;
 using Windows.UI.Core;
 using CommunityToolkit.WinUI.UI.Controls;
 using System.Linq;
-using Microsoft.UI.Xaml;
 using System.Collections;
 using System;
 using System.Diagnostics;
