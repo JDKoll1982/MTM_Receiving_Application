@@ -141,7 +141,7 @@ Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=<pass
 ### Project Structure
 - Constitution: `.specify/memory/constitution.md` - **required reading**
 - Instructions: `.github/instructions/*.instructions.md` - pattern guides
-- Specs: `specs/001-receiving-workflow/` - feature specifications
+- Specs: `specs/003-database-foundation/` - feature specifications
 - Documentation: `Documentation/` - business logic and workflows
 
 ## Common Pitfalls
@@ -173,7 +173,7 @@ Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=<pass
 
 ## Specification-Driven Development
 
-Features follow Speckit workflow in `specs/001-receiving-workflow/`:
+Features follow Speckit workflow in `specs/003-database-foundation/`:
 1. Read `spec.md` for feature requirements
 2. Review `plan.md` for implementation approach  
 3. Check `tasks.md` for task status
@@ -186,8 +186,8 @@ Features follow Speckit workflow in `specs/001-receiving-workflow/`:
 - **MVVM Guide**: `.github/instructions/mvvm-pattern.instructions.md`
 - **DAO Pattern**: `.github/instructions/dao-pattern.instructions.md`
 - **Services**: `Documentation/REUSABLE_SERVICES.md`
-- **Infor Visual**: `specs/001-receiving-workflow/INFOR_VISUAL_INTEGRATION.md`
-- **Data Model**: `specs/001-receiving-workflow/data-model.md`
+- **Infor Visual**: `specs/003-database-foundation/INFOR_VISUAL_INTEGRATION.md`
+- **Data Model**: `specs/003-database-foundation/data-model.md`
 
 ## Quick Start for New Features
 

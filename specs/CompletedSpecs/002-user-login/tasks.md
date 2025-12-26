@@ -1,7 +1,7 @@
 # Tasks: User Authentication & Login System
 
 **Feature**: User Authentication & Login System  
-**Branch**: `001-user-login`  
+**Branch**: `002-user-login`  
 **Generated**: December 15, 2025  
 **Status**: Ready for implementation
 
@@ -685,7 +685,7 @@ Phase 1 (Setup) + Phase 2 (Foundational) + Phase 3 (US1: Windows Auth) = ~40-45 
 - `App.xaml.cs` - Registered new ViewModels
 - `Service_OnStartup_AppLifecycle.cs` - Integrated PIN login and new user dialogs
 - `Tests/README.md` - Updated with manual test documentation
-- `specs/001-user-login/tasks.md` - Marked completed tasks
+- `specs/002-user-login/tasks.md` - Marked completed tasks
 
 ### Next Steps for Completion
 

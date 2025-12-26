@@ -1,6 +1,6 @@
 # Infor Visual Database Integration Guide
 
-**Feature**: 001-receiving-workflow  
+**Feature**: 003-database-foundation  
 **Date**: December 17, 2025  
 **Status**: Active
 

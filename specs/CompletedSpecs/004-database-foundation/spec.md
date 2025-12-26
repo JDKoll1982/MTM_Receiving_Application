@@ -1,6 +1,6 @@
 # Feature Specification:  Dunnage Database Foundation
 
-**Feature Branch**:  `001-database-foundation`  
+**Feature Branch**:  `004-database-foundation`  
 **Created**: 2025-12-26  
 **Status**: Ready for Implementation  
 **Parent Feature**:  Dunnage Receiving System V2

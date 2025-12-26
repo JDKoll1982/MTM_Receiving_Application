@@ -66,7 +66,7 @@ public partial class App : Application
                 // Startup Service
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
-                // Receiving Workflow Services (001-receiving-workflow)
+                // Receiving Workflow Services (003-database-foundation)
                 services.AddSingleton<IService_InforVisual, Service_InforVisual>();
                 services.AddSingleton<IService_MySQL_Receiving>(sp =>
                 {

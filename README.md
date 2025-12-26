@@ -256,7 +256,7 @@ Phase5_Model_Verification.RunAllTests();
 - **T165-T170**: New user creation tests
 - **T180-T182**: ERP credential storage tests
 
-See [tasks.md](specs/001-user-login/tasks.md) for complete test scenarios.
+See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
 
 ## Troubleshooting
 
@@ -325,7 +325,7 @@ dotnet build --configuration Release
 ### Branch Structure
 
 - `001-phase1-infrastructure`: Core infrastructure (default)
-- `001-user-login`: Authentication system (current)
+- `002-user-login`: Authentication system (current)
 - Feature branches: Follow `###-feature-name` pattern
 
 ### Pull Request Process

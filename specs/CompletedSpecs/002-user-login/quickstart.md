@@ -1,7 +1,7 @@
 # Quickstart Guide: User Authentication & Login System
 
 **Feature**: User Authentication & Login System  
-**Branch**: `001-user-login`  
+**Branch**: `002-user-login`  
 **Date**: December 15, 2025
 
 ## Overview

@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Script: 02_create_authentication_tables.sql
 -- Description: Create authentication tables for User Login & Authentication
--- Feature: User Authentication & Login System (001-user-login)
+-- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
 -- Tables:

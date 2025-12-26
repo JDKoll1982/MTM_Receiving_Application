@@ -1,7 +1,7 @@
 # Tasks: Multi-Step Receiving Label Entry Workflow
 
-**Branch**: `001-receiving-workflow` | **Date**: December 17, 2025  
-**Input**: Design documents from `/specs/001-receiving-workflow/`  
+**Branch**: `003-database-foundation` | **Date**: December 17, 2025  
+**Input**: Design documents from `/specs/003-database-foundation/`  
 **Prerequisites**: plan.md ✅, spec.md ✅, research.md ✅, data-model.md ✅, contracts/ ✅
 
 **Tests**: Unit and integration tests included as per project standards

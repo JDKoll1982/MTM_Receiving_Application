@@ -1,6 +1,6 @@
 # Feature Specification: Multi-Step Receiving Label Entry Workflow
 
-**Feature Branch**: `001-receiving-workflow`  
+**Feature Branch**: `003-database-foundation`  
 **Created**: December 16, 2025  
 **Status**: Draft  
 **Input**: User description: "Implement multi-step receiving label entry workflow with PO number entry, part selection, skid information, quantities, heat numbers, packages, and saving to CSV/database. UI elements should be in MainWindow.xaml NavigationView except for actual dialog boxes."

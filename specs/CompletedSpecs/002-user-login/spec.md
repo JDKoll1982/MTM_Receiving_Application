@@ -1,6 +1,6 @@
 # Feature Specification: User Authentication & Login System
 
-**Feature Branch**: `001-user-login`  
+**Feature Branch**: `002-user-login`  
 **Created**: December 15, 2025  
 **Status**: Draft  
 **Input**: User description: "Implement multi-tier authentication system with Windows username detection for personal workstations, PIN-based login for shared shop floor terminals, automatic new user creation workflow, and optional Visual/Infor ERP integration credentials."

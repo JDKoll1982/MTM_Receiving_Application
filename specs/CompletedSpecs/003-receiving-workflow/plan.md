@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Step Receiving Label Entry Workflow
 
-**Branch**: `001-receiving-workflow` | **Date**: December 17, 2025 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-receiving-workflow/spec.md`
+**Branch**: `003-database-foundation` | **Date**: December 17, 2025 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/003-database-foundation/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -230,5 +230,5 @@ No violations introduced during design phase.
 
 **Planning Complete**: December 17, 2025  
 **Ready for**: Task breakdown and implementation  
-**Branch**: 001-receiving-workflow  
+**Branch**: 003-database-foundation  
 **Spec**: [spec.md](./spec.md)

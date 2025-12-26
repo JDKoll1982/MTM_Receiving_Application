@@ -4,7 +4,7 @@
 **Created**: 2025-12-26  
 **Status**: Ready for Implementation  
 **Parent Feature**: Dunnage Receiving System V2  
-**Depends On**: 001-database-foundation
+**Depends On**: 004-database-foundation
 
 ## Overview
 
@@ -195,7 +195,7 @@ As a **data access layer**, I need stored procedures for inventoried parts list 
 
 ## Dependencies
 
-- 001-database-foundation (all tables must exist)
+- 004-database-foundation (all tables must exist)
 - MySQL 8.0+ with stored procedure support
 - Database user with CREATE PROCEDURE privilege
 

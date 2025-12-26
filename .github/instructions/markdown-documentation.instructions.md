@@ -437,9 +437,9 @@ plantuml diagram.puml
 
 ### ✅ Good Examples
 
-- [specs/001-database-foundation/data-model.md](../../specs/001-database-foundation/data-model.md) - ERD with PlantUML
-- [specs/001-database-foundation/plan.md](../../specs/001-database-foundation/plan.md) - WBS and component diagrams
-- [specs/001-database-foundation/spec.md](../../specs/001-database-foundation/spec.md) - File changes diagram
+- [specs/004-database-foundation/data-model.md](../../specs/004-database-foundation/data-model.md) - ERD with PlantUML
+- [specs/004-database-foundation/plan.md](../../specs/004-database-foundation/plan.md) - WBS and component diagrams
+- [specs/004-database-foundation/spec.md](../../specs/004-database-foundation/spec.md) - File changes diagram
 
 ### ❌ Avoid
 

@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_GetDepartments
 -- Description: Retrieve active departments for dropdown population
--- Feature: User Authentication & Login System (001-user-login)
+-- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
 

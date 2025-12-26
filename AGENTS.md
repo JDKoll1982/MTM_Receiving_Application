@@ -238,8 +238,8 @@ private void Button_Click(object sender, RoutedEventArgs e)
 - IDE and GitHub support
 
 **Examples**:
-- ✅ PlantUML ERD: [specs/001-database-foundation/data-model.md](specs/001-database-foundation/data-model.md)
-- ✅ PlantUML file structure: [specs/001-database-foundation/plan.md](specs/001-database-foundation/plan.md)
+- ✅ PlantUML ERD: [specs/004-database-foundation/data-model.md](specs/004-database-foundation/data-model.md)
+- ✅ PlantUML file structure: [specs/004-database-foundation/plan.md](specs/004-database-foundation/plan.md)
 - ❌ ASCII box drawings, manual tree structures
 
 See [.github/instructions/markdown-documentation.instructions.md](.github/instructions/markdown-documentation.instructions.md) for complete standards.
@@ -332,8 +332,8 @@ string query = "UPDATE po SET status = 'Received'"; // NEVER DO THIS
 
 ### Reference Documentation
 - **Services Overview:** `Documentation/REUSABLE_SERVICES.md`
-- **Data Model:** `specs/001-receiving-workflow/data-model.md`
-- **Infor Visual Integration:** `specs/001-receiving-workflow/INFOR_VISUAL_INTEGRATION.md`
+- **Data Model:** `specs/003-database-foundation/data-model.md`
+- **Infor Visual Integration:** `specs/003-database-foundation/INFOR_VISUAL_INTEGRATION.md`
 - **User Workflow:** `Documentation/NEW_APP_USER_WORKFLOW.md`
 
 ### Database
@@ -344,7 +344,7 @@ string query = "UPDATE po SET status = 'Received'"; // NEVER DO THIS
 
 ## Workflow Example: Adding a New Feature
 
-1. **Read Specification:** Check `specs/001-receiving-workflow/` for requirements
+1. **Read Specification:** Check `specs/003-database-foundation/` for requirements
 2. **Create Model:** Add `Model_NewEntity.cs` in `Models/Receiving/`
 3. **Create DAO:** Add `Dao_NewEntity.cs` (static) in `Data/Receiving/`
 4. **Create Service Interface:** Add `IService_NewFeature.cs` in `Contracts/Services/`
@@ -355,7 +355,7 @@ string query = "UPDATE po SET status = 'Received'"; // NEVER DO THIS
 9. **Create View:** Add `NewFeatureView.xaml` in `Views/Receiving/`
 10. **Add Tests:** Create test classes in `MTM_Receiving_Application.Tests/`
 11. **Build & Test:** Run `dotnet build && dotnet test`
-12. **Update Spec:** Mark tasks complete in `specs/001-receiving-workflow/tasks.md`
+12. **Update Spec:** Mark tasks complete in `specs/003-database-foundation/tasks.md`
 
 ## Common Pitfalls to Avoid
 

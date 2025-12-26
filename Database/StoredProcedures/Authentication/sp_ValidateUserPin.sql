@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_ValidateUserPin
 -- Description: Validate username and PIN combination for shared terminal login
--- Feature: User Authentication & Login System (001-user-login)
+-- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
 

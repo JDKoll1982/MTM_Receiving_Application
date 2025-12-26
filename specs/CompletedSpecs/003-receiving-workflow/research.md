@@ -1,6 +1,6 @@
 # Research: Multi-Step Receiving Label Entry Workflow
 
-**Feature**: 001-receiving-workflow  
+**Feature**: 003-database-foundation  
 **Date**: December 17, 2025  
 **Status**: Complete
 

@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_LogUserActivity
 -- Description: Log authentication events for audit trail
--- Feature: User Authentication & Login System (001-user-login)
+-- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
 

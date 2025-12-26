@@ -1,6 +1,6 @@
 # Quick Start Guide: Multi-Step Receiving Workflow
 
-**Feature**: 001-receiving-workflow  
+**Feature**: 003-database-foundation  
 **For**: Developers implementing this feature
 
 ## Overview

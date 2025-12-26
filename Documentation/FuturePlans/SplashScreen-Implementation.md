@@ -2052,7 +2052,7 @@ For each initialization step:
 **For Questions**: Contact development team or refer to source code in App.xaml.cs and startup initialization classes.
 
 **Related Documentation**:
-- [User Authentication Specification](specs/001-user-login/spec.md)
+- [User Authentication Specification](specs/002-user-login/spec.md)
 - [Database Schema](Database/Schemas/)
 - [MVVM Guidelines](.github/instructions/mvvm-pattern.instructions.md)
 - [Dependency Injection Setup](.github/instructions/mvvm-dependency-injection.instructions.md)

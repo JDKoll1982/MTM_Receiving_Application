@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Stored Procedure: sp_CreateNewUser
 -- Description: Create new user account with validation
--- Feature: User Authentication & Login System (001-user-login)
+-- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
 

@@ -1,7 +1,7 @@
 # Implementation Plan: Dunnage Database Foundation
 
-**Branch**: `001-database-foundation` | **Date**: 2025-12-26 | **Spec**: [spec.md](spec.md)
-**Input**: Feature specification from `/specs/001-database-foundation/spec.md`
+**Branch**: `004-database-foundation` | **Date**: 2025-12-26 | **Spec**: [spec.md](spec.md)
+**Input**: Feature specification from `/specs/004-database-foundation/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -61,7 +61,7 @@ Verify alignment with [MTM Receiving Application Constitution](../../.specify/me
 
 ```plantuml
 @startwbs Documentation Structure
-* specs/001-database-foundation/
+* specs/004-database-foundation/
 ** spec.md
 *** Feature specification
 *** User requirements

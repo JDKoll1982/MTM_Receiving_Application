@@ -1,6 +1,6 @@
 -- =============================================
 -- Database Schema: Receiving Tables
--- Feature: 001-receiving-workflow
+-- Feature: 003-database-foundation
 -- Purpose: Stores receiving load data with package types
 -- =============================================
 

@@ -1,6 +1,6 @@
 -- =============================================
 -- Database Schema: Package Type Preferences
--- Feature: 001-receiving-workflow
+-- Feature: 003-database-foundation
 -- Purpose: Stores user-defined package type preferences per part ID
 -- =============================================
 

@@ -4,7 +4,7 @@
 **Created**: 2025-12-26  
 **Status**: Ready for Implementation  
 **Parent Feature**:  Dunnage Receiving System V2  
-**Depends On**: 001-database-foundation, 002-stored-procedures
+**Depends On**: 004-database-foundation, 002-stored-procedures
 
 ## Overview
 
@@ -191,7 +191,7 @@ As a **service layer developer**, I need DAO classes for all remaining dunnage e
 
 ## Dependencies
 
-- 001-database-foundation (tables must exist)
+- 004-database-foundation (tables must exist)
 - 002-stored-procedures (all SPs must be created)
 - NuGet:  `CommunityToolkit.Mvvm` (for ObservableObject)
 - NuGet: `MySql.Data` or `MySqlConnector` (for database access)
