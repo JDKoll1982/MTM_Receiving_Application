@@ -11,20 +11,25 @@ using System.Text.Json;
 
 namespace MTM_Receiving_Application.Data.Dunnage;
 
-public static class Dao_DunnageLoad
+public class Dao_DunnageLoad
 {
-    private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
+    private readonly string _connectionString;
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllAsync()
+    public Dao_DunnageLoad(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public virtual async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_get_all",
             MapFromReader
         );
     }
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
+    public virtual async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -33,14 +38,14 @@ public static class Dao_DunnageLoad
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_get_by_date_range",
             MapFromReader,
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result<Model_DunnageLoad>> GetByIdAsync(Guid loadUuid)
+    public virtual async Task<Model_Dao_Result<Model_DunnageLoad>> GetByIdAsync(Guid loadUuid)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -48,14 +53,14 @@ public static class Dao_DunnageLoad
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageLoad>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_get_by_id",
             MapFromReader,
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result> InsertAsync(Guid loadUuid, string partId, decimal quantity, string user)
+    public virtual async Task<Model_Dao_Result> InsertAsync(Guid loadUuid, string partId, decimal quantity, string user)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -66,13 +71,13 @@ public static class Dao_DunnageLoad
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_insert",
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result> InsertBatchAsync(List<Model_DunnageLoad> loads, string user)
+    public virtual async Task<Model_Dao_Result> InsertBatchAsync(List<Model_DunnageLoad> loads, string user)
     {
         // Serialize loads to JSON for batch insert
         // We need to map the model properties to the JSON structure expected by the SP
@@ -96,13 +101,13 @@ public static class Dao_DunnageLoad
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_insert_batch",
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result> UpdateAsync(Guid loadUuid, decimal quantity, string user)
+    public virtual async Task<Model_Dao_Result> UpdateAsync(Guid loadUuid, decimal quantity, string user)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -112,13 +117,13 @@ public static class Dao_DunnageLoad
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_update",
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result> DeleteAsync(Guid loadUuid)
+    public virtual async Task<Model_Dao_Result> DeleteAsync(Guid loadUuid)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -126,13 +131,13 @@ public static class Dao_DunnageLoad
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_loads_delete",
             parameters
         );
     }
 
-    private static Model_DunnageLoad MapFromReader(IDataReader reader)
+    private Model_DunnageLoad MapFromReader(IDataReader reader)
     {
         return new Model_DunnageLoad
         {

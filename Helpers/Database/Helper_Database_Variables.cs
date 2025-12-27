@@ -9,13 +9,13 @@ public static class Helper_Database_Variables
     /// Production MySQL connection string
     /// Server: localhost, Port: 3306, Database: mtm_receiving_application
     /// </summary>
-    public static string ProductionConnectionString { get; } = 
+    public static string ProductionConnectionString { get; } =
         "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
 
     /// <summary>
     /// Test MySQL connection string (same as production for now)
     /// </summary>
-    public static string TestConnectionString { get; } = 
+    public static string TestConnectionString { get; } =
         "Server=localhost;Port=3306;Database=mtm_receiving_application_test;Uid=root;Pwd=root;";
 
     /// <summary>
@@ -26,5 +26,13 @@ public static class Helper_Database_Variables
     public static string GetConnectionString(bool useProduction = true)
     {
         return useProduction ? ProductionConnectionString : TestConnectionString;
+    }
+
+    /// <summary>
+    /// Gets the Infor Visual connection string (READ ONLY)
+    /// </summary>
+    public static string GetInforVisualConnectionString()
+    {
+        return "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
     }
 }

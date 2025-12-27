@@ -1,14 +1,35 @@
 # MTM Receiving Application - AI Coding Assistant Guide
 
+## ⚠️ CRITICAL: Tool Usage Rules for AI Assistants
+
+### File Operation Rules (MANDATORY)
+
+**✅ CORRECT:**
+- **Existing files**: Use `search_replace` for small edits (1-5 lines) OR display full content in chat for user to apply via right panel
+- **New files**: Use `write` ONLY after verifying file doesn't exist
+- **Terminal**: For commands (build, test, git) ONLY - NEVER for file I/O
+
+**❌ FORBIDDEN:**
+- Delete files to bypass edit restrictions
+- Use terminal for file operations (`Set-Content`, `echo >`, `cat >`, heredoc, etc.)
+- Use `search_replace` for entire file rewrites (too fragile)
+
+**Workflow for Major Edits:**
+1. Display complete new file in markdown code block
+2. User applies via right panel "Accept" button
+3. Preserves Git history, avoids tool errors
+
+---
+
 ## Project Context
 
-WinUI 3 manufacturing receiving application using strict MVVM architecture with MySQL (application data) and SQL Server (Infor Visual ERP - READ ONLY). Built on .NET 8 with CommunityToolkit.Mvvm and dependency injection.
+WinUI 3 manufacturing receiving application using strict MVVM architecture with MySQL (application data) and SQL Server (Infor Visual ERP - **READ ONLY**). Built on .NET 8 with CommunityToolkit.Mvvm and dependency injection.
 
 **Critical Constraint**: ⚠️ **Infor Visual database is STRICTLY READ ONLY** - no INSERT/UPDATE/DELETE operations allowed on SQL Server database.
 
-## Architecture Overview
+## Architecture Overview (Non-Negotiable)
 
-### MVVM Pattern (Non-Negotiable)
+### MVVM Pattern
 - **ViewModels**: All business logic, inherit from `BaseViewModel`, use `[ObservableProperty]` and `[RelayCommand]` attributes, must be `partial` classes
 - **Views**: XAML only, use `x:Bind` (compile-time binding), zero business logic in code-behind
 - **Models**: Pure data classes with INotifyPropertyChanged, match database schemas
@@ -21,6 +42,7 @@ All services registered in `App.xaml.cs`:
 - Constructor injection only - no service locators or static access
 
 ### Database Layer
+
 **Model_Dao_Result Pattern** (mandatory for all DAOs):
 ```csharp
 var result = await Dao_MyData.GetDataAsync();
@@ -57,7 +79,7 @@ Contracts/Services/                # Service interfaces
 Models/
   Receiving/                       # Data models
 Data/
-  Receiving/                       # DAOs (static classes)
+  Receiving/                       # DAOs (instance-based classes)
 Helpers/Database/                  # Database utilities
 ```
 
@@ -103,7 +125,7 @@ public partial class MyFeatureViewModel : BaseViewModel
         }
         catch (Exception ex) {
             _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, 
-                nameof(LoadDataAsync), "MyFeatureViewModel");
+                nameof(LoadDataAsync), nameof(MyFeatureViewModel));
         }
         finally { IsBusy = false; }
     }
@@ -112,10 +134,11 @@ public partial class MyFeatureViewModel : BaseViewModel
 
 ### Creating a DAO
 - File: `Data/Receiving/Dao_EntityName.cs`
-- Static class with async methods
+- Instance-based class (not static) with async methods
 - Return `Model_Dao_Result` or `Model_Dao_Result<T>`
 - Call stored procedures via `Helper_Database_StoredProcedure`
 - Never throw exceptions - return failure results
+- Register as singleton in DI container
 
 ### Error Handling
 - Use `IService_ErrorHandler.HandleException()` for all exceptions
@@ -141,28 +164,20 @@ Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=<pass
 ### Project Structure
 - Constitution: `.specify/memory/constitution.md` - **required reading**
 - Instructions: `.github/instructions/*.instructions.md` - pattern guides
-- Specs: `specs/003-database-foundation/` - feature specifications
+- Specs: `specs/` - feature specifications
 - Documentation: `Documentation/` - business logic and workflows
 
 ## Common Pitfalls
 
-❌ **Don't**: Write to Infor Visual database (SQL Server)  
-✅ **Do**: Only SELECT queries on Infor Visual
-
-❌ **Don't**: Use `Binding` in XAML  
-✅ **Do**: Use `x:Bind` for compile-time binding
-
-❌ **Don't**: Put business logic in View code-behind  
-✅ **Do**: Keep all logic in ViewModels
-
-❌ **Don't**: Create service instances manually  
-✅ **Do**: Use constructor injection from DI container
-
-❌ **Don't**: Throw exceptions from DAOs  
-✅ **Do**: Return `Model_Dao_Result.Failure()` with error message
-
-❌ **Don't**: Use direct SQL for MySQL operations  
-✅ **Do**: Use stored procedures via `Helper_Database_StoredProcedure`
+| ❌ Don't | ✅ Do |
+|---------|-------|
+| Write to Infor Visual database (SQL Server) | Only SELECT queries on Infor Visual |
+| Use `Binding` in XAML | Use `x:Bind` for compile-time binding |
+| Put business logic in View code-behind | Keep all logic in ViewModels |
+| Create service instances manually | Use constructor injection from DI container |
+| Throw exceptions from DAOs | Return `Model_Dao_Result.Failure()` with error message |
+| Use direct SQL for MySQL operations | Use stored procedures via `Helper_Database_StoredProcedure` |
+| Create static DAOs | Create instance-based DAOs registered in DI |
 
 ## Window & Dialog Standards
 
@@ -173,7 +188,7 @@ Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=<pass
 
 ## Specification-Driven Development
 
-Features follow Speckit workflow in `specs/003-database-foundation/`:
+Features follow Speckit workflow in `specs/`:
 1. Read `spec.md` for feature requirements
 2. Review `plan.md` for implementation approach  
 3. Check `tasks.md` for task status
@@ -196,12 +211,13 @@ Features follow Speckit workflow in `specs/003-database-foundation/`:
 3. Create ViewModel inheriting from BaseViewModel with DI
 4. Create View with x:Bind to ViewModel properties/commands
 5. Create service interfaces and implementations
-6. Create DAOs returning Model_Dao_Result
+6. Create DAOs returning Model_Dao_Result (instance-based, registered in DI)
 7. Add tests in `MTM_Receiving_Application.Tests/`
 8. Verify build and run: `dotnet build && dotnet test`
 
 ## Mandatory Workflow
 
 - **Build & Fix**: When changing any code, you are to **ALWAYS** build and fix any errors and warnings before completing the current chat session.
-- **File Replacement**: To completely replace an existing file, **DO NOT** use `create_file`. You must either delete and recreate the file first, or use a console command to overwrite the data.
+- **File Operations**: Follow the tool usage rules at the top of this document - use appropriate tools for each task type.
 - **Automated Builds**: Run build commands so they do not require user interaction (e.g. pressing Enter) to retrieve output.
+- **Test Before Complete**: Always run `dotnet build` and fix any issues before ending a session.

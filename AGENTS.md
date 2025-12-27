@@ -24,7 +24,7 @@ You are an expert WinUI 3 developer specializing in MVVM architecture for the MT
 - **Views/** - XAML only with x:Bind (compile-time binding), zero business logic
 - **Models/** - Pure data classes matching database schemas
 - **Services/** - Business logic services with interfaces in Contracts/Services/
-- **Data/** - Static DAO classes returning Model_Dao_Result or Model_Dao_Result<T>
+- **Data/** - Instance-based DAO classes returning Model_Dao_Result or Model_Dao_Result<T>
 - **Helpers/Database/** - Database connection and stored procedure helpers
 - **Database/** - SQL scripts for schemas, stored procedures, and test data
 - **specs/** - Feature specifications using Speckit methodology
@@ -34,6 +34,7 @@ You are an expert WinUI 3 developer specializing in MVVM architecture for the MT
 ✅ **Always use stored procedures for MySQL operations** - Never write raw SQL in C# code
 ✅ **All ViewModels must be partial classes** - Required for CommunityToolkit.Mvvm source generators
 ✅ **Views use x:Bind, not Binding** - Compile-time binding for performance and type safety
+✅ **DAOs must be Instance-Based** - Static DAOs are prohibited. Register in DI.
 
 ## Commands You Can Use
 
@@ -131,10 +132,17 @@ private async Task LoadDataAsync() { }
 
 ### DAO Pattern (Mandatory)
 ```csharp
-// ✅ CORRECT - Returns Model_Dao_Result, uses stored procedures
-public static class Dao_ReceivingPackage
+// ✅ CORRECT - Instance-based, returns Model_Dao_Result
+public class Dao_ReceivingPackage
 {
-    public static async Task<Model_Dao_Result<List<Model_ReceivingPackage>>> GetPackagesByPoAsync(string poNumber)
+    private readonly string _connectionString;
+
+    public Dao_ReceivingPackage(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public async Task<Model_Dao_Result<List<Model_ReceivingPackage>>> GetPackagesByPoAsync(string poNumber)
     {
         try
         {
@@ -144,6 +152,7 @@ public static class Dao_ReceivingPackage
             };
             
             var result = await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync<Model_ReceivingPackage>(
+                _connectionString,
                 "sp_get_packages_by_po",
                 parameters);
             
@@ -159,15 +168,15 @@ public static class Dao_ReceivingPackage
     }
 }
 
+// ❌ WRONG - Static class (Prohibited)
+public static class Dao_ReceivingPackage { }
+
 // ❌ WRONG - Throws exceptions instead of returning failure results
-public static async Task<List<Model_ReceivingPackage>> GetPackagesByPoAsync(string poNumber)
+public async Task<List<Model_ReceivingPackage>> GetPackagesByPoAsync(string poNumber)
 {
     // Don't throw - return Model_Dao_Result.Failure() instead
     throw new InvalidOperationException("PO not found");
 }
-
-// ❌ WRONG - Raw SQL instead of stored procedures
-string sql = "SELECT * FROM packages WHERE po_number = @po";
 ```
 
 ### View Pattern (Mandatory)
@@ -217,7 +226,7 @@ private void Button_Click(object sender, RoutedEventArgs e)
   - ViewModels: `MyFeatureViewModel`
   - Views: `MyFeatureView` 
   - Services: `Service_MyFeature` with interface `IService_MyFeature`
-  - DAOs: `Dao_EntityName` (static class)
+  - DAOs: `Dao_EntityName` (Instance class)
   - Models: `Model_EntityName`
 - **Methods:** PascalCase, async methods end with `Async`
 - **Properties:** PascalCase for public, `_camelCase` for private fields
@@ -250,6 +259,9 @@ All services must be registered in `App.xaml.cs` ConfigureServices:
 // Singletons - shared state
 services.AddSingleton<ILoggingService, LoggingService>();
 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
+
+// DAOs - Instance-based Singletons
+services.AddSingleton(sp => new Dao_ReceivingPackage(Helper_Database_Variables.GetConnectionString()));
 
 // Transient - new instance per request (ViewModels, most services)
 services.AddTransient<IService_MyFeature, Service_MyFeature>();
@@ -346,7 +358,7 @@ string query = "UPDATE po SET status = 'Received'"; // NEVER DO THIS
 
 1. **Read Specification:** Check `specs/003-database-foundation/` for requirements
 2. **Create Model:** Add `Model_NewEntity.cs` in `Models/Receiving/`
-3. **Create DAO:** Add `Dao_NewEntity.cs` (static) in `Data/Receiving/`
+3. **Create DAO:** Add `Dao_NewEntity.cs` (Instance) in `Data/Receiving/`
 4. **Create Service Interface:** Add `IService_NewFeature.cs` in `Contracts/Services/`
 5. **Implement Service:** Add `Service_NewFeature.cs` in `Services/Receiving/`
 6. **Register Service:** Update `App.xaml.cs` ConfigureServices

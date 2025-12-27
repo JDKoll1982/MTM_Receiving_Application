@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Data.Receiving;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
@@ -93,85 +94,25 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Querying Infor Visual for PO: {poNumber} (Clean: {cleanPoNumber})");
-                using var connection = new SqlConnection(GetConnectionString());
                 
-                const string query = @"
-                    SELECT 
-                        pol.PART_ID AS PartID,
-                        CAST(pol.LINE_NO AS VARCHAR(10)) AS POLineNumber,
-                        ISNULL(p.PRODUCT_CODE, 'UNKNOWN') AS PartType,
-                        pol.ORDER_QTY AS QtyOrdered,
-                        ISNULL(p.DESCRIPTION, '') AS Description,
-                        po.VENDOR_ID AS VendorID,
-                        pol.TOTAL_RECEIVED_QTY AS TotalReceivedQty,
-                        po.STATUS AS POStatus
-                    FROM 
-                        dbo.PURC_ORDER_LINE pol
-                    LEFT JOIN 
-                        dbo.PART p ON pol.PART_ID = p.ID
-                    INNER JOIN
-                        dbo.PURCHASE_ORDER po ON pol.PURC_ORDER_ID = po.ID
-                    WHERE 
-                        po.ID = @PONumber
-                        -- AND pol.LINE_STATUS != 'X'  -- Relaxed for testing
-                        -- Allow all PO statuses including Closed
-                    ORDER BY 
-                        pol.LINE_NO;";
-
-                using var command = new SqlCommand(query, connection)
+                // Instantiate DAO with dynamic connection string
+                var dao = new Dao_InforVisualPO(GetConnectionString());
+                var result = await dao.GetPOWithPartsAsync(cleanPoNumber);
+                
+                if (result.IsSuccess && result.Data != null)
                 {
-                    CommandType = CommandType.Text,
-                    CommandTimeout = 30
-                };
-
-                command.Parameters.AddWithValue("@PONumber", cleanPoNumber);
-
-                await connection.OpenAsync();
-                using var reader = await command.ExecuteReaderAsync();
-
-                var po = new Model_InforVisualPO
-                {
-                    PONumber = cleanPoNumber,
-                    Parts = new List<Model_InforVisualPart>()
-                };
-
-                while (await reader.ReadAsync())
-                {
-                    po.Parts.Add(new Model_InforVisualPart
-                    {
-                        PartID = !reader.IsDBNull(reader.GetOrdinal("PartID")) ? reader.GetString(reader.GetOrdinal("PartID")) : string.Empty,
-                        POLineNumber = !reader.IsDBNull(reader.GetOrdinal("POLineNumber")) ? reader.GetString(reader.GetOrdinal("POLineNumber")) : string.Empty,
-                        PartType = !reader.IsDBNull(reader.GetOrdinal("PartType")) ? reader.GetString(reader.GetOrdinal("PartType")) : "UNKNOWN",
-                        QtyOrdered = !reader.IsDBNull(reader.GetOrdinal("QtyOrdered")) ? reader.GetDecimal(reader.GetOrdinal("QtyOrdered")) : 0m,
-                        Description = !reader.IsDBNull(reader.GetOrdinal("Description")) ? reader.GetString(reader.GetOrdinal("Description")) : string.Empty
-                    });
-
-                    if (po.Vendor == string.Empty && !reader.IsDBNull(reader.GetOrdinal("VendorID")))
-                    {
-                        po.Vendor = reader.GetString(reader.GetOrdinal("VendorID"));
-                    }
-                    
-                    if (po.Status == string.Empty && !reader.IsDBNull(reader.GetOrdinal("POStatus")))
-                    {
-                        po.Status = reader.GetString(reader.GetOrdinal("POStatus"));
-                    }
+                    _logger?.LogInfo($"Successfully retrieved PO {poNumber} with {result.Data.Parts.Count} parts");
                 }
-
-                if (po.HasParts)
+                else if (result.IsSuccess && result.Data == null)
                 {
-                    _logger?.LogInfo($"Successfully retrieved PO {poNumber} with {po.Parts.Count} parts");
-                    return DaoResultFactory.Success<Model_InforVisualPO?>(po);
+                    _logger?.LogWarning($"PO {poNumber} found but has no parts or no results returned");
                 }
                 else
                 {
-                    _logger?.LogWarning($"PO {poNumber} found but has no parts or no results returned");
-                    return DaoResultFactory.Success<Model_InforVisualPO?>(null);
+                    _logger?.LogError($"Failed to query Infor Visual for PO {poNumber}: {result.ErrorMessage}");
                 }
-            }
-            catch (SqlException ex)
-            {
-                _logger?.LogError($"SQL Error querying Infor Visual for PO {poNumber}: {ex.Message}", ex);
-                return DaoResultFactory.Failure<Model_InforVisualPO?>($"Failed to query Infor Visual for PO {poNumber}: {ex.Message}", ex);
+                
+                return result;
             }
             catch (Exception ex)
             {
@@ -201,57 +142,25 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Querying Infor Visual for Part: {partID}");
-                using var connection = new SqlConnection(GetConnectionString());
                 
-                const string query = @"
-                    SELECT 
-                        p.ID AS PartID,
-                        ISNULL(p.PRODUCT_CODE, 'UNKNOWN') AS PartType,
-                        ISNULL(p.DESCRIPTION, '') AS Description,
-                        p.STOCK_UM AS UnitOfMeasure,
-                        CASE 
-                            WHEN p.INVENTORY_LOCKED = 'Y' THEN 'LOCKED'
-                            WHEN p.STOCKED = 'Y' THEN 'ACTIVE'
-                            ELSE 'INACTIVE'
-                        END AS Status
-                    FROM 
-                        dbo.PART p
-                    WHERE 
-                        p.ID = @PartID
-                        AND p.INVENTORY_LOCKED != 'Y';";
-
-                using var command = new SqlCommand(query, connection)
+                // Instantiate DAO with dynamic connection string
+                var dao = new Dao_InforVisualPart(GetConnectionString());
+                var result = await dao.GetPartByIdAsync(partID);
+                
+                if (result.IsSuccess && result.Data != null)
                 {
-                    CommandType = CommandType.Text,
-                    CommandTimeout = 30
-                };
-
-                command.Parameters.AddWithValue("@PartID", partID);
-
-                await connection.OpenAsync();
-                using var reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
-                {
-                    var part = new Model_InforVisualPart
-                    {
-                        PartID = !reader.IsDBNull(reader.GetOrdinal("PartID")) ? reader.GetString(reader.GetOrdinal("PartID")) : string.Empty,
-                        PartType = !reader.IsDBNull(reader.GetOrdinal("PartType")) ? reader.GetString(reader.GetOrdinal("PartType")) : "UNKNOWN",
-                        Description = !reader.IsDBNull(reader.GetOrdinal("Description")) ? reader.GetString(reader.GetOrdinal("Description")) : string.Empty,
-                        POLineNumber = "N/A",
-                        QtyOrdered = 0
-                    };
                     _logger?.LogInfo($"Successfully retrieved Part {partID}");
-                    return DaoResultFactory.Success<Model_InforVisualPart?>(part);
                 }
-
-                _logger?.LogWarning($"Part {partID} not found in Infor Visual");
-                return DaoResultFactory.Success<Model_InforVisualPart?>(null);
-            }
-            catch (SqlException ex)
-            {
-                _logger?.LogError($"SQL Error querying Infor Visual for Part {partID}: {ex.Message}", ex);
-                return DaoResultFactory.Failure<Model_InforVisualPart?>($"Failed to query Infor Visual for Part {partID}: {ex.Message}", ex);
+                else if (result.IsSuccess && result.Data == null)
+                {
+                    _logger?.LogWarning($"Part {partID} not found in Infor Visual");
+                }
+                else
+                {
+                    _logger?.LogError($"Failed to query Infor Visual for Part {partID}: {result.ErrorMessage}");
+                }
+                
+                return result;
             }
             catch (Exception ex)
             {
@@ -270,52 +179,21 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Checking same-day receiving for PO: {poNumber}, Part: {partID}, Date: {date:yyyy-MM-dd}");
-                using var connection = new SqlConnection(GetConnectionString());
                 
-                const string query = @"
-                    SELECT 
-                        ISNULL(SUM(it.QTY), 0) AS TotalQtyReceived,
-                        COUNT(*) AS ReceiptCount,
-                        MAX(it.TRANSACTION_DATE) AS LastReceiptTime
-                    FROM 
-                        dbo.INVENTORY_TRANS it
-                    WHERE 
-                        it.PURC_ORDER_ID = @PONumber
-                        AND it.PART_ID = @PartID
-                        AND CAST(it.TRANSACTION_DATE AS DATE) = @Date
-                        AND it.TYPE = 'R'  -- Receipt transaction
-                        AND it.CLASS = '1'  -- PO Receipt
-                        AND it.SITE_ID = (SELECT SITE_ID FROM dbo.PURCHASE_ORDER WHERE ID = @PONumber);";
-
-                using var command = new SqlCommand(query, connection)
+                // Instantiate DAO with dynamic connection string
+                var dao = new Dao_InforVisualPO(GetConnectionString());
+                var result = await dao.GetSameDayReceivingQuantityAsync(poNumber, partID, date);
+                
+                if (result.IsSuccess)
                 {
-                    CommandType = CommandType.Text,
-                    CommandTimeout = 30
-                };
-
-                command.Parameters.AddWithValue("@PONumber", poNumber);
-                command.Parameters.AddWithValue("@PartID", partID);
-                command.Parameters.AddWithValue("@Date", date.Date);
-
-                await connection.OpenAsync();
-                using var reader = await command.ExecuteReaderAsync();
-
-                decimal qty = 0;
-                if (await reader.ReadAsync())
-                {
-                    if (!reader.IsDBNull(reader.GetOrdinal("TotalQtyReceived")))
-                    {
-                        qty = reader.GetDecimal(reader.GetOrdinal("TotalQtyReceived"));
-                    }
+                    _logger?.LogInfo($"Same-day receiving check result: {result.Data} for PO {poNumber}, Part {partID}");
                 }
-
-                _logger?.LogInfo($"Same-day receiving check result: {qty} for PO {poNumber}, Part {partID}");
-                return DaoResultFactory.Success<decimal>(qty);
-            }
-            catch (SqlException ex)
-            {
-                _logger?.LogError($"SQL Error checking same-day receiving for PO {poNumber}, Part {partID}: {ex.Message}", ex);
-                return DaoResultFactory.Failure<decimal>($"Failed to query same-day receiving for PO {poNumber}, Part {partID}: {ex.Message}", ex);
+                else
+                {
+                    _logger?.LogError($"Failed to query same-day receiving for PO {poNumber}, Part {partID}: {result.ErrorMessage}");
+                }
+                
+                return result;
             }
             catch (Exception ex)
             {
@@ -340,47 +218,21 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Calculating remaining quantity for PO: {poNumber}, Part: {partID}");
-                using var connection = new SqlConnection(GetConnectionString());
                 
-                const string query = @"
-                    SELECT 
-                        pol.ORDER_QTY - ISNULL(pol.TOTAL_RECEIVED_QTY, 0) AS RemainingQuantity
-                    FROM 
-                        dbo.PURC_ORDER_LINE pol
-                    WHERE 
-                        pol.PURC_ORDER_ID = @PONumber 
-                        AND pol.PART_ID = @PartID;";
-
-                using var command = new SqlCommand(query, connection)
+                // Instantiate DAO with dynamic connection string
+                var dao = new Dao_InforVisualPO(GetConnectionString());
+                var result = await dao.GetRemainingQuantityAsync(poNumber, partID);
+                
+                if (result.IsSuccess)
                 {
-                    CommandType = CommandType.Text,
-                    CommandTimeout = 30
-                };
-
-                command.Parameters.AddWithValue("@PONumber", poNumber);
-                command.Parameters.AddWithValue("@PartID", partID);
-
-                await connection.OpenAsync();
-                var result = await command.ExecuteScalarAsync();
-
-                if (result != null && result != DBNull.Value)
-                {
-                    decimal remainingQty = Convert.ToDecimal(result);
-                    int remainingQtyInt = (int)Math.Floor(remainingQty); // Whole numbers only
-                    
-                    _logger?.LogInfo($"Remaining quantity for PO {poNumber}, Part {partID}: {remainingQtyInt}");
-                    return DaoResultFactory.Success<int>(remainingQtyInt);
+                    _logger?.LogInfo($"Remaining quantity for PO {poNumber}, Part {partID}: {result.Data}");
                 }
                 else
                 {
-                    _logger?.LogWarning($"No data found for PO {poNumber}, Part {partID}");
-                    return DaoResultFactory.Failure<int>($"No data found for PO {poNumber}, Part {partID}");
+                    _logger?.LogWarning($"Failed to calculate remaining quantity: {result.ErrorMessage}");
                 }
-            }
-            catch (SqlException ex)
-            {
-                _logger?.LogError($"SQL Error calculating remaining quantity for PO {poNumber}, Part {partID}: {ex.Message}", ex);
-                return DaoResultFactory.Failure<int>($"Failed to calculate remaining quantity: {ex.Message}", ex);
+                
+                return result;
             }
             catch (Exception ex)
             {
@@ -399,9 +251,20 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo("Testing Infor Visual connection...");
-                using var connection = new SqlConnection(GetConnectionString());
+                // Use DAO to test connection? DAO doesn't have TestConnection.
+                // But we can try a simple query or just open connection.
+                // Since we are refactoring to use DAOs, we should ideally use DAO.
+                // But for TestConnection, we might just want to check if we can connect.
+                // I'll keep the direct connection check here as it's a utility method, 
+                // OR I can add TestConnection to DAO.
+                // Given I can't easily modify DAO right now (already did), I'll keep the direct check 
+                // BUT I must use Microsoft.Data.SqlClient (or System.Data.SqlClient) which was used before.
+                // The original file used `using System.Data.SqlClient;` (implied by `SqlConnection`).
+                // I need to make sure I have the using directive.
+                
+                using var connection = new System.Data.SqlClient.SqlConnection(GetConnectionString());
                 await connection.OpenAsync();
-                bool isOpen = connection.State == ConnectionState.Open;
+                bool isOpen = connection.State == System.Data.ConnectionState.Open;
                 _logger?.LogInfo($"Infor Visual connection test result: {isOpen}");
                 return isOpen;
             }

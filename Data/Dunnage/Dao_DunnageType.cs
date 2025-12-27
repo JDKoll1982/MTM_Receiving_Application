@@ -10,20 +10,25 @@ using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Data.Dunnage;
 
-public static class Dao_DunnageType
+public class Dao_DunnageType
 {
-    private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
+    private readonly string _connectionString;
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllAsync()
+    public Dao_DunnageType(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public virtual async Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageType>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_types_get_all",
             MapFromReader
         );
     }
 
-    public static async Task<Model_Dao_Result<Model_DunnageType>> GetByIdAsync(int id)
+    public virtual async Task<Model_Dao_Result<Model_DunnageType>> GetByIdAsync(int id)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -31,14 +36,14 @@ public static class Dao_DunnageType
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageType>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_types_get_by_id",
             MapFromReader,
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> InsertAsync(string typeName, string user)
+    public virtual async Task<Model_Dao_Result<int>> InsertAsync(string typeName, string user)
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
@@ -55,7 +60,7 @@ public static class Dao_DunnageType
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
             "sp_dunnage_types_insert",
             parameters,
-            ConnectionString
+            _connectionString
         );
 
         if (result.IsSuccess)
@@ -70,7 +75,7 @@ public static class Dao_DunnageType
         return DaoResultFactory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
-    public static async Task<Model_Dao_Result> UpdateAsync(int id, string typeName, string user)
+    public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string typeName, string user)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -80,13 +85,13 @@ public static class Dao_DunnageType
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_types_update",
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result> DeleteAsync(int id)
+    public virtual async Task<Model_Dao_Result> DeleteAsync(int id)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -94,13 +99,13 @@ public static class Dao_DunnageType
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_types_delete",
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> CountPartsAsync(int typeId)
+    public virtual async Task<Model_Dao_Result<int>> CountPartsAsync(int typeId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -108,14 +113,14 @@ public static class Dao_DunnageType
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_types_count_parts",
             reader => reader.GetInt32(reader.GetOrdinal("part_count")),
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> CountTransactionsAsync(int typeId)
+    public virtual async Task<Model_Dao_Result<int>> CountTransactionsAsync(int typeId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -123,14 +128,14 @@ public static class Dao_DunnageType
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
-            ConnectionString,
+            _connectionString,
             "sp_dunnage_types_count_transactions",
             reader => reader.GetInt32(reader.GetOrdinal("transaction_count")),
             parameters
         );
     }
 
-    private static Model_DunnageType MapFromReader(IDataReader reader)
+    private Model_DunnageType MapFromReader(IDataReader reader)
     {
         return new Model_DunnageType
         {

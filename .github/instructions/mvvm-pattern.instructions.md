@@ -13,6 +13,31 @@ This file defines MVVM patterns and standards for WinUI 3 development in the MTM
 3. **CommunityToolkit.Mvvm**: Use `ObservableObject`, `RelayCommand`, `Observable` Property` attributes
 4. **Dependency Injection**: ALL ViewModels registered in DI container
 5. **No Business Logic in Code-Behind**: Only UI-specific logic in `.xaml.cs`
+6. **Layer Separation**: ViewModels **NEVER** access DAOs directly. Use Services.
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    View[View (XAML)] -->|x:Bind| ViewModel[ViewModel]
+    ViewModel -->|Injects| Service[Service Interface]
+    Service -->|Injects| DAO[DAO Interface/Class]
+    DAO -->|Executes| DB[(Database)]
+    
+    subgraph "Presentation Layer"
+    View
+    ViewModel
+    end
+    
+    subgraph "Business Layer"
+    Service
+    end
+    
+    subgraph "Data Layer"
+    DAO
+    DB
+    end
+```
 
 ---
 
@@ -22,9 +47,8 @@ This file defines MVVM patterns and standards for WinUI 3 development in the MTM
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Data.Receiving;
+using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Receiving;
-using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.ViewModels.Shared;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving;
@@ -35,13 +59,17 @@ namespace MTM_Receiving_Application.ViewModels.Receiving;
 /// </summary>
 public partial class ReceivingLabelViewModel : BaseViewModel
 {
+    private readonly IService_ReceivingWorkflow _receivingService;
+
     #region Constructor & DI
 
     public ReceivingLabelViewModel(
+        IService_ReceivingWorkflow receivingService,
         IService_ErrorHandler errorHandler,
         ILoggingService logger)
         : base(errorHandler, logger)
     {
+        _receivingService = receivingService;
         ReceivingLines = new ObservableCollection<Model_ReceivingLine>();
         LoadInitialDataAsync().ConfigureAwait(false);
     }
@@ -97,8 +125,8 @@ public partial class ReceivingLabelViewModel : BaseViewModel
             // Set employee number
             CurrentLine.EmployeeNumber = EmployeeNumber;
 
-            // Save to database
-            var result = await Dao_ReceivingLine.InsertReceivingLineAsync(CurrentLine);
+            // Save to database via Service (NOT DAO directly)
+            var result = await _receivingService.AddReceivingLineAsync(CurrentLine);
 
             if (result.IsSuccess)
             {
@@ -380,13 +408,23 @@ private void Button_Click(object sender, RoutedEventArgs e)
 }
 ```
 
-✅ **Business logic in ViewModel**
+❌ **ViewModel calling DAO directly**
+```csharp
+// WRONG: In ReceivingLabelViewModel.cs
+[RelayCommand]
+private async Task AddLineAsync()
+{
+    var result = await Dao_ReceivingLine.InsertAsync(line); // NO! Use Service instead.
+}
+```
+
+✅ **ViewModel calling Service**
 ```csharp
 // CORRECT: In ReceivingLabelViewModel.cs
 [RelayCommand]
 private async Task AddLineAsync()
 {
-    var result = await Dao_ReceivingLine.InsertAsync(line);
+    var result = await _receivingService.AddReceivingLineAsync(line);
 }
 ```
 
@@ -411,9 +449,10 @@ private async Task AddLineAsync()
 public async Task AddLineAsync_ValidData_AddsToCollection()
 {
     // Arrange
+    var mockService = new Mock<IService_ReceivingWorkflow>();
     var mockErrorHandler = new Mock<IService_ErrorHandler>();
     var mockLogger = new Mock<ILoggingService>();
-    var viewModel = new ReceivingLabelViewModel(mockErrorHandler.Object, mockLogger.Object);
+    var viewModel = new ReceivingLabelViewModel(mockService.Object, mockErrorHandler.Object, mockLogger.Object);
     
     viewModel.CurrentLine = new Model_ReceivingLine
     {
@@ -441,12 +480,12 @@ public async Task AddLineAsync_ValidData_AddsToCollection()
 | **View** | UI layout, data binding | `ReceivingLabelPage.xaml` |
 | **Code-Behind** | UI-specific logic only | `ReceivingLabelPage.xaml.cs` |
 | **Model** | Data structure | `Model_ReceivingLine` |
-| **Service** | Reusable business logic | `Service_ErrorHandler` |
+| **Service** | Reusable business logic | `Service_ReceivingWorkflow` |
 | **DAO** | Database access | `Dao_ReceivingLine` |
 
-**Key Pattern**: View → ViewModel → Service/DAO → Database
+**Key Pattern**: View → ViewModel → Service → DAO → Database
 
 ---
 
-**Last Updated**: December 15, 2025  
+**Last Updated**: December 27, 2025  
 **Framework**: WinUI 3 + CommunityToolkit.Mvvm

@@ -12,16 +12,13 @@ namespace MTM_Receiving_Application.Data.Receiving;
 /// Data Access Object for label_table_receiving table
 /// Provides CRUD operations using stored procedures
 /// </summary>
-public static class Dao_ReceivingLine
+public class Dao_ReceivingLine
 {
-    private static IService_ErrorHandler? _errorHandler;
+    private readonly string _connectionString;
 
-    /// <summary>
-    /// Sets the error handler service (dependency injection)
-    /// </summary>
-    public static void SetErrorHandler(IService_ErrorHandler errorHandler)
+    public Dao_ReceivingLine(string connectionString)
     {
-        _errorHandler = errorHandler;
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
@@ -29,13 +26,10 @@ public static class Dao_ReceivingLine
     /// </summary>
     /// <param name="line">ReceivingLine model to insert</param>
     /// <returns>Model_Dao_Result with success status and affected rows</returns>
-    public static async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line)
+    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line)
     {
         try
         {
-            // Get connection string
-            string connectionString = Helper_Database_Variables.GetConnectionString(useProduction: true);
-
             // Prepare stored procedure parameters
             var parameters = new MySqlParameter[]
             {
@@ -68,32 +62,19 @@ public static class Dao_ReceivingLine
             var result = await Helper_Database_StoredProcedure.ExecuteAsync(
                 "receiving_line_Insert",
                 parameters,
-                connectionString
+                _connectionString
             );
 
             return result;
         }
         catch (Exception ex)
         {
-            var errorResult = new Model_Dao_Result
+            return new Model_Dao_Result
             {
                 Success = false,
                 ErrorMessage = $"Unexpected error inserting receiving line: {ex.Message}",
                 Severity = Models.Enums.Enum_ErrorSeverity.Error
             };
-
-            // Log the error using error handler if available
-            if (_errorHandler != null)
-            {
-                await _errorHandler.HandleErrorAsync(
-                    errorResult.ErrorMessage,
-                    errorResult.Severity,
-                    ex,
-                    showDialog: false // Don't show dialog for DAO errors by default
-                );
-            }
-
-            return errorResult;
         }
     }
 }

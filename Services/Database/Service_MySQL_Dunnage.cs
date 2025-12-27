@@ -15,17 +15,32 @@ namespace MTM_Receiving_Application.Services.Database
         private readonly IService_ErrorHandler _errorHandler;
         private readonly ILoggingService _logger;
         private readonly IService_UserSessionManager _sessionManager;
+        private readonly Dao_DunnageLoad _daoDunnageLoad;
+        private readonly Dao_DunnageType _daoDunnageType;
+        private readonly Dao_DunnagePart _daoDunnagePart;
+        private readonly Dao_DunnageSpec _daoDunnageSpec;
+        private readonly Dao_InventoriedDunnage _daoInventoriedDunnage;
 
         private string CurrentUser => _sessionManager.CurrentSession?.User.WindowsUsername ?? "System";
 
         public Service_MySQL_Dunnage(
             IService_ErrorHandler errorHandler,
             ILoggingService logger,
-            IService_UserSessionManager sessionManager)
+            IService_UserSessionManager sessionManager,
+            Dao_DunnageLoad daoDunnageLoad,
+            Dao_DunnageType daoDunnageType,
+            Dao_DunnagePart daoDunnagePart,
+            Dao_DunnageSpec daoDunnageSpec,
+            Dao_InventoriedDunnage daoInventoriedDunnage)
         {
             _errorHandler = errorHandler;
             _logger = logger;
             _sessionManager = sessionManager;
+            _daoDunnageLoad = daoDunnageLoad;
+            _daoDunnageType = daoDunnageType;
+            _daoDunnagePart = daoDunnagePart;
+            _daoDunnageSpec = daoDunnageSpec;
+            _daoInventoriedDunnage = daoInventoriedDunnage;
         }
 
         // ==================== Type Operations ====================
@@ -34,7 +49,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageType.GetAllAsync();
+                return await _daoDunnageType.GetAllAsync();
             }
             catch (Exception ex)
             {
@@ -47,7 +62,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageType.GetByIdAsync(typeId);
+                return await _daoDunnageType.GetByIdAsync(typeId);
             }
             catch (Exception ex)
             {
@@ -60,7 +75,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_DunnageType.InsertAsync(type.TypeName, CurrentUser);
+                var result = await _daoDunnageType.InsertAsync(type.TypeName, CurrentUser);
                 if (result.IsSuccess)
                 {
                     type.Id = result.Data;
@@ -79,7 +94,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageType.UpdateAsync(type.Id, type.TypeName, CurrentUser);
+                return await _daoDunnageType.UpdateAsync(type.Id, type.TypeName, CurrentUser);
             }
             catch (Exception ex)
             {
@@ -93,20 +108,20 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 // Check if any parts are using this type
-                var partsResult = await Dao_DunnagePart.GetByTypeAsync(typeId);
-                if (partsResult.IsSuccess && partsResult.Data.Count > 0)
+                var partsResult = await _daoDunnagePart.GetByTypeAsync(typeId);
+                if (partsResult.IsSuccess && partsResult.Data?.Count > 0)
                 {
                     return DaoResultFactory.Failure($"Cannot delete type. It is used by {partsResult.Data.Count} parts.");
                 }
 
                 // Check if any specs are defined for this type
-                var specsResult = await Dao_DunnageSpec.GetByTypeAsync(typeId);
-                if (specsResult.IsSuccess && specsResult.Data.Count > 0)
+                var specsResult = await _daoDunnageSpec.GetByTypeAsync(typeId);
+                if (specsResult.IsSuccess && specsResult.Data?.Count > 0)
                 {
                     return DaoResultFactory.Failure($"Cannot delete type. It has {specsResult.Data.Count} specifications defined. Please delete them first.");
                 }
 
-                return await Dao_DunnageType.DeleteAsync(typeId);
+                return await _daoDunnageType.DeleteAsync(typeId);
             }
             catch (Exception ex)
             {
@@ -121,7 +136,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageSpec.GetByTypeAsync(typeId);
+                return await _daoDunnageSpec.GetByTypeAsync(typeId);
             }
             catch (Exception ex)
             {
@@ -134,7 +149,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_DunnageSpec.InsertAsync(spec.TypeId, spec.SpecKey, spec.SpecValue, CurrentUser);
+                var result = await _daoDunnageSpec.InsertAsync(spec.TypeId, spec.SpecKey, spec.SpecValue, CurrentUser);
                 if (result.IsSuccess)
                 {
                     spec.Id = result.Data;
@@ -153,7 +168,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageSpec.UpdateAsync(spec.Id, spec.SpecValue, CurrentUser);
+                return await _daoDunnageSpec.UpdateAsync(spec.Id, spec.SpecValue, CurrentUser);
             }
             catch (Exception ex)
             {
@@ -166,7 +181,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageSpec.DeleteByIdAsync(specId);
+                return await _daoDunnageSpec.DeleteByIdAsync(specId);
             }
             catch (Exception ex)
             {
@@ -179,7 +194,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageSpec.DeleteByTypeAsync(typeId);
+                return await _daoDunnageSpec.DeleteByTypeAsync(typeId);
             }
             catch (Exception ex)
             {
@@ -192,7 +207,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_DunnageSpec.GetAllAsync();
+                var result = await _daoDunnageSpec.GetAllAsync();
                 if (result.IsSuccess && result.Data != null)
                 {
                     return result.Data.Select(s => s.SpecKey).Distinct().OrderBy(k => k).ToList();
@@ -212,7 +227,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnagePart.GetAllAsync();
+                return await _daoDunnagePart.GetAllAsync();
             }
             catch (Exception ex)
             {
@@ -225,7 +240,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnagePart.GetByTypeAsync(typeId);
+                return await _daoDunnagePart.GetByTypeAsync(typeId);
             }
             catch (Exception ex)
             {
@@ -238,7 +253,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnagePart.GetByIdAsync(partId);
+                return await _daoDunnagePart.GetByIdAsync(partId);
             }
             catch (Exception ex)
             {
@@ -251,7 +266,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_DunnagePart.InsertAsync(part.PartId, part.TypeId, part.SpecValues, CurrentUser);
+                var result = await _daoDunnagePart.InsertAsync(part.PartId, part.TypeId, part.SpecValues, CurrentUser);
                 if (result.IsSuccess)
                 {
                     part.Id = result.Data;
@@ -270,7 +285,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnagePart.UpdateAsync(part.Id, part.SpecValues, CurrentUser);
+                return await _daoDunnagePart.UpdateAsync(part.Id, part.SpecValues, CurrentUser);
             }
             catch (Exception ex)
             {
@@ -292,11 +307,11 @@ namespace MTM_Receiving_Application.Services.Database
                 Model_Dao_Result<List<Model_DunnagePart>> result;
                 if (typeId.HasValue)
                 {
-                    result = await Dao_DunnagePart.GetByTypeAsync(typeId.Value);
+                    result = await _daoDunnagePart.GetByTypeAsync(typeId.Value);
                 }
                 else
                 {
-                    result = await Dao_DunnagePart.GetAllAsync();
+                    result = await _daoDunnagePart.GetAllAsync();
                 }
 
                 if (!result.IsSuccess || result.Data == null) return result;
@@ -324,7 +339,7 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 if (loads == null || loads.Count == 0) return DaoResultFactory.Success();
-                return await Dao_DunnageLoad.InsertBatchAsync(loads, CurrentUser);
+                return await _daoDunnageLoad.InsertBatchAsync(loads, CurrentUser);
             }
             catch (Exception ex)
             {
@@ -337,7 +352,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageLoad.GetByDateRangeAsync(start, end);
+                return await _daoDunnageLoad.GetByDateRangeAsync(start, end);
             }
             catch (Exception ex)
             {
@@ -350,7 +365,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_DunnageLoad.GetAllAsync();
+                return await _daoDunnageLoad.GetAllAsync();
             }
             catch (Exception ex)
             {
@@ -365,7 +380,7 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 if (Guid.TryParse(loadUuid, out var guid))
                 {
-                    return await Dao_DunnageLoad.GetByIdAsync(guid);
+                    return await _daoDunnageLoad.GetByIdAsync(guid);
                 }
                 return DaoResultFactory.Failure<Model_DunnageLoad>("Invalid UUID format");
             }
@@ -378,13 +393,11 @@ namespace MTM_Receiving_Application.Services.Database
 
         public async Task<Model_Dao_Result> UpdateLoadAsync(Model_DunnageLoad load)
         {
-            // Dao_DunnageLoad does not have UpdateAsync in the snippet I read.
             return DaoResultFactory.Failure("Update load not implemented in DAO yet.");
         }
 
         public async Task<Model_Dao_Result> DeleteLoadAsync(string loadUuid)
         {
-            // Dao_DunnageLoad does not have DeleteAsync in the snippet I read.
             return DaoResultFactory.Failure("Delete load not implemented in DAO yet.");
         }
 
@@ -394,7 +407,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_InventoriedDunnage.CheckAsync(partId);
+                var result = await _daoInventoriedDunnage.CheckAsync(partId);
                 return result.IsSuccess && result.Data;
             }
             catch (Exception ex)
@@ -408,7 +421,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_InventoriedDunnage.GetByPartAsync(partId);
+                return await _daoInventoriedDunnage.GetByPartAsync(partId);
             }
             catch (Exception ex)
             {
@@ -421,7 +434,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_InventoriedDunnage.GetAllAsync();
+                return await _daoInventoriedDunnage.GetAllAsync();
             }
             catch (Exception ex)
             {
@@ -434,7 +447,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_InventoriedDunnage.InsertAsync(item.PartId, item.InventoryMethod ?? string.Empty, item.Notes ?? string.Empty, CurrentUser);
+                var result = await _daoInventoriedDunnage.InsertAsync(item.PartId, item.InventoryMethod ?? string.Empty, item.Notes ?? string.Empty, CurrentUser);
                 if (result.IsSuccess)
                 {
                     item.Id = result.Data;
@@ -451,7 +464,6 @@ namespace MTM_Receiving_Application.Services.Database
 
         public async Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId)
         {
-            // Dao_InventoriedDunnage does not have DeleteAsync yet.
             return DaoResultFactory.Failure("Remove from inventory list not implemented in DAO yet.");
         }
 
@@ -459,7 +471,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await Dao_InventoriedDunnage.UpdateAsync(item.Id, item.InventoryMethod ?? string.Empty, item.Notes ?? string.Empty, CurrentUser);
+                return await _daoInventoriedDunnage.UpdateAsync(item.Id, item.InventoryMethod ?? string.Empty, item.Notes ?? string.Empty, CurrentUser);
             }
             catch (Exception ex)
             {
@@ -474,8 +486,8 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_DunnagePart.GetByTypeAsync(typeId);
-                return result.IsSuccess ? result.Data.Count : 0;
+                var result = await _daoDunnagePart.GetByTypeAsync(typeId);
+                return result.IsSuccess ? (result.Data?.Count ?? 0) : 0;
             }
             catch (Exception ex)
             {
@@ -500,7 +512,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await Dao_DunnageSpec.CountPartsUsingSpecAsync(typeId, specKey);
+                var result = await _daoDunnageSpec.CountPartsUsingSpecAsync(typeId, specKey);
                 return result.IsSuccess ? result.Data : 0;
             }
             catch (Exception ex)

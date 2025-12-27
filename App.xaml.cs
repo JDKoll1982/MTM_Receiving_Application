@@ -7,6 +7,9 @@ using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Services.Authentication;
 using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Data.Authentication;
+using MTM_Receiving_Application.Data.Receiving;
+using MTM_Receiving_Application.Data.Dunnage;
+using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.ViewModels.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
@@ -44,8 +47,27 @@ public partial class App : Application
                 services.AddSingleton<ILoggingService, LoggingUtility>();
 
                 // Authentication Services
-                services.AddSingleton(sp => new Dao_User(Helper_Database_Variables.GetConnectionString()));
-                services.AddSingleton<IDispatcherService>(sp => 
+                var mySqlConnectionString = Helper_Database_Variables.GetConnectionString();
+                var inforVisualConnectionString = Helper_Database_Variables.GetInforVisualConnectionString();
+
+                services.AddSingleton(sp => new Dao_User(mySqlConnectionString));
+
+                // Register NEW MySQL DAOs (Singleton - stateless data access)
+                services.AddSingleton(sp => new Dao_ReceivingLoad(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_ReceivingLine(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_PackageTypePreference(mySqlConnectionString));
+
+                // Register Dunnage DAOs (Singleton)
+                services.AddSingleton(sp => new Dao_DunnageLoad(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_DunnageType(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_DunnagePart(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_DunnageSpec(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_InventoriedDunnage(mySqlConnectionString));
+
+                // Register NEW Infor Visual DAOs (READ-ONLY)
+                services.AddSingleton(sp => new Dao_InforVisualPO(inforVisualConnectionString));
+                services.AddSingleton(sp => new Dao_InforVisualPart(inforVisualConnectionString));
+                services.AddSingleton<IDispatcherService>(sp =>
                 {
                     var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
                     return new DispatcherService(dispatcherQueue);
@@ -63,30 +85,18 @@ public partial class App : Application
                     var dispatcherService = sp.GetRequiredService<IDispatcherService>();
                     return new Service_UserSessionManager(daoUser, dispatcherService);
                 });
+                services.AddTransient<IService_UserPreferences, Service_UserPreferences>();
 
                 // Startup Service
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
                 // Receiving Workflow Services (003-database-foundation)
                 services.AddSingleton<IService_InforVisual, Service_InforVisual>();
-                services.AddSingleton<IService_MySQL_Receiving>(sp =>
-                {
-                    var logger = sp.GetRequiredService<ILoggingService>();
-                    return new Service_MySQL_Receiving(Helper_Database_Variables.GetConnectionString(), logger);
-                });
-                services.AddSingleton<IService_MySQL_PackagePreferences>(sp =>
-                    new Service_MySQL_PackagePreferences(Helper_Database_Variables.GetConnectionString()));
-                services.AddSingleton<IService_SessionManager>(sp => 
-                {
-                    var logger = sp.GetRequiredService<ILoggingService>();
-                    return new Service_SessionManager(logger);
-                });
-                services.AddSingleton<IService_CSVWriter>(sp =>
-                {
-                    var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
-                    var logger = sp.GetRequiredService<ILoggingService>();
-                    return new Service_CSVWriter(sessionManager, logger);
-                });
+                services.AddSingleton<IService_MySQL_Receiving>(sp => { var logger = sp.GetRequiredService<ILoggingService>(); return new Service_MySQL_Receiving(Helper_Database_Variables.GetConnectionString(), logger); });
+                services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
+                services.AddSingleton<IService_MySQL_PackagePreferences>(sp => new Service_MySQL_PackagePreferences(Helper_Database_Variables.GetConnectionString()));
+                services.AddSingleton<IService_SessionManager>(sp => { var logger = sp.GetRequiredService<ILoggingService>(); return new Service_SessionManager(logger); });
+                services.AddSingleton<IService_CSVWriter>(sp => { var sessionManager = sp.GetRequiredService<IService_UserSessionManager>(); var logger = sp.GetRequiredService<ILoggingService>(); return new Service_CSVWriter(sessionManager, logger); });
                 services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
                 services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
                 services.AddTransient<IService_Pagination, Service_Pagination>();
@@ -104,7 +114,7 @@ public partial class App : Application
                 services.AddTransient<ReceivingLabelViewModel>();
                 services.AddTransient<DunnageLabelViewModel>();
                 services.AddTransient<CarrierDeliveryLabelViewModel>();
-                
+
                 // Receiving Workflow ViewModels
                 services.AddTransient<ReceivingWorkflowViewModel>();
                 services.AddTransient<ReceivingModeSelectionViewModel>();

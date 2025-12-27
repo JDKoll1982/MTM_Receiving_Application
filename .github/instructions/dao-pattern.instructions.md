@@ -1,17 +1,25 @@
 # DAO Pattern Guidelines
 
 **Category**: Data Access Architecture  
-**Last Updated**: December 15, 2025  
+**Last Updated**: December 27, 2025  
 **Applies To**: All DAO classes in Data/ folder
 
 ## DAO Pattern Overview
 
 The Data Access Object (DAO) pattern provides an abstract interface to the database, encapsulating all data access logic and hiding implementation details from the business layer.
 
+**CONSTITUTIONAL MANDATE**: All DAOs must be **Instance-Based** and registered in the Dependency Injection container. Static DAOs are strictly prohibited.
+
+### Deprecated: Static DAO Pattern
+The legacy pattern of using `public static class Dao_Name` is **DEPRECATED**.
+-   Do NOT create new static DAOs.
+-   Refactor existing static DAOs to instance-based when modifying them.
+-   Static DAOs cannot be injected and make unit testing difficult.
+
 ### Benefits
 
 - **Separation of Concerns**: Business logic separate from data access
-- **Testability**: Easy to mock for unit testing
+- **Testability**: Easy to mock for unit testing (Moq compatible)
 - **Consistency**: Standardized database access patterns
 - **Error Handling**: Centralized error management
 - **Performance Monitoring**: Built-in metrics collection
@@ -22,45 +30,45 @@ The Data Access Object (DAO) pattern provides an abstract interface to the datab
 Data/
 ├── Receiving/
 │   ├── Dao_ReceivingLine.cs
-│   ├── Dao_DunnageLine.cs
-│   └── Dao_RoutingLabel.cs
-├── Labels/
-│   └── (Future DAOs)
-└── Lookup/
-    └── (Future DAOs)
+│   ├── Dao_ReceivingLoad.cs
+│   └── Dao_PackageTypePreference.cs
+├── InforVisual/
+│   ├── Dao_InforVisualPO.cs
+│   └── Dao_InforVisualPart.cs
+└── Dunnage/
+    └── Dao_DunnageLoad.cs
 ```
 
 ## Naming Conventions
 
 ### File Names
 - Format: `Dao_<EntityName>.cs`
-- Examples: `Dao_ReceivingLine.cs`, `Dao_Employee.cs`, `Dao_Part.cs`
+- Examples: `Dao_ReceivingLine.cs`, `Dao_User.cs`
 
 ### Class Names
 - Format: `Dao_<EntityName>`
-- Must be static classes (no instances needed)
-- Example: `public static class Dao_ReceivingLine`
+- Must be **public class** (NOT static)
+- Example: `public class Dao_ReceivingLine`
 
 ### Method Names
-- Format: `<Action><Entity>Async`
+- Format: `<Action><Entity>Async` or generic `<Action>Async`
 - Actions: Insert, Update, Delete, Get, GetAll, GetBy<Criteria>
 - Always suffix with `Async`
 - Examples:
-  - `InsertReceivingLineAsync`
-  - `UpdateReceivingLineAsync`
-  - `GetReceivingLineByIdAsync`
-  - `GetReceivingLinesByPONumberAsync`
-  - `DeleteReceivingLineAsync`
+  - `InsertAsync`
+  - `UpdateAsync`
+  - `GetByIdAsync`
+  - `GetByPoNumberAsync`
 
 ## Standard DAO Template
 
 ```csharp
 using System;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 
 namespace MTM_Receiving_Application.Data.Receiving;
 
@@ -68,86 +76,101 @@ namespace MTM_Receiving_Application.Data.Receiving;
 /// Data Access Object for <table_name> table
 /// Provides CRUD operations using stored procedures
 /// </summary>
-public static class Dao_<EntityName>
+public class Dao_<EntityName>
 {
-    private static IService_ErrorHandler? _errorHandler;
+    private readonly string _connectionString;
 
     /// <summary>
-    /// Sets the error handler service (dependency injection)
+    /// Constructor with dependency injection
     /// </summary>
-    public static void SetErrorHandler(IService_ErrorHandler errorHandler)
+    /// <param name="connectionString">Database connection string</param>
+    public Dao_<EntityName>(string connectionString)
     {
-        _errorHandler = errorHandler;
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
     /// Inserts a new record into the database
     /// </summary>
     /// <param name="entity">Entity model to insert</param>
-    /// <returns>Model_Dao_Result with success status and affected rows</returns>
-    public static async Task<Model_Dao_Result> Insert<EntityName>Async(Model_<EntityName> entity)
+    /// <returns>Model_Dao_Result with new ID or failure</returns>
+    public async Task<Model_Dao_Result<int>> InsertAsync(Model_<EntityName> entity)
     {
         try
         {
-            string connectionString = Helper_Database_Variables.GetConnectionString(useProduction: true);
-
-            var parameters = new MySqlParameter[]
+            var parameters = new Dictionary<string, object>
             {
-                new MySqlParameter("@p_Field1", entity.Field1),
-                new MySqlParameter("@p_Field2", entity.Field2),
-                new MySqlParameter("@p_Status", MySqlDbType.Int32) { Direction = System.Data.ParameterDirection.Output },
-                new MySqlParameter("@p_ErrorMsg", MySqlDbType.VarChar, 500) { Direction = System.Data.ParameterDirection.Output }
+                { "p_Field1", entity.Field1 },
+                { "p_Field2", entity.Field2 }
             };
 
-            if (!Helper_Database_StoredProcedure.ValidateParameters(parameters))
-            {
-                return new Model_Dao_Result
-                {
-                    Success = false,
-                    ErrorMessage = "Required parameters are missing or invalid",
-                    Severity = Models.Enums.Enum_ErrorSeverity.Warning
-                };
-            }
-
-            var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-                "<table_name>_Insert",
-                parameters,
-                connectionString
+            // Use Helper_Database_StoredProcedure for MySQL operations
+            return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
+                _connectionString,
+                "sp_<table_name>_insert",
+                parameters
             );
-
-            return result;
         }
         catch (Exception ex)
         {
-            var errorResult = new Model_Dao_Result
-            {
-                Success = false,
-                ErrorMessage = $"Unexpected error inserting <entity>: {ex.Message}",
-                Severity = Models.Enums.Enum_ErrorSeverity.Error
-            };
-
-            if (_errorHandler != null)
-            {
-                await _errorHandler.HandleErrorAsync(
-                    errorResult.ErrorMessage,
-                    errorResult.Severity,
-                    ex,
-                    showDialog: false
-                );
-            }
-
-            return errorResult;
+            return DaoResultFactory.Failure<int>(
+                $"Error inserting <entity>: {ex.Message}",
+                ex);
         }
     }
+    
+    /// <summary>
+    /// Retrieves all records
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_<EntityName>>>> GetAllAsync()
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>();
+            
+            return await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync<Model_<EntityName>>(
+                _connectionString,
+                "sp_<table_name>_get_all",
+                parameters);
+        }
+        catch (Exception ex)
+        {
+            return DaoResultFactory.Failure<List<Model_<EntityName>>>(
+                $"Error retrieving <entity> list: {ex.Message}",
+                ex);
+        }
+    }
+}
+```
+
+## Dependency Injection Registration
+
+All DAOs must be registered in `App.xaml.cs` as Singletons (stateless):
+
+```csharp
+// App.xaml.cs
+private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+{
+    // Get connection strings
+    var mySqlConnectionString = Helper_Database_Variables.GetConnectionString();
+    var inforVisualConnectionString = Helper_Database_Variables.GetInforVisualConnectionString();
+    
+    // Register MySQL DAOs
+    services.AddSingleton(sp => new Dao_ReceivingLine(mySqlConnectionString));
+    services.AddSingleton(sp => new Dao_User(mySqlConnectionString));
+    
+    // Register Infor Visual DAOs (READ-ONLY)
+    services.AddSingleton(sp => new Dao_InforVisualPO(inforVisualConnectionString));
 }
 ```
 
 ## Method Signatures
 
 ### Return Type
-All DAO methods MUST return `Task<Model_Dao_Result>`:
+All DAO methods MUST return `Task<Model_Dao_Result<T>>` or `Task<Model_Dao_Result>`:
 ```csharp
-public static async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line)
+public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
+public async Task<Model_Dao_Result<List<Model_ReceivingLine>>> GetAllAsync()
 ```
 
 ### Parameters
@@ -160,207 +183,97 @@ public static async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_Receiv
 - Use `await` for all database operations
 - Don't use `.Result` or `.Wait()` (causes deadlocks)
 
-## Parameter Handling
+## Infor Visual DAOs (READ-ONLY)
 
-### Required Parameters
+For Infor Visual integration, strict READ-ONLY policy applies:
+
 ```csharp
-new MySqlParameter("@p_PartID", line.PartID ?? string.Empty)
-```
-
-### Optional Parameters
-```csharp
-new MySqlParameter("@p_CoilsOnSkid", (object?)line.CoilsOnSkid ?? DBNull.Value)
-```
-
-### OUT Parameters
-```csharp
-new MySqlParameter("@p_Status", MySqlDbType.Int32) 
-{ 
-    Direction = System.Data.ParameterDirection.Output 
-},
-new MySqlParameter("@p_ErrorMsg", MySqlDbType.VarChar, 500) 
-{ 
-    Direction = System.Data.ParameterDirection.Output 
-}
-```
-
-## Transaction Handling
-
-### Single Operation
-Transactions are handled in stored procedures:
-```sql
-START TRANSACTION;
--- Operation
-COMMIT; -- or ROLLBACK on error
-```
-
-### Multiple Operations (Future)
-For operations spanning multiple procedures:
-```csharp
-using var connection = new MySqlConnection(connectionString);
-await connection.OpenAsync();
-using var transaction = await connection.BeginTransactionAsync();
-
-try
+public class Dao_InforVisualPO
 {
-    // Multiple operations
-    await Operation1(connection, transaction);
-    await Operation2(connection, transaction);
+    public Dao_InforVisualPO(string connectionString)
+    {
+        // Validate READ-ONLY intent
+        if (!connectionString.Contains("ApplicationIntent=ReadOnly"))
+            throw new InvalidOperationException("Infor Visual connection must be ReadOnly");
+            
+        _connectionString = connectionString;
+    }
     
-    await transaction.CommitAsync();
-}
-catch
-{
-    await transaction.RollbackAsync();
-    throw;
+    // SELECT methods only - NO Insert/Update/Delete
+    public async Task<Model_Dao_Result<List<Model_InforVisualPO>>> GetByPoAsync(string poNumber) { ... }
 }
 ```
 
 ## Error Handling
 
-### Three-Tier Error Handling
-
-1. **Stored Procedure Level**: Validates and returns status
-2. **Helper Level**: Retries transient errors, measures performance
-3. **DAO Level**: Catches exceptions, logs errors, returns Model_Dao_Result
-
-### Exception Types
+### DAO Level
+Catches exceptions, logs errors (optional), and returns `Model_Dao_Result.Failure`.
+**NEVER throw exceptions from a DAO.**
 
 ```csharp
-catch (MySqlException ex) when (ex.Number == 1062)
-{
-    // Duplicate key error
-    return new Model_Dao_Result
-    {
-        Success = false,
-        ErrorMessage = "Record already exists",
-        Severity = Enum_ErrorSeverity.Warning
-    };
-}
-catch (MySqlException ex)
-{
-    // Database-specific errors
-    // Log and return error result
-}
 catch (Exception ex)
 {
-    // Unexpected errors
-    // Log and return error result
+    return DaoResultFactory.Failure<T>(
+        $"Error message: {ex.Message}", 
+        ex, 
+        Enum_ErrorSeverity.High);
 }
 ```
-
-## Retry Logic
-
-Retry logic is automatic in `Helper_Database_StoredProcedure`:
-- **Max Attempts**: 3
-- **Delays**: 100ms, 200ms, 400ms
-- **Transient Errors**: MySQL error codes 1205, 1213, 2006, 2013
-
-DAOs don't need explicit retry logic.
 
 ## Testing
 
 ### Unit Tests
-Mock the database connection:
+Mock the DAO when testing Services:
 ```csharp
-[Test]
-public async Task InsertReceivingLine_ValidData_ReturnsSuccess()
+// Service Test
+[Fact]
+public async Task Insert_ValidatesInput()
 {
     // Arrange
-    var line = new Model_ReceivingLine { /* test data */ };
-    
-    // Act
-    var result = await Dao_ReceivingLine.InsertReceivingLineAsync(line);
-    
-    // Assert
-    Assert.IsTrue(result.Success);
-    Assert.AreEqual(1, result.AffectedRows);
+    var mockDao = new Mock<Dao_ReceivingLine>("fake_connection");
+    // Note: Since Dao is a class, methods must be virtual to mock, 
+    // OR better: Mock the interface if one exists, or use integration tests for DAOs.
+    // Ideally, Services inject DAOs, so we test Services by mocking DAOs.
+    // For DAO unit tests, we use integration tests with a test database.
 }
 ```
 
 ### Integration Tests
-Test against real database:
+Test against real database with test connection string:
 ```csharp
-[Test]
-public async Task InsertReceivingLine_DatabaseUnavailable_ReturnsError()
+[Fact]
+public async Task Insert_ReturnsNewId()
 {
-    // Stop MySQL before this test
-    var result = await Dao_ReceivingLine.InsertReceivingLineAsync(testLine);
+    // Arrange
+    var dao = new Dao_ReceivingLine(TestHelper.GetTestConnectionString());
+    var line = new Model_ReceivingLine { ... };
     
-    Assert.IsFalse(result.Success);
-    Assert.IsNotEmpty(result.ErrorMessage);
+    // Act
+    var result = await dao.InsertAsync(line);
+    
+    // Assert
+    Assert.True(result.IsSuccess);
+    Assert.True(result.Data > 0);
 }
 ```
 
 ## Performance Guidelines
 
 ### Connection Management
-- Use `using` statements for connections
-- Don't keep connections open longer than necessary
-- Let Helper manage connection pooling
+- Helper_Database_StoredProcedure manages connections automatically
+- For Infor Visual (direct SQL), use `using` statements for `SqlConnection`
 
 ### Query Optimization
 - Use indexes on frequently-queried columns
 - Avoid SELECT * (specify columns)
-- Use stored procedures (compiled and cached)
+- Use stored procedures for MySQL
+- Use parameterized queries for Infor Visual
 
 ### Monitoring
-Check `Model_Dao_Result.ExecutionTimeMs`:
-```csharp
-var result = await Dao_ReceivingLine.InsertReceivingLineAsync(line);
-
-if (result.ExecutionTimeMs > 500) // Threshold: 500ms
-{
-    _logger.LogWarning($"Slow database operation: {result.ExecutionTimeMs}ms");
-}
-```
-
-## Common Patterns
-
-### Bulk Operations
-```csharp
-public static async Task<Model_Dao_Result> InsertMultipleAsync(List<Model_ReceivingLine> lines)
-{
-    int successCount = 0;
-    var errors = new List<string>();
-
-    foreach (var line in lines)
-    {
-        var result = await InsertReceivingLineAsync(line);
-        if (result.Success)
-            successCount++;
-        else
-            errors.Add(result.ErrorMessage);
-    }
-
-    return new Model_Dao_Result
-    {
-        Success = errors.Count == 0,
-        AffectedRows = successCount,
-        ErrorMessage = string.Join("; ", errors)
-    };
-}
-```
-
-### Conditional Updates
-```csharp
-public static async Task<Model_Dao_Result> UpdateReceivingLineIfExistsAsync(Model_ReceivingLine line)
-{
-    // First check if exists
-    var existsResult = await GetReceivingLineByIdAsync(line.Id);
-    if (!existsResult.Success)
-        return existsResult;
-
-    // Then update
-    return await UpdateReceivingLineAsync(line);
-}
-```
+Check `Model_Dao_Result.ExecutionTimeMs` in Service layer logging.
 
 ## Examples
 
 See existing implementations:
-- `Data/Receiving/Dao_ReceivingLine.cs` - Complete CRUD example
-- `Data/Receiving/Dao_DunnageLine.cs` - Simplified example
-- `Data/Receiving/Dao_RoutingLabel.cs` - Optional field handling
-- `Helpers/Database/Helper_Database_StoredProcedure.cs` - Helper utility
-- `Database/StoredProcedures/Receiving/*.sql` - Stored procedure examples
+- `Data/Receiving/Dao_ReceivingLoad.cs` - Instance-based MySQL DAO
+- `Data/InforVisual/Dao_InforVisualPO.cs` - Instance-based READ-ONLY SQL Server DAO

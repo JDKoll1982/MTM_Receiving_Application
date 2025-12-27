@@ -3,12 +3,20 @@ using System.Threading.Tasks;
 using Xunit;
 using MTM_Receiving_Application.Data.Dunnage;
 using MTM_Receiving_Application.Models.Dunnage;
+using MTM_Receiving_Application.Helpers.Database;
 using System.Diagnostics;
 
 namespace MTM_Receiving_Application.Tests.Integration.Dunnage;
 
 public class Dao_DunnageType_Tests
 {
+    private readonly Dao_DunnageType _dao;
+
+    public Dao_DunnageType_Tests()
+    {
+        _dao = new Dao_DunnageType(Helper_Database_Variables.GetConnectionString());
+    }
+
     [Fact]
     public async Task FullCrudLifecycle_ShouldWork()
     {
@@ -19,9 +27,9 @@ public class Dao_DunnageType_Tests
 
         // Act & Assert - Insert
         var stopwatch = Stopwatch.StartNew();
-        var insertResult = await Dao_DunnageType.InsertAsync(typeName, user);
+        var insertResult = await _dao.InsertAsync(typeName, user);
         stopwatch.Stop();
-        
+
         Assert.True(insertResult.Success, $"Insert failed: {insertResult.ErrorMessage}");
         Assert.True(insertResult.Data > 0);
         Assert.True(stopwatch.ElapsedMilliseconds < 500, $"Insert took too long: {stopwatch.ElapsedMilliseconds}ms");
@@ -29,7 +37,7 @@ public class Dao_DunnageType_Tests
 
         // Act & Assert - GetById
         stopwatch.Restart();
-        var getResult = await Dao_DunnageType.GetByIdAsync(newId);
+        var getResult = await _dao.GetByIdAsync(newId);
         stopwatch.Stop();
 
         Assert.True(getResult.Success);
@@ -40,19 +48,19 @@ public class Dao_DunnageType_Tests
         // Act & Assert - Update
         string updatedName = typeName + "_Updated";
         stopwatch.Restart();
-        var updateResult = await Dao_DunnageType.UpdateAsync(newId, updatedName, user);
+        var updateResult = await _dao.UpdateAsync(newId, updatedName, user);
         stopwatch.Stop();
 
         Assert.True(updateResult.Success);
         Assert.True(stopwatch.ElapsedMilliseconds < 500, $"Update took too long: {stopwatch.ElapsedMilliseconds}ms");
 
-        var verifyUpdate = await Dao_DunnageType.GetByIdAsync(newId);
+        var verifyUpdate = await _dao.GetByIdAsync(newId);
         Assert.NotNull(verifyUpdate.Data);
         Assert.Equal(updatedName, verifyUpdate.Data.TypeName);
 
         // Act & Assert - GetAll
         stopwatch.Restart();
-        var getAllResult = await Dao_DunnageType.GetAllAsync();
+        var getAllResult = await _dao.GetAllAsync();
         stopwatch.Stop();
 
         Assert.True(getAllResult.Success);
@@ -62,13 +70,13 @@ public class Dao_DunnageType_Tests
 
         // Act & Assert - Delete
         stopwatch.Restart();
-        var deleteResult = await Dao_DunnageType.DeleteAsync(newId);
+        var deleteResult = await _dao.DeleteAsync(newId);
         stopwatch.Stop();
 
         Assert.True(deleteResult.Success);
         Assert.True(stopwatch.ElapsedMilliseconds < 500, $"Delete took too long: {stopwatch.ElapsedMilliseconds}ms");
 
-        var verifyDelete = await Dao_DunnageType.GetByIdAsync(newId);
+        var verifyDelete = await _dao.GetByIdAsync(newId);
         Assert.False(verifyDelete.Success); // Should fail or return null data depending on implementation
     }
 
@@ -77,13 +85,13 @@ public class Dao_DunnageType_Tests
     {
         // Arrange
         string typeName = $"TestType_Count_{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var insertResult = await Dao_DunnageType.InsertAsync(typeName, "TestUser");
+        var insertResult = await _dao.InsertAsync(typeName, "TestUser");
         int typeId = insertResult.Data;
 
         try
         {
             // Act
-            var countResult = await Dao_DunnageType.CountPartsAsync(typeId);
+            var countResult = await _dao.CountPartsAsync(typeId);
 
             // Assert
             Assert.True(countResult.Success);
@@ -92,7 +100,7 @@ public class Dao_DunnageType_Tests
         finally
         {
             // Cleanup
-            await Dao_DunnageType.DeleteAsync(typeId);
+            await _dao.DeleteAsync(typeId);
         }
     }
 }

@@ -1,10 +1,8 @@
 using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Data.Receiving;
 using MTM_Receiving_Application.Models.Receiving;
-using MTM_Receiving_Application.Helpers.Database;
 using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace MTM_Receiving_Application.Services.Database
 {
@@ -13,11 +11,17 @@ namespace MTM_Receiving_Application.Services.Database
     /// </summary>
     public class Service_MySQL_PackagePreferences : IService_MySQL_PackagePreferences
     {
-        private readonly string _connectionString;
+        private readonly Dao_PackageTypePreference _dao;
 
+        public Service_MySQL_PackagePreferences(Dao_PackageTypePreference dao)
+        {
+            _dao = dao ?? throw new ArgumentNullException(nameof(dao));
+        }
+
+        // Constructor for backward compatibility if needed
         public Service_MySQL_PackagePreferences(string connectionString)
         {
-            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _dao = new Dao_PackageTypePreference(connectionString);
         }
 
         public async Task<Model_PackageTypePreference?> GetPreferenceAsync(string partID)
@@ -25,26 +29,9 @@ namespace MTM_Receiving_Application.Services.Database
             if (string.IsNullOrWhiteSpace(partID))
                 throw new ArgumentException("Part ID cannot be null or empty", nameof(partID));
 
-            var parameters = new Dictionary<string, object>
-            {
-                { "@p_PartID", partID }
-            };
+            var result = await _dao.GetPreferenceAsync(partID);
 
-            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
-                _connectionString,
-                "sp_GetPackageTypePreference",
-                reader => new Model_PackageTypePreference
-                {
-                    PreferenceID = Convert.ToInt32(reader["PreferenceID"]),
-                    PartID = reader["PartID"].ToString() ?? string.Empty,
-                    PackageTypeName = reader["PackageTypeName"].ToString() ?? string.Empty,
-                    CustomTypeName = reader["CustomTypeName"] == DBNull.Value ? null : reader["CustomTypeName"].ToString(),
-                    LastModified = Convert.ToDateTime(reader["LastModified"])
-                },
-                parameters
-            );
-
-            if (result.Success)
+            if (result.IsSuccess)
             {
                 return result.Data;
             }
@@ -57,20 +44,9 @@ namespace MTM_Receiving_Application.Services.Database
             if (preference == null)
                 throw new ArgumentNullException(nameof(preference));
 
-            var parameters = new Dictionary<string, object>
-            {
-                { "@p_PartID", preference.PartID },
-                { "@p_PackageTypeName", preference.PackageTypeName },
-                { "@p_CustomTypeName", preference.CustomTypeName ?? (object)DBNull.Value }
-            };
+            var result = await _dao.SavePreferenceAsync(preference);
 
-            var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-                _connectionString,
-                "sp_SavePackageTypePreference",
-                parameters
-            );
-
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 throw new Exception(result.ErrorMessage);
             }
@@ -81,18 +57,9 @@ namespace MTM_Receiving_Application.Services.Database
             if (string.IsNullOrWhiteSpace(partID))
                 throw new ArgumentException("Part ID cannot be null or empty", nameof(partID));
 
-            var parameters = new Dictionary<string, object>
-            {
-                { "@p_PartID", partID }
-            };
+            var result = await _dao.DeletePreferenceAsync(partID);
 
-            var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-                _connectionString,
-                "sp_DeletePackageTypePreference",
-                parameters
-            );
-
-            return result.Success;
+            return result.IsSuccess;
         }
     }
 }

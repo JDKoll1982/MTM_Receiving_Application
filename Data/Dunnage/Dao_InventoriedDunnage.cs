@@ -10,20 +10,25 @@ using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Data.Dunnage;
 
-public static class Dao_InventoriedDunnage
+public class Dao_InventoriedDunnage
 {
-    private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
+    private readonly string _connectionString;
 
-    public static async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllAsync()
+    public Dao_InventoriedDunnage(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public virtual async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_InventoriedDunnage>(
-            ConnectionString,
+            _connectionString,
             "sp_inventoried_dunnage_get_all",
             MapFromReader
         );
     }
 
-    public static async Task<Model_Dao_Result<bool>> CheckAsync(string partId)
+    public virtual async Task<Model_Dao_Result<bool>> CheckAsync(string partId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -31,14 +36,14 @@ public static class Dao_InventoriedDunnage
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<bool>(
-            ConnectionString,
+            _connectionString,
             "sp_inventoried_dunnage_check",
             reader => reader.GetBoolean(reader.GetOrdinal("requires_inventory")),
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result<Model_InventoriedDunnage>> GetByPartAsync(string partId)
+    public virtual async Task<Model_Dao_Result<Model_InventoriedDunnage>> GetByPartAsync(string partId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -46,14 +51,14 @@ public static class Dao_InventoriedDunnage
         };
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_InventoriedDunnage>(
-            ConnectionString,
+            _connectionString,
             "sp_inventoried_dunnage_get_by_part",
             MapFromReader,
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> InsertAsync(string partId, string inventoryMethod, string notes, string user)
+    public virtual async Task<Model_Dao_Result<int>> InsertAsync(string partId, string inventoryMethod, string notes, string user)
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
@@ -72,7 +77,7 @@ public static class Dao_InventoriedDunnage
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
             "sp_inventoried_dunnage_insert",
             parameters,
-            ConnectionString
+            _connectionString
         );
 
         if (result.IsSuccess)
@@ -87,7 +92,7 @@ public static class Dao_InventoriedDunnage
         return DaoResultFactory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
-    public static async Task<Model_Dao_Result> UpdateAsync(int id, string inventoryMethod, string notes, string user)
+    public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string inventoryMethod, string notes, string user)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -98,13 +103,13 @@ public static class Dao_InventoriedDunnage
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_inventoried_dunnage_update",
             parameters
         );
     }
 
-    public static async Task<Model_Dao_Result> DeleteAsync(int id)
+    public virtual async Task<Model_Dao_Result> DeleteAsync(int id)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -112,13 +117,13 @@ public static class Dao_InventoriedDunnage
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            ConnectionString,
+            _connectionString,
             "sp_inventoried_dunnage_delete",
             parameters
         );
     }
 
-    private static Model_InventoriedDunnage MapFromReader(IDataReader reader)
+    private Model_InventoriedDunnage MapFromReader(IDataReader reader)
     {
         return new Model_InventoriedDunnage
         {

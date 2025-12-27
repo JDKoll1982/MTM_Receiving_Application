@@ -41,7 +41,7 @@ namespace MTM_Receiving_Application.Tests.Integration
             // Retry logic for user creation to handle potential PIN/Username collisions
             var random = new Random();
             int maxRetries = 10;
-            Model_Dao_Result<int> createResult = null;
+            Model_Dao_Result<int>? createResult = null;
             string username = "";
 
             for (int i = 0; i < maxRetries; i++)
