@@ -13,7 +13,7 @@ public static class Dao_DunnageSpec
 {
     private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageSpec>>> GetByTypeAsync(int typeId)
+    public static async Task<DaoResult<List<Model_DunnageSpec>>> GetByTypeAsync(int typeId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -28,7 +28,7 @@ public static class Dao_DunnageSpec
         );
     }
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageSpec>>> GetAllAsync()
+    public static async Task<DaoResult<List<Model_DunnageSpec>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageSpec>(
             ConnectionString,
@@ -37,7 +37,7 @@ public static class Dao_DunnageSpec
         );
     }
 
-    public static async Task<Model_Dao_Result<Model_DunnageSpec>> GetByIdAsync(int id)
+    public static async Task<DaoResult<Model_DunnageSpec>> GetByIdAsync(int id)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -52,7 +52,7 @@ public static class Dao_DunnageSpec
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> InsertAsync(int typeId, string specKey, string specValue, string user)
+    public static async Task<DaoResult<int>> InsertAsync(int typeId, string specKey, string specValue, string user)
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
@@ -78,12 +78,12 @@ public static class Dao_DunnageSpec
         {
             if (pNewId.Value != null && pNewId.Value != DBNull.Value)
             {
-                return Model_Dao_Result<int>.SuccessResult(Convert.ToInt32(pNewId.Value));
+                return DaoResult<int>.SuccessResult(Convert.ToInt32(pNewId.Value));
             }
-            return Model_Dao_Result<int>.Failure("Failed to retrieve new ID");
+            return DaoResult<int>.Failure("Failed to retrieve new ID");
         }
 
-        return Model_Dao_Result<int>.Failure(result.ErrorMessage, result.Exception);
+        return DaoResult<int>.Failure(result.ErrorMessage, result.Exception);
     }
 
     public static async Task<Model_Dao_Result> UpdateAsync(int id, string specValue, string user)
@@ -130,7 +130,7 @@ public static class Dao_DunnageSpec
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> CountPartsUsingSpecAsync(int typeId, string specKey)
+    public static async Task<DaoResult<int>> CountPartsUsingSpecAsync(int typeId, string specKey)
     {
         var parameters = new Dictionary<string, object>
         {

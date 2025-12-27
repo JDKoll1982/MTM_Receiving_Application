@@ -241,7 +241,7 @@ namespace MTM_Receiving_Application.Services.Database
             return loads;
         }
 
-        public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate)
+        public async Task<DaoResult<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate)
         {
             try
             {
@@ -263,7 +263,7 @@ namespace MTM_Receiving_Application.Services.Database
                 if (!result.IsSuccess)
                 {
                     _logger.LogError($"Failed to retrieve receiving loads: {result.ErrorMessage}");
-                    return Model_Dao_Result<List<Model_ReceivingLoad>>.Failure(result.ErrorMessage);
+                    return DaoResult<List<Model_ReceivingLoad>>.Failure(result.ErrorMessage);
                 }
 
                 if (result.Data != null)
@@ -290,12 +290,12 @@ namespace MTM_Receiving_Application.Services.Database
                 }
 
                 _logger.LogInfo($"Retrieved {loads.Count} receiving loads from database");
-                return Model_Dao_Result<List<Model_ReceivingLoad>>.SuccessResult(loads);
+                return DaoResult<List<Model_ReceivingLoad>>.SuccessResult(loads);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception retrieving all receiving loads: {ex.Message}", ex);
-                return Model_Dao_Result<List<Model_ReceivingLoad>>.Failure($"Database error: {ex.Message}");
+                return DaoResult<List<Model_ReceivingLoad>>.Failure($"Database error: {ex.Message}");
             }
         }
 

@@ -46,10 +46,10 @@ namespace MTM_Receiving_Application.Services.Database
             return $"Server={DefaultServer};Database={DefaultDatabase};User Id={DefaultUsername};Password={DefaultPassword};TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
         }
 
-        public async Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
+        public async Task<DaoResult<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
-                return Model_Dao_Result<Model_InforVisualPO?>.Failure("PO number cannot be null or empty");
+                return DaoResult<Model_InforVisualPO?>.Failure("PO number cannot be null or empty");
 
             // Strip "PO-" prefix if present for database querying/debug logic
             string cleanPoNumber = poNumber;
@@ -87,7 +87,7 @@ namespace MTM_Receiving_Application.Services.Database
                     }
                 }
             };
-            return Model_Dao_Result<Model_InforVisualPO?>.SuccessResult(debugPO);
+            return DaoResult<Model_InforVisualPO?>.SuccessResult(debugPO);
 #else
             try
             {
@@ -180,10 +180,10 @@ namespace MTM_Receiving_Application.Services.Database
 #endif
         }
 
-        public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
+        public async Task<DaoResult<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
-                return Model_Dao_Result<Model_InforVisualPart?>.Failure("Part ID cannot be null or empty");
+                return DaoResult<Model_InforVisualPart?>.Failure("Part ID cannot be null or empty");
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual query for Part: {partID}");
@@ -195,7 +195,7 @@ namespace MTM_Receiving_Application.Services.Database
                 POLineNumber = "N/A",
                 QtyOrdered = 0
             };
-            return Model_Dao_Result<Model_InforVisualPart?>.SuccessResult(debugPart);
+            return DaoResult<Model_InforVisualPart?>.SuccessResult(debugPart);
 #else
             try
             {
@@ -260,11 +260,11 @@ namespace MTM_Receiving_Application.Services.Database
 #endif
         }
 
-        public async Task<Model_Dao_Result<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date)
+        public async Task<DaoResult<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date)
         {
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual same-day receiving check for PO: {poNumber}, Part: {partID}");
-            return Model_Dao_Result<decimal>.SuccessResult(0);
+            return DaoResult<decimal>.SuccessResult(0);
 #else
             try
             {
@@ -324,17 +324,17 @@ namespace MTM_Receiving_Application.Services.Database
 #endif
         }
 
-        public async Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID)
+        public async Task<DaoResult<int>> GetRemainingQuantityAsync(string poNumber, string partID)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
-                return Model_Dao_Result<int>.Failure("PO number cannot be null or empty");
-            
+                return DaoResult<int>.Failure("PO number cannot be null or empty");
+
             if (string.IsNullOrWhiteSpace(partID))
-                return Model_Dao_Result<int>.Failure("Part ID cannot be null or empty");
+                return DaoResult<int>.Failure("Part ID cannot be null or empty");
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual remaining quantity check for PO: {poNumber}, Part: {partID}");
-            return Model_Dao_Result<int>.SuccessResult(100);
+            return DaoResult<int>.SuccessResult(100);
 #else
             try
             {

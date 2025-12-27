@@ -14,7 +14,7 @@ public static class Dao_DunnageLoad
 {
     private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllAsync()
+    public static async Task<DaoResult<List<Model_DunnageLoad>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
             ConnectionString,
@@ -23,7 +23,7 @@ public static class Dao_DunnageLoad
         );
     }
 
-    public static async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
+    public static async Task<DaoResult<List<Model_DunnageLoad>>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -39,7 +39,7 @@ public static class Dao_DunnageLoad
         );
     }
 
-    public static async Task<Model_Dao_Result<Model_DunnageLoad>> GetByIdAsync(Guid loadUuid)
+    public static async Task<DaoResult<Model_DunnageLoad>> GetByIdAsync(Guid loadUuid)
     {
         var parameters = new Dictionary<string, object>
         {

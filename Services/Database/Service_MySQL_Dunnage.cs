@@ -30,7 +30,7 @@ namespace MTM_Receiving_Application.Services.Database
 
         // ==================== Type Operations ====================
 
-        public async Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllTypesAsync()
+        public async Task<DaoResult<List<Model_DunnageType>>> GetAllTypesAsync()
         {
             try
             {
@@ -39,11 +39,11 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetAllTypesAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnageType>>.Failure($"Error retrieving dunnage types: {ex.Message}");
+                return DaoResult<List<Model_DunnageType>>.Failure($"Error retrieving dunnage types: {ex.Message}");
             }
         }
 
-        public async Task<Model_Dao_Result<Model_DunnageType>> GetTypeByIdAsync(int typeId)
+        public async Task<DaoResult<Model_DunnageType>> GetTypeByIdAsync(int typeId)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetTypeByIdAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<Model_DunnageType>.Failure($"Error retrieving dunnage type: {ex.Message}");
+                return DaoResult<Model_DunnageType>.Failure($"Error retrieving dunnage type: {ex.Message}");
             }
         }
 
@@ -117,7 +117,7 @@ namespace MTM_Receiving_Application.Services.Database
 
         // ==================== Spec Operations ====================
 
-        public async Task<Model_Dao_Result<List<Model_DunnageSpec>>> GetSpecsForTypeAsync(int typeId)
+        public async Task<DaoResult<List<Model_DunnageSpec>>> GetSpecsForTypeAsync(int typeId)
         {
             try
             {
@@ -126,7 +126,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetSpecsForTypeAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnageSpec>>.Failure($"Error retrieving specs: {ex.Message}");
+                return DaoResult<List<Model_DunnageSpec>>.Failure($"Error retrieving specs: {ex.Message}");
             }
         }
 
@@ -208,7 +208,7 @@ namespace MTM_Receiving_Application.Services.Database
 
         // ==================== Part Operations ====================
 
-        public async Task<Model_Dao_Result<List<Model_DunnagePart>>> GetAllPartsAsync()
+        public async Task<DaoResult<List<Model_DunnagePart>>> GetAllPartsAsync()
         {
             try
             {
@@ -217,11 +217,11 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetAllPartsAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnagePart>>.Failure($"Error retrieving parts: {ex.Message}");
+                return DaoResult<List<Model_DunnagePart>>.Failure($"Error retrieving parts: {ex.Message}");
             }
         }
 
-        public async Task<Model_Dao_Result<List<Model_DunnagePart>>> GetPartsByTypeAsync(int typeId)
+        public async Task<DaoResult<List<Model_DunnagePart>>> GetPartsByTypeAsync(int typeId)
         {
             try
             {
@@ -230,11 +230,11 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetPartsByTypeAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnagePart>>.Failure($"Error retrieving parts by type: {ex.Message}");
+                return DaoResult<List<Model_DunnagePart>>.Failure($"Error retrieving parts by type: {ex.Message}");
             }
         }
 
-        public async Task<Model_Dao_Result<Model_DunnagePart>> GetPartByIdAsync(string partId)
+        public async Task<DaoResult<Model_DunnagePart>> GetPartByIdAsync(string partId)
         {
             try
             {
@@ -243,7 +243,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetPartByIdAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<Model_DunnagePart>.Failure($"Error retrieving part: {ex.Message}");
+                return DaoResult<Model_DunnagePart>.Failure($"Error retrieving part: {ex.Message}");
             }
         }
 
@@ -285,11 +285,11 @@ namespace MTM_Receiving_Application.Services.Database
             return Model_Dao_Result.Failure("Delete part not implemented in DAO yet.");
         }
 
-        public async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(string searchText, int? typeId)
+        public async Task<DaoResult<List<Model_DunnagePart>>> SearchPartsAsync(string searchText, int? typeId)
         {
             try
             {
-                Model_Dao_Result<List<Model_DunnagePart>> result;
+                DaoResult<List<Model_DunnagePart>> result;
                 if (typeId.HasValue)
                 {
                     result = await Dao_DunnagePart.GetByTypeAsync(typeId.Value);
@@ -303,17 +303,17 @@ namespace MTM_Receiving_Application.Services.Database
 
                 if (string.IsNullOrWhiteSpace(searchText)) return result;
 
-                var filtered = result.Data.Where(p => 
+                var filtered = result.Data.Where(p =>
                     p.PartId.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                     p.DunnageTypeName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
 
-                return Model_Dao_Result<List<Model_DunnagePart>>.SuccessResult(filtered);
+                return DaoResult<List<Model_DunnagePart>>.SuccessResult(filtered);
             }
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(SearchPartsAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnagePart>>.Failure($"Error searching parts: {ex.Message}");
+                return DaoResult<List<Model_DunnagePart>>.Failure($"Error searching parts: {ex.Message}");
             }
         }
 
@@ -333,7 +333,7 @@ namespace MTM_Receiving_Application.Services.Database
             }
         }
 
-        public async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(DateTime start, DateTime end)
+        public async Task<DaoResult<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(DateTime start, DateTime end)
         {
             try
             {
@@ -342,11 +342,11 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetLoadsByDateRangeAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnageLoad>>.Failure($"Error retrieving loads: {ex.Message}");
+                return DaoResult<List<Model_DunnageLoad>>.Failure($"Error retrieving loads: {ex.Message}");
             }
         }
 
-        public async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllLoadsAsync()
+        public async Task<DaoResult<List<Model_DunnageLoad>>> GetAllLoadsAsync()
         {
             try
             {
@@ -355,11 +355,11 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetAllLoadsAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_DunnageLoad>>.Failure($"Error retrieving all loads: {ex.Message}");
+                return DaoResult<List<Model_DunnageLoad>>.Failure($"Error retrieving all loads: {ex.Message}");
             }
         }
 
-        public async Task<Model_Dao_Result<Model_DunnageLoad>> GetLoadByIdAsync(string loadUuid)
+        public async Task<DaoResult<Model_DunnageLoad>> GetLoadByIdAsync(string loadUuid)
         {
             try
             {
@@ -367,12 +367,12 @@ namespace MTM_Receiving_Application.Services.Database
                 {
                     return await Dao_DunnageLoad.GetByIdAsync(guid);
                 }
-                return Model_Dao_Result<Model_DunnageLoad>.Failure("Invalid UUID format");
+                return DaoResult<Model_DunnageLoad>.Failure("Invalid UUID format");
             }
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetLoadByIdAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<Model_DunnageLoad>.Failure($"Error retrieving load: {ex.Message}");
+                return DaoResult<Model_DunnageLoad>.Failure($"Error retrieving load: {ex.Message}");
             }
         }
 
@@ -404,7 +404,7 @@ namespace MTM_Receiving_Application.Services.Database
             }
         }
 
-        public async Task<Model_Dao_Result<Model_InventoriedDunnage>> GetInventoryDetailsAsync(string partId)
+        public async Task<DaoResult<Model_InventoriedDunnage>> GetInventoryDetailsAsync(string partId)
         {
             try
             {
@@ -413,11 +413,11 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetInventoryDetailsAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<Model_InventoriedDunnage>.Failure($"Error retrieving inventory details: {ex.Message}");
+                return DaoResult<Model_InventoriedDunnage>.Failure($"Error retrieving inventory details: {ex.Message}");
             }
         }
 
-        public async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllInventoriedPartsAsync()
+        public async Task<DaoResult<List<Model_InventoriedDunnage>>> GetAllInventoriedPartsAsync()
         {
             try
             {
@@ -426,7 +426,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetAllInventoriedPartsAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result<List<Model_InventoriedDunnage>>.Failure($"Error retrieving inventoried parts: {ex.Message}");
+                return DaoResult<List<Model_InventoriedDunnage>>.Failure($"Error retrieving inventoried parts: {ex.Message}");
             }
         }
 

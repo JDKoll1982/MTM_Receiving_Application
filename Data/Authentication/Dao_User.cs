@@ -35,7 +35,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// </summary>
         /// <param name="windowsUsername">Windows username from Environment.UserName</param>
         /// <returns>Result containing user data or error</returns>
-        public async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
+        public async Task<DaoResult<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -56,7 +56,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="username">Username (Windows username or full name)</param>
         /// <param name="pin">4-digit numeric PIN</param>
         /// <returns>Result containing user data or error</returns>
-        public async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(string username, string pin)
+        public async Task<DaoResult<Model_User>> ValidateUserPinAsync(string username, string pin)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -82,7 +82,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="user">User model with account data</param>
         /// <param name="createdBy">Windows username of account creator</param>
         /// <returns>Result containing new employee number or error</returns>
-        public async Task<Model_Dao_Result<int>> CreateNewUserAsync(Model_User user, string createdBy)
+        public async Task<DaoResult<int>> CreateNewUserAsync(Model_User user, string createdBy)
         {
             try
             {
@@ -118,19 +118,19 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var errorMessage = errorMessageParam.Value?.ToString();
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    return Model_Dao_Result<int>.Failure(errorMessage);
+                    return DaoResult<int>.Failure(errorMessage);
                 }
 
                 // Return the employee number that was provided
-                return Model_Dao_Result<int>.SuccessResult(user.EmployeeNumber);
+                return DaoResult<int>.SuccessResult(user.EmployeeNumber);
             }
             catch (MySqlException ex)
             {
-                return Model_Dao_Result<int>.Failure($"Database error: {ex.Message}", ex);
+                return DaoResult<int>.Failure($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result<int>.Failure($"Unexpected error: {ex.Message}", ex);
+                return DaoResult<int>.Failure($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -144,7 +144,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="pin">4-digit PIN to check</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
         /// <returns>Result indicating if PIN is unique</returns>
-        public async Task<Model_Dao_Result<bool>> IsPinUniqueAsync(string pin, int? excludeEmployeeNumber = null)
+        public async Task<DaoResult<bool>> IsPinUniqueAsync(string pin, int? excludeEmployeeNumber = null)
         {
             try
             {
@@ -157,7 +157,7 @@ namespace MTM_Receiving_Application.Data.Authentication
 
                 using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@pin", pin);
-                
+
                 if (excludeEmployeeNumber.HasValue)
                 {
                     command.Parameters.AddWithValue("@excludeId", excludeEmployeeNumber.Value);
@@ -166,15 +166,15 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 var isUnique = count == 0;
 
-                return Model_Dao_Result<bool>.SuccessResult(isUnique);
+                return DaoResult<bool>.SuccessResult(isUnique);
             }
             catch (MySqlException ex)
             {
-                return Model_Dao_Result<bool>.Failure($"Database error: {ex.Message}", ex);
+                return DaoResult<bool>.Failure($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result<bool>.Failure($"Unexpected error: {ex.Message}", ex);
+                return DaoResult<bool>.Failure($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -184,7 +184,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="username">Windows username to check</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
         /// <returns>Result indicating if username is unique</returns>
-        public async Task<Model_Dao_Result<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
+        public async Task<DaoResult<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace MTM_Receiving_Application.Data.Authentication
 
                 using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@username", username);
-                
+
                 if (excludeEmployeeNumber.HasValue)
                 {
                     command.Parameters.AddWithValue("@excludeId", excludeEmployeeNumber.Value);
@@ -206,15 +206,15 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 var isUnique = count == 0;
 
-                return Model_Dao_Result<bool>.SuccessResult(isUnique);
+                return DaoResult<bool>.SuccessResult(isUnique);
             }
             catch (MySqlException ex)
             {
-                return Model_Dao_Result<bool>.Failure($"Database error: {ex.Message}", ex);
+                return DaoResult<bool>.Failure($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return Model_Dao_Result<bool>.Failure($"Unexpected error: {ex.Message}", ex);
+                return DaoResult<bool>.Failure($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -230,10 +230,10 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="workstationName">Computer name where event occurred</param>
         /// <param name="details">Additional event details</param>
         /// <returns>Result indicating success or failure</returns>
-        public async Task<Model_Dao_Result<bool>> LogUserActivityAsync(
-            string eventType, 
-            string username, 
-            string workstationName, 
+        public async Task<DaoResult<bool>> LogUserActivityAsync(
+            string eventType,
+            string username,
+            string workstationName,
             string details)
         {
             var parameters = new Dictionary<string, object>
@@ -252,11 +252,11 @@ namespace MTM_Receiving_Application.Data.Authentication
 
             if (result.Success)
             {
-                return Model_Dao_Result<bool>.SuccessResult(true);
+                return DaoResult<bool>.SuccessResult(true);
             }
             else
             {
-                return Model_Dao_Result<bool>.Failure(result.ErrorMessage, result.Exception);
+                return DaoResult<bool>.Failure(result.ErrorMessage, result.Exception);
             }
         }
 
@@ -268,7 +268,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// Retrieves list of shared terminal workstation names.
         /// </summary>
         /// <returns>Result containing list of workstation names</returns>
-        public async Task<Model_Dao_Result<List<string>>> GetSharedTerminalNamesAsync()
+        public async Task<DaoResult<List<string>>> GetSharedTerminalNamesAsync()
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
@@ -281,7 +281,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// Retrieves list of active departments for dropdown population.
         /// </summary>
         /// <returns>Result containing list of department names</returns>
-        public async Task<Model_Dao_Result<List<string>>> GetActiveDepartmentsAsync()
+        public async Task<DaoResult<List<string>>> GetActiveDepartmentsAsync()
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
@@ -308,21 +308,21 @@ namespace MTM_Receiving_Application.Data.Authentication
                 Department = reader.GetString(reader.GetOrdinal("department")),
                 Shift = reader.GetString(reader.GetOrdinal("shift")),
                 IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
-                VisualUsername = reader.IsDBNull(reader.GetOrdinal("visual_username")) 
-                    ? null 
+                VisualUsername = reader.IsDBNull(reader.GetOrdinal("visual_username"))
+                    ? null
                     : reader.GetString(reader.GetOrdinal("visual_username")),
-                VisualPassword = reader.IsDBNull(reader.GetOrdinal("visual_password")) 
-                    ? null 
+                VisualPassword = reader.IsDBNull(reader.GetOrdinal("visual_password"))
+                    ? null
                     : reader.GetString(reader.GetOrdinal("visual_password")),
                 DefaultReceivingMode = TryGetDefaultReceivingMode(reader),
                 CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
-                CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by")) 
-                    ? null 
+                CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by"))
+                    ? null
                     : reader.GetString(reader.GetOrdinal("created_by")),
                 ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
             };
         }
-        
+
         /// <summary>
         /// Updates user's default receiving mode preference
         /// </summary>
@@ -333,14 +333,14 @@ namespace MTM_Receiving_Application.Data.Authentication
                 { "@p_user_id", userId },
                 { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
             };
-            
+
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
                 "sp_update_user_default_mode",
                 parameters
             );
         }
-        
+
         /// <summary>
         /// Safely attempts to read default_receiving_mode column, returns null if column doesn't exist
         /// </summary>

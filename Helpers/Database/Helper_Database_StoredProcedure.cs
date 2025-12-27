@@ -89,7 +89,7 @@ public static class Helper_Database_StoredProcedure
     public static bool ValidateParameters(MySqlParameter[] parameters)
     {
         if (parameters == null) return true;
-        
+
         foreach (var param in parameters)
         {
             if (param.Value == null && param.Direction == ParameterDirection.Input)
@@ -165,13 +165,13 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure that returns a single record mapped to T
     /// </summary>
-    public static async Task<Model_Dao_Result<T>> ExecuteSingleAsync<T>(
+    public static async Task<DaoResult<T>> ExecuteSingleAsync<T>(
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
         Dictionary<string, object>? parameters = null)
     {
-        var result = new Model_Dao_Result<T>();
+        var result = new DaoResult<T>();
         var stopwatch = Stopwatch.StartNew();
         int attempt = 0;
 
@@ -192,7 +192,7 @@ public static class Helper_Database_StoredProcedure
                 AddParameters(command, parameters);
 
                 using var reader = await command.ExecuteReaderAsync();
-                
+
                 if (await reader.ReadAsync())
                 {
                     result.Data = mapper(reader);
@@ -218,24 +218,24 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return Model_Dao_Result<T>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return DaoResult<T>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return Model_Dao_Result<T>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return DaoResult<T>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
     /// Executes a stored procedure that returns a list of records mapped to T
     /// </summary>
-    public static async Task<Model_Dao_Result<List<T>>> ExecuteListAsync<T>(
+    public static async Task<DaoResult<List<T>>> ExecuteListAsync<T>(
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
         Dictionary<string, object>? parameters = null)
     {
-        var result = new Model_Dao_Result<List<T>>();
+        var result = new DaoResult<List<T>>();
         var stopwatch = Stopwatch.StartNew();
         int attempt = 0;
 
@@ -257,7 +257,7 @@ public static class Helper_Database_StoredProcedure
 
                 using var reader = await command.ExecuteReaderAsync();
                 var list = new List<T>();
-                
+
                 while (await reader.ReadAsync())
                 {
                     list.Add(mapper(reader));
@@ -279,23 +279,23 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return Model_Dao_Result<List<T>>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return DaoResult<List<T>>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return Model_Dao_Result<List<T>>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return DaoResult<List<T>>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
     /// Executes a stored procedure that returns a DataTable (SELECT)
     /// </summary>
-    public static async Task<Model_Dao_Result<DataTable>> ExecuteDataTableAsync(
+    public static async Task<DaoResult<DataTable>> ExecuteDataTableAsync(
         string connectionString,
         string procedureName,
         Dictionary<string, object>? parameters = null)
     {
-        var result = new Model_Dao_Result<DataTable>();
+        var result = new DaoResult<DataTable>();
         var stopwatch = Stopwatch.StartNew();
         int attempt = 0;
 
@@ -403,13 +403,13 @@ public static class Helper_Database_StoredProcedure
                 // Or just use the key if the caller is expected to provide the correct name
                 // The constitution says: "Parameter names in C# match stored procedure parameters (WITHOUT p_ prefix - added automatically)"
                 // So we should add p_ prefix.
-                
+
                 // However, existing code might be using @p_ already.
                 // Let's be safe: if it starts with @, use it. If not, check if it starts with p_.
-                
+
                 string cleanName = param.Key.TrimStart('@');
                 string finalName = cleanName.StartsWith("p_") ? "@" + cleanName : "@p_" + cleanName;
-                
+
                 command.Parameters.AddWithValue(finalName, param.Value ?? DBNull.Value);
             }
         }
@@ -425,7 +425,7 @@ public static class Helper_Database_StoredProcedure
         // 1213 = Deadlock
         // 2006 = Server has gone away
         // 2013 = Lost connection during query
-        return ex.Number == 1205 || ex.Number == 1213 || 
+        return ex.Number == 1205 || ex.Number == 1213 ||
                ex.Number == 2006 || ex.Number == 2013;
     }
 }

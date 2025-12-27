@@ -74,16 +74,16 @@ public class Model_Dao_Result
 /// Generic version of Model_Dao_Result for returning data
 /// </summary>
 /// <typeparam name="T">Type of data returned</typeparam>
-public class Model_Dao_Result<T> : Model_Dao_Result
+public class DaoResult<T> : Model_Dao_Result
 {
     /// <summary>
     /// Data returned by the operation
     /// </summary>
     public T? Data { get; set; }
 
-    public static new Model_Dao_Result<T> Failure(string message, Exception? ex = null)
+    public static new DaoResult<T> Failure(string message, Exception? ex = null)
     {
-        return new Model_Dao_Result<T>
+        return new DaoResult<T>
         {
             Success = false,
             ErrorMessage = message,
@@ -92,9 +92,9 @@ public class Model_Dao_Result<T> : Model_Dao_Result
         };
     }
 
-    public static Model_Dao_Result<T> SuccessResult(T data, int affectedRows = 0)
+    public static DaoResult<T> SuccessResult(T data, int affectedRows = 0)
     {
-        return new Model_Dao_Result<T>
+        return new DaoResult<T>
         {
             Success = true,
             Data = data,

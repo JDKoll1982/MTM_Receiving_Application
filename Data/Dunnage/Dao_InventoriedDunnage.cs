@@ -13,7 +13,7 @@ public static class Dao_InventoriedDunnage
 {
     private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
 
-    public static async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllAsync()
+    public static async Task<DaoResult<List<Model_InventoriedDunnage>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_InventoriedDunnage>(
             ConnectionString,
@@ -22,7 +22,7 @@ public static class Dao_InventoriedDunnage
         );
     }
 
-    public static async Task<Model_Dao_Result<bool>> CheckAsync(string partId)
+    public static async Task<DaoResult<bool>> CheckAsync(string partId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -37,7 +37,7 @@ public static class Dao_InventoriedDunnage
         );
     }
 
-    public static async Task<Model_Dao_Result<Model_InventoriedDunnage>> GetByPartAsync(string partId)
+    public static async Task<DaoResult<Model_InventoriedDunnage>> GetByPartAsync(string partId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -52,7 +52,7 @@ public static class Dao_InventoriedDunnage
         );
     }
 
-    public static async Task<Model_Dao_Result<int>> InsertAsync(string partId, string inventoryMethod, string notes, string user)
+    public static async Task<DaoResult<int>> InsertAsync(string partId, string inventoryMethod, string notes, string user)
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
@@ -78,12 +78,12 @@ public static class Dao_InventoriedDunnage
         {
             if (pNewId.Value != null && pNewId.Value != DBNull.Value)
             {
-                return Model_Dao_Result<int>.SuccessResult(Convert.ToInt32(pNewId.Value));
+                return DaoResult<int>.SuccessResult(Convert.ToInt32(pNewId.Value));
             }
-            return Model_Dao_Result<int>.Failure("Failed to retrieve new ID");
+            return DaoResult<int>.Failure("Failed to retrieve new ID");
         }
 
-        return Model_Dao_Result<int>.Failure(result.ErrorMessage, result.Exception);
+        return DaoResult<int>.Failure(result.ErrorMessage, result.Exception);
     }
 
     public static async Task<Model_Dao_Result> UpdateAsync(int id, string inventoryMethod, string notes, string user)
