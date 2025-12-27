@@ -56,15 +56,15 @@ Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/.specify
 
 Now I'll create the specification based on the content from the existing file and the template structure. Let me write the complete specification: 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md)
 
 Let me read what's already in the spec file and replace it: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md#1-1), lines 1 to 10
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md#1-1), lines 1 to 10
 
 I see it created the template. Let me replace the entire content: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md)
 
 Now I'll replace the entire content with the proper specification: 
 
@@ -78,9 +78,9 @@ Using "Replace String in File"
 
 Now I need to create the quality validation checklist: 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/checklists)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/checklists)
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/checklists/requirements.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/checklists/requirements.md)
 
 ## Step 4: Validation Complete - Report Completion
 
@@ -88,9 +88,9 @@ Perfect! I have successfully created a comprehensive feature specification for t
 
 ## ✅ Feature Specification Complete
 
-**Branch Created**: `001-dunnage-stored-procedures`  
-**Spec File**: [C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\spec.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\spec.md)  
-**Quality Checklist**: [requirements.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\checklists\requirements.md)
+**Branch Created**: `005-dunnage-stored-procedures`  
+**Spec File**: [C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\spec.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\spec.md)  
+**Quality Checklist**: [requirements.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\checklists\requirements.md)
 
 ### Specification Overview
 
@@ -133,20 +133,20 @@ GitHub Copilot: I'll follow the speckit.clarify workflow to detect and reduce am
 Ran terminal command: .\.specify\scripts\powershell\check-prerequisites.ps1 -Json -PathsOnly
 
 Perfect! I have the feature information:
-- **FEATURE_DIR**: C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures
+- **FEATURE_DIR**: C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures
 - **FEATURE_SPEC**: spec.md
 
 ## Step 2: Load Current Spec and Perform Ambiguity Scan 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md#1-1), lines 1 to 50
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md#1-1), lines 1 to 50
 
 Let me continue reading the spec to get the complete picture: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md#100-100), lines 100 to 150
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md#100-100), lines 100 to 150
 
 Let me read the rest of the spec to complete my analysis: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md#150-150), lines 150 to 225
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md#150-150), lines 150 to 225
 
 ## Step 3: Ambiguity & Coverage Analysis
 
@@ -224,13 +224,13 @@ Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/.specify
 
 Now let me read the plan template to understand the structure: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/plan.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/plan.md)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/plan.md#134-134), lines 134 to 134
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/plan.md#134-134), lines 134 to 134
 
 Let me check the rest of the template: 
 
-Ran terminal command: Get-Content "C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\plan.md" | Measure-Object -Line
+Ran terminal command: Get-Content "C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\plan.md" | Measure-Object -Line
 
 Now let me create the todo list and start the workflow systematically: 
 
@@ -278,7 +278,7 @@ Starting: *Phase 0: Generate research.md* (4/8)
 
 Now I'll create the research document to resolve any technical unknowns and document technology decisions: 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/research.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/research.md)
 
 Starting: *Phase 1: Generate data-model.md* (5/8)
 
@@ -286,7 +286,7 @@ Starting: *Phase 1: Generate data-model.md* (5/8)
 
 Now I'll create the data model document with entity relationships using PlantUML: 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/data-model.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/data-model.md)
 
 Starting: *Phase 1: Generate contracts/* (6/8)
 
@@ -294,25 +294,25 @@ Starting: *Phase 1: Generate contracts/* (6/8)
 
 Now I'll create the stored procedure contracts/signatures: 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts)
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_types.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_types.md)
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_specs.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_specs.md)
 
 Let me create the remaining contract files more efficiently: 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_parts.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_parts.md)
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_loads.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_loads.md)
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/inventoried_dunnage.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/inventoried_dunnage.md)
 
 Starting: *Phase 1: Generate quickstart.md* (7/8)
 
 ## Phase 1: Generate quickstart.md 
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/quickstart.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/quickstart.md)
 
 Starting: *Phase 1: Update agent context* (8/8)
 
@@ -326,30 +326,30 @@ Completed: *Phase 1: Update agent context* (8/8)
 
 Perfect! Now let me finalize the plan by re-checking the constitution compliance post-design: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/plan.md#1-1), lines 1 to 102
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/plan.md#1-1), lines 1 to 102
 
 Excellent! The plan is complete. Now let me create a summary document to wrap up:
 
 ## ✅ Implementation Plan Complete
 
-**Branch**: `001-dunnage-stored-procedures`  
-**Spec Directory**: [C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures)
+**Branch**: `005-dunnage-stored-procedures`  
+**Spec Directory**: [C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures)
 
 ### 📋 Generated Artifacts
 
 #### ✅ Phase 0: Research & Planning
-- **[plan.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\plan.md)** - Complete implementation plan with technical context and constitution check
-- **[research.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\research.md)** - Technology decisions, MySQL 5.7.24 compatibility, patterns, and best practices
+- **[plan.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\plan.md)** - Complete implementation plan with technical context and constitution check
+- **[research.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\research.md)** - Technology decisions, MySQL 5.7.24 compatibility, patterns, and best practices
 
 #### ✅ Phase 1: Design & Contracts
-- **[data-model.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\data-model.md)** - Complete entity relationship diagram (PlantUML), schema definitions, and constraints
-- **[contracts/](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\contracts/)** - 5 contract files defining all 33 stored procedures:
-  - [dunnage_types.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\contracts\dunnage_types.md) - 7 procedures
-  - [dunnage_specs.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\contracts\dunnage_specs.md) - 7 procedures
-  - [dunnage_parts.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\contracts\dunnage_parts.md) - 8 procedures
-  - [dunnage_loads.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\contracts\dunnage_loads.md) - 7 procedures
-  - [inventoried_dunnage.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\contracts\inventoried_dunnage.md) - 6 procedures
-- **[quickstart.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\quickstart.md)** - Developer onboarding guide with examples and troubleshooting
+- **[data-model.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\data-model.md)** - Complete entity relationship diagram (PlantUML), schema definitions, and constraints
+- **[contracts/](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\contracts/)** - 5 contract files defining all 33 stored procedures:
+  - [dunnage_types.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\contracts\dunnage_types.md) - 7 procedures
+  - [dunnage_specs.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\contracts\dunnage_specs.md) - 7 procedures
+  - [dunnage_parts.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\contracts\dunnage_parts.md) - 8 procedures
+  - [dunnage_loads.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\contracts\dunnage_loads.md) - 7 procedures
+  - [inventoried_dunnage.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\contracts\inventoried_dunnage.md) - 6 procedures
+- **[quickstart.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\quickstart.md)** - Developer onboarding guide with examples and troubleshooting
 - **Agent Context Updated** - GitHub Copilot instructions updated with MySQL 5.7.24 and DAO patterns
 
 ### 🏗️ Implementation Scope
@@ -392,11 +392,11 @@ Tests/Integration/Dunnage/            # 5 test classes
 
 ### 📚 Key References
 
-- **Spec**: [spec.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\spec.md) - User scenarios and requirements
-- **Plan**: [plan.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\plan.md) - This implementation plan
-- **Research**: [research.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\research.md) - Technology decisions
-- **Data Model**: [data-model.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\data-model.md) - Schema and relationships
-- **Quickstart**: [quickstart.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\quickstart.md) - Developer guide
+- **Spec**: [spec.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\spec.md) - User scenarios and requirements
+- **Plan**: [plan.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\plan.md) - This implementation plan
+- **Research**: [research.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\research.md) - Technology decisions
+- **Data Model**: [data-model.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\data-model.md) - Schema and relationships
+- **Quickstart**: [quickstart.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\quickstart.md) - Developer guide
 - **Constitution**: [.specify/memory/constitution.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\.specify\memory\constitution.md) - Project principles
 
 ---
@@ -410,21 +410,21 @@ User: Break the plan into tasks
 
 GitHub Copilot: Ran terminal command: .\.specify\scripts\powershell\check-prerequisites.ps1 -Json
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/plan.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/plan.md#1-1), lines 1 to 100
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md#1-1), lines 1 to 150
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md#1-1), lines 1 to 150
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/.specify/templates/tasks-template.md#1-1), lines 1 to 50
 
-Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md)
+Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md)
 
 ## Task Generation Complete
 
 I have successfully generated the task breakdown for the Dunnage Stored Procedures feature.
 
-**Task File**: [C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\tasks.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\001-dunnage-stored-procedures\tasks.md)
+**Task File**: [C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\tasks.md](C:\Users\johnk\source\repos\MTM_Receiving_Application\specs\005-dunnage-stored-procedures\tasks.md)
 
 ### Task Summary
 
@@ -456,11 +456,11 @@ User: Run a project analysis for consistency
 
 GitHub Copilot: Ran terminal command: .\.specify\scripts\powershell\check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/spec.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/plan.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/plan.md)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md)
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/.specify/memory/constitution.md#1-1), lines 1 to 100
 
@@ -503,7 +503,7 @@ Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/.specify
 
 User: yes
 
-GitHub Copilot: Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md)
+GitHub Copilot: Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md)
 
 Using "Replace String in File"
 
@@ -526,19 +526,19 @@ User: Follow instructions in [speckit.implement.prompt.md](file:///c%3A/Users/jo
 
 GitHub Copilot: Ran terminal command: .\.specify\scripts\powershell\check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/checklists)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/checklists)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/checklists/requirements.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/checklists/requirements.md)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/plan.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/plan.md#1-1), lines 1 to 100
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/data-model.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/data-model.md#1-1), lines 1 to 100
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/research.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/research.md#1-1), lines 1 to 100
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/quickstart.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/quickstart.md#1-1), lines 1 to 100
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application)
 
@@ -556,7 +556,7 @@ Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/Schemas/06_create_dunnage_tables.sql#1-1), lines 1 to 100
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_specs.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_specs.md#1-1), lines 1 to 100
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/Schemas/07_create_dunnage_tables_v2.sql)
 
@@ -604,13 +604,13 @@ Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Datab
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_dunnage_types_get_by_id.sql)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_types.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_types.md#1-1), lines 1 to 100
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_dunnage_types_insert.sql)
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_dunnage_types_update.sql)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_types.md#100-100), lines 100 to 180
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_types.md#100-100), lines 100 to 180
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_dunnage_types_delete.sql)
 
@@ -686,9 +686,9 @@ Made changes.
 
 User: Follow instructions in [speckit.implement.prompt.md](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/.github/prompts/speckit.implement.prompt.md).
 
-GitHub Copilot: Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md#50-50), lines 50 to 100
+GitHub Copilot: Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md#50-50), lines 50 to 100
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/data-model.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/data-model.md#1-1), lines 1 to 100
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Models/Dunnage/Model_DunnageSpec.cs)
 
@@ -726,7 +726,7 @@ Using "Replace String in File"
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Models/Dunnage/Model_DunnagePart.cs)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_parts.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_parts.md#1-1), lines 1 to 100
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_dunnage_parts_get_all.sql)
 
@@ -762,7 +762,7 @@ Using "Replace String in File"
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Models/Dunnage/Model_DunnageLoad.cs)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/dunnage_loads.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/dunnage_loads.md#1-1), lines 1 to 100
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_dunnage_loads_get_all.sql)
 
@@ -796,7 +796,7 @@ Using "Replace String in File"
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Models/Dunnage/Model_InventoriedDunnage.cs)
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/contracts/inventoried_dunnage.md#1-1), lines 1 to 100
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/contracts/inventoried_dunnage.md#1-1), lines 1 to 100
 
 Created [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Dunnage/sp_inventoried_dunnage_get_all.sql)
 
@@ -820,7 +820,7 @@ Ran terminal command: dotnet test --filter "FullyQualifiedName~Dao_InventoriedDu
 
 Using "Replace String in File"
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md#100-100), lines 100 to 142
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md#100-100), lines 100 to 142
 
 Using "Replace String in File"
 
@@ -860,7 +860,7 @@ Using "Replace String in File"
 ```
 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/001-dunnage-stored-procedures/tasks.md)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/specs/CompletedSpecs/005-dunnage-stored-procedures/tasks.md)
 
 I have successfully completed all phases of the implementation plan for the Dunnage Stored Procedures feature.
 

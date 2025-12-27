@@ -1,6 +1,6 @@
 -- =============================================
 -- Dunnage Database Schema - v2
--- Feature: 001-dunnage-stored-procedures
+-- Feature: 005-dunnage-stored-procedures
 -- Description: Re-creates dunnage tables to match approved data model
 -- =============================================
 

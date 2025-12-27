@@ -1,6 +1,6 @@
 # Research: Dunnage Stored Procedures
 
-**Feature**: 001-dunnage-stored-procedures  
+**Feature**: 005-dunnage-stored-procedures  
 **Date**: 2025-12-26  
 **Purpose**: Document technology decisions, patterns, and best practices for implementing dunnage stored procedures
 

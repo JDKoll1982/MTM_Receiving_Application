@@ -1,6 +1,6 @@
 # Tasks: Dunnage Stored Procedures
 
-**Input**: Design documents from `/specs/001-dunnage-stored-procedures/`
+**Input**: Design documents from `/specs/CompletedSpecs/005-dunnage-stored-procedures/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
 **Tests**: Integration tests included for each DAO as per plan.

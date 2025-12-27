@@ -6,6 +6,12 @@
 **Parent Feature**: Dunnage Receiving System V2  
 **Depends On**: 003-models-and-daos
 
+> **CRITICAL IMPLEMENTATION NOTES**:
+> 1. **Stored Procedure Alignment**: The `IService_MySQL_Dunnage` interface has been explicitly synchronized with the stored procedures defined in `specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md`. Any changes to method signatures here must be reflected in the underlying SPs and DAOs.
+> 2. **User Auditing**: All modification methods (Insert/Update/Delete) require a user identifier. Implementations must inject `IService_UserSessionManager` to retrieve the current user for the `p_user` stored procedure parameters.
+> 3. **Validation Strategy**: Services perform "Fail Fast" business logic validation (e.g., checking dependencies before delete). DAOs rely on database constraints. Do not duplicate SQL constraint logic in C# unless for user experience (e.g., pre-checking uniqueness).
+> 4. **CSV Dual-Write**: The CSV service must strictly adhere to the "Local First, Network Best-Effort" policy. Network failures must never crash the application or prevent the local save.
+
 ## Overview
 
 Create the service layer that provides business logic, workflow orchestration, and CSV export functionality for the dunnage feature. This layer sits between ViewModels and DAOs, handling state management, validation, and cross-cutting concerns.
@@ -110,29 +116,36 @@ As a **workflow orchestrator**, I need a service that exports dunnage loads to C
 - **FR-020**:  Service MUST provide `Task<Model_Dao_Result> DeleteSpecsByTypeIdAsync(int typeId)` with confirmation
 - **FR-021**: Service MUST provide `Task<List<string>> GetAllSpecKeysAsync()` returning union of all spec keys
 
-##### Part Operations (6 methods)
+##### Part Operations (7 methods)
 - **FR-022**: Service MUST provide `Task<Model_Dao_Result<List<Model_DunnagePart>>> GetAllPartsAsync()`
 - **FR-023**: Service MUST provide `Task<Model_Dao_Result<List<Model_DunnagePart>>> GetPartsByTypeAsync(int typeId)`
 - **FR-024**: Service MUST provide `Task<Model_Dao_Result<Model_DunnagePart>> GetPartByIdAsync(string partId)`
 - **FR-025**: Service MUST provide `Task<Model_Dao_Result> InsertPartAsync(Model_DunnagePart part)` with PartID validation
 - **FR-026**: Service MUST provide `Task<Model_Dao_Result> UpdatePartAsync(Model_DunnagePart part)` with spec validation
 - **FR-027**:  Service MUST provide `Task<Model_Dao_Result> DeletePartAsync(string partId)` with transaction check
+- **FR-027a**: Service MUST provide `Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(string searchText, int? typeId)`
 
-##### Load Operations (2 methods)
+##### Load Operations (6 methods)
 - **FR-028**: Service MUST provide `Task<Model_Dao_Result> SaveLoadsAsync(List<Model_DunnageLoad> loads)` with batch validation
 - **FR-029**: Service MUST provide `Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetLoadsByDateRangeAsync(DateTime start, DateTime end)`
+- **FR-029a**: Service MUST provide `Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllLoadsAsync()`
+- **FR-029b**: Service MUST provide `Task<Model_Dao_Result<Model_DunnageLoad>> GetLoadByIdAsync(string loadUuid)`
+- **FR-029c**: Service MUST provide `Task<Model_Dao_Result> UpdateLoadAsync(Model_DunnageLoad load)`
+- **FR-029d**: Service MUST provide `Task<Model_Dao_Result> DeleteLoadAsync(string loadUuid)`
 
-##### Inventory Operations (5 methods)
+##### Inventory Operations (6 methods)
 - **FR-030**: Service MUST provide `Task<bool> IsPartInventoriedAsync(string partId)` for quick checks
 - **FR-031**: Service MUST provide `Task<Model_Dao_Result<Model_InventoriedDunnage>> GetInventoryDetailsAsync(string partId)`
 - **FR-032**: Service MUST provide `Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllInventoriedPartsAsync()`
 - **FR-033**: Service MUST provide `Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item)`
 - **FR-034**: Service MUST provide `Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId)`
+- **FR-034a**: Service MUST provide `Task<Model_Dao_Result> UpdateInventoriedPartAsync(Model_InventoriedDunnage item)`
 
-##### Impact Analysis (3 methods)
+##### Impact Analysis (4 methods)
 - **FR-035**: Service MUST provide `Task<int> GetPartCountByTypeIdAsync(int typeId)` for delete validation
 - **FR-036**: Service MUST provide `Task<int> GetTransactionCountByPartIdAsync(string partId)` for delete validation
 - **FR-037**: Service MUST provide `Task<int> GetTransactionCountByTypeIdAsync(int typeId)` for delete validation
+- **FR-037a**: Service MUST provide `Task<int> GetPartCountBySpecKeyAsync(int typeId, string specKey)` for spec delete validation
 
 ### Functional Requirements - CSV Service
 
@@ -175,7 +188,7 @@ As a **workflow orchestrator**, I need a service that exports dunnage loads to C
 
 ### Measurable Outcomes - MySQL Service
 
-- **SC-006**: All 32 service methods delegate correctly to corresponding DAO methods
+- **SC-006**: All 34 service methods delegate correctly to corresponding DAO methods
 - **SC-007**: Impact analysis methods return accurate counts before delete operations
 - **SC-008**:  `GetAllSpecKeysAsync()` returns correct union of spec keys across all types
 - **SC-009**: All validation logic executes before DAO calls (fail fast)
@@ -213,6 +226,7 @@ As a **workflow orchestrator**, I need a service that exports dunnage loads to C
 - 003-models-and-daos (all models and DAOs must exist)
 - Project:  `ILoggingService` (for error logging)
 - Project: `IService_ErrorHandler` (for user-friendly error messages)
+- Project: `IService_UserSessionManager` (for user auditing in database operations)
 - NuGet: `CsvHelper` or manual CSV writer (for RFC 4180 compliance)
 - NuGet: `System.Text.Json` (for JSON validation)
 - Configuration: Network share path from settings

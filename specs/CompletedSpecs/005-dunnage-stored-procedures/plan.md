@@ -1,7 +1,7 @@
 # Implementation Plan: Dunnage Stored Procedures
 
-**Branch**: `001-dunnage-stored-procedures` | **Date**: 2025-12-26 | **Spec**: [spec.md](spec.md)
-**Input**: Feature specification from `/specs/001-dunnage-stored-procedures/spec.md`
+**Branch**: `005-dunnage-stored-procedures` | **Date**: 2025-12-26 | **Spec**: [spec.md](spec.md)
+**Input**: Feature specification from `/specs/CompletedSpecs/005-dunnage-stored-procedures/spec.md`
 
 ## Summary
 
@@ -60,7 +60,7 @@ Verify alignment with [MTM Receiving Application Constitution](../../.specify/me
 ### Documentation (this feature)
 
 ```text
-specs/001-dunnage-stored-procedures/
+specs/CompletedSpecs/005-dunnage-stored-procedures/
 ├── spec.md              # Feature specification (complete)
 ├── plan.md              # This file (implementation plan)
 ├── research.md          # Phase 0 - Technology decisions and patterns
