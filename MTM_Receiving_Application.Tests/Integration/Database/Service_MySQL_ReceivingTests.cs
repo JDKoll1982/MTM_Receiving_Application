@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using MTM_Receiving_Application.Services.Database;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.Contracts.Services;
@@ -60,7 +61,7 @@ namespace MTM_Receiving_Application.Tests.Integration.Database
                 // In a real CI/CD, we'd have a dedicated test DB.
                 // For local dev, we assume the developer has set up the DB via scripts.
                 // If it fails, it's a valid failure indicating environment issue.
-                throw; 
+                throw;
             }
         }
     }

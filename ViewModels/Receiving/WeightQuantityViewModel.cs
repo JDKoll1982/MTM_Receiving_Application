@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System;
@@ -142,7 +143,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     // The spec says "Warns if entered quantities exceed PO ordered amounts".
                     // Let's assume the user sees the PO info and we rely on that, or we could show a dialog.
                     // I'll add a check here.
-                    
+
                     // For MVP, let's just proceed but maybe log a warning.
                     // Or better, show a dialog asking to confirm.
                     // But I don't have a "ConfirmDialog" service easily accessible right now without adding more UI.
@@ -150,29 +151,29 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     // We display the Ordered Qty on screen.
                 }
             }
-            
+
             // The workflow service handles the actual transition
             // But wait, the Next button is in the parent view (ReceivingWorkflowView).
             // The parent view calls ViewModel.NextStepAsync().
             // So this validation needs to happen in the WorkflowService or be triggered by the parent.
-            
+
             // Current architecture: ReceivingWorkflowViewModel calls _workflowService.AdvanceToNextStepAsync().
             // The service doesn't know about the ViewModel's validation state unless we put validation in the service or the model.
-            
+
             // The service's AdvanceToNextStepAsync does:
             // case WorkflowStep.WeightQuantityEntry: CurrentStep = WorkflowStep.HeatLotEntry; break;
-            
+
             // It doesn't validate the data in the session.
             // We should probably add validation logic to AdvanceToNextStepAsync in the service.
             // Or ReceivingWorkflowViewModel should call a Validate method on the current child VM?
             // But ReceivingWorkflowViewModel doesn't hold references to child VMs (it uses DI/View switching).
-            
+
             // Alternative: The "Next" button in the parent view is bound to ReceivingWorkflowViewModel.NextStepCommand.
             // We can use the Messenger to request validation?
             // Or we can put the validation logic in the Service_ReceivingWorkflow.AdvanceToNextStepAsync.
             // The service has access to CurrentSession.Loads.
             // So the service can iterate loads and validate WeightQuantity.
-            
+
             // Yes, validation logic belongs in the Service/Domain layer.
             // So I will update Service_ReceivingWorkflow to validate weights before advancing.
         }

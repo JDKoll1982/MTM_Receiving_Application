@@ -6,6 +6,7 @@ using Moq;
 using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Models.Systems;
 

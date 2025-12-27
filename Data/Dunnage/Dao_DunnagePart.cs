@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.Models.Dunnage;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Data.Dunnage;
@@ -13,7 +14,7 @@ public static class Dao_DunnagePart
 {
     private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
 
-    public static async Task<DaoResult<List<Model_DunnagePart>>> GetAllAsync()
+    public static async Task<Model_Dao_Result<List<Model_DunnagePart>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePart>(
             ConnectionString,
@@ -22,7 +23,7 @@ public static class Dao_DunnagePart
         );
     }
 
-    public static async Task<DaoResult<List<Model_DunnagePart>>> GetByTypeAsync(int typeId)
+    public static async Task<Model_Dao_Result<List<Model_DunnagePart>>> GetByTypeAsync(int typeId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -37,7 +38,7 @@ public static class Dao_DunnagePart
         );
     }
 
-    public static async Task<DaoResult<Model_DunnagePart>> GetByIdAsync(string partId)
+    public static async Task<Model_Dao_Result<Model_DunnagePart>> GetByIdAsync(string partId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -52,7 +53,7 @@ public static class Dao_DunnagePart
         );
     }
 
-    public static async Task<DaoResult<int>> InsertAsync(string partId, int typeId, string specValues, string user)
+    public static async Task<Model_Dao_Result<int>> InsertAsync(string partId, int typeId, string specValues, string user)
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
@@ -78,12 +79,12 @@ public static class Dao_DunnagePart
         {
             if (pNewId.Value != null && pNewId.Value != DBNull.Value)
             {
-                return DaoResult<int>.SuccessResult(Convert.ToInt32(pNewId.Value));
+                return DaoResultFactory.Success<int>(Convert.ToInt32(pNewId.Value));
             }
-            return DaoResult<int>.Failure("Failed to retrieve new ID");
+            return DaoResultFactory.Failure<int>("Failed to retrieve new ID");
         }
 
-        return DaoResult<int>.Failure(result.ErrorMessage, result.Exception);
+        return DaoResultFactory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
     public static async Task<Model_Dao_Result> UpdateAsync(int id, string specValues, string user)
@@ -116,7 +117,7 @@ public static class Dao_DunnagePart
         );
     }
 
-    public static async Task<DaoResult<int>> CountTransactionsAsync(string partId)
+    public static async Task<Model_Dao_Result<int>> CountTransactionsAsync(string partId)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -131,7 +132,7 @@ public static class Dao_DunnagePart
         );
     }
 
-    public static async Task<DaoResult<List<Model_DunnagePart>>> SearchAsync(string searchText, int? typeId = null)
+    public static async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchAsync(string searchText, int? typeId = null)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -162,3 +163,4 @@ public static class Dao_DunnagePart
         };
     }
 }
+

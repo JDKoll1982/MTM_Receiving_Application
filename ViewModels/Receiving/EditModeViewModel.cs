@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System;
@@ -83,10 +84,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _mysqlService = mysqlService;
             _csvWriter = csvWriter;
             _paginationService = paginationService;
-            
+
             _loads = new ObservableCollection<Model_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
-            
+
             _paginationService.PageChanged += OnPageChanged;
             _paginationService.PageSize = 20;
 
@@ -123,7 +124,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void UpdatePagedDisplay()
         {
             var pageItems = _paginationService.GetCurrentPageItems<Model_ReceivingLoad>();
-            
+
             Loads.Clear();
             foreach (var item in pageItems)
             {
@@ -169,7 +170,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     item.PropertyChanged -= Load_PropertyChanged;
                 }
             }
-            
+
             NotifyCommands();
         }
 
@@ -384,10 +385,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from current memory");
                 CurrentDataSource = DataSourceType.Memory;
                 SelectAllButtonText = "Select All";
-                
+
                 FilterStartDate = DateTimeOffset.Now.AddYears(-1);
                 FilterEndDate = DateTimeOffset.Now;
-                
+
                 FilterAndPaginate();
             }
             catch (Exception ex)
@@ -419,8 +420,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
 
                 await _errorHandler.ShowErrorDialogAsync(
-                    "No Labels Found", 
-                    "Could not find any current label files in the default locations.", 
+                    "No Labels Found",
+                    "Could not find any current label files in the default locations.",
                     Enum_ErrorSeverity.Warning);
             }
             catch (Exception ex)
@@ -442,11 +443,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             string localPath = _csvWriter.GetLocalCSVPath();
             if (File.Exists(localPath))
             {
-                try 
+                try
                 {
                     _logger.LogInfo($"Attempting to load from local CSV: {localPath}");
                     var loadedData = await _csvWriter.ReadFromCSVAsync(localPath);
-                    
+
                     if (loadedData.Count > 0)
                     {
                         _deletedLoads.Clear();
@@ -461,10 +462,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         CurrentDataSource = DataSourceType.CurrentLabels;
                         _currentCsvPath = localPath;
                         SelectAllButtonText = "Select All";
-                        
+
                         FilterStartDate = DateTimeOffset.Now.AddYears(-1);
                         FilterEndDate = DateTimeOffset.Now;
-                        
+
                         FilterAndPaginate();
                         return true;
                     }
@@ -482,7 +483,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 {
                     _logger.LogInfo($"Attempting to load from network labels: {networkPath}");
                     var loadedData = await _csvWriter.ReadFromCSVAsync(networkPath);
-                    
+
                     if (loadedData.Count > 0)
                     {
                         _deletedLoads.Clear();
@@ -497,10 +498,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         CurrentDataSource = DataSourceType.CurrentLabels;
                         _currentCsvPath = networkPath;
                         SelectAllButtonText = "Select All";
-                        
+
                         FilterStartDate = DateTimeOffset.Now.AddYears(-1);
                         FilterEndDate = DateTimeOffset.Now;
-                        
+
                         FilterAndPaginate();
                         return true;
                     }
@@ -560,7 +561,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 _logger.LogInfo($"Successfully loaded {_allLoads.Count} loads from history");
                 CurrentDataSource = DataSourceType.History;
                 SelectAllButtonText = "Select All";
-                
+
                 FilterAndPaginate();
             }
             catch (Exception ex)
@@ -581,7 +582,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void SelectAll()
         {
             bool anyUnselected = Loads.Any(l => !l.IsSelected);
-            
+
             if (anyUnselected)
             {
                 foreach (var load in Loads) load.IsSelected = true;
@@ -606,7 +607,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void RemoveRow()
         {
             var selectedLoads = Loads.Where(l => l.IsSelected).ToList();
-            
+
             if (selectedLoads.Any())
             {
                 _logger.LogInfo($"Removing {selectedLoads.Count} selected loads");
@@ -618,7 +619,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     _filteredLoads.Remove(load);
                     Loads.Remove(load);
                 }
-                
+
                 FilterAndPaginate();
             }
             else if (SelectedLoad != null)
@@ -629,7 +630,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 _allLoads.Remove(SelectedLoad);
                 _filteredLoads.Remove(SelectedLoad);
                 Loads.Remove(SelectedLoad);
-                
+
                 FilterAndPaginate();
             }
             else
@@ -672,13 +673,13 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     var errorMessage = string.Join("\n", validationErrors);
                     _logger.LogWarning($"Edit mode validation failed: {validationErrors.Count} errors");
                     await _errorHandler.HandleErrorAsync(
-                        $"Validation failed:\n{errorMessage}", 
+                        $"Validation failed:\n{errorMessage}",
                         Enum_ErrorSeverity.Warning);
                     return;
                 }
 
                 StatusMessage = "Saving data...";
-                
+
                 switch (CurrentDataSource)
                 {
                     case DataSourceType.Memory:
@@ -691,7 +692,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                             await _errorHandler.HandleErrorAsync("No label file path available for saving.", Enum_ErrorSeverity.Error);
                             return;
                         }
-                        
+
                         _logger.LogInfo($"Overwriting label file: {_currentCsvPath}");
                         await _csvWriter.WriteToFileAsync(_currentCsvPath, _allLoads, append: false);
                         StatusMessage = "Label file updated successfully";
@@ -712,7 +713,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                         {
                             updated = await _mysqlService.UpdateReceivingLoadsAsync(_filteredLoads);
                         }
-                        
+
                         StatusMessage = $"History updated ({updated} updated, {deleted} deleted)";
                         await _errorHandler.ShowErrorDialogAsync("Success", $"History updated successfully.\n{updated} records updated.\n{deleted} records deleted.", Enum_ErrorSeverity.Info);
                         break;

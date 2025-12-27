@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Helpers.Database;
 using System;
@@ -47,7 +48,7 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 return result.Data;
             }
-            
+
             return null;
         }
 

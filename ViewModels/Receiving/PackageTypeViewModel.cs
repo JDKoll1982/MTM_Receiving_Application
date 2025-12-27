@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
@@ -148,7 +149,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void UpdateLoadsPackageType()
         {
             var typeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
-            
+
             foreach (var load in Loads)
             {
                 load.PackageTypeName = typeName;

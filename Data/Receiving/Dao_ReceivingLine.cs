@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.Contracts.Services;

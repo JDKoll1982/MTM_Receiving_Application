@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Moq;
 using Xunit;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Models.Dunnage;
@@ -81,7 +82,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
             // But since we hardcoded a network path that likely doesn't exist, it should fail network write.
             // However, if the path is valid (e.g. mapped drive), it might succeed.
             // But the path is \\mtmanu-fs01... which is likely not available in this environment.
-            
+
             Assert.NotEmpty(result.LocalFilePath);
             Assert.True(File.Exists(result.LocalFilePath));
 

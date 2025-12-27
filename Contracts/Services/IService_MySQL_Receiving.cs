@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Contracts.Services
@@ -35,7 +36,7 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="startDate">Start date for retrieval</param>
         /// <param name="endDate">End date for retrieval</param>
         /// <returns>DAO result containing list of receiving loads</returns>
-        Task<DaoResult<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate);
+        Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate);
 
         /// <summary>
         /// Updates a batch of receiving loads in the database.

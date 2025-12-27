@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using MTM_Receiving_Application.Services.Receiving;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Contracts.Services;
 
@@ -58,7 +59,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services.Receiving
             // Assert
             Assert.True(result.LocalSuccess, $"Local write failed: {result.LocalError}");
             Assert.True(File.Exists(_localPath), $"File not found at {_localPath}");
-            
+
             var lines = await File.ReadAllLinesAsync(_localPath);
             Assert.True(lines.Length >= 2); // Header + 1 row
             Assert.Contains("TEST-PART", lines[1]);
@@ -86,7 +87,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services.Receiving
             // Header + Row1 + Row2 (Note: CsvHelper behavior depends on config, assuming append is handled or file rewritten)
             // Wait, Service_CSVWriter implementation usually appends. Let's check implementation if needed.
             // Assuming standard append behavior for logs/records.
-            
+
             // Actually, looking at typical CSV writer implementations, they might overwrite or append.
             // Let's verify if the file contains both parts.
             var content = await File.ReadAllTextAsync(_localPath);

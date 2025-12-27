@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
@@ -75,7 +76,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 {
                     Loads.Add(load);
                 }
-                
+
                 // Set current entry to first load if available
                 if (Loads.Count > 0)
                 {
@@ -83,7 +84,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     CurrentEntry = Loads[0];
                 }
             }
-            
+
             OnPropertyChanged(nameof(CanGoBack));
             OnPropertyChanged(nameof(CanGoNext));
             OnPropertyChanged(nameof(DisplayIndex));
@@ -136,10 +137,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             // This will be implemented fully in User Story 3
             // For now, it should probably just reset to PO Entry or Part Selection
             // But we need to make sure current loads are saved/accumulated in session.
-            
+
             // The workflow service should handle "AddCurrentPartToSessionAsync"
             await _workflowService.AddCurrentPartToSessionAsync();
-            
+
             // Navigate to PO Entry (or Part Selection if same PO?)
             // For MVP US1, we might not fully support this yet, but the button is requested.
             // Let's assume we go back to PO Entry.
@@ -163,9 +164,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             // Spec says: "Review Grid with Cascading Updates"
             // Usually this means if I change Heat# on Load 1, it might ask to update others, 
             // or if I change PO# it updates all for that part?
-            
+
             // T044 says: "cascading update logic for Part# and PO#"
-            
+
             var index = Loads.IndexOf(changedLoad);
             if (index < 0) return;
 

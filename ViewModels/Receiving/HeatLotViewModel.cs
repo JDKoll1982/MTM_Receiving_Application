@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
@@ -56,7 +57,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     load.PropertyChanged += Load_PropertyChanged;
                 }
             }
-            
+
             UpdateUniqueHeatNumbers();
             return Task.CompletedTask;
         }
@@ -129,13 +130,13 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
             }
         }
-        
+
         [RelayCommand]
         private Task ValidateAndContinueAsync()
         {
             // Set "Not Entered" for any blank heat/lot fields before advancing
             PrepareHeatLotFields();
-            
+
             // Validation logic is handled by Service_ReceivingWorkflow when advancing
             return Task.CompletedTask;
         }

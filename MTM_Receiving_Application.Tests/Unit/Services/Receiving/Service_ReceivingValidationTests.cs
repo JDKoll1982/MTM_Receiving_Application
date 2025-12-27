@@ -4,6 +4,7 @@ using Xunit;
 using Moq;
 using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Tests.Unit.Services.Receiving

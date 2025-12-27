@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
 using System.Collections.Generic;
@@ -106,7 +107,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                         $"Part {partID} was already received today. Visual shows {sameDayQty:F2} received. Your entry totals {userEnteredQuantity:F2}. Please verify.");
                 }
             }
-            
+
             // If check fails or returns 0, don't block - just skip the warning
             return ReceivingValidationResult.Success();
         }
@@ -175,7 +176,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         public async Task<ReceivingValidationResult> ValidatePartExistsInVisualAsync(string partID)
         {
             var result = await _inforVisualService.GetPartByIDAsync(partID);
-            
+
             if (!result.Success)
             {
                 return ReceivingValidationResult.Error($"Error validating part: {result.ErrorMessage}");

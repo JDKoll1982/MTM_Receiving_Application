@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Services.Database;
@@ -90,10 +91,10 @@ public class Service_ErrorHandler : IService_ErrorHandler
             // However, since 'App' is in the root namespace, we might need to qualify it or ensure it's accessible.
             // If 'App' is not found, it might be because we are in a library or test context where App is not defined or accessible.
             // In WinUI 3, (Application.Current as App)?.MainWindow is a common pattern.
-            
+
             // Using dynamic to avoid direct dependency on App class which might not be visible here
             // or simply checking Application.Current
-            
+
             // Use IWindowService to get the XamlRoot
             var xamlRoot = _windowService.GetXamlRoot();
 
@@ -138,7 +139,7 @@ public class Service_ErrorHandler : IService_ErrorHandler
         }
 
         string errorMessage = $"Database operation '{operationName}' failed: {result.ErrorMessage}";
-        
+
         await HandleErrorAsync(
             errorMessage,
             result.Severity,

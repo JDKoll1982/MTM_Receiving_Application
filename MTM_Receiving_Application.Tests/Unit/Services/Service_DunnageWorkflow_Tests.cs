@@ -6,6 +6,7 @@ using Xunit;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
 using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Models.Systems;
@@ -71,12 +72,12 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
             _service.CurrentSession.SelectedPart = new Model_DunnagePart { PartId = "P1", SpecValuesDict = new Dictionary<string, object>() };
             _service.CurrentSession.Quantity = 10;
             _service.CurrentSession.SelectedTypeName = "Pallet";
-            
+
             _mockSessionManager.Setup(s => s.CurrentSession)
                 .Returns(new Model_UserSession { User = new Model_User { WindowsUsername = "TestUser" } });
 
             _mockDunnageService.Setup(s => s.SaveLoadsAsync(It.IsAny<List<Model_DunnageLoad>>()))
-                .ReturnsAsync(Model_Dao_Result.SuccessResult());
+                .ReturnsAsync(DaoResultFactory.Success());
 
             _mockCsvWriter.Setup(s => s.WriteToCSVAsync(It.IsAny<List<Model_DunnageLoad>>()))
                 .ReturnsAsync(new Model_CSVWriteResult { LocalSuccess = true });
@@ -91,3 +92,4 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
         }
     }
 }
+

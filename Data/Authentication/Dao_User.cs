@@ -4,6 +4,7 @@ using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Models.Systems;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Helpers.Database;
 
@@ -35,7 +36,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// </summary>
         /// <param name="windowsUsername">Windows username from Environment.UserName</param>
         /// <returns>Result containing user data or error</returns>
-        public async Task<DaoResult<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
+        public async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -56,7 +57,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="username">Username (Windows username or full name)</param>
         /// <param name="pin">4-digit numeric PIN</param>
         /// <returns>Result containing user data or error</returns>
-        public async Task<DaoResult<Model_User>> ValidateUserPinAsync(string username, string pin)
+        public async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(string username, string pin)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -82,7 +83,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="user">User model with account data</param>
         /// <param name="createdBy">Windows username of account creator</param>
         /// <returns>Result containing new employee number or error</returns>
-        public async Task<DaoResult<int>> CreateNewUserAsync(Model_User user, string createdBy)
+        public async Task<Model_Dao_Result<int>> CreateNewUserAsync(Model_User user, string createdBy)
         {
             try
             {
@@ -118,19 +119,19 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var errorMessage = errorMessageParam.Value?.ToString();
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    return DaoResult<int>.Failure(errorMessage);
+                    return DaoResultFactory.Failure<int>(errorMessage);
                 }
 
                 // Return the employee number that was provided
-                return DaoResult<int>.SuccessResult(user.EmployeeNumber);
+                return DaoResultFactory.Success<int>(user.EmployeeNumber);
             }
             catch (MySqlException ex)
             {
-                return DaoResult<int>.Failure($"Database error: {ex.Message}", ex);
+                return DaoResultFactory.Failure<int>($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return DaoResult<int>.Failure($"Unexpected error: {ex.Message}", ex);
+                return DaoResultFactory.Failure<int>($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -144,7 +145,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="pin">4-digit PIN to check</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
         /// <returns>Result indicating if PIN is unique</returns>
-        public async Task<DaoResult<bool>> IsPinUniqueAsync(string pin, int? excludeEmployeeNumber = null)
+        public async Task<Model_Dao_Result<bool>> IsPinUniqueAsync(string pin, int? excludeEmployeeNumber = null)
         {
             try
             {
@@ -166,15 +167,15 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 var isUnique = count == 0;
 
-                return DaoResult<bool>.SuccessResult(isUnique);
+                return DaoResultFactory.Success<bool>(isUnique);
             }
             catch (MySqlException ex)
             {
-                return DaoResult<bool>.Failure($"Database error: {ex.Message}", ex);
+                return DaoResultFactory.Failure<bool>($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return DaoResult<bool>.Failure($"Unexpected error: {ex.Message}", ex);
+                return DaoResultFactory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -184,7 +185,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="username">Windows username to check</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
         /// <returns>Result indicating if username is unique</returns>
-        public async Task<DaoResult<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
+        public async Task<Model_Dao_Result<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
         {
             try
             {
@@ -206,15 +207,15 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 var isUnique = count == 0;
 
-                return DaoResult<bool>.SuccessResult(isUnique);
+                return DaoResultFactory.Success<bool>(isUnique);
             }
             catch (MySqlException ex)
             {
-                return DaoResult<bool>.Failure($"Database error: {ex.Message}", ex);
+                return DaoResultFactory.Failure<bool>($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return DaoResult<bool>.Failure($"Unexpected error: {ex.Message}", ex);
+                return DaoResultFactory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -230,7 +231,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <param name="workstationName">Computer name where event occurred</param>
         /// <param name="details">Additional event details</param>
         /// <returns>Result indicating success or failure</returns>
-        public async Task<DaoResult<bool>> LogUserActivityAsync(
+        public async Task<Model_Dao_Result<bool>> LogUserActivityAsync(
             string eventType,
             string username,
             string workstationName,
@@ -252,11 +253,11 @@ namespace MTM_Receiving_Application.Data.Authentication
 
             if (result.Success)
             {
-                return DaoResult<bool>.SuccessResult(true);
+                return DaoResultFactory.Success<bool>(true);
             }
             else
             {
-                return DaoResult<bool>.Failure(result.ErrorMessage, result.Exception);
+                return DaoResultFactory.Failure<bool>(result.ErrorMessage, result.Exception);
             }
         }
 
@@ -268,7 +269,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// Retrieves list of shared terminal workstation names.
         /// </summary>
         /// <returns>Result containing list of workstation names</returns>
-        public async Task<DaoResult<List<string>>> GetSharedTerminalNamesAsync()
+        public async Task<Model_Dao_Result<List<string>>> GetSharedTerminalNamesAsync()
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
@@ -281,7 +282,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// Retrieves list of active departments for dropdown population.
         /// </summary>
         /// <returns>Result containing list of department names</returns>
-        public async Task<DaoResult<List<string>>> GetActiveDepartmentsAsync()
+        public async Task<Model_Dao_Result<List<string>>> GetActiveDepartmentsAsync()
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
@@ -359,3 +360,4 @@ namespace MTM_Receiving_Application.Data.Authentication
         }
     }
 }
+

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections;
 using System;
 using System.Diagnostics;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System.Threading.Tasks;
 
@@ -45,7 +46,7 @@ namespace MTM_Receiving_Application.Views.Receiving
                             Debug.WriteLine($"[ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}");
                             ManualEntryDataGrid.SelectedItem = newItem;
                             ManualEntryDataGrid.ScrollIntoView(newItem, ManualEntryDataGrid.Columns.FirstOrDefault());
-                            
+
                             // Use async delay to ensure grid is fully ready before entering edit mode
                             _ = Task.Run(async () =>
                             {

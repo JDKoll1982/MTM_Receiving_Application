@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Services.Authentication;
 using MTM_Receiving_Application.Data.Authentication;
 using MTM_Receiving_Application.Models;
 using MTM_Receiving_Application.Models.Systems;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Contracts.Services;
 
 namespace MTM_Receiving_Application.Tests.Integration
@@ -37,30 +38,46 @@ namespace MTM_Receiving_Application.Tests.Integration
         public async Task PersonalWorkstation_ExistingUser_ShouldAutoLogin()
         {
             // Arrange
-            string username = "testuser_auto_" + new Random().Next(1000, 9999);
-            var newUser = new Model_User
+            // Retry logic for user creation to handle potential PIN/Username collisions
+            var random = new Random();
+            int maxRetries = 10;
+            Model_Dao_Result<int> createResult = null;
+            string username = "";
+
+            for (int i = 0; i < maxRetries; i++)
             {
-                WindowsUsername = username,
-                EmployeeNumber = new Random().Next(10000, 99999),
-                FullName = "Test User Auto",
-                Department = "Receiving",
-                Shift = "1st Shift",
-                Pin = new Random().Next(1000, 9999).ToString(),
-                IsActive = true
-            };
-            await _daoUser.CreateNewUserAsync(newUser, "system");
+                username = "testuser_auto_" + random.Next(1000, 9999);
+                var newUser = new Model_User
+                {
+                    WindowsUsername = username,
+                    EmployeeNumber = random.Next(10000, 99999),
+                    FullName = "Test User Auto",
+                    Department = "Receiving",
+                    Shift = "1st Shift",
+                    Pin = random.Next(1000, 9999).ToString(),
+                    IsActive = true
+                };
+
+                createResult = await _daoUser.CreateNewUserAsync(newUser, "system");
+                if (createResult.Success)
+                {
+                    break;
+                }
+            }
+
+            Assert.True(createResult?.Success, $"User creation failed after {maxRetries} attempts. Last error: {createResult?.ErrorMessage}");
 
             // Simulate Personal Workstation detection
-            var workstationConfig = new Model_WorkstationConfig 
-            { 
-                ComputerName = "PERSONAL-PC", 
-                WorkstationType = "personal_workstation" 
+            var workstationConfig = new Model_WorkstationConfig
+            {
+                ComputerName = "PERSONAL-PC",
+                WorkstationType = "personal_workstation"
             };
 
             // Act
             // 1. Authenticate
             var authResult = await _authService.AuthenticateByWindowsUsernameAsync(username);
-            
+
             // 2. Create Session
             Model_UserSession? session = null;
             if (authResult.Success && authResult.User != null)
@@ -72,7 +89,7 @@ namespace MTM_Receiving_Application.Tests.Integration
             Assert.True(authResult.Success);
             Assert.NotNull(authResult.User);
             Assert.Equal(username, authResult.User.WindowsUsername);
-            
+
             Assert.NotNull(session);
             Assert.Equal(username, session.User.WindowsUsername);
             Assert.Equal("personal_workstation", session.WorkstationType);

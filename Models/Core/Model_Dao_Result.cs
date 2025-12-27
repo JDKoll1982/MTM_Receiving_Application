@@ -1,7 +1,7 @@
 using MTM_Receiving_Application.Models.Enums;
 using System;
 
-namespace MTM_Receiving_Application.Models.Receiving;
+namespace MTM_Receiving_Application.Models.Core;
 
 /// <summary>
 /// Standardized response object for all database operations
@@ -49,56 +49,18 @@ public class Model_Dao_Result
     /// </summary>
     public Exception? Exception { get; set; }
 
-    public static Model_Dao_Result Failure(string message, Exception? ex = null)
-    {
-        return new Model_Dao_Result
-        {
-            Success = false,
-            ErrorMessage = message,
-            Exception = ex,
-            Severity = Enum_ErrorSeverity.Error
-        };
-    }
-
-    public static Model_Dao_Result SuccessResult(int affectedRows = 0)
-    {
-        return new Model_Dao_Result
-        {
-            Success = true,
-            AffectedRows = affectedRows
-        };
-    }
+    // Static factory methods moved to DaoResultFactory to avoid circular dependencies
 }
 
 /// <summary>
 /// Generic version of Model_Dao_Result for returning data
 /// </summary>
 /// <typeparam name="T">Type of data returned</typeparam>
-public class DaoResult<T> : Model_Dao_Result
+public class Model_Dao_Result<T> : Model_Dao_Result
 {
     /// <summary>
     /// Data returned by the operation
     /// </summary>
     public T? Data { get; set; }
-
-    public static new DaoResult<T> Failure(string message, Exception? ex = null)
-    {
-        return new DaoResult<T>
-        {
-            Success = false,
-            ErrorMessage = message,
-            Exception = ex,
-            Severity = Enum_ErrorSeverity.Error
-        };
-    }
-
-    public static DaoResult<T> SuccessResult(T data, int affectedRows = 0)
-    {
-        return new DaoResult<T>
-        {
-            Success = true,
-            Data = data,
-            AffectedRows = affectedRows
-        };
-    }
+    
 }

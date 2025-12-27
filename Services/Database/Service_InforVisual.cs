@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
 using System.Collections.Generic;
@@ -46,10 +47,10 @@ namespace MTM_Receiving_Application.Services.Database
             return $"Server={DefaultServer};Database={DefaultDatabase};User Id={DefaultUsername};Password={DefaultPassword};TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
         }
 
-        public async Task<DaoResult<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
+        public async Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
-                return DaoResult<Model_InforVisualPO?>.Failure("PO number cannot be null or empty");
+                return DaoResultFactory.Failure<Model_InforVisualPO?>("PO number cannot be null or empty");
 
             // Strip "PO-" prefix if present for database querying/debug logic
             string cleanPoNumber = poNumber;
@@ -87,7 +88,7 @@ namespace MTM_Receiving_Application.Services.Database
                     }
                 }
             };
-            return DaoResult<Model_InforVisualPO?>.SuccessResult(debugPO);
+            return DaoResultFactory.Success<Model_InforVisualPO?>(debugPO);
 #else
             try
             {
@@ -159,31 +160,31 @@ namespace MTM_Receiving_Application.Services.Database
                 if (po.HasParts)
                 {
                     _logger?.LogInfo($"Successfully retrieved PO {poNumber} with {po.Parts.Count} parts");
-                    return Model_Dao_Result<Model_InforVisualPO?>.SuccessResult(po);
+                    return DaoResultFactory.Success<Model_InforVisualPO?>(po);
                 }
                 else
                 {
                     _logger?.LogWarning($"PO {poNumber} found but has no parts or no results returned");
-                    return Model_Dao_Result<Model_InforVisualPO?>.SuccessResult(null);
+                    return DaoResultFactory.Success<Model_InforVisualPO?>(null);
                 }
             }
             catch (SqlException ex)
             {
                 _logger?.LogError($"SQL Error querying Infor Visual for PO {poNumber}: {ex.Message}", ex);
-                return Model_Dao_Result<Model_InforVisualPO?>.Failure($"Failed to query Infor Visual for PO {poNumber}: {ex.Message}", ex);
+                return DaoResultFactory.Failure<Model_InforVisualPO?>($"Failed to query Infor Visual for PO {poNumber}: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
-                return Model_Dao_Result<Model_InforVisualPO?>.Failure($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
+                return DaoResultFactory.Failure<Model_InforVisualPO?>($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
             }
 #endif
         }
 
-        public async Task<DaoResult<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
+        public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
-                return DaoResult<Model_InforVisualPart?>.Failure("Part ID cannot be null or empty");
+                return DaoResultFactory.Failure<Model_InforVisualPart?>("Part ID cannot be null or empty");
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual query for Part: {partID}");
@@ -195,7 +196,7 @@ namespace MTM_Receiving_Application.Services.Database
                 POLineNumber = "N/A",
                 QtyOrdered = 0
             };
-            return DaoResult<Model_InforVisualPart?>.SuccessResult(debugPart);
+            return DaoResultFactory.Success<Model_InforVisualPart?>(debugPart);
 #else
             try
             {
@@ -241,30 +242,30 @@ namespace MTM_Receiving_Application.Services.Database
                         QtyOrdered = 0
                     };
                     _logger?.LogInfo($"Successfully retrieved Part {partID}");
-                    return Model_Dao_Result<Model_InforVisualPart?>.SuccessResult(part);
+                    return DaoResultFactory.Success<Model_InforVisualPart?>(part);
                 }
 
                 _logger?.LogWarning($"Part {partID} not found in Infor Visual");
-                return Model_Dao_Result<Model_InforVisualPart?>.SuccessResult(null);
+                return DaoResultFactory.Success<Model_InforVisualPart?>(null);
             }
             catch (SqlException ex)
             {
                 _logger?.LogError($"SQL Error querying Infor Visual for Part {partID}: {ex.Message}", ex);
-                return Model_Dao_Result<Model_InforVisualPart?>.Failure($"Failed to query Infor Visual for Part {partID}: {ex.Message}", ex);
+                return DaoResultFactory.Failure<Model_InforVisualPart?>($"Failed to query Infor Visual for Part {partID}: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error querying Part {partID}: {ex.Message}", ex);
-                return Model_Dao_Result<Model_InforVisualPart?>.Failure($"Unexpected error querying Part {partID}: {ex.Message}", ex);
+                return DaoResultFactory.Failure<Model_InforVisualPart?>($"Unexpected error querying Part {partID}: {ex.Message}", ex);
             }
 #endif
         }
 
-        public async Task<DaoResult<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date)
+        public async Task<Model_Dao_Result<decimal>> GetSameDayReceivingQuantityAsync(string poNumber, string partID, DateTime date)
         {
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual same-day receiving check for PO: {poNumber}, Part: {partID}");
-            return DaoResult<decimal>.SuccessResult(0);
+            return DaoResultFactory.Success<decimal>(0);
 #else
             try
             {
@@ -309,32 +310,32 @@ namespace MTM_Receiving_Application.Services.Database
                 }
 
                 _logger?.LogInfo($"Same-day receiving check result: {qty} for PO {poNumber}, Part {partID}");
-                return Model_Dao_Result<decimal>.SuccessResult(qty);
+                return DaoResultFactory.Success<decimal>(qty);
             }
             catch (SqlException ex)
             {
                 _logger?.LogError($"SQL Error checking same-day receiving for PO {poNumber}, Part {partID}: {ex.Message}", ex);
-                return Model_Dao_Result<decimal>.Failure($"Failed to query same-day receiving for PO {poNumber}, Part {partID}: {ex.Message}", ex);
+                return DaoResultFactory.Failure<decimal>($"Failed to query same-day receiving for PO {poNumber}, Part {partID}: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error checking same-day receiving: {ex.Message}", ex);
-                return Model_Dao_Result<decimal>.Failure($"Unexpected error querying same-day receiving: {ex.Message}", ex);
+                return DaoResultFactory.Failure<decimal>($"Unexpected error querying same-day receiving: {ex.Message}", ex);
             }
 #endif
         }
 
-        public async Task<DaoResult<int>> GetRemainingQuantityAsync(string poNumber, string partID)
+        public async Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
-                return DaoResult<int>.Failure("PO number cannot be null or empty");
+                return DaoResultFactory.Failure<int>("PO number cannot be null or empty");
 
             if (string.IsNullOrWhiteSpace(partID))
-                return DaoResult<int>.Failure("Part ID cannot be null or empty");
+                return DaoResultFactory.Failure<int>("Part ID cannot be null or empty");
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual remaining quantity check for PO: {poNumber}, Part: {partID}");
-            return DaoResult<int>.SuccessResult(100);
+            return DaoResultFactory.Success<int>(100);
 #else
             try
             {
@@ -368,23 +369,23 @@ namespace MTM_Receiving_Application.Services.Database
                     int remainingQtyInt = (int)Math.Floor(remainingQty); // Whole numbers only
                     
                     _logger?.LogInfo($"Remaining quantity for PO {poNumber}, Part {partID}: {remainingQtyInt}");
-                    return Model_Dao_Result<int>.SuccessResult(remainingQtyInt);
+                    return DaoResultFactory.Success<int>(remainingQtyInt);
                 }
                 else
                 {
                     _logger?.LogWarning($"No data found for PO {poNumber}, Part {partID}");
-                    return Model_Dao_Result<int>.Failure($"No data found for PO {poNumber}, Part {partID}");
+                    return DaoResultFactory.Failure<int>($"No data found for PO {poNumber}, Part {partID}");
                 }
             }
             catch (SqlException ex)
             {
                 _logger?.LogError($"SQL Error calculating remaining quantity for PO {poNumber}, Part {partID}: {ex.Message}", ex);
-                return Model_Dao_Result<int>.Failure($"Failed to calculate remaining quantity: {ex.Message}", ex);
+                return DaoResultFactory.Failure<int>($"Failed to calculate remaining quantity: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
-                return Model_Dao_Result<int>.Failure($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
+                return DaoResultFactory.Failure<int>($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
             }
 #endif
         }
@@ -413,3 +414,4 @@ namespace MTM_Receiving_Application.Services.Database
         }
     }
 }
+

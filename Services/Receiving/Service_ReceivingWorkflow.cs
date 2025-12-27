@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
 using System.Collections.Generic;
@@ -111,19 +112,19 @@ namespace MTM_Receiving_Application.Services.Receiving
                 case WorkflowStep.POEntry:
                     if (string.IsNullOrEmpty(CurrentPONumber) && !IsNonPOItem)
                     {
-                         validationErrors.Add("PO Number is required.");
-                         return WorkflowStepResult.ErrorResult(validationErrors);
+                        validationErrors.Add("PO Number is required.");
+                        return WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     if (CurrentPart == null)
                     {
-                         validationErrors.Add("Part selection is required.");
-                         return WorkflowStepResult.ErrorResult(validationErrors);
+                        validationErrors.Add("Part selection is required.");
+                        return WorkflowStepResult.ErrorResult(validationErrors);
                     }
-                    
+
                     // Update session with PO/Part info
                     CurrentSession.IsNonPO = IsNonPOItem;
                     CurrentSession.PoNumber = IsNonPOItem ? null : CurrentPONumber;
-                    
+
                     CurrentStep = WorkflowStep.LoadEntry;
                     break;
 
@@ -222,7 +223,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                 }
                 _currentBatchLoads.Clear();
             }
-            
+
             for (int i = 1; i <= NumberOfLoads; i++)
             {
                 var load = new Model_ReceivingLoad
@@ -279,13 +280,13 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             // Commit current batch
             _currentBatchLoads.Clear();
-            
+
             // Reset for next part
             CurrentPONumber = null;
             CurrentPart = null;
             IsNonPOItem = false;
             NumberOfLoads = 1;
-            
+
             await PersistSessionAsync();
             CurrentStep = WorkflowStep.POEntry;
         }
@@ -319,14 +320,15 @@ namespace MTM_Receiving_Application.Services.Receiving
                 _logger.LogInfo("Calling _csvWriter.WriteToCSVAsync...");
                 var csvResult = await _csvWriter.WriteToCSVAsync(CurrentSession.Loads);
                 _logger.LogInfo($"CSV Write completed. Local: {csvResult.LocalSuccess}, Network: {csvResult.NetworkSuccess}");
-                
+
                 result.LocalCSVSuccess = csvResult.LocalSuccess;
                 result.NetworkCSVSuccess = csvResult.NetworkSuccess;
                 result.LocalCSVPath = _csvWriter.GetLocalCSVPath();
                 result.NetworkCSVPath = _csvWriter.GetNetworkCSVPath();
 
                 if (!csvResult.LocalSuccess)
-                {var msg = $"Local CSV write failed: {csvResult.LocalError}";
+                {
+                    var msg = $"Local CSV write failed: {csvResult.LocalError}";
                     result.Errors.Add(msg);
                     _logger.LogError(msg);
                 }
@@ -397,7 +399,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             CurrentPart = null;
             IsNonPOItem = false;
             _currentBatchLoads.Clear();
-            
+
             await _sessionManager.ClearSessionAsync();
             StepChanged?.Invoke(this, EventArgs.Empty);
         }

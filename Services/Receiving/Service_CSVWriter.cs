@@ -1,6 +1,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
 using System.Collections.Generic;
@@ -52,16 +53,16 @@ namespace MTM_Receiving_Application.Services.Receiving
 
                 var networkBase = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files";
                 var userDir = Path.Combine(networkBase, userName);
-                
+
                 _logger.LogInfo($"Checking network directory: {userDir}");
                 // Ensure directory exists
                 if (!Directory.Exists(userDir))
                 {
-                    try 
-                    { 
+                    try
+                    {
                         _logger.LogInfo($"Creating network directory: {userDir}");
-                        Directory.CreateDirectory(userDir); 
-                    } 
+                        Directory.CreateDirectory(userDir);
+                    }
                     catch (Exception ex)
                     {
                         _logger.LogWarning($"Failed to create network directory: {ex.Message}");
@@ -130,7 +131,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                 {
                     bool isNewFile = !File.Exists(filePath) || !append;
                     _logger.LogInfo($"File exists check for {filePath}: {!isNewFile}");
-                    
+
                     var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
                         // We handle header manually
@@ -184,10 +185,10 @@ namespace MTM_Receiving_Application.Services.Receiving
 
                     using var reader = new StreamReader(filePath);
                     using var csv = new CsvReader(reader, config);
-                    
+
                     var records = csv.GetRecords<Model_ReceivingLoad>();
                     var loads = new List<Model_ReceivingLoad>(records);
-                    
+
                     _logger.LogInfo($"Successfully read {loads.Count} records from {filePath}");
                     return loads;
                 }

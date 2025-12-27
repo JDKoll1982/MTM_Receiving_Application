@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
 namespace MTM_Receiving_Application.Contracts.Services
@@ -60,8 +61,8 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="partID">Part identifier for error message</param>
         /// <returns>Validation result with warning severity if exceeded</returns>
         Task<ReceivingValidationResult> ValidateAgainstPOQuantityAsync(
-            decimal totalQuantity, 
-            decimal orderedQuantity, 
+            decimal totalQuantity,
+            decimal orderedQuantity,
             string partID);
 
         /// <summary>
@@ -73,8 +74,8 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="userEnteredQuantity">User's total entered quantity</param>
         /// <returns>Validation result with warning if same-day receiving exists</returns>
         Task<ReceivingValidationResult> CheckSameDayReceivingAsync(
-            string poNumber, 
-            string partID, 
+            string poNumber,
+            string partID,
             decimal userEnteredQuantity);
 
         /// <summary>
@@ -110,15 +111,15 @@ namespace MTM_Receiving_Application.Contracts.Services
         public List<string> Errors { get; set; } = new();
 
         public static ReceivingValidationResult Success() => new() { IsValid = true };
-        public static ReceivingValidationResult Error(string message) => new() 
-        { 
-            IsValid = false, 
+        public static ReceivingValidationResult Error(string message) => new()
+        {
+            IsValid = false,
             Severity = ValidationSeverity.Error,
             Message = message,
             Errors = new List<string> { message }
         };
-        public static ReceivingValidationResult Warning(string message) => new() 
-        { 
+        public static ReceivingValidationResult Warning(string message) => new()
+        {
             IsValid = true, // Warnings don't block
             Severity = ValidationSeverity.Warning,
             Message = message

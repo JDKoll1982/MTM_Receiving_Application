@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.Models.Dunnage;

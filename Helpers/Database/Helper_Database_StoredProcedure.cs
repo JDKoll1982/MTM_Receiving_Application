@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.Models.Enums;
 
@@ -75,12 +76,12 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return Model_Dao_Result.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return DaoResultFactory.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return Model_Dao_Result.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return DaoResultFactory.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
@@ -165,13 +166,13 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure that returns a single record mapped to T
     /// </summary>
-    public static async Task<DaoResult<T>> ExecuteSingleAsync<T>(
+    public static async Task<Model_Dao_Result<T>> ExecuteSingleAsync<T>(
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
         Dictionary<string, object>? parameters = null)
     {
-        var result = new DaoResult<T>();
+        var result = new Model_Dao_Result<T>();
         var stopwatch = Stopwatch.StartNew();
         int attempt = 0;
 
@@ -218,24 +219,24 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return DaoResult<T>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return DaoResultFactory.Failure<T>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return DaoResult<T>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return DaoResultFactory.Failure<T>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
     /// Executes a stored procedure that returns a list of records mapped to T
     /// </summary>
-    public static async Task<DaoResult<List<T>>> ExecuteListAsync<T>(
+    public static async Task<Model_Dao_Result<List<T>>> ExecuteListAsync<T>(
         string connectionString,
         string procedureName,
         Func<IDataReader, T> mapper,
         Dictionary<string, object>? parameters = null)
     {
-        var result = new DaoResult<List<T>>();
+        var result = new Model_Dao_Result<List<T>>();
         var stopwatch = Stopwatch.StartNew();
         int attempt = 0;
 
@@ -279,23 +280,23 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return DaoResult<List<T>>.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return DaoResultFactory.Failure<List<T>>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return DaoResult<List<T>>.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return DaoResultFactory.Failure<List<T>>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
     /// Executes a stored procedure that returns a DataTable (SELECT)
     /// </summary>
-    public static async Task<DaoResult<DataTable>> ExecuteDataTableAsync(
+    public static async Task<Model_Dao_Result<DataTable>> ExecuteDataTableAsync(
         string connectionString,
         string procedureName,
         Dictionary<string, object>? parameters = null)
     {
-        var result = new DaoResult<DataTable>();
+        var result = new Model_Dao_Result<DataTable>();
         var stopwatch = Stopwatch.StartNew();
         int attempt = 0;
 
@@ -429,3 +430,5 @@ public static class Helper_Database_StoredProcedure
                ex.Number == 2006 || ex.Number == 2013;
     }
 }
+
+

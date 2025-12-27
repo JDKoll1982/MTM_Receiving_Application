@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System;
@@ -106,13 +107,13 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                                 currentLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
                                 filledCount++;
                             }
-                            
+
                             // Also copy other useful fields if blank, consistent with "same material" logic
                             if (currentLoad.PackagesPerLoad <= 0 && sourceLoad.PackagesPerLoad > 0)
                             {
                                 currentLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
                             }
-                            
+
                             if (string.IsNullOrWhiteSpace(currentLoad.PackageTypeName) && !string.IsNullOrWhiteSpace(sourceLoad.PackageTypeName))
                             {
                                 currentLoad.PackageTypeName = sourceLoad.PackageTypeName;
@@ -133,9 +134,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     if (string.IsNullOrWhiteSpace(currentLoad.UserId))
                     {
                         // Try previous row first (propagation)
-                        if (i > 0 && !string.IsNullOrWhiteSpace(Loads[i-1].UserId))
+                        if (i > 0 && !string.IsNullOrWhiteSpace(Loads[i - 1].UserId))
                         {
-                            currentLoad.UserId = Loads[i-1].UserId;
+                            currentLoad.UserId = Loads[i - 1].UserId;
                         }
                         else if (Loads.Count > 0 && !string.IsNullOrWhiteSpace(Loads[0].UserId))
                         {
@@ -151,7 +152,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
                 StatusMessage = $"Auto-fill complete. Updated {filledCount} fields.";
                 _logger.LogInfo($"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows.");
-                
+
                 // Force UI update if needed (ObservableCollection updates properties automatically if INPC is fired)
                 // Model_ReceivingLoad implements ObservableObject so it should be fine.
             }
@@ -227,7 +228,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             };
             Loads.Add(newLoad);
             _workflowService.CurrentSession.Loads.Add(newLoad);
-            
+
             // Select the new load
             SelectedLoad = newLoad;
         }
@@ -253,7 +254,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             try
             {
                 _logger.LogInfo($"Saving {Loads.Count} loads from manual entry");
-                
+
                 // Set default Heat/Lot if empty
                 foreach (var load in Loads)
                 {

@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
 using System.IO;
@@ -21,7 +22,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var appFolder = Path.Combine(appDataPath, "MTM_Receiving_Application");
-            
+
             // Ensure directory exists
             if (!Directory.Exists(appFolder))
             {
@@ -66,7 +67,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             try
             {
                 var json = await File.ReadAllTextAsync(_sessionPath);
-                
+
                 var options = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
