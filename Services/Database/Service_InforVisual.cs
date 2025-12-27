@@ -1,4 +1,5 @@
 using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Data.Receiving;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
@@ -17,27 +18,23 @@ namespace MTM_Receiving_Application.Services.Database
     {
         private readonly IService_UserSessionManager _sessionManager;
         private readonly ILoggingService? _logger;
+        private readonly Dao_InforVisualPO _daoPO;
+        private readonly Dao_InforVisualPart _daoPart;
         private const string DefaultServer = "VISUAL";
         private const string DefaultDatabase = "MTMFG";
         private const string DefaultUsername = "SHOP2";
         private const string DefaultPassword = "SHOP";
 
-        public Service_InforVisual(IService_UserSessionManager sessionManager, ILoggingService? logger = null)
+        public Service_InforVisual(
+            IService_UserSessionManager sessionManager,
+            Dao_InforVisualPO daoPO,
+            Dao_InforVisualPart daoPart,
+            ILoggingService? logger = null)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+            _daoPO = daoPO ?? throw new ArgumentNullException(nameof(daoPO));
+            _daoPart = daoPart ?? throw new ArgumentNullException(nameof(daoPart));
             _logger = logger;
-        }
-
-        /// <summary>
-        /// Builds connection string dynamically based on current user session.
-        /// </summary>
-        private string GetConnectionString()
-        {
-            var user = _sessionManager.CurrentSession?.User;
-            var username = !string.IsNullOrWhiteSpace(user?.VisualUsername) ? user.VisualUsername : DefaultUsername;
-            var password = !string.IsNullOrWhiteSpace(user?.VisualPassword) ? user.VisualPassword : DefaultPassword;
-
-            return $"Server={DefaultServer};Database={DefaultDatabase};User Id={username};Password={password};TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
         }
 
         /// <summary>
@@ -95,9 +92,7 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 _logger?.LogInfo($"Querying Infor Visual for PO: {poNumber} (Clean: {cleanPoNumber})");
                 
-                // Instantiate DAO with dynamic connection string
-                var dao = new Dao_InforVisualPO(GetConnectionString());
-                var result = await dao.GetPOWithPartsAsync(cleanPoNumber);
+                var result = await _daoPO.GetPOWithPartsAsync(cleanPoNumber);
                 
                 if (result.IsSuccess && result.Data != null)
                 {
@@ -143,9 +138,7 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 _logger?.LogInfo($"Querying Infor Visual for Part: {partID}");
                 
-                // Instantiate DAO with dynamic connection string
-                var dao = new Dao_InforVisualPart(GetConnectionString());
-                var result = await dao.GetPartByIdAsync(partID);
+                var result = await _daoPart.GetPartByIdAsync(partID);
                 
                 if (result.IsSuccess && result.Data != null)
                 {
@@ -180,9 +173,7 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 _logger?.LogInfo($"Checking same-day receiving for PO: {poNumber}, Part: {partID}, Date: {date:yyyy-MM-dd}");
                 
-                // Instantiate DAO with dynamic connection string
-                var dao = new Dao_InforVisualPO(GetConnectionString());
-                var result = await dao.GetSameDayReceivingQuantityAsync(poNumber, partID, date);
+                var result = await _daoPO.GetSameDayReceivingQuantityAsync(poNumber, partID, date);
                 
                 if (result.IsSuccess)
                 {
@@ -219,9 +210,7 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 _logger?.LogInfo($"Calculating remaining quantity for PO: {poNumber}, Part: {partID}");
                 
-                // Instantiate DAO with dynamic connection string
-                var dao = new Dao_InforVisualPO(GetConnectionString());
-                var result = await dao.GetRemainingQuantityAsync(poNumber, partID);
+                var result = await _daoPO.GetRemainingQuantityAsync(poNumber, partID);
                 
                 if (result.IsSuccess)
                 {
