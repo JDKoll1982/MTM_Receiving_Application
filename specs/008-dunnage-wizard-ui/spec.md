@@ -137,10 +137,10 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 #### DunnageLabelPage. xaml + DunnageWorkflowViewModel
 - **FR-001**: Page MUST provide navigation from MainWindow NavigationView menu
 - **FR-002**: Page MUST host all wizard step UserControls with visibility bindings
-- **FR-003**:  ViewModel MUST manage step visibility flags:  IsModeSelectionVisible, IsTypeSelectionVisible, IsPartSelectionVisible, IsQuantityEntryVisible, IsDetailsEntryVisible, IsReviewVisible
+- **FR-003**: ViewModel MUST manage step visibility flags:  IsModeSelectionVisible, IsTypeSelectionVisible, IsPartSelectionVisible, IsQuantityEntryVisible, IsDetailsEntryVisible, IsReviewVisible
 - **FR-004**: ViewModel MUST inject IService_DunnageWorkflow for state management
-- **FR-005**:  ViewModel MUST subscribe to workflow StepChanged event and update visibility flags
-- **FR-006**:  Only ONE step view MUST be visible at any time (mutual exclusion)
+- **FR-005**: ViewModel MUST subscribe to workflow StepChanged event and update visibility flags
+- **FR-006**: Only ONE step view MUST be visible at any time (mutual exclusion)
 
 ### Functional Requirements - Mode Selection
 
@@ -148,7 +148,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **FR-007**: View MUST display 3 cards:  Wizard Mode, Manual Entry Mode, Edit Mode
 - **FR-008**: Each card MUST show mode icon, title, and description
 - **FR-009**: Wizard card MUST describe "Step-by-step guided entry:  Type → Part → Quantity → Details → Review"
-- **FR-010**:  Manual card MUST describe "Grid-based batch entry: Fill multiple rows in a data grid"
+- **FR-010**: Manual card MUST describe "Grid-based batch entry: Fill multiple rows in a data grid"
 - **FR-011**: Edit card MUST describe "Review & Edit: View and modify history records with search and filter"
 - **FR-012**: ViewModel MUST provide SelectWizardModeCommand, SelectManualModeCommand, SelectEditModeCommand
 - **FR-013**: Commands MUST call workflow service to transition to appropriate step/mode
@@ -170,7 +170,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 
 #### DunnagePartSelectionView.xaml + DunnagePartSelectionViewModel
 - **FR-023**: View MUST display ComboBox with parts filtered by selected type
-- **FR-024**:  View MUST display "+ Add New Part" quick add button
+- **FR-024**: View MUST display "+ Add New Part" quick add button
 - **FR-025**: View MUST display InfoBar for inventory notification (initially hidden)
 - **FR-026**: View MUST display part details panel (Type, spec values, inventory status)
 - **FR-027**: ViewModel MUST load parts for selected type using `IService_MySQL_Dunnage.GetPartsByTypeAsync`
@@ -185,7 +185,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **FR-032**: View MUST display NumberBox for quantity with minimum value 1
 - **FR-033**: View MUST display selected type and part name for context
 - **FR-034**: ViewModel MUST initialize Quantity property to 1 by default
-- **FR-035**:  ViewModel MUST validate Quantity > 0 before allowing advancement
+- **FR-035**: ViewModel MUST validate Quantity > 0 before allowing advancement
 - **FR-036**: ViewModel MUST provide GoNextCommand that stores quantity in session and advances
 - **FR-037**: ViewModel MUST provide GoBackCommand that returns to part selection with session intact
 
@@ -197,7 +197,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **FR-040**: View MUST display InfoBar for inventoried parts with dynamic method
 - **FR-041**: View MUST dynamically generate spec input controls based on selected part's type specs
 - **FR-042**: ViewModel MUST load spec definitions from selected part's type using `IService_MySQL_Dunnage.GetSpecsForTypeAsync`
-- **FR-043**:  ViewModel MUST generate controls:  NumberBox for "number", TextBox for "text", CheckBox for "boolean"
+- **FR-043**: ViewModel MUST generate controls:  NumberBox for "number", TextBox for "text", CheckBox for "boolean"
 - **FR-044**: ViewModel MUST bind spec input values to SpecValues dictionary
 - **FR-045**: ViewModel MUST implement OnPoNumberChanged partial method to update inventory method
 - **FR-046**: When PO is blank, inventory method MUST be "Adjust In"; when PO has value, method MUST be "Receive In"
@@ -209,15 +209,15 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 #### DunnageReviewView.xaml + DunnageReviewViewModel
 - **FR-049**: View MUST display DataGrid with all loads in session (columns: Type, PartID, Qty, PO, Location, Method)
 - **FR-050**: View MUST display "Add Another" button to return to type selection
-- **FR-051**:  View MUST display "Save All" button to persist and export
+- **FR-051**: View MUST display "Save All" button to persist and export
 - **FR-052**: View MUST display "Cancel" button to clear session and return to mode selection
 - **FR-053**: ViewModel MUST bind to workflow service's CurrentSession. Loads collection
 - **FR-054**: ViewModel MUST provide AddAnotherCommand that calls workflow. GoToStep(TypeSelection) without clearing session
-- **FR-055**:  ViewModel MUST provide SaveAllCommand that calls workflow.SaveSessionAsync()
+- **FR-055**: ViewModel MUST provide SaveAllCommand that calls workflow.SaveSessionAsync()
 - **FR-056**: Save operation MUST insert loads to database via `IService_MySQL_Dunnage.SaveLoadsAsync`
 - **FR-057**: Save operation MUST export CSV via `IService_DunnageCSVWriter.WriteToCSVAsync`
-- **FR-058**:  Save success MUST display TeachingTip or InfoBar with "Successfully saved X loads and exported labels"
-- **FR-059**:  Save success MUST clear session and return to mode selection
+- **FR-058**: Save success MUST display TeachingTip or InfoBar with "Successfully saved X loads and exported labels"
+- **FR-059**: Save success MUST clear session and return to mode selection
 
 ## Success Criteria
 
@@ -229,19 +229,19 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **SC-004**: Inventory notification displays and updates correctly when part is inventoried and PO changes
 - **SC-005**: Review grid displays all loads with correct data in all columns
 - **SC-006**: "Add Another" workflow accumulates multiple loads in same session
-- **SC-007**:  "Save All" successfully persists loads and exports CSV to both local and network paths
-- **SC-008**:  Validation prevents advancement with invalid data (quantity=0, required specs missing)
+- **SC-007**: "Save All" successfully persists loads and exports CSV to both local and network paths
+- **SC-008**: Validation prevents advancement with invalid data (quantity=0, required specs missing)
 - **SC-009**: Quick add dialogs open without losing wizard session state
 - **SC-010**: Back navigation preserves previously entered values
 
 ## Non-Functional Requirements
 
 - **NFR-001**: All views MUST use x:Bind (compile-time binding) instead of Binding
-- **NFR-002**:  All views MUST use WinUI 3 controls (NavigationView, InfoBar, NumberBox, TeachingTip)
-- **NFR-003**:  Window size MUST be 1400x900 pixels (standard receiving window size)
+- **NFR-002**: All views MUST use WinUI 3 controls (NavigationView, InfoBar, NumberBox, TeachingTip)
+- **NFR-003**: Window size MUST be 1400x900 pixels (standard receiving window size)
 - **NFR-004**: Type selection buttons MUST be visually distinct with hover effects
 - **NFR-005**: Spec input controls MUST display unit labels where applicable (e.g., "inches")
-- **NFR-006**:  All user-facing text MUST be clear and concise (no technical jargon)
+- **NFR-006**: All user-facing text MUST be clear and concise (no technical jargon)
 - **NFR-007**: InfoBar severity MUST be "Informational" (blue, not warning/error)
 
 ## Out of Scope
@@ -256,7 +256,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 ## Dependencies
 
 - 004-services-layer (IService_DunnageWorkflow, IService_MySQL_Dunnage, IService_DunnageCSVWriter)
-- Project:  BaseViewModel (all ViewModels inherit from this)
+- Project: BaseViewModel (all ViewModels inherit from this)
 - NuGet: CommunityToolkit.Mvvm (for RelayCommand, ObservableProperty)
 - NuGet: Microsoft.WindowsAppSDK (for WinUI 3 controls)
 
@@ -325,10 +325,10 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 ### Resolved Questions
 
 **Q1**: Should wizard allow skipping steps?  
-**A1**: No.  Sequential navigation only. Ensures data consistency.
+**A1**: No. Sequential navigation only. Ensures data consistency.
 
 **Q2**: Should dynamic spec inputs show default values?  
-**A2**: Yes. Load default values from spec schema JSON if defined.  Otherwise blank.
+**A2**: Yes. Load default values from spec schema JSON if defined. Otherwise blank.
 
 **Q3**: Should inventory notification block advancement?  
 **A3**: No. Informational only. User can proceed but is warned. 
@@ -337,4 +337,4 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 **A4**: Yes. Store `_lastSelectedPage` in ViewModel session (not persistent, only within workflow session).
 
 **Q5**: Should Save All validate all loads before saving?  
-**A5**: Yes. Validate all quantities > 0 and required specs filled.  Show error if any load is invalid. 
+**A5**: Yes. Validate all quantities > 0 and required specs filled. Show error if any load is invalid.
