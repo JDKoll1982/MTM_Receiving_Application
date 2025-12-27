@@ -9,6 +9,8 @@ Auto-generated from all feature plans. Last updated: 2025-12-15
 - C# 12 / .NET 8.0 + MySql.Data (9.0+), Microsoft.WindowsAppSDK (1.5+), CommunityToolkit.Mvvm (8.2+) (001-phase1-infrastructure)
 - SQL (MySQL 5.7.24 compatible dialect) + MySQL Server 5.7.24+, mysql client tools (004-database-foundation)
 - MySQL database `mtm_receiving_application` (004-database-foundation)
+- SQL for MySQL 5.7.24, C# 12 / .NET 8.0 for DAO wrappers + MySQL.Data (8.0.x), Helper_Database_StoredProcedure utility class (001-dunnage-stored-procedures)
+- MySQL 5.7.24 (mtm_receiving_application database) (001-dunnage-stored-procedures)
 
 ## ⚠️ CRITICAL: Infor Visual Database Constraints
 
@@ -56,9 +58,9 @@ tests/
 C# 12 / .NET 8.0: Follow standard conventions
 
 ## Recent Changes
+- 001-dunnage-stored-procedures: Added SQL for MySQL 5.7.24, C# 12 / .NET 8.0 for DAO wrappers + MySQL.Data (8.0.x), Helper_Database_StoredProcedure utility class
 - 004-database-foundation: Added SQL (MySQL 5.7.24 compatible dialect) + MySQL Server 5.7.24+, mysql client tools
 - 003-database-foundation: Added C# 12 / .NET 8.0, WinUI 3 (Windows App SDK)
-- 002-user-login: Added C# 12 / .NET 8.0 + WinUI 3 (Windows App SDK 1.5+), Microsoft.Extensions.DependencyInjection, MySql.Data (or Dapper for MySQL)
 
 ## Documentation Standards
 

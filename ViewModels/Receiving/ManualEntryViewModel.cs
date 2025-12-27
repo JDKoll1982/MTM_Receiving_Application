@@ -15,6 +15,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
+        private readonly IWindowService _windowService;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
@@ -28,9 +29,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
             IService_ErrorHandler errorHandler,
-            ILoggingService logger)
+            ILoggingService logger,
+            IWindowService windowService)
             : base(errorHandler, logger)
         {
+            _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
             _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
@@ -173,7 +176,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private async Task AddMultipleRowsAsync()
         {
             // Prompt for number of rows
-            if (App.MainWindow?.Content?.XamlRoot == null) return;
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null) return;
 
             var inputTextBox = new Microsoft.UI.Xaml.Controls.TextBox
             {
@@ -191,7 +195,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 PrimaryButtonText = "Add",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
-                XamlRoot = App.MainWindow.Content.XamlRoot
+                XamlRoot = xamlRoot
             };
 
             var result = await dialog.ShowAsync();
@@ -273,7 +277,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [RelayCommand]
         private async Task ReturnToModeSelectionAsync()
         {
-            if (App.MainWindow?.Content?.XamlRoot == null)
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
                 await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
@@ -287,7 +292,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 PrimaryButtonText = "Yes, Change Mode",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = App.MainWindow.Content.XamlRoot
+                XamlRoot = xamlRoot
             };
 
             var result = await dialog.ShowAsync().AsTask();

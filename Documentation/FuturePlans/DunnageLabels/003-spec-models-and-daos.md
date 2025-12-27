@@ -30,41 +30,19 @@ As a **ViewModel developer**, I need observable model classes for all dunnage en
 4. **Given** a `Model_DunnageSession`, **When** adding loads to the collection, **Then** `HasLoads` computed property returns true
 5. **Given** all model classes, **When** checking inheritance, **Then** all inherit from `ObservableObject` and use `[ObservableProperty]` attributes
 
+**Status**: Partially Implemented. `Model_DunnageType`, `Model_DunnageSpec`, `Model_DunnagePart`, `Model_DunnageLoad`, `Model_InventoriedDunnage` created. `Model_DunnageSession` and Dictionary properties pending.
+
 ---
 
 ### User Story 2 - Type-Safe DAO Layer for Dunnage Types (Priority: P1)
 
-As a **service layer developer**, I need static DAO methods for dunnage type operations so that I can safely execute CRUD operations with proper error handling and result wrapping.
-
-**Why this priority**:  Types are the root of the dunnage hierarchy. All other DAOs depend on types existing and being queryable.
-
-**Independent Test**: Can be tested by calling DAO methods directly with test data against a dev database and verifying correct `Model_Dao_Result` responses with data or error messages.
-
-**Acceptance Scenarios**:
-
-1. **Given** `Dao_DunnageType. GetAllTypesAsync()` is called, **When** database has 11 seed types, **Then** result contains success=true and list of 11 `Model_DunnageType` objects
-2. **Given** `Dao_DunnageType.InsertTypeAsync()` with valid type, **When** insert executes, **Then** result contains success=true and new type ID
-3. **Given** `Dao_DunnageType.DeleteTypeAsync()` with type having dependent parts, **When** delete executes, **Then** result contains success=false and error message about FK constraint
-4. **Given** `Dao_DunnageType. GetPartCountByTypeAsync()` with valid type ID, **When** count executes, **Then** accurate count of dependent parts is returned
-5. **Given** database connection fails, **When** any DAO method executes, **Then** result contains success=false and exception details in error message
+**Status**: Implemented. `Dao_DunnageType` created with all methods.
 
 ---
 
 ### User Story 3 - DAO Layer for Specs, Parts, Loads, and Inventory (Priority: P1)
 
-As a **service layer developer**, I need DAO classes for all remaining dunnage entities (specs, parts, loads, inventoried parts) so that I can build complete workflow services.
-
-**Why this priority**: These DAOs complete the data access layer, enabling all service layer functionality.  All DAOs must exist before services can be implemented.
-
-**Independent Test**: Can be tested by executing each DAO method with various inputs (valid, invalid, null, edge cases) and verifying correct result wrapping and error handling.
-
-**Acceptance Scenarios**:
-
-1. **Given** `Dao_DunnageSpec.GetSpecsByTypeIdAsync()` with valid type ID, **When** specs exist, **Then** result contains JSON spec schema correctly deserialized
-2. **Given** `Dao_DunnagePart.SearchPartsAsync()` with search text "PALLET", **When** parts exist, **Then** filtered results contain only matching parts
-3. **Given** `Dao_DunnageLoad. InsertLoadsAsync()` with list of 50 loads, **When** batch insert executes, **Then** all loads are inserted atomically (all or nothing)
-4. **Given** `Dao_InventoriedDunnage.CheckIfInventoriedAsync()` with PartID, **When** part is in inventoried list, **Then** result returns true
-5. **Given** any DAO method encounters SQL exception, **When** exception occurs, **Then** exception is caught and wrapped in `Model_Dao_Result` with success=false
+**Status**: Implemented. `Dao_DunnageSpec`, `Dao_DunnagePart`, `Dao_DunnageLoad`, `Dao_InventoriedDunnage` created with all methods.
 
 ---
 
@@ -88,57 +66,32 @@ As a **service layer developer**, I need DAO classes for all remaining dunnage e
 - **FR-005**: System MUST provide `Model_InventoriedDunnage` with properties: Id, PartID, RequiresInventory, InventoryMethod, Notes, DateAdded, AddedBy
 - **FR-006**: System MUST provide `Model_DunnageSession` for workflow state management with properties: SelectedTypeID, SelectedTypeName, SelectedPart, Quantity, PONumber, Location, Loads (ObservableCollection), HasLoads (computed)
 
+**Status**: Partially Implemented. `Model_DunnageType`, `Model_DunnageSpec`, `Model_DunnagePart`, `Model_DunnageLoad`, `Model_InventoriedDunnage` created. `Model_DunnageSession` and Dictionary properties pending.
+
 #### Model Behaviors
 - **FR-007**: All models MUST use `[ObservableProperty]` attributes for automatic PropertyChanged implementation
 - **FR-008**: Models with JSON columns MUST provide both string property (for database) and deserialized Dictionary property (for UI binding)
 - **FR-009**: `Model_DunnageSession. HasLoads` MUST return `Loads. Count > 0` as a computed property
 - **FR-010**: All date properties MUST default to `DateTime.Now` for new instances
 
+**Status**: Partially Implemented. `[ObservableProperty]` used. Dictionary properties and `Model_DunnageSession` pending. Default dates pending.
+
 ### Functional Requirements - DAOs
 
 #### Dao_DunnageType (8 Methods)
-- **FR-011**: System MUST provide `GetAllTypesAsync()` returning `Model_Dao_Result<List<Model_DunnageType>>`
-- **FR-012**: System MUST provide `GetTypeByIdAsync(int id)` returning `Model_Dao_Result<Model_DunnageType>`
-- **FR-013**: System MUST provide `InsertTypeAsync(Model_DunnageType type)` returning `Model_Dao_Result`
-- **FR-014**: System MUST provide `UpdateTypeAsync(Model_DunnageType type)` returning `Model_Dao_Result`
-- **FR-015**: System MUST provide `DeleteTypeAsync(int id)` returning `Model_Dao_Result`
-- **FR-016**: System MUST provide `GetPartCountByTypeAsync(int typeId)` returning `Task<int>`
-- **FR-017**: System MUST provide `GetTransactionCountByTypeAsync(int typeId)` returning `Task<int>`
+**Status**: Implemented.
 
 #### Dao_DunnageSpec (7 Methods)
-- **FR-018**: System MUST provide `GetSpecsByTypeIdAsync(int typeId)` returning `Model_Dao_Result<Model_DunnageSpec>`
-- **FR-019**: System MUST provide `GetAllSpecsAsync()` returning `Model_Dao_Result<List<Model_DunnageSpec>>`
-- **FR-020**: System MUST provide `InsertSpecAsync(Model_DunnageSpec spec)` returning `Model_Dao_Result`
-- **FR-021**: System MUST provide `UpdateSpecAsync(Model_DunnageSpec spec)` returning `Model_Dao_Result`
-- **FR-022**: System MUST provide `DeleteSpecAsync(int specId)` returning `Model_Dao_Result`
-- **FR-023**: System MUST provide `DeleteSpecsByTypeIdAsync(int typeId)` returning `Model_Dao_Result`
-- **FR-024**: System MUST provide `GetPartCountUsingSpecAsync(int typeId, string specKey)` returning `Task<int>`
+**Status**: Implemented.
 
 #### Dao_DunnagePart (8 Methods)
-- **FR-025**: System MUST provide `GetAllPartsAsync()` returning `Model_Dao_Result<List<Model_DunnagePart>>`
-- **FR-026**: System MUST provide `GetPartsByTypeIdAsync(int typeId)` returning `Model_Dao_Result<List<Model_DunnagePart>>`
-- **FR-027**: System MUST provide `GetPartByIdAsync(string partId)` returning `Model_Dao_Result<Model_DunnagePart>`
-- **FR-028**: System MUST provide `InsertPartAsync(Model_DunnagePart part)` returning `Model_Dao_Result`
-- **FR-029**: System MUST provide `UpdatePartAsync(Model_DunnagePart part)` returning `Model_Dao_Result`
-- **FR-030**: System MUST provide `DeletePartAsync(string partId)` returning `Model_Dao_Result`
-- **FR-031**: System MUST provide `GetTransactionCountByPartAsync(string partId)` returning `Task<int>`
-- **FR-032**: System MUST provide `SearchPartsAsync(string searchText, int?  typeId)` returning `Model_Dao_Result<List<Model_DunnagePart>>`
+**Status**: Implemented.
 
 #### Dao_DunnageLoad (6 Methods)
-- **FR-033**: System MUST provide `GetAllLoadsAsync()` returning `Model_Dao_Result<List<Model_DunnageLoad>>`
-- **FR-034**: System MUST provide `GetLoadsByDateRangeAsync(DateTime start, DateTime end)` returning `Model_Dao_Result<List<Model_DunnageLoad>>`
-- **FR-035**: System MUST provide `InsertLoadAsync(Model_DunnageLoad load)` returning `Model_Dao_Result`
-- **FR-036**: System MUST provide `InsertLoadsAsync(List<Model_DunnageLoad> loads)` returning `Model_Dao_Result`
-- **FR-037**: System MUST provide `UpdateLoadAsync(Model_DunnageLoad load)` returning `Model_Dao_Result`
-- **FR-038**: System MUST provide `DeleteLoadAsync(Guid id)` returning `Model_Dao_Result` (hard delete, no soft delete)
+**Status**: Implemented.
 
 #### Dao_InventoriedDunnage (6 Methods)
-- **FR-039**: System MUST provide `GetAllInventoriedPartsAsync()` returning `Model_Dao_Result<List<Model_InventoriedDunnage>>`
-- **FR-040**: System MUST provide `CheckIfInventoriedAsync(string partId)` returning `Model_Dao_Result<bool>`
-- **FR-041**: System MUST provide `GetInventoriedPartAsync(string partId)` returning `Model_Dao_Result<Model_InventoriedDunnage>`
-- **FR-042**: System MUST provide `InsertInventoriedPartAsync(Model_InventoriedDunnage item)` returning `Model_Dao_Result`
-- **FR-043**: System MUST provide `UpdateInventoriedPartAsync(Model_InventoriedDunnage item)` returning `Model_Dao_Result`
-- **FR-044**: System MUST provide `DeleteInventoriedPartAsync(string partId)` returning `Model_Dao_Result`
+**Status**: Implemented.
 
 ### DAO Implementation Standards
 

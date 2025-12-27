@@ -61,6 +61,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         private string? _currentCsvPath;
         private readonly List<Model_ReceivingLoad> _deletedLoads = new();
+        private readonly IWindowService _windowService;
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
 
@@ -73,9 +74,11 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_CSVWriter csvWriter,
             IService_Pagination paginationService,
             IService_ErrorHandler errorHandler,
-            ILoggingService logger)
+            ILoggingService logger,
+            IWindowService windowService)
             : base(errorHandler, logger)
         {
+            _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
             _csvWriter = csvWriter;
@@ -743,7 +746,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [RelayCommand]
         private async Task ReturnToModeSelectionAsync()
         {
-            if (App.MainWindow?.Content?.XamlRoot == null)
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
                 await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
@@ -757,7 +761,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 PrimaryButtonText = "Yes, Change Mode",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = App.MainWindow.Content.XamlRoot
+                XamlRoot = xamlRoot
             };
 
             var result = await dialog.ShowAsync().AsTask();

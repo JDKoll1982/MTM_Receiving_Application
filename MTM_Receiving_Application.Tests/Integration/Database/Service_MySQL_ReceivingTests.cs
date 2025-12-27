@@ -54,7 +54,7 @@ namespace MTM_Receiving_Application.Tests.Integration.Database
                 // Assert
                 Assert.Equal(1, savedCount);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // If DB is not available, this might fail. 
                 // In a real CI/CD, we'd have a dedicated test DB.

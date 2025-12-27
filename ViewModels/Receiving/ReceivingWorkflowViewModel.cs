@@ -75,13 +75,19 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private Microsoft.UI.Xaml.UIElement? _helpContent;
 
         private bool _isSaving = false;
+        private readonly IDispatcherService _dispatcherService;
+        private readonly IWindowService _windowService;
 
         public ReceivingWorkflowViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_ErrorHandler errorHandler,
-            ILoggingService logger)
+            ILoggingService logger,
+            IDispatcherService dispatcherService,
+            IWindowService windowService)
             : base(errorHandler, logger)
         {
+            _dispatcherService = dispatcherService;
+            _windowService = windowService;
             _workflowService = workflowService;
             _workflowService.StepChanged += (s, e) => 
             {
@@ -90,7 +96,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 if (_workflowService.CurrentStep == WorkflowStep.Saving)
                 {
                     _logger.LogInfo("Step is Saving. Enqueuing PerformSaveAsync via Dispatcher.");
-                    App.MainWindow?.DispatcherQueue?.TryEnqueue(async () => 
+                    _dispatcherService.TryEnqueue(async () => 
                     {
                         await PerformSaveAsync();
                     });
@@ -114,7 +120,7 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
             {
                 Task.Delay(5000).ContinueWith(_ => 
                 {
-                    App.MainWindow?.DispatcherQueue?.TryEnqueue(() => 
+                    _dispatcherService.TryEnqueue(() => 
                     {
                         IsStatusOpen = false;
                     });
@@ -215,7 +221,8 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
         [RelayCommand]
         private async Task ResetCSVAsync()
         {
-            if (App.MainWindow?.Content?.XamlRoot == null)
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
                 await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
@@ -229,7 +236,7 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = App.MainWindow.Content.XamlRoot
+                XamlRoot = xamlRoot
             };
 
             var result = await dialog.ShowAsync();
@@ -260,7 +267,8 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
         [RelayCommand]
         private async Task ReturnToModeSelectionAsync()
         {
-            if (App.MainWindow?.Content?.XamlRoot == null)
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
             {
                 _logger.LogError("Cannot show dialog: XamlRoot is null");
                 await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
@@ -274,7 +282,7 @@ public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverit
                 PrimaryButtonText = "Yes, Change Mode",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
-                XamlRoot = App.MainWindow.Content.XamlRoot
+                XamlRoot = xamlRoot
             };
 
             var result = await dialog.ShowAsync();

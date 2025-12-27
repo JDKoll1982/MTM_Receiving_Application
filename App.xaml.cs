@@ -50,6 +50,7 @@ public partial class App : Application
                     var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
                     return new DispatcherService(dispatcherQueue);
                 });
+                services.AddSingleton<IWindowService, WindowService>();
                 services.AddSingleton<IService_Authentication>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();

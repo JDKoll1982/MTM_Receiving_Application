@@ -119,7 +119,8 @@ $schemaFiles = @(
     "$ProjectRoot\Database\Schemas\02_create_authentication_tables.sql",
     "$ProjectRoot\Database\Schemas\03_create_receiving_tables.sql",
     "$ProjectRoot\Database\Schemas\04_create_package_preferences.sql",
-    "$ProjectRoot\Database\Schemas\05_add_default_mode_to_users.sql"
+    "$ProjectRoot\Database\Schemas\05_add_default_mode_to_users.sql",
+    "$ProjectRoot\Database\Schemas\07_create_dunnage_tables_v2.sql"
 )
 
 foreach ($file in $schemaFiles) {
@@ -136,7 +137,8 @@ Write-Host "-" * 80
 
 $storedProcDirs = @(
     "$ProjectRoot\Database\StoredProcedures\Authentication",
-    "$ProjectRoot\Database\StoredProcedures\Receiving"
+    "$ProjectRoot\Database\StoredProcedures\Receiving",
+    "$ProjectRoot\Database\StoredProcedures\Dunnage"
 )
 
 foreach ($dir in $storedProcDirs) {
