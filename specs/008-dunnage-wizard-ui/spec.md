@@ -1,10 +1,10 @@
 # Feature Specification: Dunnage Wizard Workflow UI
 
-**Feature Branch**: `005-wizard-workflow`  
+**Feature Branch**: `008-dunnage-wizard-ui`  
 **Created**: 2025-12-26  
 **Status**:  Ready for Implementation  
 **Parent Feature**:  Dunnage Receiving System V2  
-**Depends On**: 004-services-layer
+**Depends On**: `007-architecture-compliance` & `006-dunnage-services`
 
 ## Overview
 
