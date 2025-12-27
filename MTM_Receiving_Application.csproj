@@ -12,8 +12,13 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
     <WindowsPackageType>None</WindowsPackageType>
-    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <UseRidGraph>true</UseRidGraph>
+  </PropertyGroup>
+
+  <!-- WindowsAppSDKSelfContained requires a Platform to be set, so make it conditional -->
+  <!-- This allows the language server to evaluate the project without errors -->
+  <PropertyGroup Condition="'$(Platform)' != '' and '$(Platform)' != 'AnyCPU'">
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
    <ItemGroup>
