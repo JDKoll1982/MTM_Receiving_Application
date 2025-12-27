@@ -91,6 +91,11 @@ public partial class App : Application
                 services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
                 services.AddTransient<IService_Pagination, Service_Pagination>();
 
+                // Dunnage Services (006-dunnage-services)
+                services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
+                services.AddTransient<IService_DunnageCSVWriter, Service_DunnageCSVWriter>();
+                services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
+
                 // ViewModels
                 services.AddTransient<MainWindowViewModel>();
                 services.AddTransient<SplashScreenViewModel>();

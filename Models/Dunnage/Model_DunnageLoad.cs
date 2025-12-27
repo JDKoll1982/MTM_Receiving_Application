@@ -10,6 +10,9 @@ public class Model_DunnageLoad : INotifyPropertyChanged
     private Guid _loadUuid;
     private string _partId = string.Empty;
     private decimal _quantity;
+    private string _poNumber = string.Empty;
+    private string _dunnageType = string.Empty;
+    private Dictionary<string, object> _specs = new();
     private DateTime _receivedDate = DateTime.Now;
     private string _createdBy = string.Empty;
     private DateTime _createdDate = DateTime.Now;
@@ -32,6 +35,24 @@ public class Model_DunnageLoad : INotifyPropertyChanged
     {
         get => _quantity;
         set => SetField(ref _quantity, value);
+    }
+
+    public string PoNumber
+    {
+        get => _poNumber;
+        set => SetField(ref _poNumber, value);
+    }
+
+    public string DunnageType
+    {
+        get => _dunnageType;
+        set => SetField(ref _dunnageType, value);
+    }
+
+    public Dictionary<string, object> Specs
+    {
+        get => _specs;
+        set => SetField(ref _specs, value);
     }
 
     public DateTime ReceivedDate
