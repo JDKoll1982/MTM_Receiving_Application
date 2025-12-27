@@ -13,6 +13,8 @@ Auto-generated from all feature plans. Last updated: 2025-12-15
 - MySQL 5.7.24 (mtm_receiving_application database) (005-dunnage-stored-procedures)
 - C# 12 / .NET 8.0 + CommunityToolkit.Mvvm, CsvHelper, System.Text.Json, MySql.Data (006-dunnage-services)
 - MySQL 5.7.24 (app data), File System (CSV export) (006-dunnage-services)
+- C# 12 / .NET 8.0 + WinUI 3 (Windows App SDK 1.8), CommunityToolkit.Mvvm 8.x, MySql.Data 8.x, Microsoft.Data.SqlClient, Microsoft.Extensions.DependencyInjection (007-architecture-compliance)
+- MySQL 5.7.24 (mtm_receiving_application) + SQL Server 2019 (Infor Visual - READ ONLY) (007-architecture-compliance)
 
 ## ⚠️ CRITICAL: Infor Visual Database Constraints
 
@@ -60,8 +62,8 @@ tests/
 C# 12 / .NET 8.0: Follow standard conventions
 
 ## Recent Changes
+- 007-architecture-compliance: Added C# 12 / .NET 8.0 + WinUI 3 (Windows App SDK 1.8), CommunityToolkit.Mvvm 8.x, MySql.Data 8.x, Microsoft.Data.SqlClient, Microsoft.Extensions.DependencyInjection
 - 006-dunnage-services: Added C# 12 / .NET 8.0 + CommunityToolkit.Mvvm, CsvHelper, System.Text.Json, MySql.Data
-- 006-dunnage-services: Added C# 12 / .NET 8.0
 - 006-dunnage-services: Added C# 12 / .NET 8.0
 
 ## Documentation Standards
