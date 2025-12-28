@@ -1,5 +1,9 @@
 {
     "markdown-preview-enhanced.plantumlServer": "https://www.plantuml.com/plantuml",
     "editor.fontFamily": "'Fluent System Icons'",
-    "editor.fontLigatures": true
+    "editor.fontLigatures": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "john-koll",
+        "projectKey": "JDKoll1982_MTM_Receiving_Application"
+    }
 }
