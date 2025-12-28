@@ -155,7 +155,10 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private void RemoveRow()
     {
-        if (SelectedLoad == null) return;
+        if (SelectedLoad == null)
+        {
+            return;
+        }
 
         Loads.Remove(SelectedLoad);
         SelectedLoad = Loads.LastOrDefault();
@@ -171,10 +174,16 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private void FillBlankSpaces()
     {
-        if (Loads.Count < 2) return;
+        if (Loads.Count < 2)
+        {
+            return;
+        }
 
         var lastLoad = Loads.LastOrDefault();
-        if (lastLoad == null) return;
+        if (lastLoad == null)
+        {
+            return;
+        }
 
         foreach (var load in Loads)
         {
@@ -223,7 +232,10 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task AutoFillAsync()
     {
-        if (Loads.Count == 0) return;
+        if (Loads.Count == 0)
+        {
+            return;
+        }
 
         try
         {
@@ -285,7 +297,10 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task SaveToHistoryAsync()
     {
-        if (Loads.Count == 0) return;
+        if (Loads.Count == 0)
+        {
+            return;
+        }
 
         try
         {
@@ -325,7 +340,10 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task SaveAllAsync()
     {
-        if (Loads.Count == 0) return;
+        if (Loads.Count == 0)
+        {
+            return;
+        }
 
         try
         {

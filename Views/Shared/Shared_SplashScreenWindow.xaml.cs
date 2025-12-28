@@ -68,6 +68,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle ViewModel property changes and update UI
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>

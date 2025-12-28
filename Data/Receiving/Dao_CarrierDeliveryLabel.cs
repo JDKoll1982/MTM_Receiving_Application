@@ -20,6 +20,7 @@ public static class Dao_CarrierDeliveryLabel
     /// <summary>
     /// Sets the error handler service (dependency injection)
     /// </summary>
+    /// <param name="errorHandler"></param>
     public static void SetErrorHandler(IService_ErrorHandler errorHandler)
     {
         _errorHandler = errorHandler;

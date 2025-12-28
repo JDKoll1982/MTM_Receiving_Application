@@ -33,7 +33,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         private void OnStepChanged(object? sender, System.EventArgs e)
         {
-            if (_workflowService.CurrentStep == WorkflowStep.LoadEntry)
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.LoadEntry)
             {
                 NumberOfLoads = _workflowService.NumberOfLoads;
             }

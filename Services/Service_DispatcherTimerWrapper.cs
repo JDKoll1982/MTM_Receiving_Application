@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Services
         public Service_DispatcherTimerWrapper(DispatcherQueueTimer timer)
         {
             _timer = timer ?? throw new ArgumentNullException(nameof(timer));
-            _timer.Tick += (s, e) => Tick?.Invoke(this, e);
+            _timer.Tick += (_, e) => Tick?.Invoke(this, e);
         }
 
         public TimeSpan Interval

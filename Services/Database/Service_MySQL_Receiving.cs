@@ -34,7 +34,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<int> SaveReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
         {
             if (loads == null)
+            {
                 return 0;
+            }
 
             _logger.LogInfo($"Saving {loads.Count} loads to database.");
 
@@ -55,7 +57,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<int> UpdateReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
         {
             if (loads == null)
+            {
                 return 0;
+            }
 
             _logger.LogInfo($"Updating {loads.Count} loads in database.");
 
@@ -76,7 +80,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<int> DeleteReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
         {
             if (loads == null)
+            {
                 return 0;
+            }
 
             _logger.LogInfo($"Deleting {loads.Count} loads from database.");
 

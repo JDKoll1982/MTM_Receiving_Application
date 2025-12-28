@@ -17,6 +17,7 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Constructor with ViewModel injection
         /// </summary>
+        /// <param name="viewModel"></param>
         public Shared_NewUserSetupDialog(Shared_NewUserSetupViewModel viewModel)
         {
             InitializeComponent();
@@ -32,6 +33,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle dialog closing event (including X button)
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnDialogClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
             // If user closes with X or Cancel button, mark as cancelled
@@ -44,6 +47,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Initialize dialog when loaded
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnDialogLoaded(object sender, RoutedEventArgs e)
         {
             // Set Windows username (read-only)
@@ -88,6 +93,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle Department ComboBox selection change
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DepartmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DepartmentComboBox.SelectedItem != null)
@@ -113,6 +120,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle ERP configuration checkbox checked
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ConfigureErpCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             ErpCredentialsPanel.Visibility = Visibility.Visible;
@@ -134,6 +143,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle ERP configuration checkbox unchecked
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ConfigureErpCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             ErpCredentialsPanel.Visibility = Visibility.Collapsed;
@@ -147,6 +158,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle Create Account button click
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void OnCreateAccountButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             args.Cancel = true;
@@ -283,6 +296,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handle Cancel button click
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnCancelButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             // User cancelled account creation
@@ -292,6 +307,7 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Show validation error in InfoBar
         /// </summary>
+        /// <param name="message"></param>
         private void ShowValidationError(string message)
         {
             StatusInfoBar.Title = "Validation Error";
@@ -303,6 +319,7 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Set loading state (disable controls, show progress bar)
         /// </summary>
+        /// <param name="isLoading"></param>
         private void SetLoadingState(bool isLoading)
         {
             // Disable/enable input controls

@@ -26,24 +26,23 @@ namespace MTM_Receiving_Application.Views.Receiving
         private void EditModeDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
-            if (grid != null)
+            // Wait for the move to complete then activate edit mode
+            grid?.DispatcherQueue.TryEnqueue(() =>
             {
-                // Wait for the move to complete then activate edit mode
-                grid.DispatcherQueue.TryEnqueue(() =>
+                if (grid.CurrentColumn?.IsReadOnly == false)
                 {
-                    if (grid.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
-                    {
-                        Debug.WriteLine($"[EditModeView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
-                        grid.BeginEdit();
-                    }
-                });
-            }
+                    Debug.WriteLine($"[EditModeView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
+                    grid.BeginEdit();
+                }
+            });
         }
 
         private void EditModeDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
-            if (grid == null) return;
+            if (sender is not DataGrid grid)
+            {
+                return;
+            }
 
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
             bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
@@ -53,8 +52,10 @@ namespace MTM_Receiving_Application.Views.Receiving
 
         private void EditModeDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
-            if (grid == null) return;
+            if (sender is not DataGrid grid)
+            {
+                return;
+            }
 
             Debug.WriteLine($"[EditModeView] Tapped: OriginalSource={e.OriginalSource}");
 
@@ -77,7 +78,7 @@ namespace MTM_Receiving_Application.Views.Receiving
                 Debug.WriteLine("[EditModeView] Tapped: Cell clicked. Enqueuing BeginEdit.");
                 grid.DispatcherQueue.TryEnqueue(() =>
                 {
-                    if (grid.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
+                    if (grid.CurrentColumn?.IsReadOnly == false)
                     {
                         Debug.WriteLine($"[EditModeView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
                         grid.BeginEdit();

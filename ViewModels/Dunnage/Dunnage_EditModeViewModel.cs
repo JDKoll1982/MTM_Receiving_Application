@@ -195,28 +195,44 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     [RelayCommand]
     private void FirstPage()
     {
-        if (CurrentPage == 1) return;
+        if (CurrentPage == 1)
+        {
+            return;
+        }
+
         LoadPage(1);
     }
 
     [RelayCommand]
     private void PreviousPage()
     {
-        if (CurrentPage <= 1) return;
+        if (CurrentPage <= 1)
+        {
+            return;
+        }
+
         LoadPage(CurrentPage - 1);
     }
 
     [RelayCommand]
     private void NextPage()
     {
-        if (CurrentPage >= TotalPages) return;
+        if (CurrentPage >= TotalPages)
+        {
+            return;
+        }
+
         LoadPage(CurrentPage + 1);
     }
 
     [RelayCommand]
     private void LastPage()
     {
-        if (CurrentPage == TotalPages) return;
+        if (CurrentPage == TotalPages)
+        {
+            return;
+        }
+
         LoadPage(TotalPages);
     }
 
@@ -257,7 +273,10 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     [RelayCommand]
     private void RemoveSelectedRows()
     {
-        if (SelectedLoads.Count == 0) return;
+        if (SelectedLoads.Count == 0)
+        {
+            return;
+        }
 
         var loadsToRemove = SelectedLoads.ToList();
 
@@ -281,7 +300,10 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task SaveAllAsync()
     {
-        if (_allLoads.Count == 0) return;
+        if (_allLoads.Count == 0)
+        {
+            return;
+        }
 
         try
         {

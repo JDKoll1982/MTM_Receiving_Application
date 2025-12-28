@@ -96,7 +96,7 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
         }
 
         // 4. No special characters check (Alphanumeric only)
-        if (!System.Text.RegularExpressions.Regex.IsMatch(input, "^[a-zA-Z0-9]*$"))
+        if (!AlphanumericRegex().IsMatch(input))
         {
             ShowError("Name cannot contain special characters");
             args.Cancel = true;
@@ -107,6 +107,9 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
         TypeName = input;
         SelectedIconGlyph = _selectedIcon;
     }
+
+    [System.Text.RegularExpressions.GeneratedRegex("^[a-zA-Z0-9]*$")]
+    private static partial System.Text.RegularExpressions.Regex AlphanumericRegex();
 
     private void ShowError(string message)
     {

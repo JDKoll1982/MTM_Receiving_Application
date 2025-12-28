@@ -5,7 +5,6 @@ using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System;
 using System.Threading.Tasks;
-
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
     public partial class Receiving_ReceivingModeSelectionViewModel : Shared_BaseViewModel
@@ -54,21 +53,21 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void SelectGuidedMode()
         {
             _logger.LogInfo("User selected Guided Mode.");
-            _workflowService.GoToStep(WorkflowStep.POEntry);
+            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
         }
 
         [RelayCommand]
         private void SelectManualMode()
         {
             _logger.LogInfo("User selected Manual Mode.");
-            _workflowService.GoToStep(WorkflowStep.ManualEntry);
+            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
         }
 
         [RelayCommand]
         private void SelectEditMode()
         {
             _logger.LogInfo("User selected Edit Mode.");
-            _workflowService.GoToStep(WorkflowStep.EditMode);
+            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
         }
 
         [RelayCommand]
@@ -77,30 +76,12 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             try
             {
                 var currentUser = _sessionManager.CurrentSession?.User;
-                if (currentUser == null) return;
+                if (currentUser == null)
+                {
+                    return;
+                }
 
                 string? newMode = isChecked ? "guided" : null;
-
-                // Update via service
-                // Note: Service expects "Package" or "Pallet" for package type preference, 
-                // but here we are setting receiving mode (guided/manual/edit).
-                // The IService_UserPreferences interface seems to be designed for PackageTypePreference (Package/Pallet)
-                // based on the spec, but here we are updating DefaultReceivingMode (guided/manual/edit).
-                // However, Service_UserPreferences.UpdateDefaultModeAsync calls Dao_User.UpdateDefaultModeAsync
-                // which updates the 'default_receiving_mode' column.
-                // The validation in Service_UserPreferences checks for "Package" or "Pallet".
-                // This is a conflict. The spec says "Package" or "Pallet" but the existing code uses "guided", "manual", "edit".
-
-                // I need to fix Service_UserPreferences validation to allow these values OR update the spec.
-                // Given I cannot change the spec easily, I should update the Service validation to be more permissive or correct.
-                // I will update the Service validation in a separate step if needed.
-                // For now, I will assume the service handles it or I will fix the service.
-
-                // Wait, I implemented Service_UserPreferences with:
-                // if (defaultMode != "Package" && defaultMode != "Pallet") return Failure...
-
-                // This will fail for "guided", "manual", "edit".
-                // I MUST fix Service_UserPreferences.cs to allow these values.
 
                 var result = await _userPreferencesService.UpdateDefaultModeAsync(currentUser.WindowsUsername, newMode ?? "");
 
@@ -142,7 +123,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             try
             {
                 var currentUser = _sessionManager.CurrentSession?.User;
-                if (currentUser == null) return;
+                if (currentUser == null)
+                {
+                    return;
+                }
 
                 string? newMode = isChecked ? "manual" : null;
 
@@ -186,7 +170,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             try
             {
                 var currentUser = _sessionManager.CurrentSession?.User;
-                if (currentUser == null) return;
+                if (currentUser == null)
+                {
+                    return;
+                }
 
                 string? newMode = isChecked ? "edit" : null;
 

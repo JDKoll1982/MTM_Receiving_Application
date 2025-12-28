@@ -16,6 +16,7 @@ using MTM_Receiving_Application.ViewModels.Dunnage;
 using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.ViewModels.Main;
 using MTM_Receiving_Application.Views.Main;
+using MTM_Receiving_Application.Models.Systems;
 
 using MTM_Receiving_Application.Services;
 using MTM_Receiving_Application.Services.Startup;
@@ -156,6 +157,7 @@ public partial class App : Application
     /// <summary>
     /// Invoked when the application is launched
     /// </summary>
+    /// <param name="args"></param>
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         var startupService = _host.Services.GetRequiredService<IService_OnStartup_AppLifecycle>();
@@ -171,7 +173,7 @@ public partial class App : Application
         }
     }
 
-    private void OnSessionTimedOut(object? sender, SessionTimedOutEventArgs e)
+    private void OnSessionTimedOut(object? sender, Model_SessionTimedOutEventArgs e)
     {
         // Close application on timeout
         // In a real app, we might show a dialog or navigate to login

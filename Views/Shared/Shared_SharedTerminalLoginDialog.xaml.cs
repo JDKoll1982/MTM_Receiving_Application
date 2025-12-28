@@ -18,6 +18,7 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Constructor with ViewModel injection
         /// </summary>
+        /// <param name="viewModel"></param>
         public Shared_SharedTerminalLoginDialog(Shared_SharedTerminalLoginViewModel viewModel)
         {
             InitializeComponent();
@@ -32,6 +33,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handles the Login button click
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             args.Cancel = true;
@@ -135,6 +138,8 @@ namespace MTM_Receiving_Application.Views.Shared
         /// <summary>
         /// Handles the Cancel button click
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnCloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             // User cancelled login

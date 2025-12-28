@@ -39,8 +39,7 @@ namespace MTM_Receiving_Application.Views.Dunnage
                     if (ViewModel.Loads.Count > 0)
                     {
                         // Select the last added item (assuming add to bottom)
-                        var newItem = e.NewItems?[0] as Model_DunnageLoad;
-                        if (newItem != null)
+                        if (e.NewItems?[0] is Model_DunnageLoad newItem)
                         {
                             Debug.WriteLine($"[Dunnage_ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}");
                             ManualEntryDataGrid.SelectedItem = newItem;
@@ -64,24 +63,23 @@ namespace MTM_Receiving_Application.Views.Dunnage
         private void ManualEntryDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
-            if (grid != null)
+            // Wait for the move to complete then activate edit mode
+            grid?.DispatcherQueue.TryEnqueue(() =>
             {
-                // Wait for the move to complete then activate edit mode
-                grid.DispatcherQueue.TryEnqueue(() =>
+                if (grid.CurrentColumn?.IsReadOnly == false)
                 {
-                    if (grid.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
-                    {
-                        Debug.WriteLine($"[Dunnage_ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
-                        grid.BeginEdit();
-                    }
-                });
-            }
+                    Debug.WriteLine($"[Dunnage_ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
+                    grid.BeginEdit();
+                }
+            });
         }
 
         private void ManualEntryDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
-            if (grid == null) return;
+            if (sender is not DataGrid grid)
+            {
+                return;
+            }
 
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
             bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
@@ -91,8 +89,10 @@ namespace MTM_Receiving_Application.Views.Dunnage
 
         private void ManualEntryDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
-            if (grid == null) return;
+            if (sender is not DataGrid grid)
+            {
+                return;
+            }
 
             Debug.WriteLine($"[Dunnage_ManualEntryView] Tapped: OriginalSource={e.OriginalSource}");
 
@@ -124,7 +124,7 @@ namespace MTM_Receiving_Application.Views.Dunnage
                 Debug.WriteLine("[Dunnage_ManualEntryView] Tapped: Cell clicked. Enqueuing BeginEdit.");
                 grid.DispatcherQueue.TryEnqueue(() =>
                 {
-                    if (grid.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
+                    if (grid.CurrentColumn?.IsReadOnly == false)
                     {
                         Debug.WriteLine($"[Dunnage_ManualEntryView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
                         grid.BeginEdit();

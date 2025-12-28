@@ -210,7 +210,7 @@ namespace MTM_Receiving_Application.Services.Database
                 var result = await _daoDunnageSpec.GetAllAsync();
                 if (result.IsSuccess && result.Data != null)
                 {
-                    return result.Data.Select(s => s.SpecKey).Distinct().OrderBy(k => k).ToList();
+                    return [.. result.Data.Select(s => s.SpecKey).Distinct().Order()];
                 }
                 return new List<string>();
             }
@@ -314,9 +314,15 @@ namespace MTM_Receiving_Application.Services.Database
                     result = await _daoDunnagePart.GetAllAsync();
                 }
 
-                if (!result.IsSuccess || result.Data == null) return result;
+                if (!result.IsSuccess || result.Data == null)
+                {
+                    return result;
+                }
 
-                if (string.IsNullOrWhiteSpace(searchText)) return result;
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    return result;
+                }
 
                 var filtered = result.Data.Where(p =>
                     p.PartId.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
@@ -338,7 +344,11 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                if (loads == null || loads.Count == 0) return Model_Dao_Result_Factory.Success();
+                if (loads == null || loads.Count == 0)
+                {
+                    return Model_Dao_Result_Factory.Success();
+                }
+
                 return await _daoDunnageLoad.InsertBatchAsync(loads, CurrentUser);
             }
             catch (Exception ex)

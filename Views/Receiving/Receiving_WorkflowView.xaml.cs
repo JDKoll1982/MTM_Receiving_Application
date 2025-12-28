@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.ViewModels.Receiving;
+using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.Views.Receiving
 {
@@ -26,7 +27,7 @@ namespace MTM_Receiving_Application.Views.Receiving
 
             // Only apply default mode if we're on the mode selection screen
             // and there's a valid user session
-            if (workflowService.CurrentStep == WorkflowStep.ModeSelection &&
+            if (workflowService.CurrentStep == Enum_ReceivingWorkflowStep.ModeSelection &&
                 sessionManager.CurrentSession?.User != null)
             {
                 var defaultMode = sessionManager.CurrentSession.User.DefaultReceivingMode;
@@ -36,11 +37,11 @@ namespace MTM_Receiving_Application.Views.Receiving
                     // User has a default mode set - go directly to that mode
                     if (defaultMode == "guided")
                     {
-                        workflowService.GoToStep(WorkflowStep.POEntry);
+                        workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
                     }
                     else if (defaultMode == "manual")
                     {
-                        workflowService.GoToStep(WorkflowStep.ManualEntry);
+                        workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
                     }
                 }
             }

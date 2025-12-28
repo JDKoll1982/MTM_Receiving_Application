@@ -54,6 +54,8 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Logs an informational message
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="context"></param>
     public void LogInfo(string message, string? context = null)
     {
         WriteLog("INFO", message, null, context);
@@ -62,6 +64,8 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Logs a warning message
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="context"></param>
     public void LogWarning(string message, string? context = null)
     {
         WriteLog("WARNING", message, null, context);
@@ -70,6 +74,9 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Logs an error message with optional exception
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="exception"></param>
+    /// <param name="context"></param>
     public void LogError(string message, Exception? exception = null, string? context = null)
     {
         WriteLog("ERROR", message, exception, context);
@@ -78,6 +85,9 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Logs a critical error message with optional exception
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="exception"></param>
+    /// <param name="context"></param>
     public void LogCritical(string message, Exception? exception = null, string? context = null)
     {
         WriteLog("CRITICAL", message, exception, context);
@@ -86,6 +96,9 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Logs a fatal error message with optional exception
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="exception"></param>
+    /// <param name="context"></param>
     public void LogFatal(string message, Exception? exception = null, string? context = null)
     {
         WriteLog("FATAL", message, exception, context);
@@ -124,6 +137,7 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Archives old log files (older than specified days)
     /// </summary>
+    /// <param name="daysToKeep"></param>
     public int ArchiveOldLogs(int daysToKeep = 30)
     {
         int archivedCount = 0;
@@ -175,6 +189,10 @@ public class Service_LoggingUtility : IService_LoggingUtility
     /// <summary>
     /// Core logging method that writes to file
     /// </summary>
+    /// <param name="severity"></param>
+    /// <param name="message"></param>
+    /// <param name="exception"></param>
+    /// <param name="context"></param>
     private void WriteLog(string severity, string message, Exception? exception, string? context)
     {
         try

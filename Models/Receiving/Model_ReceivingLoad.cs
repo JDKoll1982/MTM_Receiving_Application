@@ -44,7 +44,7 @@ namespace MTM_Receiving_Application.Models.Receiving
         private int _packagesPerLoad = 0;  // Default to 0 (blank)
 
         [ObservableProperty]
-        private string _packageTypeName = Enum_PackageType.Skid.ToString();
+        private string _packageTypeName = nameof(Enum_PackageType.Skid);
 
         [ObservableProperty]
         private Enum_PackageType _packageType = Enum_PackageType.Skid;

@@ -9,18 +9,18 @@ namespace MTM_Receiving_Application.Models.Receiving
     public class Model_InforVisualPO
     {
         public string PONumber { get; set; } = string.Empty;
-        
+
         public string Vendor { get; set; } = string.Empty;
-        
+
         public string Status { get; set; } = string.Empty;
-        
+
         public List<Model_InforVisualPart> Parts { get; set; } = new();
-        
+
         /// <summary>
         /// Indicates whether this PO has any parts associated with it.
         /// </summary>
-        public bool HasParts => Parts != null && Parts.Count > 0;
-        
+        public bool HasParts => Parts?.Count > 0;
+
         /// <summary>
         /// Returns a user-friendly status description.
         /// </summary>
@@ -35,7 +35,7 @@ namespace MTM_Receiving_Application.Models.Receiving
             "" => "Unknown",
             _ => $"Status: {Status}"
         };
-        
+
         /// <summary>
         /// Indicates if the PO is closed or cancelled.
         /// </summary>

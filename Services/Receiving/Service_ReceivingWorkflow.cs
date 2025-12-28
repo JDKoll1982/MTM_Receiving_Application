@@ -1,6 +1,7 @@
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
         private readonly IService_LoggingUtility _logger;
-        private List<Model_ReceivingLoad> _currentBatchLoads = new();
+        private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
 
         public event EventHandler? StepChanged;
         public event EventHandler<string>? StatusMessageRaised;
@@ -30,8 +31,8 @@ namespace MTM_Receiving_Application.Services.Receiving
             StatusMessageRaised?.Invoke(this, message);
         }
 
-        private WorkflowStep _currentStep = WorkflowStep.ModeSelection;
-        public WorkflowStep CurrentStep
+        private Enum_ReceivingWorkflowStep _currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+        public Enum_ReceivingWorkflowStep CurrentStep
         {
             get => _currentStep;
             private set
@@ -71,74 +72,74 @@ namespace MTM_Receiving_Application.Services.Receiving
             // Try to load existing session
             var existingSession = await _sessionManager.LoadSessionAsync();
 
-            if (existingSession != null && existingSession.HasLoads)
+            if (existingSession?.HasLoads == true)
             {
                 _logger.LogInfo("Restoring existing session.");
                 CurrentSession = existingSession;
                 // Determine which step to restore to based on session state
-                CurrentStep = WorkflowStep.Review; // Default to review if session exists
+                CurrentStep = Enum_ReceivingWorkflowStep.Review; // Default to review if session exists
                 return true; // Session restored
             }
 
             // Start fresh
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
-            CurrentStep = WorkflowStep.ModeSelection;
+            CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
             return false; // New session
         }
 
-        public async Task<WorkflowStepResult> AdvanceToNextStepAsync()
+        public async Task<Model_ReceivingWorkflowStepResult> AdvanceToNextStepAsync()
         {
             // Validate current step before advancing
             var validationErrors = new List<string>();
 
             switch (CurrentStep)
             {
-                case WorkflowStep.ModeSelection:
+                case Enum_ReceivingWorkflowStep.ModeSelection:
                     // Transition handled by GoToStep
-                    return WorkflowStepResult.SuccessResult(CurrentStep);
+                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
 
-                case WorkflowStep.ManualEntry:
+                case Enum_ReceivingWorkflowStep.ManualEntry:
                     // Manual entry goes directly to saving/review
                     // Validation happens on save
-                    CurrentStep = WorkflowStep.Saving;
-                    return WorkflowStepResult.SuccessResult(CurrentStep);
+                    CurrentStep = Enum_ReceivingWorkflowStep.Saving;
+                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
 
-                case WorkflowStep.EditMode:
+                case Enum_ReceivingWorkflowStep.EditMode:
                     // Edit mode goes to saving/review
-                    CurrentStep = WorkflowStep.Saving;
-                    return WorkflowStepResult.SuccessResult(CurrentStep);
+                    CurrentStep = Enum_ReceivingWorkflowStep.Saving;
+                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
 
-                case WorkflowStep.POEntry:
+                case Enum_ReceivingWorkflowStep.POEntry:
                     if (string.IsNullOrEmpty(CurrentPONumber) && !IsNonPOItem)
                     {
                         validationErrors.Add("PO Number is required.");
-                        return WorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
                     if (CurrentPart == null)
                     {
                         validationErrors.Add("Part selection is required.");
-                        return WorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
 
                     // Update session with PO/Part info
                     CurrentSession.IsNonPO = IsNonPOItem;
                     CurrentSession.PoNumber = IsNonPOItem ? null : CurrentPONumber;
 
-                    CurrentStep = WorkflowStep.LoadEntry;
+                    CurrentStep = Enum_ReceivingWorkflowStep.LoadEntry;
                     break;
 
-                case WorkflowStep.LoadEntry:
+                case Enum_ReceivingWorkflowStep.LoadEntry:
                     if (NumberOfLoads < 1)
                     {
                         validationErrors.Add("Number of loads must be at least 1.");
-                        return WorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
                     GenerateLoads();
-                    CurrentStep = WorkflowStep.WeightQuantityEntry;
+                    CurrentStep = Enum_ReceivingWorkflowStep.WeightQuantityEntry;
                     break;
 
-                case WorkflowStep.WeightQuantityEntry:
+                case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
                     foreach (var load in CurrentSession.Loads)
                     {
                         var result = _validation.ValidateWeightQuantity(load.WeightQuantity);
@@ -149,12 +150,12 @@ namespace MTM_Receiving_Application.Services.Receiving
                     }
                     if (validationErrors.Count > 0)
                     {
-                        return WorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
-                    CurrentStep = WorkflowStep.HeatLotEntry;
+                    CurrentStep = Enum_ReceivingWorkflowStep.HeatLotEntry;
                     break;
 
-                case WorkflowStep.HeatLotEntry:
+                case Enum_ReceivingWorkflowStep.HeatLotEntry:
                     foreach (var load in CurrentSession.Loads)
                     {
                         var result = _validation.ValidateHeatLotNumber(load.HeatLotNumber);
@@ -165,12 +166,12 @@ namespace MTM_Receiving_Application.Services.Receiving
                     }
                     if (validationErrors.Count > 0)
                     {
-                        return WorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
-                    CurrentStep = WorkflowStep.PackageTypeEntry;
+                    CurrentStep = Enum_ReceivingWorkflowStep.PackageTypeEntry;
                     break;
 
-                case WorkflowStep.PackageTypeEntry:
+                case Enum_ReceivingWorkflowStep.PackageTypeEntry:
                     foreach (var load in CurrentSession.Loads)
                     {
                         var result = _validation.ValidatePackageCount(load.PackagesPerLoad);
@@ -185,23 +186,23 @@ namespace MTM_Receiving_Application.Services.Receiving
                     }
                     if (validationErrors.Count > 0)
                     {
-                        return WorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
-                    CurrentStep = WorkflowStep.Review;
+                    CurrentStep = Enum_ReceivingWorkflowStep.Review;
                     break;
 
-                case WorkflowStep.Review:
+                case Enum_ReceivingWorkflowStep.Review:
                     _logger.LogInfo("Transitioning from Review to Saving...");
-                    CurrentStep = WorkflowStep.Saving;
+                    CurrentStep = Enum_ReceivingWorkflowStep.Saving;
                     break;
 
-                case WorkflowStep.Saving:
-                    CurrentStep = WorkflowStep.Complete;
+                case Enum_ReceivingWorkflowStep.Saving:
+                    CurrentStep = Enum_ReceivingWorkflowStep.Complete;
                     break;
 
                 default:
                     validationErrors.Add($"Cannot advance from step {CurrentStep}");
-                    return WorkflowStepResult.ErrorResult(validationErrors);
+                    return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
             }
 
             // Persist session after step change
@@ -209,13 +210,13 @@ namespace MTM_Receiving_Application.Services.Receiving
             await PersistSessionAsync();
             _logger.LogInfo("Session persisted.");
 
-            return WorkflowStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
+            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
         }
 
         private void GenerateLoads()
         {
             // Remove previous loads from this batch if they exist
-            if (_currentBatchLoads.Any())
+            if (_currentBatchLoads.Count > 0)
             {
                 foreach (var load in _currentBatchLoads)
                 {
@@ -240,40 +241,40 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
         }
 
-        public WorkflowStepResult GoToPreviousStep()
+        public Model_ReceivingWorkflowStepResult GoToPreviousStep()
         {
             switch (CurrentStep)
             {
-                case WorkflowStep.LoadEntry:
-                    CurrentStep = WorkflowStep.POEntry;
+                case Enum_ReceivingWorkflowStep.LoadEntry:
+                    CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
                     break;
 
-                case WorkflowStep.WeightQuantityEntry:
-                    CurrentStep = WorkflowStep.LoadEntry;
+                case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
+                    CurrentStep = Enum_ReceivingWorkflowStep.LoadEntry;
                     break;
 
-                case WorkflowStep.HeatLotEntry:
-                    CurrentStep = WorkflowStep.WeightQuantityEntry;
+                case Enum_ReceivingWorkflowStep.HeatLotEntry:
+                    CurrentStep = Enum_ReceivingWorkflowStep.WeightQuantityEntry;
                     break;
 
-                case WorkflowStep.PackageTypeEntry:
-                    CurrentStep = WorkflowStep.HeatLotEntry;
+                case Enum_ReceivingWorkflowStep.PackageTypeEntry:
+                    CurrentStep = Enum_ReceivingWorkflowStep.HeatLotEntry;
                     break;
 
-                case WorkflowStep.Review:
-                    CurrentStep = WorkflowStep.PackageTypeEntry;
+                case Enum_ReceivingWorkflowStep.Review:
+                    CurrentStep = Enum_ReceivingWorkflowStep.PackageTypeEntry;
                     break;
 
                 default:
-                    return WorkflowStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
+                    return Model_ReceivingWorkflowStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
             }
 
-            return WorkflowStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
+            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
         }
-        public WorkflowStepResult GoToStep(WorkflowStep step)
+        public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step)
         {
             CurrentStep = step;
-            return WorkflowStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
+            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
         }
 
         public async Task AddCurrentPartToSessionAsync()
@@ -288,13 +289,13 @@ namespace MTM_Receiving_Application.Services.Receiving
             NumberOfLoads = 1;
 
             await PersistSessionAsync();
-            CurrentStep = WorkflowStep.POEntry;
+            CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
         }
 
-        public async Task<SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null)
+        public async Task<Model_SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null)
         {
             _logger.LogInfo("Starting session save.");
-            var result = new SaveResult();
+            var result = new Model_SaveResult();
 
             messageProgress?.Report("Validating session...");
             percentProgress?.Report(10);
@@ -394,7 +395,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
-            CurrentStep = WorkflowStep.POEntry;
+            CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
             CurrentPONumber = null;
             CurrentPart = null;
             IsNonPOItem = false;
@@ -404,7 +405,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<CSVDeleteResult> ResetCSVFilesAsync()
+        public async Task<Model_CSVDeleteResult> ResetCSVFilesAsync()
         {
             _logger.LogInfo("Resetting CSV files requested.");
             return await _csvWriter.DeleteCSVFilesAsync();

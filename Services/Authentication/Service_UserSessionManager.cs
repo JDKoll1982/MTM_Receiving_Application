@@ -45,8 +45,15 @@ namespace MTM_Receiving_Application.Services.Authentication
             Model_WorkstationConfig workstationConfig,
             string authenticationMethod)
         {
-            if (user == null) throw new ArgumentNullException(nameof(user));
-            if (workstationConfig == null) throw new ArgumentNullException(nameof(workstationConfig));
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (workstationConfig == null)
+            {
+                throw new ArgumentNullException(nameof(workstationConfig));
+            }
 
             CurrentSession = new Model_UserSession
             {
@@ -65,10 +72,7 @@ namespace MTM_Receiving_Application.Services.Authentication
         /// <inheritdoc/>
         public void UpdateLastActivity()
         {
-            if (CurrentSession != null)
-            {
-                CurrentSession.UpdateLastActivity();
-            }
+            CurrentSession?.UpdateLastActivity();
         }
 
         // ====================================================================
@@ -118,7 +122,10 @@ namespace MTM_Receiving_Application.Services.Authentication
         /// <inheritdoc/>
         public async Task EndSessionAsync(string reason)
         {
-            if (CurrentSession == null) return;
+            if (CurrentSession == null)
+            {
+                return;
+            }
 
             try
             {
@@ -148,7 +155,7 @@ namespace MTM_Receiving_Application.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public event EventHandler<SessionTimedOutEventArgs>? SessionTimedOut;
+        public event EventHandler<Model_SessionTimedOutEventArgs>? SessionTimedOut;
 
         // ====================================================================
         // Private Methods
@@ -157,9 +164,14 @@ namespace MTM_Receiving_Application.Services.Authentication
         /// <summary>
         /// Timer tick handler - checks for session timeout.
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnTimerTick(object? sender, object args)
         {
-            if (CurrentSession == null) return;
+            if (CurrentSession == null)
+            {
+                return;
+            }
 
             if (IsSessionTimedOut())
             {
@@ -167,7 +179,7 @@ namespace MTM_Receiving_Application.Services.Authentication
                     $"Session timeout detected. Idle time: {CurrentSession.TimeSinceLastActivity.TotalMinutes:F1} minutes");
 
                 // Raise timeout event
-                SessionTimedOut?.Invoke(this, new SessionTimedOutEventArgs
+                SessionTimedOut?.Invoke(this, new Model_SessionTimedOutEventArgs
                 {
                     Session = CurrentSession,
                     IdleDuration = CurrentSession.TimeSinceLastActivity

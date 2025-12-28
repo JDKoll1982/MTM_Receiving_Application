@@ -87,10 +87,10 @@ namespace MTM_Receiving_Application.Data.Authentication
         {
             try
             {
-                using var connection = new MySqlConnection(_connectionString);
+                await using var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand("sp_CreateNewUser", connection)
+                await using var command = new MySqlCommand("sp_CreateNewUser", connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -149,14 +149,14 @@ namespace MTM_Receiving_Application.Data.Authentication
         {
             try
             {
-                using var connection = new MySqlConnection(_connectionString);
+                await using var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync();
 
                 var query = excludeEmployeeNumber.HasValue
                     ? "SELECT COUNT(*) FROM users WHERE pin = @pin AND employee_number != @excludeId"
                     : "SELECT COUNT(*) FROM users WHERE pin = @pin";
 
-                using var command = new MySqlCommand(query, connection);
+                await using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@pin", pin);
 
                 if (excludeEmployeeNumber.HasValue)
@@ -189,14 +189,14 @@ namespace MTM_Receiving_Application.Data.Authentication
         {
             try
             {
-                using var connection = new MySqlConnection(_connectionString);
+                await using var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync();
 
                 var query = excludeEmployeeNumber.HasValue
                     ? "SELECT COUNT(*) FROM users WHERE windows_username = @username AND employee_number != @excludeId"
                     : "SELECT COUNT(*) FROM users WHERE windows_username = @username";
 
-                using var command = new MySqlCommand(query, connection);
+                await using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@username", username);
 
                 if (excludeEmployeeNumber.HasValue)
@@ -298,6 +298,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <summary>
         /// Maps a IDataReader row to a Model_User object.
         /// </summary>
+        /// <param name="reader"></param>
         private Model_User MapReaderToUser(IDataReader reader)
         {
             return new Model_User
@@ -327,6 +328,8 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <summary>
         /// Updates user's default receiving mode preference
         /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="defaultMode"></param>
         public async Task<Model_Dao_Result> UpdateDefaultModeAsync(int userId, string? defaultMode)
         {
             var parameters = new Dictionary<string, object>
@@ -345,6 +348,7 @@ namespace MTM_Receiving_Application.Data.Authentication
         /// <summary>
         /// Safely attempts to read default_receiving_mode column, returns null if column doesn't exist
         /// </summary>
+        /// <param name="reader"></param>
         private static string? TryGetDefaultReceivingMode(IDataReader reader)
         {
             try

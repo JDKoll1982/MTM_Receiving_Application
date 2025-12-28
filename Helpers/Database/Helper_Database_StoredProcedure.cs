@@ -22,6 +22,9 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure using MySqlParameter array (compatible with legacy/receiving DAOs)
     /// </summary>
+    /// <param name="procedureName"></param>
+    /// <param name="parameters"></param>
+    /// <param name="connectionString"></param>
     public static async Task<Model_Dao_Result> ExecuteAsync(
         string procedureName,
         MySqlParameter[] parameters,
@@ -37,10 +40,10 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                using var connection = new MySqlConnection(connectionString);
+                await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand(procedureName, connection)
+                await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -87,9 +90,13 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Validates that all required parameters are present and not null
     /// </summary>
+    /// <param name="parameters"></param>
     public static bool ValidateParameters(MySqlParameter[] parameters)
     {
-        if (parameters == null) return true;
+        if (parameters == null)
+        {
+            return true;
+        }
 
         foreach (var param in parameters)
         {
@@ -105,6 +112,9 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure that returns no data (INSERT, UPDATE, DELETE)
     /// </summary>
+    /// <param name="connectionString"></param>
+    /// <param name="procedureName"></param>
+    /// <param name="parameters"></param>
     public static async Task<Model_Dao_Result> ExecuteNonQueryAsync(
         string connectionString,
         string procedureName,
@@ -120,10 +130,10 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                using var connection = new MySqlConnection(connectionString);
+                await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand(procedureName, connection)
+                await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -166,6 +176,11 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure that returns a single record mapped to T
     /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="connectionString"></param>
+    /// <param name="procedureName"></param>
+    /// <param name="mapper"></param>
+    /// <param name="parameters"></param>
     public static async Task<Model_Dao_Result<T>> ExecuteSingleAsync<T>(
         string connectionString,
         string procedureName,
@@ -182,17 +197,17 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                using var connection = new MySqlConnection(connectionString);
+                await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand(procedureName, connection)
+                await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
                 AddParameters(command, parameters);
 
-                using var reader = await command.ExecuteReaderAsync();
+                await using var reader = await command.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync())
                 {
@@ -230,6 +245,11 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure that returns a list of records mapped to T
     /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="connectionString"></param>
+    /// <param name="procedureName"></param>
+    /// <param name="mapper"></param>
+    /// <param name="parameters"></param>
     public static async Task<Model_Dao_Result<List<T>>> ExecuteListAsync<T>(
         string connectionString,
         string procedureName,
@@ -246,17 +266,17 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                using var connection = new MySqlConnection(connectionString);
+                await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand(procedureName, connection)
+                await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
                 AddParameters(command, parameters);
 
-                using var reader = await command.ExecuteReaderAsync();
+                await using var reader = await command.ExecuteReaderAsync();
                 var list = new List<T>();
 
                 while (await reader.ReadAsync())
@@ -291,6 +311,9 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure that returns a DataTable (SELECT)
     /// </summary>
+    /// <param name="connectionString"></param>
+    /// <param name="procedureName"></param>
+    /// <param name="parameters"></param>
     public static async Task<Model_Dao_Result<DataTable>> ExecuteDataTableAsync(
         string connectionString,
         string procedureName,
@@ -306,17 +329,17 @@ public static class Helper_Database_StoredProcedure
 
             try
             {
-                using var connection = new MySqlConnection(connectionString);
+                await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                using var command = new MySqlCommand(procedureName, connection)
+                await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
                 AddParameters(command, parameters);
 
-                using var reader = await command.ExecuteReaderAsync();
+                await using var reader = await command.ExecuteReaderAsync();
                 var dataTable = new DataTable();
                 dataTable.Load(reader);
 
@@ -355,6 +378,10 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Executes a stored procedure within an existing transaction
     /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="transaction"></param>
+    /// <param name="procedureName"></param>
+    /// <param name="parameters"></param>
     public static async Task<Model_Dao_Result> ExecuteInTransactionAsync(
         MySqlConnection connection,
         MySqlTransaction transaction,
@@ -366,7 +393,7 @@ public static class Helper_Database_StoredProcedure
 
         try
         {
-            using var command = new MySqlCommand(procedureName, connection, transaction)
+            await using var command = new MySqlCommand(procedureName, connection, transaction)
             {
                 CommandType = CommandType.StoredProcedure
             };
@@ -419,6 +446,7 @@ public static class Helper_Database_StoredProcedure
     /// <summary>
     /// Determines if a MySQL exception is transient (temporary) and should be retried
     /// </summary>
+    /// <param name="ex"></param>
     private static bool IsTransientError(MySqlException ex)
     {
         // Common transient error codes:

@@ -100,6 +100,7 @@ public static class Helper_WindowExtensions
     /// <summary>
     /// Gets the AppWindow from a WinUI 3 Window
     /// </summary>
+    /// <param name="window"></param>
     private static AppWindow GetAppWindow(this Window window)
     {
         var hWnd = WindowNative.GetWindowHandle(window);

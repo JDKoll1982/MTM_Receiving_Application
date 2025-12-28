@@ -64,9 +64,9 @@ namespace MTM_Receiving_Application.Services.Receiving
                     // FR-042: Dynamic columns
                     foreach (var key in specKeys)
                     {
-                        if (load.Specs != null && load.Specs.ContainsKey(key))
+                        if (load.Specs != null && load.Specs.TryGetValue(key, out object? value))
                         {
-                            dict[key] = load.Specs[key];
+                            dict[key] = value;
                         }
                         else
                         {
@@ -119,8 +119,8 @@ namespace MTM_Receiving_Application.Services.Receiving
 
         private async Task WriteCsvFileAsync(string path, IEnumerable<dynamic> records)
         {
-            using (var writer = new StreamWriter(path))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            await using (var writer = new StreamWriter(path))
+            await using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 await csv.WriteRecordsAsync(records);
             }

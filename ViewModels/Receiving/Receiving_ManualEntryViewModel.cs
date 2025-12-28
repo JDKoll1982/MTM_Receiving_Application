@@ -178,7 +178,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             // Prompt for number of rows
             var xamlRoot = _windowService.GetXamlRoot();
-            if (xamlRoot == null) return;
+            if (xamlRoot == null)
+            {
+                return;
+            }
 
             var inputTextBox = new Microsoft.UI.Xaml.Controls.TextBox
             {
@@ -304,7 +307,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     _logger.LogInfo("User confirmed return to mode selection, resetting workflow");
                     // Reset workflow and return to mode selection
                     await _workflowService.ResetWorkflowAsync();
-                    _workflowService.GoToStep(WorkflowStep.ModeSelection);
+                    _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
                     // The ReceivingWorkflowViewModel will handle the visibility update through StepChanged event
                 }
                 catch (Exception ex)

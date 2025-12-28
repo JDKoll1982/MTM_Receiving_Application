@@ -8,6 +8,6 @@ namespace MTM_Receiving_Application.Contracts.Services
 {
     public interface IService_DunnageCSVWriter
     {
-        Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads);
+        public Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads);
     }
 }

@@ -20,7 +20,7 @@ public interface IService_ErrorHandler
     /// <param name="exception">Optional exception that caused the error</param>
     /// <param name="showDialog">Whether to show a user-facing dialog</param>
     /// <returns>Task for async operation</returns>
-    Task HandleErrorAsync(
+    public Task HandleErrorAsync(
         string errorMessage,
         Enum_ErrorSeverity severity,
         Exception? exception = null,
@@ -34,7 +34,7 @@ public interface IService_ErrorHandler
     /// <param name="severity">The severity level of the error</param>
     /// <param name="exception">Optional exception that caused the error</param>
     /// <returns>Task for async operation</returns>
-    Task LogErrorAsync(
+    public Task LogErrorAsync(
         string errorMessage,
         Enum_ErrorSeverity severity,
         Exception? exception = null
@@ -47,7 +47,7 @@ public interface IService_ErrorHandler
     /// <param name="message">Error message to display</param>
     /// <param name="severity">Severity level (affects icon/styling)</param>
     /// <returns>Task for async operation</returns>
-    Task ShowErrorDialogAsync(
+    public Task ShowErrorDialogAsync(
         string title,
         string message,
         Enum_ErrorSeverity severity
@@ -60,7 +60,7 @@ public interface IService_ErrorHandler
     /// <param name="operationName">Name of the operation that failed</param>
     /// <param name="showDialog">Whether to show a user-facing dialog</param>
     /// <returns>Task for async operation</returns>
-    Task HandleDaoErrorAsync(
+    public Task HandleDaoErrorAsync(
         Model_Dao_Result result,
         string operationName,
         bool showDialog = true

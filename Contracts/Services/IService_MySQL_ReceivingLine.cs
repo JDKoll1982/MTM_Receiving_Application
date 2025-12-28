@@ -8,7 +8,8 @@ namespace MTM_Receiving_Application.Contracts.Services;
 public interface IService_MySQL_ReceivingLine
 {
     /// <summary>Insert a new receiving line</summary>
-    Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line);
+    /// <param name="line"></param>
+    public Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line);
 
     // Add other methods if needed by ReceivingLabelViewModel
 }

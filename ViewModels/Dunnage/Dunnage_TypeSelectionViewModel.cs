@@ -185,7 +185,10 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task SelectTypeAsync(Model_DunnageType? type)
     {
-        if (type == null || IsBusy) return;
+        if (type == null || IsBusy)
+        {
+            return;
+        }
 
         try
         {

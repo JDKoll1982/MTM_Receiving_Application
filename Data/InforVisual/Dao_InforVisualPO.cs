@@ -20,7 +20,9 @@ public class Dao_InforVisualPO
     private static void ValidateReadOnlyConnection(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
+        {
             throw new ArgumentNullException(nameof(connectionString));
+        }
 
         try
         {
@@ -46,7 +48,7 @@ public class Dao_InforVisualPO
     {
         try
         {
-            using var connection = new SqlConnection(_connectionString);
+            await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
             var query = @"
@@ -72,11 +74,11 @@ public class Dao_InforVisualPO
                 AND po.site_id = '002'
                 ORDER BY pol.po_line";
 
-            using var command = new SqlCommand(query, connection);
+            await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
             var list = new List<Model_InforVisualPO>();
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 list.Add(new Model_InforVisualPO
@@ -111,11 +113,11 @@ public class Dao_InforVisualPO
     {
         try
         {
-            using var connection = new SqlConnection(_connectionString);
+            await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
             var query = "SELECT COUNT(*) FROM po WHERE po_num = @PoNumber AND site_id = '002'";
-            using var command = new SqlCommand(query, connection);
+            await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
             var count = Convert.ToInt32(await command.ExecuteScalarAsync());

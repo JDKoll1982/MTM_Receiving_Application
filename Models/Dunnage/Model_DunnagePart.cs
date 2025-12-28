@@ -94,7 +94,11 @@ public class Model_DunnagePart : INotifyPropertyChanged
 
     protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, value))
+        {
+            return false;
+        }
+
         field = value;
         OnPropertyChanged(propertyName);
         return true;
@@ -109,7 +113,7 @@ public class Model_DunnagePart : INotifyPropertyChanged
                 SpecValuesDict = new Dictionary<string, object>();
                 return;
             }
-            
+
             var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(SpecValues);
             SpecValuesDict = dict ?? new Dictionary<string, object>();
         }

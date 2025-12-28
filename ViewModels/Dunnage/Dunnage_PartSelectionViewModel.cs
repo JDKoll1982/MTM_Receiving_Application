@@ -67,7 +67,10 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     /// </summary>
     public async Task InitializeAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -105,7 +108,10 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task LoadPartsAsync()
     {
-        if (IsBusy || SelectedTypeId == 0) return;
+        if (IsBusy || SelectedTypeId == 0)
+        {
+            return;
+        }
 
         try
         {
@@ -213,7 +219,10 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     [RelayCommand(CanExecute = nameof(IsPartSelected))]
     private async Task SelectPartAsync()
     {
-        if (SelectedPart == null || IsBusy) return;
+        if (SelectedPart == null || IsBusy)
+        {
+            return;
+        }
 
         try
         {

@@ -95,7 +95,10 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task SaveAllAsync()
     {
-        if (!CanSave || IsBusy) return;
+        if (!CanSave || IsBusy)
+        {
+            return;
+        }
 
         try
         {

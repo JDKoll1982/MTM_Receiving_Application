@@ -48,7 +48,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
+            {
                 return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>("PO number cannot be null or empty");
+            }
 
             // Strip "PO-" prefix if present for database querying/debug logic
             string cleanPoNumber = poNumber;
@@ -120,7 +122,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
+            {
                 return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>("Part ID cannot be null or empty");
+            }
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual query for Part: {partID}");
@@ -197,10 +201,14 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
+            {
                 return Model_Dao_Result_Factory.Failure<int>("PO number cannot be null or empty");
+            }
 
             if (string.IsNullOrWhiteSpace(partID))
+            {
                 return Model_Dao_Result_Factory.Failure<int>("Part ID cannot be null or empty");
+            }
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual remaining quantity check for PO: {poNumber}, Part: {partID}");

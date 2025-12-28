@@ -24,7 +24,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_CSVWriter _csvWriter;
         private readonly IService_Pagination _paginationService;
 
-        private List<Model_ReceivingLoad> _allLoads = new();
+        private readonly List<Model_ReceivingLoad> _allLoads = new();
         private List<Model_ReceivingLoad> _filteredLoads = new();
 
         [ObservableProperty]
@@ -69,6 +69,13 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <summary>
         /// Initializes a new instance of the EditModeViewModel class.
         /// </summary>
+        /// <param name="workflowService"></param>
+        /// <param name="mysqlService"></param>
+        /// <param name="csvWriter"></param>
+        /// <param name="paginationService"></param>
+        /// <param name="errorHandler"></param>
+        /// <param name="logger"></param>
+        /// <param name="windowService"></param>
         public Receiving_EditModeViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
@@ -97,6 +104,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <summary>
         /// Gets the text representation of the quarter for a given date.
         /// </summary>
+        /// <param name="date"></param>
         private static string GetQuarterText(DateTime date)
         {
             int quarter = (date.Month - 1) / 3 + 1;
@@ -113,6 +121,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <summary>
         /// Handles the pagination page changed event.
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPageChanged(object? sender, EventArgs e)
         {
             UpdatePagedDisplay();
@@ -154,6 +164,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <summary>
         /// Handles changes to the Loads collection to attach/detach property change listeners.
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -177,6 +189,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <summary>
         /// Handles property changes on individual load items.
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Load_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Model_ReceivingLoad.IsSelected))
@@ -211,7 +225,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private void ApplyDateFilter()
         {
             if (_allLoads.Count == 0)
+            {
                 return;
+            }
 
             FilterAndPaginate();
         }
@@ -240,35 +256,43 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// Sets the date filter to the last 7 days.
         /// </summary>
         [RelayCommand]
-        private async Task SetFilterLastWeek()
+        private async Task SetFilterLastWeekAsync()
         {
             FilterStartDate = DateTime.Today.AddDays(-7);
             FilterEndDate = DateTime.Today;
             if (CurrentDataSource == Enum_DataSourceType.History)
+            {
                 await LoadFromHistoryAsync();
+            }
             else
+            {
                 FilterAndPaginate();
+            }
         }
 
         /// <summary>
         /// Sets the date filter to today.
         /// </summary>
         [RelayCommand]
-        private async Task SetFilterToday()
+        private async Task SetFilterTodayAsync()
         {
             FilterStartDate = DateTime.Today;
             FilterEndDate = DateTime.Today;
             if (CurrentDataSource == Enum_DataSourceType.History)
+            {
                 await LoadFromHistoryAsync();
+            }
             else
+            {
                 FilterAndPaginate();
+            }
         }
 
         /// <summary>
         /// Sets the date filter to the current week.
         /// </summary>
         [RelayCommand]
-        private async Task SetFilterThisWeek()
+        private async Task SetFilterThisWeekAsync()
         {
             var today = DateTime.Today;
             var start = today.AddDays(-(int)today.DayOfWeek);
@@ -276,54 +300,70 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             FilterStartDate = start;
             FilterEndDate = end;
             if (CurrentDataSource == Enum_DataSourceType.History)
+            {
                 await LoadFromHistoryAsync();
+            }
             else
+            {
                 FilterAndPaginate();
+            }
         }
 
         /// <summary>
         /// Sets the date filter to the current month.
         /// </summary>
         [RelayCommand]
-        private async Task SetFilterThisMonth()
+        private async Task SetFilterThisMonthAsync()
         {
             var today = DateTime.Today;
             FilterStartDate = new DateTime(today.Year, today.Month, 1);
             FilterEndDate = FilterStartDate.AddMonths(1).AddDays(-1);
             if (CurrentDataSource == Enum_DataSourceType.History)
+            {
                 await LoadFromHistoryAsync();
+            }
             else
+            {
                 FilterAndPaginate();
+            }
         }
 
         /// <summary>
         /// Sets the date filter to the current quarter.
         /// </summary>
         [RelayCommand]
-        private async Task SetFilterThisQuarter()
+        private async Task SetFilterThisQuarterAsync()
         {
             var today = DateTime.Today;
             int quarter = (today.Month - 1) / 3 + 1;
             FilterStartDate = new DateTime(today.Year, 3 * quarter - 2, 1);
             FilterEndDate = FilterStartDate.AddMonths(3).AddDays(-1);
             if (CurrentDataSource == Enum_DataSourceType.History)
+            {
                 await LoadFromHistoryAsync();
+            }
             else
+            {
                 FilterAndPaginate();
+            }
         }
 
         /// <summary>
         /// Sets the date filter to show all records (last year).
         /// </summary>
         [RelayCommand]
-        private async Task SetFilterShowAll()
+        private async Task SetFilterShowAllAsync()
         {
             FilterStartDate = DateTime.Today.AddYears(-1);
             FilterEndDate = DateTime.Today;
             if (CurrentDataSource == Enum_DataSourceType.History)
+            {
                 await LoadFromHistoryAsync();
+            }
             else
+            {
                 FilterAndPaginate();
+            }
         }
 
         /// <summary>
@@ -599,13 +639,19 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             if (anyUnselected)
             {
                 foreach (var load in Loads)
+                {
                     load.IsSelected = true;
+                }
+
                 SelectAllButtonText = "Deselect All";
             }
             else
             {
                 foreach (var load in Loads)
+                {
                     load.IsSelected = false;
+                }
+
                 SelectAllButtonText = "Select All";
             }
         }
@@ -623,7 +669,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             var selectedLoads = Loads.Where(l => l.IsSelected).ToList();
 
-            if (selectedLoads.Any())
+            if (selectedLoads.Count > 0)
             {
                 _logger.LogInfo($"Removing {selectedLoads.Count} selected loads");
                 foreach (var load in selectedLoads)
@@ -787,7 +833,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 {
                     _logger.LogInfo("User confirmed return to mode selection, resetting workflow");
                     await _workflowService.ResetWorkflowAsync();
-                    _workflowService.GoToStep(WorkflowStep.ModeSelection);
+                    _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
                 }
                 catch (Exception ex)
                 {
@@ -804,6 +850,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <summary>
         /// Validates the list of loads before saving.
         /// </summary>
+        /// <param name="loadsToValidate"></param>
         private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate)
         {
             var errors = new System.Collections.Generic.List<string>();

@@ -26,6 +26,10 @@ public class Service_ErrorHandler : IService_ErrorHandler
     /// <summary>
     /// Handles an error by logging it and optionally displaying a dialog
     /// </summary>
+    /// <param name="errorMessage"></param>
+    /// <param name="severity"></param>
+    /// <param name="exception"></param>
+    /// <param name="showDialog"></param>
     public async Task HandleErrorAsync(
         string errorMessage,
         Enum_ErrorSeverity severity,
@@ -46,6 +50,9 @@ public class Service_ErrorHandler : IService_ErrorHandler
     /// <summary>
     /// Logs an error without displaying a dialog
     /// </summary>
+    /// <param name="errorMessage"></param>
+    /// <param name="severity"></param>
+    /// <param name="exception"></param>
     public Task LogErrorAsync(
         string errorMessage,
         Enum_ErrorSeverity severity,
@@ -77,6 +84,9 @@ public class Service_ErrorHandler : IService_ErrorHandler
     /// <summary>
     /// Displays a user-friendly error dialog using WinUI 3 ContentDialog
     /// </summary>
+    /// <param name="title"></param>
+    /// <param name="message"></param>
+    /// <param name="severity"></param>
     public async Task ShowErrorDialogAsync(
         string title,
         string message,
@@ -127,6 +137,9 @@ public class Service_ErrorHandler : IService_ErrorHandler
     /// <summary>
     /// Handles a Model_Dao_Result error by logging and optionally displaying
     /// </summary>
+    /// <param name="result"></param>
+    /// <param name="operationName"></param>
+    /// <param name="showDialog"></param>
     public async Task HandleDaoErrorAsync(
         Model_Dao_Result result,
         string operationName,
@@ -151,6 +164,7 @@ public class Service_ErrorHandler : IService_ErrorHandler
     /// <summary>
     /// Gets appropriate dialog title based on severity
     /// </summary>
+    /// <param name="severity"></param>
     private static string GetDialogTitle(Enum_ErrorSeverity severity)
     {
         return severity switch

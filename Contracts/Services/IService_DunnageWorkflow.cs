@@ -9,16 +9,16 @@ namespace MTM_Receiving_Application.Contracts.Services
 {
     public interface IService_DunnageWorkflow
     {
-        Enum_DunnageWorkflowStep CurrentStep { get; }
-        Model_DunnageSession CurrentSession { get; }
+        public Enum_DunnageWorkflowStep CurrentStep { get; }
+        public Model_DunnageSession CurrentSession { get; }
 
-        event EventHandler StepChanged;
-        event EventHandler<string> StatusMessageRaised;
+        public event EventHandler StepChanged;
+        public event EventHandler<string> StatusMessageRaised;
 
-        Task<bool> StartWorkflowAsync();
-        Task<Model_WorkflowStepResult> AdvanceToNextStepAsync();
-        void GoToStep(Enum_DunnageWorkflowStep step);
-        Task<Model_SaveResult> SaveSessionAsync();
-        void ClearSession();
+        public Task<bool> StartWorkflowAsync();
+        public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync();
+        public void GoToStep(Enum_DunnageWorkflowStep step);
+        public Task<Model_SaveResult> SaveSessionAsync();
+        public void ClearSession();
     }
 }

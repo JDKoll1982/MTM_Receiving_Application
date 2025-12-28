@@ -101,7 +101,10 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
     [RelayCommand(CanExecute = nameof(IsValid))]
     private async Task GoNextAsync()
     {
-        if (!IsValid || IsBusy) return;
+        if (!IsValid || IsBusy)
+        {
+            return;
+        }
 
         try
         {

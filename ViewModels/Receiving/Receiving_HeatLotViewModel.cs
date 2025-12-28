@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
@@ -37,7 +38,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         private void OnStepChanged(object? sender, System.EventArgs e)
         {
-            if (_workflowService.CurrentStep == WorkflowStep.HeatLotEntry)
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.HeatLotEntry)
             {
                 _ = OnNavigatedToAsync();
             }

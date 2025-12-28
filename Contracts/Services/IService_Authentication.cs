@@ -17,8 +17,8 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="windowsUsername">Windows username from Environment.UserName</param>
         /// <param name="progress">Optional progress reporter for splash screen updates</param>
         /// <returns>Authentication result with user data or error message</returns>
-        Task<AuthenticationResult> AuthenticateByWindowsUsernameAsync(
-            string windowsUsername, 
+        Task<Model_AuthenticationResult> AuthenticateByWindowsUsernameAsync(
+            string windowsUsername,
             IProgress<string>? progress = null);
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="pin">4-digit numeric PIN</param>
         /// <param name="progress">Optional progress reporter for splash screen updates</param>
         /// <returns>Authentication result with user data or error message</returns>
-        Task<AuthenticationResult> AuthenticateByPinAsync(
-            string username, 
-            string pin, 
+        Task<Model_AuthenticationResult> AuthenticateByPinAsync(
+            string username,
+            string pin,
             IProgress<string>? progress = null);
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="createdBy">Windows username of account creator</param>
         /// <param name="progress">Optional progress reporter for UI feedback</param>
         /// <returns>Result with new employee number or error message</returns>
-        Task<CreateUserResult> CreateNewUserAsync(
-            Model_User user, 
-            string createdBy, 
+        Task<Model_CreateUserResult> CreateNewUserAsync(
+            Model_User user,
+            string createdBy,
             IProgress<string>? progress = null);
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="pin">4-digit PIN to validate</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from uniqueness check</param>
         /// <returns>Validation result with error message if invalid</returns>
-        Task<ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null);
+        Task<Model_ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null);
 
         /// <summary>
         /// Detects workstation type (personal workstation or shared terminal).
@@ -75,65 +75,5 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="workstationName">Computer name where event occurred</param>
         /// <param name="details">Additional event details</param>
         Task LogUserActivityAsync(string eventType, string username, string workstationName, string details);
-    }
-
-    /// <summary>
-    /// Result of an authentication attempt.
-    /// </summary>
-    public class AuthenticationResult
-    {
-        public bool Success { get; set; }
-        public Model_User? User { get; set; }
-        public string ErrorMessage { get; set; } = string.Empty;
-
-        public static AuthenticationResult SuccessResult(Model_User user) => new()
-        {
-            Success = true,
-            User = user
-        };
-
-        public static AuthenticationResult ErrorResult(string message) => new()
-        {
-            Success = false,
-            ErrorMessage = message
-        };
-    }
-
-    /// <summary>
-    /// Result of a user creation attempt.
-    /// </summary>
-    public class CreateUserResult
-    {
-        public bool Success { get; set; }
-        public int EmployeeNumber { get; set; }
-        public string ErrorMessage { get; set; } = string.Empty;
-
-        public static CreateUserResult SuccessResult(int employeeNumber) => new()
-        {
-            Success = true,
-            EmployeeNumber = employeeNumber
-        };
-
-        public static CreateUserResult ErrorResult(string message) => new()
-        {
-            Success = false,
-            ErrorMessage = message
-        };
-    }
-
-    /// <summary>
-    /// Result of a validation operation.
-    /// </summary>
-    public class ValidationResult
-    {
-        public bool IsValid { get; set; }
-        public string ErrorMessage { get; set; } = string.Empty;
-
-        public static ValidationResult Valid() => new() { IsValid = true };
-        public static ValidationResult Invalid(string message) => new()
-        {
-            IsValid = false,
-            ErrorMessage = message
-        };
     }
 }

@@ -53,6 +53,9 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// <summary>
         /// Constructor with dependency injection
         /// </summary>
+        /// <param name="authService"></param>
+        /// <param name="errorHandler"></param>
+        /// <param name="logger"></param>
         public Shared_SharedTerminalLoginViewModel(
             IService_Authentication authService,
             IService_ErrorHandler errorHandler,
@@ -72,7 +75,10 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// <returns>True if authentication successful, false otherwise</returns>
         public async Task<bool> LoginAsync()
         {
-            if (IsBusy) return false;
+            if (IsBusy)
+            {
+                return false;
+            }
 
             try
             {

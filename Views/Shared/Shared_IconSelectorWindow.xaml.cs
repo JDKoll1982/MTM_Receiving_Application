@@ -16,6 +16,9 @@ public sealed partial class Shared_IconSelectorWindow : Window
     private List<IconInfo> _filteredIcons = new();
     private int _currentPage = 1;
     private int _totalPages = 1;
+    private static readonly System.Text.RegularExpressions.Regex _regex = new System.Text.RegularExpressions.Regex("(\\B[A-Z])");
+    private static readonly System.Text.RegularExpressions.Regex _regex2 = new System.Text.RegularExpressions.Regex("([a-zA-Z])([0-9])");
+    private static readonly System.Text.RegularExpressions.Regex _regex3 = new System.Text.RegularExpressions.Regex("([0-9])([a-zA-Z])");
     private const int ICONS_PER_PAGE = 16;
 
     public string? SelectedIconGlyph { get; private set; }
@@ -50,7 +53,10 @@ public sealed partial class Shared_IconSelectorWindow : Window
 
     private async Task LoadAllIconsAsync()
     {
-        if (_allIconsFromFile.Count > 0) return;
+        if (_allIconsFromFile.Count > 0)
+        {
+            return;
+        }
 
         try
         {
@@ -61,7 +67,7 @@ public sealed partial class Shared_IconSelectorWindow : Window
                 var jsonText = await File.ReadAllTextAsync(jsonPath);
                 var iconData = JsonSerializer.Deserialize<List<JsonIconData>>(jsonText);
 
-                if (iconData != null && iconData.Count > 0)
+                if (iconData?.Count > 0)
                 {
                     _allIconsFromFile = iconData
                         .Select(icon => new IconInfo(
@@ -122,11 +128,11 @@ public sealed partial class Shared_IconSelectorWindow : Window
     private string CleanIconName(string rawName)
     {
         // Add space before capital letters (except start)
-        var withSpaces = System.Text.RegularExpressions.Regex.Replace(rawName, "(\\B[A-Z])", " $1");
+        var withSpaces = _regex.Replace(rawName, " $1");
         // Add space between letter and number
-        withSpaces = System.Text.RegularExpressions.Regex.Replace(withSpaces, "([a-zA-Z])([0-9])", "$1 $2");
+        withSpaces = _regex2.Replace(withSpaces, "$1 $2");
         // Add space between number and letter
-        withSpaces = System.Text.RegularExpressions.Regex.Replace(withSpaces, "([0-9])([a-zA-Z])", "$1 $2");
+        withSpaces = _regex3.Replace(withSpaces, "$1 $2");
         return withSpaces;
     }
 
@@ -172,8 +178,15 @@ public sealed partial class Shared_IconSelectorWindow : Window
     private void UpdateDisplay()
     {
         _totalPages = (int)Math.Ceiling(_filteredIcons.Count / (double)ICONS_PER_PAGE);
-        if (_totalPages == 0) _totalPages = 1;
-        if (_currentPage > _totalPages) _currentPage = _totalPages;
+        if (_totalPages == 0)
+        {
+            _totalPages = 1;
+        }
+
+        if (_currentPage > _totalPages)
+        {
+            _currentPage = _totalPages;
+        }
 
         var currentPageIcons = _filteredIcons
             .Skip((_currentPage - 1) * ICONS_PER_PAGE)

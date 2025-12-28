@@ -18,6 +18,7 @@ namespace MTM_Receiving_Application.Services.Authentication
     {
         private readonly Dao_User _daoUser;
         private readonly IService_ErrorHandler _errorHandler;
+        private static readonly Regex _regex = new Regex(@"^\d{4}$");
 
         /// <summary>
         /// Constructor with dependency injection.
@@ -35,8 +36,8 @@ namespace MTM_Receiving_Application.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public async Task<AuthenticationResult> AuthenticateByWindowsUsernameAsync(
-            string windowsUsername, 
+        public async Task<Model_AuthenticationResult> AuthenticateByWindowsUsernameAsync(
+            string windowsUsername,
             IProgress<string>? progress = null)
         {
             try
@@ -46,7 +47,7 @@ namespace MTM_Receiving_Application.Services.Authentication
                 // Validate input
                 if (string.IsNullOrWhiteSpace(windowsUsername))
                 {
-                    return AuthenticationResult.ErrorResult("Windows username is required");
+                    return Model_AuthenticationResult.ErrorResult("Windows username is required");
                 }
 
                 // Query database for user
@@ -55,12 +56,12 @@ namespace MTM_Receiving_Application.Services.Authentication
                 if (!result.Success)
                 {
                     progress?.Report("User not found in database");
-                    return AuthenticationResult.ErrorResult(result.ErrorMessage);
+                    return Model_AuthenticationResult.ErrorResult(result.ErrorMessage);
                 }
 
                 if (result.Data == null)
                 {
-                    return AuthenticationResult.ErrorResult("User data is invalid");
+                    return Model_AuthenticationResult.ErrorResult("User data is invalid");
                 }
 
                 // Log successful authentication
@@ -71,20 +72,23 @@ namespace MTM_Receiving_Application.Services.Authentication
                     "Windows authentication successful");
 
                 progress?.Report($"Welcome, {result.Data.FullName}");
-                return AuthenticationResult.SuccessResult(result.Data);
+                return Model_AuthenticationResult.SuccessResult(result.Data);
             }
             catch (Exception ex)
             {
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("Authentication by Windows username failed", Enum_ErrorSeverity.Error, ex, false);
-                return AuthenticationResult.ErrorResult($"Authentication error: {ex.Message}");
+                }
+
+                return Model_AuthenticationResult.ErrorResult($"Authentication error: {ex.Message}");
             }
         }
 
         /// <inheritdoc/>
-        public async Task<AuthenticationResult> AuthenticateByPinAsync(
-            string username, 
-            string pin, 
+        public async Task<Model_AuthenticationResult> AuthenticateByPinAsync(
+            string username,
+            string pin,
             IProgress<string>? progress = null)
         {
             try
@@ -94,18 +98,18 @@ namespace MTM_Receiving_Application.Services.Authentication
                 // Validate input
                 if (string.IsNullOrWhiteSpace(username))
                 {
-                    return AuthenticationResult.ErrorResult("Username is required");
+                    return Model_AuthenticationResult.ErrorResult("Username is required");
                 }
 
                 if (string.IsNullOrWhiteSpace(pin))
                 {
-                    return AuthenticationResult.ErrorResult("PIN is required");
+                    return Model_AuthenticationResult.ErrorResult("PIN is required");
                 }
 
                 // Validate PIN format only (not uniqueness - that's for creation, not authentication)
                 if (pin.Length != 4 || !pin.All(char.IsDigit))
                 {
-                    return AuthenticationResult.ErrorResult("PIN must be exactly 4 numeric digits");
+                    return Model_AuthenticationResult.ErrorResult("PIN must be exactly 4 numeric digits");
                 }
 
                 // Query database for user with PIN
@@ -121,7 +125,7 @@ namespace MTM_Receiving_Application.Services.Authentication
                         $"Invalid credentials for user: {username}");
 
                     progress?.Report("Invalid username or PIN");
-                    return AuthenticationResult.ErrorResult("Invalid username or PIN");
+                    return Model_AuthenticationResult.ErrorResult("Invalid username or PIN");
                 }
 
                 // Log successful authentication
@@ -132,13 +136,16 @@ namespace MTM_Receiving_Application.Services.Authentication
                     $"PIN authentication successful for {result.Data.FullName}");
 
                 progress?.Report($"Welcome, {result.Data.FullName}");
-                return AuthenticationResult.SuccessResult(result.Data);
+                return Model_AuthenticationResult.SuccessResult(result.Data);
             }
             catch (Exception ex)
             {
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("Authentication by PIN failed", Enum_ErrorSeverity.Error, ex, false);
-                return AuthenticationResult.ErrorResult($"Authentication error: {ex.Message}");
+                }
+
+                return Model_AuthenticationResult.ErrorResult($"Authentication error: {ex.Message}");
             }
         }
 
@@ -147,9 +154,9 @@ namespace MTM_Receiving_Application.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public async Task<CreateUserResult> CreateNewUserAsync(
-            Model_User user, 
-            string createdBy, 
+        public async Task<Model_CreateUserResult> CreateNewUserAsync(
+            Model_User user,
+            string createdBy,
             IProgress<string>? progress = null)
         {
             try
@@ -159,29 +166,29 @@ namespace MTM_Receiving_Application.Services.Authentication
                 // Validate required fields
                 if (string.IsNullOrWhiteSpace(user.WindowsUsername))
                 {
-                    return CreateUserResult.ErrorResult("Windows username is required");
+                    return Model_CreateUserResult.ErrorResult("Windows username is required");
                 }
 
                 if (string.IsNullOrWhiteSpace(user.FullName))
                 {
-                    return CreateUserResult.ErrorResult("Full name is required");
+                    return Model_CreateUserResult.ErrorResult("Full name is required");
                 }
 
                 if (string.IsNullOrWhiteSpace(user.Department))
                 {
-                    return CreateUserResult.ErrorResult("Department is required");
+                    return Model_CreateUserResult.ErrorResult("Department is required");
                 }
 
                 if (string.IsNullOrWhiteSpace(user.Shift))
                 {
-                    return CreateUserResult.ErrorResult("Shift is required");
+                    return Model_CreateUserResult.ErrorResult("Shift is required");
                 }
 
                 // Validate PIN
                 var pinValidation = await ValidatePinAsync(user.Pin);
                 if (!pinValidation.IsValid)
                 {
-                    return CreateUserResult.ErrorResult(pinValidation.ErrorMessage);
+                    return Model_CreateUserResult.ErrorResult(pinValidation.ErrorMessage);
                 }
 
                 progress?.Report("Creating user account...");
@@ -191,7 +198,7 @@ namespace MTM_Receiving_Application.Services.Authentication
 
                 if (!result.Success || result.Data == 0)
                 {
-                    return CreateUserResult.ErrorResult(result.ErrorMessage);
+                    return Model_CreateUserResult.ErrorResult(result.ErrorMessage);
                 }
 
                 // Log user creation
@@ -202,13 +209,16 @@ namespace MTM_Receiving_Application.Services.Authentication
                     $"New user created: {user.FullName} (Emp #{result.Data}) by {createdBy}");
 
                 progress?.Report($"Account created successfully. Employee #{result.Data}");
-                return CreateUserResult.SuccessResult(result.Data);
+                return Model_CreateUserResult.SuccessResult(result.Data);
             }
             catch (Exception ex)
             {
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("Create new user failed", Enum_ErrorSeverity.Error, ex, false);
-                return CreateUserResult.ErrorResult($"User creation error: {ex.Message}");
+                }
+
+                return Model_CreateUserResult.ErrorResult($"User creation error: {ex.Message}");
             }
         }
 
@@ -217,40 +227,43 @@ namespace MTM_Receiving_Application.Services.Authentication
         // ====================================================================
 
         /// <inheritdoc/>
-        public async Task<ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null)
+        public async Task<Model_ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null)
         {
             try
             {
                 // Check format (4 digits)
                 if (string.IsNullOrWhiteSpace(pin))
                 {
-                    return ValidationResult.Invalid("PIN is required");
+                    return Model_ValidationResult.Invalid("PIN is required");
                 }
 
                 if (pin.Length != 4)
                 {
-                    return ValidationResult.Invalid("PIN must be exactly 4 digits");
+                    return Model_ValidationResult.Invalid("PIN must be exactly 4 digits");
                 }
 
-                if (!Regex.IsMatch(pin, @"^\d{4}$"))
+                if (!_regex.IsMatch(pin))
                 {
-                    return ValidationResult.Invalid("PIN must contain only numeric digits");
+                    return Model_ValidationResult.Invalid("PIN must contain only numeric digits");
                 }
 
                 // Check uniqueness
                 var uniqueResult = await _daoUser.IsPinUniqueAsync(pin, excludeEmployeeNumber);
                 if (uniqueResult.Success && uniqueResult.Data == false)
                 {
-                    return ValidationResult.Invalid("This PIN is already in use");
+                    return Model_ValidationResult.Invalid("This PIN is already in use");
                 }
 
-                return ValidationResult.Valid();
+                return Model_ValidationResult.Valid();
             }
             catch (Exception ex)
             {
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("PIN validation failed", Enum_ErrorSeverity.Error, ex, false);
-                return ValidationResult.Invalid($"Validation error: {ex.Message}");
+                }
+
+                return Model_ValidationResult.Invalid($"Validation error: {ex.Message}");
             }
         }
 
@@ -275,8 +288,8 @@ namespace MTM_Receiving_Application.Services.Authentication
                     // Check if current computer is in shared terminals list
                     var isShared = sharedTerminalsResult.Data.Contains(computerName);
                     config.WorkstationType = isShared ? "shared_terminal" : "personal_workstation";
-                    config.Description = isShared 
-                        ? "Shared terminal - PIN authentication required" 
+                    config.Description = isShared
+                        ? "Shared terminal - PIN authentication required"
                         : "Personal workstation - Windows authentication";
                 }
                 else
@@ -291,8 +304,10 @@ namespace MTM_Receiving_Application.Services.Authentication
             catch (Exception ex)
             {
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("Workstation type detection failed", Enum_ErrorSeverity.Warning, ex, false);
-                
+                }
+
                 // Return safe default
                 return new Model_WorkstationConfig(computerName ?? Environment.MachineName)
                 {
@@ -320,7 +335,10 @@ namespace MTM_Receiving_Application.Services.Authentication
             catch (Exception ex)
             {
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("Get active departments failed", Enum_ErrorSeverity.Warning, ex, false);
+                }
+
                 return new List<string>();
             }
         }
@@ -340,7 +358,10 @@ namespace MTM_Receiving_Application.Services.Authentication
             {
                 // Log errors but don't block application flow
                 if (_errorHandler != null)
+                {
                     await _errorHandler.HandleErrorAsync("Activity logging failed", Enum_ErrorSeverity.Info, ex, false);
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Failed to log activity: {ex.Message}");
             }
         }

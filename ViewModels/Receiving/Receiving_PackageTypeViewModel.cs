@@ -52,7 +52,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         private void OnStepChanged(object? sender, System.EventArgs e)
         {
-            if (_workflowService.CurrentStep == WorkflowStep.PackageTypeEntry)
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.PackageTypeEntry)
             {
                 _ = OnNavigatedToAsync();
             }
@@ -75,7 +75,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private async Task LoadPreferencesAsync()
         {
             var partId = _workflowService.CurrentPart?.PartID;
-            if (string.IsNullOrEmpty(partId)) return;
+            if (string.IsNullOrEmpty(partId))
+            {
+                return;
+            }
 
             // Try to load from DB
             var preference = await _preferencesService.GetPreferenceAsync(partId);
@@ -118,7 +121,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             IsCustomTypeVisible = value == "Custom";
             UpdateLoadsPackageType();
-            if (IsSaveAsDefault) SavePreferenceAsync().ConfigureAwait(false);
+            if (IsSaveAsDefault)
+                SavePreferenceAsync().ConfigureAwait(false);
         }
 
         partial void OnCustomPackageTypeNameChanged(string value)
@@ -126,7 +130,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             if (SelectedPackageType == "Custom")
             {
                 UpdateLoadsPackageType();
-                if (IsSaveAsDefault) SavePreferenceAsync().ConfigureAwait(false);
+                if (IsSaveAsDefault)
+                    SavePreferenceAsync().ConfigureAwait(false);
             }
         }
 
@@ -160,10 +165,16 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private async Task SavePreferenceAsync()
         {
             var partId = _workflowService.CurrentPart?.PartID;
-            if (string.IsNullOrEmpty(partId)) return;
+            if (string.IsNullOrEmpty(partId))
+            {
+                return;
+            }
 
             var typeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
-            if (string.IsNullOrWhiteSpace(typeName)) return;
+            if (string.IsNullOrWhiteSpace(typeName))
+            {
+                return;
+            }
 
             var preference = new Model_PackageTypePreference
             {
@@ -185,7 +196,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private async Task DeletePreferenceAsync()
         {
             var partId = _workflowService.CurrentPart?.PartID;
-            if (string.IsNullOrEmpty(partId)) return;
+            if (string.IsNullOrEmpty(partId))
+            {
+                return;
+            }
 
             try
             {

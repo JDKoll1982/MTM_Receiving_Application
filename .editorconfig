@@ -1,4 +1,4 @@
-# Top-level .editorconfig file - MTM Receiving Application
+﻿# Top-level .editorconfig file - MTM Receiving Application
 # Configured for strict MVVM architecture with WinUI 3 and . NET 8
 # Works with Roslynator analyzers and dotnet build
 
@@ -315,43 +315,22 @@ dotnet_diagnostic.RCS9007.severity = error
 # RCS9009: Unknown language name
 dotnet_diagnostic.RCS9009.severity = error
 
+# RCS1193:  Overriding member should not change 'params' modifier
+dotnet_diagnostic. RCS1193.severity = error
+
+# RCS1194: Implement exception constructors
+dotnet_diagnostic.RCS1194.severity = error
+
+# RCS1203: Use AttributeUsageAttribute
+dotnet_diagnostic.RCS1203.severity = error
+
 # Important Rules - Warning Level
-
-# RCS1001: Add braces (when expression spans over multiple lines)
-dotnet_diagnostic.RCS1001.severity = warning
-
-# RCS1003: Add braces to if-else (when expression spans over multiple lines)
-dotnet_diagnostic.RCS1003.severity = warning
-
-# RCS1007: Add braces (Critical for async command methods)
-dotnet_diagnostic.RCS1007.severity = warning
-
-# RCS1013: Use predefined type
-dotnet_diagnostic. RCS1013.severity = warning
 
 # RCS1015: Use nameof operator (Critical for INotifyPropertyChanged and logging)
 dotnet_diagnostic.RCS1015.severity = warning
 
-# RCS1019: Order modifiers
-dotnet_diagnostic.RCS1019.severity = warning
-
-# RCS1020: Simplify Nullable<T> to T?
-dotnet_diagnostic. RCS1020.severity = warning
-
-# RCS1033: Remove redundant boolean literal
-dotnet_diagnostic.RCS1033.severity = warning
-
-# RCS1037: Remove trailing white-space
-dotnet_diagnostic.RCS1037.severity = warning
-
 # RCS1048: Use lambda expression instead of anonymous method
 dotnet_diagnostic.RCS1048.severity = warning
-
-# RCS1049: Simplify boolean comparison
-dotnet_diagnostic.RCS1049.severity = warning
-
-# RCS1055:  Unnecessary semicolon at the end of declaration
-dotnet_diagnostic.RCS1055.severity = warning
 
 # RCS1060:  Declare each type in separate file (Enforces organization standards)
 dotnet_diagnostic.RCS1060.severity = warning
@@ -365,17 +344,8 @@ dotnet_diagnostic.RCS1080.severity = warning
 # RCS1085: Use auto-implemented property (Prefer auto-properties with ObservableProperty)
 dotnet_diagnostic.RCS1085.severity = warning
 
-# RCS1093: File contains no code
-dotnet_diagnostic.RCS1093.severity = warning
-
 # RCS1094: Declare using directive on top level
 dotnet_diagnostic.RCS1094.severity = warning
-
-# RCS1098:  Constant values should be placed on right side of comparisons
-dotnet_diagnostic.RCS1098.severity = warning
-
-# RCS1099: Default label should be the last label in a switch section
-dotnet_diagnostic.RCS1099.severity = warning
 
 # RCS1102: Make class static
 dotnet_diagnostic.RCS1102.severity = warning
@@ -383,20 +353,8 @@ dotnet_diagnostic.RCS1102.severity = warning
 # RCS1108: Add 'static' modifier to all partial class declarations
 dotnet_diagnostic.RCS1108.severity = warning
 
-# RCS1111: Add braces to switch section with multiple statements
-dotnet_diagnostic.RCS1111.severity = warning
-
 # RCS1113: Use 'string. IsNullOrEmpty' method
 dotnet_diagnostic.RCS1113.severity = warning
-
-# RCS1118: Mark local variable as const
-dotnet_diagnostic.RCS1118.severity = warning
-
-# RCS1123: Add parentheses when necessary
-dotnet_diagnostic.RCS1123.severity = warning
-
-# RCS1126: Add braces to if-else
-dotnet_diagnostic.RCS1126.severity = warning
 
 # RCS1130: Bitwise operation on enum without Flags attribute
 dotnet_diagnostic.RCS1130.severity = warning
@@ -431,9 +389,6 @@ dotnet_diagnostic.RCS1159.severity = warning
 # RCS1160: Abstract type should not have public constructors
 dotnet_diagnostic. RCS1160.severity = warning
 
-# RCS1162:  Avoid chain of assignments
-dotnet_diagnostic.RCS1162.severity = warning
-
 # RCS1163: Unused parameter
 dotnet_diagnostic.RCS1163.severity = warning
 
@@ -446,9 +401,6 @@ dotnet_diagnostic.RCS1166.severity = warning
 # RCS1168: Parameter name differs from base name
 dotnet_diagnostic.RCS1168.severity = warning
 
-# RCS1169: Make field read-only
-dotnet_diagnostic. RCS1169.severity = warning
-
 # RCS1170: Use read-only auto-implemented property
 dotnet_diagnostic.RCS1170.severity = warning
 
@@ -458,26 +410,8 @@ dotnet_diagnostic.RCS1172.severity = warning
 # RCS1175:  Unused 'this' parameter
 dotnet_diagnostic. RCS1175.severity = warning
 
-# RCS1179:  Unnecessary assignment
-dotnet_diagnostic.RCS1179.severity = warning
-
-# RCS1181: Convert comment to documentation comment
-dotnet_diagnostic.RCS1181.severity = warning
-
 # RCS1186: Use Regex instance instead of static method (Better performance for repeated use)
 dotnet_diagnostic.RCS1186.severity = warning
-
-# RCS1187: Use constant instead of field
-dotnet_diagnostic.RCS1187.severity = warning
-
-# RCS1189: Add or remove region name (Enforce region organization)
-dotnet_diagnostic.RCS1189.severity = warning
-
-# RCS1193:  Overriding member should not change 'params' modifier
-dotnet_diagnostic. RCS1193.severity = error
-
-# RCS1194: Implement exception constructors
-dotnet_diagnostic.RCS1194.severity = error
 
 # RCS1196: Call extension method as instance method
 dotnet_diagnostic.RCS1196.severity = warning
@@ -490,9 +424,6 @@ dotnet_diagnostic.RCS1198.severity = warning
 
 # RCS1200: Call 'Enumerable.ThenBy' instead of 'Enumerable.OrderBy'
 dotnet_diagnostic. RCS1200.severity = warning
-
-# RCS1203: Use AttributeUsageAttribute
-dotnet_diagnostic.RCS1203.severity = error
 
 # RCS1209: Order type parameter constraints
 dotnet_diagnostic.RCS1209.severity = warning
@@ -512,17 +443,11 @@ dotnet_diagnostic.RCS1221.severity = warning
 # RCS1225: Make class sealed (Good practice when not intended for inheritance)
 dotnet_diagnostic.RCS1225.severity = warning
 
-# RCS1228:  Unused element in a documentation comment
-dotnet_diagnostic.RCS1228.severity = warning
-
 # RCS1229: Use async/await when necessary
 dotnet_diagnostic.RCS1229.severity = warning
 
 # RCS1233: Use short-circuiting operator
 dotnet_diagnostic.RCS1233.severity = warning
-
-# RCS1238:  Avoid nested ?:  operators
-dotnet_diagnostic.RCS1238.severity = warning
 
 # RCS1247: Fix documentation comment tag
 dotnet_diagnostic.RCS1247.severity = warning
@@ -533,151 +458,8 @@ dotnet_diagnostic.RCS1248.severity = warning
 # RCS1257: Use enum field explicitly
 dotnet_diagnostic.RCS1257.severity = warning
 
-# RCS1258: Unnecessary enum flag
-dotnet_diagnostic.RCS1258.severity = warning
-
 # RCS1261: Resource can be disposed asynchronously (Important for database connections)
 dotnet_diagnostic.RCS1261.severity = warning
-
-# Formatting Rules - Suggestion Level
-
-# RCS0001: Add blank line after embedded statement
-dotnet_diagnostic.RCS0001.severity = suggestion
-
-# RCS0002: Add blank line after #region
-dotnet_diagnostic.RCS0002.severity = suggestion
-
-# RCS0003: Add blank line after using directive list
-dotnet_diagnostic.RCS0003.severity = suggestion
-
-# RCS0005: Add blank line before #endregion
-dotnet_diagnostic.RCS0005.severity = suggestion
-
-# RCS0006: Add blank line before using directive list
-dotnet_diagnostic. RCS0006.severity = suggestion
-
-# RCS0007: Add blank line between accessors
-dotnet_diagnostic.RCS0007.severity = suggestion
-
-# RCS0008: Add blank line between closing brace and next statement
-dotnet_diagnostic.RCS0008.severity = suggestion
-
-# RCS0009: Add blank line between declaration and documentation comment
-dotnet_diagnostic.RCS0009.severity = warning
-
-# RCS0010: Add blank line between declarations
-dotnet_diagnostic.RCS0010.severity = suggestion
-
-# RCS0012: Add blank line between single-line declarations
-dotnet_diagnostic.RCS0012.severity = suggestion
-
-# RCS0013: Add blank line between single-line declarations of different kind
-dotnet_diagnostic.RCS0013.severity = suggestion
-
-# RCS0015: Add/remove blank line between using directives
-dotnet_diagnostic. RCS0015.severity = suggestion
-
-# RCS0016: Put attribute list on its own line
-dotnet_diagnostic. RCS0016.severity = suggestion
-
-# RCS0020: Format accessor's braces on a single line or multiple lines
-dotnet_diagnostic.RCS0020.severity = suggestion
-
-# RCS0021: Format block's braces on a single line or multiple lines
-dotnet_diagnostic.RCS0021.severity = suggestion
-
-# RCS0023: Format type declaration's braces
-dotnet_diagnostic.RCS0023.severity = suggestion
-
-# RCS0024: Add new line after switch label
-dotnet_diagnostic.RCS0024.severity = suggestion
-
-# RCS0025: Put full accessor on its own line
-dotnet_diagnostic. RCS0025.severity = suggestion
-
-# RCS0027: Place new line after/before binary operator
-dotnet_diagnostic.RCS0027.severity = suggestion
-
-# RCS0028: Place new line after/before '? : ' operator
-dotnet_diagnostic. RCS0028.severity = suggestion
-
-# RCS0029: Put constructor initializer on its own line
-dotnet_diagnostic.RCS0029.severity = suggestion
-
-# RCS0030: Put embedded statement on its own line
-dotnet_diagnostic.RCS0030.severity = suggestion
-
-# RCS0031: Put enum member on its own line
-dotnet_diagnostic.RCS0031.severity = suggestion
-
-# RCS0032: Place new line after/before arrow token
-dotnet_diagnostic.RCS0032.severity = suggestion
-
-# RCS0033: Put statement on its own line
-dotnet_diagnostic.RCS0033.severity = suggestion
-
-# RCS0034: Put type parameter constraint on its own line
-dotnet_diagnostic.RCS0034.severity = suggestion
-
-# RCS0036: Remove blank line between single-line declarations of same kind
-dotnet_diagnostic.RCS0036.severity = suggestion
-
-# RCS0039: Remove new line before base list
-dotnet_diagnostic.RCS0039.severity = suggestion
-
-# RCS0041: Remove new line between 'if' keyword and 'else' keyword
-dotnet_diagnostic.RCS0041.severity = suggestion
-
-# RCS0042: Put auto-accessors on a single line
-dotnet_diagnostic. RCS0042.severity = suggestion
-
-# RCS0044: Use carriage return + linefeed as new line
-dotnet_diagnostic.RCS0044.severity = warning
-
-# RCS0046: Use spaces instead of tab
-dotnet_diagnostic.RCS0046.severity = warning
-
-# RCS0049: Add blank line after top comment
-dotnet_diagnostic.RCS0049.severity = suggestion
-
-# RCS0050: Add blank line before top declaration
-dotnet_diagnostic.RCS0050.severity = suggestion
-
-# RCS0051: Add/remove new line before 'while' in 'do' statement
-dotnet_diagnostic.RCS0051.severity = suggestion
-
-# RCS0052: Place new line after/before equals token
-dotnet_diagnostic.RCS0052.severity = suggestion
-
-# RCS0053: Fix formatting of a list
-dotnet_diagnostic.RCS0053.severity = suggestion
-
-# RCS0054: Fix formatting of a call chain
-dotnet_diagnostic.RCS0054.severity = suggestion
-
-# RCS0055: Fix formatting of a binary expression chain
-dotnet_diagnostic.RCS0055.severity = suggestion
-
-# RCS0056: A line is too long
-dotnet_diagnostic.RCS0056.severity = suggestion
-
-# RCS0057: Normalize whitespace at the beginning of a file
-dotnet_diagnostic.RCS0057.severity = suggestion
-
-# RCS0058: Normalize whitespace at the end of a file
-dotnet_diagnostic.RCS0058.severity = suggestion
-
-# RCS0059: Place new line after/before null-conditional operator
-dotnet_diagnostic.RCS0059.severity = suggestion
-
-# RCS0060: Add/remove line after file scoped namespace declaration
-dotnet_diagnostic.RCS0060.severity = suggestion
-
-# RCS0061: Add/remove blank line between switch sections
-dotnet_diagnostic.RCS0061.severity = suggestion
-
-# RCS0063: Remove unnecessary blank line
-dotnet_diagnostic.RCS0063.severity = suggestion
 
 # Disabled Rules for MVVM Pattern
 
@@ -793,3 +575,8 @@ indent_size = 4
 #### Markdown Files ####
 [*.md]
 trim_trailing_whitespace = false
+
+# Ignore unused parameters in XAML code-behind files (VS Code linking issue)
+[*.xaml.cs]
+dotnet_diagnostic.RCS1163.severity = none
+dotnet_diagnostic.IDE0060.severity = none

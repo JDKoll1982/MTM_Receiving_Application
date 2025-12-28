@@ -129,7 +129,9 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
         try
         {
             if (string.IsNullOrWhiteSpace(specsJson))
+            {
                 return new Dictionary<string, object>();
+            }
 
             return JsonSerializer.Deserialize<Dictionary<string, object>>(specsJson)
                 ?? new Dictionary<string, object>();
@@ -143,40 +145,61 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
 
     private string DetermineSpecType(object specValue)
     {
-        if (specValue == null) return "text";
+        if (specValue == null)
+        {
+            return "text";
+        }
 
         var specStr = specValue.ToString()?.ToLowerInvariant() ?? string.Empty;
 
         // Check for common patterns
         if (specStr.Contains("number") || specStr.Contains("numeric") || specStr.Contains("mm") || specStr.Contains("inches"))
+        {
             return "number";
+        }
 
         if (specStr.Contains("bool") || specStr.Contains("yes/no") || specStr.Contains("true/false"))
+        {
             return "boolean";
+        }
 
         return "text";
     }
 
     private string? ExtractUnit(object specValue)
     {
-        if (specValue == null) return null;
+        if (specValue == null)
+        {
+            return null;
+        }
 
         var specStr = specValue.ToString() ?? string.Empty;
 
         // Extract units like mm, inches, etc.
         if (specStr.Contains("mm", StringComparison.OrdinalIgnoreCase))
+        {
             return "mm";
+        }
+
         if (specStr.Contains("inch", StringComparison.OrdinalIgnoreCase))
+        {
             return "inches";
+        }
+
         if (specStr.Contains("cm", StringComparison.OrdinalIgnoreCase))
+        {
             return "cm";
+        }
 
         return null;
     }
 
     private bool IsSpecRequired(object specValue)
     {
-        if (specValue == null) return false;
+        if (specValue == null)
+        {
+            return false;
+        }
 
         var specStr = specValue.ToString()?.ToLowerInvariant() ?? string.Empty;
         return specStr.Contains("required");
@@ -241,7 +264,10 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task GoNextAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {

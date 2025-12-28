@@ -4,5 +4,5 @@ namespace MTM_Receiving_Application.Contracts.Services;
 
 public interface IService_Window
 {
-    XamlRoot? GetXamlRoot();
+    public XamlRoot? GetXamlRoot();
 }

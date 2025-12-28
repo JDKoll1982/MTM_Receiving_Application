@@ -20,19 +20,25 @@ public class Dao_ReceivingLoad
 
     private string? CleanPONumber(string? poNumber)
     {
-        if (string.IsNullOrEmpty(poNumber)) return null;
+        if (string.IsNullOrEmpty(poNumber))
+        {
+            return null;
+        }
+
         return poNumber.Replace("PO-", "", StringComparison.OrdinalIgnoreCase).Trim();
     }
 
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
+        {
             return Model_Dao_Result_Factory.Failure<int>("Loads list cannot be null or empty");
+        }
 
-        using var connection = new MySqlConnection(_connectionString);
+        await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        using var transaction = await connection.BeginTransactionAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
         try
         {
             int savedCount = 0;
@@ -84,12 +90,14 @@ public class Dao_ReceivingLoad
     public async Task<Model_Dao_Result<int>> UpdateLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
+        {
             return Model_Dao_Result_Factory.Failure<int>("Loads list cannot be null or empty");
+        }
 
-        using var connection = new MySqlConnection(_connectionString);
+        await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        using var transaction = await connection.BeginTransactionAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
         try
         {
             int updatedCount = 0;
@@ -141,12 +149,14 @@ public class Dao_ReceivingLoad
     public async Task<Model_Dao_Result<int>> DeleteLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
+        {
             return Model_Dao_Result_Factory.Success<int>(0);
+        }
 
-        using var connection = new MySqlConnection(_connectionString);
+        await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        using var transaction = await connection.BeginTransactionAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
         try
         {
             int deletedCount = 0;

@@ -80,6 +80,9 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// <summary>
         /// Constructor with dependency injection
         /// </summary>
+        /// <param name="authService"></param>
+        /// <param name="errorHandler"></param>
+        /// <param name="logger"></param>
         public Shared_NewUserSetupViewModel(
             IService_Authentication authService,
             IService_ErrorHandler errorHandler,
@@ -134,7 +137,10 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// </summary>
         public async Task<bool> CreateAccountAsync()
         {
-            if (IsBusy) return false;
+            if (IsBusy)
+            {
+                return false;
+            }
 
             try
             {
@@ -220,18 +226,25 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// <summary>
         /// Validate PIN format (4 digits)
         /// </summary>
+        /// <param name="pin"></param>
         public bool ValidatePinFormat(string pin)
         {
             if (string.IsNullOrWhiteSpace(pin))
+            {
                 return false;
+            }
 
             if (pin.Length != 4)
+            {
                 return false;
+            }
 
             foreach (char c in pin)
             {
                 if (!char.IsDigit(c))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -240,6 +253,8 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// <summary>
         /// Validate that PINs match
         /// </summary>
+        /// <param name="pin"></param>
+        /// <param name="confirmPin"></param>
         public bool ValidatePinMatch(string pin, string confirmPin)
         {
             return !string.IsNullOrWhiteSpace(pin) && pin == confirmPin;
@@ -248,6 +263,7 @@ namespace MTM_Receiving_Application.ViewModels.Shared
         /// <summary>
         /// Validate full name (at least 2 characters)
         /// </summary>
+        /// <param name="fullName"></param>
         public bool ValidateFullName(string fullName)
         {
             return !string.IsNullOrWhiteSpace(fullName) && fullName.Trim().Length >= 2;

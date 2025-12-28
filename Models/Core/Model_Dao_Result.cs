@@ -52,15 +52,3 @@ public class Model_Dao_Result
     // Static factory methods moved to DaoResultFactory to avoid circular dependencies
 }
 
-/// <summary>
-/// Generic version of Model_Dao_Result for returning data
-/// </summary>
-/// <typeparam name="T">Type of data returned</typeparam>
-public class Model_Dao_Result<T> : Model_Dao_Result
-{
-    /// <summary>
-    /// Data returned by the operation
-    /// </summary>
-    public T? Data { get; set; }
-    
-}

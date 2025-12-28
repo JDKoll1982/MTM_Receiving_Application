@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -15,78 +16,79 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <summary>
         /// Event raised when a status message should be shown.
         /// </summary>
-        event EventHandler<string> StatusMessageRaised;
+        public event EventHandler<string> StatusMessageRaised;
 
         /// <summary>
         /// Raises a status message.
         /// </summary>
-        void RaiseStatusMessage(string message);
+        /// <param name="message"></param>
+        public void RaiseStatusMessage(string message);
 
         /// <summary>
         /// Event raised when the workflow step changes.
         /// </summary>
-        event EventHandler StepChanged;
+        public event EventHandler StepChanged;
 
         /// <summary>
         /// Gets the current workflow step.
         /// </summary>
-        WorkflowStep CurrentStep { get; }
+        public Enum_ReceivingWorkflowStep CurrentStep { get; }
 
         /// <summary>
         /// Gets the current session.
         /// </summary>
-        Model_ReceivingSession CurrentSession { get; }
+        public Model_ReceivingSession CurrentSession { get; }
 
         /// <summary>
         /// Gets or sets the current PO number being processed.
         /// </summary>
-        string? CurrentPONumber { get; set; }
+        public string? CurrentPONumber { get; set; }
 
         /// <summary>
         /// Gets or sets the current part being processed.
         /// </summary>
-        Model_InforVisualPart? CurrentPart { get; set; }
+        public Model_InforVisualPart? CurrentPart { get; set; }
 
         /// <summary>
         /// Gets or sets whether the current item is a non-PO item.
         /// </summary>
-        bool IsNonPOItem { get; set; }
+        public bool IsNonPOItem { get; set; }
 
         /// <summary>
         /// Gets or sets the number of loads to create for the current part.
         /// </summary>
-        int NumberOfLoads { get; set; }
+        public int NumberOfLoads { get; set; }
 
         /// <summary>
         /// Starts a new receiving workflow session.
         /// Loads any existing persisted session if available.
         /// </summary>
         /// <returns>True if existing session restored, false if new session</returns>
-        Task<bool> StartWorkflowAsync();
+        public Task<bool> StartWorkflowAsync();
 
         /// <summary>
         /// Advances to the next step if validation passes.
         /// </summary>
         /// <returns>Result indicating success and any validation errors</returns>
-        Task<WorkflowStepResult> AdvanceToNextStepAsync();
+        public Task<Model_ReceivingWorkflowStepResult> AdvanceToNextStepAsync();
 
         /// <summary>
         /// Goes back to the previous step.
         /// </summary>
         /// <returns>Result indicating success</returns>
-        WorkflowStepResult GoToPreviousStep();
+        public Model_ReceivingWorkflowStepResult GoToPreviousStep();
 
         /// <summary>
         /// Goes to a specific step (used for "Add Another Part/PO").
         /// </summary>
         /// <param name="step">Target step</param>
         /// <returns>Result indicating success</returns>
-        WorkflowStepResult GoToStep(WorkflowStep step);
+        public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step);
 
         /// <summary>
         /// Adds current loads to session and resets for next part entry.
         /// </summary>
-        Task AddCurrentPartToSessionAsync();
+        public Task AddCurrentPartToSessionAsync();
 
         /// <summary>
         /// Saves all loads in session to CSV and database.
@@ -94,83 +96,21 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <param name="messageProgress">Progress reporter for status messages</param>
         /// <param name="percentProgress">Progress reporter for percentage completion</param>
         /// <returns>Result with save operation details</returns>
-        Task<SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null);
+        public Task<Model_SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null);
 
         /// <summary>
         /// Resets the workflow to initial state.
         /// </summary>
-        Task ResetWorkflowAsync();
+        public Task ResetWorkflowAsync();
 
         /// <summary>
         /// Resets the CSV files (deletes them).
         /// </summary>
-        Task<CSVDeleteResult> ResetCSVFilesAsync();
+        public Task<Model_CSVDeleteResult> ResetCSVFilesAsync();
 
         /// <summary>
         /// Persists current session state to JSON.
         /// </summary>
-        Task PersistSessionAsync();
-    }
-
-    /// <summary>
-    /// Workflow steps enumeration.
-    /// </summary>
-    public enum WorkflowStep
-    {
-        ModeSelection = 0,
-        ManualEntry = 1,
-        EditMode = 2,
-        POEntry = 3,
-        PartSelection = 4,
-        LoadEntry = 5,
-        WeightQuantityEntry = 6,
-        HeatLotEntry = 7,
-        PackageTypeEntry = 8,
-        Review = 9,
-        Saving = 10,
-        Complete = 11
-    }
-
-    /// <summary>
-    /// Result of a workflow step transition.
-    /// </summary>
-    public class WorkflowStepResult
-    {
-        public bool Success { get; set; }
-        public WorkflowStep NewStep { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public List<string> ValidationErrors { get; set; } = new();
-
-        public static WorkflowStepResult SuccessResult(WorkflowStep newStep, string message = "") => new()
-        {
-            Success = true,
-            NewStep = newStep,
-            Message = message
-        };
-
-        public static WorkflowStepResult ErrorResult(List<string> errors) => new()
-        {
-            Success = false,
-            ValidationErrors = errors
-        };
-    }
-
-    /// <summary>
-    /// Result of save operation.
-    /// </summary>
-    public class SaveResult
-    {
-        public bool Success { get; set; }
-        public int LoadsSaved { get; set; }
-        public bool LocalCSVSuccess { get; set; }
-        public bool NetworkCSVSuccess { get; set; }
-        public bool DatabaseSuccess { get; set; }
-        public string? LocalCSVPath { get; set; }
-        public string? NetworkCSVPath { get; set; }
-        public List<string> Errors { get; set; } = new();
-        public List<string> Warnings { get; set; } = new();
-
-        public bool IsFullSuccess => LocalCSVSuccess && NetworkCSVSuccess && DatabaseSuccess;
-        public bool IsPartialSuccess => (LocalCSVSuccess || DatabaseSuccess) && !IsFullSuccess;
+        public Task PersistSessionAsync();
     }
 }

@@ -36,7 +36,9 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             _logger.LogInfo("SaveSessionAsync started.");
             if (session == null)
+            {
                 throw new ArgumentNullException(nameof(session));
+            }
 
             try
             {
@@ -62,7 +64,9 @@ namespace MTM_Receiving_Application.Services.Receiving
         public async Task<Model_ReceivingSession?> LoadSessionAsync()
         {
             if (!File.Exists(_sessionPath))
+            {
                 return null;
+            }
 
             try
             {
@@ -97,7 +101,9 @@ namespace MTM_Receiving_Application.Services.Receiving
         public async Task<bool> ClearSessionAsync()
         {
             if (!File.Exists(_sessionPath))
+            {
                 return false;
+            }
 
             try
             {

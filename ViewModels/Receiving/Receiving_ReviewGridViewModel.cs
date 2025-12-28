@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Models.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
@@ -61,7 +62,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         private void OnStepChanged(object? sender, System.EventArgs e)
         {
-            if (_workflowService.CurrentStep == WorkflowStep.Review)
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Review)
             {
                 _ = OnNavigatedToAsync();
             }
@@ -144,7 +145,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             // Navigate to PO Entry (or Part Selection if same PO?)
             // For MVP US1, we might not fully support this yet, but the button is requested.
             // Let's assume we go back to PO Entry.
-            _workflowService.GoToStep(WorkflowStep.POEntry);
+            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
         }
 
         [RelayCommand]
@@ -157,7 +158,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
         public void HandleCascadingUpdate(Model_ReceivingLoad changedLoad, string propertyName)
         {
-            if (changedLoad == null) return;
+            if (changedLoad == null)
+            {
+                return;
+            }
 
             // Logic for cascading updates
             // If user changes a value in row X, should it update X+1, X+2...?
@@ -168,7 +172,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             // T044 says: "cascading update logic for Part# and PO#"
 
             var index = Loads.IndexOf(changedLoad);
-            if (index < 0) return;
+            if (index < 0)
+            {
+                return;
+            }
 
             if (propertyName == nameof(Model_ReceivingLoad.PoNumber))
             {

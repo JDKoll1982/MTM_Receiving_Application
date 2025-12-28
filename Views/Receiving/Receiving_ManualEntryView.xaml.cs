@@ -40,8 +40,7 @@ namespace MTM_Receiving_Application.Views.Receiving
                     if (ViewModel.Loads.Count > 0)
                     {
                         // Select the last added item (assuming add to bottom)
-                        var newItem = e.NewItems?[0] as Model_ReceivingLoad;
-                        if (newItem != null)
+                        if (e.NewItems?[0] is Model_ReceivingLoad newItem)
                         {
                             Debug.WriteLine($"[ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}");
                             ManualEntryDataGrid.SelectedItem = newItem;
@@ -65,24 +64,23 @@ namespace MTM_Receiving_Application.Views.Receiving
         private void ManualEntryDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
-            if (grid != null)
+            // Wait for the move to complete then activate edit mode
+            grid?.DispatcherQueue.TryEnqueue(() =>
             {
-                // Wait for the move to complete then activate edit mode
-                grid.DispatcherQueue.TryEnqueue(() =>
+                if (grid.CurrentColumn?.IsReadOnly == false)
                 {
-                    if (grid.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
-                    {
-                        Debug.WriteLine($"[ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
-                        grid.BeginEdit();
-                    }
-                });
-            }
+                    Debug.WriteLine($"[ManualEntryView] CurrentCellChanged: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
+                    grid.BeginEdit();
+                }
+            });
         }
 
         private void ManualEntryDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
-            if (grid == null) return;
+            if (!(sender is DataGrid grid))
+            {
+                return;
+            }
 
             var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
             bool isShiftDown = (shiftState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
@@ -92,8 +90,10 @@ namespace MTM_Receiving_Application.Views.Receiving
 
         private void ManualEntryDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
-            if (grid == null) return;
+            if (!(sender is DataGrid grid))
+            {
+                return;
+            }
 
             Debug.WriteLine($"[ManualEntryView] Tapped: OriginalSource={e.OriginalSource}");
 
@@ -125,7 +125,7 @@ namespace MTM_Receiving_Application.Views.Receiving
                 Debug.WriteLine("[ManualEntryView] Tapped: Cell clicked. Enqueuing BeginEdit.");
                 grid.DispatcherQueue.TryEnqueue(() =>
                 {
-                    if (grid.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
+                    if (grid.CurrentColumn?.IsReadOnly == false)
                     {
                         Debug.WriteLine($"[ManualEntryView] Tapped: BeginEdit for Row={grid.SelectedIndex}, Col={grid.CurrentColumn.Header}");
                         grid.BeginEdit();

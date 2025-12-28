@@ -27,7 +27,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_PackageTypePreference?> GetPreferenceAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
+            {
                 throw new ArgumentException("Part ID cannot be null or empty", nameof(partID));
+            }
 
             var result = await _dao.GetPreferenceAsync(partID);
 
@@ -42,7 +44,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task SavePreferenceAsync(Model_PackageTypePreference preference)
         {
             if (preference == null)
+            {
                 throw new ArgumentNullException(nameof(preference));
+            }
 
             var result = await _dao.SavePreferenceAsync(preference);
 
@@ -55,7 +59,9 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<bool> DeletePreferenceAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
+            {
                 throw new ArgumentException("Part ID cannot be null or empty", nameof(partID));
+            }
 
             var result = await _dao.DeletePreferenceAsync(partID);
 

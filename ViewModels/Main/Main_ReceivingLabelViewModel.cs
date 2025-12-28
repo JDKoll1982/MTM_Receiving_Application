@@ -47,7 +47,10 @@ public partial class Main_ReceivingLabelViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task AddLineAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -110,7 +113,10 @@ public partial class Main_ReceivingLabelViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task SaveToHistoryAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {

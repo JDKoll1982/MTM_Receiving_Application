@@ -1,24 +1,24 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.Helpers.UI
 {
     public static class Helper_WorkflowHelpContentGenerator
     {
-        public static UIElement GenerateHelpContent(WorkflowStep step)
+        public static UIElement GenerateHelpContent(Enum_ReceivingWorkflowStep step)
         {
             return step switch
             {
-                WorkflowStep.ModeSelection => CreateModeSelectionHelp(),
-                WorkflowStep.ManualEntry => CreateManualEntryHelp(),
-                WorkflowStep.POEntry => CreatePOEntryHelp(),
-                WorkflowStep.LoadEntry => CreateLoadEntryHelp(),
-                WorkflowStep.WeightQuantityEntry => CreateWeightQuantityHelp(),
-                WorkflowStep.HeatLotEntry => CreateHeatLotHelp(),
-                WorkflowStep.PackageTypeEntry => CreatePackageTypeHelp(),
-                WorkflowStep.Review => CreateReviewHelp(),
+                Enum_ReceivingWorkflowStep.ModeSelection => CreateModeSelectionHelp(),
+                Enum_ReceivingWorkflowStep.ManualEntry => CreateManualEntryHelp(),
+                Enum_ReceivingWorkflowStep.POEntry => CreatePOEntryHelp(),
+                Enum_ReceivingWorkflowStep.LoadEntry => CreateLoadEntryHelp(),
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry => CreateWeightQuantityHelp(),
+                Enum_ReceivingWorkflowStep.HeatLotEntry => CreateHeatLotHelp(),
+                Enum_ReceivingWorkflowStep.PackageTypeEntry => CreatePackageTypeHelp(),
+                Enum_ReceivingWorkflowStep.Review => CreateReviewHelp(),
                 _ => CreateDefaultHelp()
             };
         }

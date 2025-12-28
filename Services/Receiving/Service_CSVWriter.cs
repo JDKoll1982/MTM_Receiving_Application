@@ -77,13 +77,15 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
         }
 
-        public async Task<CSVWriteResult> WriteToCSVAsync(List<Model_ReceivingLoad> loads)
+        public async Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_ReceivingLoad> loads)
         {
             _logger.LogInfo($"Starting WriteToCSVAsync for {loads?.Count ?? 0} loads.");
             if (loads == null || loads.Count == 0)
+            {
                 throw new ArgumentException("Loads list cannot be null or empty", nameof(loads));
+            }
 
-            var result = new CSVWriteResult { RecordsWritten = loads.Count };
+            var result = new Model_CSVWriteResult { RecordsWritten = loads.Count };
 
             // Write to local CSV (required - failure is critical)
             try
@@ -138,9 +140,9 @@ namespace MTM_Receiving_Application.Services.Receiving
                     };
 
                     var fileMode = append ? FileMode.Append : FileMode.Create;
-                    using var stream = new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
-                    using var writer = new StreamWriter(stream);
-                    using var csv = new CsvWriter(writer, config);
+                    await using var stream = new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
+                    await using var writer = new StreamWriter(stream);
+                    await using var csv = new CsvWriter(writer, config);
 
                     if (isNewFile)
                     {
@@ -200,9 +202,9 @@ namespace MTM_Receiving_Application.Services.Receiving
             });
         }
 
-        public async Task<CSVDeleteResult> DeleteCSVFilesAsync()
+        public async Task<Model_CSVDeleteResult> DeleteCSVFilesAsync()
         {
-            var result = new CSVDeleteResult();
+            var result = new Model_CSVDeleteResult();
 
             // Delete local CSV
             if (File.Exists(_localCSVPath))
@@ -241,9 +243,9 @@ namespace MTM_Receiving_Application.Services.Receiving
             return result;
         }
 
-        public async Task<CSVExistenceResult> CheckCSVFilesExistAsync()
+        public async Task<Model_CSVExistenceResult> CheckCSVFilesExistAsync()
         {
-            var result = new CSVExistenceResult();
+            var result = new Model_CSVExistenceResult();
 
             await Task.Run(() =>
             {

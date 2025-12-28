@@ -69,7 +69,9 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             // Auto-correction only on LostFocus (not TextChanged)
             if (string.IsNullOrWhiteSpace(PoNumber))
+            {
                 return;
+            }
 
             // Trim and uppercase first
             string value = PoNumber.Trim().ToUpper();

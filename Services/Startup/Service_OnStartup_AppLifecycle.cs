@@ -107,10 +107,7 @@ namespace MTM_Receiving_Application.Services.Startup
                         _splashScreen?.Close();
 
                         // Close main window if it exists
-                        if (App.MainWindow != null)
-                        {
-                            App.MainWindow.Close();
-                        }
+                        App.MainWindow?.Close();
 
                         // Exit application properly
                         Application.Current.Exit();
@@ -262,40 +259,6 @@ namespace MTM_Receiving_Application.Services.Startup
         private void SetSplashIndeterminate(string message)
         {
             _splashScreen?.ViewModel.SetIndeterminate(message);
-        }
-
-        private async Task CheckAndResetCSVFilesAsync()
-        {
-            // Only check if files exist
-            // We don't have a method to check existence in interface, but DeleteCSVFilesAsync handles it?
-            // Or we should just ask every time?
-            // The requirement says "Warehouse supervisor can optionally reset CSV files on application startup".
-            // It implies we should ask.
-
-            // We need to show a ContentDialog.
-            // Since we are in a service, we need to create it on the UI thread and attach to MainWindow.
-
-            if (App.MainWindow == null) return;
-
-            await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
-            {
-                var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
-                {
-                    Title = "Reset CSV Files?",
-                    Content = "Do you want to delete existing CSV files to start fresh? This cannot be undone.",
-                    PrimaryButtonText = "Yes, Reset",
-                    CloseButtonText = "No, Continue",
-                    DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                    XamlRoot = App.MainWindow.Content.XamlRoot
-                };
-
-                var result = await dialog.ShowAsync();
-
-                if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-                {
-                    await _csvWriter.DeleteCSVFilesAsync();
-                }
-            });
         }
     }
 }

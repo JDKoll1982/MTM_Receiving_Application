@@ -20,7 +20,9 @@ public class Dao_InforVisualPart
     private static void ValidateReadOnlyConnection(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
+        {
             throw new ArgumentNullException(nameof(connectionString));
+        }
 
         try
         {
@@ -46,7 +48,7 @@ public class Dao_InforVisualPart
     {
         try
         {
-            using var connection = new SqlConnection(_connectionString);
+            await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
             var query = @"
@@ -66,10 +68,10 @@ public class Dao_InforVisualPart
                 LEFT JOIN inventory inv ON p.part_id = inv.part_id AND inv.site_id = '002'
                 WHERE p.part_id = @PartNumber";
 
-            using var command = new SqlCommand(query, connection);
+            await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PartNumber", partNumber);
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
                 var part = new Model_InforVisualPart
@@ -105,7 +107,7 @@ public class Dao_InforVisualPart
     {
         try
         {
-            using var connection = new SqlConnection(_connectionString);
+            await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
             var query = @"
@@ -126,12 +128,12 @@ public class Dao_InforVisualPart
                 WHERE p.description LIKE @SearchTerm + '%'
                 ORDER BY p.part_id";
 
-            using var command = new SqlCommand(query, connection);
+            await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@SearchTerm", searchTerm);
             command.Parameters.AddWithValue("@MaxResults", maxResults);
 
             var list = new List<Model_InforVisualPart>();
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 list.Add(new Model_InforVisualPart
