@@ -56,6 +56,17 @@ mysql -h localhost -P 3306 -u root -p mtm_receiving_application
 mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_name.sql
 ```
 
+### XAML Troubleshooting
+```powershell
+# Get detailed XAML compilation errors (when dotnet build fails with XamlCompiler error)
+$vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath; & "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Rebuild "Debug|x64" 2>&1 | Select-String "error|warning" | Select-Object -Last 30
+
+# Common XAML errors:
+# - WMC1121: Type mismatch in binding (e.g., DateTime to DateTimeOffset)
+# - WMC1110: Property not found on ViewModel
+# - Invalid x:Bind path or mode
+```
+
 ## Architecture Patterns
 
 ### ViewModel Pattern (Mandatory)

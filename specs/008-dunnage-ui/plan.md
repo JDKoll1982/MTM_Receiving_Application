@@ -165,6 +165,159 @@ Services, DAOs, and Models already exist from feature `007-architecture-complian
 - **Existing files reused**: 9 (3 Services + 3 DAOs + 3 Models)
 - **Test files**: 8 new unit test classes in MTM_Receiving_Application.Tests/Unit/ViewModels/Dunnage/
 
+## Receiving Workflow Pattern Reference
+
+**Pattern Source**: `Views/Receiving/Receiving_ManualEntryView.xaml` and `Views/Receiving/Receiving_EditModeView.xaml`
+
+The Dunnage Manual Entry and Edit Mode views MUST follow the established patterns from the Receiving workflow:
+
+### Manual Entry View Pattern
+
+**XAML Structure** (`Dunnage_ManualEntryView.xaml`):
+- **Grid with 3 rows**: Toolbar (Auto), DataGrid (*), Navigation (Auto)
+- **Toolbar (Row 0)**: Left column with operations, right column with "Mode Selection" button
+  - Operations: Add Row, Add Multiple, Remove Row, Auto-Fill, Fill Blank Spaces, Sort
+- **DataGrid (Row 1)**: CommunityToolkit DataGrid with:
+  - `KeyDown` event → `DataGrid_KeyDown`
+  - `CurrentCellChanged` event → `DataGrid_CurrentCellChanged`
+  - `Tapped` event → `DataGrid_Tapped`
+  - Columns: Type (ComboBox), Part (ComboBox), Quantity, Weight/Qty, Heat/Lot, PO, Location, Specs
+- **Navigation (Row 2)**: Save & Finish button (right-aligned)
+
+**Code-Behind Pattern** (`Dunnage_ManualEntryView.xaml.cs`):
+```csharp
+public sealed partial class Dunnage_ManualEntryView : UserControl
+{
+    public Dunnage_ManualEntryViewModel ViewModel { get; }
+
+    public Dunnage_ManualEntryView()
+    {
+        ViewModel = App.GetService<Dunnage_ManualEntryViewModel>();
+        this.DataContext = ViewModel;
+        this.InitializeComponent();
+        
+        // Listen for collection changes to handle "Add Row" focus
+        ViewModel.Loads.CollectionChanged += Loads_CollectionChanged;
+    }
+
+    private void Loads_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // Auto-focus and edit first cell of new row
+        if (e.Action == NotifyCollectionChangedAction.Add)
+        {
+            ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
+            {
+                var newItem = e.NewItems?[0] as Model_DunnageLoad;
+                if (newItem != null)
+                {
+                    ManualEntryDataGrid.SelectedItem = newItem;
+                    ManualEntryDataGrid.ScrollIntoView(newItem, ManualEntryDataGrid.Columns.FirstOrDefault());
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(100); // Grid render delay
+                        ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
+                        {
+                            SelectFirstEditableCell(ManualEntryDataGrid);
+                        });
+                    });
+                }
+            });
+        }
+    }
+
+    private void ManualEntryDataGrid_CurrentCellChanged(object? sender, EventArgs e)
+    {
+        var grid = sender as DataGrid;
+        if (grid?.CurrentColumn != null && !grid.CurrentColumn.IsReadOnly)
+        {
+            grid.DispatcherQueue.TryEnqueue(() => grid.BeginEdit());
+        }
+    }
+
+    private void ManualEntryDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        // Handle Tab, Enter, Escape for grid navigation
+    }
+
+    private void ManualEntryDataGrid_Tapped(object sender, TappedRoutedEventArgs e)
+    {
+        // Handle cell selection and edit mode activation
+    }
+
+    private void SelectFirstEditableCell(DataGrid grid)
+    {
+        // Focus first editable column
+    }
+}
+```
+
+**ViewModel Pattern** (`Dunnage_ManualEntryViewModel.cs`):
+- **Properties**: `ObservableCollection<Model_DunnageLoad> Loads`, `SelectedLoad`, `CanSave`
+- **Commands**:
+  - `AddRowCommand` → Creates new `Model_DunnageLoad` with defaults, adds to collection
+  - `AddMultipleCommand(string countStr)` → Validates count (1-100), adds N rows
+  - `RemoveRowCommand` → Removes selected row
+  - `AutoFillCommand` → Fetches last entry for same Part ID, copies PO/Location/Specs
+  - `FillBlankSpacesCommand` → Copies PO/Location/Specs from last row to empty fields
+  - `SortForPrintingCommand` → Sorts by Part ID (asc) → PO (asc) → Type (asc)
+  - `SaveToHistoryCommand` → Saves with `Status="In Progress"`
+  - `SaveAllCommand` → Saves with `Status="Complete"`, exports CSV
+- **Initialization**: Constructor injects services, `InitializeAsync()` loads types/parts
+
+### Edit Mode View Pattern
+
+**XAML Structure** (`Dunnage_EditModeView.xaml`):
+- **Grid with 4 rows**: Toolbar (Auto), Date Filter (Auto), DataGrid (*), Footer (Auto)
+- **Toolbar (Row 0)**: Load from Memory/Labels/History buttons, Select All, Remove Row
+- **Date Filter (Row 1)**: CalendarDatePickers + quick buttons (Today, This Week, This Month, This Quarter)
+- **DataGrid (Row 2)**: Same event handlers as Manual Entry
+- **Footer (Row 3)**: Left = Pagination controls, Right = Save & Export buttons
+
+**Code-Behind Pattern** (`Dunnage_EditModeView.xaml.cs`):
+- Same as Manual Entry (DataGrid events, focus management)
+
+**ViewModel Pattern** (`Dunnage_EditModeViewModel.cs`):
+- **Properties**: 
+  - `ObservableCollection<Model_DunnageLoad> Loads` (paged display)
+  - `List<Model_DunnageLoad> _allLoads`, `_filteredLoads` (internal)
+  - `FilterStartDate`, `FilterEndDate`
+  - `CurrentPage`, `TotalPages`, `GotoPageNumber`
+  - `CurrentDataSource` (Memory, Labels, History)
+- **Commands**:
+  - `LoadFromCurrentMemoryCommand` → Loads from workflow session
+  - `LoadFromCurrentLabelsCommand` → Loads from CSV export folder
+  - `LoadFromHistoryCommand` → Loads from database by date range
+  - `SelectAllCommand` → Toggles `IsSelected` on all displayed loads
+  - `RemoveRowCommand` → Soft delete (tracks in `_deletedLoads`)
+  - `SaveAllCommand` → Persists changes, hard deletes tracked items
+  - Pagination: `FirstPageCommand`, `PreviousPageCommand`, `NextPageCommand`, `LastPageCommand`, `GotoPageCommand`
+- **Pagination**: Uses `IService_Pagination` with 50 rows per page
+- **Date Filtering**: `OnFilterStartDateChanged`, `OnFilterEndDateChanged` → `ApplyDateFilter()`
+
+### Required Converters
+
+- `Converter_DecimalToString` - Displays decimal values in DataGrid cells
+- Use existing converters from `Converters/` folder
+
+### DataGrid Column Patterns
+
+**Manual Entry Columns**:
+1. `IsSelected` (CheckBox) - only in Edit Mode
+2. `LoadNumber` (Text, ReadOnly) - auto-generated
+3. `Type` (ComboBox) - editable, bound to `AvailableTypes`
+4. `PartID` (ComboBox) - editable, bound to `AvailableParts` filtered by Type
+5. `Quantity` (NumberBox) - editable, Minimum=1
+6. `Weight/Qty` (NumberBox with Converter_DecimalToString) - editable
+7. `Heat/Lot` (Text) - editable
+8. `PO` (Text) - editable
+9. `Location` (Text) - editable
+10. Dynamic specs (Text/NumberBox/CheckBox) - based on type schema
+
+**Edit Mode Additional Columns**:
+- `CreatedDate` (DateOnly, ReadOnly)
+- `CreatedBy` (Text, ReadOnly)
+- `Status` (Text, ReadOnly) - "In Progress" or "Complete"
+
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**

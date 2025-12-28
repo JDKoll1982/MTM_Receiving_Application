@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -66,12 +67,19 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     /// </summary>
     public async Task InitializeAsync()
     {
-        if (IsBusy) return;
+        _logger.LogInfo("TypeSelection: InitializeAsync called", "Dunnage_TypeSelectionViewModel");
+
+        if (IsBusy)
+        {
+            _logger.LogInfo("TypeSelection: Already busy, returning", "Dunnage_TypeSelectionViewModel");
+            return;
+        }
 
         try
         {
             IsBusy = true;
             StatusMessage = "Loading dunnage types...";
+            _logger.LogInfo("TypeSelection: Starting to load types", "Dunnage_TypeSelectionViewModel");
 
             await LoadTypesAsync();
 
@@ -100,24 +108,27 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task LoadTypesAsync()
     {
-        if (IsBusy) return;
+        _logger.LogInfo("TypeSelection: LoadTypesAsync called", "Dunnage_TypeSelectionViewModel");
 
         try
         {
-            IsBusy = true;
+            _logger.LogInfo("TypeSelection: Calling service.GetAllTypesAsync()", "Dunnage_TypeSelectionViewModel");
 
             var result = await _dunnageService.GetAllTypesAsync();
+
+            _logger.LogInfo($"TypeSelection: Service returned - IsSuccess: {result.IsSuccess}, Data null: {result.Data == null}, Count: {result.Data?.Count ?? 0}", "Dunnage_TypeSelectionViewModel");
 
             if (result.IsSuccess && result.Data != null)
             {
                 // Configure pagination for 3x3 grid (9 items per page)
                 _paginationService.PageSize = 9;
                 _paginationService.SetSource(result.Data);
+                _logger.LogInfo($"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}", "Dunnage_TypeSelectionViewModel");
 
                 UpdatePaginationProperties();
                 UpdatePageDisplay();
 
-                _logger.LogInfo($"Loaded {result.Data.Count} dunnage types with {TotalPages} pages");
+                _logger.LogInfo($"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}", "Dunnage_TypeSelectionViewModel");
             }
             else
             {
@@ -136,10 +147,6 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
                 ex,
                 true
             );
-        }
-        finally
-        {
-            IsBusy = false;
         }
     }
 
@@ -249,12 +256,16 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     private void UpdatePageDisplay()
     {
         var currentItems = _paginationService.GetCurrentPageItems<Model_DunnageType>();
+        _logger.LogInfo($"TypeSelection: UpdatePageDisplay - Got {currentItems.Count()} items from pagination service", "Dunnage_TypeSelectionViewModel");
 
         DisplayedTypes.Clear();
         foreach (var type in currentItems)
         {
             DisplayedTypes.Add(type);
+            _logger.LogInfo($"TypeSelection: Added type to DisplayedTypes - ID: {type.Id}, Name: {type.TypeName}", "Dunnage_TypeSelectionViewModel");
         }
+
+        _logger.LogInfo($"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}", "Dunnage_TypeSelectionViewModel");
     }
 
     #endregion

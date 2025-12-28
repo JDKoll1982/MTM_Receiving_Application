@@ -100,7 +100,8 @@ namespace MTM_Receiving_Application
                         break;
                     case "DunnageLabelPage":
                         PageTitleTextBlock.Text = "Dunnage Labels";
-                        ContentFrame.Navigate(typeof(Views.Main.Main_DunnageLabelPage));
+                        ContentFrame.Navigate(typeof(Views.Dunnage.Dunnage_WorkflowView));
+                        ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "CarrierDeliveryLabelPage":
                         PageTitleTextBlock.Text = "Carrier Delivery";
@@ -116,6 +117,25 @@ namespace MTM_Receiving_Application
             if (ContentFrame.Content is Views.Receiving.Receiving_WorkflowView receivingView)
             {
                 var viewModel = receivingView.ViewModel;
+                if (viewModel != null)
+                {
+                    // Update header with current step title
+                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+
+                    // Subscribe to property changes to keep header updated
+                    viewModel.PropertyChanged += (s, args) =>
+                    {
+                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
+                        {
+                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                        }
+                    };
+                }
+            }
+            // If navigated to DunnageWorkflowView, subscribe to ViewModel changes to update header
+            else if (ContentFrame.Content is Views.Dunnage.Dunnage_WorkflowView dunnageView)
+            {
+                var viewModel = dunnageView.ViewModel;
                 if (viewModel != null)
                 {
                     // Update header with current step title

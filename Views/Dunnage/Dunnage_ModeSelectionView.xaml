@@ -8,18 +8,12 @@
     mc:Ignorable="d">
 
     <Grid>
-        <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="920">
-            <!-- Title -->
-            <TextBlock Text="Select Dunnage Workflow Mode"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,16"/>
-
-            <StackPanel Orientation="Horizontal" Spacing="24" HorizontalAlignment="Center">
+        <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="24">
                 <!-- Guided Wizard Column -->
                 <StackPanel Spacing="12">
                     <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
-                            Width="280" Height="200"
+                            Width="280" Height="180"
                             Padding="20"
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -49,7 +43,7 @@
                 <!-- Manual Entry Column -->
                 <StackPanel Spacing="12">
                     <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
-                            Width="280" Height="200"
+                            Width="280" Height="180"
                             Padding="20"
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -79,7 +73,7 @@
                 <!-- Edit Mode Column -->
                 <StackPanel Spacing="12">
                     <Button Command="{x:Bind ViewModel.SelectEditModeCommand}"
-                            Width="280" Height="200"
+                            Width="280" Height="180"
                             Padding="20"
                             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -106,26 +100,6 @@
                               ToolTipService.ToolTip="Skip mode selection and go directly to Edit Mode"/>
                 </StackPanel>
             </StackPanel>
-
-            <!-- Info bar with workflow tips -->
-            <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    Padding="16"
-                    CornerRadius="8"
-                    BorderThickness="1"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    MaxWidth="880">
-                <StackPanel Spacing="8">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE946;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                        <TextBlock Text="Workflow Tips" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                        • Guided Wizard: Best for single items with PO tracking<LineBreak/>
-                        • Manual Entry: Efficient for batch receiving multiple dunnage types<LineBreak/>
-                        • Edit Mode: Correct mistakes or update historical records
-                    </TextBlock>
-                </StackPanel>
-            </Border>
         </StackPanel>
     </Grid>
 </UserControl>

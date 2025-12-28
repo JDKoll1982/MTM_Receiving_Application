@@ -23,6 +23,9 @@ public class Model_DunnageLoad : INotifyPropertyChanged
     private string? _modifiedBy;
     private DateTime? _modifiedDate;
 
+    private int _loadNumber;
+    private bool _isSelected;
+
     public Guid LoadUuid
     {
         get => _loadUuid;
@@ -111,6 +114,18 @@ public class Model_DunnageLoad : INotifyPropertyChanged
     {
         get => _modifiedDate;
         set => SetField(ref _modifiedDate, value);
+    }
+
+    public int LoadNumber
+    {
+        get => _loadNumber;
+        set => SetField(ref _loadNumber, value);
+    }
+
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetField(ref _isSelected, value);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

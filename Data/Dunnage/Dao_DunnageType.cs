@@ -21,11 +21,18 @@ public class Dao_DunnageType
 
     public virtual async Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllAsync()
     {
-        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageType>(
+        Console.WriteLine($"[Dao_DunnageType] GetAllAsync called");
+        Console.WriteLine($"[Dao_DunnageType] Connection string: {_connectionString}");
+
+        var result = await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageType>(
             _connectionString,
             "sp_dunnage_types_get_all",
             MapFromReader
         );
+
+        Console.WriteLine($"[Dao_DunnageType] Result - IsSuccess: {result.IsSuccess}, Data Count: {result.Data?.Count ?? 0}, Error: {result.ErrorMessage}");
+
+        return result;
     }
 
     public virtual async Task<Model_Dao_Result<Model_DunnageType>> GetByIdAsync(int id)

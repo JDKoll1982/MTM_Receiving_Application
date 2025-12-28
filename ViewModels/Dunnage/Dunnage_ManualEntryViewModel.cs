@@ -21,17 +21,20 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_DunnageCSVWriter _csvWriter;
+    private readonly IService_Window _windowService;
 
     public Dunnage_ManualEntryViewModel(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_DunnageCSVWriter csvWriter,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Window windowService) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
         _csvWriter = csvWriter;
+        _windowService = windowService;
     }
 
     #region Observable Properties
@@ -64,7 +67,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
 
             // Load available types
             var typesResult = await _dunnageService.GetAllTypesAsync();
-            if (typesResult.Success)
+            if (typesResult.Success && typesResult.Data != null)
             {
                 AvailableTypes.Clear();
                 foreach (var type in typesResult.Data)
@@ -75,7 +78,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
 
             // Load available parts
             var partsResult = await _dunnageService.GetAllPartsAsync();
-            if (partsResult.Success)
+            if (partsResult.Success && partsResult.Data != null)
             {
                 AvailableParts.Clear();
                 foreach (var part in partsResult.Data)
@@ -381,6 +384,53 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
         {
             IsBusy = false;
             CanSave = true;
+        }
+    }
+
+    #endregion
+
+    #region Navigation Commands
+
+    [RelayCommand]
+    private async Task ReturnToModeSelectionAsync()
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            _logger.LogError("Cannot show dialog: XamlRoot is null", null, "ManualEntry");
+            await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error, null, true);
+            return;
+        }
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Change Mode?",
+            Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+            PrimaryButtonText = "Yes, Change Mode",
+            CloseButtonText = "Cancel",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+            XamlRoot = xamlRoot
+        };
+
+        var result = await dialog.ShowAsync().AsTask();
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            try
+            {
+                _logger.LogInfo("User confirmed return to mode selection, clearing loads", "ManualEntry");
+                Loads.Clear();
+                _workflowService.ClearSession();
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return to mode selection: {ex.Message}", ex, "ManualEntry");
+                await _errorHandler.HandleErrorAsync("Failed to return to mode selection", Enum_ErrorSeverity.Error, ex, true);
+            }
+        }
+        else
+        {
+            _logger.LogInfo("User cancelled return to mode selection", "ManualEntry");
         }
     }
 

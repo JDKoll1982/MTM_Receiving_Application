@@ -351,21 +351,45 @@
 - [x] T137 [US7] Implement SortForPrintingCommand in Dunnage_ManualEntryViewModel.cs to sort by PartId (asc), PoNumber (asc), TypeName (asc)
 - [x] T138 [US7] Implement SaveToHistoryCommand in Dunnage_ManualEntryViewModel.cs to call _dunnageService.SaveLoadsAsync()
 - [x] T139 [US7] Register Dunnage_ManualEntryViewModel as Transient in App.xaml.cs
-- [ ] T140 [P] [US7] Create Dunnage_ManualEntryView.xaml in Views/Dunnage/ with editable DataGrid
-- [ ] T141 [US7] Add toolbar buttons in Dunnage_ManualEntryView.xaml: Add Row, Remove Row, Fill Blank Spaces, Sort, Save to History, Save All
-- [ ] T142 [US7] Configure DataGrid in Dunnage_ManualEntryView.xaml with editable columns: Type (ComboBox), Part (ComboBox), Qty (NumberBox), PO, Location
-- [ ] T143 [P] [US7] Create Dunnage_ManualEntryView.xaml.cs code-behind
-- [ ] T144 [US7] Update Main_DunnageLabelPage.xaml to add Dunnage_ManualEntryView with Visibility binding
+- [x] T140 [P] [US7] Create Dunnage_ManualEntryView.xaml in Views/Dunnage/ with Grid (3 rows: Toolbar, DataGrid, Navigation) matching Receiving_ManualEntryView.xaml pattern
+- [x] T140a [US7] Add xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls" and xmlns:converters="using:MTM_Receiving_Application.Converters" to Dunnage_ManualEntryView.xaml
+- [x] T140b [US7] Add Converter_DecimalToString resource to Dunnage_ManualEntryView.xaml UserControl.Resources
+- [x] T141 [US7] Add toolbar (Grid.Row="0") in Dunnage_ManualEntryView.xaml with left column (operations) and right column ("Mode Selection" button)
+- [x] T141a [US7] Add operations buttons: Add Row (AccentButtonStyle), Add Multiple, Remove Row, Auto-Fill, Fill Blank Spaces, Sort buttons in toolbar left column
+- [x] T141b [US7] Add "Mode Selection" button in toolbar right column bound to ReturnToModeSelectionCommand with transparent background and accent border
+- [x] T142 [US7] Configure CommunityToolkit DataGrid (Grid.Row="1") in Dunnage_ManualEntryView.xaml with x:Name="ManualEntryDataGrid"
+- [x] T142a [US7] Add DataGrid event handlers: KeyDown="ManualEntryDataGrid_KeyDown", CurrentCellChanged="ManualEntryDataGrid_CurrentCellChanged", Tapped="ManualEntryDataGrid_Tapped"
+- [x] T142b [US7] Add DataGrid columns: LoadNumber (ReadOnly), Type (ComboBox), PartID (ComboBox), Quantity, Weight/Qty (with DecimalToStringConverter), Heat/Lot, PO, Location
+- [x] T142c [US7] Set DataGrid properties: AutoGenerateColumns="False", IsReadOnly="False", CanUserSortColumns="True", GridLinesVisibility="All", SelectionMode="Single"
+- [x] T143 [US7] Add navigation footer (Grid.Row="2") in Dunnage_ManualEntryView.xaml with right-aligned "Save & Finish" button bound to SaveCommand
+- [x] T144 [P] [US7] Create Dunnage_ManualEntryView.xaml.cs code-behind with ViewModel property, InitializeComponent, and Loads.CollectionChanged event subscription
+- [x] T144a [US7] Implement Loads_CollectionChanged in Dunnage_ManualEntryView.xaml.cs to auto-select and focus first editable cell of new row
+- [x] T144b [US7] Implement ManualEntryDataGrid_CurrentCellChanged in Dunnage_ManualEntryView.xaml.cs to call BeginEdit() on non-readonly columns
+- [x] T144c [US7] Implement ManualEntryDataGrid_KeyDown in Dunnage_ManualEntryView.xaml.cs for keyboard navigation (Tab, Enter, Escape)
+- [x] T144d [US7] Implement ManualEntryDataGrid_Tapped in Dunnage_ManualEntryView.xaml.cs for cell selection
+- [x] T144e [US7] Implement SelectFirstEditableCell helper method in Dunnage_ManualEntryView.xaml.cs to focus first editable column
+- [x] T145 [US7] Update Main_DunnageLabelPage.xaml to add Dunnage_ManualEntryView with Visibility binding to IsManualEntryVisible
 - [x] T145 [P] [US7] Create Dunnage_EditModeViewModel.cs in ViewModels/Dunnage/ with properties: FilteredLoads, FromDate, ToDate, CurrentPage, TotalPages
 - [x] T146 [P] [US7] Add LoadFromHistoryCommand, SelectAllCommand, RemoveRowCommand, SaveAllCommand, pagination commands to Dunnage_EditModeViewModel.cs
 - [x] T147 [US7] Implement LoadFromHistoryCommand in Dunnage_EditModeViewModel.cs to call _dunnageService.GetLoadsByDateRangeAsync()
 - [x] T148 [US7] Implement pagination in Dunnage_EditModeViewModel.cs using _paginationService with PageSize=50
 - [x] T149 [US7] Register Dunnage_EditModeViewModel as Transient in App.xaml.cs
-- [ ] T150 [P] [US7] Create Dunnage_EditModeView.xaml in Views/Dunnage/ with filter toolbar and editable DataGrid
-- [ ] T151 [US7] Add date range filters in Dunnage_EditModeView.xaml with DatePickers and quick buttons (Last Week, Today, etc.)
-- [ ] T152 [US7] Add pagination controls in Dunnage_EditModeView.xaml: First, Previous, Page indicator, Next, Last buttons
-- [ ] T153 [P] [US7] Create Dunnage_EditModeView.xaml.cs code-behind
-- [ ] T154 [US7] Update Main_DunnageLabelPage.xaml to add Dunnage_EditModeView with Visibility binding
+- [x] T150 [P] [US7] Create Dunnage_EditModeView.xaml in Views/Dunnage/ with Grid (4 rows: Toolbar, Date Filter, DataGrid, Footer) matching Receiving_EditModeView.xaml pattern
+- [x] T150a [US7] Add xmlns:controls and xmlns:converters to Dunnage_EditModeView.xaml
+- [x] T150b [US7] Add Converter_DecimalToString resource to Dunnage_EditModeView.xaml
+- [x] T151 [US7] Add toolbar (Grid.Row="0") in Dunnage_EditModeView.xaml with "Load Data From:" section (left) and "Mode Selection" button (right)
+- [x] T151a [US7] Add load buttons in toolbar: Load from Current Memory, Load from Current Labels, Load from History, separated by Rectangle divider
+- [x] T151b [US7] Add edit action buttons in toolbar: Select All, Remove Row
+- [x] T152 [US7] Add date filter toolbar (Grid.Row="1") in Dunnage_EditModeView.xaml with CalendarDatePickers for start/end dates
+- [x] T152a [US7] Add quick filter buttons in date toolbar: Today, This Week, This Month (dynamic text), This Quarter (dynamic text)
+- [x] T153 [US7] Configure CommunityToolkit DataGrid (Grid.Row="2") in Dunnage_EditModeView.xaml with x:Name="EditModeDataGrid" and same event handlers as Manual Entry
+- [x] T153a [US7] Add DataGrid columns: IsSelected (CheckBox), LoadNumber (ReadOnly), Type, PartID, Quantity, Weight/Qty, Heat/Lot, PO, Location, CreatedDate (ReadOnly), CreatedBy (ReadOnly), Status (ReadOnly)
+- [x] T154 [US7] Add footer (Grid.Row="3") in Dunnage_EditModeView.xaml with pagination controls (left) and Save/Export buttons (right)
+- [x] T154a [US7] Add pagination controls: First/Previous/Next/Last buttons with page indicator TextBlock and "Go to Page" NumberBox
+- [x] T154b [US7] Bind pagination buttons to FirstPageCommand, PreviousPageCommand, NextPageCommand, LastPageCommand, GotoPageCommand with IsEnabled bindings
+- [x] T155 [P] [US7] Create Dunnage_EditModeView.xaml.cs code-behind with ViewModel property and same DataGrid event handlers as Manual Entry
+- [x] T155a [US7] Implement EditModeDataGrid_CurrentCellChanged, EditModeDataGrid_KeyDown, EditModeDataGrid_Tapped in Dunnage_EditModeView.xaml.cs
+- [x] T156 [US7] Update Main_DunnageLabelPage.xaml to add Dunnage_EditModeView with Visibility binding to IsEditModeVisible
 - [x] T155 [P] [US7] Create Dunnage_ManualEntryViewModel_Tests.cs with test FillBlankSpacesCommand_ShouldCopyFromLastRow
 - [x] T156 [P] [US7] Add test SortForPrintingCommand_ShouldSortByPartIdThenPO in Dunnage_ManualEntryViewModel_Tests.cs
 - [x] T157 [P] [US7] Create Dunnage_EditModeViewModel_Tests.cs with test LoadFromHistoryCommand_ShouldFilterByDateRange

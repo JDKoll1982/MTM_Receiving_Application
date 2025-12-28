@@ -918,6 +918,48 @@ When generating code, consider:
 
 ---
 
+## XAML Troubleshooting
+
+### Detecting XAML Compilation Errors
+
+When `dotnet build` fails with a generic `MSB3073: XamlCompiler.exe exited with code 1` error, the actual XAML errors are often not displayed. Use Visual Studio's command-line build tool to get detailed error messages:
+
+```powershell
+$vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+& "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Rebuild "Debug|x64" 2>&1 | Select-String "error|warning" | Select-Object -Last 30
+```
+
+### Common XAML Errors
+
+**WMC1121: Invalid binding assignment (Type mismatch)**
+```
+Cannot directly bind type 'System.DateTime' to 'System.Nullable(System.DateTimeOffset)'
+```
+**Solution**: Use a converter or change property type to match control requirements
+- CalendarDatePicker requires `DateTimeOffset?`, not `DateTime`
+- Use `DateTimeOffset.FromDateTime()` or create a converter
+
+**WMC1110: Property not found on ViewModel**
+```
+Invalid binding path 'ViewModel.MyCommand' : Property 'MyCommand' not found on type 'MyViewModel'
+```
+**Solution**: 
+- Verify the property/command exists in ViewModel
+- Check spelling and casing (x:Bind is case-sensitive)
+- Ensure ViewModel is `partial` class with `[RelayCommand]` or `[ObservableProperty]`
+- Rebuild to regenerate source-generated code
+
+**Invalid x:Bind Mode**
+```
+x:Bind requires explicit Mode (OneWay, TwoWay, OneTime)
+```
+**Solution**: Always specify Mode:
+- `Mode=OneWay` for read-only display
+- `Mode=TwoWay` for user input
+- `Mode=OneTime` for static values
+
+---
+
 ## File Naming Conventions
 
 | Type | Pattern | Example |

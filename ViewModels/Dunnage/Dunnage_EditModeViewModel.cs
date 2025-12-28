@@ -22,6 +22,8 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
     private readonly IService_DunnageCSVWriter _csvWriter;
+    private readonly IService_DunnageWorkflow _workflowService;
+    private readonly IService_Window _windowService;
 
     private const int PAGE_SIZE = 50;
 
@@ -29,16 +31,20 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
         IService_DunnageCSVWriter csvWriter,
+        IService_DunnageWorkflow workflowService,
+        IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _dunnageService = dunnageService;
         _paginationService = paginationService;
         _csvWriter = csvWriter;
+        _workflowService = workflowService;
+        _windowService = windowService;
 
         // Set default date range (last 7 days)
-        ToDate = DateTime.Now;
-        FromDate = DateTime.Now.AddDays(-7);
+        ToDate = DateTimeOffset.Now;
+        FromDate = DateTimeOffset.Now.AddDays(-7);
     }
 
     #region Observable Properties
@@ -50,10 +56,10 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     private ObservableCollection<Model_DunnageLoad> _selectedLoads = new();
 
     [ObservableProperty]
-    private DateTime _fromDate;
+    private DateTimeOffset? _fromDate;
 
     [ObservableProperty]
-    private DateTime _toDate;
+    private DateTimeOffset? _toDate;
 
     [ObservableProperty]
     private int _currentPage = 1;
@@ -84,7 +90,10 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
             IsBusy = true;
             StatusMessage = "Loading historical data...";
 
-            var result = await _dunnageService.GetLoadsByDateRangeAsync(FromDate, ToDate);
+            var startDate = FromDate?.DateTime ?? DateTime.Now.AddDays(-7);
+            var endDate = ToDate?.DateTime ?? DateTime.Now;
+
+            var result = await _dunnageService.GetLoadsByDateRangeAsync(startDate, endDate);
 
             if (!result.Success)
             {
@@ -92,7 +101,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
                 return;
             }
 
-            _allLoads = result.Data;
+            _allLoads = result.Data ?? new List<Model_DunnageLoad>();
             TotalRecords = _allLoads.Count;
 
             // Set pagination source
@@ -106,7 +115,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
             CanNavigate = TotalPages > 1;
             StatusMessage = $"Loaded {TotalRecords} records";
 
-            _logger.LogInfo($"Loaded {TotalRecords} historical loads from {FromDate:d} to {ToDate:d}", "EditMode");
+            _logger.LogInfo($"Loaded {TotalRecords} historical loads from {startDate:d} to {endDate:d}", "EditMode");
         }
         catch (Exception ex)
         {
@@ -121,6 +130,41 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task SetFilterTodayAsync()
+    {
+        FromDate = DateTime.Now.Date;
+        ToDate = DateTime.Now.Date;
+        await LoadFromHistoryAsync();
+    }
+
+    [RelayCommand]
+    private async Task SetFilterThisWeekAsync()
+    {
+        var today = DateTime.Now.Date;
+        var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+        FromDate = startOfWeek;
+        ToDate = today;
+        await LoadFromHistoryAsync();
+    }
+
+    [RelayCommand]
+    private async Task SetFilterThisMonthAsync()
+    {
+        var today = DateTime.Now.Date;
+        FromDate = new DateTime(today.Year, today.Month, 1);
+        ToDate = today;
+        await LoadFromHistoryAsync();
+    }
+
+    [RelayCommand]
+    private async Task SetFilterShowAllAsync()
+    {
+        FromDate = DateTime.Now.Date.AddYears(-1);
+        ToDate = DateTime.Now.Date;
+        await LoadFromHistoryAsync();
     }
 
     [RelayCommand]
@@ -292,6 +336,54 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         {
             IsBusy = false;
             CanSave = true;
+        }
+    }
+
+    #endregion
+
+    #region Navigation Commands
+
+    [RelayCommand]
+    private async Task ReturnToModeSelectionAsync()
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            _logger.LogError("Cannot show dialog: XamlRoot is null", null, "EditMode");
+            await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error, null, true);
+            return;
+        }
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Change Mode?",
+            Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+            PrimaryButtonText = "Yes, Change Mode",
+            CloseButtonText = "Cancel",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+            XamlRoot = xamlRoot
+        };
+
+        var result = await dialog.ShowAsync().AsTask();
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            try
+            {
+                _logger.LogInfo("User confirmed return to mode selection, clearing data", "EditMode");
+                FilteredLoads.Clear();
+                _allLoads.Clear();
+                _workflowService.ClearSession();
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return to mode selection: {ex.Message}", ex, "EditMode");
+                await _errorHandler.HandleErrorAsync("Failed to return to mode selection", Enum_ErrorSeverity.Error, ex, true);
+            }
+        }
+        else
+        {
+            _logger.LogInfo("User cancelled return to mode selection", "EditMode");
         }
     }
 

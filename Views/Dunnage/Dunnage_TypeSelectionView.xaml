@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     Loaded="OnLoaded">
 
-    <Grid Padding="24">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,32">
             <TextBlock Text="Select Dunnage Type"
                        Style="{StaticResource TitleTextBlockStyle}"/>
             <TextBlock Text="Choose a dunnage type from the available options below."
@@ -92,7 +92,7 @@
                     Orientation="Horizontal" 
                     HorizontalAlignment="Center"
                     Spacing="16"
-                    Margin="0,24,0,0">
+                    Margin="0,32,0,0">
             <!-- First Page -->
             <Button Command="{x:Bind ViewModel.FirstPageCommand}"
                     ToolTipService.ToolTip="First Page">
