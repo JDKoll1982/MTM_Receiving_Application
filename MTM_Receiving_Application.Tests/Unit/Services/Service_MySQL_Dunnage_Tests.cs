@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
     public class Service_MySQL_Dunnage_Tests
     {
         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
-        private readonly Mock<ILoggingService> _mockLogger;
+        private readonly Mock<IService_LoggingUtility> _mockLogger;
         private readonly Mock<IService_UserSessionManager> _mockSessionManager;
         private readonly Mock<Dao_DunnageLoad> _mockDaoDunnageLoad;
         private readonly Mock<Dao_DunnageType> _mockDaoDunnageType;
@@ -29,7 +29,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
         public Service_MySQL_Dunnage_Tests()
         {
             _mockErrorHandler = new Mock<IService_ErrorHandler>();
-            _mockLogger = new Mock<ILoggingService>();
+            _mockLogger = new Mock<IService_LoggingUtility>();
             _mockSessionManager = new Mock<IService_UserSessionManager>();
 
             // Mock DAOs with dummy connection string

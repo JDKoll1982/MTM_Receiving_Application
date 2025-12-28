@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
     {
         private readonly Mock<IService_MySQL_Dunnage> _mockDunnageService;
         private readonly Mock<IService_UserSessionManager> _mockSessionManager;
-        private readonly Mock<ILoggingService> _mockLogger;
+        private readonly Mock<IService_LoggingUtility> _mockLogger;
         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
         private readonly Service_DunnageCSVWriter _service;
 
@@ -25,7 +25,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Services
         {
             _mockDunnageService = new Mock<IService_MySQL_Dunnage>();
             _mockSessionManager = new Mock<IService_UserSessionManager>();
-            _mockLogger = new Mock<ILoggingService>();
+            _mockLogger = new Mock<IService_LoggingUtility>();
             _mockErrorHandler = new Mock<IService_ErrorHandler>();
 
             _service = new Service_DunnageCSVWriter(

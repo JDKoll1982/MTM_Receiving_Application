@@ -16,6 +16,9 @@ public class Model_DunnageSession : INotifyPropertyChanged
     private string _location = string.Empty;
     private ObservableCollection<Model_DunnageLoad> _loads = new();
 
+    private Dictionary<string, object>? _specValues;
+    private Model_DunnageType? _selectedType;
+
     public int SelectedTypeId
     {
         get => _selectedTypeId;
@@ -63,6 +66,18 @@ public class Model_DunnageSession : INotifyPropertyChanged
                 _loads.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasLoads));
             }
         }
+    }
+
+    public Dictionary<string, object>? SpecValues
+    {
+        get => _specValues;
+        set => SetField(ref _specValues, value);
+    }
+
+    public Model_DunnageType? SelectedType
+    {
+        get => _selectedType;
+        set => SetField(ref _selectedType, value);
     }
 
     public bool HasLoads => Loads.Count > 0;

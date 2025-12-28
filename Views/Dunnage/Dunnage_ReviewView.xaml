@@ -1,0 +1,150 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Views.Dunnage.Dunnage_ReviewView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="OnLoaded">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
+            <TextBlock Text="Review Loads"
+                       Style="{StaticResource TitleTextBlockStyle}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Total loads in session:"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Style="{StaticResource BodyTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind ViewModel.LoadCount, Mode=OneWay}"
+                           FontWeight="SemiBold"
+                           Style="{StaticResource BodyTextBlockStyle}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Success Message -->
+        <InfoBar Grid.Row="1"
+                 IsOpen="{x:Bind ViewModel.IsSuccessMessageVisible, Mode=OneWay}"
+                 Severity="Success"
+                 Message="{x:Bind ViewModel.SuccessMessage, Mode=OneWay}"
+                 IsClosable="False"
+                 Margin="0,0,0,16"/>
+
+        <!-- Loads DataGrid -->
+        <Border Grid.Row="2"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16">
+            <StackPanel Spacing="16">
+                <TextBlock Text="Load Review (DataGrid placeholder)"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.SessionLoads, Mode=OneWay}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="12"
+                                    Margin="0,0,0,8">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Type" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Part ID" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding PartId}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Quantity" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="{Binding Quantity}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="3">
+                                        <TextBlock Text="PO / Location" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock FontWeight="SemiBold">
+                                            <Run Text="{Binding PONumber}"/>
+                                            <Run Text=" / "/>
+                                            <Run Text="{Binding Location}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+
+                <!-- Empty State -->
+                <StackPanel HorizontalAlignment="Center" 
+                            Spacing="16"
+                            Visibility="{x:Bind ViewModel.LoadCount, Mode=OneWay, Converter={StaticResource ZeroToVisibleConverter}}">
+                    <FontIcon Glyph="&#xE7C3;" FontSize="48" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Text="No loads in session"
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Action Buttons -->
+        <Grid Grid.Row="3" Margin="0,24,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Cancel -->
+            <Button Grid.Column="0"
+                    Command="{x:Bind ViewModel.CancelCommand}"
+                    HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE711;" FontSize="16"/>
+                    <TextBlock Text="Cancel"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Add Another -->
+            <Button Grid.Column="2"
+                    Command="{x:Bind ViewModel.AddAnotherCommand}"
+                    Margin="0,0,16,0">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE710;" FontSize="16"/>
+                    <TextBlock Text="Add Another"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Save All -->
+            <Button Grid.Column="3"
+                    Command="{x:Bind ViewModel.SaveAllCommand}"
+                    Style="{StaticResource AccentButtonStyle}"
+                    IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE74E;" FontSize="16"/>
+                    <TextBlock Text="Save All"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

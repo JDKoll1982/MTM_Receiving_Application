@@ -9,6 +9,7 @@ public class Model_DunnageType : INotifyPropertyChanged
 {
     private int _id;
     private string _typeName = string.Empty;
+    private string _specsJson = string.Empty;
     private string _createdBy = string.Empty;
     private DateTime _createdDate = DateTime.Now;
     private string? _modifiedBy;
@@ -24,6 +25,12 @@ public class Model_DunnageType : INotifyPropertyChanged
     {
         get => _typeName;
         set => SetField(ref _typeName, value);
+    }
+
+    public string SpecsJson
+    {
+        get => _specsJson;
+        set => SetField(ref _specsJson, value);
     }
 
     public string CreatedBy

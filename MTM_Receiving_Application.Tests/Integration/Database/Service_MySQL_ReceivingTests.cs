@@ -15,11 +15,11 @@ namespace MTM_Receiving_Application.Tests.Integration.Database
     {
         private readonly string _connectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;"; // Use main DB for now as test DB might not exist
         private readonly Service_MySQL_Receiving _service;
-        private readonly Mock<ILoggingService> _mockLogger;
+        private readonly Mock<IService_LoggingUtility> _mockLogger;
 
         public Service_MySQL_ReceivingTests()
         {
-            _mockLogger = new Mock<ILoggingService>();
+            _mockLogger = new Mock<IService_LoggingUtility>();
             _service = new Service_MySQL_Receiving(_connectionString, _mockLogger.Object);
         }
 

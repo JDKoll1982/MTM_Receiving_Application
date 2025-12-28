@@ -16,12 +16,12 @@ namespace MTM_Receiving_Application.Tests.Unit.Services.Receiving
         private readonly Service_CSVWriter _service;
         private readonly string _localPath;
         private readonly Mock<IService_UserSessionManager> _mockSessionManager;
-        private readonly Mock<ILoggingService> _mockLogger;
+        private readonly Mock<IService_LoggingUtility> _mockLogger;
 
         public Service_CSVWriterTests()
         {
-            _mockSessionManager = new Mock<IService_UserSessionManager>();
-            _mockLogger = new Mock<ILoggingService>();
+            _mockErrorHandler = new Mock<IService_ErrorHandler>();
+            _mockLogger = new Mock<IService_LoggingUtility>();
             _service = new Service_CSVWriter(_mockSessionManager.Object, _mockLogger.Object);
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             _localPath = Path.Combine(appDataPath, "MTM_Receiving_Application", "ReceivingData.csv");

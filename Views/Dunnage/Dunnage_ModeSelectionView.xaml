@@ -1,0 +1,131 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Views.Dunnage.Dunnage_ModeSelectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Dunnage"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="920">
+            <!-- Title -->
+            <TextBlock Text="Select Dunnage Workflow Mode"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,16"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="24" HorizontalAlignment="Center">
+                <!-- Guided Wizard Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
+                            Width="280" Height="200"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Guided Wizard Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE81E;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Step-by-step workflow for dunnage receiving with validation at each stage." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Guided Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
+                              CommandParameter="{x:Bind ViewModel.IsGuidedModeDefault, Mode=OneWay}"
+                              HorizontalAlignment="Center"
+                              ToolTipService.ToolTip="Skip mode selection and go directly to Guided Wizard"/>
+                </StackPanel>
+
+                <!-- Manual Entry Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
+                            Width="280" Height="200"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Manual Entry Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE8F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Bulk grid entry for receiving multiple dunnage items simultaneously." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Manual Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
+                              CommandParameter="{x:Bind ViewModel.IsManualModeDefault, Mode=OneWay}"
+                              HorizontalAlignment="Center"
+                              ToolTipService.ToolTip="Skip mode selection and go directly to Manual Entry"/>
+                </StackPanel>
+
+                <!-- Edit Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectEditModeCommand}"
+                            Width="280" Height="200"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Edit Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE70F;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Edit Mode" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Load historical dunnage records for editing and correction." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Edit Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
+                              CommandParameter="{x:Bind ViewModel.IsEditModeDefault, Mode=OneWay}"
+                              HorizontalAlignment="Center"
+                              ToolTipService.ToolTip="Skip mode selection and go directly to Edit Mode"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Info bar with workflow tips -->
+            <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    Padding="16"
+                    CornerRadius="8"
+                    BorderThickness="1"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    MaxWidth="880">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE946;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                        <TextBlock Text="Workflow Tips" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        • Guided Wizard: Best for single items with PO tracking<LineBreak/>
+                        • Manual Entry: Efficient for batch receiving multiple dunnage types<LineBreak/>
+                        • Edit Mode: Correct mistakes or update historical records
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

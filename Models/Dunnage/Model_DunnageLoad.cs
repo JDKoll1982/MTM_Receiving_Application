@@ -13,6 +13,10 @@ public class Model_DunnageLoad : INotifyPropertyChanged
     private string _poNumber = string.Empty;
     private string _dunnageType = string.Empty;
     private Dictionary<string, object> _specs = new();
+    private string _location = string.Empty;
+    private string _typeName = string.Empty;
+    private string _inventoryMethod = "Adjust In";
+    private Dictionary<string, object>? _specValues;
     private DateTime _receivedDate = DateTime.Now;
     private string _createdBy = string.Empty;
     private DateTime _createdDate = DateTime.Now;
@@ -53,6 +57,30 @@ public class Model_DunnageLoad : INotifyPropertyChanged
     {
         get => _specs;
         set => SetField(ref _specs, value);
+    }
+
+    public string Location
+    {
+        get => _location;
+        set => SetField(ref _location, value);
+    }
+
+    public string TypeName
+    {
+        get => _typeName;
+        set => SetField(ref _typeName, value);
+    }
+
+    public string InventoryMethod
+    {
+        get => _inventoryMethod;
+        set => SetField(ref _inventoryMethod, value);
+    }
+
+    public Dictionary<string, object>? SpecValues
+    {
+        get => _specValues;
+        set => SetField(ref _specValues, value);
     }
 
     public DateTime ReceivedDate

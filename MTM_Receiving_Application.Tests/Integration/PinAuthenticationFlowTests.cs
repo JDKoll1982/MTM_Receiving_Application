@@ -15,8 +15,8 @@ namespace MTM_Receiving_Application.Tests.Integration
         private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
         private readonly Dao_User _daoUser;
         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
-        private readonly Mock<IDispatcherService> _mockDispatcherService;
-        private readonly Mock<IDispatcherTimer> _mockTimer;
+        private readonly Mock<IService_Dispatcher> _mockDispatcherService;
+        private readonly Mock<IService_DispatcherTimer> _mockTimer;
         private readonly Service_Authentication _authService;
         private readonly Service_UserSessionManager _sessionManager;
 
@@ -24,8 +24,8 @@ namespace MTM_Receiving_Application.Tests.Integration
         {
             _daoUser = new Dao_User(ConnectionString);
             _mockErrorHandler = new Mock<IService_ErrorHandler>();
-            _mockDispatcherService = new Mock<IDispatcherService>();
-            _mockTimer = new Mock<IDispatcherTimer>();
+            _mockDispatcherService = new Mock<IService_Dispatcher>();
+            _mockTimer = new Mock<IService_DispatcherTimer>();
 
             _mockDispatcherService.Setup(d => d.CreateTimer()).Returns(_mockTimer.Object);
 

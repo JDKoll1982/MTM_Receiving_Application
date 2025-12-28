@@ -1,0 +1,118 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Views.Dunnage.Dunnage_QuantityEntryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="OnLoaded">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
+            <TextBlock Text="Enter Quantity"
+                       Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock Text="Specify how many labels you need to generate."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Style="{StaticResource BodyTextBlockStyle}"/>
+        </StackPanel>
+
+        <!-- Context Banner -->
+        <Border Grid.Row="1"
+                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,24">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Selection Summary"
+                           FontWeight="SemiBold"
+                           Foreground="White"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Type:" Foreground="White" Opacity="0.8"/>
+                    <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"
+                               FontWeight="SemiBold"
+                               Foreground="White"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Part:" Foreground="White" Opacity="0.8"/>
+                    <TextBlock Text="{x:Bind ViewModel.SelectedPartName, Mode=OneWay}"
+                               FontWeight="SemiBold"
+                               Foreground="White"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Quantity Input -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="24" MaxWidth="600" HorizontalAlignment="Left">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Quantity"
+                               Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <NumberBox Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}"
+                               Minimum="1"
+                               Maximum="9999"
+                               SpinButtonPlacementMode="Inline"
+                               HorizontalAlignment="Stretch"
+                               PlaceholderText="Enter quantity..."/>
+                </StackPanel>
+
+                <!-- Validation Message -->
+                <TextBlock Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
+                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                           Visibility="{x:Bind ViewModel.ValidationMessage, Mode=OneWay, Converter={StaticResource EmptyStringToCollapsedConverter}}"
+                           TextWrapping="Wrap"/>
+
+                <!-- Info Panel -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE946;" FontSize="16" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Tip" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <TextBlock Text="You can adjust the quantity later if needed. The system will generate individual labels for each item."
+                                   TextWrapping="Wrap"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Navigation Buttons -->
+        <Grid Grid.Row="3" Margin="0,24,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Command="{x:Bind ViewModel.GoBackCommand}"
+                    HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE72B;" FontSize="16"/>
+                    <TextBlock Text="Back"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Column="1"
+                    Command="{x:Bind ViewModel.GoNextCommand}"
+                    Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Next"/>
+                    <FontIcon Glyph="&#xE72A;" FontSize="16"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -12,6 +12,7 @@ using MTM_Receiving_Application.Data.Dunnage;
 using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.ViewModels.Receiving;
+using MTM_Receiving_Application.ViewModels.Dunnage;
 using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.ViewModels.Main;
 using MTM_Receiving_Application.Views.Main;
@@ -127,6 +128,16 @@ public partial class App : Application
                 services.AddTransient<Receiving_HeatLotViewModel>();
                 services.AddTransient<Receiving_PackageTypeViewModel>();
                 services.AddTransient<Receiving_ReviewGridViewModel>();
+
+                // Dunnage Workflow ViewModels
+                services.AddTransient<Dunnage_ModeSelectionViewModel>();
+                services.AddTransient<Dunnage_TypeSelectionViewModel>();
+                services.AddTransient<Dunnage_PartSelectionViewModel>();
+                services.AddTransient<Dunnage_QuantityEntryViewModel>();
+                services.AddTransient<Dunnage_DetailsEntryViewModel>();
+                services.AddTransient<Dunnage_ReviewViewModel>();
+                services.AddTransient<Dunnage_ManualEntryViewModel>();
+                services.AddTransient<Dunnage_EditModeViewModel>();
 
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
