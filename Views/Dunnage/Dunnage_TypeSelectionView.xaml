@@ -57,6 +57,7 @@
                             <!-- Icon -->
                             <FontIcon Grid.Row="0" 
                                       Glyph="&#xE7B8;" 
+                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                       FontSize="48" 
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                                       HorizontalAlignment="Center"

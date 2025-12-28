@@ -219,15 +219,68 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task QuickAddTypeAsync()
     {
-        // TODO: Implement Quick Add Type dialog (future enhancement)
-        _logger.LogInfo("Quick Add Type requested - feature not yet implemented");
+        try
+        {
+            _logger.LogInfo("Quick Add Type requested", "TypeSelection");
 
-        await _errorHandler.HandleErrorAsync(
-            "Quick Add Type feature is not yet implemented",
-            Enum_ErrorSeverity.Info,
-            null,
-            true
-        );
+            // Show dialog
+            var dialog = new Views.Dunnage.Dunnage_QuickAddTypeDialog
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot
+            };
+
+            if (dialog.XamlRoot == null)
+            {
+                _logger.LogInfo("Cannot show dialog: XamlRoot is null", "TypeSelection");
+                return;
+            }
+
+            var result = await dialog.ShowAsync();
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                var typeName = dialog.TypeName;
+                var iconGlyph = dialog.SelectedIconGlyph;
+
+                _logger.LogInfo($"Adding new type: {typeName} with icon {iconGlyph}", "TypeSelection");
+
+                // Insert new type
+                var newType = new Model_DunnageType
+                {
+                    TypeName = typeName
+                    // Note: Icon storage would need to be added to database schema
+                };
+
+                var insertResult = await _dunnageService.InsertTypeAsync(newType);
+
+                if (insertResult.IsSuccess)
+                {
+                    _logger.LogInfo($"Successfully added type: {typeName}", "TypeSelection");
+
+                    // Reload types to show new type
+                    await LoadTypesAsync();
+
+                    StatusMessage = $"Added new type: {typeName}";
+                }
+                else
+                {
+                    await _errorHandler.HandleDaoErrorAsync(
+                        insertResult,
+                        nameof(QuickAddTypeAsync),
+                        true
+                    );
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error adding new dunnage type",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
     }
 
     #endregion

@@ -36,9 +36,8 @@
             <views:Dunnage_TypeSelectionView 
                 Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-            <!-- Part Selection View not yet implemented -->
-            <!--<views:Dunnage_PartSelectionView 
-                Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
+            <views:Dunnage_PartSelectionView 
+                Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <views:Dunnage_QuantityEntryView 
                 Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -82,7 +81,9 @@
                     Padding="12,8"
                     ToolTipService.ToolTip="Click for help about dunnage labels">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE946;" FontSize="16"/>
+                    <FontIcon Glyph="&#xE946;" 
+                              FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                              FontSize="16"/>
                     <TextBlock Text="Help"/>
                 </StackPanel>
                 <Button.Flyout>

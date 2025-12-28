@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Views.Dunnage.Dunnage_QuickAddTypeDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Add New Dunnage Type"
+    PrimaryButtonText="Add Type"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OnPrimaryButtonClick"
+    PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
+    Width="500">
+
+    <StackPanel Spacing="20" Padding="8">
+        <!-- Instructions -->
+        <TextBlock 
+            Text="Enter details for the new dunnage type"
+            TextWrapping="Wrap"
+            Style="{StaticResource BodyTextBlockStyle}"/>
+
+        <!-- Type Name Field -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="Type Name" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+            <TextBox 
+                x:Name="TypeNameTextBox"
+                PlaceholderText="e.g., Pallet, Crate, Blocking"
+                MaxLength="100"
+                TextChanged="OnTypeNameChanged"/>
+            <TextBlock 
+                x:Name="ValidationTextBlock"
+                Text="Type name is required"
+                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                Visibility="Collapsed"
+                Style="{StaticResource CaptionTextBlockStyle}"/>
+        </StackPanel>
+
+        <!-- Icon Selection -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="Select Icon" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+            <TextBlock 
+                Text="Choose an icon to represent this type"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"/>
+            
+            <Button x:Name="SelectIconButton"
+                    Click="OnSelectIconClick"
+                    HorizontalAlignment="Stretch">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon x:Name="SelectedIconDisplay" 
+                              Glyph="&#xE7B8;" 
+                              FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                              FontSize="24"
+                              Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Click to select icon" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="SelectedIconNameText"
+                                   Text="Box"
+                                   FontSize="12"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</ContentDialog>

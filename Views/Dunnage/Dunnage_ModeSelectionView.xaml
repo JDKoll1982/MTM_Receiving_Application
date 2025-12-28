@@ -21,7 +21,10 @@
                             CornerRadius="8"
                             AutomationProperties.Name="Guided Wizard Mode">
                         <StackPanel Spacing="12">
-                            <FontIcon Glyph="&#xE81E;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <FontIcon Glyph="&#xE81E;" 
+                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                                      FontSize="48" 
+                                      Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
                             <TextBlock Text="Step-by-step workflow for dunnage receiving with validation at each stage." 
                                        Style="{StaticResource BodyTextBlockStyle}" 
@@ -51,7 +54,10 @@
                             CornerRadius="8"
                             AutomationProperties.Name="Manual Entry Mode">
                         <StackPanel Spacing="12">
-                            <FontIcon Glyph="&#xE8F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <FontIcon Glyph="&#xE8F0;" 
+                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                                      FontSize="48" 
+                                      Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
                             <TextBlock Text="Bulk grid entry for receiving multiple dunnage items simultaneously." 
                                        Style="{StaticResource BodyTextBlockStyle}" 
@@ -81,7 +87,10 @@
                             CornerRadius="8"
                             AutomationProperties.Name="Edit Mode">
                         <StackPanel Spacing="12">
-                            <FontIcon Glyph="&#xE70F;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <FontIcon Glyph="&#xE70F;" 
+                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                                      FontSize="48" 
+                                      Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Edit Mode" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
                             <TextBlock Text="Load historical dunnage records for editing and correction." 
                                        Style="{StaticResource BodyTextBlockStyle}" 

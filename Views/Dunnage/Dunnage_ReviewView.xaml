@@ -98,7 +98,10 @@
                 <StackPanel HorizontalAlignment="Center" 
                             Spacing="16"
                             Visibility="{x:Bind ViewModel.LoadCount, Mode=OneWay, Converter={StaticResource ZeroToVisibleConverter}}">
-                    <FontIcon Glyph="&#xE7C3;" FontSize="48" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <FontIcon Glyph="&#xE7C3;" 
+                              FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                              FontSize="48" 
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                     <TextBlock Text="No loads in session"
                                Style="{StaticResource SubtitleTextBlockStyle}"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>

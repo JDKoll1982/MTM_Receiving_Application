@@ -1,0 +1,128 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Views.Dunnage.Dunnage_PartSelectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
+    mc:Ignorable="d"
+    Loaded="OnLoaded">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">
+                <Run Text="Select Part - "/>
+                <Run Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
+            </TextBlock>
+            <TextBlock Text="Choose a part from the dropdown or add a new one."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Style="{StaticResource BodyTextBlockStyle}"/>
+        </StackPanel>
+
+        <!-- Inventory Notification -->
+        <InfoBar Grid.Row="1"
+                 IsOpen="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}"
+                 Severity="Warning"
+                 Message="{x:Bind ViewModel.InventoryNotificationMessage, Mode=OneWay}"
+                 Margin="0,0,0,16"/>
+
+        <!-- Part Selection Form -->
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="24" MaxWidth="800">
+                
+                <!-- Part Dropdown -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Select Part" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                    <ComboBox x:Name="PartComboBox"
+                              ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                              DisplayMemberPath="PartId"
+                              PlaceholderText="Choose a part..."
+                              HorizontalAlignment="Stretch"
+                              MinWidth="300"/>
+                </StackPanel>
+
+                <!-- Part Details Card -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20"
+                        Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay}">
+                    <Grid RowSpacing="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <TextBlock Grid.Row="0" 
+                                   Text="Part Details" 
+                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                        <!-- Details Grid -->
+                        <Grid Grid.Row="1" ColumnSpacing="24" RowSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Part ID -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                                       Text="Part ID:" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" 
+                                       Text="{x:Bind ViewModel.SelectedPart.PartId, Mode=OneWay}" 
+                                       FontWeight="SemiBold"/>
+
+                            <!-- Type -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" 
+                                       Text="Type:" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" 
+                                       Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
+                        </Grid>
+
+                        <!-- Inventory Method (if applicable) -->
+                        <StackPanel Grid.Row="2" 
+                                    Orientation="Horizontal" 
+                                    Spacing="8"
+                                    Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}">
+                            <FontIcon Glyph="&#xE946;" 
+                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                                      FontSize="16" 
+                                      Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                            <TextBlock Text="Inventory Method:" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="{x:Bind ViewModel.InventoryMethod, Mode=OneWay}" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Quick Add Part Button -->
+                <Button Command="{x:Bind ViewModel.QuickAddPartCommand}"
+                        HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE710;" FontSize="16"/>
+                        <TextBlock Text="Add New Part"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

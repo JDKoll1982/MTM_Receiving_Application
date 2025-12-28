@@ -245,15 +245,78 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task QuickAddPartAsync()
     {
-        // TODO: Implement Quick Add Part dialog with type pre-selected
-        _logger.LogInfo($"Quick Add Part requested for type {SelectedTypeName}", "PartSelection");
+        try
+        {
+            _logger.LogInfo($"Quick Add Part requested for type {SelectedTypeName}", "PartSelection");
 
-        await _errorHandler.HandleErrorAsync(
-            "Quick Add Part feature is not yet implemented",
-            Enum_ErrorSeverity.Info,
-            null,
-            true
-        );
+            // Show dialog with type pre-selected
+            var dialog = new Views.Dunnage.Dunnage_QuickAddPartDialog(SelectedTypeId, SelectedTypeName)
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot
+            };
+
+            if (dialog.XamlRoot == null)
+            {
+                _logger.LogInfo("Cannot show dialog: XamlRoot is null", "PartSelection");
+                return;
+            }
+
+            var result = await dialog.ShowAsync();
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                var partId = dialog.PartId;
+                var specValuesJson = dialog.SpecValuesJson;
+
+                _logger.LogInfo($"Adding new part: {partId} for type {SelectedTypeName}", "PartSelection");
+
+                // Create new part model
+                var newPart = new Model_DunnagePart
+                {
+                    PartId = partId,
+                    TypeId = SelectedTypeId,
+                    SpecValues = specValuesJson,
+                    DunnageTypeName = SelectedTypeName
+                };
+
+                // Insert new part
+                var insertResult = await _dunnageService.InsertPartAsync(newPart);
+
+                if (insertResult.IsSuccess)
+                {
+                    _logger.LogInfo($"Successfully added part: {partId}", "PartSelection");
+
+                    // Reload parts to show new part
+                    await LoadPartsAsync();
+
+                    // Auto-select the new part
+                    var addedPart = AvailableParts.FirstOrDefault(p => p.PartId == partId);
+                    if (addedPart != null)
+                    {
+                        SelectedPart = addedPart;
+                    }
+
+                    StatusMessage = $"Added new part: {partId}";
+                }
+                else
+                {
+                    await _errorHandler.HandleDaoErrorAsync(
+                        insertResult,
+                        nameof(QuickAddPartAsync),
+                        true
+                    );
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error adding new dunnage part",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
     }
 
     #endregion
