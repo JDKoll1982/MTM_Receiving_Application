@@ -193,11 +193,11 @@ public class Dunnage_TypeSelectionViewModel_Tests
         Assert.Equal(selectedType, _viewModel.SelectedType);
         Assert.Equal(5, mockSession.SelectedTypeId);
         Assert.Equal("Pallet", mockSession.SelectedTypeName);
-        
+
         _mockWorkflowService.Verify(
             w => w.GoToStep(Enum_DunnageWorkflowStep.PartSelection),
             Times.Once);
-        
+
         _mockLogger.Verify(
             l => l.LogInfo(It.IsAny<string>(), It.IsAny<string>()),
             Times.AtLeastOnce);
@@ -251,7 +251,7 @@ public class Dunnage_TypeSelectionViewModel_Tests
         _mockLogger.Verify(
             l => l.LogInfo(It.IsAny<string>(), It.IsAny<string>()),
             Times.AtLeastOnce);
-        
+
         _mockErrorHandler.Verify(
             e => e.HandleErrorAsync(
                 It.IsAny<string>(),

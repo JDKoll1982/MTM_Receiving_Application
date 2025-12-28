@@ -190,7 +190,7 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
             // Set in workflow session
             _workflowService.CurrentSession.SelectedTypeId = type.Id;
             _workflowService.CurrentSession.SelectedTypeName = type.TypeName;
-            
+
             // Navigate to part selection
             _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);
         }

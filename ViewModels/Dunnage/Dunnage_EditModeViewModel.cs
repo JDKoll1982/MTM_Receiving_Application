@@ -216,7 +216,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         if (SelectedLoads.Count == 0) return;
 
         var loadsToRemove = SelectedLoads.ToList();
-        
+
         foreach (var load in loadsToRemove)
         {
             FilteredLoads.Remove(load);

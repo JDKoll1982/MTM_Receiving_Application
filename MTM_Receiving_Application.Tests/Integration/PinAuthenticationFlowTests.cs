@@ -51,15 +51,15 @@ namespace MTM_Receiving_Application.Tests.Integration
             };
             await _daoUser.CreateNewUserAsync(newUser, "system");
 
-            var workstationConfig = new Model_WorkstationConfig 
-            { 
-                ComputerName = "SHARED-PC", 
-                WorkstationType = "shared_terminal" 
+            var workstationConfig = new Model_WorkstationConfig
+            {
+                ComputerName = "SHARED-PC",
+                WorkstationType = "shared_terminal"
             };
 
             // Act
             var authResult = await _authService.AuthenticateByPinAsync(username, pin);
-            
+
             Model_UserSession? session = null;
             if (authResult.Success && authResult.User != null)
             {

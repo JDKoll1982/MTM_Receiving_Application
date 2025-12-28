@@ -52,13 +52,13 @@ namespace MTM_Receiving_Application.Tests.Unit
             var user = new Model_User { WindowsUsername = "test", EmployeeNumber = 123 };
             var config = new Model_WorkstationConfig { ComputerName = "TEST-PC", WorkstationType = "personal_workstation" };
             var session = _sessionManager.CreateSession(user, config, "Windows");
-            
+
             // Manually set TimeoutDuration to a very small value to simulate timeout condition logic
             // Note: IsSessionTimedOut relies on TimeSinceLastActivity >= TimeoutDuration
             // We can't easily mock DateTime.Now inside the model without more refactoring,
             // but we can set TimeoutDuration to TimeSpan.Zero.
             session.TimeoutDuration = TimeSpan.Zero;
-            
+
             // Act
             // Wait a tiny bit to ensure TimeSinceLastActivity > 0
             System.Threading.Thread.Sleep(10);
@@ -109,7 +109,7 @@ namespace MTM_Receiving_Application.Tests.Unit
             var user = new Model_User { WindowsUsername = "test", EmployeeNumber = 123 };
             var config = new Model_WorkstationConfig { ComputerName = "TEST-PC", WorkstationType = "personal_workstation" };
             var session = _sessionManager.CreateSession(user, config, "Windows");
-            
+
             // Simulate some time passing (conceptually)
             var initialActivity = session.LastActivityTimestamp;
             System.Threading.Thread.Sleep(10); // Ensure clock ticks

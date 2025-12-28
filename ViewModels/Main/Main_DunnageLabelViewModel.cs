@@ -26,10 +26,10 @@ public partial class Main_DunnageLabelViewModel : Shared_BaseViewModel
     {
         _workflowService = workflowService;
         _workflowService.StepChanged += OnWorkflowStepChanged;
-        
+
         DunnageLines = new ObservableCollection<Model_DunnageLine>();
         _currentLine = new Model_DunnageLine();
-        
+
         // Initialize to Mode Selection
         IsModeSelectionVisible = true;
     }
@@ -40,7 +40,7 @@ public partial class Main_DunnageLabelViewModel : Shared_BaseViewModel
     private Model_DunnageLine _currentLine;
 
     #region Step Visibility Properties
-    
+
     [ObservableProperty]
     private bool _isModeSelectionVisible;
 

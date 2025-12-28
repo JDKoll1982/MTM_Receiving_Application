@@ -151,7 +151,7 @@ public class Dunnage_PartSelectionViewModel_Tests
     {
         // Arrange
         var part = new Model_DunnagePart { PartId = "P001", Description = "Test Part" };
-        
+
         _mockDunnageService.Setup(s => s.IsPartInventoriedAsync("P001"))
             .ReturnsAsync(true);
 
@@ -171,7 +171,7 @@ public class Dunnage_PartSelectionViewModel_Tests
     {
         // Arrange
         var part = new Model_DunnagePart { PartId = "P002", Description = "Non-Inventoried Part" };
-        
+
         _mockDunnageService.Setup(s => s.IsPartInventoriedAsync("P002"))
             .ReturnsAsync(false);
 

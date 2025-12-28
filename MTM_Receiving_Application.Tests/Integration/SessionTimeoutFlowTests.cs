@@ -36,7 +36,7 @@ namespace MTM_Receiving_Application.Tests.Integration
             var user = new Model_User { WindowsUsername = "test", EmployeeNumber = 123 };
             var config = new Model_WorkstationConfig { ComputerName = "TEST-PC", WorkstationType = "personal_workstation" };
             var session = _sessionManager.CreateSession(user, config, "Windows");
-            
+
             bool eventFired = false;
             _sessionManager.SessionTimedOut += (s, e) => eventFired = true;
 

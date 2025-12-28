@@ -87,7 +87,7 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
     private void AddAnother()
     {
         _logger.LogInfo("Adding another load, preserving session", "Review");
-        
+
         // Navigate back to Type Selection without clearing session
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
     }
@@ -160,7 +160,7 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
     private void Cancel()
     {
         _logger.LogInfo("Cancelling review, clearing session", "Review");
-        
+
         // Clear session and return to Mode Selection
         _workflowService.ClearSession();
         _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
