@@ -210,7 +210,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// </summary>
         private void ApplyDateFilter()
         {
-            if (_allLoads.Count == 0) return;
+            if (_allLoads.Count == 0)
+                return;
 
             FilterAndPaginate();
         }
@@ -243,8 +244,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             FilterStartDate = DateTime.Today.AddDays(-7);
             FilterEndDate = DateTime.Today;
-            if (CurrentDataSource == Enum_DataSourceType.History) await LoadFromHistoryAsync();
-            else FilterAndPaginate();
+            if (CurrentDataSource == Enum_DataSourceType.History)
+                await LoadFromHistoryAsync();
+            else
+                FilterAndPaginate();
         }
 
         /// <summary>
@@ -255,8 +258,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             FilterStartDate = DateTime.Today;
             FilterEndDate = DateTime.Today;
-            if (CurrentDataSource == Enum_DataSourceType.History) await LoadFromHistoryAsync();
-            else FilterAndPaginate();
+            if (CurrentDataSource == Enum_DataSourceType.History)
+                await LoadFromHistoryAsync();
+            else
+                FilterAndPaginate();
         }
 
         /// <summary>
@@ -270,8 +275,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             var end = start.AddDays(6);
             FilterStartDate = start;
             FilterEndDate = end;
-            if (CurrentDataSource == Enum_DataSourceType.History) await LoadFromHistoryAsync();
-            else FilterAndPaginate();
+            if (CurrentDataSource == Enum_DataSourceType.History)
+                await LoadFromHistoryAsync();
+            else
+                FilterAndPaginate();
         }
 
         /// <summary>
@@ -283,8 +290,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             var today = DateTime.Today;
             FilterStartDate = new DateTime(today.Year, today.Month, 1);
             FilterEndDate = FilterStartDate.AddMonths(1).AddDays(-1);
-            if (CurrentDataSource == Enum_DataSourceType.History) await LoadFromHistoryAsync();
-            else FilterAndPaginate();
+            if (CurrentDataSource == Enum_DataSourceType.History)
+                await LoadFromHistoryAsync();
+            else
+                FilterAndPaginate();
         }
 
         /// <summary>
@@ -297,8 +306,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             int quarter = (today.Month - 1) / 3 + 1;
             FilterStartDate = new DateTime(today.Year, 3 * quarter - 2, 1);
             FilterEndDate = FilterStartDate.AddMonths(3).AddDays(-1);
-            if (CurrentDataSource == Enum_DataSourceType.History) await LoadFromHistoryAsync();
-            else FilterAndPaginate();
+            if (CurrentDataSource == Enum_DataSourceType.History)
+                await LoadFromHistoryAsync();
+            else
+                FilterAndPaginate();
         }
 
         /// <summary>
@@ -309,8 +320,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             FilterStartDate = DateTime.Today.AddYears(-1);
             FilterEndDate = DateTime.Today;
-            if (CurrentDataSource == Enum_DataSourceType.History) await LoadFromHistoryAsync();
-            else FilterAndPaginate();
+            if (CurrentDataSource == Enum_DataSourceType.History)
+                await LoadFromHistoryAsync();
+            else
+                FilterAndPaginate();
         }
 
         /// <summary>
@@ -585,12 +598,14 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
             if (anyUnselected)
             {
-                foreach (var load in Loads) load.IsSelected = true;
+                foreach (var load in Loads)
+                    load.IsSelected = true;
                 SelectAllButtonText = "Deselect All";
             }
             else
             {
-                foreach (var load in Loads) load.IsSelected = false;
+                foreach (var load in Loads)
+                    load.IsSelected = false;
                 SelectAllButtonText = "Select All";
             }
         }
@@ -668,7 +683,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
 
                 var validationErrors = ValidateLoads(_filteredLoads);
-                if (validationErrors.Any())
+                if (validationErrors.Count > 0)
                 {
                     var errorMessage = string.Join("\n", validationErrors);
                     _logger.LogWarning($"Edit mode validation failed: {validationErrors.Count} errors");
