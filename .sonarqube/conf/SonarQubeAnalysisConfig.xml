@@ -214,7 +214,7 @@ Automatic Analysis will not be available between 07:00 CET and 09:00 CET</Proper
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">https://sonarcloud.io</Property>
-    <Property Name="sonar.branch.name">008-dunnage-ui</Property>
+    <Property Name="sonar.branch.name">master</Property>
     <Property Name="sonar.cs.vscoveragexml.reportsPaths">coverage.xml</Property>
     <Property Name="sonar.organization">john-koll</Property>
     <Property Name="sonar.exclusions">coverage.xml</Property>

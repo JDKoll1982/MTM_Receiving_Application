@@ -30161,110 +30161,7 @@ ViewModels$ .
 ôô  !
 }
 öö 
-}ùù «
-kC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_CarrierDeliveryLabelViewModel.cs
-	namespace
-
- 	%
-MTM_Receiving_Application
-
-
- #
-.
-
-# $
-
-ViewModels
-
-$ .
-.
-
-. /
-Main
-
-/ 3
-;
-
-3 4
-public 
-partial 
-class .
-"Main_CarrierDeliveryLabelViewModel 7
-:8 9 
-Shared_BaseViewModel: N
-{ 
-public 
-.
-"Main_CarrierDeliveryLabelViewModel -
-(- .!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-: 	
-base
- 
-( 
-errorHandler 
-, 
-logger #
-)# $
-{ !
-CarrierDeliveryLabels 
-= 
-new  # 
-ObservableCollection$ 8
-<8 9&
-Model_CarrierDeliveryLabel9 S
->S T
-(T U
-)U V
-;V W
-_currentLabel 
-= 
-new &
-Model_CarrierDeliveryLabel 6
-(6 7
-)7 8
-;8 9
-} 
-public 
- 
-ObservableCollection 
-<  &
-Model_CarrierDeliveryLabel  :
->: ;!
-CarrierDeliveryLabels< Q
-{R S
-getT W
-;W X
-}Y Z
-[ 
-ObservableProperty 
-] 
-private &
-Model_CarrierDeliveryLabel &
-_currentLabel' 4
-;4 5
-[ 
-RelayCommand 
-] 
-private   
-async   
-Task   
-AddLabelAsync   $
-(  $ %
-)  % &
-{!! 
-await## 
-Task## 
-.## 
-CompletedTask##  
-;##  !
-}$$ 
-}%% ˚
+}ùù ˚
 fC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Helpers\SpecInputViewModel.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -32692,7 +32589,383 @@ _csvWritervv" ,
 ¶¶I J
 }
 ßß 
-}™™ —î
+}™™ â6
+jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_QuantityEntryViewModel.cs
+	namespace		 	%
+MTM_Receiving_Application		
+ #
+.		# $
+
+ViewModels		$ .
+.		. /
+Dunnage		/ 6
+;		6 7
+public 
+partial 
+class *
+Dunnage_QuantityEntryViewModel 3
+:4 5 
+Shared_BaseViewModel6 J
+{ 
+private 
+readonly $
+IService_DunnageWorkflow -
+_workflowService. >
+;> ?
+public 
+*
+Dunnage_QuantityEntryViewModel )
+() *$
+IService_DunnageWorkflow  
+workflowService! 0
+,0 1!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+:( )
+base* .
+(. /
+errorHandler/ ;
+,; <
+logger= C
+)C D
+{ 
+_workflowService 
+= 
+workflowService *
+;* +
+} 
+[ 
+ObservableProperty 
+] 
+[ $
+NotifyPropertyChangedFor 
+( 
+nameof $
+($ %
+IsValid% ,
+), -
+)- .
+]. /
+private 
+int 
+	_quantity 
+= 
+$num 
+; 
+[   
+ObservableProperty   
+]   
+private!! 
+string!! 
+_selectedTypeName!! $
+=!!% &
+string!!' -
+.!!- .
+Empty!!. 3
+;!!3 4
+[## 
+ObservableProperty## 
+]## 
+private$$ 
+string$$ 
+_selectedPartName$$ $
+=$$% &
+string$$' -
+.$$- .
+Empty$$. 3
+;$$3 4
+[&& 
+ObservableProperty&& 
+]&& 
+private'' 
+string'' 
+_validationMessage'' %
+=''& '
+string''( .
+.''. /
+Empty''/ 4
+;''4 5
+public,, 
+
+bool,, 
+IsValid,, 
+=>,, 
+Quantity,, #
+>,,$ %
+$num,,& '
+;,,' (
+public55 
+
+void55 
+LoadContextData55 
+(55  
+)55  !
+{66 
+try77 
+{88 	
+SelectedTypeName99 
+=99 
+_workflowService99 /
+.99/ 0
+CurrentSession990 >
+.99> ?
+SelectedTypeName99? O
+??99P R
+string99S Y
+.99Y Z
+Empty99Z _
+;99_ `
+SelectedPartName:: 
+=:: 
+_workflowService:: /
+.::/ 0
+CurrentSession::0 >
+.::> ?
+SelectedPart::? K
+?::K L
+.::L M
+PartId::M S
+??::T V
+string::W ]
+.::] ^
+Empty::^ c
+;::c d
+_logger<< 
+.<< 
+LogInfo<< 
+(<< 
+$"<< 
+$str<< 3
+{<<3 4
+SelectedTypeName<<4 D
+}<<D E
+$str<<E L
+{<<L M
+SelectedPartName<<M ]
+}<<] ^
+"<<^ _
+,<<_ `
+$str<<a p
+)<<p q
+;<<q r
+}== 	
+catch>> 
+(>> 
+	Exception>> 
+ex>> 
+)>> 
+{?? 	
+_logger@@ 
+.@@ 
+LogError@@ 
+(@@ 
+$"@@ 
+$str@@ ;
+{@@; <
+ex@@< >
+.@@> ?
+Message@@? F
+}@@F G
+"@@G H
+,@@H I
+ex@@J L
+,@@L M
+$str@@N ]
+)@@] ^
+;@@^ _
+}AA 	
+}BB 
+partialHH 
+voidHH 
+OnQuantityChangedHH "
+(HH" #
+intHH# &
+valueHH' ,
+)HH, -
+{II 
+ValidateQuantityJJ 
+(JJ 
+)JJ 
+;JJ 
+GoNextCommandKK 
+.KK #
+NotifyCanExecuteChangedKK -
+(KK- .
+)KK. /
+;KK/ 0
+}LL 
+privateNN 
+voidNN 
+ValidateQuantityNN !
+(NN! "
+)NN" #
+{OO 
+ifPP 
+
+(PP 
+QuantityPP 
+<=PP 
+$numPP 
+)PP 
+{QQ 	
+ValidationMessageRR 
+=RR 
+$strRR  A
+;RRA B
+}SS 	
+elseTT 
+{UU 	
+ValidationMessageVV 
+=VV 
+stringVV  &
+.VV& '
+EmptyVV' ,
+;VV, -
+}WW 	
+}XX 
+[^^ 
+RelayCommand^^ 
+]^^ 
+private__ 
+void__ 
+GoBack__ 
+(__ 
+)__ 
+{`` 
+_loggeraa 
+.aa 
+LogInfoaa 
+(aa 
+$straa ;
+,aa; <
+$straa= L
+)aaL M
+;aaM N
+_workflowServicebb 
+.bb 
+GoToStepbb !
+(bb! "$
+Enum_DunnageWorkflowStepbb" :
+.bb: ;
+PartSelectionbb; H
+)bbH I
+;bbI J
+}cc 
+[ee 
+RelayCommandee 
+(ee 
+
+CanExecuteee 
+=ee 
+nameofee %
+(ee% &
+IsValidee& -
+)ee- .
+)ee. /
+]ee/ 0
+privateff 
+asyncff 
+Taskff 
+GoNextAsyncff "
+(ff" #
+)ff# $
+{gg 
+ifhh 
+
+(hh 
+!hh 
+IsValidhh 
+||hh 
+IsBusyhh 
+)hh 
+returnhh  &
+;hh& '
+tryjj 
+{kk 	
+IsBusyll 
+=ll 
+truell 
+;ll 
+StatusMessagemm 
+=mm 
+$strmm 0
+;mm0 1
+_workflowServicepp 
+.pp 
+CurrentSessionpp +
+.pp+ ,
+Quantitypp, 4
+=pp5 6
+Quantitypp7 ?
+;pp? @
+_loggerrr 
+.rr 
+LogInforr 
+(rr 
+$"rr 
+$strrr .
+{rr. /
+Quantityrr/ 7
+}rr7 8
+"rr8 9
+,rr9 :
+$strrr; J
+)rrJ K
+;rrK L
+_workflowServiceuu 
+.uu 
+GoToStepuu %
+(uu% &$
+Enum_DunnageWorkflowStepuu& >
+.uu> ?
+DetailsEntryuu? K
+)uuK L
+;uuL M
+}vv 	
+catchww 
+(ww 
+	Exceptionww 
+exww 
+)ww 
+{xx 	
+awaityy 
+_errorHandleryy 
+.yy  
+HandleErrorAsyncyy  0
+(yy0 1
+$strzz '
+,zz' (
+Enum_ErrorSeverity{{ "
+.{{" #
+Error{{# (
+,{{( )
+ex|| 
+,|| 
+true}} 
+)~~ 
+;~~ 
+} 	
+finally
+ÄÄ 
+{
+ÅÅ 	
+IsBusy
+ÇÇ 
+=
+ÇÇ 
+false
+ÇÇ 
+;
+ÇÇ 
+}
+ÉÉ 	
+}
+ÑÑ 
+}áá —î
 jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_PartSelectionViewModel.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -34254,7 +34527,372 @@ SpecValues
 øø 	
 }
 ¿¿ 
-}√√ Üı
+}√√ «
+kC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_CarrierDeliveryLabelViewModel.cs
+	namespace
+
+ 	%
+MTM_Receiving_Application
+
+
+ #
+.
+
+# $
+
+ViewModels
+
+$ .
+.
+
+. /
+Main
+
+/ 3
+;
+
+3 4
+public 
+partial 
+class .
+"Main_CarrierDeliveryLabelViewModel 7
+:8 9 
+Shared_BaseViewModel: N
+{ 
+public 
+.
+"Main_CarrierDeliveryLabelViewModel -
+(- .!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+: 	
+base
+ 
+( 
+errorHandler 
+, 
+logger #
+)# $
+{ !
+CarrierDeliveryLabels 
+= 
+new  # 
+ObservableCollection$ 8
+<8 9&
+Model_CarrierDeliveryLabel9 S
+>S T
+(T U
+)U V
+;V W
+_currentLabel 
+= 
+new &
+Model_CarrierDeliveryLabel 6
+(6 7
+)7 8
+;8 9
+} 
+public 
+ 
+ObservableCollection 
+<  &
+Model_CarrierDeliveryLabel  :
+>: ;!
+CarrierDeliveryLabels< Q
+{R S
+getT W
+;W X
+}Y Z
+[ 
+ObservableProperty 
+] 
+private &
+Model_CarrierDeliveryLabel &
+_currentLabel' 4
+;4 5
+[ 
+RelayCommand 
+] 
+private   
+async   
+Task   
+AddLabelAsync   $
+(  $ %
+)  % &
+{!! 
+await## 
+Task## 
+.## 
+CompletedTask##  
+;##  !
+}$$ 
+}%% Ü(
+jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ModeSelectionViewModel.cs
+	namespace		 	%
+MTM_Receiving_Application		
+ #
+.		# $
+
+ViewModels		$ .
+.		. /
+Dunnage		/ 6
+;		6 7
+public 
+partial 
+class *
+Dunnage_ModeSelectionViewModel 3
+:4 5 
+Shared_BaseViewModel6 J
+{ 
+private 
+readonly $
+IService_DunnageWorkflow -
+_workflowService. >
+;> ?
+public 
+*
+Dunnage_ModeSelectionViewModel )
+() *$
+IService_DunnageWorkflow  
+workflowService! 0
+,0 1!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+:( )
+base* .
+(. /
+errorHandler/ ;
+,; <
+logger= C
+)C D
+{ 
+_workflowService 
+= 
+workflowService *
+;* +
+} 
+[ 
+ObservableProperty 
+] 
+private 
+bool  
+_isGuidedModeDefault %
+;% &
+[ 
+ObservableProperty 
+] 
+private   
+bool    
+_isManualModeDefault   %
+;  % &
+["" 
+ObservableProperty"" 
+]"" 
+private## 
+bool## 
+_isEditModeDefault## #
+;### $
+[)) 
+RelayCommand)) 
+])) 
+private** 
+void** 
+SelectGuidedMode** !
+(**! "
+)**" #
+{++ 
+_logger,, 
+.,, 
+LogInfo,, 
+(,, 
+$str,, :
+),,: ;
+;,,; <
+_workflowService-- 
+.-- 
+GoToStep-- !
+(--! "$
+Enum_DunnageWorkflowStep--" :
+.--: ;
+TypeSelection--; H
+)--H I
+;--I J
+}.. 
+[00 
+RelayCommand00 
+]00 
+private11 
+void11 
+SelectManualMode11 !
+(11! "
+)11" #
+{22 
+_logger33 
+.33 
+LogInfo33 
+(33 
+$str33 9
+)339 :
+;33: ;
+_workflowService44 
+.44 
+GoToStep44 !
+(44! "$
+Enum_DunnageWorkflowStep44" :
+.44: ;
+ManualEntry44; F
+)44F G
+;44G H
+}55 
+[77 
+RelayCommand77 
+]77 
+private88 
+void88 
+SelectEditMode88 
+(88  
+)88  !
+{99 
+_logger:: 
+.:: 
+LogInfo:: 
+(:: 
+$str:: 1
+)::1 2
+;::2 3
+_workflowService;; 
+.;; 
+GoToStep;; !
+(;;! "$
+Enum_DunnageWorkflowStep;;" :
+.;;: ;
+EditMode;;; C
+);;C D
+;;;D E
+}<< 
+[BB 
+RelayCommandBB 
+]BB 
+privateCC 
+voidCC 
+SetGuidedAsDefaultCC #
+(CC# $
+boolCC$ (
+	isCheckedCC) 2
+)CC2 3
+{DD 
+IsGuidedModeDefaultEE 
+=EE 
+	isCheckedEE '
+;EE' (
+ifFF 
+
+(FF 
+	isCheckedFF 
+)FF 
+{GG 	
+IsManualModeDefaultHH 
+=HH  !
+falseHH" '
+;HH' (
+IsEditModeDefaultII 
+=II 
+falseII  %
+;II% &
+_loggerKK 
+.KK 
+LogInfoKK 
+(KK 
+$strKK 8
+)KK8 9
+;KK9 :
+}LL 	
+}MM 
+[OO 
+RelayCommandOO 
+]OO 
+privatePP 
+voidPP 
+SetManualAsDefaultPP #
+(PP# $
+boolPP$ (
+	isCheckedPP) 2
+)PP2 3
+{QQ 
+IsManualModeDefaultRR 
+=RR 
+	isCheckedRR '
+;RR' (
+ifSS 
+
+(SS 
+	isCheckedSS 
+)SS 
+{TT 	
+IsGuidedModeDefaultUU 
+=UU  !
+falseUU" '
+;UU' (
+IsEditModeDefaultVV 
+=VV 
+falseVV  %
+;VV% &
+_loggerXX 
+.XX 
+LogInfoXX 
+(XX 
+$strXX 8
+)XX8 9
+;XX9 :
+}YY 	
+}ZZ 
+[\\ 
+RelayCommand\\ 
+]\\ 
+private]] 
+void]] 
+SetEditAsDefault]] !
+(]]! "
+bool]]" &
+	isChecked]]' 0
+)]]0 1
+{^^ 
+IsEditModeDefault__ 
+=__ 
+	isChecked__ %
+;__% &
+if`` 
+
+(`` 
+	isChecked`` 
+)`` 
+{aa 	
+IsGuidedModeDefaultbb 
+=bb  !
+falsebb" '
+;bb' (
+IsManualModeDefaultcc 
+=cc  !
+falsecc" '
+;cc' (
+_loggeree 
+.ee 
+LogInfoee 
+(ee 
+$stree 6
+)ee6 7
+;ee7 8
+}ff 	
+}gg 
+}jj Üı
 hC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ManualEntryViewModel.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -43203,645 +43841,7 @@ _csvWriter
 ´´ 	
 }
 ¨¨ 
-}≠≠ â6
-jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_QuantityEntryViewModel.cs
-	namespace		 	%
-MTM_Receiving_Application		
- #
-.		# $
-
-ViewModels		$ .
-.		. /
-Dunnage		/ 6
-;		6 7
-public 
-partial 
-class *
-Dunnage_QuantityEntryViewModel 3
-:4 5 
-Shared_BaseViewModel6 J
-{ 
-private 
-readonly $
-IService_DunnageWorkflow -
-_workflowService. >
-;> ?
-public 
-*
-Dunnage_QuantityEntryViewModel )
-() *$
-IService_DunnageWorkflow  
-workflowService! 0
-,0 1!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-:( )
-base* .
-(. /
-errorHandler/ ;
-,; <
-logger= C
-)C D
-{ 
-_workflowService 
-= 
-workflowService *
-;* +
-} 
-[ 
-ObservableProperty 
-] 
-[ $
-NotifyPropertyChangedFor 
-( 
-nameof $
-($ %
-IsValid% ,
-), -
-)- .
-]. /
-private 
-int 
-	_quantity 
-= 
-$num 
-; 
-[   
-ObservableProperty   
-]   
-private!! 
-string!! 
-_selectedTypeName!! $
-=!!% &
-string!!' -
-.!!- .
-Empty!!. 3
-;!!3 4
-[## 
-ObservableProperty## 
-]## 
-private$$ 
-string$$ 
-_selectedPartName$$ $
-=$$% &
-string$$' -
-.$$- .
-Empty$$. 3
-;$$3 4
-[&& 
-ObservableProperty&& 
-]&& 
-private'' 
-string'' 
-_validationMessage'' %
-=''& '
-string''( .
-.''. /
-Empty''/ 4
-;''4 5
-public,, 
-
-bool,, 
-IsValid,, 
-=>,, 
-Quantity,, #
->,,$ %
-$num,,& '
-;,,' (
-public55 
-
-void55 
-LoadContextData55 
-(55  
-)55  !
-{66 
-try77 
-{88 	
-SelectedTypeName99 
-=99 
-_workflowService99 /
-.99/ 0
-CurrentSession990 >
-.99> ?
-SelectedTypeName99? O
-??99P R
-string99S Y
-.99Y Z
-Empty99Z _
-;99_ `
-SelectedPartName:: 
-=:: 
-_workflowService:: /
-.::/ 0
-CurrentSession::0 >
-.::> ?
-SelectedPart::? K
-?::K L
-.::L M
-PartId::M S
-??::T V
-string::W ]
-.::] ^
-Empty::^ c
-;::c d
-_logger<< 
-.<< 
-LogInfo<< 
-(<< 
-$"<< 
-$str<< 3
-{<<3 4
-SelectedTypeName<<4 D
-}<<D E
-$str<<E L
-{<<L M
-SelectedPartName<<M ]
-}<<] ^
-"<<^ _
-,<<_ `
-$str<<a p
-)<<p q
-;<<q r
-}== 	
-catch>> 
-(>> 
-	Exception>> 
-ex>> 
-)>> 
-{?? 	
-_logger@@ 
-.@@ 
-LogError@@ 
-(@@ 
-$"@@ 
-$str@@ ;
-{@@; <
-ex@@< >
-.@@> ?
-Message@@? F
-}@@F G
-"@@G H
-,@@H I
-ex@@J L
-,@@L M
-$str@@N ]
-)@@] ^
-;@@^ _
-}AA 	
-}BB 
-partialHH 
-voidHH 
-OnQuantityChangedHH "
-(HH" #
-intHH# &
-valueHH' ,
-)HH, -
-{II 
-ValidateQuantityJJ 
-(JJ 
-)JJ 
-;JJ 
-GoNextCommandKK 
-.KK #
-NotifyCanExecuteChangedKK -
-(KK- .
-)KK. /
-;KK/ 0
-}LL 
-privateNN 
-voidNN 
-ValidateQuantityNN !
-(NN! "
-)NN" #
-{OO 
-ifPP 
-
-(PP 
-QuantityPP 
-<=PP 
-$numPP 
-)PP 
-{QQ 	
-ValidationMessageRR 
-=RR 
-$strRR  A
-;RRA B
-}SS 	
-elseTT 
-{UU 	
-ValidationMessageVV 
-=VV 
-stringVV  &
-.VV& '
-EmptyVV' ,
-;VV, -
-}WW 	
-}XX 
-[^^ 
-RelayCommand^^ 
-]^^ 
-private__ 
-void__ 
-GoBack__ 
-(__ 
-)__ 
-{`` 
-_loggeraa 
-.aa 
-LogInfoaa 
-(aa 
-$straa ;
-,aa; <
-$straa= L
-)aaL M
-;aaM N
-_workflowServicebb 
-.bb 
-GoToStepbb !
-(bb! "$
-Enum_DunnageWorkflowStepbb" :
-.bb: ;
-PartSelectionbb; H
-)bbH I
-;bbI J
-}cc 
-[ee 
-RelayCommandee 
-(ee 
-
-CanExecuteee 
-=ee 
-nameofee %
-(ee% &
-IsValidee& -
-)ee- .
-)ee. /
-]ee/ 0
-privateff 
-asyncff 
-Taskff 
-GoNextAsyncff "
-(ff" #
-)ff# $
-{gg 
-ifhh 
-
-(hh 
-!hh 
-IsValidhh 
-||hh 
-IsBusyhh 
-)hh 
-returnhh  &
-;hh& '
-tryjj 
-{kk 	
-IsBusyll 
-=ll 
-truell 
-;ll 
-StatusMessagemm 
-=mm 
-$strmm 0
-;mm0 1
-_workflowServicepp 
-.pp 
-CurrentSessionpp +
-.pp+ ,
-Quantitypp, 4
-=pp5 6
-Quantitypp7 ?
-;pp? @
-_loggerrr 
-.rr 
-LogInforr 
-(rr 
-$"rr 
-$strrr .
-{rr. /
-Quantityrr/ 7
-}rr7 8
-"rr8 9
-,rr9 :
-$strrr; J
-)rrJ K
-;rrK L
-_workflowServiceuu 
-.uu 
-GoToStepuu %
-(uu% &$
-Enum_DunnageWorkflowStepuu& >
-.uu> ?
-DetailsEntryuu? K
-)uuK L
-;uuL M
-}vv 	
-catchww 
-(ww 
-	Exceptionww 
-exww 
-)ww 
-{xx 	
-awaityy 
-_errorHandleryy 
-.yy  
-HandleErrorAsyncyy  0
-(yy0 1
-$strzz '
-,zz' (
-Enum_ErrorSeverity{{ "
-.{{" #
-Error{{# (
-,{{( )
-ex|| 
-,|| 
-true}} 
-)~~ 
-;~~ 
-} 	
-finally
-ÄÄ 
-{
-ÅÅ 	
-IsBusy
-ÇÇ 
-=
-ÇÇ 
-false
-ÇÇ 
-;
-ÇÇ 
-}
-ÉÉ 	
-}
-ÑÑ 
-}áá Ü(
-jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ModeSelectionViewModel.cs
-	namespace		 	%
-MTM_Receiving_Application		
- #
-.		# $
-
-ViewModels		$ .
-.		. /
-Dunnage		/ 6
-;		6 7
-public 
-partial 
-class *
-Dunnage_ModeSelectionViewModel 3
-:4 5 
-Shared_BaseViewModel6 J
-{ 
-private 
-readonly $
-IService_DunnageWorkflow -
-_workflowService. >
-;> ?
-public 
-*
-Dunnage_ModeSelectionViewModel )
-() *$
-IService_DunnageWorkflow  
-workflowService! 0
-,0 1!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-:( )
-base* .
-(. /
-errorHandler/ ;
-,; <
-logger= C
-)C D
-{ 
-_workflowService 
-= 
-workflowService *
-;* +
-} 
-[ 
-ObservableProperty 
-] 
-private 
-bool  
-_isGuidedModeDefault %
-;% &
-[ 
-ObservableProperty 
-] 
-private   
-bool    
-_isManualModeDefault   %
-;  % &
-["" 
-ObservableProperty"" 
-]"" 
-private## 
-bool## 
-_isEditModeDefault## #
-;### $
-[)) 
-RelayCommand)) 
-])) 
-private** 
-void** 
-SelectGuidedMode** !
-(**! "
-)**" #
-{++ 
-_logger,, 
-.,, 
-LogInfo,, 
-(,, 
-$str,, :
-),,: ;
-;,,; <
-_workflowService-- 
-.-- 
-GoToStep-- !
-(--! "$
-Enum_DunnageWorkflowStep--" :
-.--: ;
-TypeSelection--; H
-)--H I
-;--I J
-}.. 
-[00 
-RelayCommand00 
-]00 
-private11 
-void11 
-SelectManualMode11 !
-(11! "
-)11" #
-{22 
-_logger33 
-.33 
-LogInfo33 
-(33 
-$str33 9
-)339 :
-;33: ;
-_workflowService44 
-.44 
-GoToStep44 !
-(44! "$
-Enum_DunnageWorkflowStep44" :
-.44: ;
-ManualEntry44; F
-)44F G
-;44G H
-}55 
-[77 
-RelayCommand77 
-]77 
-private88 
-void88 
-SelectEditMode88 
-(88  
-)88  !
-{99 
-_logger:: 
-.:: 
-LogInfo:: 
-(:: 
-$str:: 1
-)::1 2
-;::2 3
-_workflowService;; 
-.;; 
-GoToStep;; !
-(;;! "$
-Enum_DunnageWorkflowStep;;" :
-.;;: ;
-EditMode;;; C
-);;C D
-;;;D E
-}<< 
-[BB 
-RelayCommandBB 
-]BB 
-privateCC 
-voidCC 
-SetGuidedAsDefaultCC #
-(CC# $
-boolCC$ (
-	isCheckedCC) 2
-)CC2 3
-{DD 
-IsGuidedModeDefaultEE 
-=EE 
-	isCheckedEE '
-;EE' (
-ifFF 
-
-(FF 
-	isCheckedFF 
-)FF 
-{GG 	
-IsManualModeDefaultHH 
-=HH  !
-falseHH" '
-;HH' (
-IsEditModeDefaultII 
-=II 
-falseII  %
-;II% &
-_loggerKK 
-.KK 
-LogInfoKK 
-(KK 
-$strKK 8
-)KK8 9
-;KK9 :
-}LL 	
-}MM 
-[OO 
-RelayCommandOO 
-]OO 
-privatePP 
-voidPP 
-SetManualAsDefaultPP #
-(PP# $
-boolPP$ (
-	isCheckedPP) 2
-)PP2 3
-{QQ 
-IsManualModeDefaultRR 
-=RR 
-	isCheckedRR '
-;RR' (
-ifSS 
-
-(SS 
-	isCheckedSS 
-)SS 
-{TT 	
-IsGuidedModeDefaultUU 
-=UU  !
-falseUU" '
-;UU' (
-IsEditModeDefaultVV 
-=VV 
-falseVV  %
-;VV% &
-_loggerXX 
-.XX 
-LogInfoXX 
-(XX 
-$strXX 8
-)XX8 9
-;XX9 :
-}YY 	
-}ZZ 
-[\\ 
-RelayCommand\\ 
-]\\ 
-private]] 
-void]] 
-SetEditAsDefault]] !
-(]]! "
-bool]]" &
-	isChecked]]' 0
-)]]0 1
-{^^ 
-IsEditModeDefault__ 
-=__ 
-	isChecked__ %
-;__% &
-if`` 
-
-(`` 
-	isChecked`` 
-)`` 
-{aa 	
-IsGuidedModeDefaultbb 
-=bb  !
-falsebb" '
-;bb' (
-IsManualModeDefaultcc 
-=cc  !
-falsecc" '
-;cc' (
-_loggeree 
-.ee 
-LogInfoee 
-(ee 
-$stree 6
-)ee6 7
-;ee7 8
-}ff 	
-}gg 
-}jj ô
+}≠≠ ô
 PC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Window.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -43898,438 +43898,7 @@ MainWindow
 
 0 1
 } 
-}  7
-TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Pagination.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Services$ ,
-{ 
-public 
-
-class 
-Service_Pagination #
-:$ %
-IService_Pagination& 9
-{		 
-private
-
- 
-IEnumerable
-
- 
-<
-
- 
-object
-
- "
->
-
-" #
-?
-
-# $
-_source
-
-% ,
-;
-
-, -
-private 
-int 
-_currentPage  
-=! "
-$num# $
-;$ %
-private 
-int 
-	_pageSize 
-= 
-$num  "
-;" #
-public 
-int 
-CurrentPage 
-=> !
-_currentPage" .
-;. /
-public 
-int 
-
-TotalPages 
-{ 	
-get 
-{ 
-if 
-( 
-_source 
-== 
-null #
-||$ &
-!' (
-_source( /
-./ 0
-Any0 3
-(3 4
-)4 5
-)5 6
-return7 =
-$num> ?
-;? @
-return 
-( 
-int 
-) 
-Math  
-.  !
-Ceiling! (
-(( )
-() *
-double* 0
-)0 1
-
-TotalItems1 ;
-/< =
-PageSize> F
-)F G
-;G H
-} 
-} 	
-public 
-int 
-PageSize 
-{ 	
-get 
-=> 
-	_pageSize 
-; 
-set 
-{ 
-if 
-( 
-	_pageSize 
-!=  
-value! &
-)& '
-{ 
-	_pageSize   
-=   
-value    %
-;  % &
-_currentPage!!  
-=!!! "
-$num!!# $
-;!!$ %
-OnPageChanged"" !
-(""! "
-)""" #
-;""# $
-}## 
-}$$ 
-}%% 	
-public'' 
-int'' 
-
-TotalItems'' 
-=>''  
-_source''! (
-?''( )
-.'') *
-Count''* /
-(''/ 0
-)''0 1
-??''2 4
-$num''5 6
-;''6 7
-public)) 
-bool)) 
-HasNextPage)) 
-=>))  "
-CurrentPage))# .
-<))/ 0
-
-TotalPages))1 ;
-;)); <
-public++ 
-bool++ 
-HasPreviousPage++ #
-=>++$ &
-CurrentPage++' 2
->++3 4
-$num++5 6
-;++6 7
-public-- 
-event-- 
-EventHandler-- !
-?--! "
-PageChanged--# .
-;--. /
-public// 
-void// 
-	SetSource// 
-<// 
-T// 
->//  
-(//  !
-IEnumerable//! ,
-<//, -
-T//- .
->//. /
-source//0 6
-)//6 7
-{00 	
-_source11 
-=11 
-source11 
-?11 
-.11 
-Cast11 "
-<11" #
-object11# )
->11) *
-(11* +
-)11+ ,
-??11- /
-
-Enumerable110 :
-.11: ;
-Empty11; @
-<11@ A
-object11A G
->11G H
-(11H I
-)11I J
-;11J K
-_currentPage22 
-=22 
-$num22 
-;22 
-OnPageChanged33 
-(33 
-)33 
-;33 
-}44 	
-public66 
-IEnumerable66 
-<66 
-T66 
->66 
-GetCurrentPageItems66 1
-<661 2
-T662 3
->663 4
-(664 5
-)665 6
-{77 	
-if88 
-(88 
-_source88 
-==88 
-null88 
-)88  
-return88! '
-
-Enumerable88( 2
-.882 3
-Empty883 8
-<888 9
-T889 :
->88: ;
-(88; <
-)88< =
-;88= >
-return:: 
-_source:: 
-.;; 
-Skip;; 
-(;; 
-(;; 
-CurrentPage;; "
--;;# $
-$num;;% &
-);;& '
-*;;( )
-PageSize;;* 2
-);;2 3
-.<< 
-Take<< 
-(<< 
-PageSize<< 
-)<< 
-.== 
-Cast== 
-<== 
-T== 
->== 
-(== 
-)== 
-;== 
-}>> 	
-public@@ 
-void@@ 
-NextPage@@ 
-(@@ 
-)@@ 
-{AA 	
-ifBB 
-(BB 
-HasNextPageBB 
-)BB 
-{CC 
-_currentPageDD 
-++DD 
-;DD 
-OnPageChangedEE 
-(EE 
-)EE 
-;EE  
-}FF 
-}GG 	
-publicII 
-voidII 
-PreviousPageII  
-(II  !
-)II! "
-{JJ 	
-ifKK 
-(KK 
-HasPreviousPageKK 
-)KK  
-{LL 
-_currentPageMM 
---MM 
-;MM 
-OnPageChangedNN 
-(NN 
-)NN 
-;NN  
-}OO 
-}PP 	
-publicRR 
-voidRR 
-	FirstPageRR 
-(RR 
-)RR 
-{SS 	
-ifTT 
-(TT 
-_currentPageTT 
-!=TT 
-$numTT  !
-)TT! "
-{UU 
-_currentPageVV 
-=VV 
-$numVV  
-;VV  !
-OnPageChangedWW 
-(WW 
-)WW 
-;WW  
-}XX 
-}YY 	
-public[[ 
-void[[ 
-LastPage[[ 
-([[ 
-)[[ 
-{\\ 	
-if]] 
-(]] 
-_currentPage]] 
-!=]] 
-
-TotalPages]]  *
-)]]* +
-{^^ 
-_currentPage__ 
-=__ 
-
-TotalPages__ )
-;__) *
-OnPageChanged`` 
-(`` 
-)`` 
-;``  
-}aa 
-}bb 	
-publicdd 
-voiddd 
-GoToPagedd 
-(dd 
-intdd  
-
-pageNumberdd! +
-)dd+ ,
-{ee 	
-ifff 
-(ff 
-
-pageNumberff 
-<ff 
-$numff 
-)ff 
-
-pageNumberff  *
-=ff+ ,
-$numff- .
-;ff. /
-ifgg 
-(gg 
-
-pageNumbergg 
->gg 
-
-TotalPagesgg '
-)gg' (
-
-pageNumbergg) 3
-=gg4 5
-
-TotalPagesgg6 @
-;gg@ A
-ifii 
-(ii 
-_currentPageii 
-!=ii 
-
-pageNumberii  *
-)ii* +
-{jj 
-_currentPagekk 
-=kk 
-
-pageNumberkk )
-;kk) *
-OnPageChangedll 
-(ll 
-)ll 
-;ll  
-}mm 
-}nn 	
-privatepp 
-voidpp 
-OnPageChangedpp "
-(pp" #
-)pp# $
-{qq 	
-PageChangedrr 
-?rr 
-.rr 
-Invokerr 
-(rr  
-thisrr  $
-,rr$ %
-	EventArgsrr& /
-.rr/ 0
-Emptyrr0 5
-)rr5 6
-;rr6 7
-}ss 	
-}tt 
-}uu ÿ
+} ÿ
 `C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_DispatcherTimerWrapper.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -48324,7 +47893,438 @@ _csvWriter
 ££ 	
 }
 §§ 
-}•• ◊Ü
+}••  7
+TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Pagination.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Services$ ,
+{ 
+public 
+
+class 
+Service_Pagination #
+:$ %
+IService_Pagination& 9
+{		 
+private
+
+ 
+IEnumerable
+
+ 
+<
+
+ 
+object
+
+ "
+>
+
+" #
+?
+
+# $
+_source
+
+% ,
+;
+
+, -
+private 
+int 
+_currentPage  
+=! "
+$num# $
+;$ %
+private 
+int 
+	_pageSize 
+= 
+$num  "
+;" #
+public 
+int 
+CurrentPage 
+=> !
+_currentPage" .
+;. /
+public 
+int 
+
+TotalPages 
+{ 	
+get 
+{ 
+if 
+( 
+_source 
+== 
+null #
+||$ &
+!' (
+_source( /
+./ 0
+Any0 3
+(3 4
+)4 5
+)5 6
+return7 =
+$num> ?
+;? @
+return 
+( 
+int 
+) 
+Math  
+.  !
+Ceiling! (
+(( )
+() *
+double* 0
+)0 1
+
+TotalItems1 ;
+/< =
+PageSize> F
+)F G
+;G H
+} 
+} 	
+public 
+int 
+PageSize 
+{ 	
+get 
+=> 
+	_pageSize 
+; 
+set 
+{ 
+if 
+( 
+	_pageSize 
+!=  
+value! &
+)& '
+{ 
+	_pageSize   
+=   
+value    %
+;  % &
+_currentPage!!  
+=!!! "
+$num!!# $
+;!!$ %
+OnPageChanged"" !
+(""! "
+)""" #
+;""# $
+}## 
+}$$ 
+}%% 	
+public'' 
+int'' 
+
+TotalItems'' 
+=>''  
+_source''! (
+?''( )
+.'') *
+Count''* /
+(''/ 0
+)''0 1
+??''2 4
+$num''5 6
+;''6 7
+public)) 
+bool)) 
+HasNextPage)) 
+=>))  "
+CurrentPage))# .
+<))/ 0
+
+TotalPages))1 ;
+;)); <
+public++ 
+bool++ 
+HasPreviousPage++ #
+=>++$ &
+CurrentPage++' 2
+>++3 4
+$num++5 6
+;++6 7
+public-- 
+event-- 
+EventHandler-- !
+?--! "
+PageChanged--# .
+;--. /
+public// 
+void// 
+	SetSource// 
+<// 
+T// 
+>//  
+(//  !
+IEnumerable//! ,
+<//, -
+T//- .
+>//. /
+source//0 6
+)//6 7
+{00 	
+_source11 
+=11 
+source11 
+?11 
+.11 
+Cast11 "
+<11" #
+object11# )
+>11) *
+(11* +
+)11+ ,
+??11- /
+
+Enumerable110 :
+.11: ;
+Empty11; @
+<11@ A
+object11A G
+>11G H
+(11H I
+)11I J
+;11J K
+_currentPage22 
+=22 
+$num22 
+;22 
+OnPageChanged33 
+(33 
+)33 
+;33 
+}44 	
+public66 
+IEnumerable66 
+<66 
+T66 
+>66 
+GetCurrentPageItems66 1
+<661 2
+T662 3
+>663 4
+(664 5
+)665 6
+{77 	
+if88 
+(88 
+_source88 
+==88 
+null88 
+)88  
+return88! '
+
+Enumerable88( 2
+.882 3
+Empty883 8
+<888 9
+T889 :
+>88: ;
+(88; <
+)88< =
+;88= >
+return:: 
+_source:: 
+.;; 
+Skip;; 
+(;; 
+(;; 
+CurrentPage;; "
+-;;# $
+$num;;% &
+);;& '
+*;;( )
+PageSize;;* 2
+);;2 3
+.<< 
+Take<< 
+(<< 
+PageSize<< 
+)<< 
+.== 
+Cast== 
+<== 
+T== 
+>== 
+(== 
+)== 
+;== 
+}>> 	
+public@@ 
+void@@ 
+NextPage@@ 
+(@@ 
+)@@ 
+{AA 	
+ifBB 
+(BB 
+HasNextPageBB 
+)BB 
+{CC 
+_currentPageDD 
+++DD 
+;DD 
+OnPageChangedEE 
+(EE 
+)EE 
+;EE  
+}FF 
+}GG 	
+publicII 
+voidII 
+PreviousPageII  
+(II  !
+)II! "
+{JJ 	
+ifKK 
+(KK 
+HasPreviousPageKK 
+)KK  
+{LL 
+_currentPageMM 
+--MM 
+;MM 
+OnPageChangedNN 
+(NN 
+)NN 
+;NN  
+}OO 
+}PP 	
+publicRR 
+voidRR 
+	FirstPageRR 
+(RR 
+)RR 
+{SS 	
+ifTT 
+(TT 
+_currentPageTT 
+!=TT 
+$numTT  !
+)TT! "
+{UU 
+_currentPageVV 
+=VV 
+$numVV  
+;VV  !
+OnPageChangedWW 
+(WW 
+)WW 
+;WW  
+}XX 
+}YY 	
+public[[ 
+void[[ 
+LastPage[[ 
+([[ 
+)[[ 
+{\\ 	
+if]] 
+(]] 
+_currentPage]] 
+!=]] 
+
+TotalPages]]  *
+)]]* +
+{^^ 
+_currentPage__ 
+=__ 
+
+TotalPages__ )
+;__) *
+OnPageChanged`` 
+(`` 
+)`` 
+;``  
+}aa 
+}bb 	
+publicdd 
+voiddd 
+GoToPagedd 
+(dd 
+intdd  
+
+pageNumberdd! +
+)dd+ ,
+{ee 	
+ifff 
+(ff 
+
+pageNumberff 
+<ff 
+$numff 
+)ff 
+
+pageNumberff  *
+=ff+ ,
+$numff- .
+;ff. /
+ifgg 
+(gg 
+
+pageNumbergg 
+>gg 
+
+TotalPagesgg '
+)gg' (
+
+pageNumbergg) 3
+=gg4 5
+
+TotalPagesgg6 @
+;gg@ A
+ifii 
+(ii 
+_currentPageii 
+!=ii 
+
+pageNumberii  *
+)ii* +
+{jj 
+_currentPagekk 
+=kk 
+
+pageNumberkk )
+;kk) *
+OnPageChangedll 
+(ll 
+)ll 
+;ll  
+}mm 
+}nn 	
+privatepp 
+voidpp 
+OnPageChangedpp "
+(pp" #
+)pp# $
+{qq 	
+PageChangedrr 
+?rr 
+.rr 
+Invokerr 
+(rr  
+thisrr  $
+,rr$ %
+	EventArgsrr& /
+.rr/ 0
+Emptyrr0 5
+)rr5 6
+;rr6 7
+}ss 	
+}tt 
+}uu ◊Ü
 gC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Receiving\Service_ReceivingValidation.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -67875,144 +67875,341 @@ eC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_Ap
 =&&0 1
 $str&&2 ?
 ;&&? @
-}'' …
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPO.cs
-	namespace 	%
-MTM_Receiving_Application
+}'' î-
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_InventoriedDunnage.cs
+	namespace 	%
+MTM_Receiving_Application
  #
-.# $
-Models$ *
-.* +
-InforVisual+ 6
-;6 7
-public 
-partial 
-class 
-Model_InforVisualPO (
-:) *
-ObservableObject+ ;
-{ 
-[ 
-ObservableProperty 
-] 
-private		 
-string		 
-	_poNumber		 
-=		 
-string		 %
-.		% &
-Empty		& +
-;		+ ,
-[ 
-ObservableProperty 
-] 
-private 
-int 
-_poLine 
-; 
-[ 
-ObservableProperty 
-] 
-private 
-string 
-_partNumber 
-=  
-string! '
-.' (
-Empty( -
-;- .
-[ 
-ObservableProperty 
-] 
-private 
-string 
-_partDescription #
-=$ %
-string& ,
-., -
-Empty- 2
-;2 3
-[ 
-ObservableProperty 
-] 
-private 
-decimal 
-_orderedQty 
-;  
-[ 
-ObservableProperty 
-] 
-private 
-decimal 
-_receivedQty  
-;  !
-[ 
-ObservableProperty 
-] 
-private 
-decimal 
-_remainingQty !
-;! "
-[ 
-ObservableProperty 
-] 
-private 
-string 
-_unitOfMeasure !
-=" #
-$str$ (
-;( )
-[   
-ObservableProperty   
-]   
-private!! 
-DateTime!! 
-?!! 
-_dueDate!! 
-;!! 
-[## 
-ObservableProperty## 
-]## 
-private$$ 
-string$$ 
-_vendorCode$$ 
-=$$  
-string$$! '
-.$$' (
-Empty$$( -
-;$$- .
-[&& 
-ObservableProperty&& 
-]&& 
-private'' 
-string'' 
-_vendorName'' 
-=''  
-string''! '
-.''' (
-Empty''( -
-;''- .
-[)) 
-ObservableProperty)) 
-])) 
-private** 
-string** 
-	_poStatus** 
-=** 
-string** %
-.**% &
-Empty**& +
-;**+ ,
-[,, 
-ObservableProperty,, 
-],, 
-private-- 
-string-- 
-_siteId-- 
-=-- 
-$str-- "
-;--" #
-}.. ø
+.# $
+Models$ *
+.* +
+Dunnage+ 2
+;2 3
+public 
+class $
+Model_InventoriedDunnage %
+:& '"
+INotifyPropertyChanged( >
+{		 
+private
+
+ 
+int
+
+ 
+_id
+
+ 
+;
+
+ 
+private 
+string 
+_partId 
+= 
+string #
+.# $
+Empty$ )
+;) *
+private 
+string 
+? 
+_inventoryMethod $
+;$ %
+private 
+string 
+? 
+_notes 
+; 
+private 
+string 
+
+_createdBy 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+DateTime 
+_createdDate !
+=" #
+DateTime$ ,
+., -
+Now- 0
+;0 1
+private 
+string 
+? 
+_modifiedBy 
+;  
+private 
+DateTime 
+? 
+_modifiedDate #
+;# $
+public 
+
+int 
+Id 
+{ 
+get 
+=> 
+_id 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+_id 
+,  
+value! &
+)& '
+;' (
+} 
+public 
+
+string 
+PartId 
+{ 
+get 
+=> 
+_partId 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+_partId #
+,# $
+value% *
+)* +
+;+ ,
+} 
+public 
+
+string 
+? 
+InventoryMethod "
+{   
+get!! 
+=>!! 
+_inventoryMethod!! 
+;!!  
+set"" 
+=>"" 
+SetField"" 
+("" 
+ref"" 
+_inventoryMethod"" ,
+,"", -
+value"". 3
+)""3 4
+;""4 5
+}## 
+public%% 
+
+string%% 
+?%% 
+Notes%% 
+{&& 
+get'' 
+=>'' 
+_notes'' 
+;'' 
+set(( 
+=>(( 
+SetField(( 
+((( 
+ref(( 
+_notes(( "
+,((" #
+value(($ )
+)(() *
+;((* +
+})) 
+public++ 
+
+string++ 
+	CreatedBy++ 
+{,, 
+get-- 
+=>-- 
+
+_createdBy-- 
+;-- 
+set.. 
+=>.. 
+SetField.. 
+(.. 
+ref.. 
+
+_createdBy.. &
+,..& '
+value..( -
+)..- .
+;... /
+}// 
+public11 
+
+DateTime11 
+CreatedDate11 
+{22 
+get33 
+=>33 
+_createdDate33 
+;33 
+set44 
+=>44 
+SetField44 
+(44 
+ref44 
+_createdDate44 (
+,44( )
+value44* /
+)44/ 0
+;440 1
+}55 
+public77 
+
+string77 
+?77 
+
+ModifiedBy77 
+{88 
+get99 
+=>99 
+_modifiedBy99 
+;99 
+set:: 
+=>:: 
+SetField:: 
+(:: 
+ref:: 
+_modifiedBy:: '
+,::' (
+value::) .
+)::. /
+;::/ 0
+};; 
+public== 
+
+DateTime== 
+?== 
+ModifiedDate== !
+{>> 
+get?? 
+=>?? 
+_modifiedDate?? 
+;?? 
+set@@ 
+=>@@ 
+SetField@@ 
+(@@ 
+ref@@ 
+_modifiedDate@@ )
+,@@) *
+value@@+ 0
+)@@0 1
+;@@1 2
+}AA 
+publicCC 
+
+eventCC '
+PropertyChangedEventHandlerCC ,
+?CC, -
+PropertyChangedCC. =
+;CC= >
+	protectedEE 
+virtualEE 
+voidEE 
+OnPropertyChangedEE ,
+(EE, -
+[EE- .
+CallerMemberNameEE. >
+]EE> ?
+stringEE@ F
+?EEF G
+propertyNameEEH T
+=EEU V
+nullEEW [
+)EE[ \
+{FF 
+PropertyChangedGG 
+?GG 
+.GG 
+InvokeGG 
+(GG  
+thisGG  $
+,GG$ %
+newGG& )$
+PropertyChangedEventArgsGG* B
+(GGB C
+propertyNameGGC O
+)GGO P
+)GGP Q
+;GGQ R
+}HH 
+	protectedJJ 
+boolJJ 
+SetFieldJJ 
+<JJ 
+TJJ 
+>JJ 
+(JJ 
+refJJ "
+TJJ# $
+fieldJJ% *
+,JJ* +
+TJJ, -
+valueJJ. 3
+,JJ3 4
+[JJ5 6
+CallerMemberNameJJ6 F
+]JJF G
+stringJJH N
+?JJN O
+propertyNameJJP \
+=JJ] ^
+nullJJ_ c
+)JJc d
+{KK 
+ifLL 
+
+(LL 
+EqualityComparerLL 
+<LL 
+TLL 
+>LL 
+.LL  
+DefaultLL  '
+.LL' (
+EqualsLL( .
+(LL. /
+fieldLL/ 4
+,LL4 5
+valueLL6 ;
+)LL; <
+)LL< =
+returnLL> D
+falseLLE J
+;LLJ K
+fieldMM 
+=MM 
+valueMM 
+;MM 
+OnPropertyChangedNN 
+(NN 
+propertyNameNN &
+)NN& '
+;NN' (
+returnOO 
+trueOO 
+;OO 
+}PP 
+}QQ ø
 aC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPart.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -68393,654 +68590,144 @@ WC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_Spec
 bool 
 _isRequired 
 ; 
-} î-
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_InventoriedDunnage.cs
-	namespace 	%
-MTM_Receiving_Application
+} …
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPO.cs
+	namespace 	%
+MTM_Receiving_Application
  #
-.# $
-Models$ *
-.* +
-Dunnage+ 2
-;2 3
-public 
-class $
-Model_InventoriedDunnage %
-:& '"
-INotifyPropertyChanged( >
-{		 
-private
-
- 
-int
-
- 
-_id
-
- 
-;
-
- 
-private 
-string 
-_partId 
-= 
-string #
-.# $
-Empty$ )
-;) *
-private 
-string 
-? 
-_inventoryMethod $
-;$ %
-private 
-string 
-? 
-_notes 
-; 
-private 
-string 
-
-_createdBy 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-DateTime 
-_createdDate !
-=" #
-DateTime$ ,
-., -
-Now- 0
-;0 1
-private 
-string 
-? 
-_modifiedBy 
-;  
-private 
-DateTime 
-? 
-_modifiedDate #
-;# $
-public 
-
-int 
-Id 
-{ 
-get 
-=> 
-_id 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-_id 
-,  
-value! &
-)& '
-;' (
-} 
-public 
-
-string 
-PartId 
-{ 
-get 
-=> 
-_partId 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-_partId #
-,# $
-value% *
-)* +
-;+ ,
-} 
-public 
-
-string 
-? 
-InventoryMethod "
-{   
-get!! 
-=>!! 
-_inventoryMethod!! 
-;!!  
-set"" 
-=>"" 
-SetField"" 
-("" 
-ref"" 
-_inventoryMethod"" ,
-,"", -
-value"". 3
-)""3 4
-;""4 5
-}## 
-public%% 
-
-string%% 
-?%% 
-Notes%% 
-{&& 
-get'' 
-=>'' 
-_notes'' 
-;'' 
-set(( 
-=>(( 
-SetField(( 
-((( 
-ref(( 
-_notes(( "
-,((" #
-value(($ )
-)(() *
-;((* +
-})) 
-public++ 
-
-string++ 
-	CreatedBy++ 
-{,, 
-get-- 
-=>-- 
-
-_createdBy-- 
-;-- 
-set.. 
-=>.. 
-SetField.. 
-(.. 
-ref.. 
-
-_createdBy.. &
-,..& '
-value..( -
-)..- .
-;... /
-}// 
-public11 
-
-DateTime11 
-CreatedDate11 
-{22 
-get33 
-=>33 
-_createdDate33 
-;33 
-set44 
-=>44 
-SetField44 
-(44 
-ref44 
-_createdDate44 (
-,44( )
-value44* /
-)44/ 0
-;440 1
-}55 
-public77 
-
-string77 
-?77 
-
-ModifiedBy77 
-{88 
-get99 
-=>99 
-_modifiedBy99 
-;99 
-set:: 
-=>:: 
-SetField:: 
-(:: 
-ref:: 
-_modifiedBy:: '
-,::' (
-value::) .
-)::. /
-;::/ 0
-};; 
-public== 
-
-DateTime== 
-?== 
-ModifiedDate== !
-{>> 
-get?? 
-=>?? 
-_modifiedDate?? 
-;?? 
-set@@ 
-=>@@ 
-SetField@@ 
-(@@ 
-ref@@ 
-_modifiedDate@@ )
-,@@) *
-value@@+ 0
-)@@0 1
-;@@1 2
-}AA 
-publicCC 
-
-eventCC '
-PropertyChangedEventHandlerCC ,
-?CC, -
-PropertyChangedCC. =
-;CC= >
-	protectedEE 
-virtualEE 
-voidEE 
-OnPropertyChangedEE ,
-(EE, -
-[EE- .
-CallerMemberNameEE. >
-]EE> ?
-stringEE@ F
-?EEF G
-propertyNameEEH T
-=EEU V
-nullEEW [
-)EE[ \
-{FF 
-PropertyChangedGG 
-?GG 
-.GG 
-InvokeGG 
-(GG  
-thisGG  $
-,GG$ %
-newGG& )$
-PropertyChangedEventArgsGG* B
-(GGB C
-propertyNameGGC O
-)GGO P
-)GGP Q
-;GGQ R
-}HH 
-	protectedJJ 
-boolJJ 
-SetFieldJJ 
-<JJ 
-TJJ 
->JJ 
-(JJ 
-refJJ "
-TJJ# $
-fieldJJ% *
-,JJ* +
-TJJ, -
-valueJJ. 3
-,JJ3 4
-[JJ5 6
-CallerMemberNameJJ6 F
-]JJF G
-stringJJH N
-?JJN O
-propertyNameJJP \
-=JJ] ^
-nullJJ_ c
-)JJc d
-{KK 
-ifLL 
-
-(LL 
-EqualityComparerLL 
-<LL 
-TLL 
->LL 
-.LL  
-DefaultLL  '
-.LL' (
-EqualsLL( .
-(LL. /
-fieldLL/ 4
-,LL4 5
-valueLL6 ;
-)LL; <
-)LL< =
-returnLL> D
-falseLLE J
-;LLJ K
-fieldMM 
-=MM 
-valueMM 
-;MM 
-OnPropertyChangedNN 
-(NN 
-propertyNameNN &
-)NN& '
-;NN' (
-returnOO 
-trueOO 
-;OO 
-}PP 
-}QQ Î)
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageType.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Models$ *
-.* +
-Dunnage+ 2
-;2 3
-public 
-class 
-Model_DunnageType 
-:  "
-INotifyPropertyChanged! 7
-{		 
-private
-
- 
-int
-
- 
-_id
-
- 
-;
-
- 
-private 
-string 
-	_typeName 
-= 
-string %
-.% &
-Empty& +
-;+ ,
-private 
-string 
-
-_specsJson 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-string 
-
-_createdBy 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-DateTime 
-_createdDate !
-=" #
-DateTime$ ,
-., -
-Now- 0
-;0 1
+.# $
+Models$ *
+.* +
+InforVisual+ 6
+;6 7
+public 
+partial 
+class 
+Model_InforVisualPO (
+:) *
+ObservableObject+ ;
+{ 
+[ 
+ObservableProperty 
+] 
+private		 
+string		 
+	_poNumber		 
+=		 
+string		 %
+.		% &
+Empty		& +
+;		+ ,
+[ 
+ObservableProperty 
+] 
+private 
+int 
+_poLine 
+; 
+[ 
+ObservableProperty 
+] 
 private 
-string 
-? 
-_modifiedBy 
-;  
-private 
-DateTime 
-? 
-_modifiedDate #
-;# $
-public 
-
-int 
-Id 
-{ 
-get 
-=> 
-_id 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-_id 
-,  
-value! &
-)& '
-;' (
-} 
-public 
-
-string 
-TypeName 
-{ 
-get 
-=> 
-	_typeName 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-	_typeName %
-,% &
-value' ,
-), -
-;- .
-} 
-public 
-
-string 
-	SpecsJson 
-{ 
-get   
-=>   
-
-_specsJson   
-;   
-set!! 
-=>!! 
-SetField!! 
-(!! 
-ref!! 
-
-_specsJson!! &
-,!!& '
-value!!( -
-)!!- .
-;!!. /
-}"" 
-public$$ 
-
-string$$ 
-	CreatedBy$$ 
-{%% 
-get&& 
-=>&& 
-
-_createdBy&& 
-;&& 
-set'' 
-=>'' 
-SetField'' 
-('' 
-ref'' 
-
-_createdBy'' &
-,''& '
-value''( -
-)''- .
-;''. /
-}(( 
-public** 
-
-DateTime** 
-CreatedDate** 
-{++ 
-get,, 
-=>,, 
-_createdDate,, 
-;,, 
-set-- 
-=>-- 
-SetField-- 
-(-- 
-ref-- 
-_createdDate-- (
-,--( )
-value--* /
-)--/ 0
-;--0 1
-}.. 
-public00 
-
-string00 
-?00 
-
-ModifiedBy00 
-{11 
-get22 
-=>22 
-_modifiedBy22 
-;22 
-set33 
-=>33 
-SetField33 
-(33 
-ref33 
-_modifiedBy33 '
-,33' (
-value33) .
-)33. /
-;33/ 0
-}44 
-public66 
-
-DateTime66 
-?66 
-ModifiedDate66 !
-{77 
-get88 
-=>88 
-_modifiedDate88 
-;88 
-set99 
-=>99 
-SetField99 
-(99 
-ref99 
-_modifiedDate99 )
-,99) *
-value99+ 0
-)990 1
-;991 2
-}:: 
-public<< 
-
-event<< '
-PropertyChangedEventHandler<< ,
-?<<, -
-PropertyChanged<<. =
-;<<= >
-	protected>> 
-virtual>> 
-void>> 
-OnPropertyChanged>> ,
-(>>, -
-[>>- .
-CallerMemberName>>. >
-]>>> ?
-string>>@ F
-?>>F G
-propertyName>>H T
-=>>U V
-null>>W [
-)>>[ \
-{?? 
-PropertyChanged@@ 
-?@@ 
-.@@ 
-Invoke@@ 
-(@@  
-this@@  $
-,@@$ %
-new@@& )$
-PropertyChangedEventArgs@@* B
-(@@B C
-propertyName@@C O
-)@@O P
-)@@P Q
-;@@Q R
-}AA 
-	protectedCC 
-boolCC 
-SetFieldCC 
-<CC 
-TCC 
->CC 
-(CC 
-refCC "
-TCC# $
-fieldCC% *
-,CC* +
-TCC, -
-valueCC. 3
-,CC3 4
-[CC5 6
-CallerMemberNameCC6 F
-]CCF G
-stringCCH N
-?CCN O
-propertyNameCCP \
-=CC] ^
-nullCC_ c
-)CCc d
-{DD 
-ifEE 
-
-(EE 
-EqualityComparerEE 
-<EE 
-TEE 
->EE 
-.EE  
-DefaultEE  '
-.EE' (
-EqualsEE( .
-(EE. /
-fieldEE/ 4
-,EE4 5
-valueEE6 ;
-)EE; <
-)EE< =
-returnEE> D
-falseEEE J
-;EEJ K
-fieldFF 
-=FF 
-valueFF 
-;FF 
-OnPropertyChangedGG 
-(GG 
-propertyNameGG &
-)GG& '
-;GG' (
-returnHH 
-trueHH 
-;HH 
-}II 
-}JJ Ô>
+string 
+_partNumber 
+=  
+string! '
+.' (
+Empty( -
+;- .
+[ 
+ObservableProperty 
+] 
+private 
+string 
+_partDescription #
+=$ %
+string& ,
+., -
+Empty- 2
+;2 3
+[ 
+ObservableProperty 
+] 
+private 
+decimal 
+_orderedQty 
+;  
+[ 
+ObservableProperty 
+] 
+private 
+decimal 
+_receivedQty  
+;  !
+[ 
+ObservableProperty 
+] 
+private 
+decimal 
+_remainingQty !
+;! "
+[ 
+ObservableProperty 
+] 
+private 
+string 
+_unitOfMeasure !
+=" #
+$str$ (
+;( )
+[   
+ObservableProperty   
+]   
+private!! 
+DateTime!! 
+?!! 
+_dueDate!! 
+;!! 
+[## 
+ObservableProperty## 
+]## 
+private$$ 
+string$$ 
+_vendorCode$$ 
+=$$  
+string$$! '
+.$$' (
+Empty$$( -
+;$$- .
+[&& 
+ObservableProperty&& 
+]&& 
+private'' 
+string'' 
+_vendorName'' 
+=''  
+string''! '
+.''' (
+Empty''( -
+;''- .
+[)) 
+ObservableProperty)) 
+])) 
+private** 
+string** 
+	_poStatus** 
+=** 
+string** %
+.**% &
+Empty**& +
+;**+ ,
+[,, 
+ObservableProperty,, 
+],, 
+private-- 
+string-- 
+_siteId-- 
+=-- 
+$str-- "
+;--" #
+}.. Ô>
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageSpec.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -69942,7 +69629,185 @@ SpecValuesGG' 1
 trueff 
 ;ff 
 }gg 
-}hh ıB
+}hh «
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result_Factory.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Models$ *
+.* +
+Core+ /
+;/ 0
+public		 
+static		 
+class		 $
+Model_Dao_Result_Factory		 ,
+{
+
+ 
+public 
+
+static 
+Model_Dao_Result "
+Failure# *
+(* +
+string+ 1
+message2 9
+,9 :
+	Exception; D
+?D E
+exF H
+=I J
+nullK O
+)O P
+{ 
+return 
+new 
+Model_Dao_Result #
+{ 	
+Success 
+= 
+false 
+, 
+ErrorMessage 
+= 
+message "
+," #
+	Exception 
+= 
+ex 
+, 
+Severity 
+= 
+Enum_ErrorSeverity )
+.) *
+Error* /
+} 	
+;	 
+
+} 
+public 
+
+static 
+Model_Dao_Result "
+Success# *
+(* +
+int+ .
+affectedRows/ ;
+=< =
+$num> ?
+)? @
+{ 
+return 
+new 
+Model_Dao_Result #
+{ 	
+Success 
+= 
+true 
+, 
+AffectedRows 
+= 
+affectedRows '
+} 	
+;	 
+
+} 
+public 
+
+static 
+Model_Dao_Result "
+<" #
+T# $
+>$ %
+Failure& -
+<- .
+T. /
+>/ 0
+(0 1
+string1 7
+message8 ?
+,? @
+	ExceptionA J
+?J K
+exL N
+=O P
+nullQ U
+)U V
+{   
+return!! 
+new!! 
+Model_Dao_Result!! #
+<!!# $
+T!!$ %
+>!!% &
+{"" 	
+Success## 
+=## 
+false## 
+,## 
+ErrorMessage$$ 
+=$$ 
+message$$ "
+,$$" #
+	Exception%% 
+=%% 
+ex%% 
+,%% 
+Severity&& 
+=&& 
+Enum_ErrorSeverity&& )
+.&&) *
+Error&&* /
+}'' 	
+;''	 
+
+}(( 
+public** 
+
+static** 
+Model_Dao_Result** "
+<**" #
+T**# $
+>**$ %
+Success**& -
+<**- .
+T**. /
+>**/ 0
+(**0 1
+T**1 2
+data**3 7
+,**7 8
+int**9 <
+affectedRows**= I
+=**J K
+$num**L M
+)**M N
+{++ 
+return,, 
+new,, 
+Model_Dao_Result,, #
+<,,# $
+T,,$ %
+>,,% &
+{-- 	
+Success.. 
+=.. 
+true.. 
+,.. 
+Data// 
+=// 
+data// 
+,// 
+AffectedRows00 
+=00 
+affectedRows00 '
+}11 	
+;11	 
+
+}22 
+}33 ıB
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnagePart.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -71140,185 +71005,7 @@ IsSelected}} 
 èè 
 }
 êê 
-}ëë «
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result_Factory.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Models$ *
-.* +
-Core+ /
-;/ 0
-public		 
-static		 
-class		 $
-Model_Dao_Result_Factory		 ,
-{
-
- 
-public 
-
-static 
-Model_Dao_Result "
-Failure# *
-(* +
-string+ 1
-message2 9
-,9 :
-	Exception; D
-?D E
-exF H
-=I J
-nullK O
-)O P
-{ 
-return 
-new 
-Model_Dao_Result #
-{ 	
-Success 
-= 
-false 
-, 
-ErrorMessage 
-= 
-message "
-," #
-	Exception 
-= 
-ex 
-, 
-Severity 
-= 
-Enum_ErrorSeverity )
-.) *
-Error* /
-} 	
-;	 
-
-} 
-public 
-
-static 
-Model_Dao_Result "
-Success# *
-(* +
-int+ .
-affectedRows/ ;
-=< =
-$num> ?
-)? @
-{ 
-return 
-new 
-Model_Dao_Result #
-{ 	
-Success 
-= 
-true 
-, 
-AffectedRows 
-= 
-affectedRows '
-} 	
-;	 
-
-} 
-public 
-
-static 
-Model_Dao_Result "
-<" #
-T# $
->$ %
-Failure& -
-<- .
-T. /
->/ 0
-(0 1
-string1 7
-message8 ?
-,? @
-	ExceptionA J
-?J K
-exL N
-=O P
-nullQ U
-)U V
-{   
-return!! 
-new!! 
-Model_Dao_Result!! #
-<!!# $
-T!!$ %
->!!% &
-{"" 	
-Success## 
-=## 
-false## 
-,## 
-ErrorMessage$$ 
-=$$ 
-message$$ "
-,$$" #
-	Exception%% 
-=%% 
-ex%% 
-,%% 
-Severity&& 
-=&& 
-Enum_ErrorSeverity&& )
-.&&) *
-Error&&* /
-}'' 	
-;''	 
-
-}(( 
-public** 
-
-static** 
-Model_Dao_Result** "
-<**" #
-T**# $
->**$ %
-Success**& -
-<**- .
-T**. /
->**/ 0
-(**0 1
-T**1 2
-data**3 7
-,**7 8
-int**9 <
-affectedRows**= I
-=**J K
-$num**L M
-)**M N
-{++ 
-return,, 
-new,, 
-Model_Dao_Result,, #
-<,,# $
-T,,$ %
->,,% &
-{-- 	
-Success.. 
-=.. 
-true.. 
-,.. 
-Data// 
-=// 
-data// 
-,// 
-AffectedRows00 
-=00 
-affectedRows00 '
-}11 	
-;11	 
-
-}22 
-}33 ˝
+}ëë ˝
 UC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -81494,7 +81181,320 @@ parameters
 ∞∞ 	
 }
 ±± 
-}≤≤ „/
+}≤≤ Î)
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageType.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Models$ *
+.* +
+Dunnage+ 2
+;2 3
+public 
+class 
+Model_DunnageType 
+:  "
+INotifyPropertyChanged! 7
+{		 
+private
+
+ 
+int
+
+ 
+_id
+
+ 
+;
+
+ 
+private 
+string 
+	_typeName 
+= 
+string %
+.% &
+Empty& +
+;+ ,
+private 
+string 
+
+_specsJson 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+string 
+
+_createdBy 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+DateTime 
+_createdDate !
+=" #
+DateTime$ ,
+., -
+Now- 0
+;0 1
+private 
+string 
+? 
+_modifiedBy 
+;  
+private 
+DateTime 
+? 
+_modifiedDate #
+;# $
+public 
+
+int 
+Id 
+{ 
+get 
+=> 
+_id 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+_id 
+,  
+value! &
+)& '
+;' (
+} 
+public 
+
+string 
+TypeName 
+{ 
+get 
+=> 
+	_typeName 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+	_typeName %
+,% &
+value' ,
+), -
+;- .
+} 
+public 
+
+string 
+	SpecsJson 
+{ 
+get   
+=>   
+
+_specsJson   
+;   
+set!! 
+=>!! 
+SetField!! 
+(!! 
+ref!! 
+
+_specsJson!! &
+,!!& '
+value!!( -
+)!!- .
+;!!. /
+}"" 
+public$$ 
+
+string$$ 
+	CreatedBy$$ 
+{%% 
+get&& 
+=>&& 
+
+_createdBy&& 
+;&& 
+set'' 
+=>'' 
+SetField'' 
+('' 
+ref'' 
+
+_createdBy'' &
+,''& '
+value''( -
+)''- .
+;''. /
+}(( 
+public** 
+
+DateTime** 
+CreatedDate** 
+{++ 
+get,, 
+=>,, 
+_createdDate,, 
+;,, 
+set-- 
+=>-- 
+SetField-- 
+(-- 
+ref-- 
+_createdDate-- (
+,--( )
+value--* /
+)--/ 0
+;--0 1
+}.. 
+public00 
+
+string00 
+?00 
+
+ModifiedBy00 
+{11 
+get22 
+=>22 
+_modifiedBy22 
+;22 
+set33 
+=>33 
+SetField33 
+(33 
+ref33 
+_modifiedBy33 '
+,33' (
+value33) .
+)33. /
+;33/ 0
+}44 
+public66 
+
+DateTime66 
+?66 
+ModifiedDate66 !
+{77 
+get88 
+=>88 
+_modifiedDate88 
+;88 
+set99 
+=>99 
+SetField99 
+(99 
+ref99 
+_modifiedDate99 )
+,99) *
+value99+ 0
+)990 1
+;991 2
+}:: 
+public<< 
+
+event<< '
+PropertyChangedEventHandler<< ,
+?<<, -
+PropertyChanged<<. =
+;<<= >
+	protected>> 
+virtual>> 
+void>> 
+OnPropertyChanged>> ,
+(>>, -
+[>>- .
+CallerMemberName>>. >
+]>>> ?
+string>>@ F
+?>>F G
+propertyName>>H T
+=>>U V
+null>>W [
+)>>[ \
+{?? 
+PropertyChanged@@ 
+?@@ 
+.@@ 
+Invoke@@ 
+(@@  
+this@@  $
+,@@$ %
+new@@& )$
+PropertyChangedEventArgs@@* B
+(@@B C
+propertyName@@C O
+)@@O P
+)@@P Q
+;@@Q R
+}AA 
+	protectedCC 
+boolCC 
+SetFieldCC 
+<CC 
+TCC 
+>CC 
+(CC 
+refCC "
+TCC# $
+fieldCC% *
+,CC* +
+TCC, -
+valueCC. 3
+,CC3 4
+[CC5 6
+CallerMemberNameCC6 F
+]CCF G
+stringCCH N
+?CCN O
+propertyNameCCP \
+=CC] ^
+nullCC_ c
+)CCc d
+{DD 
+ifEE 
+
+(EE 
+EqualityComparerEE 
+<EE 
+TEE 
+>EE 
+.EE  
+DefaultEE  '
+.EE' (
+EqualsEE( .
+(EE. /
+fieldEE/ 4
+,EE4 5
+valueEE6 ;
+)EE; <
+)EE< =
+returnEE> D
+falseEEE J
+;EEJ K
+fieldFF 
+=FF 
+valueFF 
+;FF 
+OnPropertyChangedGG 
+(GG 
+propertyNameGG &
+)GG& '
+;GG' (
+returnHH 
+trueHH 
+;HH 
+}II 
+}JJ „/
 WC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_DunnageLine.cs
 	namespace		 	%
 MTM_Receiving_Application		
@@ -92209,7 +92209,240 @@ targetType5 ?
 ;/ 0
 } 	
 } 
-} Û
+} €
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_IntToVisibility.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+Converters$ .
+{ 
+public 
+
+class %
+Converter_IntToVisibility *
+:+ ,
+IValueConverter- <
+{ 
+public		 
+object		 
+Convert		 
+(		 
+object		 $
+value		% *
+,		* +
+Type		, 0
+
+targetType		1 ;
+,		; <
+object		= C
+	parameter		D M
+,		M N
+string		O U
+language		V ^
+)		^ _
+{
+
+ 	
+int 
+intValue 
+= 
+value  
+is! #
+int$ '
+i( )
+?* +
+i, -
+:. /
+$num0 1
+;1 2
+bool 
+	isVisible 
+= 
+intValue %
+>& '
+$num( )
+;) *
+if 
+( 
+	parameter 
+is 
+string #
+s$ %
+&&& (
+s) *
+.* +
+Equals+ 1
+(1 2
+$str2 ;
+,; <
+StringComparison= M
+.M N
+OrdinalIgnoreCaseN _
+)_ `
+)` a
+{ 
+	isVisible 
+= 
+! 
+	isVisible &
+;& '
+} 
+return 
+	isVisible 
+? 
+
+Visibility )
+.) *
+Visible* 1
+:2 3
+
+Visibility4 >
+.> ?
+	Collapsed? H
+;H I
+} 	
+public 
+object 
+ConvertBack !
+(! "
+object" (
+value) .
+,. /
+Type0 4
+
+targetType5 ?
+,? @
+objectA G
+	parameterH Q
+,Q R
+stringS Y
+languageZ b
+)b c
+{ 	
+throw 
+new #
+NotImplementedException -
+(- .
+). /
+;/ 0
+} 	
+} 
+} ˙
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DoubleToDecimal.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+Converters$ .
+{ 
+public 
+
+class %
+Converter_DoubleToDecimal *
+:+ ,
+IValueConverter- <
+{ 
+public 
+object 
+Convert 
+( 
+object $
+value% *
+,* +
+Type, 0
+
+targetType1 ;
+,; <
+object= C
+	parameterD M
+,M N
+stringO U
+languageV ^
+)^ _
+{		 	
+if
+
+ 
+(
+
+ 
+value
+
+ 
+is
+
+ 
+decimal
+
+  
+d
+
+! "
+)
+
+" #
+{ 
+return 
+System 
+. 
+Convert %
+.% &
+ToDouble& .
+(. /
+d/ 0
+)0 1
+;1 2
+} 
+return 
+$num 
+; 
+} 	
+public 
+object 
+ConvertBack !
+(! "
+object" (
+value) .
+,. /
+Type0 4
+
+targetType5 ?
+,? @
+objectA G
+	parameterH Q
+,Q R
+stringS Y
+languageZ b
+)b c
+{ 	
+if 
+( 
+value 
+is 
+double 
+d  !
+)! "
+{ 
+return 
+System 
+. 
+Convert %
+.% &
+	ToDecimal& /
+(/ 0
+d0 1
+)1 2
+;2 3
+} 
+return 
+$num 
+; 
+} 	
+} 
+} Û
 ]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DecimalToString.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -92352,384 +92585,7 @@ targetType5 ?
 ; 
 } 	
 }   
-}!! ˙
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DoubleToDecimal.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-
-Converters$ .
-{ 
-public 
-
-class %
-Converter_DoubleToDecimal *
-:+ ,
-IValueConverter- <
-{ 
-public 
-object 
-Convert 
-( 
-object $
-value% *
-,* +
-Type, 0
-
-targetType1 ;
-,; <
-object= C
-	parameterD M
-,M N
-stringO U
-languageV ^
-)^ _
-{		 	
-if
-
- 
-(
-
- 
-value
-
- 
-is
-
- 
-decimal
-
-  
-d
-
-! "
-)
-
-" #
-{ 
-return 
-System 
-. 
-Convert %
-.% &
-ToDouble& .
-(. /
-d/ 0
-)0 1
-;1 2
-} 
-return 
-$num 
-; 
-} 	
-public 
-object 
-ConvertBack !
-(! "
-object" (
-value) .
-,. /
-Type0 4
-
-targetType5 ?
-,? @
-objectA G
-	parameterH Q
-,Q R
-stringS Y
-languageZ b
-)b c
-{ 	
-if 
-( 
-value 
-is 
-double 
-d  !
-)! "
-{ 
-return 
-System 
-. 
-Convert %
-.% &
-	ToDecimal& /
-(/ 0
-d0 1
-)1 2
-;2 3
-} 
-return 
-$num 
-; 
-} 	
-} 
-} €
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_IntToVisibility.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-
-Converters$ .
-{ 
-public 
-
-class %
-Converter_IntToVisibility *
-:+ ,
-IValueConverter- <
-{ 
-public		 
-object		 
-Convert		 
-(		 
-object		 $
-value		% *
-,		* +
-Type		, 0
-
-targetType		1 ;
-,		; <
-object		= C
-	parameter		D M
-,		M N
-string		O U
-language		V ^
-)		^ _
-{
-
- 	
-int 
-intValue 
-= 
-value  
-is! #
-int$ '
-i( )
-?* +
-i, -
-:. /
-$num0 1
-;1 2
-bool 
-	isVisible 
-= 
-intValue %
->& '
-$num( )
-;) *
-if 
-( 
-	parameter 
-is 
-string #
-s$ %
-&&& (
-s) *
-.* +
-Equals+ 1
-(1 2
-$str2 ;
-,; <
-StringComparison= M
-.M N
-OrdinalIgnoreCaseN _
-)_ `
-)` a
-{ 
-	isVisible 
-= 
-! 
-	isVisible &
-;& '
-} 
-return 
-	isVisible 
-? 
-
-Visibility )
-.) *
-Visible* 1
-:2 3
-
-Visibility4 >
-.> ?
-	Collapsed? H
-;H I
-} 	
-public 
-object 
-ConvertBack !
-(! "
-object" (
-value) .
-,. /
-Type0 4
-
-targetType5 ?
-,? @
-objectA G
-	parameterH Q
-,Q R
-stringS Y
-languageZ b
-)b c
-{ 	
-throw 
-new #
-NotImplementedException -
-(- .
-). /
-;/ 0
-} 	
-} 
-} ˙
-ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BoolToString.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-
-Converters$ .
-{ 
-public 
-
-class "
-Converter_BoolToString '
-:( )
-IValueConverter* 9
-{ 
-public 
-object 
-Convert 
-( 
-object $
-value% *
-,* +
-Type, 0
-
-targetType1 ;
-,; <
-object= C
-	parameterD M
-,M N
-stringO U
-languageV ^
-)^ _
-{		 	
-if
-
- 
-(
-
- 
-value
-
- 
-is
-
- 
-bool
-
- 
-	boolValue
-
- '
-&&
-
-( *
-	parameter
-
-+ 4
-is
-
-5 7
-string
-
-8 >
-paramString
-
-? J
-)
-
-J K
-{ 
-var 
-parts 
-= 
-paramString '
-.' (
-Split( -
-(- .
-$char. 1
-)1 2
-;2 3
-if 
-( 
-parts 
-. 
-Length  
-==! #
-$num$ %
-)% &
-{ 
-return 
-	boolValue $
-?% &
-parts' ,
-[, -
-$num- .
-]. /
-:0 1
-parts2 7
-[7 8
-$num8 9
-]9 :
-;: ;
-} 
-} 
-return 
-value 
-? 
-. 
-ToString "
-(" #
-)# $
-??% '
-string( .
-.. /
-Empty/ 4
-;4 5
-} 	
-public 
-object 
-ConvertBack !
-(! "
-object" (
-value) .
-,. /
-Type0 4
-
-targetType5 ?
-,? @
-objectA G
-	parameterH Q
-,Q R
-stringS Y
-languageZ b
-)b c
-{ 	
-throw 
-new #
-NotImplementedException -
-(- .
-). /
-;/ 0
-} 	
-} 
-} í
+}!! í
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DecimalToInt.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -92892,7 +92748,151 @@ targetType5 ?
 ;"" 
 }## 	
 }$$ 
-}%% »
+}%% ˙
+ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BoolToString.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+Converters$ .
+{ 
+public 
+
+class "
+Converter_BoolToString '
+:( )
+IValueConverter* 9
+{ 
+public 
+object 
+Convert 
+( 
+object $
+value% *
+,* +
+Type, 0
+
+targetType1 ;
+,; <
+object= C
+	parameterD M
+,M N
+stringO U
+languageV ^
+)^ _
+{		 	
+if
+
+ 
+(
+
+ 
+value
+
+ 
+is
+
+ 
+bool
+
+ 
+	boolValue
+
+ '
+&&
+
+( *
+	parameter
+
++ 4
+is
+
+5 7
+string
+
+8 >
+paramString
+
+? J
+)
+
+J K
+{ 
+var 
+parts 
+= 
+paramString '
+.' (
+Split( -
+(- .
+$char. 1
+)1 2
+;2 3
+if 
+( 
+parts 
+. 
+Length  
+==! #
+$num$ %
+)% &
+{ 
+return 
+	boolValue $
+?% &
+parts' ,
+[, -
+$num- .
+]. /
+:0 1
+parts2 7
+[7 8
+$num8 9
+]9 :
+;: ;
+} 
+} 
+return 
+value 
+? 
+. 
+ToString "
+(" #
+)# $
+??% '
+string( .
+.. /
+Empty/ 4
+;4 5
+} 	
+public 
+object 
+ConvertBack !
+(! "
+object" (
+value) .
+,. /
+Type0 4
+
+targetType5 ?
+,? @
+objectA G
+	parameterH Q
+,Q R
+stringS Y
+languageZ b
+)b c
+{ 	
+throw 
+new #
+NotImplementedException -
+(- .
+). /
+;/ 0
+} 	
+} 
+} »
 aC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BooleanToVisibility.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -94009,119 +94009,7 @@ LoadsSaved
 ÆÆ^ _
 }
 ØØ 
-}∞∞ «
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Pagination.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-{ 
-public 
-
-	interface 
-IService_Pagination (
-{ 
-int 
-CurrentPage 
-{ 
-get 
-; 
-}  
-int 
-
-TotalPages 
-{ 
-get 
-; 
-} 
-int 
-PageSize 
-{ 
-get 
-; 
-set 
-;  
-}! "
-int 
-
-TotalItems 
-{ 
-get 
-; 
-} 
-bool 
-HasNextPage 
-{ 
-get 
-; 
-}  !
-bool$$ 
-HasPreviousPage$$ 
-{$$ 
-get$$ "
-;$$" #
-}$$$ %
-event)) 
-EventHandler)) 
-PageChanged)) &
-;))& '
-void00 
-	SetSource00 
-<00 
-T00 
->00 
-(00 
-IEnumerable00 %
-<00% &
-T00& '
->00' (
-source00) /
-)00/ 0
-;000 1
-IEnumerable77 
-<77 
-T77 
->77 
-GetCurrentPageItems77 *
-<77* +
-T77+ ,
->77, -
-(77- .
-)77. /
-;77/ 0
-void<< 
-NextPage<< 
-(<< 
-)<< 
-;<< 
-voidAA 
-PreviousPageAA 
-(AA 
-)AA 
-;AA 
-voidFF 
-	FirstPageFF 
-(FF 
-)FF 
-;FF 
-voidKK 
-LastPageKK 
-(KK 
-)KK 
-;KK 
-voidQQ 
-GoToPageQQ 
-(QQ 
-intQQ 
-
-pageNumberQQ $
-)QQ$ %
-;QQ% &
-}RR 
-}SS ü*
+}∞∞ ü*
 hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ReceivingValidation.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -94404,7 +94292,119 @@ hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 àà 
 }
 ââ 
-}ää €
+}ää «
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Pagination.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+	Contracts$ -
+.- .
+Services. 6
+{ 
+public 
+
+	interface 
+IService_Pagination (
+{ 
+int 
+CurrentPage 
+{ 
+get 
+; 
+}  
+int 
+
+TotalPages 
+{ 
+get 
+; 
+} 
+int 
+PageSize 
+{ 
+get 
+; 
+set 
+;  
+}! "
+int 
+
+TotalItems 
+{ 
+get 
+; 
+} 
+bool 
+HasNextPage 
+{ 
+get 
+; 
+}  !
+bool$$ 
+HasPreviousPage$$ 
+{$$ 
+get$$ "
+;$$" #
+}$$$ %
+event)) 
+EventHandler)) 
+PageChanged)) &
+;))& '
+void00 
+	SetSource00 
+<00 
+T00 
+>00 
+(00 
+IEnumerable00 %
+<00% &
+T00& '
+>00' (
+source00) /
+)00/ 0
+;000 1
+IEnumerable77 
+<77 
+T77 
+>77 
+GetCurrentPageItems77 *
+<77* +
+T77+ ,
+>77, -
+(77- .
+)77. /
+;77/ 0
+void<< 
+NextPage<< 
+(<< 
+)<< 
+;<< 
+voidAA 
+PreviousPageAA 
+(AA 
+)AA 
+;AA 
+voidFF 
+	FirstPageFF 
+(FF 
+)FF 
+;FF 
+voidKK 
+LastPageKK 
+(KK 
+)KK 
+;KK 
+voidQQ 
+GoToPageQQ 
+(QQ 
+intQQ 
+
+pageNumberQQ $
+)QQ$ %
+;QQ% &
+}RR 
+}SS €
 kC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_OnStartup_AppLifecycle.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -94551,7 +94551,52 @@ dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 );;' (
 ;;;( )
 }<< 
-}== Œ@
+}== ¿
+mC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_PackagePreferences.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+	Contracts$ -
+.- .
+Services. 6
+{ 
+public 
+
+	interface -
+!IService_MySQL_PackagePreferences 6
+{ 
+Task 
+< '
+Model_PackageTypePreference (
+?( )
+>) *
+GetPreferenceAsync+ =
+(= >
+string> D
+partIDE K
+)K L
+;L M
+Task 
+SavePreferenceAsync  
+(  !'
+Model_PackageTypePreference! <
+
+preference= G
+)G H
+;H I
+Task$$ 
+<$$ 
+bool$$ 
+>$$ !
+DeletePreferenceAsync$$ (
+($$( )
+string$$) /
+partID$$0 6
+)$$6 7
+;$$7 8
+}%% 
+}&& Œ@
 bC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_Dunnage.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -94974,52 +95019,7 @@ searchText((P Z
 )AAG H
 ;AAH I
 }BB 
-}CC ¿
-mC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_PackagePreferences.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-{ 
-public 
-
-	interface -
-!IService_MySQL_PackagePreferences 6
-{ 
-Task 
-< '
-Model_PackageTypePreference (
-?( )
->) *
-GetPreferenceAsync+ =
-(= >
-string> D
-partIDE K
-)K L
-;L M
-Task 
-SavePreferenceAsync  
-(  !'
-Model_PackageTypePreference! <
-
-preference= G
-)G H
-;H I
-Task$$ 
-<$$ 
-bool$$ 
->$$ !
-DeletePreferenceAsync$$ (
-($$( )
-string$$) /
-partID$$0 6
-)$$6 7
-;$$7 8
-}%% 
-}&& ô
+}CC ô
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_LoggingUtility.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -95140,94 +95140,7 @@ daysToKeepCC %
 $numCC( *
 )CC* +
 ;CC+ ,
-}DD …
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_InforVisual.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-{ 
-public 
-
-	interface  
-IService_InforVisual )
-{ 
-Task 
-< 
-Model_Dao_Result 
-< 
-Model_InforVisualPO 1
-?1 2
->2 3
->3 4
-GetPOWithPartsAsync5 H
-(H I
-stringI O
-poNumberP X
-)X Y
-;Y Z
-Task 
-< 
-Model_Dao_Result 
-< !
-Model_InforVisualPart 3
-?3 4
->4 5
->5 6
-GetPartByIDAsync7 G
-(G H
-stringH N
-partIDO U
-)U V
-;V W
-Task$$ 
-<$$ 
-Model_Dao_Result$$ 
-<$$ 
-decimal$$ %
->$$% &
->$$& ',
- GetSameDayReceivingQuantityAsync$$( H
-($$H I
-string$$I O
-poNumber$$P X
-,$$X Y
-string$$Z `
-partID$$a g
-,$$g h
-DateTime$$i q
-date$$r v
-)$$v w
-;$$w x
-Task.. 
-<.. 
-Model_Dao_Result.. 
-<.. 
-int.. !
->..! "
->.." #%
-GetRemainingQuantityAsync..$ =
-(..= >
-string..> D
-poNumber..E M
-,..M N
-string..O U
-partID..V \
-)..\ ]
-;..] ^
-Task44 
-<44 
-bool44 
->44 
-TestConnectionAsync44 &
-(44& '
-)44' (
-;44( )
-}55 
-}66 ﬂ
+}DD ﬂ
 aC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ErrorHandler.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -95420,7 +95333,38 @@ eC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 )P Q
 ;Q R
 } 
-} ‚"
+} Ÿ
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Dispatcher.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+	Contracts$ -
+.- .
+Services. 6
+{ 
+public		 
+
+	interface		 
+IService_Dispatcher		 (
+{
+
+ $
+IService_DispatcherTimer  
+CreateTimer! ,
+(, -
+)- .
+;. /
+bool 
+
+TryEnqueue 
+( 
+Action 
+callback '
+)' (
+;( )
+} 
+} ‚"
 ^C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_CSVWriter.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -95662,38 +95606,94 @@ LocalError\\ !
 ;gg0 1
 }gg2 3
 }hh 
-}ii Ÿ
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Dispatcher.cs
-	namespace 	%
-MTM_Receiving_Application
+}ii …
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_InforVisual.cs
+	namespace 	%
+MTM_Receiving_Application
  #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-{ 
-public		 
+.# $
+	Contracts$ -
+.- .
+Services. 6
+{ 
+public 
 
-	interface		 
-IService_Dispatcher		 (
-{
-
- $
-IService_DispatcherTimer  
-CreateTimer! ,
-(, -
-)- .
-;. /
-bool 
-
-TryEnqueue 
-( 
-Action 
-callback '
-)' (
-;( )
-} 
-} ö6
+	interface  
+IService_InforVisual )
+{ 
+Task 
+< 
+Model_Dao_Result 
+< 
+Model_InforVisualPO 1
+?1 2
+>2 3
+>3 4
+GetPOWithPartsAsync5 H
+(H I
+stringI O
+poNumberP X
+)X Y
+;Y Z
+Task 
+< 
+Model_Dao_Result 
+< !
+Model_InforVisualPart 3
+?3 4
+>4 5
+>5 6
+GetPartByIDAsync7 G
+(G H
+stringH N
+partIDO U
+)U V
+;V W
+Task$$ 
+<$$ 
+Model_Dao_Result$$ 
+<$$ 
+decimal$$ %
+>$$% &
+>$$& ',
+ GetSameDayReceivingQuantityAsync$$( H
+($$H I
+string$$I O
+poNumber$$P X
+,$$X Y
+string$$Z `
+partID$$a g
+,$$g h
+DateTime$$i q
+date$$r v
+)$$v w
+;$$w x
+Task.. 
+<.. 
+Model_Dao_Result.. 
+<.. 
+int.. !
+>..! "
+>.." #%
+GetRemainingQuantityAsync..$ =
+(..= >
+string..> D
+poNumber..E M
+,..M N
+string..O U
+partID..V \
+)..\ ]
+;..] ^
+Task44 
+<44 
+bool44 
+>44 
+TestConnectionAsync44 &
+(44& '
+)44' (
+;44( )
+}55 
+}66 ö6
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Authentication.cs
 	namespace 	%
 MTM_Receiving_Application

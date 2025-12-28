@@ -10,7 +10,7 @@
     },
     {
       "key": "sonar.scanner.bootstrapStartTime",
-      "value": "1766938804000"
+      "value": "1766939544000"
     },
     {
       "key": "sonar.projectKey",
@@ -90,7 +90,7 @@
     },
     {
       "key": "sonar.branch.name",
-      "value": "008-dunnage-ui"
+      "value": "master"
     },
     {
       "key": "sonar.cs.vscoveragexml.reportsPaths",

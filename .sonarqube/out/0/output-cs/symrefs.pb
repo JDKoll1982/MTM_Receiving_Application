@@ -363,16 +363,7 @@ dC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving
 B C  
     " 0(
   '' '++ '(
-   ""* 5%% #)) (∆
-jC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_WeightQuantityView.xaml.cs
-
-  <
-		1 :  
- 4 4
-
-< B
-
-T U∏
+   ""* 5%% #)) (∏
 fC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_ReviewGridView.xaml.cs
 
   8
@@ -382,20 +373,16 @@ fC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving
 
 5 ;
 
-M Nç
-iC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_ModeSelectionView.xaml.cs
+M N∆
+jC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_WeightQuantityView.xaml.cs
 
-  ;
-9 B √
-gC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_PackageTypeView.xaml.cs
+  <
+		1 :  
+ 4 4
 
-  9
-		. 7  
- 1 1
+< B
 
-9 ?
-
-Q RŸ
+T UŸ
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_POEntryView.xaml.cs
 
   5
@@ -411,7 +398,20 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving
 
 0 6
 
-H I’
+H I√
+gC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_PackageTypeView.xaml.cs
+
+  9
+		. 7  
+ 1 1
+
+9 ?
+
+Q Rç
+iC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_ModeSelectionView.xaml.cs
+
+  ;
+9 B ’
 gC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving_ManualEntryView.xaml.cs
 
   9F
@@ -518,11 +518,7 @@ dC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Receiving\Receiving
 __ !`` !bbe rcc) 6ffk x
 __9 :__> ?
 __] ^__c d
-oo ppd mé
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Main\Main_ReceivingLabelPage.xaml.cs
-
-		 3
-( 1  å
+oo ppd må
 ^C:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Main\Main_DunnageLabelPage.xaml.cs
 
 		 1
@@ -548,23 +544,34 @@ hC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Dunnage\Helpers\Spe
 `C:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Dunnage\Dunnage_WorkflowView.xaml.cs
 
  0
-& / Ö
-eC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Dunnage\Dunnage_TypeSelectionView.xaml.cs
+& / Æ
+jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_QuantityEntryViewModel.cs
 
- 5(
-* 3   
+ 3F
+. > 99 /:: /bb pp uu 
+! 0 *
+ */ ;
+  &= C
 
- 
+ 
 
-' -
+!! $
 
-? @
+$$ $
 
- )
+'' %(
+,, % ,ee& -hh 
 
-1 7
-L M 
-/ 3; ?∞
+55 
+
+HH "
+
+HH' ,
+NN !JJ 
+
+__ 
+
+ff "∞
 ^C:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Dunnage\Dunnage_ReviewView.xaml.cs
 
  .
@@ -2023,7 +2030,11 @@ iC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Receiving\Rece
 ¶¶ 
 ´´ 
 ∞∞ 
-¥¥ ã
+¥¥ é
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Main\Main_ReceivingLabelPage.xaml.cs
+
+		 3
+( 1  ã
 eC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_ReceivingLabelViewModel.cs
 
  1
@@ -2090,16 +2101,7 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_Dunn
 
 èè &
 
-ññ #›
-kC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_CarrierDeliveryLabelViewModel.cs
-
- 7
- * 
-  & #
-< Q 
-' 4 
-
-   $º
+ññ #º
 fC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Helpers\SpecInputViewModel.cs
 
 		 '
@@ -2260,7 +2262,23 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnag
 kk mm oo8 B
 vv xx {{ 
 
-†† Ã
+†† Ö
+eC:\Users\johnk\source\repos\MTM_Receiving_Application\Views\Dunnage\Dunnage_TypeSelectionView.xaml.cs
+
+ 5(
+* 3   
+
+ 
+
+' -
+
+? @
+
+ )
+
+1 7
+L M 
+/ 3; ?Ã
 jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_PartSelectionViewModel.cs
 
  3L
@@ -2356,7 +2374,44 @@ jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnag
 ®®' 0
 
 ••B C
-••G HÄ
+••G H›
+kC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_CarrierDeliveryLabelViewModel.cs
+
+ 7
+ * 
+  & #
+< Q 
+' 4 
+
+   $∫
+jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ModeSelectionViewModel.cs
+
+ 32
+. > -- 44 ;; 
+! 0 *
+ */ ;
+  &= C
+
+ %
+
+   %
+
+## #
+
+** !
+
+11 !
+
+88 
+
+CC #
+CC) 2EE 'FF 
+
+PP #
+PP) 2RR 'SS 
+
+]] !
+]]' 0__ %`` Ä
 hC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ManualEntryViewModel.cs
 
  1,
@@ -2846,96 +2901,12 @@ hC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Startup\Service_
 §§# )
 
 §§ 
-¶¶ Æ
-jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_QuantityEntryViewModel.cs
+¶¶ j
+PC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Window.cs
 
- 3F
-. > 99 /:: /bb pp uu 
-! 0 *
- */ ;
-  &= C
+ 
 
- 
-
-!! $
-
-$$ $
-
-'' %(
-,, % ,ee& -hh 
-
-55 
-
-HH "
-
-HH' ,
-NN !JJ 
-
-__ 
-
-ff "∫
-jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ModeSelectionViewModel.cs
-
- 32
-. > -- 44 ;; 
-! 0 *
- */ ;
-  &= C
-
- %
-
-   %
-
-## #
-
-** !
-
-11 !
-
-88 
-
-CC #
-CC) 2EE 'FF 
-
-PP #
-PP) 2RR 'SS 
-
-]] !
-]]' 0__ %`` ¸
-TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Pagination.cs
-
- #F
-
-
-% , ( /''! (11 88 :: x
-  " .!!  22 DD MM TT VV ]] __ ii kk (
-      (
- ))# .++' 2;; "<
- ))1 ;]]  *__ )gg 'gg6 @(
- > F;;* 2<< 
-'' 1 ;
-)) BB 
-++ #KK 
---# .rr 
-
-// 
-// //- .
-//0 611 
-
-66 1(
-662 366 889 :== 
-
-@@ 
-
-II  
-
-RR 
-
-[[ 
-
-dd F
-dd! +ff ff  *gg gg) 3ii  *kk )P
-pp """ !33 EE NN WW `` ll Ë
+  Ë
 `C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_DispatcherTimerWrapper.cs
 
 
@@ -2956,12 +2927,19 @@ TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Paginati
 
 $$ 
 
-&& j
-PC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Window.cs
+&& ⁄
+TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Dispatcher.cs
 
- 
+
+
+ #(
+) 9 6 F #
+2 A .Y h
 
-  ∆
+( 3
+
+ 
+& .5 =∆
 bC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Receiving\Service_SessionManager.cs
 
  'n
@@ -3225,7 +3203,41 @@ eC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Receiving\Servic
 
 ùù -
 —— %
-¢¢ %™
+¢¢ %¸
+TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Pagination.cs
+
+ #F
+
+
+% , ( /''! (11 88 :: x
+  " .!!  22 DD MM TT VV ]] __ ii kk (
+      (
+ ))# .++' 2;; "<
+ ))1 ;]]  *__ )gg 'gg6 @(
+ > F;;* 2<< 
+'' 1 ;
+)) BB 
+++ #KK 
+--# .rr 
+
+// 
+// //- .
+//0 611 
+
+66 1(
+662 366 889 :== 
+
+@@ 
+
+II  
+
+RR 
+
+[[ 
+
+dd F
+dd! +ff ff  *gg gg) 3ii  *kk )P
+pp """ !33 EE NN WW `` ll ™
 
 gC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Receiving\Service_ReceivingValidation.cs
 
@@ -3606,34 +3618,7 @@ bC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service
 ÄÄ_ e
 ÅÅ 
 
-ÖÖ  3Û
-aC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPart.cs
-
- *
-
-
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-"" !
-
-&& !
-
-** 
-
-.. 
-
-22 Â
+ÖÖ  3Â
 kC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_MySQL_PackagePreferences.cs
 
  1<
@@ -3651,795 +3636,7 @@ kC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service
 
 77  5(
 77= C99* 0::V \<<: @
-<< >> ¿
-aC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_LoggingUtility.cs
-
- #V
- ) dd )nn" /pp* 7
-ÖÖ" /
-ãã0 =
-çç4 A
- '** ! 
-N W%%! *
-◊◊ 
-##  5 D
-)) ",,' 2
-
-99 
-99 &;;  
-990 7;;( /
-
-AA 
-AA" )CC #
-AA3 :CC+ 2
-
-II 
-II  'KK !
-II4 =KK# ,
-IIN UKK. 5
-
-QQ 
-QQ# *SS $
-QQ7 @SS& /
-QQQ XSS1 8
-
-YY 
-YY  '[[ !
-YY4 =[[# ,
-YYN U[[. 5 
-aa '))% :
-∂∂! 6
-cc dd+ 3
-jj (  
-
- 
-" ,
-ää3 =$
-
-ÅÅ 
-££ !
-¨¨ 
-
-ää 
-ëë- 70
-
-ãã  
-îî* :
-ññ2 B
-öö6 F$
-
-èè 
-ëë 
-ööH P0
-
-öö &
-ùù$ /
-üü$ /
-¢¢$ /J
-
-≤≤ ;; CC KK SS [[ 
-©© 
-
-≤≤! )
-∫∫M U$
-
-≤≤2 9
-ªª, 3
-‡‡D KH
-
-≤≤F O
-ƒƒ 
-∆∆2 ;
-∆∆R [
-»»$ -
-ÀÀ% .0
-
-≤≤Y `
-∫∫Z a
-∫∫p w
-ææ& -
-
-∂∂ ê
-
-∑∑ 
-∫∫ 
-ªª 
-¿¿ 
-∆∆ 
-«« 
-»» 
-ŒŒ 
-œœ 
-‘‘ 
-◊◊ "
-⁄⁄+ 3T
-
-ÀÀ "
-ÃÃ %
-ŒŒ< J
-ŒŒa o
-œœ( 6
-–– "
-––% 3Í
-dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_DunnageWorkflow.cs
-
-
-
- -
-
-! ,
-
- +
-
- &
-
-# 6
-
- %
-
-' =
-
- 
-
-/ 3
-
- /
-
- Ω
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_ErrorHandler.cs
-
- !Z
-- < ;; #>> #AA #DD #GG #hh {{ 
-% 3 cc )
-8 F (S a
-X e &Q ^
- &
-èè 
- $$ (**. :(
- #$$* 2))* 2**< D 
-   $$4 =
-íí  
-!! '' 
-ìì 
-)) **' ,
-11 $$ <
-22 ;;, 8>>/ ;AA- 9DD0 <GG- 9
-33 #88 (
-44 AA; DDD> GGG; D
-PP *** &
-QQ nn 
-RR oo !
-
-SS #
-cc ee qq #
-ll vv 
-
-ÇÇ )0
-
-ÉÉ 
-áá 
-ççN T
-ëë 
-
-ÑÑ 
-çç5 B
-
-ÖÖ 
-ìì "
-
-çç 
-êê 
-
-öö ()) )
-
-öö< D
-úú †
-kC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Authentication\Service_UserSessionManager.cs
-
- +
-" * ~~ 
-- ? ZZ .d
-* 7ZZ [[ \\ ]] ^^ ff hh ii jj 
- .[[: N
-3 : I P
-P a! 2] n∫
-$$" 033 >> !DD FF QQ ``_ mss !yy 
-ÄÄ "
-ÅÅ "
-ÇÇ@ N
-éé 
-¢¢ 
-ßß< J
-¨¨ ,
-≠≠# 1
-
-++! .(
-,, 00 00E I55 <
---$ 511 !11R c66" 377" 3;;" 3
-.. '88' ;
-
-BB &
-
-OO *,
-dd )WW !
-çç %
-±± %
-qq %
-§§ !
-
-ww ) 
-ww1 7 
-ÑÑM S
-
-óó= L
-™™  
-
-††  ]]" -ii& 1
-
-††) /
-
-††8 <ú
-gC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Authentication\Service_Authentication.cs
-
- 'd
-" * 55# +pp# +
-ææ# +
-ÒÒ) 1
-çç2 :
-∂∂# +
-—— ∏
-/ < NN !OO '
-ãã !
-åå '
-—— !
-““ '
-˚˚ !
-¸¸ '
-•• !
-¶¶ '
-¬¬ !
-√√ '
-÷÷ !
-◊◊ '
-/ 6 I P
-N Z (S _
-
-&&0 R(
-'' "//. =55J YEE #(
-(( ',, 99 II <
-55 77 ::< B== II- 3JJ: @
-
-UU0 F2
-VV __. 6ppA Iww  yy9 A2
-WW dd. 1jj jj( +ppK N*
-XX '\\ {{ 
-ÜÜ N
-pp rr rr' -
-ÇÇ 
-ÑÑ9 ?
-ÜÜ- 3
-áá: @
-
-ññ, >l
-
-óó 
-††. 2
-••. 2
-™™. 2
-ØØ. 2
-µµ; ?
-ææ? C
-»» 
-  ) -$
-
-òò 
-ææE N
-  Q Z0
-
-ôô '
-ùù 
-ªª 
-ÃÃ $
-
-µµ !
-∂∂ "
-∏∏8 ET
-
-ææ 
-¿¿ 
-¿¿' -
-¬¬8 >
-  ? E
-ÃÃL R
-ÕÕ6 <
-
-‹‹, <
-µµ* :<
-
-‹‹D G
-··. 1
-ÊÊ 
-ÎÎ# &
-ÒÒC F
-
-‹‹N c
-ÒÒH ]$
-
-ÒÒ  
-ÚÚ  
-ÚÚ, 8
-
-ÜÜ3 M<
-
-ÜÜV b
-ää 
-èè9 E
-îîG S
-©©3 ?0
-
-çç )
-ëë )
-ëë5 J
-îî# 8H
-
-èè 
-ïï 
-ññ 
-ùù 
-ûû 
-°° $
-
-îî  
-ïï- 5
-ññ) 1
-
-≤≤( A0
-
-∂∂ 
-∏∏ 
-∏∏& ,
-∫∫ !8
-
-ÕÕ .CC *uu .
-ÄÄ *
-∆∆ *
-
-ÕÕ6 ?
-——4 =
-
-ÕÕH P
-——? G
-
-ÕÕY h
-——I X
-
-ÕÕq x
-——Z aÛ
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Systems\Model_WorkstationConfig.cs
-
-		 (
- "EE 
- %%%( 7**- <
-
- "
-%% $00+ ;
-
-** )
-
-00 '
-CC/ ;EE '±
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Systems\Model_UserSession.cs
-
-		 "
- II$ (
-
- %
-
-   %
-
-%% *
-** &aa (
-00 -??@ UUU !bb !
-:: 'DD; J
-?? -DD" 7
-
-DD 
-
-II  
-
-SS &∆
-RC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Systems\Model_User.cs
-
-		 
- !ZZ9 G
-
- %
- ZZ( 0
-
-## 
-
-((  
-
--- 
-
-22 
-77 %__? M
-
-<< %
-
-AA +
-FF #jj 
-
-KK  
-PP $kk 
-
-ZZ !
-
-__  ⁄
-TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Dispatcher.cs
-
-
-
- #(
-) 9 6 F #
-2 A .Y h
-
-( 3
-
- 
-& .5 =î
-bC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_WorkflowStepResult.cs
-
- )
-
- 
-
- "
-
-		) 3®
-^C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_UserPreference.cs
-
- )
-
-
-
- 
-
- 
-
- (
-
- !
-
- ò
-ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_SaveResult.cs
-
- !
-
- 
-
- "
-
- 
-
-% 4ƒ
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_ReceivingSession.cs
-
- '
-
- 
-
- #<
-) .& +$$. 3** //  %//1 6
-
- 
-
- 
-
- 
-
- "
-
-$$ *
-$$9 :$$> ?
-
-)) '
-** **  
-
-// ”
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_ReceivingLoad.cs
-
- ,
-
- 
-
-  
-
- 
-
-  
-
- !
-
- $
-
-   
-
-## '
-
-&& %
-
-)) &
-
-,, $
-
-// '
-
-22! -
-
-55 )
-
-88 !
-
-;; &
-
->> 
-
-@@ $
-@@, 1BB* /LL! &
-LL MM QQ #
-
-\\ )
-\\; @^^ #
-
-aa -
-aa5 :cc0 5
-cc? Eee# )gg" (
-
-oo ,
-
-oo5 :
-
-ww -
-
-ww2 7
- .qq %yy %
-
-èè -
-
-ïï %≥
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_ReceivingLine.cs
-
-		  
-
- 
-
- 
-
- 
-
- 
-
-"" 
-
-'' 
-
-,, 
-
-11 !
-
-66 
-;; TT" -
-@@ TT2 =
-
-EE 
-
-JJ !
-
-OO 
-
-TT ˚
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_InforVisualPO.cs
-
-		 $
-
- 
-
- 2
- + 1$$ "**  &**1 7
-+ 0  %1 6
-
- 
-
- '
-
-** ﬂ
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_InforVisualPart.cs
-
- &
-		  
- ". :
-
- 
-
- !
- ! %
-
- $
-
- !û
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_HeatCheckboxItem.cs
-
-		 /
-
- %
-
- 
-
- $
-
- !‘
-UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageType.cs
-
- f
- - B S .. FF __ mm {{ 
-ää 
-" 2 ,
-
-I T4
- !!C I!!c i
-!!Ö ã## 
-
-&&C O
-&&T V** 
-(( 11 
-
-555 @
-55H P>>/ 7
-55Y ]??* .2
-77 @@ KK KK( .MMM S
-<< EE (
-CC II RR5 ;RRJ P
-
-UU0 ;
-UU@ BYY 
-UUK SZZ #
-UU\ `[[ 
-WW aa 
-
-ee0 ;
-ee@ Bii 
-gg oo 
-
-ss5 D
-ssI Oww 
-uu ~~ 
-}} }} }}& ,
-
-ÇÇ5 K
-
-ÇÇP V
-ÜÜ 
-
-ÑÑ 
-çç $
-
-åå 
-åå 
-åå& , 
-
-ëë + 00 Ã
-
-ëë8 >
-ïï 
-ïï! '
-ññ 
-ññ( .
-óó 
-óó) /
-òò  
-òò- 3
-ôô 
-ôô) /
-ôôT Z
-ôôe k
-öö !
-öö+ 1
-ööX ^
-öök qØ
-eC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_PackageTypePreference.cs
-
-		 ,
-
- 
-
- 
-
- %
-
- %
-
- $®
-^C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_CSVWriteResult.cs
-
- %
-
-  
-
- "
-
- "
-
- #
-
-		 %Í
-dC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_CarrierDeliveryLabel.cs
-
-
-
- '
-
- 
-
- 
-
- 
-
- $
-
-## 
-
-(( !
-
--- 
-
-22 
-
-77 
-
-<< Ø
-eC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_Application_Variables.cs
-
-		 (
-
- !
-
- 
-
- "
-
- 
-
-&& !â
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPO.cs
-
- (
-
-		 
-
- 
-
- 
-
- #
-
- 
-
-  
-
- !
-
- !
-
-!! 
-
-$$ 
-
-'' 
-
-** 
-
--- π
+<< >> π
 `C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_MySQL_Dunnage.cs”
  &88_ tEE_ tXX^ see^ s
 ÄÄ^ s
@@ -4778,19 +3975,116 @@ _C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_
 èè; A
 
 ççf o
-èèE Nb
-TC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_LabelType.cs
+èèE N¿
+aC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_LoggingUtility.cs
 
- f
-XC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_ErrorSeverity.cs
+ #V
+ ) dd )nn" /pp* 7
+ÖÖ" /
+ãã0 =
+çç4 A
+ '** ! 
+N W%%! *
+◊◊ 
+##  5 D
+)) ",,' 2
 
- l
-^C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_DunnageWorkflowStep.cs
+99 
+99 &;;  
+990 7;;( /
 
- (g
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_DataSourceType.cs
+AA 
+AA" )CC #
+AA3 :CC+ 2
 
- #È
+II 
+II  'KK !
+II4 =KK# ,
+IIN UKK. 5
+
+QQ 
+QQ# *SS $
+QQ7 @SS& /
+QQQ XSS1 8
+
+YY 
+YY  '[[ !
+YY4 =[[# ,
+YYN U[[. 5 
+aa '))% :
+∂∂! 6
+cc dd+ 3
+jj (  
+
+ 
+" ,
+ää3 =$
+
+ÅÅ 
+££ !
+¨¨ 
+
+ää 
+ëë- 70
+
+ãã  
+îî* :
+ññ2 B
+öö6 F$
+
+èè 
+ëë 
+ööH P0
+
+öö &
+ùù$ /
+üü$ /
+¢¢$ /J
+
+≤≤ ;; CC KK SS [[ 
+©© 
+
+≤≤! )
+∫∫M U$
+
+≤≤2 9
+ªª, 3
+‡‡D KH
+
+≤≤F O
+ƒƒ 
+∆∆2 ;
+∆∆R [
+»»$ -
+ÀÀ% .0
+
+≤≤Y `
+∫∫Z a
+∫∫p w
+ææ& -
+
+∂∂ ê
+
+∑∑ 
+∫∫ 
+ªª 
+¿¿ 
+∆∆ 
+«« 
+»» 
+ŒŒ 
+œœ 
+‘‘ 
+◊◊ "
+⁄⁄+ 3T
+
+ÀÀ "
+ÃÃ %
+ŒŒ< J
+ŒŒa o
+œœ( 6
+–– "
+––% 3È
 ^C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_InforVisual.cs
 
  $
@@ -4842,7 +4136,442 @@ YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_DataSou
   * 0
 ŒŒw }
 
-ÍÍ  3ú
+ÍÍ  3Ω
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Database\Service_ErrorHandler.cs
+
+ !Z
+- < ;; #>> #AA #DD #GG #hh {{ 
+% 3 cc )
+8 F (S a
+X e &Q ^
+ &
+èè 
+ $$ (**. :(
+ #$$* 2))* 2**< D 
+   $$4 =
+íí  
+!! '' 
+ìì 
+)) **' ,
+11 $$ <
+22 ;;, 8>>/ ;AA- 9DD0 <GG- 9
+33 #88 (
+44 AA; DDD> GGG; D
+PP *** &
+QQ nn 
+RR oo !
+
+SS #
+cc ee qq #
+ll vv 
+
+ÇÇ )0
+
+ÉÉ 
+áá 
+ççN T
+ëë 
+
+ÑÑ 
+çç5 B
+
+ÖÖ 
+ìì "
+
+çç 
+êê 
+
+öö ()) )
+
+öö< D
+úú †
+kC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Authentication\Service_UserSessionManager.cs
+
+ +
+" * ~~ 
+- ? ZZ .d
+* 7ZZ [[ \\ ]] ^^ ff hh ii jj 
+ .[[: N
+3 : I P
+P a! 2] n∫
+$$" 033 >> !DD FF QQ ``_ mss !yy 
+ÄÄ "
+ÅÅ "
+ÇÇ@ N
+éé 
+¢¢ 
+ßß< J
+¨¨ ,
+≠≠# 1
+
+++! .(
+,, 00 00E I55 <
+--$ 511 !11R c66" 377" 3;;" 3
+.. '88' ;
+
+BB &
+
+OO *,
+dd )WW !
+çç %
+±± %
+qq %
+§§ !
+
+ww ) 
+ww1 7 
+ÑÑM S
+
+óó= L
+™™  
+
+††  ]]" -ii& 1
+
+††) /
+
+††8 <d
+VC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_PackageType.cs
+
+  Û
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Systems\Model_WorkstationConfig.cs
+
+		 (
+ "EE 
+ %%%( 7**- <
+
+ "
+%% $00+ ;
+
+** )
+
+00 '
+CC/ ;EE '±
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Systems\Model_UserSession.cs
+
+		 "
+ II$ (
+
+ %
+
+   %
+
+%% *
+** &aa (
+00 -??@ UUU !bb !
+:: 'DD; J
+?? -DD" 7
+
+DD 
+
+II  
+
+SS &∆
+RC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Systems\Model_User.cs
+
+		 
+ !ZZ9 G
+
+ %
+ ZZ( 0
+
+## 
+
+((  
+
+-- 
+
+22 
+77 %__? M
+
+<< %
+
+AA +
+FF #jj 
+
+KK  
+PP $kk 
+
+ZZ !
+
+__  î
+bC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_WorkflowStepResult.cs
+
+ )
+
+ 
+
+ "
+
+		) 3®
+^C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_UserPreference.cs
+
+ )
+
+
+
+ 
+
+ 
+
+ (
+
+ !
+
+ ò
+ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_SaveResult.cs
+
+ !
+
+ 
+
+ "
+
+ 
+
+% 4ƒ
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_ReceivingSession.cs
+
+ '
+
+ 
+
+ #<
+) .& +$$. 3** //  %//1 6
+
+ 
+
+ 
+
+ 
+
+ "
+
+$$ *
+$$9 :$$> ?
+
+)) '
+** **  
+
+// ”
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_ReceivingLoad.cs
+
+ ,
+
+ 
+
+  
+
+ 
+
+  
+
+ !
+
+ $
+
+   
+
+## '
+
+&& %
+
+)) &
+
+,, $
+
+// '
+
+22! -
+
+55 )
+
+88 !
+
+;; &
+
+>> 
+
+@@ $
+@@, 1BB* /LL! &
+LL MM QQ #
+
+\\ )
+\\; @^^ #
+
+aa -
+aa5 :cc0 5
+cc? Eee# )gg" (
+
+oo ,
+
+oo5 :
+
+ww -
+
+ww2 7
+ .qq %yy %
+
+èè -
+
+ïï %≥
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_ReceivingLine.cs
+
+		  
+
+ 
+
+ 
+
+ 
+
+ 
+
+"" 
+
+'' 
+
+,, 
+
+11 !
+
+66 
+;; TT" -
+@@ TT2 =
+
+EE 
+
+JJ !
+
+OO 
+
+TT Ø
+eC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_PackageTypePreference.cs
+
+		 ,
+
+ 
+
+ 
+
+ %
+
+ %
+
+ $˚
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_InforVisualPO.cs
+
+		 $
+
+ 
+
+ 2
+ + 1$$ "**  &**1 7
++ 0  %1 6
+
+ 
+
+ '
+
+** ﬂ
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_InforVisualPart.cs
+
+ &
+		  
+ ". :
+
+ 
+
+ !
+ ! %
+
+ $
+
+ !û
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_HeatCheckboxItem.cs
+
+		 /
+
+ %
+
+ 
+
+ $
+
+ !·
+[C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_DunnageLine.cs
+
+		 
+
+ 
+
+ 
+
+ 
+
+ 
+
+"" 
+
+'' 
+
+,, 
+
+11 
+
+66 
+
+;; ®
+^C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_CSVWriteResult.cs
+
+ %
+
+  
+
+ "
+
+ "
+
+ #
+
+		 %Í
+dC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_CarrierDeliveryLabel.cs
+
+
+
+ '
+
+ 
+
+ 
+
+ 
+
+ $
+
+## 
+
+(( !
+
+-- 
+
+22 
+
+77 
+
+<< Ø
+eC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_Application_Variables.cs
+
+		 (
+
+ !
+
+ 
+
+ "
+
+ 
+
+&& !ú
 `C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_InventoriedDunnage.cs
 
  %
@@ -4880,42 +4609,224 @@ YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_DataSou
 JJ JJ# $JJ, -LL 
 JJ% *LL/ 4MM 
 JJ. 3LL6 ;MM 
-JJP \NN &È
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageType.cs
+JJP \NN &Û
+aC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPart.cs
 
- 
+ *
+
 
 
-   
-   %
-    !! &
- && '' &
- !,, -- (
- 22 33 '
- #88 99 )
+ 
 
- 
+ 
 
- 
+ 
 
- 
+ 
 
-$$ 
+ 
 
-** 
+ 
 
-00 
+"" !
 
-66 !
-<<. =@@ 
->> ,GG 
->>H T@@C O
+&& !
 
-CC (
-CC CC# $CC, -EE 
-CC% *EE/ 4FF 
-CC. 3EE6 ;FF 
-CCP \GG &ü
+** 
+
+.. 
+
+22 ú
+gC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Authentication\Service_Authentication.cs
+
+ 'd
+" * 55# +pp# +
+ææ# +
+ÒÒ) 1
+çç2 :
+∂∂# +
+—— ∏
+/ < NN !OO '
+ãã !
+åå '
+—— !
+““ '
+˚˚ !
+¸¸ '
+•• !
+¶¶ '
+¬¬ !
+√√ '
+÷÷ !
+◊◊ '
+/ 6 I P
+N Z (S _
+
+&&0 R(
+'' "//. =55J YEE #(
+(( ',, 99 II <
+55 77 ::< B== II- 3JJ: @
+
+UU0 F2
+VV __. 6ppA Iww  yy9 A2
+WW dd. 1jj jj( +ppK N*
+XX '\\ {{ 
+ÜÜ N
+pp rr rr' -
+ÇÇ 
+ÑÑ9 ?
+ÜÜ- 3
+áá: @
+
+ññ, >l
+
+óó 
+††. 2
+••. 2
+™™. 2
+ØØ. 2
+µµ; ?
+ææ? C
+»» 
+  ) -$
+
+òò 
+ææE N
+  Q Z0
+
+ôô '
+ùù 
+ªª 
+ÃÃ $
+
+µµ !
+∂∂ "
+∏∏8 ET
+
+ææ 
+¿¿ 
+¿¿' -
+¬¬8 >
+  ? E
+ÃÃL R
+ÕÕ6 <
+
+‹‹, <
+µµ* :<
+
+‹‹D G
+··. 1
+ÊÊ 
+ÎÎ# &
+ÒÒC F
+
+‹‹N c
+ÒÒH ]$
+
+ÒÒ  
+ÚÚ  
+ÚÚ, 8
+
+ÜÜ3 M<
+
+ÜÜV b
+ää 
+èè9 E
+îîG S
+©©3 ?0
+
+çç )
+ëë )
+ëë5 J
+îî# 8H
+
+èè 
+ïï 
+ññ 
+ùù 
+ûû 
+°° $
+
+îî  
+ïï- 5
+ññ) 1
+
+≤≤( A0
+
+∂∂ 
+∏∏ 
+∏∏& ,
+∫∫ !8
+
+ÕÕ .CC *uu .
+ÄÄ *
+∆∆ *
+
+ÕÕ6 ?
+——4 =
+
+ÕÕH P
+——? G
+
+ÕÕY h
+——I X
+
+ÕÕq x
+——Z ab
+TC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_LabelType.cs
+
+ â
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPO.cs
+
+ (
+
+		 
+
+ 
+
+ 
+
+ #
+
+ 
+
+  
+
+ !
+
+ !
+
+!! 
+
+$$ 
+
+'' 
+
+** 
+
+-- l
+^C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_DunnageWorkflowStep.cs
+
+ (g
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_DataSourceType.cs
+
+ #°
+WC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_SpecInput.cs
+
+ $
+
+ 
+
+ 
+
+ 
+
+ 
+
+ f
+XC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_ErrorSeverity.cs
+
+ ü
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageSpec.cs
 
 		 
@@ -5001,7 +4912,69 @@ YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_Dunn
 aa aa# $aa, -cc 
 aa% *cc/ 4dd 
 aa. 3cc6 ;dd 
-aaP \ee &…
+aaP \ee &ˇ
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result_Factory.cs
+
+		 ,
+
+# *
+2 9 "
+F H 
+
+# *
+/ ; '
+
+& -
+. /# $!!$ %
+8 ?$$ "
+L N%% 
+
+**& -(
+**. /**# $**1 2,,$ %
+**3 7// 
+**= I00 'À
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnagePart.cs
+
+		 
+   
+   #
+ $$ %% #
+ ** -- (
+' 666 77 +
+ #<< == ,
+ BB CC &
+ !HH II (
+ NN OO '
+ #TT UU )
+
+ 
+
+ 
+
+"" 
+(( kk* 4qqN X(
+44& 4mm rr vv 
+
+:: !
+
+@@ 
+
+FF 
+
+LL 
+
+RR !
+XX. =\\ 
+ZZ ,cc 
+ZZH T\\C O
+
+__ (
+__ __# $__, -aa 
+__% *aa/ 4bb 
+__. 3aa6 ;bb 
+__P \cc &
+gg &// %
+qq rr !…
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageLoad.cs
 
  
@@ -5109,93 +5082,75 @@ UC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Res
 ;; 
 ;; @@ 
 
-@@ ¸
-HC:\Users\johnk\source\repos\MTM_Receiving_Application\MainWindow.xaml.cs
+@@ ‘
+UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageType.cs
 
-  *
-* 3 ^
-5 D 44 66 *>>6 E??1 @PP 
-¢¢ 
-§§ *
-5 > !
-\ j ,
-""  &&9 A((? G(
-## "%%9 C''? I**D N
-66 77, 088* .
-<<% 0>> ?? 
+ f
+ - B S .. FF __ mm {{ 
+ää 
+" 2 ,
 
->>- .
+I T4
+ !!C I!!c i
+!!Ö ã## 
 
->>0 1
+&&C O
+&&T V** 
+(( 11 
 
-??( )
+555 @
+55H P>>/ 7
+55Y ]??* .2
+77 @@ KK KK( .MMM S
+<< EE (
+CC II RR5 ;RRJ P
 
-??+ ,
-FF &CC ,
+UU0 ;
+UU@ BYY 
+UUK SZZ #
+UU\ `[[ 
+WW aa 
 
-FF. 4
+ee0 ;
+ee@ Bii 
+gg oo 
 
-FFF J
-LL )BB 2
+ss5 D
+ssI Oww 
+uu ~~ 
+}} }} }}& ,
 
-LL1 7
-LLR VNN 
+ÇÇ5 K
 
-TT -
+ÇÇP V
+ÜÜ 
 
-TT= C
-TTm qVV [[ 
-[[= A]] 
-]] ^^ 
-rr +cc2 Hhh2 H
+ÑÑ 
+çç $
 
-rr3 9
+åå 
+åå 
+åå& , 
 
-rrl m
-uuO \ww  -@
-ww xx {{. 7~~ 
-ÄÄ8 A
-ÇÇ6 ?
+ëë + 00 Ã
 
-~~2 3
-~~5 9
-ÄÄ  
-
-ààP [
-ää  +H
-
-ää 
-ãã 
-éé. 7
-ëë 
-ìì8 A
-ïï6 ?
-
-ëë2 3
-
-ëë5 9
-ìì  
-
-†† %$
-
-§§ 
-••, 0
-¶¶* .
-
-≠≠ ! 
-
-ØØ 
-∞∞ &$
-
-∞∞ 
-≤≤ #
-≥≥ #
-
-≤≤ 
-µµ; B
-
-≥≥ 
-µµD Kª
+ëë8 >
+ïï 
+ïï! '
+ññ 
+ññ( .
+óó 
+óó) /
+òò  
+òò- 3
+ôô 
+ôô) /
+ôôT Z
+ôôe k
+öö !
+öö+ 1
+ööX ^
+öök qª
 gC:\Users\johnk\source\repos\MTM_Receiving_Application\Helpers\UI\Helper_WorkflowHelpContentGenerator.cs
 
  ;
@@ -5778,7 +5733,17 @@ YC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_Receiv
 ää !
 ãã1 4
 åå, /
-çç. 1ô
+çç. 1Ÿ
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_ReceivingLine.cs
+
+ 
+ - AA !
+$ 4 ,W g
+
+( @n
+U Y$$2 6%%0 4&&2 6''8 <((. 2)). 2**9 =++> B,,4 8--9 =
+"" 33D N@@ 
+>> DD ô
 aC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_PackageTypePreference.cs
 
  &J
@@ -5821,7 +5786,42 @@ aC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_Packag
 
 üü 
 •• 
-©©: @Ö
+©©: @È
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageType.cs
+
+ 
+
+
+   
+   %
+    !! &
+ && '' &
+ !,, -- (
+ 22 33 '
+ #88 99 )
+
+ 
+
+ 
+
+ 
+
+$$ 
+
+** 
+
+00 
+
+66 !
+<<. =@@ 
+>> ,GG 
+>>H T@@C O
+
+CC (
+CC CC# $CC, -EE 
+CC% *EE/ 4FF 
+CC. 3EE6 ;FF 
+CCP \GG &Ö
 WC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_DunnageLine.cs
 
  #(
@@ -5835,21 +5835,75 @@ WC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_Dunnag
 %% #DD  
 (( 66D NCC 
 AA GG (
-KK VV WW ]] é
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_CarrierDeliveryLabel.cs
+KK VV WW ]] µ
+UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageLoad.cs
 
- ,(
-* 7 TT VV #
+ \
+ -  )) 88 JJ hh xx 
+ÜÜ 
+" 2 ,
 
- &
-= I $
+I T
 
-!!/ NP
-!!j o++3 8,,4 9--< A..; @//9 >008 =11. 3
-&& #EE  
-)) 77D NDD 
-BB HH (
-LL WW XX ^^ 
+  I \
+  f o$$ %
+	  z Å%% !
+"" ,, 
+
+00C O
+00U ]44 #
+22 ;; 
+
+??0 ;
+??A ICC #
+??R XDD 
+??b jEE "
+??s wFF 
+AA LL 
+
+PP0 @
+PPY ^UU "
+PPg kdd 
+TT WW __/ 7
+__ cc 
+aa jj 
+
+nn0 ;
+nnA Irr #
+nnS [ss "
+nnd htt 
+pp zz 
+
+~~0 ;
+~~A I
+ÇÇ #
+
+ÄÄ 
+àà *
+
+åå + ++ :: ¸
+
+åå8 >
+êê #
+êê$ *
+ëë 
+ëë& ,
+íí 
+íí) /
+ìì !
+ìì. 4
+îî 
+îî) /
+ïï  
+ïï- 3
+ññ 
+ññ) /
+ññT Z
+ññe k
+óó !
+óó+ 1
+óóX ^
+óók q
 [C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\InforVisual\Dao_InforVisualPO.cs
 
 
@@ -5925,30 +5979,155 @@ WC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_Dunnag
 íí5 ;
 ìì" (
 îî! '
-ïï" (·
-[C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_DunnageLine.cs
+ïï" (∆
+\C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_InventoriedDunnage.cs
 
-		 
+ #P
+ -  '' 66 PP jj xx 
+) 9 ,
 
- 
+P [
 
- 
+6 @
+H N## 
+!! ** 
+)) )) ))( .
 
- 
+..J X
+..` f22 
+00 99 
 
- 
+==5 @
+==H NFF- 3
+==W fGG6 E
+==o tHH+ 0
+	==} ÅII* .2
+?? JJ UU UU( .WWM S
+DD OO (
+MM SS \\5 ;\\J P
 
-"" 
+__0 ;
+__@ Bcc 
+__K Zdd" 1
+__c hee 
+__q uff 
+aa ll 
 
-'' 
+pp0 ;
+pp@ Btt 
+rr zz 
+~~% 2 88 ™
+~~? E
+ÇÇ 
+ÇÇ! '
+ÉÉ 
+ÉÉ& ,
+ÑÑ $
+ÑÑ. 4
+ÑÑ^ d
+ÑÑo u
+ÖÖ 
+ÖÖ$ *
+ÖÖI O
+ÖÖZ `
+ÜÜ 
+ÜÜ) /
+áá  
+áá- 3
+àà 
+àà) /
+ààT Z
+ààe k
+ââ !
+ââ+ 1
+ââX ^
+ââk q¸
+HC:\Users\johnk\source\repos\MTM_Receiving_Application\MainWindow.xaml.cs
 
-,, 
+  *
+* 3 ^
+5 D 44 66 *>>6 E??1 @PP 
+¢¢ 
+§§ *
+5 > !
+\ j ,
+""  &&9 A((? G(
+## "%%9 C''? I**D N
+66 77, 088* .
+<<% 0>> ?? 
 
-11 
+>>- .
 
-66 
+>>0 1
 
-;; ‘	
+??( )
+
+??+ ,
+FF &CC ,
+
+FF. 4
+
+FFF J
+LL )BB 2
+
+LL1 7
+LLR VNN 
+
+TT -
+
+TT= C
+TTm qVV [[ 
+[[= A]] 
+]] ^^ 
+rr +cc2 Hhh2 H
+
+rr3 9
+
+rrl m
+uuO \ww  -@
+ww xx {{. 7~~ 
+ÄÄ8 A
+ÇÇ6 ?
+
+~~2 3
+~~5 9
+ÄÄ  
+
+ààP [
+ää  +H
+
+ää 
+ãã 
+éé. 7
+ëë 
+ìì8 A
+ïï6 ?
+
+ëë2 3
+
+ëë5 9
+ìì  
+
+†† %$
+
+§§ 
+••, 0
+¶¶* .
+
+≠≠ ! 
+
+ØØ 
+∞∞ &$
+
+∞∞ 
+≤≤ #
+≥≥ #
+
+≤≤ 
+µµ; B
+
+≥≥ 
+µµD K‘	
 UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageSpec.cs
 
  h
@@ -6115,75 +6294,21 @@ UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageP
 ßß !
 ßß+ 1
 ßßX ^
-ßßk qµ
-UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageLoad.cs
+ßßk qé
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_CarrierDeliveryLabel.cs
 
- \
- -  )) 88 JJ hh xx 
-ÜÜ 
-" 2 ,
+ ,(
+* 7 TT VV #
 
-I T
+ &
+= I $
 
-  I \
-  f o$$ %
-	  z Å%% !
-"" ,, 
-
-00C O
-00U ]44 #
-22 ;; 
-
-??0 ;
-??A ICC #
-??R XDD 
-??b jEE "
-??s wFF 
-AA LL 
-
-PP0 @
-PPY ^UU "
-PPg kdd 
-TT WW __/ 7
-__ cc 
-aa jj 
-
-nn0 ;
-nnA Irr #
-nnS [ss "
-nnd htt 
-pp zz 
-
-~~0 ;
-~~A I
-ÇÇ #
-
-ÄÄ 
-àà *
-
-åå + ++ :: ¸
-
-åå8 >
-êê #
-êê$ *
-ëë 
-ëë& ,
-íí 
-íí) /
-ìì !
-ìì. 4
-îî 
-îî) /
-ïï  
-ïï- 3
-ññ 
-ññ) /
-ññT Z
-ññe k
-óó !
-óó+ 1
-óóX ^
-óók qÑ
+!!/ NP
+!!j o++3 8,,4 9--< A..; @//9 >008 =11. 3
+&& #EE  
+)) 77D NDD 
+BB HH (
+LL WW XX ^^ Ñ
 UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Authentication\Dao_User.cs
 
  z
@@ -6413,10 +6538,7 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\Database\Deploy\DeployAut
 ííC M
 îî 
 îî1 ;
-ññ d
-VC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Enums\Enum_PackageType.cs
-
-  î
+ññ î
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_StringFormat.cs
 
  '
@@ -6442,7 +6564,59 @@ ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_Stri
 
 H Q
 
-Z bÕ
+Z b„
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_IntToVisibility.cs
+
+ *
+
+		 
+		% *  
+
+		1 ;
+		D M 
+
+		V ^
+  %
+( ), -(
+   & 
+$ %) *
+
+ !
+
+) .
+
+5 ?
+
+H Q
+
+Z b£
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DoubleToDecimal.cs
+
+ *
+
+ 
+% *
+
+ 
+
+1 ;
+
+D M
+
+V ^
+
+
+! "/ 0
+
+ !
+) . 
+
+5 ?
+
+H Q
+
+Z b
+  !0 1Õ
 ]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DecimalToString.cs
 
  *
@@ -6470,34 +6644,7 @@ ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_Stri
 
 Z b
   !. /% &
-4 : !£
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DoubleToDecimal.cs
-
- *
-
- 
-% *
-
- 
-
-1 ;
-
-D M
-
-V ^
-
-
-! "/ 0
-
- !
-) . 
-
-5 ?
-
-H Q
-
-Z b
-  !0 1Ä
+4 : !Ä
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_DecimalToInt.cs
 
 		 '
@@ -6523,20 +6670,7 @@ ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_Deci
 
 Z b
   (= E
-S Y   °
-WC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_SpecInput.cs
-
- $
-
- 
-
- 
-
- 
-
- 
-
- ‘
+S Y   ‘
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BoolToString.cs
 
  '
@@ -6592,74 +6726,12 @@ aC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_Bool
 
 H Q
 
-Z bÀ
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnagePart.cs
-
-		 
-   
-   #
- $$ %% #
- ** -- (
-' 666 77 +
- #<< == ,
- BB CC &
- !HH II (
- NN OO '
- #TT UU )
-
- 
-
- 
-
-"" 
-(( kk* 4qqN X(
-44& 4mm rr vv 
-
-:: !
-
-@@ 
-
-FF 
-
-LL 
-
-RR !
-XX. =\\ 
-ZZ ,cc 
-ZZH T\\C O
-
-__ (
-__ __# $__, -aa 
-__% *aa/ 4bb 
-__. 3aa6 ;bb 
-__P \cc &
-gg &// %
-qq rr !t
+Z bt
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IWindowService.cs
 
   
 
- ˇ
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result_Factory.cs
-
-		 ,
-
-# *
-2 9 "
-F H 
-
-# *
-/ ; '
-
-& -
-. /# $!!$ %
-8 ?$$ "
-L N%% 
-
-**& -(
-**. /**# $**1 2,,$ %
-**3 7// 
-**= I00 '®
+ ®
 RC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\ITimer.cs
 
 		 -
@@ -6850,193 +6922,19 @@ fC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 ≠≠ !
 ÆÆQ ^
 
-ÆÆ $Ÿ
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Pagination.cs
+ÆÆ $Ö
+kC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_OnStartup_AppLifecycle.cs
 
- (
+ 4
 
- 
-
- 
-
- 
-
- 
-
- 
-
-$$ 
-
-)) &
-
-00 
-00 00& '
-
-00) /
-
-77 *
-77+ ,77 
-
-<< 
-
-AA 
-
-FF 
-
-KK 
-
-QQ 
-
-QQ $◊
-hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ReceivingValidation.cs
-
- 1
-
-" 2
-
-: B
-
-" 0
-
-8 >
-
-  " 7
-
-  < D
-
-''" 8
-
-''A O
-
-.." 6
-
-..; J
-
-55" 7
-
-55? L
-
-??( F
-
-@@ !
-
-AA #
-
-BB 
-
-LL( B
-
-MM 
-
-NN 
-
-OO '
-
-VV" 7
-
-VVL P
-
-]]" 1
-
-]]L Q
-
-dd( G
-
-ddO Uñ
-jj * ! !   !'' !.. !55 !?? &LL &VV !]] !dd &qq /rr /yy /(
-ll qqE Ltt {{ 
-mm" *uu || 
-nn vv }} 
-oo "ww 
-
-qq0 7
-
-rr0 5
-rr= Dvv ww( /
-
-yy0 7
-yy? F}} 4
-
-ÑÑ "mm !mm; Muu )|| )Ÿ
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_ReceivingLine.cs
-
- 
- - AA !
-$ 4 ,W g
-
-( @n
-U Y$$2 6%%0 4&&2 6''8 <((. 2)). 2**9 =++> B,,4 8--9 =
-"" 33D N@@ 
->> DD é
+ é
 hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_ReceivingLine.cs
 
  -
 
  3
 
-H L∆
-\C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_InventoriedDunnage.cs
-
- #P
- -  '' 66 PP jj xx 
-) 9 ,
-
-P [
-
-6 @
-H N## 
-!! ** 
-)) )) ))( .
-
-..J X
-..` f22 
-00 99 
-
-==5 @
-==H NFF- 3
-==W fGG6 E
-==o tHH+ 0
-	==} ÅII* .2
-?? JJ UU UU( .WWM S
-DD OO (
-MM SS \\5 ;\\J P
-
-__0 ;
-__@ Bcc 
-__K Zdd" 1
-__c hee 
-__q uff 
-aa ll 
-
-pp0 ;
-pp@ Btt 
-rr zz 
-~~% 2 88 ™
-~~? E
-ÇÇ 
-ÇÇ! '
-ÉÉ 
-ÉÉ& ,
-ÑÑ $
-ÑÑ. 4
-ÑÑ^ d
-ÑÑo u
-ÖÖ 
-ÖÖ$ *
-ÖÖI O
-ÖÖZ `
-ÜÜ 
-ÜÜ) /
-áá  
-áá- 3
-àà 
-àà) /
-ààT Z
-ààe k
-ââ !
-ââ+ 1
-ââX ^
-ââk qö
+H Lö
 dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_Receiving.cs
 
  -
@@ -7067,7 +6965,22 @@ dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 
 55F K
 
-;; &à
+;; &√
+mC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_PackagePreferences.cs
+
+ 6
+
++ =
+
+E K
+
+  
+
+= G
+
+$$ (
+
+$$0 6à
 bC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_Dunnage.cs
 
  +
@@ -7202,22 +7115,7 @@ bC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 
 AA1 7
 
-AA@ G√
-mC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_PackagePreferences.cs
-
- 6
-
-+ =
-
-E K
-
-  
-
-= G
-
-$$ (
-
-$$0 6˘
+AA@ G˘
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_LoggingUtility.cs
 
 		 (
@@ -7264,34 +7162,7 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 
 CC 
 
-CC %˛
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_InforVisual.cs
-
- )
-
-5 H
-
-P X
-
-7 G
-
-O U
-
-$$( H
-
-$$P X
-
-$$a g
-
-$$r v
-
-..$ =
-
-..E M
-
-..V \
-
-44 &ª
+CC %ª
 aC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ErrorHandler.cs
 
  &
@@ -7328,39 +7199,48 @@ aC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 
 AA 
 
-BB „
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_IntToVisibility.cs
+BB Í
+dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_DunnageWorkflow.cs
 
- *
+
+
+ -
 
-		 
-		% *  
+! ,
 
-		1 ;
-		D M 
+ +
 
-		V ^
-  %
-( ), -(
-   & 
-$ %) *
+ &
 
- !
+# 6
 
-) .
+ %
 
-5 ?
+' =
 
-H Q
+ 
 
-Z bã
+/ 3
+
+ /
+
+ ã
 eC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_DunnageCSVWriter.cs
 
 		 .
 
 # 2
 
-K P§
+K Pë
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Dispatcher.cs
+
+		 (
+
+! ,
+
+ 
+
+ '§
 ^C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_CSVWriter.cs
 
  '
@@ -7418,16 +7298,71 @@ eC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 
 ff !
 
-gg %ë
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Dispatcher.cs
+gg %˛
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_InforVisual.cs
 
-		 (
+ )
 
-! ,
+5 H
 
- 
+P X
 
- 'õ
+7 G
+
+O U
+
+$$( H
+
+$$P X
+
+$$a g
+
+$$r v
+
+..$ =
+
+..E M
+
+..V \
+
+44 &Ÿ
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Pagination.cs
+
+ (
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+$$ 
+
+)) &
+
+00 
+00 00& '
+
+00) /
+
+77 *
+77+ ,77 
+
+<< 
+
+AA 
+
+FF 
+
+KK 
+
+QQ 
+
+QQ $õ
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Authentication.cs
 
  ,
@@ -7511,12 +7446,77 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 ÖÖ' .
 
 ÖÖ6 =
-àà "Ö
-kC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_OnStartup_AppLifecycle.cs
+àà "◊
+hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ReceivingValidation.cs
 
- 4
+ 1
 
- ¶
+" 2
+
+: B
+
+" 0
+
+8 >
+
+  " 7
+
+  < D
+
+''" 8
+
+''A O
+
+.." 6
+
+..; J
+
+55" 7
+
+55? L
+
+??( F
+
+@@ !
+
+AA #
+
+BB 
+
+LL( B
+
+MM 
+
+NN 
+
+OO '
+
+VV" 7
+
+VVL P
+
+]]" 1
+
+]]L Q
+
+dd( G
+
+ddO Uñ
+jj * ! !   !'' !.. !55 !?? &LL &VV !]] !dd &qq /rr /yy /(
+ll qqE Ltt {{ 
+mm" *uu || 
+nn vv }} 
+oo "ww 
+
+qq0 7
+
+rr0 5
+rr= Dvv ww( /
+
+yy0 7
+yy? F}} 4
+
+ÑÑ "mm !mm; Muu )|| )¶
 AC:\Users\johnk\source\repos\MTM_Receiving_Application\App.xaml.cs
  
 ¿¿ D

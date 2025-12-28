@@ -2,7 +2,7 @@ organization=john-koll
 projectKey=JDKoll1982_MTM_Receiving_Application
 serverUrl=https://sonarcloud.io
 serverVersion=8.0.0.78018
-branch=008-dunnage-ui
-dashboardUrl=https://sonarcloud.io/dashboard?id=JDKoll1982_MTM_Receiving_Application&branch=008-dunnage-ui&resolved=false
-ceTaskId=AZtlwyA9N810Gp6OIsHO
-ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZtlwyA9N810Gp6OIsHO
+branch=master
+dashboardUrl=https://sonarcloud.io/dashboard?id=JDKoll1982_MTM_Receiving_Application&branch=master
+ceTaskId=AZtlzjczDOZPsRkQRGYQ
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZtlzjczDOZPsRkQRGYQ
