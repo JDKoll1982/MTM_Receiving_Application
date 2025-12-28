@@ -12,12 +12,12 @@ namespace MTM_Receiving_Application.Services.Database;
 public class Service_UserPreferences : IService_UserPreferences
 {
     private readonly Dao_User _userDao;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
     private readonly IService_ErrorHandler _errorHandler;
 
     public Service_UserPreferences(
         Dao_User userDao,
-        ILoggingService logger,
+        IService_LoggingUtility logger,
         IService_ErrorHandler errorHandler)
     {
         _userDao = userDao;
@@ -33,7 +33,7 @@ public class Service_UserPreferences : IService_UserPreferences
             var normalizedUsername = username?.Trim();
             if (string.IsNullOrWhiteSpace(normalizedUsername))
             {
-                return DaoResultFactory.Failure<Model_UserPreference>(
+                return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
                     "Username cannot be empty");
             }
 
@@ -44,12 +44,12 @@ public class Service_UserPreferences : IService_UserPreferences
             {
                 _logger.LogError(
                    $"Failed to retrieve user {normalizedUsername}: {userResult.ErrorMessage}", null, "UserPreferences");
-                return DaoResultFactory.Failure<Model_UserPreference>(userResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<Model_UserPreference>(userResult.ErrorMessage);
             }
 
             if (userResult.Data == null)
             {
-                return DaoResultFactory.Failure<Model_UserPreference>("User not found");
+                return Model_Dao_Result_Factory.Failure<Model_UserPreference>("User not found");
             }
 
             var preference = new Model_UserPreference
@@ -63,7 +63,7 @@ public class Service_UserPreferences : IService_UserPreferences
             _logger.LogInfo(
                 $"Retrieved preference for user {normalizedUsername}", "UserPreferences");
 
-            return DaoResultFactory.Success(preference);
+            return Model_Dao_Result_Factory.Success(preference);
         }
         catch (Exception ex)
         {
@@ -72,7 +72,7 @@ public class Service_UserPreferences : IService_UserPreferences
                 Enum_ErrorSeverity.Critical,
                 ex);
 
-            return DaoResultFactory.Failure<Model_UserPreference>(
+            return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
                 "An error occurred while retrieving user preferences.", ex);
         }
     }
@@ -85,12 +85,12 @@ public class Service_UserPreferences : IService_UserPreferences
             var normalizedUsername = username?.Trim();
             if (string.IsNullOrWhiteSpace(normalizedUsername))
             {
-                return DaoResultFactory.Failure("Username cannot be empty");
+                return Model_Dao_Result_Factory.Failure("Username cannot be empty");
             }
 
             if (defaultMode != "Package" && defaultMode != "Pallet")
             {
-                return DaoResultFactory.Failure(
+                return Model_Dao_Result_Factory.Failure(
                     $"Invalid default mode '{defaultMode}'. Must be 'Package' or 'Pallet'.");
             }
 
@@ -98,7 +98,7 @@ public class Service_UserPreferences : IService_UserPreferences
             var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
             if (!userResult.IsSuccess || userResult.Data == null)
             {
-                return DaoResultFactory.Failure($"User '{normalizedUsername}' not found.");
+                return Model_Dao_Result_Factory.Failure($"User '{normalizedUsername}' not found.");
             }
 
             // DELEGATE TO DAO
@@ -120,7 +120,7 @@ public class Service_UserPreferences : IService_UserPreferences
                 Enum_ErrorSeverity.Critical,
                 ex);
 
-            return DaoResultFactory.Failure("An error occurred while updating preference.", ex);
+            return Model_Dao_Result_Factory.Failure("An error occurred while updating preference.", ex);
         }
     }
 }

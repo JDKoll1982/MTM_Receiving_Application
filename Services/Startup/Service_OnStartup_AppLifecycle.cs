@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Services.Startup
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_CSVWriter _csvWriter;
-        private Views.Shared.SplashScreenWindow? _splashScreen;
+        private Views.Shared.Shared_SplashScreenWindow? _splashScreen;
 
         public Service_OnStartup_AppLifecycle(
             IServiceProvider serviceProvider,
@@ -36,7 +36,7 @@ namespace MTM_Receiving_Application.Services.Startup
             try
             {
                 // 1. Show splash screen immediately (0-15%)
-                _splashScreen = _serviceProvider.GetRequiredService<Views.Shared.SplashScreenWindow>();
+                _splashScreen = _serviceProvider.GetRequiredService<Views.Shared.Shared_SplashScreenWindow>();
                 _splashScreen.Activate();
                 UpdateSplash(5, "Starting application...");
                 await Task.Delay(100);
@@ -45,7 +45,7 @@ namespace MTM_Receiving_Application.Services.Startup
                 UpdateSplash(15, "Loading main window...");
                 var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
                 App.MainWindow = mainWindow;
-                
+
                 // Give UI thread time to initialize
                 await Task.Delay(100);
 
@@ -57,7 +57,7 @@ namespace MTM_Receiving_Application.Services.Startup
                 UpdateSplash(30, "Checking user account...");
                 var windowsUser = Environment.UserName;
                 var userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(windowsUser);
-                
+
                 Model_User? authenticatedUser = null;
                 string authMethod = "";
 
@@ -65,30 +65,30 @@ namespace MTM_Receiving_Application.Services.Startup
                 if (!userCheckResult.Success)
                 {
                     SetSplashIndeterminate("User account not found. Waiting for account creation...");
-                    
+
                     // Show New User Setup Dialog as child of splash screen
-                    var newUserViewModel = _serviceProvider.GetRequiredService<ViewModels.Shared.NewUserSetupViewModel>();
+                    var newUserViewModel = _serviceProvider.GetRequiredService<ViewModels.Shared.Shared_NewUserSetupViewModel>();
                     newUserViewModel.WindowsUsername = windowsUser;
                     newUserViewModel.CreatedBy = windowsUser; // Self-creation (physical presence is authorization)
-                    
-                    var newUserDialog = new Views.Shared.NewUserSetupDialog(newUserViewModel);
-                    
+
+                    var newUserDialog = new Views.Shared.Shared_NewUserSetupDialog(newUserViewModel);
+
                     // Set splash screen as parent
                     if (_splashScreen?.Content is Microsoft.UI.Xaml.UIElement rootElement)
                     {
                         newUserDialog.XamlRoot = rootElement.XamlRoot;
                     }
-                    
+
                     // Show dialog and wait for result
                     var dialogResult = await newUserDialog.ShowAsync();
-                    
+
                     // Check result
                     if (newUserViewModel.NewEmployeeNumber > 0 && !newUserViewModel.IsCancelled)
                     {
                         // Account created successfully - re-authenticate to get full user data
                         UpdateSplash(40, "Employee account created...");
                         userCheckResult = await _authService.AuthenticateByWindowsUsernameAsync(windowsUser);
-                        
+
                         if (userCheckResult.Success)
                         {
                             authenticatedUser = userCheckResult.User;
@@ -102,16 +102,16 @@ namespace MTM_Receiving_Application.Services.Startup
                             "User account creation cancelled. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
                             showDialog: false);
-                        
+
                         // Close splash screen
                         _splashScreen?.Close();
-                        
+
                         // Close main window if it exists
                         if (App.MainWindow != null)
                         {
                             App.MainWindow.Close();
                         }
-                        
+
                         // Exit application properly
                         Application.Current.Exit();
                         return;
@@ -126,7 +126,7 @@ namespace MTM_Receiving_Application.Services.Startup
                 // 4. Detect Workstation (50%)
                 UpdateSplash(50, "Detecting workstation configuration...");
                 var workstationConfig = await _authService.DetectWorkstationTypeAsync();
-                
+
                 // Debug logging
                 System.Diagnostics.Debug.WriteLine($"Workstation: {workstationConfig.ComputerName}");
                 System.Diagnostics.Debug.WriteLine($"Type: {workstationConfig.WorkstationType}");
@@ -148,20 +148,20 @@ namespace MTM_Receiving_Application.Services.Startup
                     authenticatedUser = null;
 
                     SetSplashIndeterminate("Shared terminal detected. Waiting for PIN login...");
-                    
+
                     // Show PIN login dialog as child of splash screen
-                    var loginViewModel = _serviceProvider.GetRequiredService<ViewModels.Shared.SharedTerminalLoginViewModel>();
-                    var loginDialog = new Views.Shared.SharedTerminalLoginDialog(loginViewModel);
-                    
+                    var loginViewModel = _serviceProvider.GetRequiredService<ViewModels.Shared.Shared_SharedTerminalLoginViewModel>();
+                    var loginDialog = new Views.Shared.Shared_SharedTerminalLoginDialog(loginViewModel);
+
                     // Set splash screen as parent
                     if (_splashScreen?.Content is Microsoft.UI.Xaml.UIElement rootElement)
                     {
                         loginDialog.XamlRoot = rootElement.XamlRoot;
                     }
-                    
+
                     // Show dialog and wait for result
                     var dialogResult = await loginDialog.ShowAsync();
-                    
+
                     // Check result
                     if (loginViewModel.AuthenticatedUser != null && !loginViewModel.IsCancelled && !loginViewModel.IsLockedOut)
                     {
@@ -177,7 +177,7 @@ namespace MTM_Receiving_Application.Services.Startup
                             "Maximum login attempts exceeded. Application closing for security.",
                             Models.Enums.Enum_ErrorSeverity.Warning,
                             showDialog: false);
-                        
+
                         // Close application
                         Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().UnregisterKey();
                         System.Environment.Exit(0);
@@ -190,7 +190,7 @@ namespace MTM_Receiving_Application.Services.Startup
                             "User cancelled login. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
                             showDialog: false);
-                        
+
                         System.Environment.Exit(0);
                         return;
                     }
@@ -201,7 +201,7 @@ namespace MTM_Receiving_Application.Services.Startup
                             "Login dialog closed unexpectedly. Application closing.",
                             Models.Enums.Enum_ErrorSeverity.Info,
                             showDialog: false);
-                        
+
                         System.Environment.Exit(0);
                         return;
                     }
@@ -213,7 +213,7 @@ namespace MTM_Receiving_Application.Services.Startup
                     UpdateSplash(90, "Creating user session...");
                     _sessionManager.CreateSession(authenticatedUser, workstationConfig, authMethod);
                     _sessionManager.StartTimeoutMonitoring();
-                    
+
                     // Update MainWindow user display
                     if (App.MainWindow is MainWindow mainWin)
                     {
@@ -271,10 +271,10 @@ namespace MTM_Receiving_Application.Services.Startup
             // Or we should just ask every time?
             // The requirement says "Warehouse supervisor can optionally reset CSV files on application startup".
             // It implies we should ask.
-            
+
             // We need to show a ContentDialog.
             // Since we are in a service, we need to create it on the UI thread and attach to MainWindow.
-            
+
             if (App.MainWindow == null) return;
 
             await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>

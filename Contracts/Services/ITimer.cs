@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Contracts.Services
     /// Interface for a timer that can be used for scheduling tasks.
     /// Wraps DispatcherQueueTimer to allow mocking in unit tests.
     /// </summary>
-    public interface IDispatcherTimer
+    public interface IService_DispatcherTimer
     {
         /// <summary>
         /// Gets or sets the amount of time between timer ticks.

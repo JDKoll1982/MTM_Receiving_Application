@@ -97,11 +97,11 @@ public class Dao_InforVisualPO
                 });
             }
 
-            return DaoResultFactory.Success(list);
+            return Model_Dao_Result_Factory.Success(list);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<List<Model_InforVisualPO>>(
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPO>>(
                 $"Error retrieving PO {poNumber}: {ex.Message}",
                 ex);
         }
@@ -119,11 +119,11 @@ public class Dao_InforVisualPO
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
             var count = Convert.ToInt32(await command.ExecuteScalarAsync());
-            return DaoResultFactory.Success(count > 0);
+            return Model_Dao_Result_Factory.Success(count > 0);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<bool>(
+            return Model_Dao_Result_Factory.Failure<bool>(
                 $"Error validating PO {poNumber}: {ex.Message}",
                 ex);
         }

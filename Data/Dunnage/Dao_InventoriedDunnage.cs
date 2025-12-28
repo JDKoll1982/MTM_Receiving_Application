@@ -84,12 +84,12 @@ public class Dao_InventoriedDunnage
         {
             if (pNewId.Value != null && pNewId.Value != DBNull.Value)
             {
-                return DaoResultFactory.Success<int>(Convert.ToInt32(pNewId.Value));
+                return Model_Dao_Result_Factory.Success<int>(Convert.ToInt32(pNewId.Value));
             }
-            return DaoResultFactory.Failure<int>("Failed to retrieve new ID");
+            return Model_Dao_Result_Factory.Failure<int>("Failed to retrieve new ID");
         }
 
-        return DaoResultFactory.Failure<int>(result.ErrorMessage, result.Exception);
+        return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
     public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string inventoryMethod, string notes, string user)

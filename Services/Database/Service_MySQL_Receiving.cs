@@ -14,18 +14,18 @@ namespace MTM_Receiving_Application.Services.Database
     public class Service_MySQL_Receiving : IService_MySQL_Receiving
     {
         private readonly Dao_ReceivingLoad _receivingLoadDao;
-        private readonly ILoggingService _logger;
+        private readonly IService_LoggingUtility _logger;
 
         public Service_MySQL_Receiving(
             Dao_ReceivingLoad receivingLoadDao,
-            ILoggingService logger)
+            IService_LoggingUtility logger)
         {
             _receivingLoadDao = receivingLoadDao;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         // Constructor for backward compatibility if needed, but DI should handle it
-        public Service_MySQL_Receiving(string connectionString, ILoggingService logger)
+        public Service_MySQL_Receiving(string connectionString, IService_LoggingUtility logger)
         {
             _receivingLoadDao = new Dao_ReceivingLoad(connectionString);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

@@ -309,7 +309,7 @@ get_symbols_overview("Data/Receiving/Dao_ReceivingLine.cs", depth=1)
 # Returns: Class name + all method signatures (no bodies)
 
 # 2. Check View structure
-get_symbols_overview("Views/Receiving/ReceivingView.xaml.cs", depth=1)
+get_symbols_overview("Views/Receiving/Receiving_WorkflowView.xaml.cs", depth=1)
 # Returns: Class + properties + methods (useful before editing)
 
 # 3. Quick scan of Service methods
@@ -320,7 +320,7 @@ get_symbols_overview("Helpers/Database/Helper_Database_StoredProcedure.cs", dept
 # Returns: Just the class structure, no methods
 
 # 5. Review ViewModel layout
-get_symbols_overview("ViewModels/Receiving/ReceivingViewModel.cs", depth=1)
+get_symbols_overview("ViewModels/Receiving/Receiving_WorkflowViewModel.cs", depth=1)
 ```
 
 **Best Practice:** **ALWAYS** call this first when exploring a new file. It's like reading a table of contents before diving into chapters.
@@ -369,7 +369,7 @@ find_referencing_symbols(
 # 4. Find View instantiations
 find_referencing_symbols(
     name_path="ReceivingView",  # Constructor
-    relative_path="Views/Receiving/ReceivingView.xaml.cs"
+    relative_path="Views/Receiving/Receiving_WorkflowView.xaml.cs"
 )
 
 # 5. Find Model_Dao_Result usage

@@ -13,8 +13,8 @@ namespace MTM_Receiving_Application.Services.Authentication
     public class Service_UserSessionManager : IService_UserSessionManager
     {
         private readonly Dao_User _daoUser;
-        private readonly IDispatcherService _dispatcherService;
-        private IDispatcherTimer? _timeoutTimer;
+        private readonly IService_Dispatcher _dispatcherService;
+        private IService_DispatcherTimer? _timeoutTimer;
         private const int TimerIntervalSeconds = 60;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace MTM_Receiving_Application.Services.Authentication
         /// </summary>
         /// <param name="daoUser">User data access object for activity logging</param>
         /// <param name="dispatcherService">Dispatcher service for timer operations</param>
-        public Service_UserSessionManager(Dao_User daoUser, IDispatcherService dispatcherService)
+        public Service_UserSessionManager(Dao_User daoUser, IService_Dispatcher dispatcherService)
         {
             _daoUser = daoUser ?? throw new ArgumentNullException(nameof(daoUser));
             _dispatcherService = dispatcherService ?? throw new ArgumentNullException(nameof(dispatcherService));
@@ -41,8 +41,8 @@ namespace MTM_Receiving_Application.Services.Authentication
 
         /// <inheritdoc/>
         public Model_UserSession CreateSession(
-            Model_User user, 
-            Model_WorkstationConfig workstationConfig, 
+            Model_User user,
+            Model_WorkstationConfig workstationConfig,
             string authenticationMethod)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
@@ -104,7 +104,7 @@ namespace MTM_Receiving_Application.Services.Authentication
                 _timeoutTimer.Stop();
                 _timeoutTimer.Tick -= OnTimerTick;
                 _timeoutTimer = null;
-                
+
                 System.Diagnostics.Debug.WriteLine("Session timeout monitoring stopped");
             }
         }

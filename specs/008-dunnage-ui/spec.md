@@ -19,7 +19,18 @@ Create the complete wizard workflow user interface for guided dunnage receiving.
 - Mode selection card design with default preference checkboxes
 - Pagination controls and navigation patterns matching existing Receiving workflow UI
 
-All XAML views should replicate the mockup's structure using WinUI 3 controls with equivalent styling from the application's theme. 
+All XAML views should replicate the mockup's structure using WinUI 3 controls with equivalent styling from the application's theme.
+
+**Color Consistency Requirement**: All UI elements MUST use the same WinUI 3 theme resources as the existing Receiving workflow to maintain visual consistency:
+- **Accent headers**: `{ThemeResource AccentFillColorDefaultBrush}` for header backgrounds with white foreground text
+- **Card containers**: `{ThemeResource CardBackgroundFillColorDefaultBrush}` for card backgrounds
+- **Card borders**: `{ThemeResource CardStrokeColorDefaultBrush}` for card border colors
+- **Accent icons**: `{ThemeResource AccentTextFillColorPrimaryBrush}` for icon foreground colors
+- **Text styles**: `{StaticResource BodyStrongTextBlockStyle}` for emphasized text
+- **Corner radius**: 8px standard for all rounded corners (CornerRadius="8")
+- **Padding/spacing**: 16px standard padding, 12px vertical padding for headers, 8px spacing between elements
+
+Refer to existing Receiving views (WeightQuantityView.xaml, ReviewGridView.xaml) for exact color resource usage patterns. 
 
 ## User Scenarios & Testing
 
@@ -134,6 +145,32 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 
 ---
 
+### User Story 7 - Bulk Operations & Data Utilities (Priority: P2)
+
+As a **receiving user**, I need to auto-fill repeated values, sort loads for optimal printing, and save sessions to history so that I can work efficiently with batch data entry.
+
+**Why this priority**: Utility functions improve productivity for users entering multiple loads with similar data. Auto-fill reduces repetitive typing, sorting optimizes label printing order, and history saves allow resuming incomplete sessions.
+
+**Independent Test**: Can be tested by entering multiple loads with common values, clicking "Fill Blank Spaces" to auto-populate from last entry, clicking "Sort for Printing" to reorder by Part ID/PO, and clicking "Save to History" to persist session for later completion.
+
+**Acceptance Scenarios**:
+
+1. **Given** user has entered 3 loads with PO "PO123456", **When** user starts 4th load and clicks "Fill Blank Spaces", **Then** PO field auto-fills with "PO123456" from previous load
+2. **Given** manual entry grid has 10 loads with varying Part IDs, **When** user clicks "Sort for Printing", **Then** loads are reordered by Part ID (ascending), then PO Number (ascending)
+3. **Given** review view has 5 loads, **When** user clicks "Save to History", **Then** loads are saved to database with status "In Progress" and session ID is stored for later retrieval
+4. **Given** user has incomplete history session, **When** user navigates to Edit Mode and clicks "Load from History", **Then** previously saved loads are loaded into grid for continued editing
+5. **Given** auto-fill is active, **When** user manually changes a field value, **Then** auto-fill respects manual input and does not overwrite
+6. **Given** loads are sorted, **When** new load is added, **Then** it appears at bottom of grid (unsorted position) until "Sort for Printing" is clicked again
+7. **Given** user clicks "Save to History" with validation errors, **When** invalid loads exist, **Then** error message displays "Cannot save: 2 loads have validation errors. Fix before saving to history."
+
+**Implementation Notes**:
+- Auto-fill logic MUST copy values from most recent load: PO Number, Location, and spec values (but NOT Type, Part ID, or Quantity)
+- Sorting priority: Part ID (ascending) → PO Number (ascending) → Type Name (ascending)
+- History saves MUST include session ID (GUID), timestamp, employee number, and status flag ("In Progress" vs "Completed")
+- "Save to History" is different from "Save All" - history preserves incomplete work, "Save All" marks loads as completed and exports CSV
+
+---
+
 ### Edge Cases
 
 - What happens when type selection loads but database is unreachable?  (Error message, disable type selection)
@@ -162,6 +199,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 
 #### DunnageModeSelectionView.xaml + DunnageModeSelectionViewModel
 - **FR-011**: View MUST display 3 cards: Guided Wizard Mode, Manual Entry Mode, Edit Mode
+- **FR-011a**: Mode selection cards MUST use `{ThemeResource CardBackgroundFillColorDefaultBrush}` background, `{ThemeResource CardStrokeColorDefaultBrush}` border, CornerRadius="8", and 16px padding to match Receiving UI card styling
 - **FR-012**: Each card MUST show mode icon, title, and description
 - **FR-013**: Wizard card MUST describe "Step-by-step process for standard receiving workflow"
 - **FR-014**: Manual card MUST describe "Customizable grid for bulk data entry and editing"
@@ -179,6 +217,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 
 #### DunnageTypeSelectionView.xaml + DunnageTypeSelectionViewModel
 - **FR-024**: View MUST display types in 3x3 button grid (9 types per page)
+- **FR-024a**: Type selection buttons MUST be styled as cards with `{ThemeResource CardBackgroundFillColorDefaultBrush}` background, `{ThemeResource CardStrokeColorDefaultBrush}` border, CornerRadius="8", and hover effects matching Receiving UI button patterns
 - **FR-025**: View MUST provide pagination controls: Previous Page, Page X of Y, Next Page
 - **FR-026**: View MUST provide "+ Add New Type" quick add button
 - **FR-027**: ViewModel MUST load all types from `IService_MySQL_Dunnage` on initialization
@@ -206,6 +245,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 #### DunnageQuantityEntryView.xaml + DunnageQuantityEntryViewModel
 - **FR-032**: View MUST display NumberBox for quantity with minimum value 1
 - **FR-033**: View MUST display selected type and part name for context
+- **FR-033a**: Context header MUST use `{ThemeResource AccentFillColorDefaultBrush}` background with white foreground text and `{StaticResource BodyStrongTextBlockStyle}`, matching WeightQuantityView.xaml info header pattern
 - **FR-034**: ViewModel MUST initialize Quantity property to 1 by default
 - **FR-035**: ViewModel MUST validate Quantity > 0 before allowing advancement
 - **FR-036**: ViewModel MUST provide GoNextCommand that stores quantity in session and advances
@@ -217,6 +257,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **FR-038**: View MUST display TextBox for PO Number (optional)
 - **FR-039**: View MUST display TextBox for Location (optional)
 - **FR-040**: View MUST display InfoBar for inventoried parts with dynamic method
+- **FR-040a**: InfoBar MUST use Severity="Informational" (blue accent color) to match Receiving UI InfoBar styling, NOT Warning/Error severity
 - **FR-041**: View MUST dynamically generate spec input controls based on selected part's type specs
 - **FR-042**: ViewModel MUST load spec definitions from selected part's type using `IService_MySQL_Dunnage.GetSpecsForTypeAsync`
 - **FR-043**: ViewModel MUST generate controls:  NumberBox for "number", TextBox for "text", CheckBox for "boolean"
@@ -230,6 +271,7 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 
 #### DunnageReviewView.xaml + DunnageReviewViewModel
 - **FR-049**: View MUST display DataGrid with all loads in session (columns: Type, PartID, Qty, PO, Location, Method)
+- **FR-049a**: DataGrid container MUST use `{ThemeResource CardBackgroundFillColorDefaultBrush}` background and `{ThemeResource CardStrokeColorDefaultBrush}` border with CornerRadius="8" to match ReviewGridView.xaml card styling
 - **FR-050**: View MUST display "Add Another" button to return to type selection
 - **FR-051**: View MUST display "Save All" button to persist and export
 - **FR-052**: View MUST display "Cancel" button to clear session and return to mode selection
@@ -240,6 +282,25 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **FR-057**: Save operation MUST export CSV via `IService_DunnageCSVWriter.WriteToCSVAsync`
 - **FR-058**: Save success MUST display TeachingTip or InfoBar with "Successfully saved X loads and exported labels"
 - **FR-059**: Save success MUST clear session and return to mode selection
+
+### Functional Requirements - Bulk Operations & Data Utilities
+
+#### Shared Across Review, Manual Entry, and Edit Mode ViewModels
+- **FR-059a**: ViewModels MUST provide FillBlankSpacesCommand that auto-fills empty fields from most recent load
+- **FR-059b**: Auto-fill logic MUST copy: PO Number, Location, and all spec values from previous load
+- **FR-059c**: Auto-fill logic MUST NOT copy: Type, Part ID, Quantity, or Load ID
+- **FR-059d**: Auto-fill MUST preserve any user-entered values (do not overwrite manual input)
+- **FR-059e**: ViewModels MUST provide SortForPrintingCommand that reorders loads
+- **FR-059f**: Sort order MUST be: Part ID (ascending) → PO Number (ascending) → Type Name (ascending)
+- **FR-059g**: ViewModels MUST provide SaveToHistoryCommand that persists session as "In Progress"
+- **FR-059h**: History save MUST generate unique session GUID and store with timestamp and employee number
+- **FR-059i**: History save MUST validate all loads before persisting (quantity > 0, required specs filled)
+- **FR-059j**: History save MUST call IService_MySQL_Dunnage.SaveSessionToHistoryAsync with session object
+- **FR-059k**: View toolbar MUST provide "Fill Blank Spaces", "Sort for Printing", and "Save to History" buttons alongside "Save All"
+- **FR-059l**: "Save to History" button MUST be enabled when 1+ loads exist, regardless of validation state
+- **FR-059m**: "Save to History" with invalid loads MUST display error: "Cannot save: X loads have validation errors. Fix before saving to history."
+- **FR-059n**: Successful history save MUST display InfoBar message: "Session saved to history (Session ID: {GUID})"
+- **FR-059o**: Edit Mode "Load from History" MUST query IService_MySQL_Dunnage.GetHistorySessionsAsync and display sessions in dropdown with timestamp
 
 ### Functional Requirements - Manual Entry Mode
 
@@ -312,10 +373,12 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **NFR-002**: All views MUST use WinUI 3 controls (NavigationView, InfoBar, NumberBox, TeachingTip)
 - **NFR-003**: Window size MUST be 1400x900 pixels (standard receiving window size)
 - **NFR-004**: Type selection buttons MUST be visually distinct with hover effects
+- **NFR-004a**: All UI elements MUST use WinUI 3 theme resources (`{ThemeResource ...}`) for colors to match existing Receiving workflow visual style. NO hardcoded color values (#RRGGBB) are permitted except in theme resource definitions
 - **NFR-005**: Spec input controls MUST display unit labels where applicable (e.g., "inches")
 - **NFR-006**: All user-facing text MUST be clear and concise (no technical jargon)
-- **NFR-007**: InfoBar severity MUST be "Informational" (blue, not warning/error)
+- **NFR-007**: InfoBar severity MUST be "Informational" (blue accent color via Severity="Informational", not yellow Warning or red Error) to match Receiving UI notification patterns
 - **NFR-008**: UI layout MUST match mockup in `specs/008-dunnage-ui/mockups/` for consistency with existing Receiving workflow
+- **NFR-009**: All accent colors (headers, icons, highlights) MUST use `{ThemeResource AccentFillColorDefaultBrush}` and `{ThemeResource AccentTextFillColorPrimaryBrush}` to ensure system-wide theme consistency
 
 ## Implementation Guidance
 

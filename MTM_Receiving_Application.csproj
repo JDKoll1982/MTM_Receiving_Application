@@ -52,20 +52,6 @@
     <None Include="Documentation\UPSFEDEXLABELLOGIC-GOOGLEAPPSCRIPTS.md" />
   </ItemGroup>
 
-  <!-- Template Files -->
-  <ItemGroup>
-    <None Include="Data\_TEMPLATE_Dao_Inventory.txt" />
-    <None Include="Data\_TEMPLATE_Dao_User.txt" />
-    <None Include="Helpers\_TEMPLATE_Helper_ExportManager.txt" />
-    <None Include="Helpers\Database\_TEMPLATE_Helper_Database_StoredProcedure.txt" />
-    <None Include="Helpers\Database\_TEMPLATE_Helper_Database_Variables.txt" />
-    <None Include="Helpers\Validation\_TEMPLATE_Helper_Validation_ValidatedTextBox.txt" />
-    <None Include="Models\_TEMPLATE_Model_Application_Variables.txt" />
-    <None Include="Models\_TEMPLATE_Model_Dao_Result.txt" />
-    <None Include="Models\Enums\_TEMPLATE_Enum_ErrorSeverity.txt" />
-    <None Include="Services\_TEMPLATE_Service_ErrorHandler.txt" />
-  </ItemGroup>
-
   <!-- GitHub Workflow Files -->
   <ItemGroup>
     <None Include=".github\agents\speckit.analyze.agent.md" />

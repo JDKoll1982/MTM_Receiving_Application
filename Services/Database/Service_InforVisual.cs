@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.Services.Database
     public class Service_InforVisual : IService_InforVisual
     {
         private readonly IService_UserSessionManager _sessionManager;
-        private readonly ILoggingService? _logger;
+        private readonly IService_LoggingUtility? _logger;
         private readonly Dao_InforVisualPO _daoPO;
         private readonly Dao_InforVisualPart _daoPart;
         private const string DefaultServer = "VISUAL";
@@ -29,7 +29,7 @@ namespace MTM_Receiving_Application.Services.Database
             IService_UserSessionManager sessionManager,
             Dao_InforVisualPO daoPO,
             Dao_InforVisualPart daoPart,
-            ILoggingService? logger = null)
+            IService_LoggingUtility? logger = null)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _daoPO = daoPO ?? throw new ArgumentNullException(nameof(daoPO));
@@ -48,7 +48,7 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
-                return DaoResultFactory.Failure<Model_InforVisualPO?>("PO number cannot be null or empty");
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>("PO number cannot be null or empty");
 
             // Strip "PO-" prefix if present for database querying/debug logic
             string cleanPoNumber = poNumber;
@@ -86,7 +86,7 @@ namespace MTM_Receiving_Application.Services.Database
                     }
                 }
             };
-            return DaoResultFactory.Success<Model_InforVisualPO?>(debugPO);
+            return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(debugPO);
 #else
             try
             {
@@ -120,7 +120,7 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
-                return DaoResultFactory.Failure<Model_InforVisualPart?>("Part ID cannot be null or empty");
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>("Part ID cannot be null or empty");
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual query for Part: {partID}");
@@ -132,7 +132,7 @@ namespace MTM_Receiving_Application.Services.Database
                 POLineNumber = "N/A",
                 QtyOrdered = 0
             };
-            return DaoResultFactory.Success<Model_InforVisualPart?>(debugPart);
+            return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(debugPart);
 #else
             try
             {
@@ -167,7 +167,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual same-day receiving check for PO: {poNumber}, Part: {partID}");
-            return DaoResultFactory.Success<decimal>(0);
+            return Model_Dao_Result_Factory.Success<decimal>(0);
 #else
             try
             {
@@ -197,14 +197,14 @@ namespace MTM_Receiving_Application.Services.Database
         public async Task<Model_Dao_Result<int>> GetRemainingQuantityAsync(string poNumber, string partID)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
-                return DaoResultFactory.Failure<int>("PO number cannot be null or empty");
+                return Model_Dao_Result_Factory.Failure<int>("PO number cannot be null or empty");
 
             if (string.IsNullOrWhiteSpace(partID))
-                return DaoResultFactory.Failure<int>("Part ID cannot be null or empty");
+                return Model_Dao_Result_Factory.Failure<int>("Part ID cannot be null or empty");
 
 #if DEBUG
             _logger?.LogInfo($"[DEBUG MODE] Bypassing Infor Visual remaining quantity check for PO: {poNumber}, Part: {partID}");
-            return DaoResultFactory.Success<int>(100);
+            return Model_Dao_Result_Factory.Success<int>(100);
 #else
             try
             {

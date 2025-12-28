@@ -19,7 +19,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         private readonly IService_CSVWriter _csvWriter;
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
-        private readonly ILoggingService _logger;
+        private readonly IService_LoggingUtility _logger;
         private List<Model_ReceivingLoad> _currentBatchLoads = new();
 
         public event EventHandler? StepChanged;
@@ -56,7 +56,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             IService_CSVWriter csvWriter,
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
-            ILoggingService logger)
+            IService_LoggingUtility logger)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _csvWriter = csvWriter ?? throw new ArgumentNullException(nameof(csvWriter));

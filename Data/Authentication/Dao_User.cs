@@ -119,19 +119,19 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var errorMessage = errorMessageParam.Value?.ToString();
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    return DaoResultFactory.Failure<int>(errorMessage);
+                    return Model_Dao_Result_Factory.Failure<int>(errorMessage);
                 }
 
                 // Return the employee number that was provided
-                return DaoResultFactory.Success<int>(user.EmployeeNumber);
+                return Model_Dao_Result_Factory.Success<int>(user.EmployeeNumber);
             }
             catch (MySqlException ex)
             {
-                return DaoResultFactory.Failure<int>($"Database error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<int>($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return DaoResultFactory.Failure<int>($"Unexpected error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<int>($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -167,15 +167,15 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 var isUnique = count == 0;
 
-                return DaoResultFactory.Success<bool>(isUnique);
+                return Model_Dao_Result_Factory.Success<bool>(isUnique);
             }
             catch (MySqlException ex)
             {
-                return DaoResultFactory.Failure<bool>($"Database error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<bool>($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return DaoResultFactory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -207,15 +207,15 @@ namespace MTM_Receiving_Application.Data.Authentication
                 var count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 var isUnique = count == 0;
 
-                return DaoResultFactory.Success<bool>(isUnique);
+                return Model_Dao_Result_Factory.Success<bool>(isUnique);
             }
             catch (MySqlException ex)
             {
-                return DaoResultFactory.Failure<bool>($"Database error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<bool>($"Database error: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                return DaoResultFactory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
             }
         }
 
@@ -253,11 +253,11 @@ namespace MTM_Receiving_Application.Data.Authentication
 
             if (result.Success)
             {
-                return DaoResultFactory.Success<bool>(true);
+                return Model_Dao_Result_Factory.Success<bool>(true);
             }
             else
             {
-                return DaoResultFactory.Failure<bool>(result.ErrorMessage, result.Exception);
+                return Model_Dao_Result_Factory.Failure<bool>(result.ErrorMessage, result.Exception);
             }
         }
 

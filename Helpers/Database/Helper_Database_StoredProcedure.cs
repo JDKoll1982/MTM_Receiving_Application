@@ -76,12 +76,12 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return DaoResultFactory.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return DaoResultFactory.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return Model_Dao_Result_Factory.Failure($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
@@ -219,12 +219,12 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return DaoResultFactory.Failure<T>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<T>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return DaoResultFactory.Failure<T>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return Model_Dao_Result_Factory.Failure<T>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>
@@ -280,12 +280,12 @@ public static class Helper_Database_StoredProcedure
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                return DaoResultFactory.Failure<List<T>>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<List<T>>($"Stored procedure '{procedureName}' failed: {ex.Message}", ex);
             }
         }
 
         stopwatch.Stop();
-        return DaoResultFactory.Failure<List<T>>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
+        return Model_Dao_Result_Factory.Failure<List<T>>($"Stored procedure '{procedureName}' failed after {MaxRetries} attempts");
     }
 
     /// <summary>

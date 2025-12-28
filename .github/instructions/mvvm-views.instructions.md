@@ -193,7 +193,7 @@ services.AddTransient<MyPage>();
 
 - XAML: `Views/[FeatureName]/[PageName].xaml`
 - Code-behind: `Views/[FeatureName]/[PageName].xaml.cs`
-- Example: `Views/Receiving/ReceivingLabelPage.xaml`
+- Example: `Views/Main/Main_ReceivingLabelPage.xaml`
 
 ## Common Patterns
 

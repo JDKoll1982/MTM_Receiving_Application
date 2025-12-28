@@ -343,10 +343,10 @@ string query = "UPDATE po SET status = 'Received'"; // NEVER DO THIS
 - **Window Sizing:** `.github/instructions/window-sizing.instructions.md`
 
 ### Reference Documentation
-- **Services Overview:** `Documentation/REUSABLE_SERVICES.md`
-- **Data Model:** `specs/003-database-foundation/data-model.md`
-- **Infor Visual Integration:** `specs/003-database-foundation/INFOR_VISUAL_INTEGRATION.md`
-- **User Workflow:** `Documentation/NEW_APP_USER_WORKFLOW.md`
+- **Services Overview:** `Documentation/README.md`
+- **Data Model:** `specs/CompletedSpecs/003-receiving-workflow/data-model.md`
+- **Infor Visual Integration:** `specs/CompletedSpecs/003-receiving-workflow/INFOR_VISUAL_INTEGRATION.md`
+- **User Workflow:** `Documentation/README.md`
 
 ### Database
 - **Connection String:** `Helpers/Database/Helper_Database_Variables.cs`

@@ -19,9 +19,9 @@ namespace MTM_Receiving_Application.Services.Receiving
     {
         private readonly string _localCSVPath;
         private readonly IService_UserSessionManager _sessionManager;
-        private readonly ILoggingService _logger;
+        private readonly IService_LoggingUtility _logger;
 
-        public Service_CSVWriter(IService_UserSessionManager sessionManager, ILoggingService logger)
+        public Service_CSVWriter(IService_UserSessionManager sessionManager, IService_LoggingUtility logger)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

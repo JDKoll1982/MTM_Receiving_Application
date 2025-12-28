@@ -44,7 +44,7 @@ public class Dao_PackageTypePreference
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<Model_UserPreference>(
+            return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
                 $"Error retrieving user package preference: {ex.Message}",
                 ex);
         }
@@ -68,7 +68,7 @@ public class Dao_PackageTypePreference
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure(
+            return Model_Dao_Result_Factory.Failure(
                 $"Error upserting user package preference: {ex.Message}",
                 ex);
         }
@@ -104,13 +104,13 @@ public class Dao_PackageTypePreference
 
             if (result.Success)
             {
-                return DaoResultFactory.Success(result.Data);
+                return Model_Dao_Result_Factory.Success(result.Data);
             }
-            return DaoResultFactory.Failure<Model_PackageTypePreference?>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<Model_PackageTypePreference?>(
+            return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(
                 $"Error retrieving part package preference: {ex.Message}",
                 ex);
         }
@@ -135,13 +135,13 @@ public class Dao_PackageTypePreference
 
             if (result.Success)
             {
-                return DaoResultFactory.Success();
+                return Model_Dao_Result_Factory.Success();
             }
-            return DaoResultFactory.Failure(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure(
+            return Model_Dao_Result_Factory.Failure(
                 $"Error saving part package preference: {ex.Message}",
                 ex);
         }
@@ -164,13 +164,13 @@ public class Dao_PackageTypePreference
 
             if (result.Success)
             {
-                return DaoResultFactory.Success(true);
+                return Model_Dao_Result_Factory.Success(true);
             }
-            return DaoResultFactory.Failure<bool>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<bool>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<bool>(
+            return Model_Dao_Result_Factory.Failure<bool>(
                 $"Error deleting part package preference: {ex.Message}",
                 ex);
         }

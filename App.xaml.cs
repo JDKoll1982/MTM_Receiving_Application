@@ -13,7 +13,8 @@ using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.ViewModels.Receiving;
 using MTM_Receiving_Application.ViewModels.Shared;
-using MTM_Receiving_Application.Views.Receiving;
+using MTM_Receiving_Application.ViewModels.Main;
+using MTM_Receiving_Application.Views.Main;
 
 using MTM_Receiving_Application.Services;
 using MTM_Receiving_Application.Services.Startup;
@@ -44,7 +45,7 @@ public partial class App : Application
             {
                 // Core Services
                 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
-                services.AddSingleton<ILoggingService, LoggingUtility>();
+                services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
 
                 // Authentication Services
                 var mySqlConnectionString = Helper_Database_Variables.GetConnectionString();
@@ -67,12 +68,12 @@ public partial class App : Application
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp => new Dao_InforVisualPO(inforVisualConnectionString));
                 services.AddSingleton(sp => new Dao_InforVisualPart(inforVisualConnectionString));
-                services.AddSingleton<IDispatcherService>(sp =>
+                services.AddSingleton<IService_Dispatcher>(sp =>
                 {
                     var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-                    return new DispatcherService(dispatcherQueue);
+                    return new Service_Dispatcher(dispatcherQueue);
                 });
-                services.AddSingleton<IWindowService, WindowService>();
+                services.AddSingleton<IService_Window, Service_Window>();
                 services.AddSingleton<IService_Authentication>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();
@@ -82,7 +83,7 @@ public partial class App : Application
                 services.AddSingleton<IService_UserSessionManager>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();
-                    var dispatcherService = sp.GetRequiredService<IDispatcherService>();
+                    var dispatcherService = sp.GetRequiredService<IService_Dispatcher>();
                     return new Service_UserSessionManager(daoUser, dispatcherService);
                 });
                 services.AddTransient<IService_UserPreferences, Service_UserPreferences>();
@@ -92,11 +93,11 @@ public partial class App : Application
 
                 // Receiving Workflow Services (003-database-foundation)
                 services.AddSingleton<IService_InforVisual, Service_InforVisual>();
-                services.AddSingleton<IService_MySQL_Receiving>(sp => { var logger = sp.GetRequiredService<ILoggingService>(); return new Service_MySQL_Receiving(Helper_Database_Variables.GetConnectionString(), logger); });
+                services.AddSingleton<IService_MySQL_Receiving>(sp => { var logger = sp.GetRequiredService<IService_LoggingUtility>(); return new Service_MySQL_Receiving(Helper_Database_Variables.GetConnectionString(), logger); });
                 services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
                 services.AddSingleton<IService_MySQL_PackagePreferences>(sp => new Service_MySQL_PackagePreferences(Helper_Database_Variables.GetConnectionString()));
-                services.AddSingleton<IService_SessionManager>(sp => { var logger = sp.GetRequiredService<ILoggingService>(); return new Service_SessionManager(logger); });
-                services.AddSingleton<IService_CSVWriter>(sp => { var sessionManager = sp.GetRequiredService<IService_UserSessionManager>(); var logger = sp.GetRequiredService<ILoggingService>(); return new Service_CSVWriter(sessionManager, logger); });
+                services.AddSingleton<IService_SessionManager>(sp => { var logger = sp.GetRequiredService<IService_LoggingUtility>(); return new Service_SessionManager(logger); });
+                services.AddSingleton<IService_CSVWriter>(sp => { var sessionManager = sp.GetRequiredService<IService_UserSessionManager>(); var logger = sp.GetRequiredService<IService_LoggingUtility>(); return new Service_CSVWriter(sessionManager, logger); });
                 services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
                 services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
                 services.AddTransient<IService_Pagination, Service_Pagination>();
@@ -107,35 +108,35 @@ public partial class App : Application
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
 
                 // ViewModels
-                services.AddTransient<MainWindowViewModel>();
-                services.AddTransient<SplashScreenViewModel>();
-                services.AddTransient<SharedTerminalLoginViewModel>();
-                services.AddTransient<NewUserSetupViewModel>();
-                services.AddTransient<ReceivingLabelViewModel>();
-                services.AddTransient<DunnageLabelViewModel>();
-                services.AddTransient<CarrierDeliveryLabelViewModel>();
+                services.AddTransient<Shared_MainWindowViewModel>();
+                services.AddTransient<Shared_SplashScreenViewModel>();
+                services.AddTransient<Shared_SharedTerminalLoginViewModel>();
+                services.AddTransient<Shared_NewUserSetupViewModel>();
+                services.AddTransient<Main_ReceivingLabelViewModel>();
+                services.AddTransient<Main_DunnageLabelViewModel>();
+                services.AddTransient<Main_CarrierDeliveryLabelViewModel>();
 
                 // Receiving Workflow ViewModels
-                services.AddTransient<ReceivingWorkflowViewModel>();
-                services.AddTransient<ReceivingModeSelectionViewModel>();
-                services.AddTransient<ManualEntryViewModel>();
-                services.AddTransient<EditModeViewModel>();
-                services.AddTransient<POEntryViewModel>();
-                services.AddTransient<LoadEntryViewModel>();
-                services.AddTransient<WeightQuantityViewModel>();
-                services.AddTransient<HeatLotViewModel>();
-                services.AddTransient<PackageTypeViewModel>();
-                services.AddTransient<ReviewGridViewModel>();
+                services.AddTransient<Receiving_ReceivingWorkflowViewModel>();
+                services.AddTransient<Receiving_ReceivingModeSelectionViewModel>();
+                services.AddTransient<Receiving_ManualEntryViewModel>();
+                services.AddTransient<Receiving_EditModeViewModel>();
+                services.AddTransient<Receiving_POEntryViewModel>();
+                services.AddTransient<Receiving_LoadEntryViewModel>();
+                services.AddTransient<Receiving_WeightQuantityViewModel>();
+                services.AddTransient<Receiving_HeatLotViewModel>();
+                services.AddTransient<Receiving_PackageTypeViewModel>();
+                services.AddTransient<Receiving_ReviewGridViewModel>();
 
                 // Views
-                services.AddTransient<ReceivingLabelPage>();
-                services.AddTransient<DunnageLabelPage>();
-                services.AddTransient<CarrierDeliveryLabelPage>();
+                services.AddTransient<Main_ReceivingLabelPage>();
+                services.AddTransient<Main_DunnageLabelPage>();
+                services.AddTransient<Main_CarrierDeliveryLabelPage>();
 
                 // Windows
-                services.AddTransient<Views.Shared.SplashScreenWindow>();
-                services.AddTransient<Views.Shared.SharedTerminalLoginDialog>();
-                services.AddTransient<Views.Shared.NewUserSetupDialog>();
+                services.AddTransient<Views.Shared.Shared_SplashScreenWindow>();
+                services.AddTransient<Views.Shared.Shared_SharedTerminalLoginDialog>();
+                services.AddTransient<Views.Shared.Shared_NewUserSetupDialog>();
                 services.AddSingleton<MainWindow>();
             })
             .Build();

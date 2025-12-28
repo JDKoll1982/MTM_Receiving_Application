@@ -11,7 +11,7 @@ This file provides guidelines for creating ViewModels following the MVVM pattern
 ## Core Principles
 
 1. **All ViewModels must inherit from BaseViewModel**
-   - Located at: `ViewModels/Shared/BaseViewModel.cs`
+   - Located at: `ViewModels/Shared/Shared_BaseViewModel.cs`
    - Provides: `IsBusy`, `StatusMessage`, error handling, logging
 
 2. **Use CommunityToolkit.Mvvm attributes**
@@ -156,9 +156,9 @@ services.AddTransient<MyViewModel>();
 
 ## File Location
 
-- Base: `ViewModels/Shared/BaseViewModel.cs`
+- Base: `ViewModels/Shared/Shared_BaseViewModel.cs`
 - Feature-specific: `ViewModels/[FeatureName]/[Feature]ViewModel.cs`
-- Example: `ViewModels/Receiving/ReceivingLabelViewModel.cs`
+- Example: `ViewModels/Main/Main_ReceivingLabelViewModel.cs`
 
 ## Common Patterns
 

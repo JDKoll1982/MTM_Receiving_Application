@@ -14,10 +14,10 @@ namespace MTM_Receiving_Application.Services.Database;
 /// </summary>
 public class Service_ErrorHandler : IService_ErrorHandler
 {
-    private readonly ILoggingService _loggingService;
-    private readonly IWindowService _windowService;
+    private readonly IService_LoggingUtility _loggingService;
+    private readonly IService_Window _windowService;
 
-    public Service_ErrorHandler(ILoggingService loggingService, IWindowService windowService)
+    public Service_ErrorHandler(IService_LoggingUtility loggingService, IService_Window windowService)
     {
         _loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));

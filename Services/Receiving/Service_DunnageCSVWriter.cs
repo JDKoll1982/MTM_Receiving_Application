@@ -18,13 +18,13 @@ namespace MTM_Receiving_Application.Services.Receiving
     {
         private readonly IService_MySQL_Dunnage _dunnageService;
         private readonly IService_UserSessionManager _sessionManager;
-        private readonly ILoggingService _logger;
+        private readonly IService_LoggingUtility _logger;
         private readonly IService_ErrorHandler _errorHandler;
 
         public Service_DunnageCSVWriter(
             IService_MySQL_Dunnage dunnageService,
             IService_UserSessionManager sessionManager,
-            ILoggingService logger,
+            IService_LoggingUtility logger,
             IService_ErrorHandler errorHandler)
         {
             _dunnageService = dunnageService;

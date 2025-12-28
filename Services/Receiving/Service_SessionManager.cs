@@ -15,9 +15,9 @@ namespace MTM_Receiving_Application.Services.Receiving
     public class Service_SessionManager : IService_SessionManager
     {
         private readonly string _sessionPath;
-        private readonly ILoggingService _logger;
+        private readonly IService_LoggingUtility _logger;
 
-        public Service_SessionManager(ILoggingService logger)
+        public Service_SessionManager(IService_LoggingUtility logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

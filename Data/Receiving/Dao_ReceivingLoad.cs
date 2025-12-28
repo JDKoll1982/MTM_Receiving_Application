@@ -27,7 +27,7 @@ public class Dao_ReceivingLoad
     public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
-            return DaoResultFactory.Failure<int>("Loads list cannot be null or empty");
+            return Model_Dao_Result_Factory.Failure<int>("Loads list cannot be null or empty");
 
         using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -72,19 +72,19 @@ public class Dao_ReceivingLoad
             }
 
             await transaction.CommitAsync();
-            return DaoResultFactory.Success<int>(savedCount);
+            return Model_Dao_Result_Factory.Success<int>(savedCount);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return DaoResultFactory.Failure<int>($"Failed to save loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>($"Failed to save loads: {ex.Message}", ex);
         }
     }
 
     public async Task<Model_Dao_Result<int>> UpdateLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
-            return DaoResultFactory.Failure<int>("Loads list cannot be null or empty");
+            return Model_Dao_Result_Factory.Failure<int>("Loads list cannot be null or empty");
 
         using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -129,19 +129,19 @@ public class Dao_ReceivingLoad
             }
 
             await transaction.CommitAsync();
-            return DaoResultFactory.Success<int>(updatedCount);
+            return Model_Dao_Result_Factory.Success<int>(updatedCount);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return DaoResultFactory.Failure<int>($"Failed to update loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>($"Failed to update loads: {ex.Message}", ex);
         }
     }
 
     public async Task<Model_Dao_Result<int>> DeleteLoadsAsync(List<Model_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
-            return DaoResultFactory.Success<int>(0);
+            return Model_Dao_Result_Factory.Success<int>(0);
 
         using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -174,12 +174,12 @@ public class Dao_ReceivingLoad
             }
 
             await transaction.CommitAsync();
-            return DaoResultFactory.Success<int>(deletedCount);
+            return Model_Dao_Result_Factory.Success<int>(deletedCount);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return DaoResultFactory.Failure<int>($"Failed to delete loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>($"Failed to delete loads: {ex.Message}", ex);
         }
     }
 
@@ -207,13 +207,13 @@ public class Dao_ReceivingLoad
                 {
                     loads.Add(MapRowToLoad(row));
                 }
-                return DaoResultFactory.Success(loads);
+                return Model_Dao_Result_Factory.Success(loads);
             }
-            return DaoResultFactory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<List<Model_ReceivingLoad>>($"Error retrieving history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving history: {ex.Message}", ex);
         }
     }
 
@@ -240,13 +240,13 @@ public class Dao_ReceivingLoad
                 {
                     loads.Add(MapRowToLoad(row));
                 }
-                return DaoResultFactory.Success(loads);
+                return Model_Dao_Result_Factory.Success(loads);
             }
-            return DaoResultFactory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<List<Model_ReceivingLoad>>($"Error retrieving all loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving all loads: {ex.Message}", ex);
         }
     }
 

@@ -86,14 +86,14 @@ public class Dao_InforVisualPart
                     PartStatus = reader["PartStatus"].ToString() ?? "ACTIVE",
                     ProductLine = reader["ProductLine"].ToString() ?? string.Empty
                 };
-                return DaoResultFactory.Success(part);
+                return Model_Dao_Result_Factory.Success(part);
             }
 
-            return DaoResultFactory.Failure<Model_InforVisualPart>("Part not found");
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart>("Part not found");
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<Model_InforVisualPart>(
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart>(
                 $"Error retrieving part {partNumber}: {ex.Message}",
                 ex);
         }
@@ -150,11 +150,11 @@ public class Dao_InforVisualPart
                 });
             }
 
-            return DaoResultFactory.Success(list);
+            return Model_Dao_Result_Factory.Success(list);
         }
         catch (Exception ex)
         {
-            return DaoResultFactory.Failure<List<Model_InforVisualPart>>(
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPart>>(
                 $"Error searching parts: {ex.Message}",
                 ex);
         }

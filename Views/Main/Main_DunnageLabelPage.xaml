@@ -1,0 +1,89 @@
+<Page
+    x:Class="MTM_Receiving_Application.Views.Main.Main_DunnageLabelPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="24">
+        <Button x:Name="HelpButton"
+                Canvas.ZIndex="1000"
+                Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="12,8"
+                ToolTipService.ToolTip="Click for help about dunnage labels">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE946;" FontSize="16"/>
+                <TextBlock Text="Help"/>
+            </StackPanel>
+            <Button.Flyout>
+                <Flyout>
+                    <StackPanel Spacing="20" Padding="4" MaxWidth="450">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Dunnage Labels" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
+                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Create labels for dunnage material (pallets, crates, blocking).</TextBlock>
+                            </StackPanel>
+                            
+                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="What is Dunnage?" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Dunnage refers to packaging materials used to protect cargo during shipping: wooden pallets, crates, blocking materials, and protective wrapping.</TextBlock>
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource SystemFillColorAttentionBrush}">
+                                <StackPanel Spacing="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE946;" FontSize="14" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                                        <TextBlock Text="Coming Soon" FontWeight="SemiBold" FontSize="14" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12">This feature will be implemented with full dunnage tracking and label printing capabilities.</TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="600" Spacing="24">
+            <FontIcon Glyph="&#xE7B8;" FontSize="64" Foreground="{ThemeResource SystemFillColorAttentionBrush}" HorizontalAlignment="Center"/>
+            
+            <TextBlock Text="Dunnage Label Entry" 
+                       Style="{StaticResource TitleTextBlockStyle}" 
+                       HorizontalAlignment="Center"/>
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="24">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Feature Under Development" 
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Foreground="{ThemeResource SystemFillColorAttentionBrush}"
+                               HorizontalAlignment="Center"/>
+                    
+                    <TextBlock TextWrapping="Wrap" 
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        This page will allow you to create and print labels for dunnage materials such as pallets, crates, and protective packaging.
+                    </TextBlock>
+                    
+                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}" 
+                            Padding="16" 
+                            CornerRadius="4">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Planned Features:" FontWeight="SemiBold"/>
+                            <TextBlock Text="• Quick dunnage entry" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Pallet and crate tracking" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Label printing" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Material inventory" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Page>

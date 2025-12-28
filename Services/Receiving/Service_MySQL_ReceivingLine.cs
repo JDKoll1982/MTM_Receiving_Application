@@ -12,12 +12,12 @@ namespace MTM_Receiving_Application.Services.Receiving;
 public class Service_MySQL_ReceivingLine : IService_MySQL_ReceivingLine
 {
     private readonly Dao_ReceivingLine _receivingLineDao;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
     private readonly IService_ErrorHandler _errorHandler;
 
     public Service_MySQL_ReceivingLine(
         Dao_ReceivingLine receivingLineDao,
-        ILoggingService logger,
+        IService_LoggingUtility logger,
         IService_ErrorHandler errorHandler)
     {
         _receivingLineDao = receivingLineDao;
@@ -52,7 +52,7 @@ public class Service_MySQL_ReceivingLine : IService_MySQL_ReceivingLine
                 Enum_ErrorSeverity.Critical,
                 ex);
 
-            return DaoResultFactory.Failure(
+            return Model_Dao_Result_Factory.Failure(
                 "An error occurred while inserting receiving line.", ex);
         }
     }

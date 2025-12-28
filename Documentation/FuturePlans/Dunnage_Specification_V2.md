@@ -573,7 +573,7 @@ Task<List<string>> GetAllSpecKeysAsync(); // Union of all possible specs from DB
 All ViewModels inherit from `BaseViewModel` and are `partial` classes.
 
 ### 6.1 DunnageWorkflowViewModel (Orchestrator)
-File: `ViewModels/Receiving/DunnageWorkflowViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_WorkflowViewModel.cs`
 
 **Purpose**: Main orchestrator, manages step visibility and navigation (similar to `ReceivingWorkflowViewModel`).
 
@@ -597,7 +597,7 @@ File: `ViewModels/Receiving/DunnageWorkflowViewModel.cs`
 ### 6.2 Step ViewModels
 
 #### 6.2.1 DunnageModeSelectionViewModel
-File: `ViewModels/Receiving/DunnageModeSelectionViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_ModeSelectionViewModel.cs`
 
 **Purpose**: Choose Wizard/Manual/Edit mode (C.1)
 
@@ -616,7 +616,7 @@ File: `ViewModels/Receiving/DunnageModeSelectionViewModel.cs`
 ```
 
 #### 6.2.2 DunnageTypeSelectionViewModel
-File: `ViewModels/Receiving/DunnageTypeSelectionViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_TypeSelectionViewModel.cs`
 
 **Purpose**: Select Type with dynamic button grid (C.2)
 
@@ -647,7 +647,7 @@ File: `ViewModels/Receiving/DunnageTypeSelectionViewModel.cs`
 - Update displayed types when page changes
 
 #### 6.2.3 DunnagePartSelectionViewModel
-File: `ViewModels/Receiving/DunnagePartSelectionViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_PartSelectionViewModel.cs`
 
 **Purpose**: Select Part ID, check inventory status (C.3)
 
@@ -677,7 +677,7 @@ File: `ViewModels/Receiving/DunnagePartSelectionViewModel.cs`
 - If inventoried, display notification (method determined by PO in next step)
 
 #### 6.2.4 DunnageQuantityEntryViewModel
-File: `ViewModels/Receiving/DunnageQuantityEntryViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_QuantityEntryViewModel.cs`
 
 **Purpose**: Enter quantity (C.4)
 
@@ -695,7 +695,7 @@ File: `ViewModels/Receiving/DunnageQuantityEntryViewModel.cs`
 ```
 
 #### 6.2.5 DunnageDetailsEntryViewModel
-File: `ViewModels/Receiving/DunnageDetailsEntryViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_DetailsEntryViewModel.cs`
 
 **Purpose**: PO Number, Location, Dynamic Specs (C.5)
 
@@ -743,7 +743,7 @@ private void UpdateInventoryMethod()
 ```
 
 #### 6.2.6 DunnageReviewViewModel
-File: `ViewModels/Receiving/DunnageReviewViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_ReviewViewModel.cs`
 
 **Purpose**: Review and save (C.6)
 
@@ -763,7 +763,7 @@ File: `ViewModels/Receiving/DunnageReviewViewModel.cs`
 ### 6.3 Mode ViewModels
 
 #### 6.3.1 DunnageManualEntryViewModel
-File: `ViewModels/Receiving/DunnageManualEntryViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_ManualEntryViewModel.cs`
 
 **Purpose**: DataGrid-based manual entry (C.7)
 
@@ -798,7 +798,7 @@ File: `ViewModels/Receiving/DunnageManualEntryViewModel.cs`
 - `ILoggingService`
 
 #### 6.3.2 DunnageEditModeViewModel
-File: `ViewModels/Receiving/DunnageEditModeViewModel.cs`
+File: `ViewModels/Dunnage/Dunnage_EditModeViewModel.cs`
 
 **Purpose**: History view with date grouping, filtering, pagination (C.8)
 
@@ -849,7 +849,7 @@ File: `ViewModels/Receiving/DunnageEditModeViewModel.cs`
 ```
 
 **Logic**:
-- Matches EditModeView.xaml pattern from Receiving
+- Matches Receiving_EditModeView.xaml pattern from Receiving
 - Load Data From options: Current Memory (unsaved), Current Labels (CSV), History (database)
 - Date filters apply to Loads collection with pagination
 - Checkbox column for multi-select

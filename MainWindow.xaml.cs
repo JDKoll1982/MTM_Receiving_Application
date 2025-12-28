@@ -10,10 +10,10 @@ namespace MTM_Receiving_Application
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public MainWindowViewModel ViewModel { get; }
+        public Shared_MainWindowViewModel ViewModel { get; }
         private readonly IService_UserSessionManager _sessionManager;
 
-        public MainWindow(MainWindowViewModel viewModel, IService_UserSessionManager sessionManager)
+        public MainWindow(Shared_MainWindowViewModel viewModel, IService_UserSessionManager sessionManager)
         {
             InitializeComponent();
             ViewModel = viewModel;
@@ -21,7 +21,7 @@ namespace MTM_Receiving_Application
 
             // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1450, 900));
-            
+
             // Center window on screen
             CenterWindow();
 
@@ -33,7 +33,7 @@ namespace MTM_Receiving_Application
                 {
                     var redColor = Windows.UI.Color.FromArgb(255, 220, 53, 69); // Bootstrap Danger Red
                     var whiteColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-                    
+
                     AppWindow.TitleBar.ForegroundColor = whiteColor;
                     AppWindow.TitleBar.BackgroundColor = redColor;
                     AppWindow.TitleBar.ButtonForegroundColor = whiteColor;
@@ -62,7 +62,7 @@ namespace MTM_Receiving_Application
                 rootElement.PointerMoved += (s, e) => _sessionManager.UpdateLastActivity();
                 rootElement.KeyDown += (s, e) => _sessionManager.UpdateLastActivity();
             }
-            
+
             this.Activated += MainWindow_Activated;
             this.Closed += MainWindow_Closed;
         }
@@ -95,16 +95,16 @@ namespace MTM_Receiving_Application
                 {
                     case "ReceivingWorkflowView":
                         PageTitleTextBlock.Text = "Receiving Workflow";
-                        ContentFrame.Navigate(typeof(Views.Receiving.ReceivingWorkflowView));
+                        ContentFrame.Navigate(typeof(Views.Receiving.Receiving_WorkflowView));
                         ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "DunnageLabelPage":
                         PageTitleTextBlock.Text = "Dunnage Labels";
-                        ContentFrame.Navigate(typeof(Views.Receiving.DunnageLabelPage));
+                        ContentFrame.Navigate(typeof(Views.Main.Main_DunnageLabelPage));
                         break;
                     case "CarrierDeliveryLabelPage":
                         PageTitleTextBlock.Text = "Carrier Delivery";
-                        ContentFrame.Navigate(typeof(Views.Receiving.CarrierDeliveryLabelPage));
+                        ContentFrame.Navigate(typeof(Views.Main.Main_CarrierDeliveryLabelPage));
                         break;
                 }
             }
@@ -113,14 +113,14 @@ namespace MTM_Receiving_Application
         private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
         {
             // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
-            if (ContentFrame.Content is Views.Receiving.ReceivingWorkflowView receivingView)
+            if (ContentFrame.Content is Views.Receiving.Receiving_WorkflowView receivingView)
             {
                 var viewModel = receivingView.ViewModel;
                 if (viewModel != null)
                 {
                     // Update header with current step title
                     PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                    
+
                     // Subscribe to property changes to keep header updated
                     viewModel.PropertyChanged += (s, args) =>
                     {
@@ -154,10 +154,10 @@ namespace MTM_Receiving_Application
         {
             var displayArea = Microsoft.UI.Windowing.DisplayArea.Primary;
             var workArea = displayArea.WorkArea;
-            
+
             var centerX = (workArea.Width - 1450) / 2;
             var centerY = (workArea.Height - 900) / 2;
-            
+
             AppWindow.Move(new Windows.Graphics.PointInt32(centerX, centerY));
         }
     }
