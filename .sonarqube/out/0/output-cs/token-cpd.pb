@@ -29050,1118 +29050,110 @@ LoadNumber
 µµ 	
 }
 ¶¶ 
-}·· I
-eC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_ReceivingLabelViewModel.cs
-	namespace 	%
-MTM_Receiving_Application
+}·· Η
+kC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_CarrierDeliveryLabelViewModel.cs
+	namespace
+
+ 	%
+MTM_Receiving_Application
+
+
  #
-.# $
+.
+
+# $
 
-ViewModels$ .
-.. /
-Main/ 3
-;3 4
-public 
-partial 
-class (
-Main_ReceivingLabelViewModel 1
-:2 3 
-Shared_BaseViewModel4 H
-{ 
-private 
-readonly (
-IService_MySQL_ReceivingLine 1!
-_receivingLineService2 G
-;G H
-public 
-(
-Main_ReceivingLabelViewModel '
-(' ((
-IService_MySQL_ReceivingLine $ 
-receivingLineService% 9
-,9 :!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-: 	
-base
+ViewModels
+
+$ .
+.
+
+. /
+Main
+
+/ 3
+;
+
+3 4
+public 
+partial 
+class .
+"Main_CarrierDeliveryLabelViewModel 7
+:8 9 
+Shared_BaseViewModel: N
+{ 
+public 
+.
+"Main_CarrierDeliveryLabelViewModel -
+(- .!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+: 	
+base
  
-( 
-errorHandler 
-, 
-logger #
-)# $
-{ !
-_receivingLineService 
-=  
-receivingLineService  4
-;4 5
-ReceivingLines 
-= 
-new  
-ObservableCollection 1
-<1 2
-Model_ReceivingLine2 E
->E F
-(F G
-)G H
-;H I
-} 
-public!! 
+( 
+errorHandler 
+, 
+logger #
+)# $
+{ !
+CarrierDeliveryLabels 
+= 
+new  # 
+ObservableCollection$ 8
+<8 9&
+Model_CarrierDeliveryLabel9 S
+>S T
+(T U
+)U V
+;V W
+_currentLabel 
+= 
+new &
+Model_CarrierDeliveryLabel 6
+(6 7
+)7 8
+;8 9
+} 
+public 
  
-ObservableCollection!! 
-<!!  
-Model_ReceivingLine!!  3
->!!3 4
-ReceivingLines!!5 C
-{!!D E
-get!!F I
-;!!I J
-}!!K L
-[## 
-ObservableProperty## 
-]## 
-private$$ 
-Model_ReceivingLine$$ 
-_currentLine$$  ,
-=$$- .
-new$$/ 2
-Model_ReceivingLine$$3 F
-($$F G
-)$$G H
-;$$H I
-[&& 
-ObservableProperty&& 
-]&& 
-private'' 
-int'' 
-
-_totalRows'' 
-;'' 
-[)) 
-ObservableProperty)) 
-])) 
-private** 
-int** 
-_employeeNumber** 
-=**  !
-$num**" &
-;**& '
-[// 
-RelayCommand// 
-]// 
-private00 
-async00 
-Task00 
-AddLineAsync00 #
-(00# $
-)00$ %
-{11 
-if22 
-
-(22 
-IsBusy22 
-)22 
-return22 
-;22 
-try44 
-{55 	
-IsBusy66 
-=66 
-true66 
-;66 
-StatusMessage77 
-=77 
-$str77 6
-;776 7
-if:: 
-(:: 
-string:: 
-.:: 
-IsNullOrEmpty:: $
-(::$ %
-CurrentLine::% 0
-.::0 1
-PartID::1 7
-)::7 8
-)::8 9
-{;; 
-await<< 
-_errorHandler<< #
-.<<# $
-HandleErrorAsync<<$ 4
-(<<4 5
-$str== )
-,==) *
-Models>> 
-.>> 
-Enums>>  
-.>>  !
-Enum_ErrorSeverity>>! 3
-.>>3 4
-Warning>>4 ;
-,>>; <
-
-showDialog?? 
-:?? 
-true??  $
-)@@ 
-;@@ 
-returnAA 
-;AA 
-}BB 
-CurrentLineEE 
-.EE 
-EmployeeNumberEE &
-=EE' (
-EmployeeNumberEE) 7
-;EE7 8
-varHH 
-resultHH 
-=HH 
-awaitHH !
-_receivingLineServiceHH 4
-.HH4 5$
-InsertReceivingLineAsyncHH5 M
-(HHM N
-CurrentLineHHN Y
-)HHY Z
-;HHZ [
-ifJJ 
-(JJ 
-resultJJ 
-.JJ 
-	IsSuccessJJ  
-)JJ  !
-{KK 
-ReceivingLinesLL 
-.LL 
-AddLL "
-(LL" #
-CurrentLineLL# .
-)LL. /
-;LL/ 0
-	TotalRowsMM 
-=MM 
-ReceivingLinesMM *
-.MM* +
-CountMM+ 0
-;MM0 1
-CurrentLineOO 
-=OO 
-newOO !
-Model_ReceivingLineOO" 5
-(OO5 6
-)OO6 7
-;OO7 8
-OnPropertyChangedPP !
-(PP! "
-nameofPP" (
-(PP( )
-CurrentLinePP) 4
-)PP4 5
-)PP5 6
-;PP6 7
-StatusMessageQQ 
-=QQ 
-$strQQ  9
-;QQ9 :
-}RR 
-elseSS 
-{TT 
-awaitUU 
-_errorHandlerUU #
-.UU# $
-HandleErrorAsyncUU$ 4
-(UU4 5
-resultVV 
-.VV 
-ErrorMessageVV '
-,VV' (
-resultWW 
-.WW 
-SeverityWW #
-,WW# $
-
-showDialogXX 
-:XX 
-trueXX  $
-)YY 
-;YY 
-}ZZ 
-}[[ 	
-catch\\ 
-(\\ 
-	Exception\\ 
-ex\\ 
-)\\ 
-{]] 	
-await^^ 
-_errorHandler^^ 
-.^^  
-HandleErrorAsync^^  0
-(^^0 1
-$"__ 
-$str__ /
-{__/ 0
-ex__0 2
-.__2 3
-Message__3 :
-}__: ;
-"__; <
-,__< =
-Models`` 
-.`` 
-Enums`` 
-.`` 
-Enum_ErrorSeverity`` /
-.``/ 0
-Error``0 5
-,``5 6
-exaa 
-,aa 
-
-showDialogbb 
-:bb 
-truebb  
-)cc 
-;cc 
-}dd 	
-finallyee 
-{ff 	
-IsBusygg 
-=gg 
-falsegg 
-;gg 
-}hh 	
-}ii 
-[nn 
-RelayCommandnn 
-]nn 
-privateoo 
-asyncoo 
-Taskoo 
-SaveToHistoryAsyncoo )
-(oo) *
-)oo* +
-{pp 
-ifqq 
-
-(qq 
-IsBusyqq 
-)qq 
-returnqq 
-;qq 
-tryss 
-{tt 	
-IsBusyuu 
-=uu 
-trueuu 
-;uu 
-StatusMessagevv 
-=vv 
-$strvv 2
-;vv2 3
-awaityy 
-Taskyy 
-.yy 
-Delayyy 
-(yy 
-$numyy  
-)yy  !
-;yy! "
-ReceivingLines{{ 
-.{{ 
-Clear{{  
-({{  !
-){{! "
-;{{" #
-	TotalRows|| 
-=|| 
-$num|| 
-;|| 
-StatusMessage}} 
-=}} 
-$str}} .
-;}}. /
-}~~ 	
-catch 
-( 
-	Exception 
-ex 
-) 
-{
-€€ 	
-await
- 
-_errorHandler
- 
-.
-  
-HandleErrorAsync
-  0
-(
-0 1
-$"
-‚‚ 
-$str
-‚‚ +
-{
-‚‚+ ,
-ex
-‚‚, .
-.
-‚‚. /
-Message
-‚‚/ 6
-}
-‚‚6 7
-"
-‚‚7 8
-,
-‚‚8 9
-Models
-ƒƒ 
-.
-ƒƒ 
-Enums
-ƒƒ 
-.
-ƒƒ  
-Enum_ErrorSeverity
-ƒƒ /
-.
-ƒƒ/ 0
-Error
-ƒƒ0 5
-,
-ƒƒ5 6
-ex
-„„ 
-,
-„„ 
-
-showDialog
-…… 
-:
-…… 
-true
-……  
-)
-†† 
-;
-†† 
-}
-‡‡ 	
-finally
- 
-{
-‰‰ 	
-IsBusy
- 
-=
- 
-false
- 
-;
- 
-}
-‹‹ 	
-}
- 
-[
-‘‘ 
-RelayCommand
-‘‘ 
-]
-‘‘ 
-private
-’’ 
-async
-’’ 
-Task
-’’ "
-FillBlankSpacesAsync
-’’ +
-(
-’’+ ,
-)
-’’, -
-{
-““ 
-try
-”” 
-{
-•• 	
-StatusMessage
-—— 
-=
-—— 
-$str
-—— 1
-;
-——1 2
-}
- 	
-catch
-™™ 
-(
-™™ 
-	Exception
-™™ 
-ex
-™™ 
-)
-™™ 
-{
- 	
-await
-›› 
-_errorHandler
-›› 
-.
-››  
-HandleErrorAsync
-››  0
-(
-››0 1
-$"
- 
-$str
- .
-{
-. /
-ex
-/ 1
-.
-1 2
-Message
-2 9
-}
-9 :
-"
-: ;
-,
-; <
-Models
- 
-.
- 
-Enums
- 
-.
-  
-Enum_ErrorSeverity
- /
-.
-/ 0
-Warning
-0 7
-,
-7 8
-ex
- 
-,
- 
-
-showDialog
- 
-:
- 
-true
-  
-)
-   
-;
-   
-}
-΅΅ 	
-}
-ΆΆ 
-[
-§§ 
-RelayCommand
-§§ 
-]
-§§ 
-private
-¨¨ 
-async
-¨¨ 
-Task
-¨¨ "
-SortForPrintingAsync
-¨¨ +
-(
-¨¨+ ,
-)
-¨¨, -
-{
-©© 
-try
-ªª 
-{
-«« 	
-StatusMessage
-­­ 
-=
-­­ 
-$str
-­­ 1
-;
-­­1 2
-}
-®® 	
-catch
-―― 
-(
-―― 
-	Exception
-―― 
-ex
-―― 
-)
-―― 
-{
-°° 	
-await
-±± 
-_errorHandler
-±± 
-.
-±±  
-HandleErrorAsync
-±±  0
-(
-±±0 1
-$"
-²² 
-$str
-²² .
-{
-²². /
-ex
-²²/ 1
-.
-²²1 2
-Message
-²²2 9
-}
-²²9 :
-"
-²²: ;
-,
-²²; <
-Models
-³³ 
-.
-³³ 
-Enums
-³³ 
-.
-³³  
-Enum_ErrorSeverity
-³³ /
-.
-³³/ 0
-Warning
-³³0 7
-,
-³³7 8
-ex
-΄΄ 
-,
-΄΄ 
-
-showDialog
-µµ 
-:
-µµ 
-true
-µµ  
-)
-¶¶ 
-;
-¶¶ 
-}
-·· 	
-}
-ΈΈ 
-}ΉΉ ζA
-cC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_DunnageLabelViewModel.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-
-ViewModels$ .
-.. /
-Main/ 3
-;3 4
-public 
-partial 
-class &
-Main_DunnageLabelViewModel /
-:0 1 
-Shared_BaseViewModel2 F
-{ 
-private 
-readonly $
-IService_DunnageWorkflow -
-_workflowService. >
-;> ?
-public 
-&
-Main_DunnageLabelViewModel %
-(% &$
-IService_DunnageWorkflow  
-workflowService! 0
-,0 1!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-: 	
-base
- 
-( 
-errorHandler 
-, 
-logger #
-)# $
-{ 
-_workflowService 
-= 
-workflowService *
-;* +
-_workflowService 
-. 
-StepChanged $
-+=% '!
-OnWorkflowStepChanged( =
-;= >
-DunnageLines 
-= 
-new  
-ObservableCollection /
-</ 0
-Model_DunnageLine0 A
->A B
-(B C
-)C D
-;D E
-_currentLine 
-= 
-new 
-Model_DunnageLine ,
-(, -
-)- .
-;. /"
-IsModeSelectionVisible"" 
-=""  
-true""! %
-;""% &
-}## 
-public%% 
- 
-ObservableCollection%% 
-<%%  
-Model_DunnageLine%%  1
->%%1 2
-DunnageLines%%3 ?
-{%%@ A
-get%%B E
-;%%E F
-}%%G H
-['' 
-ObservableProperty'' 
-]'' 
-private(( 
-Model_DunnageLine(( 
-_currentLine(( *
-;((* +
-[,, 
-ObservableProperty,, 
-],, 
-private-- 
-bool-- #
-_isModeSelectionVisible-- (
-;--( )
-[// 
-ObservableProperty// 
-]// 
-private00 
-bool00 #
-_isTypeSelectionVisible00 (
-;00( )
-[22 
-ObservableProperty22 
-]22 
-private33 
-bool33 #
-_isPartSelectionVisible33 (
-;33( )
-[55 
-ObservableProperty55 
-]55 
-private66 
-bool66 #
-_isQuantityEntryVisible66 (
-;66( )
-[88 
-ObservableProperty88 
-]88 
-private99 
-bool99 "
-_isDetailsEntryVisible99 '
-;99' (
-[;; 
-ObservableProperty;; 
-];; 
-private<< 
-bool<< 
-_isReviewVisible<< !
-;<<! "
-[>> 
-ObservableProperty>> 
-]>> 
-private?? 
-bool?? !
-_isManualEntryVisible?? &
-;??& '
-[AA 
-ObservablePropertyAA 
-]AA 
-privateBB 
-boolBB 
-_isEditModeVisibleBB #
-;BB# $
-[DD 
-ObservablePropertyDD 
-]DD 
-privateEE 
-stringEE 
-_currentStepTitleEE $
-=EE% &
-$strEE' 7
-;EE7 8
-[KK 
-ObservablePropertyKK 
-]KK 
-privateLL 
-boolLL 
-_isStatusOpenLL 
-;LL 
-[NN 
-ObservablePropertyNN 
-]NN 
-privateOO 
-stringOO 
-_statusMessageOO !
-=OO" #
-stringOO$ *
-.OO* +
-EmptyOO+ 0
-;OO0 1
-[QQ 
-ObservablePropertyQQ 
-]QQ 
-privateRR 
-Enum_ErrorSeverityRR 
-_statusSeverityRR .
-=RR/ 0
-Enum_ErrorSeverityRR1 C
-.RRC D
-InfoRRD H
-;RRH I
-privateXX 
-voidXX !
-OnWorkflowStepChangedXX &
-(XX& '
-objectXX' -
-?XX- .
-senderXX/ 5
-,XX5 6
-	EventArgsXX7 @
-eXXA B
-)XXB C
-{YY "
-IsModeSelectionVisible[[ 
-=[[  
-false[[! &
-;[[& '"
-IsTypeSelectionVisible\\ 
-=\\  
-false\\! &
-;\\& '"
-IsPartSelectionVisible]] 
-=]]  
-false]]! &
-;]]& '"
-IsQuantityEntryVisible^^ 
-=^^  
-false^^! &
-;^^& '!
-IsDetailsEntryVisible__ 
-=__ 
-false__  %
-;__% &
-IsReviewVisible`` 
-=`` 
-false`` 
-;``   
-IsManualEntryVisibleaa 
-=aa 
-falseaa $
-;aa$ %
-IsEditModeVisiblebb 
-=bb 
-falsebb !
-;bb! "
-switchee 
-(ee 
-_workflowServiceee  
-.ee  !
-CurrentStepee! ,
-)ee, -
-{ff 	
-casegg $
-Enum_DunnageWorkflowStepgg )
-.gg) *
-ModeSelectiongg* 7
-:gg7 8"
-IsModeSelectionVisiblehh &
-=hh' (
-truehh) -
-;hh- .
-CurrentStepTitleii  
-=ii! "
-$strii# 3
-;ii3 4
-breakjj 
-;jj 
-casekk $
-Enum_DunnageWorkflowStepkk )
-.kk) *
-TypeSelectionkk* 7
-:kk7 8"
-IsTypeSelectionVisiblell &
-=ll' (
-truell) -
-;ll- .
-CurrentStepTitlemm  
-=mm! "
-$strmm# 0
-;mm0 1
-breaknn 
-;nn 
-caseoo $
-Enum_DunnageWorkflowStepoo )
-.oo) *
-PartSelectionoo* 7
-:oo7 8"
-IsPartSelectionVisiblepp &
-=pp' (
-truepp) -
-;pp- .
-CurrentStepTitleqq  
-=qq! "
-$strqq# 0
-;qq0 1
-breakrr 
-;rr 
-casess $
-Enum_DunnageWorkflowStepss )
-.ss) *
-QuantityEntryss* 7
-:ss7 8"
-IsQuantityEntryVisiblett &
-=tt' (
-truett) -
-;tt- .
-CurrentStepTitleuu  
-=uu! "
-$struu# 3
-;uu3 4
-breakvv 
-;vv 
-caseww $
-Enum_DunnageWorkflowStepww )
-.ww) *
-DetailsEntryww* 6
-:ww6 7!
-IsDetailsEntryVisiblexx %
-=xx& '
-truexx( ,
-;xx, -
-CurrentStepTitleyy  
-=yy! "
-$stryy# 2
-;yy2 3
-breakzz 
-;zz 
-case{{ $
-Enum_DunnageWorkflowStep{{ )
-.{{) *
-Review{{* 0
-:{{0 1
-IsReviewVisible|| 
-=||  !
-true||" &
-;||& '
-CurrentStepTitle}}  
-=}}! "
-$str}}# 2
-;}}2 3
-break~~ 
-;~~ 
-case $
-Enum_DunnageWorkflowStep )
-.) *
-ManualEntry* 5
-:5 6"
-IsManualEntryVisible
-€€ $
-=
-€€% &
-true
-€€' +
-;
-€€+ ,
-CurrentStepTitle
-  
-=
-! "
-$str
-# 1
-;
-1 2
-break
-‚‚ 
-;
-‚‚ 
-case
-ƒƒ &
-Enum_DunnageWorkflowStep
-ƒƒ )
-.
-ƒƒ) *
-EditMode
-ƒƒ* 2
-:
-ƒƒ2 3
-IsEditModeVisible
-„„ !
-=
-„„" #
-true
-„„$ (
-;
-„„( )
-CurrentStepTitle
-……  
-=
-……! "
-$str
-……# .
-;
-……. /
-break
-†† 
-;
-†† 
-}
-‡‡ 	
-}
- 
-[
- 
-RelayCommand
- 
-]
- 
-private
- 
-void
- #
-ReturnToModeSelection
- &
-(
-& '
-)
-' (
-{
- 
-_workflowService
-‘‘ 
-.
-‘‘ 
-ClearSession
-‘‘ %
-(
-‘‘% &
-)
-‘‘& '
-;
-‘‘' (
-_workflowService
-’’ 
-.
-’’ 
-GoToStep
-’’ !
-(
-’’! "&
-Enum_DunnageWorkflowStep
-’’" :
-.
-’’: ;
-ModeSelection
-’’; H
-)
-’’H I
-;
-’’I J
-}
-““ 
-[
-•• 
-RelayCommand
-•• 
-]
-•• 
-private
-–– 
-async
-–– 
-Task
-–– 
-AddLineAsync
-–– #
-(
-––# $
-)
-––$ %
-{
-—— 
-await
-™™ 
-Task
-™™ 
-.
-™™ 
-CompletedTask
-™™  
-;
-™™  !
-}
- 
-} ϋ
+ObservableCollection 
+<  &
+Model_CarrierDeliveryLabel  :
+>: ;!
+CarrierDeliveryLabels< Q
+{R S
+getT W
+;W X
+}Y Z
+[ 
+ObservableProperty 
+] 
+private &
+Model_CarrierDeliveryLabel &
+_currentLabel' 4
+;4 5
+[ 
+RelayCommand 
+] 
+private   
+async   
+Task   
+AddLabelAsync   $
+(  $ %
+)  % &
+{!! 
+await## 
+Task## 
+.## 
+CompletedTask##  
+;##  !
+}$$ 
+}%% ϋ
 fC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Helpers\SpecInputViewModel.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -31971,7 +30963,647 @@ TotalPages
 ;ΑΑ† ‡
 }
 ΒΒ 
-}ΕΕ δI
+}ΕΕ I
+eC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_ReceivingLabelViewModel.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+ViewModels$ .
+.. /
+Main/ 3
+;3 4
+public 
+partial 
+class (
+Main_ReceivingLabelViewModel 1
+:2 3 
+Shared_BaseViewModel4 H
+{ 
+private 
+readonly (
+IService_MySQL_ReceivingLine 1!
+_receivingLineService2 G
+;G H
+public 
+(
+Main_ReceivingLabelViewModel '
+(' ((
+IService_MySQL_ReceivingLine $ 
+receivingLineService% 9
+,9 :!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+: 	
+base
+ 
+( 
+errorHandler 
+, 
+logger #
+)# $
+{ !
+_receivingLineService 
+=  
+receivingLineService  4
+;4 5
+ReceivingLines 
+= 
+new  
+ObservableCollection 1
+<1 2
+Model_ReceivingLine2 E
+>E F
+(F G
+)G H
+;H I
+} 
+public!! 
+ 
+ObservableCollection!! 
+<!!  
+Model_ReceivingLine!!  3
+>!!3 4
+ReceivingLines!!5 C
+{!!D E
+get!!F I
+;!!I J
+}!!K L
+[## 
+ObservableProperty## 
+]## 
+private$$ 
+Model_ReceivingLine$$ 
+_currentLine$$  ,
+=$$- .
+new$$/ 2
+Model_ReceivingLine$$3 F
+($$F G
+)$$G H
+;$$H I
+[&& 
+ObservableProperty&& 
+]&& 
+private'' 
+int'' 
+
+_totalRows'' 
+;'' 
+[)) 
+ObservableProperty)) 
+])) 
+private** 
+int** 
+_employeeNumber** 
+=**  !
+$num**" &
+;**& '
+[// 
+RelayCommand// 
+]// 
+private00 
+async00 
+Task00 
+AddLineAsync00 #
+(00# $
+)00$ %
+{11 
+if22 
+
+(22 
+IsBusy22 
+)22 
+return22 
+;22 
+try44 
+{55 	
+IsBusy66 
+=66 
+true66 
+;66 
+StatusMessage77 
+=77 
+$str77 6
+;776 7
+if:: 
+(:: 
+string:: 
+.:: 
+IsNullOrEmpty:: $
+(::$ %
+CurrentLine::% 0
+.::0 1
+PartID::1 7
+)::7 8
+)::8 9
+{;; 
+await<< 
+_errorHandler<< #
+.<<# $
+HandleErrorAsync<<$ 4
+(<<4 5
+$str== )
+,==) *
+Models>> 
+.>> 
+Enums>>  
+.>>  !
+Enum_ErrorSeverity>>! 3
+.>>3 4
+Warning>>4 ;
+,>>; <
+
+showDialog?? 
+:?? 
+true??  $
+)@@ 
+;@@ 
+returnAA 
+;AA 
+}BB 
+CurrentLineEE 
+.EE 
+EmployeeNumberEE &
+=EE' (
+EmployeeNumberEE) 7
+;EE7 8
+varHH 
+resultHH 
+=HH 
+awaitHH !
+_receivingLineServiceHH 4
+.HH4 5$
+InsertReceivingLineAsyncHH5 M
+(HHM N
+CurrentLineHHN Y
+)HHY Z
+;HHZ [
+ifJJ 
+(JJ 
+resultJJ 
+.JJ 
+	IsSuccessJJ  
+)JJ  !
+{KK 
+ReceivingLinesLL 
+.LL 
+AddLL "
+(LL" #
+CurrentLineLL# .
+)LL. /
+;LL/ 0
+	TotalRowsMM 
+=MM 
+ReceivingLinesMM *
+.MM* +
+CountMM+ 0
+;MM0 1
+CurrentLineOO 
+=OO 
+newOO !
+Model_ReceivingLineOO" 5
+(OO5 6
+)OO6 7
+;OO7 8
+OnPropertyChangedPP !
+(PP! "
+nameofPP" (
+(PP( )
+CurrentLinePP) 4
+)PP4 5
+)PP5 6
+;PP6 7
+StatusMessageQQ 
+=QQ 
+$strQQ  9
+;QQ9 :
+}RR 
+elseSS 
+{TT 
+awaitUU 
+_errorHandlerUU #
+.UU# $
+HandleErrorAsyncUU$ 4
+(UU4 5
+resultVV 
+.VV 
+ErrorMessageVV '
+,VV' (
+resultWW 
+.WW 
+SeverityWW #
+,WW# $
+
+showDialogXX 
+:XX 
+trueXX  $
+)YY 
+;YY 
+}ZZ 
+}[[ 	
+catch\\ 
+(\\ 
+	Exception\\ 
+ex\\ 
+)\\ 
+{]] 	
+await^^ 
+_errorHandler^^ 
+.^^  
+HandleErrorAsync^^  0
+(^^0 1
+$"__ 
+$str__ /
+{__/ 0
+ex__0 2
+.__2 3
+Message__3 :
+}__: ;
+"__; <
+,__< =
+Models`` 
+.`` 
+Enums`` 
+.`` 
+Enum_ErrorSeverity`` /
+.``/ 0
+Error``0 5
+,``5 6
+exaa 
+,aa 
+
+showDialogbb 
+:bb 
+truebb  
+)cc 
+;cc 
+}dd 	
+finallyee 
+{ff 	
+IsBusygg 
+=gg 
+falsegg 
+;gg 
+}hh 	
+}ii 
+[nn 
+RelayCommandnn 
+]nn 
+privateoo 
+asyncoo 
+Taskoo 
+SaveToHistoryAsyncoo )
+(oo) *
+)oo* +
+{pp 
+ifqq 
+
+(qq 
+IsBusyqq 
+)qq 
+returnqq 
+;qq 
+tryss 
+{tt 	
+IsBusyuu 
+=uu 
+trueuu 
+;uu 
+StatusMessagevv 
+=vv 
+$strvv 2
+;vv2 3
+awaityy 
+Taskyy 
+.yy 
+Delayyy 
+(yy 
+$numyy  
+)yy  !
+;yy! "
+ReceivingLines{{ 
+.{{ 
+Clear{{  
+({{  !
+){{! "
+;{{" #
+	TotalRows|| 
+=|| 
+$num|| 
+;|| 
+StatusMessage}} 
+=}} 
+$str}} .
+;}}. /
+}~~ 	
+catch 
+( 
+	Exception 
+ex 
+) 
+{
+€€ 	
+await
+ 
+_errorHandler
+ 
+.
+  
+HandleErrorAsync
+  0
+(
+0 1
+$"
+‚‚ 
+$str
+‚‚ +
+{
+‚‚+ ,
+ex
+‚‚, .
+.
+‚‚. /
+Message
+‚‚/ 6
+}
+‚‚6 7
+"
+‚‚7 8
+,
+‚‚8 9
+Models
+ƒƒ 
+.
+ƒƒ 
+Enums
+ƒƒ 
+.
+ƒƒ  
+Enum_ErrorSeverity
+ƒƒ /
+.
+ƒƒ/ 0
+Error
+ƒƒ0 5
+,
+ƒƒ5 6
+ex
+„„ 
+,
+„„ 
+
+showDialog
+…… 
+:
+…… 
+true
+……  
+)
+†† 
+;
+†† 
+}
+‡‡ 	
+finally
+ 
+{
+‰‰ 	
+IsBusy
+ 
+=
+ 
+false
+ 
+;
+ 
+}
+‹‹ 	
+}
+ 
+[
+‘‘ 
+RelayCommand
+‘‘ 
+]
+‘‘ 
+private
+’’ 
+async
+’’ 
+Task
+’’ "
+FillBlankSpacesAsync
+’’ +
+(
+’’+ ,
+)
+’’, -
+{
+““ 
+try
+”” 
+{
+•• 	
+StatusMessage
+—— 
+=
+—— 
+$str
+—— 1
+;
+——1 2
+}
+ 	
+catch
+™™ 
+(
+™™ 
+	Exception
+™™ 
+ex
+™™ 
+)
+™™ 
+{
+ 	
+await
+›› 
+_errorHandler
+›› 
+.
+››  
+HandleErrorAsync
+››  0
+(
+››0 1
+$"
+ 
+$str
+ .
+{
+. /
+ex
+/ 1
+.
+1 2
+Message
+2 9
+}
+9 :
+"
+: ;
+,
+; <
+Models
+ 
+.
+ 
+Enums
+ 
+.
+  
+Enum_ErrorSeverity
+ /
+.
+/ 0
+Warning
+0 7
+,
+7 8
+ex
+ 
+,
+ 
+
+showDialog
+ 
+:
+ 
+true
+  
+)
+   
+;
+   
+}
+΅΅ 	
+}
+ΆΆ 
+[
+§§ 
+RelayCommand
+§§ 
+]
+§§ 
+private
+¨¨ 
+async
+¨¨ 
+Task
+¨¨ "
+SortForPrintingAsync
+¨¨ +
+(
+¨¨+ ,
+)
+¨¨, -
+{
+©© 
+try
+ªª 
+{
+«« 	
+StatusMessage
+­­ 
+=
+­­ 
+$str
+­­ 1
+;
+­­1 2
+}
+®® 	
+catch
+―― 
+(
+―― 
+	Exception
+―― 
+ex
+―― 
+)
+―― 
+{
+°° 	
+await
+±± 
+_errorHandler
+±± 
+.
+±±  
+HandleErrorAsync
+±±  0
+(
+±±0 1
+$"
+²² 
+$str
+²² .
+{
+²². /
+ex
+²²/ 1
+.
+²²1 2
+Message
+²²2 9
+}
+²²9 :
+"
+²²: ;
+,
+²²; <
+Models
+³³ 
+.
+³³ 
+Enums
+³³ 
+.
+³³  
+Enum_ErrorSeverity
+³³ /
+.
+³³/ 0
+Warning
+³³0 7
+,
+³³7 8
+ex
+΄΄ 
+,
+΄΄ 
+
+showDialog
+µµ 
+:
+µµ 
+true
+µµ  
+)
+¶¶ 
+;
+¶¶ 
+}
+·· 	
+}
+ΈΈ 
+}ΉΉ δI
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ReviewViewModel.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -34527,110 +34159,7 @@ SpecValues
 ΏΏ 	
 }
 ΐΐ 
-}ΓΓ Η
-kC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_CarrierDeliveryLabelViewModel.cs
-	namespace
-
- 	%
-MTM_Receiving_Application
-
-
- #
-.
-
-# $
-
-ViewModels
-
-$ .
-.
-
-. /
-Main
-
-/ 3
-;
-
-3 4
-public 
-partial 
-class .
-"Main_CarrierDeliveryLabelViewModel 7
-:8 9 
-Shared_BaseViewModel: N
-{ 
-public 
-.
-"Main_CarrierDeliveryLabelViewModel -
-(- .!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-: 	
-base
- 
-( 
-errorHandler 
-, 
-logger #
-)# $
-{ !
-CarrierDeliveryLabels 
-= 
-new  # 
-ObservableCollection$ 8
-<8 9&
-Model_CarrierDeliveryLabel9 S
->S T
-(T U
-)U V
-;V W
-_currentLabel 
-= 
-new &
-Model_CarrierDeliveryLabel 6
-(6 7
-)7 8
-;8 9
-} 
-public 
- 
-ObservableCollection 
-<  &
-Model_CarrierDeliveryLabel  :
->: ;!
-CarrierDeliveryLabels< Q
-{R S
-getT W
-;W X
-}Y Z
-[ 
-ObservableProperty 
-] 
-private &
-Model_CarrierDeliveryLabel &
-_currentLabel' 4
-;4 5
-[ 
-RelayCommand 
-] 
-private   
-async   
-Task   
-AddLabelAsync   $
-(  $ %
-)  % &
-{!! 
-await## 
-Task## 
-.## 
-CompletedTask##  
-;##  !
-}$$ 
-}%% †(
+}ΓΓ †(
 jC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_ModeSelectionViewModel.cs
 	namespace		 	%
 MTM_Receiving_Application		
@@ -37772,7 +37301,4475 @@ _csvWriter
 »»p q
 }
 ΌΌ 
-}ΏΏ κδ
+}ΏΏ Κ7
+TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Pagination.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Services$ ,
+{ 
+public 
+
+class 
+Service_Pagination #
+:$ %
+IService_Pagination& 9
+{		 
+private
+
+ 
+IEnumerable
+
+ 
+<
+
+ 
+object
+
+ "
+>
+
+" #
+?
+
+# $
+_source
+
+% ,
+;
+
+, -
+private 
+int 
+_currentPage  
+=! "
+$num# $
+;$ %
+private 
+int 
+	_pageSize 
+= 
+$num  "
+;" #
+public 
+int 
+CurrentPage 
+=> !
+_currentPage" .
+;. /
+public 
+int 
+
+TotalPages 
+{ 	
+get 
+{ 
+if 
+( 
+_source 
+== 
+null #
+||$ &
+!' (
+_source( /
+./ 0
+Any0 3
+(3 4
+)4 5
+)5 6
+return7 =
+$num> ?
+;? @
+return 
+( 
+int 
+) 
+Math  
+.  !
+Ceiling! (
+(( )
+() *
+double* 0
+)0 1
+
+TotalItems1 ;
+/< =
+PageSize> F
+)F G
+;G H
+} 
+} 	
+public 
+int 
+PageSize 
+{ 	
+get 
+=> 
+	_pageSize 
+; 
+set 
+{ 
+if 
+( 
+	_pageSize 
+!=  
+value! &
+)& '
+{ 
+	_pageSize   
+=   
+value    %
+;  % &
+_currentPage!!  
+=!!! "
+$num!!# $
+;!!$ %
+OnPageChanged"" !
+(""! "
+)""" #
+;""# $
+}## 
+}$$ 
+}%% 	
+public'' 
+int'' 
+
+TotalItems'' 
+=>''  
+_source''! (
+?''( )
+.'') *
+Count''* /
+(''/ 0
+)''0 1
+??''2 4
+$num''5 6
+;''6 7
+public)) 
+bool)) 
+HasNextPage)) 
+=>))  "
+CurrentPage))# .
+<))/ 0
+
+TotalPages))1 ;
+;)); <
+public++ 
+bool++ 
+HasPreviousPage++ #
+=>++$ &
+CurrentPage++' 2
+>++3 4
+$num++5 6
+;++6 7
+public-- 
+event-- 
+EventHandler-- !
+?--! "
+PageChanged--# .
+;--. /
+public// 
+void// 
+	SetSource// 
+<// 
+T// 
+>//  
+(//  !
+IEnumerable//! ,
+<//, -
+T//- .
+>//. /
+source//0 6
+)//6 7
+{00 	
+_source11 
+=11 
+source11 
+?11 
+.11 
+Cast11 "
+<11" #
+object11# )
+>11) *
+(11* +
+)11+ ,
+??11- /
+
+Enumerable110 :
+.11: ;
+Empty11; @
+<11@ A
+object11A G
+>11G H
+(11H I
+)11I J
+;11J K
+_currentPage22 
+=22 
+$num22 
+;22 
+OnPageChanged33 
+(33 
+)33 
+;33 
+}44 	
+public66 
+IEnumerable66 
+<66 
+T66 
+>66 
+GetCurrentPageItems66 1
+<661 2
+T662 3
+>663 4
+(664 5
+)665 6
+{77 	
+if88 
+(88 
+_source88 
+==88 
+null88 
+)88  
+return88! '
+
+Enumerable88( 2
+.882 3
+Empty883 8
+<888 9
+T889 :
+>88: ;
+(88; <
+)88< =
+;88= >
+return:: 
+_source:: 
+.;; 
+Skip;; 
+(;; 
+(;; 
+CurrentPage;; "
+-;;# $
+$num;;% &
+);;& '
+*;;( )
+PageSize;;* 2
+);;2 3
+.<< 
+Take<< 
+(<< 
+PageSize<< 
+)<< 
+.== 
+Cast== 
+<== 
+T== 
+>== 
+(== 
+)== 
+;== 
+}>> 	
+public@@ 
+void@@ 
+NextPage@@ 
+(@@ 
+)@@ 
+{AA 	
+ifBB 
+(BB 
+HasNextPageBB 
+)BB 
+{CC 
+_currentPageDD 
+++DD 
+;DD 
+OnPageChangedEE 
+(EE 
+)EE 
+;EE  
+}FF 
+}GG 	
+publicII 
+voidII 
+PreviousPageII  
+(II  !
+)II! "
+{JJ 	
+ifKK 
+(KK 
+HasPreviousPageKK 
+)KK  
+{LL 
+_currentPageMM 
+--MM 
+;MM 
+OnPageChangedNN 
+(NN 
+)NN 
+;NN  
+}OO 
+}PP 	
+publicRR 
+voidRR 
+	FirstPageRR 
+(RR 
+)RR 
+{SS 	
+ifTT 
+(TT 
+_currentPageTT 
+!=TT 
+$numTT  !
+)TT! "
+{UU 
+_currentPageVV 
+=VV 
+$numVV  
+;VV  !
+OnPageChangedWW 
+(WW 
+)WW 
+;WW  
+}XX 
+}YY 	
+public[[ 
+void[[ 
+LastPage[[ 
+([[ 
+)[[ 
+{\\ 	
+if]] 
+(]] 
+_currentPage]] 
+!=]] 
+
+TotalPages]]  *
+)]]* +
+{^^ 
+_currentPage__ 
+=__ 
+
+TotalPages__ )
+;__) *
+OnPageChanged`` 
+(`` 
+)`` 
+;``  
+}aa 
+}bb 	
+publicdd 
+voiddd 
+GoToPagedd 
+(dd 
+intdd  
+
+pageNumberdd! +
+)dd+ ,
+{ee 	
+ifff 
+(ff 
+
+pageNumberff 
+<ff 
+$numff 
+)ff 
+
+pageNumberff  *
+=ff+ ,
+$numff- .
+;ff. /
+ifgg 
+(gg 
+
+pageNumbergg 
+>gg 
+
+TotalPagesgg '
+)gg' (
+
+pageNumbergg) 3
+=gg4 5
+
+TotalPagesgg6 @
+;gg@ A
+ifii 
+(ii 
+_currentPageii 
+!=ii 
+
+pageNumberii  *
+)ii* +
+{jj 
+_currentPagekk 
+=kk 
+
+pageNumberkk )
+;kk) *
+OnPageChangedll 
+(ll 
+)ll 
+;ll  
+}mm 
+}nn 	
+privatepp 
+voidpp 
+OnPageChangedpp "
+(pp" #
+)pp# $
+{qq 	
+PageChangedrr 
+?rr 
+.rr 
+Invokerr 
+(rr  
+thisrr  $
+,rr$ %
+	EventArgsrr& /
+.rr/ 0
+Emptyrr0 5
+)rr5 6
+;rr6 7
+}ss 	
+}tt 
+}uu Ò’
+iC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_DetailsEntryViewModel.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+ViewModels$ .
+.. /
+Dunnage/ 6
+;6 7
+public 
+partial 
+class )
+Dunnage_DetailsEntryViewModel 2
+:3 4 
+Shared_BaseViewModel5 I
+{ 
+private 
+readonly $
+IService_DunnageWorkflow -
+_workflowService. >
+;> ?
+private 
+readonly "
+IService_MySQL_Dunnage +
+_dunnageService, ;
+;; <
+public 
+)
+Dunnage_DetailsEntryViewModel (
+(( )$
+IService_DunnageWorkflow  
+workflowService! 0
+,0 1"
+IService_MySQL_Dunnage 
+dunnageService -
+,- .!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+:( )
+base* .
+(. /
+errorHandler/ ;
+,; <
+logger= C
+)C D
+{ 
+_workflowService 
+= 
+workflowService *
+;* +
+_dunnageService 
+= 
+dunnageService (
+;( )
+}   
+[$$ 
+ObservableProperty$$ 
+]$$ 
+private%% 
+string%% 
+	_poNumber%% 
+=%% 
+string%% %
+.%%% &
+Empty%%& +
+;%%+ ,
+['' 
+ObservableProperty'' 
+]'' 
+private(( 
+string(( 
+	_location(( 
+=(( 
+string(( %
+.((% &
+Empty((& +
+;((+ ,
+[** 
+ObservableProperty** 
+]** 
+private++  
+ObservableCollection++  
+<++  !
+Model_SpecInput++! 0
+>++0 1
+_specInputs++2 =
+=++> ?
+new++@ C
+(++C D
+)++D E
+;++E F
+[-- 
+ObservableProperty-- 
+]-- 
+private.. 
+bool.. +
+_isInventoryNotificationVisible.. 0
+=..1 2
+false..3 8
+;..8 9
+[00 
+ObservableProperty00 
+]00 
+private11 
+string11 )
+_inventoryNotificationMessage11 0
+=111 2
+string113 9
+.119 :
+Empty11: ?
+;11? @
+[33 
+ObservableProperty33 
+]33 
+private44 
+string44 
+_inventoryMethod44 #
+=44$ %
+$str44& 1
+;441 2
+public== 
+
+async== 
+Task== )
+LoadSpecsForSelectedPartAsync== 3
+(==3 4
+)==4 5
+{>> 
+try?? 
+{@@ 	
+IsBusyAA 
+=AA 
+trueAA 
+;AA 
+StatusMessageBB 
+=BB 
+$strBB 4
+;BB4 5
+varDD 
+selectedTypeDD 
+=DD 
+_workflowServiceDD /
+.DD/ 0
+CurrentSessionDD0 >
+.DD> ?
+SelectedTypeDD? K
+;DDK L
+ifEE 
+(EE 
+selectedTypeEE 
+==EE 
+nullEE  $
+)EE$ %
+{FF 
+_loggerGG 
+.GG 
+LogErrorGG  
+(GG  !
+$strGG! G
+,GGG H
+nullGGI M
+,GGM N
+$strGGO ]
+)GG] ^
+;GG^ _
+returnHH 
+;HH 
+}II 
+varLL 
+specsLL 
+=LL  
+DeserializeSpecsJsonLL ,
+(LL, -
+selectedTypeLL- 9
+.LL9 :
+	SpecsJsonLL: C
+)LLC D
+;LLD E
+
+SpecInputsOO 
+.OO 
+ClearOO 
+(OO 
+)OO 
+;OO 
+foreachPP 
+(PP 
+varPP 
+specPP 
+inPP  
+specsPP! &
+)PP& '
+{QQ 
+varRR 
+inputRR 
+=RR 
+newRR 
+Model_SpecInputRR  /
+{SS 
+SpecNameTT 
+=TT 
+specTT #
+.TT# $
+KeyTT$ '
+,TT' (
+SpecTypeUU 
+=UU 
+DetermineSpecTypeUU 0
+(UU0 1
+specUU1 5
+.UU5 6
+ValueUU6 ;
+)UU; <
+,UU< =
+UnitVV 
+=VV 
+ExtractUnitVV &
+(VV& '
+specVV' +
+.VV+ ,
+ValueVV, 1
+)VV1 2
+,VV2 3
+
+IsRequiredWW 
+=WW  
+IsSpecRequiredWW! /
+(WW/ 0
+specWW0 4
+.WW4 5
+ValueWW5 :
+)WW: ;
+,WW; <
+ValueXX 
+=XX 
+nullXX  
+}YY 
+;YY 
+
+SpecInputs[[ 
+.[[ 
+Add[[ 
+([[ 
+input[[ $
+)[[$ %
+;[[% &
+}\\ 
+_logger^^ 
+.^^ 
+LogInfo^^ 
+(^^ 
+$"^^ 
+$str^^ %
+{^^% &
+
+SpecInputs^^& 0
+.^^0 1
+Count^^1 6
+}^^6 7
+$str^^7 C
+"^^C D
+,^^D E
+$str^^F T
+)^^T U
+;^^U V
+varaa 
+selectedPartaa 
+=aa 
+_workflowServiceaa /
+.aa/ 0
+CurrentSessionaa0 >
+.aa> ?
+SelectedPartaa? K
+;aaK L
+ifbb 
+(bb 
+selectedPartbb 
+!=bb 
+nullbb  $
+)bb$ %
+{cc 
+vardd 
+isInventorieddd !
+=dd" #
+awaitdd$ )
+_dunnageServicedd* 9
+.dd9 :"
+IsPartInventoriedAsyncdd: P
+(ddP Q
+selectedPartddQ ]
+.dd] ^
+PartIddd^ d
+)ddd e
+;dde f
+ifee 
+(ee 
+isInventoriedee !
+)ee! "
+{ff *
+IsInventoryNotificationVisiblegg 2
+=gg3 4
+truegg5 9
+;gg9 :"
+UpdateInventoryMessagehh *
+(hh* +
+)hh+ ,
+;hh, -
+}ii 
+}jj 
+}kk 	
+catchll 
+(ll 
+	Exceptionll 
+exll 
+)ll 
+{mm 	
+awaitnn 
+_errorHandlernn 
+.nn  
+HandleErrorAsyncnn  0
+(nn0 1
+$stroo %
+,oo% &
+Enum_ErrorSeveritypp "
+.pp" #
+Errorpp# (
+,pp( )
+exqq 
+,qq 
+truerr 
+)ss 
+;ss 
+}tt 	
+finallyuu 
+{vv 	
+IsBusyww 
+=ww 
+falseww 
+;ww 
+}xx 	
+}yy 
+private 
+
+Dictionary 
+< 
+string 
+, 
+object %
+>% & 
+DeserializeSpecsJson' ;
+(; <
+string< B
+	specsJsonC L
+)L M
+{
+€€ 
+try
+ 
+{
+‚‚ 	
+if
+ƒƒ 
+(
+ƒƒ 
+string
+ƒƒ 
+.
+ƒƒ  
+IsNullOrWhiteSpace
+ƒƒ )
+(
+ƒƒ) *
+	specsJson
+ƒƒ* 3
+)
+ƒƒ3 4
+)
+ƒƒ4 5
+return
+„„ 
+new
+„„ 
+
+Dictionary
+„„ %
+<
+„„% &
+string
+„„& ,
+,
+„„, -
+object
+„„. 4
+>
+„„4 5
+(
+„„5 6
+)
+„„6 7
+;
+„„7 8
+return
+†† 
+JsonSerializer
+†† !
+.
+††! "
+Deserialize
+††" -
+<
+††- .
+
+Dictionary
+††. 8
+<
+††8 9
+string
+††9 ?
+,
+††? @
+object
+††A G
+>
+††G H
+>
+††H I
+(
+††I J
+	specsJson
+††J S
+)
+††S T
+??
+‡‡ 
+new
+‡‡ 
+
+Dictionary
+‡‡ !
+<
+‡‡! "
+string
+‡‡" (
+,
+‡‡( )
+object
+‡‡* 0
+>
+‡‡0 1
+(
+‡‡1 2
+)
+‡‡2 3
+;
+‡‡3 4
+}
+ 	
+catch
+‰‰ 
+(
+‰‰ 
+	Exception
+‰‰ 
+ex
+‰‰ 
+)
+‰‰ 
+{
+ 	
+_logger
+‹‹ 
+.
+‹‹ 
+LogError
+‹‹ 
+(
+‹‹ 
+$"
+‹‹ 
+$str
+‹‹ A
+{
+‹‹A B
+ex
+‹‹B D
+.
+‹‹D E
+Message
+‹‹E L
+}
+‹‹L M
+"
+‹‹M N
+,
+‹‹N O
+ex
+‹‹P R
+,
+‹‹R S
+$str
+‹‹T b
+)
+‹‹b c
+;
+‹‹c d
+return
+ 
+new
+ 
+
+Dictionary
+ !
+<
+! "
+string
+" (
+,
+( )
+object
+* 0
+>
+0 1
+(
+1 2
+)
+2 3
+;
+3 4
+}
+ 	
+}
+ 
+private
+ 
+string
+ 
+DetermineSpecType
+ $
+(
+$ %
+object
+% +
+	specValue
+, 5
+)
+5 6
+{
+‘‘ 
+if
+’’ 
+
+(
+’’ 
+	specValue
+’’ 
+==
+’’ 
+null
+’’ 
+)
+’’ 
+return
+’’ %
+$str
+’’& ,
+;
+’’, -
+var
+”” 
+specStr
+”” 
+=
+”” 
+	specValue
+”” 
+.
+””  
+ToString
+””  (
+(
+””( )
+)
+””) *
+?
+””* +
+.
+””+ ,
+ToLowerInvariant
+””, <
+(
+””< =
+)
+””= >
+??
+””? A
+string
+””B H
+.
+””H I
+Empty
+””I N
+;
+””N O
+if
+—— 
+
+(
+—— 
+specStr
+—— 
+.
+—— 
+Contains
+—— 
+(
+—— 
+$str
+—— %
+)
+——% &
+||
+——' )
+specStr
+——* 1
+.
+——1 2
+Contains
+——2 :
+(
+——: ;
+$str
+——; D
+)
+——D E
+||
+——F H
+specStr
+——I P
+.
+——P Q
+Contains
+——Q Y
+(
+——Y Z
+$str
+——Z ^
+)
+——^ _
+||
+——` b
+specStr
+——c j
+.
+——j k
+Contains
+——k s
+(
+——s t
+$str
+——t |
+)
+——| }
+)
+——} ~
+return
+ 
+$str
+ 
+;
+ 
+if
+ 
+
+(
+ 
+specStr
+ 
+.
+ 
+Contains
+ 
+(
+ 
+$str
+ #
+)
+# $
+||
+% '
+specStr
+( /
+.
+/ 0
+Contains
+0 8
+(
+8 9
+$str
+9 A
+)
+A B
+||
+C E
+specStr
+F M
+.
+M N
+Contains
+N V
+(
+V W
+$str
+W c
+)
+c d
+)
+d e
+return
+›› 
+$str
+›› 
+;
+›› 
+return
+ 
+$str
+ 
+;
+ 
+}
+ 
+private
+   
+string
+   
+?
+   
+ExtractUnit
+   
+(
+    
+object
+    &
+	specValue
+  ' 0
+)
+  0 1
+{
+΅΅ 
+if
+ΆΆ 
+
+(
+ΆΆ 
+	specValue
+ΆΆ 
+==
+ΆΆ 
+null
+ΆΆ 
+)
+ΆΆ 
+return
+ΆΆ %
+null
+ΆΆ& *
+;
+ΆΆ* +
+var
+¤¤ 
+specStr
+¤¤ 
+=
+¤¤ 
+	specValue
+¤¤ 
+.
+¤¤  
+ToString
+¤¤  (
+(
+¤¤( )
+)
+¤¤) *
+??
+¤¤+ -
+string
+¤¤. 4
+.
+¤¤4 5
+Empty
+¤¤5 :
+;
+¤¤: ;
+if
+§§ 
+
+(
+§§ 
+specStr
+§§ 
+.
+§§ 
+Contains
+§§ 
+(
+§§ 
+$str
+§§ !
+,
+§§! "
+StringComparison
+§§# 3
+.
+§§3 4
+OrdinalIgnoreCase
+§§4 E
+)
+§§E F
+)
+§§F G
+return
+¨¨ 
+$str
+¨¨ 
+;
+¨¨ 
+if
+©© 
+
+(
+©© 
+specStr
+©© 
+.
+©© 
+Contains
+©© 
+(
+©© 
+$str
+©© #
+,
+©©# $
+StringComparison
+©©% 5
+.
+©©5 6
+OrdinalIgnoreCase
+©©6 G
+)
+©©G H
+)
+©©H I
+return
+ªª 
+$str
+ªª 
+;
+ªª 
+if
+«« 
+
+(
+«« 
+specStr
+«« 
+.
+«« 
+Contains
+«« 
+(
+«« 
+$str
+«« !
+,
+««! "
+StringComparison
+««# 3
+.
+««3 4
+OrdinalIgnoreCase
+««4 E
+)
+««E F
+)
+««F G
+return
+¬¬ 
+$str
+¬¬ 
+;
+¬¬ 
+return
+®® 
+null
+®® 
+;
+®® 
+}
+―― 
+private
+±± 
+bool
+±± 
+IsSpecRequired
+±± 
+(
+±±  
+object
+±±  &
+	specValue
+±±' 0
+)
+±±0 1
+{
+²² 
+if
+³³ 
+
+(
+³³ 
+	specValue
+³³ 
+==
+³³ 
+null
+³³ 
+)
+³³ 
+return
+³³ %
+false
+³³& +
+;
+³³+ ,
+var
+µµ 
+specStr
+µµ 
+=
+µµ 
+	specValue
+µµ 
+.
+µµ  
+ToString
+µµ  (
+(
+µµ( )
+)
+µµ) *
+?
+µµ* +
+.
+µµ+ ,
+ToLowerInvariant
+µµ, <
+(
+µµ< =
+)
+µµ= >
+??
+µµ? A
+string
+µµB H
+.
+µµH I
+Empty
+µµI N
+;
+µµN O
+return
+¶¶ 
+specStr
+¶¶ 
+.
+¶¶ 
+Contains
+¶¶ 
+(
+¶¶  
+$str
+¶¶  *
+)
+¶¶* +
+;
+¶¶+ ,
+}
+·· 
+partial
+½½ 
+void
+½½ 
+OnPoNumberChanged
+½½ "
+(
+½½" #
+string
+½½# )
+value
+½½* /
+)
+½½/ 0
+{
+ΎΎ 
+if
+ΏΏ 
+
+(
+ΏΏ 
+string
+ΏΏ 
+.
+ΏΏ  
+IsNullOrWhiteSpace
+ΏΏ %
+(
+ΏΏ% &
+value
+ΏΏ& +
+)
+ΏΏ+ ,
+)
+ΏΏ, -
+{
+ΐΐ 	
+InventoryMethod
+ΑΑ 
+=
+ΑΑ 
+$str
+ΑΑ )
+;
+ΑΑ) *
+}
+ΒΒ 	
+else
+ΓΓ 
+{
+ΔΔ 	
+InventoryMethod
+ΕΕ 
+=
+ΕΕ 
+$str
+ΕΕ *
+;
+ΕΕ* +
+}
+ΖΖ 	$
+UpdateInventoryMessage
+ΘΘ 
+(
+ΘΘ 
+)
+ΘΘ  
+;
+ΘΘ  !
+}
+ΙΙ 
+private
+ΛΛ 
+void
+ΛΛ $
+UpdateInventoryMessage
+ΛΛ '
+(
+ΛΛ' (
+)
+ΛΛ( )
+{
+ΜΜ 
+if
+ΝΝ 
+
+(
+ΝΝ ,
+IsInventoryNotificationVisible
+ΝΝ *
+)
+ΝΝ* +
+{
+ΞΞ 	*
+InventoryNotificationMessage
+ΟΟ (
+=
+ΟΟ) *
+$"
+ΟΟ+ -
+$str
+ΟΟ- k
+{
+ΟΟk l
+InventoryMethod
+ΟΟl {
+}
+ΟΟ{ |
+"
+ΟΟ| }
+;
+ΟΟ} ~
+}
+ΠΠ 	
+}
+ΡΡ 
+private
+ΧΧ 
+bool
+ΧΧ 
+ValidateInputs
+ΧΧ 
+(
+ΧΧ  
+)
+ΧΧ  !
+{
+ΨΨ 
+foreach
+ΪΪ 
+(
+ΪΪ 
+var
+ΪΪ 
+spec
+ΪΪ 
+in
+ΪΪ 
+
+SpecInputs
+ΪΪ '
+.
+ΪΪ' (
+Where
+ΪΪ( -
+(
+ΪΪ- .
+s
+ΪΪ. /
+=>
+ΪΪ0 2
+s
+ΪΪ3 4
+.
+ΪΪ4 5
+
+IsRequired
+ΪΪ5 ?
+)
+ΪΪ? @
+)
+ΪΪ@ A
+{
+ΫΫ 	
+if
+άά 
+(
+άά 
+spec
+άά 
+.
+άά 
+Value
+άά 
+==
+άά 
+null
+άά "
+||
+άά# %
+string
+άά& ,
+.
+άά, - 
+IsNullOrWhiteSpace
+άά- ?
+(
+άά? @
+spec
+άά@ D
+.
+άάD E
+Value
+άάE J
+.
+άάJ K
+ToString
+άάK S
+(
+άάS T
+)
+άάT U
+)
+άάU V
+)
+άάV W
+{
+έέ 
+StatusMessage
+ήή 
+=
+ήή 
+$"
+ήή  "
+$str
+ήή" :
+{
+ήή: ;
+spec
+ήή; ?
+.
+ήή? @
+SpecName
+ήή@ H
+}
+ήήH I
+"
+ήήI J
+;
+ήήJ K
+return
+ίί 
+false
+ίί 
+;
+ίί 
+}
+ΰΰ 
+}
+αα 	
+return
+γγ 
+true
+γγ 
+;
+γγ 
+}
+δδ 
+[
+κκ 
+RelayCommand
+κκ 
+]
+κκ 
+private
+λλ 
+void
+λλ 
+GoBack
+λλ 
+(
+λλ 
+)
+λλ 
+{
+μμ 
+_logger
+νν 
+.
+νν 
+LogInfo
+νν 
+(
+νν 
+$str
+νν ;
+,
+νν; <
+$str
+νν= K
+)
+ννK L
+;
+ννL M
+_workflowService
+ξξ 
+.
+ξξ 
+GoToStep
+ξξ !
+(
+ξξ! "&
+Enum_DunnageWorkflowStep
+ξξ" :
+.
+ξξ: ;
+QuantityEntry
+ξξ; H
+)
+ξξH I
+;
+ξξI J
+}
+οο 
+[
+ρρ 
+RelayCommand
+ρρ 
+]
+ρρ 
+private
+ςς 
+async
+ςς 
+Task
+ςς 
+GoNextAsync
+ςς "
+(
+ςς" #
+)
+ςς# $
+{
+σσ 
+if
+ττ 
+
+(
+ττ 
+IsBusy
+ττ 
+)
+ττ 
+return
+ττ 
+;
+ττ 
+try
+φφ 
+{
+χχ 	
+IsBusy
+ψψ 
+=
+ψψ 
+true
+ψψ 
+;
+ψψ 
+StatusMessage
+ωω 
+=
+ωω 
+$str
+ωω +
+;
+ωω+ ,
+if
+ϋϋ 
+(
+ϋϋ 
+!
+ϋϋ 
+ValidateInputs
+ϋϋ 
+(
+ϋϋ  
+)
+ϋϋ  !
+)
+ϋϋ! "
+{
+όό 
+return
+ύύ 
+;
+ύύ 
+}
+ώώ 
+_workflowService
+ 
+.
+ 
+CurrentSession
+ +
+.
++ ,
+PONumber
+, 4
+=
+5 6
+PoNumber
+7 ?
+;
+? @
+_workflowService
+‚‚ 
+.
+‚‚ 
+CurrentSession
+‚‚ +
+.
+‚‚+ ,
+Location
+‚‚, 4
+=
+‚‚5 6
+Location
+‚‚7 ?
+;
+‚‚? @
+var
+…… 
+
+specValues
+…… 
+=
+…… 
+
+SpecInputs
+…… '
+.
+……' (
+ToDictionary
+……( 4
+(
+……4 5
+s
+†† 
+=>
+†† 
+s
+†† 
+.
+†† 
+SpecName
+†† 
+,
+††  
+s
+‡‡ 
+=>
+‡‡ 
+s
+‡‡ 
+.
+‡‡ 
+Value
+‡‡ 
+??
+‡‡ 
+string
+‡‡  &
+.
+‡‡& '
+Empty
+‡‡' ,
+)
+ 
+;
+ 
+_workflowService
+ 
+.
+ 
+CurrentSession
+ +
+.
++ ,
+
+SpecValues
+, 6
+=
+7 8
+
+specValues
+9 C
+;
+C D
+_logger
+ 
+.
+ 
+LogInfo
+ 
+(
+ 
+$str
+ A
+,
+A B
+$str
+C Q
+)
+Q R
+;
+R S
+_workflowService
+ 
+.
+ 
+GoToStep
+ %
+(
+% &&
+Enum_DunnageWorkflowStep
+& >
+.
+> ?
+Review
+? E
+)
+E F
+;
+F G
+}
+ 	
+catch
+‘‘ 
+(
+‘‘ 
+	Exception
+‘‘ 
+ex
+‘‘ 
+)
+‘‘ 
+{
+’’ 	
+await
+““ 
+_errorHandler
+““ 
+.
+““  
+HandleErrorAsync
+““  0
+(
+““0 1
+$str
+”” &
+,
+””& ' 
+Enum_ErrorSeverity
+•• "
+.
+••" #
+Error
+••# (
+,
+••( )
+ex
+–– 
+,
+–– 
+true
+—— 
+)
+ 
+;
+ 
+}
+™™ 	
+finally
+ 
+{
+›› 	
+IsBusy
+ 
+=
+ 
+false
+ 
+;
+ 
+}
+ 	
+}
+ 
+}΅΅ ζA
+cC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Main\Main_DunnageLabelViewModel.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+ViewModels$ .
+.. /
+Main/ 3
+;3 4
+public 
+partial 
+class &
+Main_DunnageLabelViewModel /
+:0 1 
+Shared_BaseViewModel2 F
+{ 
+private 
+readonly $
+IService_DunnageWorkflow -
+_workflowService. >
+;> ?
+public 
+&
+Main_DunnageLabelViewModel %
+(% &$
+IService_DunnageWorkflow  
+workflowService! 0
+,0 1!
+IService_ErrorHandler 
+errorHandler *
+,* +#
+IService_LoggingUtility 
+logger  &
+)& '
+: 	
+base
+ 
+( 
+errorHandler 
+, 
+logger #
+)# $
+{ 
+_workflowService 
+= 
+workflowService *
+;* +
+_workflowService 
+. 
+StepChanged $
++=% '!
+OnWorkflowStepChanged( =
+;= >
+DunnageLines 
+= 
+new  
+ObservableCollection /
+</ 0
+Model_DunnageLine0 A
+>A B
+(B C
+)C D
+;D E
+_currentLine 
+= 
+new 
+Model_DunnageLine ,
+(, -
+)- .
+;. /"
+IsModeSelectionVisible"" 
+=""  
+true""! %
+;""% &
+}## 
+public%% 
+ 
+ObservableCollection%% 
+<%%  
+Model_DunnageLine%%  1
+>%%1 2
+DunnageLines%%3 ?
+{%%@ A
+get%%B E
+;%%E F
+}%%G H
+['' 
+ObservableProperty'' 
+]'' 
+private(( 
+Model_DunnageLine(( 
+_currentLine(( *
+;((* +
+[,, 
+ObservableProperty,, 
+],, 
+private-- 
+bool-- #
+_isModeSelectionVisible-- (
+;--( )
+[// 
+ObservableProperty// 
+]// 
+private00 
+bool00 #
+_isTypeSelectionVisible00 (
+;00( )
+[22 
+ObservableProperty22 
+]22 
+private33 
+bool33 #
+_isPartSelectionVisible33 (
+;33( )
+[55 
+ObservableProperty55 
+]55 
+private66 
+bool66 #
+_isQuantityEntryVisible66 (
+;66( )
+[88 
+ObservableProperty88 
+]88 
+private99 
+bool99 "
+_isDetailsEntryVisible99 '
+;99' (
+[;; 
+ObservableProperty;; 
+];; 
+private<< 
+bool<< 
+_isReviewVisible<< !
+;<<! "
+[>> 
+ObservableProperty>> 
+]>> 
+private?? 
+bool?? !
+_isManualEntryVisible?? &
+;??& '
+[AA 
+ObservablePropertyAA 
+]AA 
+privateBB 
+boolBB 
+_isEditModeVisibleBB #
+;BB# $
+[DD 
+ObservablePropertyDD 
+]DD 
+privateEE 
+stringEE 
+_currentStepTitleEE $
+=EE% &
+$strEE' 7
+;EE7 8
+[KK 
+ObservablePropertyKK 
+]KK 
+privateLL 
+boolLL 
+_isStatusOpenLL 
+;LL 
+[NN 
+ObservablePropertyNN 
+]NN 
+privateOO 
+stringOO 
+_statusMessageOO !
+=OO" #
+stringOO$ *
+.OO* +
+EmptyOO+ 0
+;OO0 1
+[QQ 
+ObservablePropertyQQ 
+]QQ 
+privateRR 
+Enum_ErrorSeverityRR 
+_statusSeverityRR .
+=RR/ 0
+Enum_ErrorSeverityRR1 C
+.RRC D
+InfoRRD H
+;RRH I
+privateXX 
+voidXX !
+OnWorkflowStepChangedXX &
+(XX& '
+objectXX' -
+?XX- .
+senderXX/ 5
+,XX5 6
+	EventArgsXX7 @
+eXXA B
+)XXB C
+{YY "
+IsModeSelectionVisible[[ 
+=[[  
+false[[! &
+;[[& '"
+IsTypeSelectionVisible\\ 
+=\\  
+false\\! &
+;\\& '"
+IsPartSelectionVisible]] 
+=]]  
+false]]! &
+;]]& '"
+IsQuantityEntryVisible^^ 
+=^^  
+false^^! &
+;^^& '!
+IsDetailsEntryVisible__ 
+=__ 
+false__  %
+;__% &
+IsReviewVisible`` 
+=`` 
+false`` 
+;``   
+IsManualEntryVisibleaa 
+=aa 
+falseaa $
+;aa$ %
+IsEditModeVisiblebb 
+=bb 
+falsebb !
+;bb! "
+switchee 
+(ee 
+_workflowServiceee  
+.ee  !
+CurrentStepee! ,
+)ee, -
+{ff 	
+casegg $
+Enum_DunnageWorkflowStepgg )
+.gg) *
+ModeSelectiongg* 7
+:gg7 8"
+IsModeSelectionVisiblehh &
+=hh' (
+truehh) -
+;hh- .
+CurrentStepTitleii  
+=ii! "
+$strii# 3
+;ii3 4
+breakjj 
+;jj 
+casekk $
+Enum_DunnageWorkflowStepkk )
+.kk) *
+TypeSelectionkk* 7
+:kk7 8"
+IsTypeSelectionVisiblell &
+=ll' (
+truell) -
+;ll- .
+CurrentStepTitlemm  
+=mm! "
+$strmm# 0
+;mm0 1
+breaknn 
+;nn 
+caseoo $
+Enum_DunnageWorkflowStepoo )
+.oo) *
+PartSelectionoo* 7
+:oo7 8"
+IsPartSelectionVisiblepp &
+=pp' (
+truepp) -
+;pp- .
+CurrentStepTitleqq  
+=qq! "
+$strqq# 0
+;qq0 1
+breakrr 
+;rr 
+casess $
+Enum_DunnageWorkflowStepss )
+.ss) *
+QuantityEntryss* 7
+:ss7 8"
+IsQuantityEntryVisiblett &
+=tt' (
+truett) -
+;tt- .
+CurrentStepTitleuu  
+=uu! "
+$struu# 3
+;uu3 4
+breakvv 
+;vv 
+caseww $
+Enum_DunnageWorkflowStepww )
+.ww) *
+DetailsEntryww* 6
+:ww6 7!
+IsDetailsEntryVisiblexx %
+=xx& '
+truexx( ,
+;xx, -
+CurrentStepTitleyy  
+=yy! "
+$stryy# 2
+;yy2 3
+breakzz 
+;zz 
+case{{ $
+Enum_DunnageWorkflowStep{{ )
+.{{) *
+Review{{* 0
+:{{0 1
+IsReviewVisible|| 
+=||  !
+true||" &
+;||& '
+CurrentStepTitle}}  
+=}}! "
+$str}}# 2
+;}}2 3
+break~~ 
+;~~ 
+case $
+Enum_DunnageWorkflowStep )
+.) *
+ManualEntry* 5
+:5 6"
+IsManualEntryVisible
+€€ $
+=
+€€% &
+true
+€€' +
+;
+€€+ ,
+CurrentStepTitle
+  
+=
+! "
+$str
+# 1
+;
+1 2
+break
+‚‚ 
+;
+‚‚ 
+case
+ƒƒ &
+Enum_DunnageWorkflowStep
+ƒƒ )
+.
+ƒƒ) *
+EditMode
+ƒƒ* 2
+:
+ƒƒ2 3
+IsEditModeVisible
+„„ !
+=
+„„" #
+true
+„„$ (
+;
+„„( )
+CurrentStepTitle
+……  
+=
+……! "
+$str
+……# .
+;
+……. /
+break
+†† 
+;
+†† 
+}
+‡‡ 	
+}
+ 
+[
+ 
+RelayCommand
+ 
+]
+ 
+private
+ 
+void
+ #
+ReturnToModeSelection
+ &
+(
+& '
+)
+' (
+{
+ 
+_workflowService
+‘‘ 
+.
+‘‘ 
+ClearSession
+‘‘ %
+(
+‘‘% &
+)
+‘‘& '
+;
+‘‘' (
+_workflowService
+’’ 
+.
+’’ 
+GoToStep
+’’ !
+(
+’’! "&
+Enum_DunnageWorkflowStep
+’’" :
+.
+’’: ;
+ModeSelection
+’’; H
+)
+’’H I
+;
+’’I J
+}
+““ 
+[
+•• 
+RelayCommand
+•• 
+]
+•• 
+private
+–– 
+async
+–– 
+Task
+–– 
+AddLineAsync
+–– #
+(
+––# $
+)
+––$ %
+{
+—— 
+await
+™™ 
+Task
+™™ 
+.
+™™ 
+CompletedTask
+™™  
+;
+™™  !
+}
+ 
+} £Ή
+hC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Startup\Service_OnStartup_AppLifecycle.cs
+	namespace		 	%
+MTM_Receiving_Application		
+ #
+.		# $
+Services		$ ,
+.		, -
+Startup		- 4
+{
+
+ 
+public 
+
+class *
+Service_OnStartup_AppLifecycle /
+:0 1+
+IService_OnStartup_AppLifecycle2 Q
+{ 
+private 
+readonly 
+IServiceProvider )
+_serviceProvider* :
+;: ;
+private 
+readonly #
+IService_Authentication 0
+_authService1 =
+;= >
+private 
+readonly '
+IService_UserSessionManager 4
+_sessionManager5 D
+;D E
+private 
+readonly !
+IService_ErrorHandler .
+_errorHandler/ <
+;< =
+private 
+readonly 
+IService_CSVWriter +
+
+_csvWriter, 6
+;6 7
+private 
+Views 
+. 
+Shared 
+. %
+Shared_SplashScreenWindow 6
+?6 7
+_splashScreen8 E
+;E F
+public *
+Service_OnStartup_AppLifecycle -
+(- .
+IServiceProvider 
+serviceProvider ,
+,, -#
+IService_Authentication #
+authService$ /
+,/ 0'
+IService_UserSessionManager '
+sessionManager( 6
+,6 7!
+IService_ErrorHandler !
+errorHandler" .
+,. /
+IService_CSVWriter 
+	csvWriter (
+)( )
+{ 	
+_serviceProvider 
+= 
+serviceProvider .
+;. /
+_authService 
+= 
+authService &
+;& '
+_sessionManager 
+= 
+sessionManager ,
+;, -
+_errorHandler 
+= 
+errorHandler (
+;( )
+
+_csvWriter 
+= 
+	csvWriter "
+;" #
+}   	
+public"" 
+async"" 
+Task"" 
+
+StartAsync"" $
+(""$ %
+)""% &
+{## 	
+try$$ 
+{%% 
+_splashScreen'' 
+='' 
+_serviceProvider''  0
+.''0 1
+GetRequiredService''1 C
+<''C D
+Views''D I
+.''I J
+Shared''J P
+.''P Q%
+Shared_SplashScreenWindow''Q j
+>''j k
+(''k l
+)''l m
+;''m n
+_splashScreen(( 
+.(( 
+Activate(( &
+(((& '
+)((' (
+;((( )
+UpdateSplash)) 
+()) 
+$num)) 
+,)) 
+$str))  9
+)))9 :
+;)): ;
+await** 
+Task** 
+.** 
+Delay**  
+(**  !
+$num**! $
+)**$ %
+;**% &
+UpdateSplash-- 
+(-- 
+$num-- 
+,--  
+$str--! 9
+)--9 :
+;--: ;
+var.. 
+
+mainWindow.. 
+=..  
+_serviceProvider..! 1
+...1 2
+GetRequiredService..2 D
+<..D E
+
+MainWindow..E O
+>..O P
+(..P Q
+)..Q R
+;..R S
+App// 
+.// 
+
+MainWindow// 
+=//  
+
+mainWindow//! +
+;//+ ,
+await22 
+Task22 
+.22 
+Delay22  
+(22  !
+$num22! $
+)22$ %
+;22% &
+UpdateSplash55 
+(55 
+$num55 
+,55  
+$str55! ;
+)55; <
+;55< =
+await66 
+Task66 
+.66 
+Delay66  
+(66  !
+$num66! $
+)66$ %
+;66% &
+UpdateSplash99 
+(99 
+$num99 
+,99  
+$str99! ;
+)99; <
+;99< =
+var:: 
+windowsUser:: 
+=::  !
+Environment::" -
+.::- .
+UserName::. 6
+;::6 7
+var;; 
+userCheckResult;; #
+=;;$ %
+await;;& +
+_authService;;, 8
+.;;8 9.
+"AuthenticateByWindowsUsernameAsync;;9 [
+(;;[ \
+windowsUser;;\ g
+);;g h
+;;;h i
+
+Model_User== 
+?== 
+authenticatedUser== -
+===. /
+null==0 4
+;==4 5
+string>> 
+
+authMethod>> !
+=>>" #
+$str>>$ &
+;>>& '
+ifAA 
+(AA 
+!AA 
+userCheckResultAA $
+.AA$ %
+SuccessAA% ,
+)AA, -
+{BB "
+SetSplashIndeterminateCC *
+(CC* +
+$strCC+ d
+)CCd e
+;CCe f
+varFF 
+newUserViewModelFF (
+=FF) *
+_serviceProviderFF+ ;
+.FF; <
+GetRequiredServiceFF< N
+<FFN O
+
+ViewModelsFFO Y
+.FFY Z
+SharedFFZ `
+.FF` a(
+Shared_NewUserSetupViewModelFFa }
+>FF} ~
+(FF~ 
+)	FF €
+;
+FF€ 
+newUserViewModelGG $
+.GG$ %
+WindowsUsernameGG% 4
+=GG5 6
+windowsUserGG7 B
+;GGB C
+newUserViewModelHH $
+.HH$ %
+	CreatedByHH% .
+=HH/ 0
+windowsUserHH1 <
+;HH< =
+varJJ 
+newUserDialogJJ %
+=JJ& '
+newJJ( +
+ViewsJJ, 1
+.JJ1 2
+SharedJJ2 8
+.JJ8 9%
+Shared_NewUserSetupDialogJJ9 R
+(JJR S
+newUserViewModelJJS c
+)JJc d
+;JJd e
+ifMM 
+(MM 
+_splashScreenMM %
+?MM% &
+.MM& '
+ContentMM' .
+isMM/ 1
+	MicrosoftMM2 ;
+.MM; <
+UIMM< >
+.MM> ?
+XamlMM? C
+.MMC D
+	UIElementMMD M
+rootElementMMN Y
+)MMY Z
+{NN 
+newUserDialogOO %
+.OO% &
+XamlRootOO& .
+=OO/ 0
+rootElementOO1 <
+.OO< =
+XamlRootOO= E
+;OOE F
+}PP 
+varSS 
+dialogResultSS $
+=SS% &
+awaitSS' ,
+newUserDialogSS- :
+.SS: ;
+	ShowAsyncSS; D
+(SSD E
+)SSE F
+;SSF G
+ifVV 
+(VV 
+newUserViewModelVV (
+.VV( )
+NewEmployeeNumberVV) :
+>VV; <
+$numVV= >
+&&VV? A
+!VVB C
+newUserViewModelVVC S
+.VVS T
+IsCancelledVVT _
+)VV_ `
+{WW 
+UpdateSplashYY $
+(YY$ %
+$numYY% '
+,YY' (
+$strYY) F
+)YYF G
+;YYG H
+userCheckResultZZ '
+=ZZ( )
+awaitZZ* /
+_authServiceZZ0 <
+.ZZ< =.
+"AuthenticateByWindowsUsernameAsyncZZ= _
+(ZZ_ `
+windowsUserZZ` k
+)ZZk l
+;ZZl m
+if\\ 
+(\\ 
+userCheckResult\\ +
+.\\+ ,
+Success\\, 3
+)\\3 4
+{]] 
+authenticatedUser^^ -
+=^^. /
+userCheckResult^^0 ?
+.^^? @
+User^^@ D
+;^^D E
+UpdateSplash__ (
+(__( )
+$num__) +
+,__+ ,
+$"__- /
+$str__/ C
+{__C D
+authenticatedUser__D U
+?__U V
+.__V W
+FullName__W _
+}___ `
+"__` a
+)__a b
+;__b c
+}`` 
+}aa 
+elsebb 
+ifbb 
+(bb 
+newUserViewModelbb -
+.bb- .
+IsCancelledbb. 9
+)bb9 :
+{cc 
+awaitee 
+_errorHandleree +
+.ee+ ,
+HandleErrorAsyncee, <
+(ee< =
+$strff S
+,ffS T
+Modelsgg "
+.gg" #
+Enumsgg# (
+.gg( )
+Enum_ErrorSeveritygg) ;
+.gg; <
+Infogg< @
+,gg@ A
+
+showDialoghh &
+:hh& '
+falsehh( -
+)hh- .
+;hh. /
+_splashScreenkk %
+?kk% &
+.kk& '
+Closekk' ,
+(kk, -
+)kk- .
+;kk. /
+ifnn 
+(nn 
+Appnn 
+.nn  
+
+MainWindownn  *
+!=nn+ -
+nullnn. 2
+)nn2 3
+{oo 
+Apppp 
+.pp  
+
+MainWindowpp  *
+.pp* +
+Closepp+ 0
+(pp0 1
+)pp1 2
+;pp2 3
+}qq 
+Applicationtt #
+.tt# $
+Currenttt$ +
+.tt+ ,
+Exittt, 0
+(tt0 1
+)tt1 2
+;tt2 3
+returnuu 
+;uu 
+}vv 
+}ww 
+elsexx 
+{yy 
+authenticatedUser{{ %
+={{& '
+userCheckResult{{( 7
+.{{7 8
+User{{8 <
+;{{< =
+}|| 
+UpdateSplash 
+( 
+$num 
+,  
+$str! I
+)I J
+;J K
+var
+€€ 
+workstationConfig
+€€ %
+=
+€€& '
+await
+€€( -
+_authService
+€€. :
+.
+€€: ;(
+DetectWorkstationTypeAsync
+€€; U
+(
+€€U V
+)
+€€V W
+;
+€€W X
+System
+ƒƒ 
+.
+ƒƒ 
+Diagnostics
+ƒƒ "
+.
+ƒƒ" #
+Debug
+ƒƒ# (
+.
+ƒƒ( )
+	WriteLine
+ƒƒ) 2
+(
+ƒƒ2 3
+$"
+ƒƒ3 5
+$str
+ƒƒ5 B
+{
+ƒƒB C
+workstationConfig
+ƒƒC T
+.
+ƒƒT U
+ComputerName
+ƒƒU a
+}
+ƒƒa b
+"
+ƒƒb c
+)
+ƒƒc d
+;
+ƒƒd e
+System
+„„ 
+.
+„„ 
+Diagnostics
+„„ "
+.
+„„" #
+Debug
+„„# (
+.
+„„( )
+	WriteLine
+„„) 2
+(
+„„2 3
+$"
+„„3 5
+$str
+„„5 ;
+{
+„„; <
+workstationConfig
+„„< M
+.
+„„M N
+WorkstationType
+„„N ]
+}
+„„] ^
+"
+„„^ _
+)
+„„_ `
+;
+„„` a
+System
+…… 
+.
+…… 
+Diagnostics
+…… "
+.
+……" #
+Debug
+……# (
+.
+……( )
+	WriteLine
+……) 2
+(
+……2 3
+$"
+……3 5
+$str
+……5 @
+{
+……@ A
+workstationConfig
+……A R
+.
+……R S
+IsSharedTerminal
+……S c
+}
+……c d
+"
+……d e
+)
+……e f
+;
+……f g
+System
+†† 
+.
+†† 
+Diagnostics
+†† "
+.
+††" #
+Debug
+††# (
+.
+††( )
+	WriteLine
+††) 2
+(
+††2 3
+$"
+††3 5
+$str
+††5 B
+{
+††B C
+workstationConfig
+††C T
+.
+††T U#
+IsPersonalWorkstation
+††U j
+}
+††j k
+"
+††k l
+)
+††l m
+;
+††m n
+if
+‰‰ 
+(
+‰‰ 
+workstationConfig
+‰‰ %
+.
+‰‰% &#
+IsPersonalWorkstation
+‰‰& ;
+)
+‰‰; <
+{
+ 
+UpdateSplash
+  
+(
+  !
+$num
+! #
+,
+# $
+$str
+% T
+)
+T U
+;
+U V
+
+authMethod
+ 
+=
+  
+$str
+! /
+;
+/ 0
+UpdateSplash
+  
+(
+  !
+$num
+! #
+,
+# $
+$"
+% '
+$str
+' 0
+{
+0 1
+authenticatedUser
+1 B
+?
+B C
+.
+C D
+FullName
+D L
+}
+L M
+"
+M N
+)
+N O
+;
+O P
+}
+ 
+else
+ 
+if
+ 
+(
+ 
+workstationConfig
+ *
+.
+* +
+IsSharedTerminal
++ ;
+)
+; <
+{
+‘‘ 
+authenticatedUser
+”” %
+=
+””& '
+null
+””( ,
+;
+””, -$
+SetSplashIndeterminate
+–– *
+(
+––* +
+$str
+––+ _
+)
+––_ `
+;
+––` a
+var
+™™ 
+loginViewModel
+™™ &
+=
+™™' (
+_serviceProvider
+™™) 9
+.
+™™9 : 
+GetRequiredService
+™™: L
+<
+™™L M
+
+ViewModels
+™™M W
+.
+™™W X
+Shared
+™™X ^
+.
+™™^ _2
+#Shared_SharedTerminalLoginViewModel™™_ ‚
+>™™‚ ƒ
+(™™ƒ „
+)™™„ …
+;™™… †
+var
+ 
+loginDialog
+ #
+=
+$ %
+new
+& )
+Views
+* /
+.
+/ 0
+Shared
+0 6
+.
+6 7.
+ Shared_SharedTerminalLoginDialog
+7 W
+(
+W X
+loginViewModel
+X f
+)
+f g
+;
+g h
+if
+ 
+(
+ 
+_splashScreen
+ %
+?
+% &
+.
+& '
+Content
+' .
+is
+/ 1
+	Microsoft
+2 ;
+.
+; <
+UI
+< >
+.
+> ?
+Xaml
+? C
+.
+C D
+	UIElement
+D M
+rootElement
+N Y
+)
+Y Z
+{
+ 
+loginDialog
+ #
+.
+# $
+XamlRoot
+$ ,
+=
+- .
+rootElement
+/ :
+.
+: ;
+XamlRoot
+; C
+;
+C D
+}
+   
+var
+££ 
+dialogResult
+££ $
+=
+££% &
+await
+££' ,
+loginDialog
+££- 8
+.
+££8 9
+	ShowAsync
+££9 B
+(
+££B C
+)
+££C D
+;
+££D E
+if
+¦¦ 
+(
+¦¦ 
+loginViewModel
+¦¦ &
+.
+¦¦& '
+AuthenticatedUser
+¦¦' 8
+!=
+¦¦9 ;
+null
+¦¦< @
+&&
+¦¦A C
+!
+¦¦D E
+loginViewModel
+¦¦E S
+.
+¦¦S T
+IsCancelled
+¦¦T _
+&&
+¦¦` b
+!
+¦¦c d
+loginViewModel
+¦¦d r
+.
+¦¦r s
+IsLockedOut
+¦¦s ~
+)
+¦¦~ 
+{
+§§ 
+authenticatedUser
+©© )
+=
+©©* +
+loginViewModel
+©©, :
+.
+©©: ;
+AuthenticatedUser
+©©; L
+;
+©©L M
+
+authMethod
+ªª "
+=
+ªª# $
+$str
+ªª% 0
+;
+ªª0 1
+UpdateSplash
+«« $
+(
+««$ %
+$num
+««% '
+,
+««' (
+$"
+««) +
+$str
+««+ 4
+{
+««4 5
+authenticatedUser
+««5 F
+.
+««F G
+FullName
+««G O
+}
+««O P
+"
+««P Q
+)
+««Q R
+;
+««R S
+}
+¬¬ 
+else
+­­ 
+if
+­­ 
+(
+­­ 
+loginViewModel
+­­ +
+.
+­­+ ,
+IsLockedOut
+­­, 7
+)
+­­7 8
+{
+®® 
+await
+°° 
+_errorHandler
+°° +
+.
+°°+ ,
+HandleErrorAsync
+°°, <
+(
+°°< =
+$str
+±± `
+,
+±±` a
+Models
+²² "
+.
+²²" #
+Enums
+²²# (
+.
+²²( ) 
+Enum_ErrorSeverity
+²²) ;
+.
+²²; <
+Warning
+²²< C
+,
+²²C D
+
+showDialog
+³³ &
+:
+³³& '
+false
+³³( -
+)
+³³- .
+;
+³³. /
+	Microsoft
+¶¶ !
+.
+¶¶! "
+Windows
+¶¶" )
+.
+¶¶) *
+AppLifecycle
+¶¶* 6
+.
+¶¶6 7
+AppInstance
+¶¶7 B
+.
+¶¶B C
+
+GetCurrent
+¶¶C M
+(
+¶¶M N
+)
+¶¶N O
+.
+¶¶O P
+UnregisterKey
+¶¶P ]
+(
+¶¶] ^
+)
+¶¶^ _
+;
+¶¶_ `
+System
+·· 
+.
+·· 
+Environment
+·· *
+.
+··* +
+Exit
+··+ /
+(
+··/ 0
+$num
+··0 1
+)
+··1 2
+;
+··2 3
+return
+ΈΈ 
+;
+ΈΈ 
+}
+ΉΉ 
+else
+ΊΊ 
+if
+ΊΊ 
+(
+ΊΊ 
+loginViewModel
+ΊΊ +
+.
+ΊΊ+ ,
+IsCancelled
+ΊΊ, 7
+)
+ΊΊ7 8
+{
+»» 
+await
+½½ 
+_errorHandler
+½½ +
+.
+½½+ ,
+HandleErrorAsync
+½½, <
+(
+½½< =
+$str
+ΎΎ H
+,
+ΎΎH I
+Models
+ΏΏ "
+.
+ΏΏ" #
+Enums
+ΏΏ# (
+.
+ΏΏ( ) 
+Enum_ErrorSeverity
+ΏΏ) ;
+.
+ΏΏ; <
+Info
+ΏΏ< @
+,
+ΏΏ@ A
+
+showDialog
+ΐΐ &
+:
+ΐΐ& '
+false
+ΐΐ( -
+)
+ΐΐ- .
+;
+ΐΐ. /
+System
+ΒΒ 
+.
+ΒΒ 
+Environment
+ΒΒ *
+.
+ΒΒ* +
+Exit
+ΒΒ+ /
+(
+ΒΒ/ 0
+$num
+ΒΒ0 1
+)
+ΒΒ1 2
+;
+ΒΒ2 3
+return
+ΓΓ 
+;
+ΓΓ 
+}
+ΔΔ 
+else
+ΕΕ 
+{
+ΖΖ 
+await
+ΘΘ 
+_errorHandler
+ΘΘ +
+.
+ΘΘ+ ,
+HandleErrorAsync
+ΘΘ, <
+(
+ΘΘ< =
+$str
+ΙΙ T
+,
+ΙΙT U
+Models
+ΚΚ "
+.
+ΚΚ" #
+Enums
+ΚΚ# (
+.
+ΚΚ( ) 
+Enum_ErrorSeverity
+ΚΚ) ;
+.
+ΚΚ; <
+Info
+ΚΚ< @
+,
+ΚΚ@ A
+
+showDialog
+ΛΛ &
+:
+ΛΛ& '
+false
+ΛΛ( -
+)
+ΛΛ- .
+;
+ΛΛ. /
+System
+ΝΝ 
+.
+ΝΝ 
+Environment
+ΝΝ *
+.
+ΝΝ* +
+Exit
+ΝΝ+ /
+(
+ΝΝ/ 0
+$num
+ΝΝ0 1
+)
+ΝΝ1 2
+;
+ΝΝ2 3
+return
+ΞΞ 
+;
+ΞΞ 
+}
+ΟΟ 
+}
+ΠΠ 
+if
+ΣΣ 
+(
+ΣΣ 
+authenticatedUser
+ΣΣ %
+!=
+ΣΣ& (
+null
+ΣΣ) -
+)
+ΣΣ- .
+{
+ΤΤ 
+UpdateSplash
+ΥΥ  
+(
+ΥΥ  !
+$num
+ΥΥ! #
+,
+ΥΥ# $
+$str
+ΥΥ% ?
+)
+ΥΥ? @
+;
+ΥΥ@ A
+_sessionManager
+ΦΦ #
+.
+ΦΦ# $
+CreateSession
+ΦΦ$ 1
+(
+ΦΦ1 2
+authenticatedUser
+ΦΦ2 C
+,
+ΦΦC D
+workstationConfig
+ΦΦE V
+,
+ΦΦV W
+
+authMethod
+ΦΦX b
+)
+ΦΦb c
+;
+ΦΦc d
+_sessionManager
+ΧΧ #
+.
+ΧΧ# $$
+StartTimeoutMonitoring
+ΧΧ$ :
+(
+ΧΧ: ;
+)
+ΧΧ; <
+;
+ΧΧ< =
+if
+ΪΪ 
+(
+ΪΪ 
+App
+ΪΪ 
+.
+ΪΪ 
+
+MainWindow
+ΪΪ &
+is
+ΪΪ' )
+
+MainWindow
+ΪΪ* 4
+mainWin
+ΪΪ5 <
+)
+ΪΪ< =
+{
+ΫΫ 
+mainWin
+άά 
+.
+άά  
+DispatcherQueue
+άά  /
+.
+άά/ 0
+
+TryEnqueue
+άά0 :
+(
+άά: ;
+(
+άά; <
+)
+άά< =
+=>
+άά> @
+mainWin
+άάA H
+.
+άάH I
+UpdateUserDisplay
+άάI Z
+(
+άάZ [
+)
+άά[ \
+)
+άά\ ]
+;
+άά] ^
+}
+έέ 
+}
+ήή 
+else
+ίί 
+{
+ΰΰ 
+await
+ββ 
+_errorHandler
+ββ '
+.
+ββ' (
+HandleErrorAsync
+ββ( 8
+(
+ββ8 9
+$str
+γγ E
+,
+γγE F
+Models
+δδ 
+.
+δδ 
+Enums
+δδ $
+.
+δδ$ % 
+Enum_ErrorSeverity
+δδ% 7
+.
+δδ7 8
+Warning
+δδ8 ?
+,
+δδ? @
+
+showDialog
+εε "
+:
+εε" #
+false
+εε$ )
+)
+εε) *
+;
+εε* +
+System
+ζζ 
+.
+ζζ 
+Environment
+ζζ &
+.
+ζζ& '
+Exit
+ζζ' +
+(
+ζζ+ ,
+$num
+ζζ, -
+)
+ζζ- .
+;
+ζζ. /
+return
+ηη 
+;
+ηη 
+}
+θθ 
+UpdateSplash
+λλ 
+(
+λλ 
+$num
+λλ  
+,
+λλ  !
+$str
+λλ" *
+)
+λλ* +
+;
+λλ+ ,
+await
+μμ 
+Task
+μμ 
+.
+μμ 
+Delay
+μμ  
+(
+μμ  !
+$num
+μμ! $
+)
+μμ$ %
+;
+μμ% &
+App
+οο 
+.
+οο 
+
+MainWindow
+οο 
+?
+οο 
+.
+οο  
+Activate
+οο  (
+(
+οο( )
+)
+οο) *
+;
+οο* +
+if
+ππ 
+(
+ππ 
+_splashScreen
+ππ !
+!=
+ππ" $
+null
+ππ% )
+)
+ππ) *
+{
+ρρ 
+_splashScreen
+ςς !
+.
+ςς! "!
+IsProgrammaticClose
+ςς" 5
+=
+ςς6 7
+true
+ςς8 <
+;
+ςς< =
+_splashScreen
+σσ !
+.
+σσ! "
+Close
+σσ" '
+(
+σσ' (
+)
+σσ( )
+;
+σσ) *
+}
+ττ 
+_splashScreen
+υυ 
+=
+υυ 
+null
+υυ  $
+;
+υυ$ %
+}
+ψψ 
+catch
+ωω 
+(
+ωω 
+	Exception
+ωω 
+ex
+ωω 
+)
+ωω  
+{
+ϊϊ 
+await
+ϋϋ 
+_errorHandler
+ϋϋ #
+.
+ϋϋ# $
+HandleErrorAsync
+ϋϋ$ 4
+(
+ϋϋ4 5
+$str
+ϋϋ5 E
+,
+ϋϋE F
+Models
+ϋϋG M
+.
+ϋϋM N
+Enums
+ϋϋN S
+.
+ϋϋS T 
+Enum_ErrorSeverity
+ϋϋT f
+.
+ϋϋf g
+Critical
+ϋϋg o
+,
+ϋϋo p
+ex
+ϋϋq s
+)
+ϋϋs t
+;
+ϋϋt u
+_splashScreen
+όό 
+?
+όό 
+.
+όό 
+Close
+όό $
+(
+όό$ %
+)
+όό% &
+;
+όό& '
+System
+ύύ 
+.
+ύύ 
+Environment
+ύύ "
+.
+ύύ" #
+Exit
+ύύ# '
+(
+ύύ' (
+$num
+ύύ( )
+)
+ύύ) *
+;
+ύύ* +
+}
+ώώ 
+}
+ÿÿ 	
+private
+ 
+void
+ 
+UpdateSplash
+ !
+(
+! "
+double
+" (
+
+percentage
+) 3
+,
+3 4
+string
+5 ;
+message
+< C
+)
+C D
+{
+‚‚ 	
+_splashScreen
+ƒƒ 
+?
+ƒƒ 
+.
+ƒƒ 
+	ViewModel
+ƒƒ $
+.
+ƒƒ$ %
+UpdateProgress
+ƒƒ% 3
+(
+ƒƒ3 4
+
+percentage
+ƒƒ4 >
+,
+ƒƒ> ?
+message
+ƒƒ@ G
+)
+ƒƒG H
+;
+ƒƒH I
+}
+„„ 	
+private
+†† 
+void
+†† $
+SetSplashIndeterminate
+†† +
+(
+††+ ,
+string
+††, 2
+message
+††3 :
+)
+††: ;
+{
+‡‡ 	
+_splashScreen
+ 
+?
+ 
+.
+ 
+	ViewModel
+ $
+.
+$ %
+SetIndeterminate
+% 5
+(
+5 6
+message
+6 =
+)
+= >
+;
+> ?
+}
+‰‰ 	
+private
+‹‹ 
+async
+‹‹ 
+Task
+‹‹ (
+CheckAndResetCSVFilesAsync
+‹‹ 5
+(
+‹‹5 6
+)
+‹‹6 7
+{
+ 	
+if
+–– 
+(
+–– 
+App
+–– 
+.
+–– 
+
+MainWindow
+–– 
+==
+–– !
+null
+––" &
+)
+––& '
+return
+––( .
+;
+––. /
+await
+ 
+App
+ 
+.
+ 
+
+MainWindow
+  
+.
+  !
+DispatcherQueue
+! 0
+.
+0 1
+EnqueueAsync
+1 =
+(
+= >
+async
+> C
+(
+D E
+)
+E F
+=>
+G I
+{
+™™ 
+var
+ 
+dialog
+ 
+=
+ 
+new
+  
+	Microsoft
+! *
+.
+* +
+UI
++ -
+.
+- .
+Xaml
+. 2
+.
+2 3
+Controls
+3 ;
+.
+; <
+ContentDialog
+< I
+{
+›› 
+Title
+ 
+=
+ 
+$str
+ .
+,
+. /
+Content
+ 
+=
+ 
+$str
+ o
+,
+o p
+PrimaryButtonText
+ %
+=
+& '
+$str
+( 4
+,
+4 5
+CloseButtonText
+ #
+=
+$ %
+$str
+& 4
+,
+4 5
+DefaultButton
+   !
+=
+  " #
+	Microsoft
+  $ -
+.
+  - .
+UI
+  . 0
+.
+  0 1
+Xaml
+  1 5
+.
+  5 6
+Controls
+  6 >
+.
+  > ?!
+ContentDialogButton
+  ? R
+.
+  R S
+Close
+  S X
+,
+  X Y
+XamlRoot
+΅΅ 
+=
+΅΅ 
+App
+΅΅ "
+.
+΅΅" #
+
+MainWindow
+΅΅# -
+.
+΅΅- .
+Content
+΅΅. 5
+.
+΅΅5 6
+XamlRoot
+΅΅6 >
+}
+ΆΆ 
+;
+ΆΆ 
+var
+¤¤ 
+result
+¤¤ 
+=
+¤¤ 
+await
+¤¤ "
+dialog
+¤¤# )
+.
+¤¤) *
+	ShowAsync
+¤¤* 3
+(
+¤¤3 4
+)
+¤¤4 5
+;
+¤¤5 6
+if
+¦¦ 
+(
+¦¦ 
+result
+¦¦ 
+==
+¦¦ 
+	Microsoft
+¦¦ '
+.
+¦¦' (
+UI
+¦¦( *
+.
+¦¦* +
+Xaml
+¦¦+ /
+.
+¦¦/ 0
+Controls
+¦¦0 8
+.
+¦¦8 9!
+ContentDialogResult
+¦¦9 L
+.
+¦¦L M
+Primary
+¦¦M T
+)
+¦¦T U
+{
+§§ 
+await
+¨¨ 
+
+_csvWriter
+¨¨ $
+.
+¨¨$ %!
+DeleteCSVFilesAsync
+¨¨% 8
+(
+¨¨8 9
+)
+¨¨9 :
+;
+¨¨: ;
+}
+©© 
+}
+ªª 
+)
+ªª 
+;
+ªª 
+}
+«« 	
+}
+¬¬ 
+}­­ ™
+PC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Window.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Services$ ,
+;, -
+public 
+class 
+Service_Window 
+: 
+IService_Window -
+{ 
+public 
+
+XamlRoot 
+? 
+GetXamlRoot  
+(  !
+)! "
+{		 
+return
+
+ 
+App
+
+ 
+.
+
+ 
+
+MainWindow
+
+ 
+?
+
+ 
+.
+
+ 
+Content
+
+ &
+?
+
+& '
+.
+
+' (
+XamlRoot
+
+( 0
+;
+
+0 1
+} 
+} κδ
 eC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_EditModeViewModel.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -40332,3573 +44329,7 @@ _csvWriter
 t u
 }
  
-} Ò’
-iC:\Users\johnk\source\repos\MTM_Receiving_Application\ViewModels\Dunnage\Dunnage_DetailsEntryViewModel.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-
-ViewModels$ .
-.. /
-Dunnage/ 6
-;6 7
-public 
-partial 
-class )
-Dunnage_DetailsEntryViewModel 2
-:3 4 
-Shared_BaseViewModel5 I
-{ 
-private 
-readonly $
-IService_DunnageWorkflow -
-_workflowService. >
-;> ?
-private 
-readonly "
-IService_MySQL_Dunnage +
-_dunnageService, ;
-;; <
-public 
-)
-Dunnage_DetailsEntryViewModel (
-(( )$
-IService_DunnageWorkflow  
-workflowService! 0
-,0 1"
-IService_MySQL_Dunnage 
-dunnageService -
-,- .!
-IService_ErrorHandler 
-errorHandler *
-,* +#
-IService_LoggingUtility 
-logger  &
-)& '
-:( )
-base* .
-(. /
-errorHandler/ ;
-,; <
-logger= C
-)C D
-{ 
-_workflowService 
-= 
-workflowService *
-;* +
-_dunnageService 
-= 
-dunnageService (
-;( )
-}   
-[$$ 
-ObservableProperty$$ 
-]$$ 
-private%% 
-string%% 
-	_poNumber%% 
-=%% 
-string%% %
-.%%% &
-Empty%%& +
-;%%+ ,
-['' 
-ObservableProperty'' 
-]'' 
-private(( 
-string(( 
-	_location(( 
-=(( 
-string(( %
-.((% &
-Empty((& +
-;((+ ,
-[** 
-ObservableProperty** 
-]** 
-private++  
-ObservableCollection++  
-<++  !
-Model_SpecInput++! 0
->++0 1
-_specInputs++2 =
-=++> ?
-new++@ C
-(++C D
-)++D E
-;++E F
-[-- 
-ObservableProperty-- 
-]-- 
-private.. 
-bool.. +
-_isInventoryNotificationVisible.. 0
-=..1 2
-false..3 8
-;..8 9
-[00 
-ObservableProperty00 
-]00 
-private11 
-string11 )
-_inventoryNotificationMessage11 0
-=111 2
-string113 9
-.119 :
-Empty11: ?
-;11? @
-[33 
-ObservableProperty33 
-]33 
-private44 
-string44 
-_inventoryMethod44 #
-=44$ %
-$str44& 1
-;441 2
-public== 
-
-async== 
-Task== )
-LoadSpecsForSelectedPartAsync== 3
-(==3 4
-)==4 5
-{>> 
-try?? 
-{@@ 	
-IsBusyAA 
-=AA 
-trueAA 
-;AA 
-StatusMessageBB 
-=BB 
-$strBB 4
-;BB4 5
-varDD 
-selectedTypeDD 
-=DD 
-_workflowServiceDD /
-.DD/ 0
-CurrentSessionDD0 >
-.DD> ?
-SelectedTypeDD? K
-;DDK L
-ifEE 
-(EE 
-selectedTypeEE 
-==EE 
-nullEE  $
-)EE$ %
-{FF 
-_loggerGG 
-.GG 
-LogErrorGG  
-(GG  !
-$strGG! G
-,GGG H
-nullGGI M
-,GGM N
-$strGGO ]
-)GG] ^
-;GG^ _
-returnHH 
-;HH 
-}II 
-varLL 
-specsLL 
-=LL  
-DeserializeSpecsJsonLL ,
-(LL, -
-selectedTypeLL- 9
-.LL9 :
-	SpecsJsonLL: C
-)LLC D
-;LLD E
-
-SpecInputsOO 
-.OO 
-ClearOO 
-(OO 
-)OO 
-;OO 
-foreachPP 
-(PP 
-varPP 
-specPP 
-inPP  
-specsPP! &
-)PP& '
-{QQ 
-varRR 
-inputRR 
-=RR 
-newRR 
-Model_SpecInputRR  /
-{SS 
-SpecNameTT 
-=TT 
-specTT #
-.TT# $
-KeyTT$ '
-,TT' (
-SpecTypeUU 
-=UU 
-DetermineSpecTypeUU 0
-(UU0 1
-specUU1 5
-.UU5 6
-ValueUU6 ;
-)UU; <
-,UU< =
-UnitVV 
-=VV 
-ExtractUnitVV &
-(VV& '
-specVV' +
-.VV+ ,
-ValueVV, 1
-)VV1 2
-,VV2 3
-
-IsRequiredWW 
-=WW  
-IsSpecRequiredWW! /
-(WW/ 0
-specWW0 4
-.WW4 5
-ValueWW5 :
-)WW: ;
-,WW; <
-ValueXX 
-=XX 
-nullXX  
-}YY 
-;YY 
-
-SpecInputs[[ 
-.[[ 
-Add[[ 
-([[ 
-input[[ $
-)[[$ %
-;[[% &
-}\\ 
-_logger^^ 
-.^^ 
-LogInfo^^ 
-(^^ 
-$"^^ 
-$str^^ %
-{^^% &
-
-SpecInputs^^& 0
-.^^0 1
-Count^^1 6
-}^^6 7
-$str^^7 C
-"^^C D
-,^^D E
-$str^^F T
-)^^T U
-;^^U V
-varaa 
-selectedPartaa 
-=aa 
-_workflowServiceaa /
-.aa/ 0
-CurrentSessionaa0 >
-.aa> ?
-SelectedPartaa? K
-;aaK L
-ifbb 
-(bb 
-selectedPartbb 
-!=bb 
-nullbb  $
-)bb$ %
-{cc 
-vardd 
-isInventorieddd !
-=dd" #
-awaitdd$ )
-_dunnageServicedd* 9
-.dd9 :"
-IsPartInventoriedAsyncdd: P
-(ddP Q
-selectedPartddQ ]
-.dd] ^
-PartIddd^ d
-)ddd e
-;dde f
-ifee 
-(ee 
-isInventoriedee !
-)ee! "
-{ff *
-IsInventoryNotificationVisiblegg 2
-=gg3 4
-truegg5 9
-;gg9 :"
-UpdateInventoryMessagehh *
-(hh* +
-)hh+ ,
-;hh, -
-}ii 
-}jj 
-}kk 	
-catchll 
-(ll 
-	Exceptionll 
-exll 
-)ll 
-{mm 	
-awaitnn 
-_errorHandlernn 
-.nn  
-HandleErrorAsyncnn  0
-(nn0 1
-$stroo %
-,oo% &
-Enum_ErrorSeveritypp "
-.pp" #
-Errorpp# (
-,pp( )
-exqq 
-,qq 
-truerr 
-)ss 
-;ss 
-}tt 	
-finallyuu 
-{vv 	
-IsBusyww 
-=ww 
-falseww 
-;ww 
-}xx 	
-}yy 
-private 
-
-Dictionary 
-< 
-string 
-, 
-object %
->% & 
-DeserializeSpecsJson' ;
-(; <
-string< B
-	specsJsonC L
-)L M
-{
-€€ 
-try
- 
-{
-‚‚ 	
-if
-ƒƒ 
-(
-ƒƒ 
-string
-ƒƒ 
-.
-ƒƒ  
-IsNullOrWhiteSpace
-ƒƒ )
-(
-ƒƒ) *
-	specsJson
-ƒƒ* 3
-)
-ƒƒ3 4
-)
-ƒƒ4 5
-return
-„„ 
-new
-„„ 
-
-Dictionary
-„„ %
-<
-„„% &
-string
-„„& ,
-,
-„„, -
-object
-„„. 4
->
-„„4 5
-(
-„„5 6
-)
-„„6 7
-;
-„„7 8
-return
-†† 
-JsonSerializer
-†† !
-.
-††! "
-Deserialize
-††" -
-<
-††- .
-
-Dictionary
-††. 8
-<
-††8 9
-string
-††9 ?
-,
-††? @
-object
-††A G
->
-††G H
->
-††H I
-(
-††I J
-	specsJson
-††J S
-)
-††S T
-??
-‡‡ 
-new
-‡‡ 
-
-Dictionary
-‡‡ !
-<
-‡‡! "
-string
-‡‡" (
-,
-‡‡( )
-object
-‡‡* 0
->
-‡‡0 1
-(
-‡‡1 2
-)
-‡‡2 3
-;
-‡‡3 4
-}
- 	
-catch
-‰‰ 
-(
-‰‰ 
-	Exception
-‰‰ 
-ex
-‰‰ 
-)
-‰‰ 
-{
- 	
-_logger
-‹‹ 
-.
-‹‹ 
-LogError
-‹‹ 
-(
-‹‹ 
-$"
-‹‹ 
-$str
-‹‹ A
-{
-‹‹A B
-ex
-‹‹B D
-.
-‹‹D E
-Message
-‹‹E L
-}
-‹‹L M
-"
-‹‹M N
-,
-‹‹N O
-ex
-‹‹P R
-,
-‹‹R S
-$str
-‹‹T b
-)
-‹‹b c
-;
-‹‹c d
-return
- 
-new
- 
-
-Dictionary
- !
-<
-! "
-string
-" (
-,
-( )
-object
-* 0
->
-0 1
-(
-1 2
-)
-2 3
-;
-3 4
-}
- 	
-}
- 
-private
- 
-string
- 
-DetermineSpecType
- $
-(
-$ %
-object
-% +
-	specValue
-, 5
-)
-5 6
-{
-‘‘ 
-if
-’’ 
-
-(
-’’ 
-	specValue
-’’ 
-==
-’’ 
-null
-’’ 
-)
-’’ 
-return
-’’ %
-$str
-’’& ,
-;
-’’, -
-var
-”” 
-specStr
-”” 
-=
-”” 
-	specValue
-”” 
-.
-””  
-ToString
-””  (
-(
-””( )
-)
-””) *
-?
-””* +
-.
-””+ ,
-ToLowerInvariant
-””, <
-(
-””< =
-)
-””= >
-??
-””? A
-string
-””B H
-.
-””H I
-Empty
-””I N
-;
-””N O
-if
-—— 
-
-(
-—— 
-specStr
-—— 
-.
-—— 
-Contains
-—— 
-(
-—— 
-$str
-—— %
-)
-——% &
-||
-——' )
-specStr
-——* 1
-.
-——1 2
-Contains
-——2 :
-(
-——: ;
-$str
-——; D
-)
-——D E
-||
-——F H
-specStr
-——I P
-.
-——P Q
-Contains
-——Q Y
-(
-——Y Z
-$str
-——Z ^
-)
-——^ _
-||
-——` b
-specStr
-——c j
-.
-——j k
-Contains
-——k s
-(
-——s t
-$str
-——t |
-)
-——| }
-)
-——} ~
-return
- 
-$str
- 
-;
- 
-if
- 
-
-(
- 
-specStr
- 
-.
- 
-Contains
- 
-(
- 
-$str
- #
-)
-# $
-||
-% '
-specStr
-( /
-.
-/ 0
-Contains
-0 8
-(
-8 9
-$str
-9 A
-)
-A B
-||
-C E
-specStr
-F M
-.
-M N
-Contains
-N V
-(
-V W
-$str
-W c
-)
-c d
-)
-d e
-return
-›› 
-$str
-›› 
-;
-›› 
-return
- 
-$str
- 
-;
- 
-}
- 
-private
-   
-string
-   
-?
-   
-ExtractUnit
-   
-(
-    
-object
-    &
-	specValue
-  ' 0
-)
-  0 1
-{
-΅΅ 
-if
-ΆΆ 
-
-(
-ΆΆ 
-	specValue
-ΆΆ 
-==
-ΆΆ 
-null
-ΆΆ 
-)
-ΆΆ 
-return
-ΆΆ %
-null
-ΆΆ& *
-;
-ΆΆ* +
-var
-¤¤ 
-specStr
-¤¤ 
-=
-¤¤ 
-	specValue
-¤¤ 
-.
-¤¤  
-ToString
-¤¤  (
-(
-¤¤( )
-)
-¤¤) *
-??
-¤¤+ -
-string
-¤¤. 4
-.
-¤¤4 5
-Empty
-¤¤5 :
-;
-¤¤: ;
-if
-§§ 
-
-(
-§§ 
-specStr
-§§ 
-.
-§§ 
-Contains
-§§ 
-(
-§§ 
-$str
-§§ !
-,
-§§! "
-StringComparison
-§§# 3
-.
-§§3 4
-OrdinalIgnoreCase
-§§4 E
-)
-§§E F
-)
-§§F G
-return
-¨¨ 
-$str
-¨¨ 
-;
-¨¨ 
-if
-©© 
-
-(
-©© 
-specStr
-©© 
-.
-©© 
-Contains
-©© 
-(
-©© 
-$str
-©© #
-,
-©©# $
-StringComparison
-©©% 5
-.
-©©5 6
-OrdinalIgnoreCase
-©©6 G
-)
-©©G H
-)
-©©H I
-return
-ªª 
-$str
-ªª 
-;
-ªª 
-if
-«« 
-
-(
-«« 
-specStr
-«« 
-.
-«« 
-Contains
-«« 
-(
-«« 
-$str
-«« !
-,
-««! "
-StringComparison
-««# 3
-.
-««3 4
-OrdinalIgnoreCase
-««4 E
-)
-««E F
-)
-««F G
-return
-¬¬ 
-$str
-¬¬ 
-;
-¬¬ 
-return
-®® 
-null
-®® 
-;
-®® 
-}
-―― 
-private
-±± 
-bool
-±± 
-IsSpecRequired
-±± 
-(
-±±  
-object
-±±  &
-	specValue
-±±' 0
-)
-±±0 1
-{
-²² 
-if
-³³ 
-
-(
-³³ 
-	specValue
-³³ 
-==
-³³ 
-null
-³³ 
-)
-³³ 
-return
-³³ %
-false
-³³& +
-;
-³³+ ,
-var
-µµ 
-specStr
-µµ 
-=
-µµ 
-	specValue
-µµ 
-.
-µµ  
-ToString
-µµ  (
-(
-µµ( )
-)
-µµ) *
-?
-µµ* +
-.
-µµ+ ,
-ToLowerInvariant
-µµ, <
-(
-µµ< =
-)
-µµ= >
-??
-µµ? A
-string
-µµB H
-.
-µµH I
-Empty
-µµI N
-;
-µµN O
-return
-¶¶ 
-specStr
-¶¶ 
-.
-¶¶ 
-Contains
-¶¶ 
-(
-¶¶  
-$str
-¶¶  *
-)
-¶¶* +
-;
-¶¶+ ,
-}
-·· 
-partial
-½½ 
-void
-½½ 
-OnPoNumberChanged
-½½ "
-(
-½½" #
-string
-½½# )
-value
-½½* /
-)
-½½/ 0
-{
-ΎΎ 
-if
-ΏΏ 
-
-(
-ΏΏ 
-string
-ΏΏ 
-.
-ΏΏ  
-IsNullOrWhiteSpace
-ΏΏ %
-(
-ΏΏ% &
-value
-ΏΏ& +
-)
-ΏΏ+ ,
-)
-ΏΏ, -
-{
-ΐΐ 	
-InventoryMethod
-ΑΑ 
-=
-ΑΑ 
-$str
-ΑΑ )
-;
-ΑΑ) *
-}
-ΒΒ 	
-else
-ΓΓ 
-{
-ΔΔ 	
-InventoryMethod
-ΕΕ 
-=
-ΕΕ 
-$str
-ΕΕ *
-;
-ΕΕ* +
-}
-ΖΖ 	$
-UpdateInventoryMessage
-ΘΘ 
-(
-ΘΘ 
-)
-ΘΘ  
-;
-ΘΘ  !
-}
-ΙΙ 
-private
-ΛΛ 
-void
-ΛΛ $
-UpdateInventoryMessage
-ΛΛ '
-(
-ΛΛ' (
-)
-ΛΛ( )
-{
-ΜΜ 
-if
-ΝΝ 
-
-(
-ΝΝ ,
-IsInventoryNotificationVisible
-ΝΝ *
-)
-ΝΝ* +
-{
-ΞΞ 	*
-InventoryNotificationMessage
-ΟΟ (
-=
-ΟΟ) *
-$"
-ΟΟ+ -
-$str
-ΟΟ- k
-{
-ΟΟk l
-InventoryMethod
-ΟΟl {
-}
-ΟΟ{ |
-"
-ΟΟ| }
-;
-ΟΟ} ~
-}
-ΠΠ 	
-}
-ΡΡ 
-private
-ΧΧ 
-bool
-ΧΧ 
-ValidateInputs
-ΧΧ 
-(
-ΧΧ  
-)
-ΧΧ  !
-{
-ΨΨ 
-foreach
-ΪΪ 
-(
-ΪΪ 
-var
-ΪΪ 
-spec
-ΪΪ 
-in
-ΪΪ 
-
-SpecInputs
-ΪΪ '
-.
-ΪΪ' (
-Where
-ΪΪ( -
-(
-ΪΪ- .
-s
-ΪΪ. /
-=>
-ΪΪ0 2
-s
-ΪΪ3 4
-.
-ΪΪ4 5
-
-IsRequired
-ΪΪ5 ?
-)
-ΪΪ? @
-)
-ΪΪ@ A
-{
-ΫΫ 	
-if
-άά 
-(
-άά 
-spec
-άά 
-.
-άά 
-Value
-άά 
-==
-άά 
-null
-άά "
-||
-άά# %
-string
-άά& ,
-.
-άά, - 
-IsNullOrWhiteSpace
-άά- ?
-(
-άά? @
-spec
-άά@ D
-.
-άάD E
-Value
-άάE J
-.
-άάJ K
-ToString
-άάK S
-(
-άάS T
-)
-άάT U
-)
-άάU V
-)
-άάV W
-{
-έέ 
-StatusMessage
-ήή 
-=
-ήή 
-$"
-ήή  "
-$str
-ήή" :
-{
-ήή: ;
-spec
-ήή; ?
-.
-ήή? @
-SpecName
-ήή@ H
-}
-ήήH I
-"
-ήήI J
-;
-ήήJ K
-return
-ίί 
-false
-ίί 
-;
-ίί 
-}
-ΰΰ 
-}
-αα 	
-return
-γγ 
-true
-γγ 
-;
-γγ 
-}
-δδ 
-[
-κκ 
-RelayCommand
-κκ 
-]
-κκ 
-private
-λλ 
-void
-λλ 
-GoBack
-λλ 
-(
-λλ 
-)
-λλ 
-{
-μμ 
-_logger
-νν 
-.
-νν 
-LogInfo
-νν 
-(
-νν 
-$str
-νν ;
-,
-νν; <
-$str
-νν= K
-)
-ννK L
-;
-ννL M
-_workflowService
-ξξ 
-.
-ξξ 
-GoToStep
-ξξ !
-(
-ξξ! "&
-Enum_DunnageWorkflowStep
-ξξ" :
-.
-ξξ: ;
-QuantityEntry
-ξξ; H
-)
-ξξH I
-;
-ξξI J
-}
-οο 
-[
-ρρ 
-RelayCommand
-ρρ 
-]
-ρρ 
-private
-ςς 
-async
-ςς 
-Task
-ςς 
-GoNextAsync
-ςς "
-(
-ςς" #
-)
-ςς# $
-{
-σσ 
-if
-ττ 
-
-(
-ττ 
-IsBusy
-ττ 
-)
-ττ 
-return
-ττ 
-;
-ττ 
-try
-φφ 
-{
-χχ 	
-IsBusy
-ψψ 
-=
-ψψ 
-true
-ψψ 
-;
-ψψ 
-StatusMessage
-ωω 
-=
-ωω 
-$str
-ωω +
-;
-ωω+ ,
-if
-ϋϋ 
-(
-ϋϋ 
-!
-ϋϋ 
-ValidateInputs
-ϋϋ 
-(
-ϋϋ  
-)
-ϋϋ  !
-)
-ϋϋ! "
-{
-όό 
-return
-ύύ 
-;
-ύύ 
-}
-ώώ 
-_workflowService
- 
-.
- 
-CurrentSession
- +
-.
-+ ,
-PONumber
-, 4
-=
-5 6
-PoNumber
-7 ?
-;
-? @
-_workflowService
-‚‚ 
-.
-‚‚ 
-CurrentSession
-‚‚ +
-.
-‚‚+ ,
-Location
-‚‚, 4
-=
-‚‚5 6
-Location
-‚‚7 ?
-;
-‚‚? @
-var
-…… 
-
-specValues
-…… 
-=
-…… 
-
-SpecInputs
-…… '
-.
-……' (
-ToDictionary
-……( 4
-(
-……4 5
-s
-†† 
-=>
-†† 
-s
-†† 
-.
-†† 
-SpecName
-†† 
-,
-††  
-s
-‡‡ 
-=>
-‡‡ 
-s
-‡‡ 
-.
-‡‡ 
-Value
-‡‡ 
-??
-‡‡ 
-string
-‡‡  &
-.
-‡‡& '
-Empty
-‡‡' ,
-)
- 
-;
- 
-_workflowService
- 
-.
- 
-CurrentSession
- +
-.
-+ ,
-
-SpecValues
-, 6
-=
-7 8
-
-specValues
-9 C
-;
-C D
-_logger
- 
-.
- 
-LogInfo
- 
-(
- 
-$str
- A
-,
-A B
-$str
-C Q
-)
-Q R
-;
-R S
-_workflowService
- 
-.
- 
-GoToStep
- %
-(
-% &&
-Enum_DunnageWorkflowStep
-& >
-.
-> ?
-Review
-? E
-)
-E F
-;
-F G
-}
- 	
-catch
-‘‘ 
-(
-‘‘ 
-	Exception
-‘‘ 
-ex
-‘‘ 
-)
-‘‘ 
-{
-’’ 	
-await
-““ 
-_errorHandler
-““ 
-.
-““  
-HandleErrorAsync
-““  0
-(
-““0 1
-$str
-”” &
-,
-””& ' 
-Enum_ErrorSeverity
-•• "
-.
-••" #
-Error
-••# (
-,
-••( )
-ex
-–– 
-,
-–– 
-true
-—— 
-)
- 
-;
- 
-}
-™™ 	
-finally
- 
-{
-›› 	
-IsBusy
- 
-=
- 
-false
- 
-;
- 
-}
- 	
-}
- 
-}΅΅ £Ή
-hC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Startup\Service_OnStartup_AppLifecycle.cs
-	namespace		 	%
-MTM_Receiving_Application		
- #
-.		# $
-Services		$ ,
-.		, -
-Startup		- 4
-{
-
- 
-public 
-
-class *
-Service_OnStartup_AppLifecycle /
-:0 1+
-IService_OnStartup_AppLifecycle2 Q
-{ 
-private 
-readonly 
-IServiceProvider )
-_serviceProvider* :
-;: ;
-private 
-readonly #
-IService_Authentication 0
-_authService1 =
-;= >
-private 
-readonly '
-IService_UserSessionManager 4
-_sessionManager5 D
-;D E
-private 
-readonly !
-IService_ErrorHandler .
-_errorHandler/ <
-;< =
-private 
-readonly 
-IService_CSVWriter +
-
-_csvWriter, 6
-;6 7
-private 
-Views 
-. 
-Shared 
-. %
-Shared_SplashScreenWindow 6
-?6 7
-_splashScreen8 E
-;E F
-public *
-Service_OnStartup_AppLifecycle -
-(- .
-IServiceProvider 
-serviceProvider ,
-,, -#
-IService_Authentication #
-authService$ /
-,/ 0'
-IService_UserSessionManager '
-sessionManager( 6
-,6 7!
-IService_ErrorHandler !
-errorHandler" .
-,. /
-IService_CSVWriter 
-	csvWriter (
-)( )
-{ 	
-_serviceProvider 
-= 
-serviceProvider .
-;. /
-_authService 
-= 
-authService &
-;& '
-_sessionManager 
-= 
-sessionManager ,
-;, -
-_errorHandler 
-= 
-errorHandler (
-;( )
-
-_csvWriter 
-= 
-	csvWriter "
-;" #
-}   	
-public"" 
-async"" 
-Task"" 
-
-StartAsync"" $
-(""$ %
-)""% &
-{## 	
-try$$ 
-{%% 
-_splashScreen'' 
-='' 
-_serviceProvider''  0
-.''0 1
-GetRequiredService''1 C
-<''C D
-Views''D I
-.''I J
-Shared''J P
-.''P Q%
-Shared_SplashScreenWindow''Q j
->''j k
-(''k l
-)''l m
-;''m n
-_splashScreen(( 
-.(( 
-Activate(( &
-(((& '
-)((' (
-;((( )
-UpdateSplash)) 
-()) 
-$num)) 
-,)) 
-$str))  9
-)))9 :
-;)): ;
-await** 
-Task** 
-.** 
-Delay**  
-(**  !
-$num**! $
-)**$ %
-;**% &
-UpdateSplash-- 
-(-- 
-$num-- 
-,--  
-$str--! 9
-)--9 :
-;--: ;
-var.. 
-
-mainWindow.. 
-=..  
-_serviceProvider..! 1
-...1 2
-GetRequiredService..2 D
-<..D E
-
-MainWindow..E O
->..O P
-(..P Q
-)..Q R
-;..R S
-App// 
-.// 
-
-MainWindow// 
-=//  
-
-mainWindow//! +
-;//+ ,
-await22 
-Task22 
-.22 
-Delay22  
-(22  !
-$num22! $
-)22$ %
-;22% &
-UpdateSplash55 
-(55 
-$num55 
-,55  
-$str55! ;
-)55; <
-;55< =
-await66 
-Task66 
-.66 
-Delay66  
-(66  !
-$num66! $
-)66$ %
-;66% &
-UpdateSplash99 
-(99 
-$num99 
-,99  
-$str99! ;
-)99; <
-;99< =
-var:: 
-windowsUser:: 
-=::  !
-Environment::" -
-.::- .
-UserName::. 6
-;::6 7
-var;; 
-userCheckResult;; #
-=;;$ %
-await;;& +
-_authService;;, 8
-.;;8 9.
-"AuthenticateByWindowsUsernameAsync;;9 [
-(;;[ \
-windowsUser;;\ g
-);;g h
-;;;h i
-
-Model_User== 
-?== 
-authenticatedUser== -
-===. /
-null==0 4
-;==4 5
-string>> 
-
-authMethod>> !
-=>>" #
-$str>>$ &
-;>>& '
-ifAA 
-(AA 
-!AA 
-userCheckResultAA $
-.AA$ %
-SuccessAA% ,
-)AA, -
-{BB "
-SetSplashIndeterminateCC *
-(CC* +
-$strCC+ d
-)CCd e
-;CCe f
-varFF 
-newUserViewModelFF (
-=FF) *
-_serviceProviderFF+ ;
-.FF; <
-GetRequiredServiceFF< N
-<FFN O
-
-ViewModelsFFO Y
-.FFY Z
-SharedFFZ `
-.FF` a(
-Shared_NewUserSetupViewModelFFa }
->FF} ~
-(FF~ 
-)	FF €
-;
-FF€ 
-newUserViewModelGG $
-.GG$ %
-WindowsUsernameGG% 4
-=GG5 6
-windowsUserGG7 B
-;GGB C
-newUserViewModelHH $
-.HH$ %
-	CreatedByHH% .
-=HH/ 0
-windowsUserHH1 <
-;HH< =
-varJJ 
-newUserDialogJJ %
-=JJ& '
-newJJ( +
-ViewsJJ, 1
-.JJ1 2
-SharedJJ2 8
-.JJ8 9%
-Shared_NewUserSetupDialogJJ9 R
-(JJR S
-newUserViewModelJJS c
-)JJc d
-;JJd e
-ifMM 
-(MM 
-_splashScreenMM %
-?MM% &
-.MM& '
-ContentMM' .
-isMM/ 1
-	MicrosoftMM2 ;
-.MM; <
-UIMM< >
-.MM> ?
-XamlMM? C
-.MMC D
-	UIElementMMD M
-rootElementMMN Y
-)MMY Z
-{NN 
-newUserDialogOO %
-.OO% &
-XamlRootOO& .
-=OO/ 0
-rootElementOO1 <
-.OO< =
-XamlRootOO= E
-;OOE F
-}PP 
-varSS 
-dialogResultSS $
-=SS% &
-awaitSS' ,
-newUserDialogSS- :
-.SS: ;
-	ShowAsyncSS; D
-(SSD E
-)SSE F
-;SSF G
-ifVV 
-(VV 
-newUserViewModelVV (
-.VV( )
-NewEmployeeNumberVV) :
->VV; <
-$numVV= >
-&&VV? A
-!VVB C
-newUserViewModelVVC S
-.VVS T
-IsCancelledVVT _
-)VV_ `
-{WW 
-UpdateSplashYY $
-(YY$ %
-$numYY% '
-,YY' (
-$strYY) F
-)YYF G
-;YYG H
-userCheckResultZZ '
-=ZZ( )
-awaitZZ* /
-_authServiceZZ0 <
-.ZZ< =.
-"AuthenticateByWindowsUsernameAsyncZZ= _
-(ZZ_ `
-windowsUserZZ` k
-)ZZk l
-;ZZl m
-if\\ 
-(\\ 
-userCheckResult\\ +
-.\\+ ,
-Success\\, 3
-)\\3 4
-{]] 
-authenticatedUser^^ -
-=^^. /
-userCheckResult^^0 ?
-.^^? @
-User^^@ D
-;^^D E
-UpdateSplash__ (
-(__( )
-$num__) +
-,__+ ,
-$"__- /
-$str__/ C
-{__C D
-authenticatedUser__D U
-?__U V
-.__V W
-FullName__W _
-}___ `
-"__` a
-)__a b
-;__b c
-}`` 
-}aa 
-elsebb 
-ifbb 
-(bb 
-newUserViewModelbb -
-.bb- .
-IsCancelledbb. 9
-)bb9 :
-{cc 
-awaitee 
-_errorHandleree +
-.ee+ ,
-HandleErrorAsyncee, <
-(ee< =
-$strff S
-,ffS T
-Modelsgg "
-.gg" #
-Enumsgg# (
-.gg( )
-Enum_ErrorSeveritygg) ;
-.gg; <
-Infogg< @
-,gg@ A
-
-showDialoghh &
-:hh& '
-falsehh( -
-)hh- .
-;hh. /
-_splashScreenkk %
-?kk% &
-.kk& '
-Closekk' ,
-(kk, -
-)kk- .
-;kk. /
-ifnn 
-(nn 
-Appnn 
-.nn  
-
-MainWindownn  *
-!=nn+ -
-nullnn. 2
-)nn2 3
-{oo 
-Apppp 
-.pp  
-
-MainWindowpp  *
-.pp* +
-Closepp+ 0
-(pp0 1
-)pp1 2
-;pp2 3
-}qq 
-Applicationtt #
-.tt# $
-Currenttt$ +
-.tt+ ,
-Exittt, 0
-(tt0 1
-)tt1 2
-;tt2 3
-returnuu 
-;uu 
-}vv 
-}ww 
-elsexx 
-{yy 
-authenticatedUser{{ %
-={{& '
-userCheckResult{{( 7
-.{{7 8
-User{{8 <
-;{{< =
-}|| 
-UpdateSplash 
-( 
-$num 
-,  
-$str! I
-)I J
-;J K
-var
-€€ 
-workstationConfig
-€€ %
-=
-€€& '
-await
-€€( -
-_authService
-€€. :
-.
-€€: ;(
-DetectWorkstationTypeAsync
-€€; U
-(
-€€U V
-)
-€€V W
-;
-€€W X
-System
-ƒƒ 
-.
-ƒƒ 
-Diagnostics
-ƒƒ "
-.
-ƒƒ" #
-Debug
-ƒƒ# (
-.
-ƒƒ( )
-	WriteLine
-ƒƒ) 2
-(
-ƒƒ2 3
-$"
-ƒƒ3 5
-$str
-ƒƒ5 B
-{
-ƒƒB C
-workstationConfig
-ƒƒC T
-.
-ƒƒT U
-ComputerName
-ƒƒU a
-}
-ƒƒa b
-"
-ƒƒb c
-)
-ƒƒc d
-;
-ƒƒd e
-System
-„„ 
-.
-„„ 
-Diagnostics
-„„ "
-.
-„„" #
-Debug
-„„# (
-.
-„„( )
-	WriteLine
-„„) 2
-(
-„„2 3
-$"
-„„3 5
-$str
-„„5 ;
-{
-„„; <
-workstationConfig
-„„< M
-.
-„„M N
-WorkstationType
-„„N ]
-}
-„„] ^
-"
-„„^ _
-)
-„„_ `
-;
-„„` a
-System
-…… 
-.
-…… 
-Diagnostics
-…… "
-.
-……" #
-Debug
-……# (
-.
-……( )
-	WriteLine
-……) 2
-(
-……2 3
-$"
-……3 5
-$str
-……5 @
-{
-……@ A
-workstationConfig
-……A R
-.
-……R S
-IsSharedTerminal
-……S c
-}
-……c d
-"
-……d e
-)
-……e f
-;
-……f g
-System
-†† 
-.
-†† 
-Diagnostics
-†† "
-.
-††" #
-Debug
-††# (
-.
-††( )
-	WriteLine
-††) 2
-(
-††2 3
-$"
-††3 5
-$str
-††5 B
-{
-††B C
-workstationConfig
-††C T
-.
-††T U#
-IsPersonalWorkstation
-††U j
-}
-††j k
-"
-††k l
-)
-††l m
-;
-††m n
-if
-‰‰ 
-(
-‰‰ 
-workstationConfig
-‰‰ %
-.
-‰‰% &#
-IsPersonalWorkstation
-‰‰& ;
-)
-‰‰; <
-{
- 
-UpdateSplash
-  
-(
-  !
-$num
-! #
-,
-# $
-$str
-% T
-)
-T U
-;
-U V
-
-authMethod
- 
-=
-  
-$str
-! /
-;
-/ 0
-UpdateSplash
-  
-(
-  !
-$num
-! #
-,
-# $
-$"
-% '
-$str
-' 0
-{
-0 1
-authenticatedUser
-1 B
-?
-B C
-.
-C D
-FullName
-D L
-}
-L M
-"
-M N
-)
-N O
-;
-O P
-}
- 
-else
- 
-if
- 
-(
- 
-workstationConfig
- *
-.
-* +
-IsSharedTerminal
-+ ;
-)
-; <
-{
-‘‘ 
-authenticatedUser
-”” %
-=
-””& '
-null
-””( ,
-;
-””, -$
-SetSplashIndeterminate
-–– *
-(
-––* +
-$str
-––+ _
-)
-––_ `
-;
-––` a
-var
-™™ 
-loginViewModel
-™™ &
-=
-™™' (
-_serviceProvider
-™™) 9
-.
-™™9 : 
-GetRequiredService
-™™: L
-<
-™™L M
-
-ViewModels
-™™M W
-.
-™™W X
-Shared
-™™X ^
-.
-™™^ _2
-#Shared_SharedTerminalLoginViewModel™™_ ‚
->™™‚ ƒ
-(™™ƒ „
-)™™„ …
-;™™… †
-var
- 
-loginDialog
- #
-=
-$ %
-new
-& )
-Views
-* /
-.
-/ 0
-Shared
-0 6
-.
-6 7.
- Shared_SharedTerminalLoginDialog
-7 W
-(
-W X
-loginViewModel
-X f
-)
-f g
-;
-g h
-if
- 
-(
- 
-_splashScreen
- %
-?
-% &
-.
-& '
-Content
-' .
-is
-/ 1
-	Microsoft
-2 ;
-.
-; <
-UI
-< >
-.
-> ?
-Xaml
-? C
-.
-C D
-	UIElement
-D M
-rootElement
-N Y
-)
-Y Z
-{
- 
-loginDialog
- #
-.
-# $
-XamlRoot
-$ ,
-=
-- .
-rootElement
-/ :
-.
-: ;
-XamlRoot
-; C
-;
-C D
-}
-   
-var
-££ 
-dialogResult
-££ $
-=
-££% &
-await
-££' ,
-loginDialog
-££- 8
-.
-££8 9
-	ShowAsync
-££9 B
-(
-££B C
-)
-££C D
-;
-££D E
-if
-¦¦ 
-(
-¦¦ 
-loginViewModel
-¦¦ &
-.
-¦¦& '
-AuthenticatedUser
-¦¦' 8
-!=
-¦¦9 ;
-null
-¦¦< @
-&&
-¦¦A C
-!
-¦¦D E
-loginViewModel
-¦¦E S
-.
-¦¦S T
-IsCancelled
-¦¦T _
-&&
-¦¦` b
-!
-¦¦c d
-loginViewModel
-¦¦d r
-.
-¦¦r s
-IsLockedOut
-¦¦s ~
-)
-¦¦~ 
-{
-§§ 
-authenticatedUser
-©© )
-=
-©©* +
-loginViewModel
-©©, :
-.
-©©: ;
-AuthenticatedUser
-©©; L
-;
-©©L M
-
-authMethod
-ªª "
-=
-ªª# $
-$str
-ªª% 0
-;
-ªª0 1
-UpdateSplash
-«« $
-(
-««$ %
-$num
-««% '
-,
-««' (
-$"
-««) +
-$str
-««+ 4
-{
-««4 5
-authenticatedUser
-««5 F
-.
-««F G
-FullName
-««G O
-}
-««O P
-"
-««P Q
-)
-««Q R
-;
-««R S
-}
-¬¬ 
-else
-­­ 
-if
-­­ 
-(
-­­ 
-loginViewModel
-­­ +
-.
-­­+ ,
-IsLockedOut
-­­, 7
-)
-­­7 8
-{
-®® 
-await
-°° 
-_errorHandler
-°° +
-.
-°°+ ,
-HandleErrorAsync
-°°, <
-(
-°°< =
-$str
-±± `
-,
-±±` a
-Models
-²² "
-.
-²²" #
-Enums
-²²# (
-.
-²²( ) 
-Enum_ErrorSeverity
-²²) ;
-.
-²²; <
-Warning
-²²< C
-,
-²²C D
-
-showDialog
-³³ &
-:
-³³& '
-false
-³³( -
-)
-³³- .
-;
-³³. /
-	Microsoft
-¶¶ !
-.
-¶¶! "
-Windows
-¶¶" )
-.
-¶¶) *
-AppLifecycle
-¶¶* 6
-.
-¶¶6 7
-AppInstance
-¶¶7 B
-.
-¶¶B C
-
-GetCurrent
-¶¶C M
-(
-¶¶M N
-)
-¶¶N O
-.
-¶¶O P
-UnregisterKey
-¶¶P ]
-(
-¶¶] ^
-)
-¶¶^ _
-;
-¶¶_ `
-System
-·· 
-.
-·· 
-Environment
-·· *
-.
-··* +
-Exit
-··+ /
-(
-··/ 0
-$num
-··0 1
-)
-··1 2
-;
-··2 3
-return
-ΈΈ 
-;
-ΈΈ 
-}
-ΉΉ 
-else
-ΊΊ 
-if
-ΊΊ 
-(
-ΊΊ 
-loginViewModel
-ΊΊ +
-.
-ΊΊ+ ,
-IsCancelled
-ΊΊ, 7
-)
-ΊΊ7 8
-{
-»» 
-await
-½½ 
-_errorHandler
-½½ +
-.
-½½+ ,
-HandleErrorAsync
-½½, <
-(
-½½< =
-$str
-ΎΎ H
-,
-ΎΎH I
-Models
-ΏΏ "
-.
-ΏΏ" #
-Enums
-ΏΏ# (
-.
-ΏΏ( ) 
-Enum_ErrorSeverity
-ΏΏ) ;
-.
-ΏΏ; <
-Info
-ΏΏ< @
-,
-ΏΏ@ A
-
-showDialog
-ΐΐ &
-:
-ΐΐ& '
-false
-ΐΐ( -
-)
-ΐΐ- .
-;
-ΐΐ. /
-System
-ΒΒ 
-.
-ΒΒ 
-Environment
-ΒΒ *
-.
-ΒΒ* +
-Exit
-ΒΒ+ /
-(
-ΒΒ/ 0
-$num
-ΒΒ0 1
-)
-ΒΒ1 2
-;
-ΒΒ2 3
-return
-ΓΓ 
-;
-ΓΓ 
-}
-ΔΔ 
-else
-ΕΕ 
-{
-ΖΖ 
-await
-ΘΘ 
-_errorHandler
-ΘΘ +
-.
-ΘΘ+ ,
-HandleErrorAsync
-ΘΘ, <
-(
-ΘΘ< =
-$str
-ΙΙ T
-,
-ΙΙT U
-Models
-ΚΚ "
-.
-ΚΚ" #
-Enums
-ΚΚ# (
-.
-ΚΚ( ) 
-Enum_ErrorSeverity
-ΚΚ) ;
-.
-ΚΚ; <
-Info
-ΚΚ< @
-,
-ΚΚ@ A
-
-showDialog
-ΛΛ &
-:
-ΛΛ& '
-false
-ΛΛ( -
-)
-ΛΛ- .
-;
-ΛΛ. /
-System
-ΝΝ 
-.
-ΝΝ 
-Environment
-ΝΝ *
-.
-ΝΝ* +
-Exit
-ΝΝ+ /
-(
-ΝΝ/ 0
-$num
-ΝΝ0 1
-)
-ΝΝ1 2
-;
-ΝΝ2 3
-return
-ΞΞ 
-;
-ΞΞ 
-}
-ΟΟ 
-}
-ΠΠ 
-if
-ΣΣ 
-(
-ΣΣ 
-authenticatedUser
-ΣΣ %
-!=
-ΣΣ& (
-null
-ΣΣ) -
-)
-ΣΣ- .
-{
-ΤΤ 
-UpdateSplash
-ΥΥ  
-(
-ΥΥ  !
-$num
-ΥΥ! #
-,
-ΥΥ# $
-$str
-ΥΥ% ?
-)
-ΥΥ? @
-;
-ΥΥ@ A
-_sessionManager
-ΦΦ #
-.
-ΦΦ# $
-CreateSession
-ΦΦ$ 1
-(
-ΦΦ1 2
-authenticatedUser
-ΦΦ2 C
-,
-ΦΦC D
-workstationConfig
-ΦΦE V
-,
-ΦΦV W
-
-authMethod
-ΦΦX b
-)
-ΦΦb c
-;
-ΦΦc d
-_sessionManager
-ΧΧ #
-.
-ΧΧ# $$
-StartTimeoutMonitoring
-ΧΧ$ :
-(
-ΧΧ: ;
-)
-ΧΧ; <
-;
-ΧΧ< =
-if
-ΪΪ 
-(
-ΪΪ 
-App
-ΪΪ 
-.
-ΪΪ 
-
-MainWindow
-ΪΪ &
-is
-ΪΪ' )
-
-MainWindow
-ΪΪ* 4
-mainWin
-ΪΪ5 <
-)
-ΪΪ< =
-{
-ΫΫ 
-mainWin
-άά 
-.
-άά  
-DispatcherQueue
-άά  /
-.
-άά/ 0
-
-TryEnqueue
-άά0 :
-(
-άά: ;
-(
-άά; <
-)
-άά< =
-=>
-άά> @
-mainWin
-άάA H
-.
-άάH I
-UpdateUserDisplay
-άάI Z
-(
-άάZ [
-)
-άά[ \
-)
-άά\ ]
-;
-άά] ^
-}
-έέ 
-}
-ήή 
-else
-ίί 
-{
-ΰΰ 
-await
-ββ 
-_errorHandler
-ββ '
-.
-ββ' (
-HandleErrorAsync
-ββ( 8
-(
-ββ8 9
-$str
-γγ E
-,
-γγE F
-Models
-δδ 
-.
-δδ 
-Enums
-δδ $
-.
-δδ$ % 
-Enum_ErrorSeverity
-δδ% 7
-.
-δδ7 8
-Warning
-δδ8 ?
-,
-δδ? @
-
-showDialog
-εε "
-:
-εε" #
-false
-εε$ )
-)
-εε) *
-;
-εε* +
-System
-ζζ 
-.
-ζζ 
-Environment
-ζζ &
-.
-ζζ& '
-Exit
-ζζ' +
-(
-ζζ+ ,
-$num
-ζζ, -
-)
-ζζ- .
-;
-ζζ. /
-return
-ηη 
-;
-ηη 
-}
-θθ 
-UpdateSplash
-λλ 
-(
-λλ 
-$num
-λλ  
-,
-λλ  !
-$str
-λλ" *
-)
-λλ* +
-;
-λλ+ ,
-await
-μμ 
-Task
-μμ 
-.
-μμ 
-Delay
-μμ  
-(
-μμ  !
-$num
-μμ! $
-)
-μμ$ %
-;
-μμ% &
-App
-οο 
-.
-οο 
-
-MainWindow
-οο 
-?
-οο 
-.
-οο  
-Activate
-οο  (
-(
-οο( )
-)
-οο) *
-;
-οο* +
-if
-ππ 
-(
-ππ 
-_splashScreen
-ππ !
-!=
-ππ" $
-null
-ππ% )
-)
-ππ) *
-{
-ρρ 
-_splashScreen
-ςς !
-.
-ςς! "!
-IsProgrammaticClose
-ςς" 5
-=
-ςς6 7
-true
-ςς8 <
-;
-ςς< =
-_splashScreen
-σσ !
-.
-σσ! "
-Close
-σσ" '
-(
-σσ' (
-)
-σσ( )
-;
-σσ) *
-}
-ττ 
-_splashScreen
-υυ 
-=
-υυ 
-null
-υυ  $
-;
-υυ$ %
-}
-ψψ 
-catch
-ωω 
-(
-ωω 
-	Exception
-ωω 
-ex
-ωω 
-)
-ωω  
-{
-ϊϊ 
-await
-ϋϋ 
-_errorHandler
-ϋϋ #
-.
-ϋϋ# $
-HandleErrorAsync
-ϋϋ$ 4
-(
-ϋϋ4 5
-$str
-ϋϋ5 E
-,
-ϋϋE F
-Models
-ϋϋG M
-.
-ϋϋM N
-Enums
-ϋϋN S
-.
-ϋϋS T 
-Enum_ErrorSeverity
-ϋϋT f
-.
-ϋϋf g
-Critical
-ϋϋg o
-,
-ϋϋo p
-ex
-ϋϋq s
-)
-ϋϋs t
-;
-ϋϋt u
-_splashScreen
-όό 
-?
-όό 
-.
-όό 
-Close
-όό $
-(
-όό$ %
-)
-όό% &
-;
-όό& '
-System
-ύύ 
-.
-ύύ 
-Environment
-ύύ "
-.
-ύύ" #
-Exit
-ύύ# '
-(
-ύύ' (
-$num
-ύύ( )
-)
-ύύ) *
-;
-ύύ* +
-}
-ώώ 
-}
-ÿÿ 	
-private
- 
-void
- 
-UpdateSplash
- !
-(
-! "
-double
-" (
-
-percentage
-) 3
-,
-3 4
-string
-5 ;
-message
-< C
-)
-C D
-{
-‚‚ 	
-_splashScreen
-ƒƒ 
-?
-ƒƒ 
-.
-ƒƒ 
-	ViewModel
-ƒƒ $
-.
-ƒƒ$ %
-UpdateProgress
-ƒƒ% 3
-(
-ƒƒ3 4
-
-percentage
-ƒƒ4 >
-,
-ƒƒ> ?
-message
-ƒƒ@ G
-)
-ƒƒG H
-;
-ƒƒH I
-}
-„„ 	
-private
-†† 
-void
-†† $
-SetSplashIndeterminate
-†† +
-(
-††+ ,
-string
-††, 2
-message
-††3 :
-)
-††: ;
-{
-‡‡ 	
-_splashScreen
- 
-?
- 
-.
- 
-	ViewModel
- $
-.
-$ %
-SetIndeterminate
-% 5
-(
-5 6
-message
-6 =
-)
-= >
-;
-> ?
-}
-‰‰ 	
-private
-‹‹ 
-async
-‹‹ 
-Task
-‹‹ (
-CheckAndResetCSVFilesAsync
-‹‹ 5
-(
-‹‹5 6
-)
-‹‹6 7
-{
- 	
-if
-–– 
-(
-–– 
-App
-–– 
-.
-–– 
-
-MainWindow
-–– 
-==
-–– !
-null
-––" &
-)
-––& '
-return
-––( .
-;
-––. /
-await
- 
-App
- 
-.
- 
-
-MainWindow
-  
-.
-  !
-DispatcherQueue
-! 0
-.
-0 1
-EnqueueAsync
-1 =
-(
-= >
-async
-> C
-(
-D E
-)
-E F
-=>
-G I
-{
-™™ 
-var
- 
-dialog
- 
-=
- 
-new
-  
-	Microsoft
-! *
-.
-* +
-UI
-+ -
-.
-- .
-Xaml
-. 2
-.
-2 3
-Controls
-3 ;
-.
-; <
-ContentDialog
-< I
-{
-›› 
-Title
- 
-=
- 
-$str
- .
-,
-. /
-Content
- 
-=
- 
-$str
- o
-,
-o p
-PrimaryButtonText
- %
-=
-& '
-$str
-( 4
-,
-4 5
-CloseButtonText
- #
-=
-$ %
-$str
-& 4
-,
-4 5
-DefaultButton
-   !
-=
-  " #
-	Microsoft
-  $ -
-.
-  - .
-UI
-  . 0
-.
-  0 1
-Xaml
-  1 5
-.
-  5 6
-Controls
-  6 >
-.
-  > ?!
-ContentDialogButton
-  ? R
-.
-  R S
-Close
-  S X
-,
-  X Y
-XamlRoot
-΅΅ 
-=
-΅΅ 
-App
-΅΅ "
-.
-΅΅" #
-
-MainWindow
-΅΅# -
-.
-΅΅- .
-Content
-΅΅. 5
-.
-΅΅5 6
-XamlRoot
-΅΅6 >
-}
-ΆΆ 
-;
-ΆΆ 
-var
-¤¤ 
-result
-¤¤ 
-=
-¤¤ 
-await
-¤¤ "
-dialog
-¤¤# )
-.
-¤¤) *
-	ShowAsync
-¤¤* 3
-(
-¤¤3 4
-)
-¤¤4 5
-;
-¤¤5 6
-if
-¦¦ 
-(
-¦¦ 
-result
-¦¦ 
-==
-¦¦ 
-	Microsoft
-¦¦ '
-.
-¦¦' (
-UI
-¦¦( *
-.
-¦¦* +
-Xaml
-¦¦+ /
-.
-¦¦/ 0
-Controls
-¦¦0 8
-.
-¦¦8 9!
-ContentDialogResult
-¦¦9 L
-.
-¦¦L M
-Primary
-¦¦M T
-)
-¦¦T U
-{
-§§ 
-await
-¨¨ 
-
-_csvWriter
-¨¨ $
-.
-¨¨$ %!
-DeleteCSVFilesAsync
-¨¨% 8
-(
-¨¨8 9
-)
-¨¨9 :
-;
-¨¨: ;
-}
-©© 
-}
-ªª 
-)
-ªª 
-;
-ªª 
-}
-«« 	
-}
-¬¬ 
-}­­ ™
-PC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Window.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Services$ ,
-;, -
-public 
-class 
-Service_Window 
-: 
-IService_Window -
-{ 
-public 
-
-XamlRoot 
-? 
-GetXamlRoot  
-(  !
-)! "
-{		 
-return
-
- 
-App
-
- 
-.
-
- 
-
-MainWindow
-
- 
-?
-
- 
-.
-
- 
-Content
-
- &
-?
-
-& '
-.
-
-' (
-XamlRoot
-
-( 0
-;
-
-0 1
-} 
-} Ψ
+} Ψ
 `C:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_DispatcherTimerWrapper.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -47893,438 +48324,7 @@ _csvWriter
 ££ 	
 }
 ¤¤ 
-}¥¥ Κ7
-TC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Service_Pagination.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Services$ ,
-{ 
-public 
-
-class 
-Service_Pagination #
-:$ %
-IService_Pagination& 9
-{		 
-private
-
- 
-IEnumerable
-
- 
-<
-
- 
-object
-
- "
->
-
-" #
-?
-
-# $
-_source
-
-% ,
-;
-
-, -
-private 
-int 
-_currentPage  
-=! "
-$num# $
-;$ %
-private 
-int 
-	_pageSize 
-= 
-$num  "
-;" #
-public 
-int 
-CurrentPage 
-=> !
-_currentPage" .
-;. /
-public 
-int 
-
-TotalPages 
-{ 	
-get 
-{ 
-if 
-( 
-_source 
-== 
-null #
-||$ &
-!' (
-_source( /
-./ 0
-Any0 3
-(3 4
-)4 5
-)5 6
-return7 =
-$num> ?
-;? @
-return 
-( 
-int 
-) 
-Math  
-.  !
-Ceiling! (
-(( )
-() *
-double* 0
-)0 1
-
-TotalItems1 ;
-/< =
-PageSize> F
-)F G
-;G H
-} 
-} 	
-public 
-int 
-PageSize 
-{ 	
-get 
-=> 
-	_pageSize 
-; 
-set 
-{ 
-if 
-( 
-	_pageSize 
-!=  
-value! &
-)& '
-{ 
-	_pageSize   
-=   
-value    %
-;  % &
-_currentPage!!  
-=!!! "
-$num!!# $
-;!!$ %
-OnPageChanged"" !
-(""! "
-)""" #
-;""# $
-}## 
-}$$ 
-}%% 	
-public'' 
-int'' 
-
-TotalItems'' 
-=>''  
-_source''! (
-?''( )
-.'') *
-Count''* /
-(''/ 0
-)''0 1
-??''2 4
-$num''5 6
-;''6 7
-public)) 
-bool)) 
-HasNextPage)) 
-=>))  "
-CurrentPage))# .
-<))/ 0
-
-TotalPages))1 ;
-;)); <
-public++ 
-bool++ 
-HasPreviousPage++ #
-=>++$ &
-CurrentPage++' 2
->++3 4
-$num++5 6
-;++6 7
-public-- 
-event-- 
-EventHandler-- !
-?--! "
-PageChanged--# .
-;--. /
-public// 
-void// 
-	SetSource// 
-<// 
-T// 
->//  
-(//  !
-IEnumerable//! ,
-<//, -
-T//- .
->//. /
-source//0 6
-)//6 7
-{00 	
-_source11 
-=11 
-source11 
-?11 
-.11 
-Cast11 "
-<11" #
-object11# )
->11) *
-(11* +
-)11+ ,
-??11- /
-
-Enumerable110 :
-.11: ;
-Empty11; @
-<11@ A
-object11A G
->11G H
-(11H I
-)11I J
-;11J K
-_currentPage22 
-=22 
-$num22 
-;22 
-OnPageChanged33 
-(33 
-)33 
-;33 
-}44 	
-public66 
-IEnumerable66 
-<66 
-T66 
->66 
-GetCurrentPageItems66 1
-<661 2
-T662 3
->663 4
-(664 5
-)665 6
-{77 	
-if88 
-(88 
-_source88 
-==88 
-null88 
-)88  
-return88! '
-
-Enumerable88( 2
-.882 3
-Empty883 8
-<888 9
-T889 :
->88: ;
-(88; <
-)88< =
-;88= >
-return:: 
-_source:: 
-.;; 
-Skip;; 
-(;; 
-(;; 
-CurrentPage;; "
--;;# $
-$num;;% &
-);;& '
-*;;( )
-PageSize;;* 2
-);;2 3
-.<< 
-Take<< 
-(<< 
-PageSize<< 
-)<< 
-.== 
-Cast== 
-<== 
-T== 
->== 
-(== 
-)== 
-;== 
-}>> 	
-public@@ 
-void@@ 
-NextPage@@ 
-(@@ 
-)@@ 
-{AA 	
-ifBB 
-(BB 
-HasNextPageBB 
-)BB 
-{CC 
-_currentPageDD 
-++DD 
-;DD 
-OnPageChangedEE 
-(EE 
-)EE 
-;EE  
-}FF 
-}GG 	
-publicII 
-voidII 
-PreviousPageII  
-(II  !
-)II! "
-{JJ 	
-ifKK 
-(KK 
-HasPreviousPageKK 
-)KK  
-{LL 
-_currentPageMM 
---MM 
-;MM 
-OnPageChangedNN 
-(NN 
-)NN 
-;NN  
-}OO 
-}PP 	
-publicRR 
-voidRR 
-	FirstPageRR 
-(RR 
-)RR 
-{SS 	
-ifTT 
-(TT 
-_currentPageTT 
-!=TT 
-$numTT  !
-)TT! "
-{UU 
-_currentPageVV 
-=VV 
-$numVV  
-;VV  !
-OnPageChangedWW 
-(WW 
-)WW 
-;WW  
-}XX 
-}YY 	
-public[[ 
-void[[ 
-LastPage[[ 
-([[ 
-)[[ 
-{\\ 	
-if]] 
-(]] 
-_currentPage]] 
-!=]] 
-
-TotalPages]]  *
-)]]* +
-{^^ 
-_currentPage__ 
-=__ 
-
-TotalPages__ )
-;__) *
-OnPageChanged`` 
-(`` 
-)`` 
-;``  
-}aa 
-}bb 	
-publicdd 
-voiddd 
-GoToPagedd 
-(dd 
-intdd  
-
-pageNumberdd! +
-)dd+ ,
-{ee 	
-ifff 
-(ff 
-
-pageNumberff 
-<ff 
-$numff 
-)ff 
-
-pageNumberff  *
-=ff+ ,
-$numff- .
-;ff. /
-ifgg 
-(gg 
-
-pageNumbergg 
->gg 
-
-TotalPagesgg '
-)gg' (
-
-pageNumbergg) 3
-=gg4 5
-
-TotalPagesgg6 @
-;gg@ A
-ifii 
-(ii 
-_currentPageii 
-!=ii 
-
-pageNumberii  *
-)ii* +
-{jj 
-_currentPagekk 
-=kk 
-
-pageNumberkk )
-;kk) *
-OnPageChangedll 
-(ll 
-)ll 
-;ll  
-}mm 
-}nn 	
-privatepp 
-voidpp 
-OnPageChangedpp "
-(pp" #
-)pp# $
-{qq 	
-PageChangedrr 
-?rr 
-.rr 
-Invokerr 
-(rr  
-thisrr  $
-,rr$ %
-	EventArgsrr& /
-.rr/ 0
-Emptyrr0 5
-)rr5 6
-;rr6 7
-}ss 	
-}tt 
-}uu Χ†
+}¥¥ Χ†
 gC:\Users\johnk\source\repos\MTM_Receiving_Application\Services\Receiving\Service_ReceivingValidation.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -67875,341 +67875,144 @@ eC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Receiving\Model_Ap
 =&&0 1
 $str&&2 ?
 ;&&? @
-}'' ”-
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_InventoriedDunnage.cs
-	namespace 	%
-MTM_Receiving_Application
+}'' Ι
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPO.cs
+	namespace 	%
+MTM_Receiving_Application
  #
-.# $
-Models$ *
-.* +
-Dunnage+ 2
-;2 3
-public 
-class $
-Model_InventoriedDunnage %
-:& '"
-INotifyPropertyChanged( >
-{		 
-private
-
- 
-int
-
- 
-_id
-
- 
-;
-
- 
-private 
-string 
-_partId 
-= 
-string #
-.# $
-Empty$ )
-;) *
-private 
-string 
-? 
-_inventoryMethod $
-;$ %
-private 
-string 
-? 
-_notes 
-; 
-private 
-string 
-
-_createdBy 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-DateTime 
-_createdDate !
-=" #
-DateTime$ ,
-., -
-Now- 0
-;0 1
-private 
-string 
-? 
-_modifiedBy 
-;  
-private 
-DateTime 
-? 
-_modifiedDate #
-;# $
-public 
-
-int 
-Id 
-{ 
-get 
-=> 
-_id 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-_id 
-,  
-value! &
-)& '
-;' (
-} 
-public 
-
-string 
-PartId 
-{ 
-get 
-=> 
-_partId 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-_partId #
-,# $
-value% *
-)* +
-;+ ,
-} 
-public 
-
-string 
-? 
-InventoryMethod "
-{   
-get!! 
-=>!! 
-_inventoryMethod!! 
-;!!  
-set"" 
-=>"" 
-SetField"" 
-("" 
-ref"" 
-_inventoryMethod"" ,
-,"", -
-value"". 3
-)""3 4
-;""4 5
-}## 
-public%% 
-
-string%% 
-?%% 
-Notes%% 
-{&& 
-get'' 
-=>'' 
-_notes'' 
-;'' 
-set(( 
-=>(( 
-SetField(( 
-((( 
-ref(( 
-_notes(( "
-,((" #
-value(($ )
-)(() *
-;((* +
-})) 
-public++ 
-
-string++ 
-	CreatedBy++ 
-{,, 
-get-- 
-=>-- 
-
-_createdBy-- 
-;-- 
-set.. 
-=>.. 
-SetField.. 
-(.. 
-ref.. 
-
-_createdBy.. &
-,..& '
-value..( -
-)..- .
-;... /
-}// 
-public11 
-
-DateTime11 
-CreatedDate11 
-{22 
-get33 
-=>33 
-_createdDate33 
-;33 
-set44 
-=>44 
-SetField44 
-(44 
-ref44 
-_createdDate44 (
-,44( )
-value44* /
-)44/ 0
-;440 1
-}55 
-public77 
-
-string77 
-?77 
-
-ModifiedBy77 
-{88 
-get99 
-=>99 
-_modifiedBy99 
-;99 
-set:: 
-=>:: 
-SetField:: 
-(:: 
-ref:: 
-_modifiedBy:: '
-,::' (
-value::) .
-)::. /
-;::/ 0
-};; 
-public== 
-
-DateTime== 
-?== 
-ModifiedDate== !
-{>> 
-get?? 
-=>?? 
-_modifiedDate?? 
-;?? 
-set@@ 
-=>@@ 
-SetField@@ 
-(@@ 
-ref@@ 
-_modifiedDate@@ )
-,@@) *
-value@@+ 0
-)@@0 1
-;@@1 2
-}AA 
-publicCC 
-
-eventCC '
-PropertyChangedEventHandlerCC ,
-?CC, -
-PropertyChangedCC. =
-;CC= >
-	protectedEE 
-virtualEE 
-voidEE 
-OnPropertyChangedEE ,
-(EE, -
-[EE- .
-CallerMemberNameEE. >
-]EE> ?
-stringEE@ F
-?EEF G
-propertyNameEEH T
-=EEU V
-nullEEW [
-)EE[ \
-{FF 
-PropertyChangedGG 
-?GG 
-.GG 
-InvokeGG 
-(GG  
-thisGG  $
-,GG$ %
-newGG& )$
-PropertyChangedEventArgsGG* B
-(GGB C
-propertyNameGGC O
-)GGO P
-)GGP Q
-;GGQ R
-}HH 
-	protectedJJ 
-boolJJ 
-SetFieldJJ 
-<JJ 
-TJJ 
->JJ 
-(JJ 
-refJJ "
-TJJ# $
-fieldJJ% *
-,JJ* +
-TJJ, -
-valueJJ. 3
-,JJ3 4
-[JJ5 6
-CallerMemberNameJJ6 F
-]JJF G
-stringJJH N
-?JJN O
-propertyNameJJP \
-=JJ] ^
-nullJJ_ c
-)JJc d
-{KK 
-ifLL 
-
-(LL 
-EqualityComparerLL 
-<LL 
-TLL 
->LL 
-.LL  
-DefaultLL  '
-.LL' (
-EqualsLL( .
-(LL. /
-fieldLL/ 4
-,LL4 5
-valueLL6 ;
-)LL; <
-)LL< =
-returnLL> D
-falseLLE J
-;LLJ K
-fieldMM 
-=MM 
-valueMM 
-;MM 
-OnPropertyChangedNN 
-(NN 
-propertyNameNN &
-)NN& '
-;NN' (
-returnOO 
-trueOO 
-;OO 
-}PP 
-}QQ Ώ
+.# $
+Models$ *
+.* +
+InforVisual+ 6
+;6 7
+public 
+partial 
+class 
+Model_InforVisualPO (
+:) *
+ObservableObject+ ;
+{ 
+[ 
+ObservableProperty 
+] 
+private		 
+string		 
+	_poNumber		 
+=		 
+string		 %
+.		% &
+Empty		& +
+;		+ ,
+[ 
+ObservableProperty 
+] 
+private 
+int 
+_poLine 
+; 
+[ 
+ObservableProperty 
+] 
+private 
+string 
+_partNumber 
+=  
+string! '
+.' (
+Empty( -
+;- .
+[ 
+ObservableProperty 
+] 
+private 
+string 
+_partDescription #
+=$ %
+string& ,
+., -
+Empty- 2
+;2 3
+[ 
+ObservableProperty 
+] 
+private 
+decimal 
+_orderedQty 
+;  
+[ 
+ObservableProperty 
+] 
+private 
+decimal 
+_receivedQty  
+;  !
+[ 
+ObservableProperty 
+] 
+private 
+decimal 
+_remainingQty !
+;! "
+[ 
+ObservableProperty 
+] 
+private 
+string 
+_unitOfMeasure !
+=" #
+$str$ (
+;( )
+[   
+ObservableProperty   
+]   
+private!! 
+DateTime!! 
+?!! 
+_dueDate!! 
+;!! 
+[## 
+ObservableProperty## 
+]## 
+private$$ 
+string$$ 
+_vendorCode$$ 
+=$$  
+string$$! '
+.$$' (
+Empty$$( -
+;$$- .
+[&& 
+ObservableProperty&& 
+]&& 
+private'' 
+string'' 
+_vendorName'' 
+=''  
+string''! '
+.''' (
+Empty''( -
+;''- .
+[)) 
+ObservableProperty)) 
+])) 
+private** 
+string** 
+	_poStatus** 
+=** 
+string** %
+.**% &
+Empty**& +
+;**+ ,
+[,, 
+ObservableProperty,, 
+],, 
+private-- 
+string-- 
+_siteId-- 
+=-- 
+$str-- "
+;--" #
+}.. Ώ
 aC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPart.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -68590,144 +68393,654 @@ WC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_Spec
 bool 
 _isRequired 
 ; 
-} Ι
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\InforVisual\Model_InforVisualPO.cs
-	namespace 	%
-MTM_Receiving_Application
+} ”-
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_InventoriedDunnage.cs
+	namespace 	%
+MTM_Receiving_Application
  #
-.# $
-Models$ *
-.* +
-InforVisual+ 6
-;6 7
-public 
-partial 
-class 
-Model_InforVisualPO (
-:) *
-ObservableObject+ ;
-{ 
-[ 
-ObservableProperty 
-] 
-private		 
-string		 
-	_poNumber		 
-=		 
-string		 %
-.		% &
-Empty		& +
-;		+ ,
-[ 
-ObservableProperty 
-] 
-private 
-int 
-_poLine 
-; 
-[ 
-ObservableProperty 
-] 
+.# $
+Models$ *
+.* +
+Dunnage+ 2
+;2 3
+public 
+class $
+Model_InventoriedDunnage %
+:& '"
+INotifyPropertyChanged( >
+{		 
+private
+
+ 
+int
+
+ 
+_id
+
+ 
+;
+
+ 
+private 
+string 
+_partId 
+= 
+string #
+.# $
+Empty$ )
+;) *
+private 
+string 
+? 
+_inventoryMethod $
+;$ %
+private 
+string 
+? 
+_notes 
+; 
+private 
+string 
+
+_createdBy 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+DateTime 
+_createdDate !
+=" #
+DateTime$ ,
+., -
+Now- 0
+;0 1
+private 
+string 
+? 
+_modifiedBy 
+;  
+private 
+DateTime 
+? 
+_modifiedDate #
+;# $
+public 
+
+int 
+Id 
+{ 
+get 
+=> 
+_id 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+_id 
+,  
+value! &
+)& '
+;' (
+} 
+public 
+
+string 
+PartId 
+{ 
+get 
+=> 
+_partId 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+_partId #
+,# $
+value% *
+)* +
+;+ ,
+} 
+public 
+
+string 
+? 
+InventoryMethod "
+{   
+get!! 
+=>!! 
+_inventoryMethod!! 
+;!!  
+set"" 
+=>"" 
+SetField"" 
+("" 
+ref"" 
+_inventoryMethod"" ,
+,"", -
+value"". 3
+)""3 4
+;""4 5
+}## 
+public%% 
+
+string%% 
+?%% 
+Notes%% 
+{&& 
+get'' 
+=>'' 
+_notes'' 
+;'' 
+set(( 
+=>(( 
+SetField(( 
+((( 
+ref(( 
+_notes(( "
+,((" #
+value(($ )
+)(() *
+;((* +
+})) 
+public++ 
+
+string++ 
+	CreatedBy++ 
+{,, 
+get-- 
+=>-- 
+
+_createdBy-- 
+;-- 
+set.. 
+=>.. 
+SetField.. 
+(.. 
+ref.. 
+
+_createdBy.. &
+,..& '
+value..( -
+)..- .
+;... /
+}// 
+public11 
+
+DateTime11 
+CreatedDate11 
+{22 
+get33 
+=>33 
+_createdDate33 
+;33 
+set44 
+=>44 
+SetField44 
+(44 
+ref44 
+_createdDate44 (
+,44( )
+value44* /
+)44/ 0
+;440 1
+}55 
+public77 
+
+string77 
+?77 
+
+ModifiedBy77 
+{88 
+get99 
+=>99 
+_modifiedBy99 
+;99 
+set:: 
+=>:: 
+SetField:: 
+(:: 
+ref:: 
+_modifiedBy:: '
+,::' (
+value::) .
+)::. /
+;::/ 0
+};; 
+public== 
+
+DateTime== 
+?== 
+ModifiedDate== !
+{>> 
+get?? 
+=>?? 
+_modifiedDate?? 
+;?? 
+set@@ 
+=>@@ 
+SetField@@ 
+(@@ 
+ref@@ 
+_modifiedDate@@ )
+,@@) *
+value@@+ 0
+)@@0 1
+;@@1 2
+}AA 
+publicCC 
+
+eventCC '
+PropertyChangedEventHandlerCC ,
+?CC, -
+PropertyChangedCC. =
+;CC= >
+	protectedEE 
+virtualEE 
+voidEE 
+OnPropertyChangedEE ,
+(EE, -
+[EE- .
+CallerMemberNameEE. >
+]EE> ?
+stringEE@ F
+?EEF G
+propertyNameEEH T
+=EEU V
+nullEEW [
+)EE[ \
+{FF 
+PropertyChangedGG 
+?GG 
+.GG 
+InvokeGG 
+(GG  
+thisGG  $
+,GG$ %
+newGG& )$
+PropertyChangedEventArgsGG* B
+(GGB C
+propertyNameGGC O
+)GGO P
+)GGP Q
+;GGQ R
+}HH 
+	protectedJJ 
+boolJJ 
+SetFieldJJ 
+<JJ 
+TJJ 
+>JJ 
+(JJ 
+refJJ "
+TJJ# $
+fieldJJ% *
+,JJ* +
+TJJ, -
+valueJJ. 3
+,JJ3 4
+[JJ5 6
+CallerMemberNameJJ6 F
+]JJF G
+stringJJH N
+?JJN O
+propertyNameJJP \
+=JJ] ^
+nullJJ_ c
+)JJc d
+{KK 
+ifLL 
+
+(LL 
+EqualityComparerLL 
+<LL 
+TLL 
+>LL 
+.LL  
+DefaultLL  '
+.LL' (
+EqualsLL( .
+(LL. /
+fieldLL/ 4
+,LL4 5
+valueLL6 ;
+)LL; <
+)LL< =
+returnLL> D
+falseLLE J
+;LLJ K
+fieldMM 
+=MM 
+valueMM 
+;MM 
+OnPropertyChangedNN 
+(NN 
+propertyNameNN &
+)NN& '
+;NN' (
+returnOO 
+trueOO 
+;OO 
+}PP 
+}QQ λ)
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageType.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Models$ *
+.* +
+Dunnage+ 2
+;2 3
+public 
+class 
+Model_DunnageType 
+:  "
+INotifyPropertyChanged! 7
+{		 
+private
+
+ 
+int
+
+ 
+_id
+
+ 
+;
+
+ 
+private 
+string 
+	_typeName 
+= 
+string %
+.% &
+Empty& +
+;+ ,
+private 
+string 
+
+_specsJson 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+string 
+
+_createdBy 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+DateTime 
+_createdDate !
+=" #
+DateTime$ ,
+., -
+Now- 0
+;0 1
 private 
-string 
-_partNumber 
-=  
-string! '
-.' (
-Empty( -
-;- .
-[ 
-ObservableProperty 
-] 
-private 
-string 
-_partDescription #
-=$ %
-string& ,
-., -
-Empty- 2
-;2 3
-[ 
-ObservableProperty 
-] 
-private 
-decimal 
-_orderedQty 
-;  
-[ 
-ObservableProperty 
-] 
-private 
-decimal 
-_receivedQty  
-;  !
-[ 
-ObservableProperty 
-] 
-private 
-decimal 
-_remainingQty !
-;! "
-[ 
-ObservableProperty 
-] 
-private 
-string 
-_unitOfMeasure !
-=" #
-$str$ (
-;( )
-[   
-ObservableProperty   
-]   
-private!! 
-DateTime!! 
-?!! 
-_dueDate!! 
-;!! 
-[## 
-ObservableProperty## 
-]## 
-private$$ 
-string$$ 
-_vendorCode$$ 
-=$$  
-string$$! '
-.$$' (
-Empty$$( -
-;$$- .
-[&& 
-ObservableProperty&& 
-]&& 
-private'' 
-string'' 
-_vendorName'' 
-=''  
-string''! '
-.''' (
-Empty''( -
-;''- .
-[)) 
-ObservableProperty)) 
-])) 
-private** 
-string** 
-	_poStatus** 
-=** 
-string** %
-.**% &
-Empty**& +
-;**+ ,
-[,, 
-ObservableProperty,, 
-],, 
-private-- 
-string-- 
-_siteId-- 
-=-- 
-$str-- "
-;--" #
-}.. ο>
+string 
+? 
+_modifiedBy 
+;  
+private 
+DateTime 
+? 
+_modifiedDate #
+;# $
+public 
+
+int 
+Id 
+{ 
+get 
+=> 
+_id 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+_id 
+,  
+value! &
+)& '
+;' (
+} 
+public 
+
+string 
+TypeName 
+{ 
+get 
+=> 
+	_typeName 
+; 
+set 
+=> 
+SetField 
+( 
+ref 
+	_typeName %
+,% &
+value' ,
+), -
+;- .
+} 
+public 
+
+string 
+	SpecsJson 
+{ 
+get   
+=>   
+
+_specsJson   
+;   
+set!! 
+=>!! 
+SetField!! 
+(!! 
+ref!! 
+
+_specsJson!! &
+,!!& '
+value!!( -
+)!!- .
+;!!. /
+}"" 
+public$$ 
+
+string$$ 
+	CreatedBy$$ 
+{%% 
+get&& 
+=>&& 
+
+_createdBy&& 
+;&& 
+set'' 
+=>'' 
+SetField'' 
+('' 
+ref'' 
+
+_createdBy'' &
+,''& '
+value''( -
+)''- .
+;''. /
+}(( 
+public** 
+
+DateTime** 
+CreatedDate** 
+{++ 
+get,, 
+=>,, 
+_createdDate,, 
+;,, 
+set-- 
+=>-- 
+SetField-- 
+(-- 
+ref-- 
+_createdDate-- (
+,--( )
+value--* /
+)--/ 0
+;--0 1
+}.. 
+public00 
+
+string00 
+?00 
+
+ModifiedBy00 
+{11 
+get22 
+=>22 
+_modifiedBy22 
+;22 
+set33 
+=>33 
+SetField33 
+(33 
+ref33 
+_modifiedBy33 '
+,33' (
+value33) .
+)33. /
+;33/ 0
+}44 
+public66 
+
+DateTime66 
+?66 
+ModifiedDate66 !
+{77 
+get88 
+=>88 
+_modifiedDate88 
+;88 
+set99 
+=>99 
+SetField99 
+(99 
+ref99 
+_modifiedDate99 )
+,99) *
+value99+ 0
+)990 1
+;991 2
+}:: 
+public<< 
+
+event<< '
+PropertyChangedEventHandler<< ,
+?<<, -
+PropertyChanged<<. =
+;<<= >
+	protected>> 
+virtual>> 
+void>> 
+OnPropertyChanged>> ,
+(>>, -
+[>>- .
+CallerMemberName>>. >
+]>>> ?
+string>>@ F
+?>>F G
+propertyName>>H T
+=>>U V
+null>>W [
+)>>[ \
+{?? 
+PropertyChanged@@ 
+?@@ 
+.@@ 
+Invoke@@ 
+(@@  
+this@@  $
+,@@$ %
+new@@& )$
+PropertyChangedEventArgs@@* B
+(@@B C
+propertyName@@C O
+)@@O P
+)@@P Q
+;@@Q R
+}AA 
+	protectedCC 
+boolCC 
+SetFieldCC 
+<CC 
+TCC 
+>CC 
+(CC 
+refCC "
+TCC# $
+fieldCC% *
+,CC* +
+TCC, -
+valueCC. 3
+,CC3 4
+[CC5 6
+CallerMemberNameCC6 F
+]CCF G
+stringCCH N
+?CCN O
+propertyNameCCP \
+=CC] ^
+nullCC_ c
+)CCc d
+{DD 
+ifEE 
+
+(EE 
+EqualityComparerEE 
+<EE 
+TEE 
+>EE 
+.EE  
+DefaultEE  '
+.EE' (
+EqualsEE( .
+(EE. /
+fieldEE/ 4
+,EE4 5
+valueEE6 ;
+)EE; <
+)EE< =
+returnEE> D
+falseEEE J
+;EEJ K
+fieldFF 
+=FF 
+valueFF 
+;FF 
+OnPropertyChangedGG 
+(GG 
+propertyNameGG &
+)GG& '
+;GG' (
+returnHH 
+trueHH 
+;HH 
+}II 
+}JJ ο>
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageSpec.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -69629,185 +69942,7 @@ SpecValuesGG' 1
 trueff 
 ;ff 
 }gg 
-}hh Η
-]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result_Factory.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Models$ *
-.* +
-Core+ /
-;/ 0
-public		 
-static		 
-class		 $
-Model_Dao_Result_Factory		 ,
-{
-
- 
-public 
-
-static 
-Model_Dao_Result "
-Failure# *
-(* +
-string+ 1
-message2 9
-,9 :
-	Exception; D
-?D E
-exF H
-=I J
-nullK O
-)O P
-{ 
-return 
-new 
-Model_Dao_Result #
-{ 	
-Success 
-= 
-false 
-, 
-ErrorMessage 
-= 
-message "
-," #
-	Exception 
-= 
-ex 
-, 
-Severity 
-= 
-Enum_ErrorSeverity )
-.) *
-Error* /
-} 	
-;	 
-
-} 
-public 
-
-static 
-Model_Dao_Result "
-Success# *
-(* +
-int+ .
-affectedRows/ ;
-=< =
-$num> ?
-)? @
-{ 
-return 
-new 
-Model_Dao_Result #
-{ 	
-Success 
-= 
-true 
-, 
-AffectedRows 
-= 
-affectedRows '
-} 	
-;	 
-
-} 
-public 
-
-static 
-Model_Dao_Result "
-<" #
-T# $
->$ %
-Failure& -
-<- .
-T. /
->/ 0
-(0 1
-string1 7
-message8 ?
-,? @
-	ExceptionA J
-?J K
-exL N
-=O P
-nullQ U
-)U V
-{   
-return!! 
-new!! 
-Model_Dao_Result!! #
-<!!# $
-T!!$ %
->!!% &
-{"" 	
-Success## 
-=## 
-false## 
-,## 
-ErrorMessage$$ 
-=$$ 
-message$$ "
-,$$" #
-	Exception%% 
-=%% 
-ex%% 
-,%% 
-Severity&& 
-=&& 
-Enum_ErrorSeverity&& )
-.&&) *
-Error&&* /
-}'' 	
-;''	 
-
-}(( 
-public** 
-
-static** 
-Model_Dao_Result** "
-<**" #
-T**# $
->**$ %
-Success**& -
-<**- .
-T**. /
->**/ 0
-(**0 1
-T**1 2
-data**3 7
-,**7 8
-int**9 <
-affectedRows**= I
-=**J K
-$num**L M
-)**M N
-{++ 
-return,, 
-new,, 
-Model_Dao_Result,, #
-<,,# $
-T,,$ %
->,,% &
-{-- 	
-Success.. 
-=.. 
-true.. 
-,.. 
-Data// 
-=// 
-data// 
-,// 
-AffectedRows00 
-=00 
-affectedRows00 '
-}11 	
-;11	 
-
-}22 
-}33 υB
+}hh υB
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnagePart.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -70301,853 +70436,7 @@ Dictionaryvv! +
 ;vv= >
 }ww 	
 }xx 
-}yy ΎR
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageLoad.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Models$ *
-.* +
-Dunnage+ 2
-;2 3
-public 
-class 
-Model_DunnageLoad 
-:  "
-INotifyPropertyChanged! 7
-{		 
-private
-
- 
-Guid
-
- 
-	_loadUuid
-
- 
-;
-
- 
-private 
-string 
-_partId 
-= 
-string #
-.# $
-Empty$ )
-;) *
-private 
-decimal 
-	_quantity 
-; 
-private 
-string 
-	_poNumber 
-= 
-string %
-.% &
-Empty& +
-;+ ,
-private 
-string 
-_dunnageType 
-=  !
-string" (
-.( )
-Empty) .
-;. /
-private 
-
-Dictionary 
-< 
-string 
-, 
-object %
->% &
-_specs' -
-=. /
-new0 3
-(3 4
-)4 5
-;5 6
-private 
-string 
-	_location 
-= 
-string %
-.% &
-Empty& +
-;+ ,
-private 
-string 
-	_typeName 
-= 
-string %
-.% &
-Empty& +
-;+ ,
-private 
-string 
-_inventoryMethod #
-=$ %
-$str& 1
-;1 2
-private 
-
-Dictionary 
-< 
-string 
-, 
-object %
->% &
-?& '
-_specValues( 3
-;3 4
-private 
-DateTime 
-_receivedDate "
-=# $
-DateTime% -
-.- .
-Now. 1
-;1 2
-private 
-string 
-
-_createdBy 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-DateTime 
-_createdDate !
-=" #
-DateTime$ ,
-., -
-Now- 0
-;0 1
-private 
-string 
-? 
-_modifiedBy 
-;  
-private 
-DateTime 
-? 
-_modifiedDate #
-;# $
-private 
-int 
-_loadNumber 
-; 
-private 
-bool 
-_isSelected 
-; 
-public 
-
-Guid 
-LoadUuid 
-{ 
-get 
-=> 
-	_loadUuid 
-; 
-set   
-=>   
-SetField   
-(   
-ref   
-	_loadUuid   %
-,  % &
-value  ' ,
-)  , -
-;  - .
-}!! 
-public## 
-
-string## 
-PartId## 
-{$$ 
-get%% 
-=>%% 
-_partId%% 
-;%% 
-set&& 
-=>&& 
-SetField&& 
-(&& 
-ref&& 
-_partId&& #
-,&&# $
-value&&% *
-)&&* +
-;&&+ ,
-}'' 
-public)) 
-
-decimal)) 
-Quantity)) 
-{** 
-get++ 
-=>++ 
-	_quantity++ 
-;++ 
-set,, 
-=>,, 
-SetField,, 
-(,, 
-ref,, 
-	_quantity,, %
-,,,% &
-value,,' ,
-),,, -
-;,,- .
-}-- 
-public// 
-
-string// 
-PoNumber// 
-{00 
-get11 
-=>11 
-	_poNumber11 
-;11 
-set22 
-=>22 
-SetField22 
-(22 
-ref22 
-	_poNumber22 %
-,22% &
-value22' ,
-)22, -
-;22- .
-}33 
-public55 
-
-string55 
-DunnageType55 
-{66 
-get77 
-=>77 
-_dunnageType77 
-;77 
-set88 
-=>88 
-SetField88 
-(88 
-ref88 
-_dunnageType88 (
-,88( )
-value88* /
-)88/ 0
-;880 1
-}99 
-public;; 
-
-
-Dictionary;; 
-<;; 
-string;; 
-,;; 
-object;; $
->;;$ %
-Specs;;& +
-{<< 
-get== 
-=>== 
-_specs== 
-;== 
-set>> 
-=>>> 
-SetField>> 
-(>> 
-ref>> 
-_specs>> "
-,>>" #
-value>>$ )
-)>>) *
-;>>* +
-}?? 
-publicAA 
-
-stringAA 
-LocationAA 
-{BB 
-getCC 
-=>CC 
-	_locationCC 
-;CC 
-setDD 
-=>DD 
-SetFieldDD 
-(DD 
-refDD 
-	_locationDD %
-,DD% &
-valueDD' ,
-)DD, -
-;DD- .
-}EE 
-publicGG 
-
-stringGG 
-TypeNameGG 
-{HH 
-getII 
-=>II 
-	_typeNameII 
-;II 
-setJJ 
-=>JJ 
-SetFieldJJ 
-(JJ 
-refJJ 
-	_typeNameJJ %
-,JJ% &
-valueJJ' ,
-)JJ, -
-;JJ- .
-}KK 
-publicMM 
-
-stringMM 
-InventoryMethodMM !
-{NN 
-getOO 
-=>OO 
-_inventoryMethodOO 
-;OO  
-setPP 
-=>PP 
-SetFieldPP 
-(PP 
-refPP 
-_inventoryMethodPP ,
-,PP, -
-valuePP. 3
-)PP3 4
-;PP4 5
-}QQ 
-publicSS 
-
-
-DictionarySS 
-<SS 
-stringSS 
-,SS 
-objectSS $
->SS$ %
-?SS% &
-
-SpecValuesSS' 1
-{TT 
-getUU 
-=>UU 
-_specValuesUU 
-;UU 
-setVV 
-=>VV 
-SetFieldVV 
-(VV 
-refVV 
-_specValuesVV '
-,VV' (
-valueVV) .
-)VV. /
-;VV/ 0
-}WW 
-publicYY 
-
-DateTimeYY 
-ReceivedDateYY  
-{ZZ 
-get[[ 
-=>[[ 
-_receivedDate[[ 
-;[[ 
-set\\ 
-=>\\ 
-SetField\\ 
-(\\ 
-ref\\ 
-_receivedDate\\ )
-,\\) *
-value\\+ 0
-)\\0 1
-;\\1 2
-}]] 
-public__ 
-
-string__ 
-	CreatedBy__ 
-{`` 
-getaa 
-=>aa 
-
-_createdByaa 
-;aa 
-setbb 
-=>bb 
-SetFieldbb 
-(bb 
-refbb 
-
-_createdBybb &
-,bb& '
-valuebb( -
-)bb- .
-;bb. /
-}cc 
-publicee 
-
-DateTimeee 
-CreatedDateee 
-{ff 
-getgg 
-=>gg 
-_createdDategg 
-;gg 
-sethh 
-=>hh 
-SetFieldhh 
-(hh 
-refhh 
-_createdDatehh (
-,hh( )
-valuehh* /
-)hh/ 0
-;hh0 1
-}ii 
-publickk 
-
-stringkk 
-?kk 
-
-ModifiedBykk 
-{ll 
-getmm 
-=>mm 
-_modifiedBymm 
-;mm 
-setnn 
-=>nn 
-SetFieldnn 
-(nn 
-refnn 
-_modifiedBynn '
-,nn' (
-valuenn) .
-)nn. /
-;nn/ 0
-}oo 
-publicqq 
-
-DateTimeqq 
-?qq 
-ModifiedDateqq !
-{rr 
-getss 
-=>ss 
-_modifiedDatess 
-;ss 
-settt 
-=>tt 
-SetFieldtt 
-(tt 
-reftt 
-_modifiedDatett )
-,tt) *
-valuett+ 0
-)tt0 1
-;tt1 2
-}uu 
-publicww 
-
-intww 
-
-LoadNumberww 
-{xx 
-getyy 
-=>yy 
-_loadNumberyy 
-;yy 
-setzz 
-=>zz 
-SetFieldzz 
-(zz 
-refzz 
-_loadNumberzz '
-,zz' (
-valuezz) .
-)zz. /
-;zz/ 0
-}{{ 
-public}} 
-
-bool}} 
-
-IsSelected}} 
-{~~ 
-get 
-=> 
-_isSelected 
-; 
-set
-€€ 
-=>
-€€ 
-SetField
-€€ 
-(
-€€ 
-ref
-€€ 
-_isSelected
-€€ '
-,
-€€' (
-value
-€€) .
-)
-€€. /
-;
-€€/ 0
-}
- 
-public
-ƒƒ 
-
-event
-ƒƒ )
-PropertyChangedEventHandler
-ƒƒ ,
-?
-ƒƒ, -
-PropertyChanged
-ƒƒ. =
-;
-ƒƒ= >
-	protected
-…… 
-virtual
-…… 
-void
-…… 
-OnPropertyChanged
-…… ,
-(
-……, -
-[
-……- .
-CallerMemberName
-……. >
-]
-……> ?
-string
-……@ F
-?
-……F G
-propertyName
-……H T
-=
-……U V
-null
-……W [
-)
-……[ \
-{
-†† 
-PropertyChanged
-‡‡ 
-?
-‡‡ 
-.
-‡‡ 
-Invoke
-‡‡ 
-(
-‡‡  
-this
-‡‡  $
-,
-‡‡$ %
-new
-‡‡& )&
-PropertyChangedEventArgs
-‡‡* B
-(
-‡‡B C
-propertyName
-‡‡C O
-)
-‡‡O P
-)
-‡‡P Q
-;
-‡‡Q R
-}
- 
-	protected
- 
-bool
- 
-SetField
- 
-<
- 
-T
- 
->
- 
-(
- 
-ref
- "
-T
-# $
-field
-% *
-,
-* +
-T
-, -
-value
-. 3
-,
-3 4
-[
-5 6
-CallerMemberName
-6 F
-]
-F G
-string
-H N
-?
-N O
-propertyName
-P \
-=
-] ^
-null
-_ c
-)
-c d
-{
-‹‹ 
-if
- 
-
-(
- 
-EqualityComparer
- 
-<
- 
-T
- 
->
- 
-.
-  
-Default
-  '
-.
-' (
-Equals
-( .
-(
-. /
-field
-/ 4
-,
-4 5
-value
-6 ;
-)
-; <
-)
-< =
-return
-> D
-false
-E J
-;
-J K
-field
- 
-=
- 
-value
- 
-;
- 
-OnPropertyChanged
- 
-(
- 
-propertyName
- &
-)
-& '
-;
-' (
-return
- 
-true
- 
-;
- 
-}
- 
-}‘‘ ύ
-UC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Models$ *
-.* +
-Core+ /
-;/ 0
-public
-
- 
-class
-
- 
-Model_Dao_Result
-
- 
-{ 
-public 
-
-bool 
-Success 
-{ 
-get 
-; 
-set "
-;" #
-}$ %
-=& '
-false( -
-;- .
-public 
-
-bool 
-	IsSuccess 
-=> 
-Success $
-;$ %
-public 
-
-string 
-ErrorMessage 
-{  
-get! $
-;$ %
-set& )
-;) *
-}+ ,
-=- .
-string/ 5
-.5 6
-Empty6 ;
-;; <
-public 
-
-Enum_ErrorSeverity 
-Severity &
-{' (
-get) ,
-;, -
-set. 1
-;1 2
-}3 4
-=5 6
-Enum_ErrorSeverity7 I
-.I J
-InfoJ N
-;N O
-public## 
-
-int## 
-AffectedRows## 
-{## 
-get## !
-;##! "
-set### &
-;##& '
-}##( )
-=##* +
-$num##, -
-;##- .
-public(( 
-
-long(( 
-ExecutionTimeMs(( 
-{((  !
-get((" %
-;((% &
-set((' *
-;((* +
-}((, -
-=((. /
-$num((0 1
-;((1 2
-public-- 
-
-object-- 
-?-- 
-ReturnValue-- 
-{--  
-get--! $
-;--$ %
-set--& )
-;--) *
-}--+ ,
-=--- .
-null--/ 3
-;--3 4
-public22 
-
-	Exception22 
-?22 
-	Exception22 
-{22  !
-get22" %
-;22% &
-set22' *
-;22* +
-}22, -
-}55 
-public;; 
-class;; 
-Model_Dao_Result;; 
-<;; 
-T;; 
->;;  
-:;;! "
-Model_Dao_Result;;# 3
-{<< 
-public@@ 
-
-T@@ 
-?@@ 
-Data@@ 
-{@@ 
-get@@ 
-;@@ 
-set@@ 
-;@@ 
-}@@  
-}BB ίx
+}yy ίx
 HC:\Users\johnk\source\repos\MTM_Receiving_Application\MainWindow.xaml.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -72176,7 +71465,1031 @@ PointInt32
 ¶¶ 	
 }
 ·· 
-}ΈΈ 
+}ΈΈ Η
+]C:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result_Factory.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Models$ *
+.* +
+Core+ /
+;/ 0
+public		 
+static		 
+class		 $
+Model_Dao_Result_Factory		 ,
+{
+
+ 
+public 
+
+static 
+Model_Dao_Result "
+Failure# *
+(* +
+string+ 1
+message2 9
+,9 :
+	Exception; D
+?D E
+exF H
+=I J
+nullK O
+)O P
+{ 
+return 
+new 
+Model_Dao_Result #
+{ 	
+Success 
+= 
+false 
+, 
+ErrorMessage 
+= 
+message "
+," #
+	Exception 
+= 
+ex 
+, 
+Severity 
+= 
+Enum_ErrorSeverity )
+.) *
+Error* /
+} 	
+;	 
+
+} 
+public 
+
+static 
+Model_Dao_Result "
+Success# *
+(* +
+int+ .
+affectedRows/ ;
+=< =
+$num> ?
+)? @
+{ 
+return 
+new 
+Model_Dao_Result #
+{ 	
+Success 
+= 
+true 
+, 
+AffectedRows 
+= 
+affectedRows '
+} 	
+;	 
+
+} 
+public 
+
+static 
+Model_Dao_Result "
+<" #
+T# $
+>$ %
+Failure& -
+<- .
+T. /
+>/ 0
+(0 1
+string1 7
+message8 ?
+,? @
+	ExceptionA J
+?J K
+exL N
+=O P
+nullQ U
+)U V
+{   
+return!! 
+new!! 
+Model_Dao_Result!! #
+<!!# $
+T!!$ %
+>!!% &
+{"" 	
+Success## 
+=## 
+false## 
+,## 
+ErrorMessage$$ 
+=$$ 
+message$$ "
+,$$" #
+	Exception%% 
+=%% 
+ex%% 
+,%% 
+Severity&& 
+=&& 
+Enum_ErrorSeverity&& )
+.&&) *
+Error&&* /
+}'' 	
+;''	 
+
+}(( 
+public** 
+
+static** 
+Model_Dao_Result** "
+<**" #
+T**# $
+>**$ %
+Success**& -
+<**- .
+T**. /
+>**/ 0
+(**0 1
+T**1 2
+data**3 7
+,**7 8
+int**9 <
+affectedRows**= I
+=**J K
+$num**L M
+)**M N
+{++ 
+return,, 
+new,, 
+Model_Dao_Result,, #
+<,,# $
+T,,$ %
+>,,% &
+{-- 	
+Success.. 
+=.. 
+true.. 
+,.. 
+Data// 
+=// 
+data// 
+,// 
+AffectedRows00 
+=00 
+affectedRows00 '
+}11 	
+;11	 
+
+}22 
+}33 ύ
+UC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Core\Model_Dao_Result.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Models$ *
+.* +
+Core+ /
+;/ 0
+public
+
+ 
+class
+
+ 
+Model_Dao_Result
+
+ 
+{ 
+public 
+
+bool 
+Success 
+{ 
+get 
+; 
+set "
+;" #
+}$ %
+=& '
+false( -
+;- .
+public 
+
+bool 
+	IsSuccess 
+=> 
+Success $
+;$ %
+public 
+
+string 
+ErrorMessage 
+{  
+get! $
+;$ %
+set& )
+;) *
+}+ ,
+=- .
+string/ 5
+.5 6
+Empty6 ;
+;; <
+public 
+
+Enum_ErrorSeverity 
+Severity &
+{' (
+get) ,
+;, -
+set. 1
+;1 2
+}3 4
+=5 6
+Enum_ErrorSeverity7 I
+.I J
+InfoJ N
+;N O
+public## 
+
+int## 
+AffectedRows## 
+{## 
+get## !
+;##! "
+set### &
+;##& '
+}##( )
+=##* +
+$num##, -
+;##- .
+public(( 
+
+long(( 
+ExecutionTimeMs(( 
+{((  !
+get((" %
+;((% &
+set((' *
+;((* +
+}((, -
+=((. /
+$num((0 1
+;((1 2
+public-- 
+
+object-- 
+?-- 
+ReturnValue-- 
+{--  
+get--! $
+;--$ %
+set--& )
+;--) *
+}--+ ,
+=--- .
+null--/ 3
+;--3 4
+public22 
+
+	Exception22 
+?22 
+	Exception22 
+{22  !
+get22" %
+;22% &
+set22' *
+;22* +
+}22, -
+}55 
+public;; 
+class;; 
+Model_Dao_Result;; 
+<;; 
+T;; 
+>;;  
+:;;! "
+Model_Dao_Result;;# 3
+{<< 
+public@@ 
+
+T@@ 
+?@@ 
+Data@@ 
+{@@ 
+get@@ 
+;@@ 
+set@@ 
+;@@ 
+}@@  
+}BB ΎR
+YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageLoad.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Models$ *
+.* +
+Dunnage+ 2
+;2 3
+public 
+class 
+Model_DunnageLoad 
+:  "
+INotifyPropertyChanged! 7
+{		 
+private
+
+ 
+Guid
+
+ 
+	_loadUuid
+
+ 
+;
+
+ 
+private 
+string 
+_partId 
+= 
+string #
+.# $
+Empty$ )
+;) *
+private 
+decimal 
+	_quantity 
+; 
+private 
+string 
+	_poNumber 
+= 
+string %
+.% &
+Empty& +
+;+ ,
+private 
+string 
+_dunnageType 
+=  !
+string" (
+.( )
+Empty) .
+;. /
+private 
+
+Dictionary 
+< 
+string 
+, 
+object %
+>% &
+_specs' -
+=. /
+new0 3
+(3 4
+)4 5
+;5 6
+private 
+string 
+	_location 
+= 
+string %
+.% &
+Empty& +
+;+ ,
+private 
+string 
+	_typeName 
+= 
+string %
+.% &
+Empty& +
+;+ ,
+private 
+string 
+_inventoryMethod #
+=$ %
+$str& 1
+;1 2
+private 
+
+Dictionary 
+< 
+string 
+, 
+object %
+>% &
+?& '
+_specValues( 3
+;3 4
+private 
+DateTime 
+_receivedDate "
+=# $
+DateTime% -
+.- .
+Now. 1
+;1 2
+private 
+string 
+
+_createdBy 
+= 
+string  &
+.& '
+Empty' ,
+;, -
+private 
+DateTime 
+_createdDate !
+=" #
+DateTime$ ,
+., -
+Now- 0
+;0 1
+private 
+string 
+? 
+_modifiedBy 
+;  
+private 
+DateTime 
+? 
+_modifiedDate #
+;# $
+private 
+int 
+_loadNumber 
+; 
+private 
+bool 
+_isSelected 
+; 
+public 
+
+Guid 
+LoadUuid 
+{ 
+get 
+=> 
+	_loadUuid 
+; 
+set   
+=>   
+SetField   
+(   
+ref   
+	_loadUuid   %
+,  % &
+value  ' ,
+)  , -
+;  - .
+}!! 
+public## 
+
+string## 
+PartId## 
+{$$ 
+get%% 
+=>%% 
+_partId%% 
+;%% 
+set&& 
+=>&& 
+SetField&& 
+(&& 
+ref&& 
+_partId&& #
+,&&# $
+value&&% *
+)&&* +
+;&&+ ,
+}'' 
+public)) 
+
+decimal)) 
+Quantity)) 
+{** 
+get++ 
+=>++ 
+	_quantity++ 
+;++ 
+set,, 
+=>,, 
+SetField,, 
+(,, 
+ref,, 
+	_quantity,, %
+,,,% &
+value,,' ,
+),,, -
+;,,- .
+}-- 
+public// 
+
+string// 
+PoNumber// 
+{00 
+get11 
+=>11 
+	_poNumber11 
+;11 
+set22 
+=>22 
+SetField22 
+(22 
+ref22 
+	_poNumber22 %
+,22% &
+value22' ,
+)22, -
+;22- .
+}33 
+public55 
+
+string55 
+DunnageType55 
+{66 
+get77 
+=>77 
+_dunnageType77 
+;77 
+set88 
+=>88 
+SetField88 
+(88 
+ref88 
+_dunnageType88 (
+,88( )
+value88* /
+)88/ 0
+;880 1
+}99 
+public;; 
+
+
+Dictionary;; 
+<;; 
+string;; 
+,;; 
+object;; $
+>;;$ %
+Specs;;& +
+{<< 
+get== 
+=>== 
+_specs== 
+;== 
+set>> 
+=>>> 
+SetField>> 
+(>> 
+ref>> 
+_specs>> "
+,>>" #
+value>>$ )
+)>>) *
+;>>* +
+}?? 
+publicAA 
+
+stringAA 
+LocationAA 
+{BB 
+getCC 
+=>CC 
+	_locationCC 
+;CC 
+setDD 
+=>DD 
+SetFieldDD 
+(DD 
+refDD 
+	_locationDD %
+,DD% &
+valueDD' ,
+)DD, -
+;DD- .
+}EE 
+publicGG 
+
+stringGG 
+TypeNameGG 
+{HH 
+getII 
+=>II 
+	_typeNameII 
+;II 
+setJJ 
+=>JJ 
+SetFieldJJ 
+(JJ 
+refJJ 
+	_typeNameJJ %
+,JJ% &
+valueJJ' ,
+)JJ, -
+;JJ- .
+}KK 
+publicMM 
+
+stringMM 
+InventoryMethodMM !
+{NN 
+getOO 
+=>OO 
+_inventoryMethodOO 
+;OO  
+setPP 
+=>PP 
+SetFieldPP 
+(PP 
+refPP 
+_inventoryMethodPP ,
+,PP, -
+valuePP. 3
+)PP3 4
+;PP4 5
+}QQ 
+publicSS 
+
+
+DictionarySS 
+<SS 
+stringSS 
+,SS 
+objectSS $
+>SS$ %
+?SS% &
+
+SpecValuesSS' 1
+{TT 
+getUU 
+=>UU 
+_specValuesUU 
+;UU 
+setVV 
+=>VV 
+SetFieldVV 
+(VV 
+refVV 
+_specValuesVV '
+,VV' (
+valueVV) .
+)VV. /
+;VV/ 0
+}WW 
+publicYY 
+
+DateTimeYY 
+ReceivedDateYY  
+{ZZ 
+get[[ 
+=>[[ 
+_receivedDate[[ 
+;[[ 
+set\\ 
+=>\\ 
+SetField\\ 
+(\\ 
+ref\\ 
+_receivedDate\\ )
+,\\) *
+value\\+ 0
+)\\0 1
+;\\1 2
+}]] 
+public__ 
+
+string__ 
+	CreatedBy__ 
+{`` 
+getaa 
+=>aa 
+
+_createdByaa 
+;aa 
+setbb 
+=>bb 
+SetFieldbb 
+(bb 
+refbb 
+
+_createdBybb &
+,bb& '
+valuebb( -
+)bb- .
+;bb. /
+}cc 
+publicee 
+
+DateTimeee 
+CreatedDateee 
+{ff 
+getgg 
+=>gg 
+_createdDategg 
+;gg 
+sethh 
+=>hh 
+SetFieldhh 
+(hh 
+refhh 
+_createdDatehh (
+,hh( )
+valuehh* /
+)hh/ 0
+;hh0 1
+}ii 
+publickk 
+
+stringkk 
+?kk 
+
+ModifiedBykk 
+{ll 
+getmm 
+=>mm 
+_modifiedBymm 
+;mm 
+setnn 
+=>nn 
+SetFieldnn 
+(nn 
+refnn 
+_modifiedBynn '
+,nn' (
+valuenn) .
+)nn. /
+;nn/ 0
+}oo 
+publicqq 
+
+DateTimeqq 
+?qq 
+ModifiedDateqq !
+{rr 
+getss 
+=>ss 
+_modifiedDatess 
+;ss 
+settt 
+=>tt 
+SetFieldtt 
+(tt 
+reftt 
+_modifiedDatett )
+,tt) *
+valuett+ 0
+)tt0 1
+;tt1 2
+}uu 
+publicww 
+
+intww 
+
+LoadNumberww 
+{xx 
+getyy 
+=>yy 
+_loadNumberyy 
+;yy 
+setzz 
+=>zz 
+SetFieldzz 
+(zz 
+refzz 
+_loadNumberzz '
+,zz' (
+valuezz) .
+)zz. /
+;zz/ 0
+}{{ 
+public}} 
+
+bool}} 
+
+IsSelected}} 
+{~~ 
+get 
+=> 
+_isSelected 
+; 
+set
+€€ 
+=>
+€€ 
+SetField
+€€ 
+(
+€€ 
+ref
+€€ 
+_isSelected
+€€ '
+,
+€€' (
+value
+€€) .
+)
+€€. /
+;
+€€/ 0
+}
+ 
+public
+ƒƒ 
+
+event
+ƒƒ )
+PropertyChangedEventHandler
+ƒƒ ,
+?
+ƒƒ, -
+PropertyChanged
+ƒƒ. =
+;
+ƒƒ= >
+	protected
+…… 
+virtual
+…… 
+void
+…… 
+OnPropertyChanged
+…… ,
+(
+……, -
+[
+……- .
+CallerMemberName
+……. >
+]
+……> ?
+string
+……@ F
+?
+……F G
+propertyName
+……H T
+=
+……U V
+null
+……W [
+)
+……[ \
+{
+†† 
+PropertyChanged
+‡‡ 
+?
+‡‡ 
+.
+‡‡ 
+Invoke
+‡‡ 
+(
+‡‡  
+this
+‡‡  $
+,
+‡‡$ %
+new
+‡‡& )&
+PropertyChangedEventArgs
+‡‡* B
+(
+‡‡B C
+propertyName
+‡‡C O
+)
+‡‡O P
+)
+‡‡P Q
+;
+‡‡Q R
+}
+ 
+	protected
+ 
+bool
+ 
+SetField
+ 
+<
+ 
+T
+ 
+>
+ 
+(
+ 
+ref
+ "
+T
+# $
+field
+% *
+,
+* +
+T
+, -
+value
+. 3
+,
+3 4
+[
+5 6
+CallerMemberName
+6 F
+]
+F G
+string
+H N
+?
+N O
+propertyName
+P \
+=
+] ^
+null
+_ c
+)
+c d
+{
+‹‹ 
+if
+ 
+
+(
+ 
+EqualityComparer
+ 
+<
+ 
+T
+ 
+>
+ 
+.
+  
+Default
+  '
+.
+' (
+Equals
+( .
+(
+. /
+field
+/ 4
+,
+4 5
+value
+6 ;
+)
+; <
+)
+< =
+return
+> D
+false
+E J
+;
+J K
+field
+ 
+=
+ 
+value
+ 
+;
+ 
+OnPropertyChanged
+ 
+(
+ 
+propertyName
+ &
+)
+& '
+;
+' (
+return
+ 
+true
+ 
+;
+ 
+}
+ 
+}‘‘ 
 gC:\Users\johnk\source\repos\MTM_Receiving_Application\Helpers\UI\Helper_WorkflowHelpContentGenerator.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -74163,3446 +74476,7 @@ cC:\Users\johnk\source\repos\MTM_Receiving_Application\Helpers\Database\Helper_D
 ;
 $$ ‚
 }%% 
-}&& δ¦
-iC:\Users\johnk\source\repos\MTM_Receiving_Application\Helpers\Database\Helper_Database_StoredProcedure.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Helpers$ +
-.+ ,
-Database, 4
-;4 5
-public 
-static 
-class +
-Helper_Database_StoredProcedure 3
-{ 
-private 
-const 
-int 
-
-MaxRetries  
-=! "
-$num# $
-;$ %
-private 
-static 
-readonly 
-int 
-[  
-]  !
-RetryDelaysMs" /
-=0 1
-{2 3
-$num4 7
-,7 8
-$num9 <
-,< =
-$num> A
-}B C
-;C D
-public 
-
-static 
-async 
-Task 
-< 
-Model_Dao_Result -
->- .
-ExecuteAsync/ ;
-(; <
-string 
-procedureName 
-, 
-MySqlParameter 
-[ 
-] 
-
-parameters #
-,# $
-string 
-connectionString 
-)  
-{ 
-var 
-result 
-= 
-new 
-Model_Dao_Result )
-() *
-)* +
-;+ ,
-var 
-	stopwatch 
-= 
-	Stopwatch !
-.! "
-StartNew" *
-(* +
-)+ ,
-;, -
-int   
-attempt   
-=   
-$num   
-;   
-while"" 
-("" 
-attempt"" 
-<"" 
-
-MaxRetries"" #
-)""# $
-{## 	
-attempt$$ 
-++$$ 
-;$$ 
-try&& 
-{'' 
-using(( 
-var(( 
-
-connection(( $
-=((% &
-new((' *
-MySqlConnection((+ :
-(((: ;
-connectionString((; K
-)((K L
-;((L M
-await)) 
-
-connection))  
-.))  !
-	OpenAsync))! *
-())* +
-)))+ ,
-;)), -
-using++ 
-var++ 
-command++ !
-=++" #
-new++$ '
-MySqlCommand++( 4
-(++4 5
-procedureName++5 B
-,++B C
-
-connection++D N
-)++N O
-{,, 
-CommandType-- 
-=--  !
-CommandType--" -
-.--- .
-StoredProcedure--. =
-}.. 
-;.. 
-if00 
-(00 
-
-parameters00 
-!=00 !
-null00" &
-)00& '
-{11 
-command22 
-.22 
-
-Parameters22 &
-.22& '
-AddRange22' /
-(22/ 0
-
-parameters220 :
-)22: ;
-;22; <
-}33 
-var55 
-affectedRows55  
-=55! "
-await55# (
-command55) 0
-.550 1 
-ExecuteNonQueryAsync551 E
-(55E F
-)55F G
-;55G H
-foreach88 
-(88 
-var88 
-param88 "
-in88# %
-command88& -
-.88- .
-
-Parameters88. 8
-)888 9
-{99 
-if:: 
-(:: 
-param:: 
-is::  
-MySqlParameter::! /
-p::0 1
-&&::2 4
-(::5 6
-p::6 7
-.::7 8
-	Direction::8 A
-==::B D
-ParameterDirection::E W
-.::W X
-Output::X ^
-||::_ a
-p::b c
-.::c d
-	Direction::d m
-==::n p
-ParameterDirection	::q ƒ
-.
-::ƒ „
-InputOutput
-::„ 
-)
-:: 
-)
-:: ‘
-{;; 
-}>> 
-}?? 
-	stopwatchAA 
-.AA 
-StopAA 
-(AA 
-)AA  
-;AA  !
-resultBB 
-.BB 
-SuccessBB 
-=BB  
-trueBB! %
-;BB% &
-resultCC 
-.CC 
-AffectedRowsCC #
-=CC$ %
-affectedRowsCC& 2
-;CC2 3
-resultDD 
-.DD 
-ExecutionTimeMsDD &
-=DD' (
-	stopwatchDD) 2
-.DD2 3
-ElapsedMillisecondsDD3 F
-;DDF G
-returnEE 
-resultEE 
-;EE 
-}FF 
-catchGG 
-(GG 
-MySqlExceptionGG !
-exGG" $
-)GG$ %
-whenGG& *
-(GG+ ,
-IsTransientErrorGG, <
-(GG< =
-exGG= ?
-)GG? @
-&&GGA C
-attemptGGD K
-<GGL M
-
-MaxRetriesGGN X
-)GGX Y
-{HH 
-awaitII 
-TaskII 
-.II 
-DelayII  
-(II  !
-RetryDelaysMsII! .
-[II. /
-attemptII/ 6
--II7 8
-$numII9 :
-]II: ;
-)II; <
-;II< =
-continueJJ 
-;JJ 
-}KK 
-catchLL 
-(LL 
-	ExceptionLL 
-exLL 
-)LL  
-{MM 
-	stopwatchNN 
-.NN 
-StopNN 
-(NN 
-)NN  
-;NN  !
-returnOO $
-Model_Dao_Result_FactoryOO /
-.OO/ 0
-FailureOO0 7
-(OO7 8
-$"OO8 :
-$strOO: L
-{OOL M
-procedureNameOOM Z
-}OOZ [
-$strOO[ e
-{OOe f
-exOOf h
-.OOh i
-MessageOOi p
-}OOp q
-"OOq r
-,OOr s
-exOOt v
-)OOv w
-;OOw x
-}PP 
-}QQ 	
-	stopwatchSS 
-.SS 
-StopSS 
-(SS 
-)SS 
-;SS 
-returnTT $
-Model_Dao_Result_FactoryTT '
-.TT' (
-FailureTT( /
-(TT/ 0
-$"TT0 2
-$strTT2 D
-{TTD E
-procedureNameTTE R
-}TTR S
-$strTTS b
-{TTb c
-
-MaxRetriesTTc m
-}TTm n
-$strTTn w
-"TTw x
-)TTx y
-;TTy z
-}UU 
-publicZZ 
-
-staticZZ 
-boolZZ 
-ValidateParametersZZ )
-(ZZ) *
-MySqlParameterZZ* 8
-[ZZ8 9
-]ZZ9 :
-
-parametersZZ; E
-)ZZE F
-{[[ 
-if\\ 
-
-(\\ 
-
-parameters\\ 
-==\\ 
-null\\ 
-)\\ 
-return\\  &
-true\\' +
-;\\+ ,
-foreach^^ 
-(^^ 
-var^^ 
-param^^ 
-in^^ 
-
-parameters^^ (
-)^^( )
-{__ 	
-if`` 
-(`` 
-param`` 
-.`` 
-Value`` 
-==`` 
-null`` #
-&&``$ &
-param``' ,
-.``, -
-	Direction``- 6
-==``7 9
-ParameterDirection``: L
-.``L M
-Input``M R
-)``R S
-{aa 
-returncc 
-falsecc 
-;cc 
-}dd 
-}ee 	
-returnff 
-trueff 
-;ff 
-}gg 
-publicll 
-
-staticll 
-asyncll 
-Taskll 
-<ll 
-Model_Dao_Resultll -
->ll- . 
-ExecuteNonQueryAsyncll/ C
-(llC D
-stringmm 
-connectionStringmm 
-,mm  
-stringnn 
-procedureNamenn 
-,nn 
-
-Dictionaryoo 
-<oo 
-stringoo 
-,oo 
-objectoo !
->oo! "
-?oo" #
-
-parametersoo$ .
-=oo/ 0
-nulloo1 5
-)oo5 6
-{pp 
-varqq 
-resultqq 
-=qq 
-newqq 
-Model_Dao_Resultqq )
-(qq) *
-)qq* +
-;qq+ ,
-varrr 
-	stopwatchrr 
-=rr 
-	Stopwatchrr !
-.rr! "
-StartNewrr" *
-(rr* +
-)rr+ ,
-;rr, -
-intss 
-attemptss 
-=ss 
-$numss 
-;ss 
-whileuu 
-(uu 
-attemptuu 
-<uu 
-
-MaxRetriesuu #
-)uu# $
-{vv 	
-attemptww 
-++ww 
-;ww 
-tryyy 
-{zz 
-using{{ 
-var{{ 
-
-connection{{ $
-={{% &
-new{{' *
-MySqlConnection{{+ :
-({{: ;
-connectionString{{; K
-){{K L
-;{{L M
-await|| 
-
-connection||  
-.||  !
-	OpenAsync||! *
-(||* +
-)||+ ,
-;||, -
-using~~ 
-var~~ 
-command~~ !
-=~~" #
-new~~$ '
-MySqlCommand~~( 4
-(~~4 5
-procedureName~~5 B
-,~~B C
-
-connection~~D N
-)~~N O
-{ 
-CommandType
-€€ 
-=
-€€  !
-CommandType
-€€" -
-.
-€€- .
-StoredProcedure
-€€. =
-}
- 
-;
- 
-AddParameters
-ƒƒ 
-(
-ƒƒ 
-command
-ƒƒ %
-,
-ƒƒ% &
-
-parameters
-ƒƒ' 1
-)
-ƒƒ1 2
-;
-ƒƒ2 3
-var
-…… 
-affectedRows
-……  
-=
-……! "
-await
-……# (
-command
-……) 0
-.
-……0 1"
-ExecuteNonQueryAsync
-……1 E
-(
-……E F
-)
-……F G
-;
-……G H
-	stopwatch
-‡‡ 
-.
-‡‡ 
-Stop
-‡‡ 
-(
-‡‡ 
-)
-‡‡  
-;
-‡‡  !
-result
- 
-.
- 
-Success
- 
-=
-  
-true
-! %
-;
-% &
-result
-‰‰ 
-.
-‰‰ 
-AffectedRows
-‰‰ #
-=
-‰‰$ %
-affectedRows
-‰‰& 2
-;
-‰‰2 3
-result
- 
-.
- 
-ExecutionTimeMs
- &
-=
-' (
-	stopwatch
-) 2
-.
-2 3!
-ElapsedMilliseconds
-3 F
-;
-F G
-return
-‹‹ 
-result
-‹‹ 
-;
-‹‹ 
-}
- 
-catch
- 
-(
- 
-MySqlException
- !
-ex
-" $
-)
-$ %
-when
-& *
-(
-+ ,
-IsTransientError
-, <
-(
-< =
-ex
-= ?
-)
-? @
-&&
-A C
-attempt
-D K
-<
-L M
-
-MaxRetries
-N X
-)
-X Y
-{
- 
-await
- 
-Task
- 
-.
- 
-Delay
-  
-(
-  !
-RetryDelaysMs
-! .
-[
-. /
-attempt
-/ 6
--
-7 8
-$num
-9 :
-]
-: ;
-)
-; <
-;
-< =
-continue
- 
-;
- 
-}
-‘‘ 
-catch
-’’ 
-(
-’’ 
-	Exception
-’’ 
-ex
-’’ 
-)
-’’  
-{
-““ 
-	stopwatch
-”” 
-.
-”” 
-Stop
-”” 
-(
-”” 
-)
-””  
-;
-””  !
-result
-•• 
-.
-•• 
-Success
-•• 
-=
-••  
-false
-••! &
-;
-••& '
-result
-–– 
-.
-–– 
-ErrorMessage
-–– #
-=
-––$ %
-$"
-––& (
-$str
-––( :
-{
-––: ;
-procedureName
-––; H
-}
-––H I
-$str
-––I S
-{
-––S T
-ex
-––T V
-.
-––V W
-Message
-––W ^
-}
-––^ _
-"
-––_ `
-;
-––` a
-result
-—— 
-.
-—— 
-Severity
-—— 
-=
-——  ! 
-Enum_ErrorSeverity
-——" 4
-.
-——4 5
-Error
-——5 :
-;
-——: ;
-result
- 
-.
- 
-ExecutionTimeMs
- &
-=
-' (
-	stopwatch
-) 2
-.
-2 3!
-ElapsedMilliseconds
-3 F
-;
-F G
-result
-™™ 
-.
-™™ 
-	Exception
-™™  
-=
-™™! "
-ex
-™™# %
-;
-™™% &
-return
- 
-result
- 
-;
- 
-}
-›› 
-}
- 	
-	stopwatch
- 
-.
- 
-Stop
- 
-(
- 
-)
- 
-;
- 
-result
- 
-.
- 
-Success
- 
-=
- 
-false
- 
-;
- 
-result
-   
-.
-   
-ErrorMessage
-   
-=
-   
-$"
-    
-$str
-    2
-{
-  2 3
-procedureName
-  3 @
-}
-  @ A
-$str
-  A P
-{
-  P Q
-
-MaxRetries
-  Q [
-}
-  [ \
-$str
-  \ e
-"
-  e f
-;
-  f g
-result
-΅΅ 
-.
-΅΅ 
-Severity
-΅΅ 
-=
-΅΅  
-Enum_ErrorSeverity
-΅΅ ,
-.
-΅΅, -
-Critical
-΅΅- 5
-;
-΅΅5 6
-result
-ΆΆ 
-.
-ΆΆ 
-ExecutionTimeMs
-ΆΆ 
-=
-ΆΆ  
-	stopwatch
-ΆΆ! *
-.
-ΆΆ* +!
-ElapsedMilliseconds
-ΆΆ+ >
-;
-ΆΆ> ?
-return
-££ 
-result
-££ 
-;
-££ 
-}
-¤¤ 
-public
-©© 
-
-static
-©© 
-async
-©© 
-Task
-©© 
-<
-©© 
-Model_Dao_Result
-©© -
-<
-©©- .
-T
-©©. /
->
-©©/ 0
->
-©©0 1 
-ExecuteSingleAsync
-©©2 D
-<
-©©D E
-T
-©©E F
->
-©©F G
-(
-©©G H
-string
-ªª 
-connectionString
-ªª 
-,
-ªª  
-string
-«« 
-procedureName
-«« 
-,
-«« 
-Func
-¬¬ 
-<
-¬¬ 
-IDataReader
-¬¬ 
-,
-¬¬ 
-T
-¬¬ 
->
-¬¬ 
-mapper
-¬¬ #
-,
-¬¬# $
-
-Dictionary
-­­ 
-<
-­­ 
-string
-­­ 
-,
-­­ 
-object
-­­ !
->
-­­! "
-?
-­­" #
-
-parameters
-­­$ .
-=
-­­/ 0
-null
-­­1 5
-)
-­­5 6
-{
-®® 
-var
-―― 
-result
-―― 
-=
-―― 
-new
-―― 
-Model_Dao_Result
-―― )
-<
-――) *
-T
-――* +
->
-――+ ,
-(
-――, -
-)
-――- .
-;
-――. /
-var
-°° 
-	stopwatch
-°° 
-=
-°° 
-	Stopwatch
-°° !
-.
-°°! "
-StartNew
-°°" *
-(
-°°* +
-)
-°°+ ,
-;
-°°, -
-int
-±± 
-attempt
-±± 
-=
-±± 
-$num
-±± 
-;
-±± 
-while
-³³ 
-(
-³³ 
-attempt
-³³ 
-<
-³³ 
-
-MaxRetries
-³³ #
-)
-³³# $
-{
-΄΄ 	
-attempt
-µµ 
-++
-µµ 
-;
-µµ 
-try
-·· 
-{
-ΈΈ 
-using
-ΉΉ 
-var
-ΉΉ 
-
-connection
-ΉΉ $
-=
-ΉΉ% &
-new
-ΉΉ' *
-MySqlConnection
-ΉΉ+ :
-(
-ΉΉ: ;
-connectionString
-ΉΉ; K
-)
-ΉΉK L
-;
-ΉΉL M
-await
-ΊΊ 
-
-connection
-ΊΊ  
-.
-ΊΊ  !
-	OpenAsync
-ΊΊ! *
-(
-ΊΊ* +
-)
-ΊΊ+ ,
-;
-ΊΊ, -
-using
-ΌΌ 
-var
-ΌΌ 
-command
-ΌΌ !
-=
-ΌΌ" #
-new
-ΌΌ$ '
-MySqlCommand
-ΌΌ( 4
-(
-ΌΌ4 5
-procedureName
-ΌΌ5 B
-,
-ΌΌB C
-
-connection
-ΌΌD N
-)
-ΌΌN O
-{
-½½ 
-CommandType
-ΎΎ 
-=
-ΎΎ  !
-CommandType
-ΎΎ" -
-.
-ΎΎ- .
-StoredProcedure
-ΎΎ. =
-}
-ΏΏ 
-;
-ΏΏ 
-AddParameters
-ΑΑ 
-(
-ΑΑ 
-command
-ΑΑ %
-,
-ΑΑ% &
-
-parameters
-ΑΑ' 1
-)
-ΑΑ1 2
-;
-ΑΑ2 3
-using
-ΓΓ 
-var
-ΓΓ 
-reader
-ΓΓ  
-=
-ΓΓ! "
-await
-ΓΓ# (
-command
-ΓΓ) 0
-.
-ΓΓ0 1 
-ExecuteReaderAsync
-ΓΓ1 C
-(
-ΓΓC D
-)
-ΓΓD E
-;
-ΓΓE F
-if
-ΕΕ 
-(
-ΕΕ 
-await
-ΕΕ 
-reader
-ΕΕ  
-.
-ΕΕ  !
-	ReadAsync
-ΕΕ! *
-(
-ΕΕ* +
-)
-ΕΕ+ ,
-)
-ΕΕ, -
-{
-ΖΖ 
-result
-ΗΗ 
-.
-ΗΗ 
-Data
-ΗΗ 
-=
-ΗΗ  !
-mapper
-ΗΗ" (
-(
-ΗΗ( )
-reader
-ΗΗ) /
-)
-ΗΗ/ 0
-;
-ΗΗ0 1
-result
-ΘΘ 
-.
-ΘΘ 
-Success
-ΘΘ "
-=
-ΘΘ# $
-true
-ΘΘ% )
-;
-ΘΘ) *
-result
-ΙΙ 
-.
-ΙΙ 
-AffectedRows
-ΙΙ '
-=
-ΙΙ( )
-$num
-ΙΙ* +
-;
-ΙΙ+ ,
-}
-ΚΚ 
-else
-ΛΛ 
-{
-ΜΜ 
-result
-ΝΝ 
-.
-ΝΝ 
-Success
-ΝΝ "
-=
-ΝΝ# $
-false
-ΝΝ% *
-;
-ΝΝ* +
-result
-ΞΞ 
-.
-ΞΞ 
-ErrorMessage
-ΞΞ '
-=
-ΞΞ( )
-$str
-ΞΞ* ;
-;
-ΞΞ; <
-result
-ΟΟ 
-.
-ΟΟ 
-Severity
-ΟΟ #
-=
-ΟΟ$ % 
-Enum_ErrorSeverity
-ΟΟ& 8
-.
-ΟΟ8 9
-Info
-ΟΟ9 =
-;
-ΟΟ= >
-}
-ΠΠ 
-	stopwatch
-ÒÒ 
-.
-ÒÒ 
-Stop
-ÒÒ 
-(
-ÒÒ 
-)
-ÒÒ  
-;
-ÒÒ  !
-result
-ΣΣ 
-.
-ΣΣ 
-ExecutionTimeMs
-ΣΣ &
-=
-ΣΣ' (
-	stopwatch
-ΣΣ) 2
-.
-ΣΣ2 3!
-ElapsedMilliseconds
-ΣΣ3 F
-;
-ΣΣF G
-return
-ΤΤ 
-result
-ΤΤ 
-;
-ΤΤ 
-}
-ΥΥ 
-catch
-ΦΦ 
-(
-ΦΦ 
-MySqlException
-ΦΦ !
-ex
-ΦΦ" $
-)
-ΦΦ$ %
-when
-ΦΦ& *
-(
-ΦΦ+ ,
-IsTransientError
-ΦΦ, <
-(
-ΦΦ< =
-ex
-ΦΦ= ?
-)
-ΦΦ? @
-&&
-ΦΦA C
-attempt
-ΦΦD K
-<
-ΦΦL M
-
-MaxRetries
-ΦΦN X
-)
-ΦΦX Y
-{
-ΧΧ 
-await
-ΨΨ 
-Task
-ΨΨ 
-.
-ΨΨ 
-Delay
-ΨΨ  
-(
-ΨΨ  !
-RetryDelaysMs
-ΨΨ! .
-[
-ΨΨ. /
-attempt
-ΨΨ/ 6
--
-ΨΨ7 8
-$num
-ΨΨ9 :
-]
-ΨΨ: ;
-)
-ΨΨ; <
-;
-ΨΨ< =
-continue
-ΩΩ 
-;
-ΩΩ 
-}
-ΪΪ 
-catch
-ΫΫ 
-(
-ΫΫ 
-	Exception
-ΫΫ 
-ex
-ΫΫ 
-)
-ΫΫ  
-{
-άά 
-	stopwatch
-έέ 
-.
-έέ 
-Stop
-έέ 
-(
-έέ 
-)
-έέ  
-;
-έέ  !
-return
-ήή &
-Model_Dao_Result_Factory
-ήή /
-.
-ήή/ 0
-Failure
-ήή0 7
-<
-ήή7 8
-T
-ήή8 9
->
-ήή9 :
-(
-ήή: ;
-$"
-ήή; =
-$str
-ήή= O
-{
-ήήO P
-procedureName
-ήήP ]
-}
-ήή] ^
-$str
-ήή^ h
-{
-ήήh i
-ex
-ήήi k
-.
-ήήk l
-Message
-ήήl s
-}
-ήήs t
-"
-ήήt u
-,
-ήήu v
-ex
-ήήw y
-)
-ήήy z
-;
-ήήz {
-}
-ίί 
-}
-ΰΰ 	
-	stopwatch
-ββ 
-.
-ββ 
-Stop
-ββ 
-(
-ββ 
-)
-ββ 
-;
-ββ 
-return
-γγ &
-Model_Dao_Result_Factory
-γγ '
-.
-γγ' (
-Failure
-γγ( /
-<
-γγ/ 0
-T
-γγ0 1
->
-γγ1 2
-(
-γγ2 3
-$"
-γγ3 5
-$str
-γγ5 G
-{
-γγG H
-procedureName
-γγH U
-}
-γγU V
-$str
-γγV e
-{
-γγe f
-
-MaxRetries
-γγf p
-}
-γγp q
-$str
-γγq z
-"
-γγz {
-)
-γγ{ |
-;
-γγ| }
-}
-δδ 
-public
-ιι 
-
-static
-ιι 
-async
-ιι 
-Task
-ιι 
-<
-ιι 
-Model_Dao_Result
-ιι -
-<
-ιι- .
-List
-ιι. 2
-<
-ιι2 3
-T
-ιι3 4
->
-ιι4 5
->
-ιι5 6
->
-ιι6 7
-ExecuteListAsync
-ιι8 H
-<
-ιιH I
-T
-ιιI J
->
-ιιJ K
-(
-ιιK L
-string
-κκ 
-connectionString
-κκ 
-,
-κκ  
-string
-λλ 
-procedureName
-λλ 
-,
-λλ 
-Func
-μμ 
-<
-μμ 
-IDataReader
-μμ 
-,
-μμ 
-T
-μμ 
->
-μμ 
-mapper
-μμ #
-,
-μμ# $
-
-Dictionary
-νν 
-<
-νν 
-string
-νν 
-,
-νν 
-object
-νν !
->
-νν! "
-?
-νν" #
-
-parameters
-νν$ .
-=
-νν/ 0
-null
-νν1 5
-)
-νν5 6
-{
-ξξ 
-var
-οο 
-result
-οο 
-=
-οο 
-new
-οο 
-Model_Dao_Result
-οο )
-<
-οο) *
-List
-οο* .
-<
-οο. /
-T
-οο/ 0
->
-οο0 1
->
-οο1 2
-(
-οο2 3
-)
-οο3 4
-;
-οο4 5
-var
-ππ 
-	stopwatch
-ππ 
-=
-ππ 
-	Stopwatch
-ππ !
-.
-ππ! "
-StartNew
-ππ" *
-(
-ππ* +
-)
-ππ+ ,
-;
-ππ, -
-int
-ρρ 
-attempt
-ρρ 
-=
-ρρ 
-$num
-ρρ 
-;
-ρρ 
-while
-σσ 
-(
-σσ 
-attempt
-σσ 
-<
-σσ 
-
-MaxRetries
-σσ #
-)
-σσ# $
-{
-ττ 	
-attempt
-υυ 
-++
-υυ 
-;
-υυ 
-try
-χχ 
-{
-ψψ 
-using
-ωω 
-var
-ωω 
-
-connection
-ωω $
-=
-ωω% &
-new
-ωω' *
-MySqlConnection
-ωω+ :
-(
-ωω: ;
-connectionString
-ωω; K
-)
-ωωK L
-;
-ωωL M
-await
-ϊϊ 
-
-connection
-ϊϊ  
-.
-ϊϊ  !
-	OpenAsync
-ϊϊ! *
-(
-ϊϊ* +
-)
-ϊϊ+ ,
-;
-ϊϊ, -
-using
-όό 
-var
-όό 
-command
-όό !
-=
-όό" #
-new
-όό$ '
-MySqlCommand
-όό( 4
-(
-όό4 5
-procedureName
-όό5 B
-,
-όόB C
-
-connection
-όόD N
-)
-όόN O
-{
-ύύ 
-CommandType
-ώώ 
-=
-ώώ  !
-CommandType
-ώώ" -
-.
-ώώ- .
-StoredProcedure
-ώώ. =
-}
-ÿÿ 
-;
-ÿÿ 
-AddParameters
- 
-(
- 
-command
- %
-,
-% &
-
-parameters
-' 1
-)
-1 2
-;
-2 3
-using
-ƒƒ 
-var
-ƒƒ 
-reader
-ƒƒ  
-=
-ƒƒ! "
-await
-ƒƒ# (
-command
-ƒƒ) 0
-.
-ƒƒ0 1 
-ExecuteReaderAsync
-ƒƒ1 C
-(
-ƒƒC D
-)
-ƒƒD E
-;
-ƒƒE F
-var
-„„ 
-list
-„„ 
-=
-„„ 
-new
-„„ 
-List
-„„ #
-<
-„„# $
-T
-„„$ %
->
-„„% &
-(
-„„& '
-)
-„„' (
-;
-„„( )
-while
-†† 
-(
-†† 
-await
-†† 
-reader
-†† #
-.
-††# $
-	ReadAsync
-††$ -
-(
-††- .
-)
-††. /
-)
-††/ 0
-{
-‡‡ 
-list
- 
-.
- 
-Add
- 
-(
- 
-mapper
- #
-(
-# $
-reader
-$ *
-)
-* +
-)
-+ ,
-;
-, -
-}
-‰‰ 
-result
-‹‹ 
-.
-‹‹ 
-Data
-‹‹ 
-=
-‹‹ 
-list
-‹‹ "
-;
-‹‹" #
-result
- 
-.
- 
-Success
- 
-=
-  
-true
-! %
-;
-% &
-result
- 
-.
- 
-AffectedRows
- #
-=
-$ %
-list
-& *
-.
-* +
-Count
-+ 0
-;
-0 1
-	stopwatch
- 
-.
- 
-Stop
- 
-(
- 
-)
-  
-;
-  !
-result
- 
-.
- 
-ExecutionTimeMs
- &
-=
-' (
-	stopwatch
-) 2
-.
-2 3!
-ElapsedMilliseconds
-3 F
-;
-F G
-return
-‘‘ 
-result
-‘‘ 
-;
-‘‘ 
-}
-’’ 
-catch
-““ 
-(
-““ 
-MySqlException
-““ !
-ex
-““" $
-)
-““$ %
-when
-““& *
-(
-““+ ,
-IsTransientError
-““, <
-(
-““< =
-ex
-““= ?
-)
-““? @
-&&
-““A C
-attempt
-““D K
-<
-““L M
-
-MaxRetries
-““N X
-)
-““X Y
-{
-”” 
-await
-•• 
-Task
-•• 
-.
-•• 
-Delay
-••  
-(
-••  !
-RetryDelaysMs
-••! .
-[
-••. /
-attempt
-••/ 6
--
-••7 8
-$num
-••9 :
-]
-••: ;
-)
-••; <
-;
-••< =
-continue
-–– 
-;
-–– 
-}
-—— 
-catch
- 
-(
- 
-	Exception
- 
-ex
- 
-)
-  
-{
-™™ 
-	stopwatch
- 
-.
- 
-Stop
- 
-(
- 
-)
-  
-;
-  !
-return
-›› &
-Model_Dao_Result_Factory
-›› /
-.
-››/ 0
-Failure
-››0 7
-<
-››7 8
-List
-››8 <
-<
-››< =
-T
-››= >
->
-››> ?
->
-››? @
-(
-››@ A
-$"
-››A C
-$str
-››C U
-{
-››U V
-procedureName
-››V c
-}
-››c d
-$str
-››d n
-{
-››n o
-ex
-››o q
-.
-››q r
-Message
-››r y
-}
-››y z
-"
-››z {
-,
-››{ |
-ex
-››} 
-)›› €
-;››€ 
-}
- 
-}
- 	
-	stopwatch
- 
-.
- 
-Stop
- 
-(
- 
-)
- 
-;
- 
-return
-   &
-Model_Dao_Result_Factory
-   '
-.
-  ' (
-Failure
-  ( /
-<
-  / 0
-List
-  0 4
-<
-  4 5
-T
-  5 6
->
-  6 7
->
-  7 8
-(
-  8 9
-$"
-  9 ;
-$str
-  ; M
-{
-  M N
-procedureName
-  N [
-}
-  [ \
-$str
-  \ k
-{
-  k l
-
-MaxRetries
-  l v
-}
-  v w
-$str  w €
-"  € 
-)   ‚
-;  ‚ ƒ
-}
-΅΅ 
-public
-¦¦ 
-
-static
-¦¦ 
-async
-¦¦ 
-Task
-¦¦ 
-<
-¦¦ 
-Model_Dao_Result
-¦¦ -
-<
-¦¦- .
-	DataTable
-¦¦. 7
->
-¦¦7 8
->
-¦¦8 9#
-ExecuteDataTableAsync
-¦¦: O
-(
-¦¦O P
-string
-§§ 
-connectionString
-§§ 
-,
-§§  
-string
-¨¨ 
-procedureName
-¨¨ 
-,
-¨¨ 
-
-Dictionary
-©© 
-<
-©© 
-string
-©© 
-,
-©© 
-object
-©© !
->
-©©! "
-?
-©©" #
-
-parameters
-©©$ .
-=
-©©/ 0
-null
-©©1 5
-)
-©©5 6
-{
-ªª 
-var
-«« 
-result
-«« 
-=
-«« 
-new
-«« 
-Model_Dao_Result
-«« )
-<
-««) *
-	DataTable
-««* 3
->
-««3 4
-(
-««4 5
-)
-««5 6
-;
-««6 7
-var
-¬¬ 
-	stopwatch
-¬¬ 
-=
-¬¬ 
-	Stopwatch
-¬¬ !
-.
-¬¬! "
-StartNew
-¬¬" *
-(
-¬¬* +
-)
-¬¬+ ,
-;
-¬¬, -
-int
-­­ 
-attempt
-­­ 
-=
-­­ 
-$num
-­­ 
-;
-­­ 
-while
-―― 
-(
-―― 
-attempt
-―― 
-<
-―― 
-
-MaxRetries
-―― #
-)
-――# $
-{
-°° 	
-attempt
-±± 
-++
-±± 
-;
-±± 
-try
-³³ 
-{
-΄΄ 
-using
-µµ 
-var
-µµ 
-
-connection
-µµ $
-=
-µµ% &
-new
-µµ' *
-MySqlConnection
-µµ+ :
-(
-µµ: ;
-connectionString
-µµ; K
-)
-µµK L
-;
-µµL M
-await
-¶¶ 
-
-connection
-¶¶  
-.
-¶¶  !
-	OpenAsync
-¶¶! *
-(
-¶¶* +
-)
-¶¶+ ,
-;
-¶¶, -
-using
-ΈΈ 
-var
-ΈΈ 
-command
-ΈΈ !
-=
-ΈΈ" #
-new
-ΈΈ$ '
-MySqlCommand
-ΈΈ( 4
-(
-ΈΈ4 5
-procedureName
-ΈΈ5 B
-,
-ΈΈB C
-
-connection
-ΈΈD N
-)
-ΈΈN O
-{
-ΉΉ 
-CommandType
-ΊΊ 
-=
-ΊΊ  !
-CommandType
-ΊΊ" -
-.
-ΊΊ- .
-StoredProcedure
-ΊΊ. =
-}
-»» 
-;
-»» 
-AddParameters
-½½ 
-(
-½½ 
-command
-½½ %
-,
-½½% &
-
-parameters
-½½' 1
-)
-½½1 2
-;
-½½2 3
-using
-ΏΏ 
-var
-ΏΏ 
-reader
-ΏΏ  
-=
-ΏΏ! "
-await
-ΏΏ# (
-command
-ΏΏ) 0
-.
-ΏΏ0 1 
-ExecuteReaderAsync
-ΏΏ1 C
-(
-ΏΏC D
-)
-ΏΏD E
-;
-ΏΏE F
-var
-ΐΐ 
-	dataTable
-ΐΐ 
-=
-ΐΐ 
-new
-ΐΐ  #
-	DataTable
-ΐΐ$ -
-(
-ΐΐ- .
-)
-ΐΐ. /
-;
-ΐΐ/ 0
-	dataTable
-ΑΑ 
-.
-ΑΑ 
-Load
-ΑΑ 
-(
-ΑΑ 
-reader
-ΑΑ %
-)
-ΑΑ% &
-;
-ΑΑ& '
-	stopwatch
-ΓΓ 
-.
-ΓΓ 
-Stop
-ΓΓ 
-(
-ΓΓ 
-)
-ΓΓ  
-;
-ΓΓ  !
-result
-ΔΔ 
-.
-ΔΔ 
-Success
-ΔΔ 
-=
-ΔΔ  
-true
-ΔΔ! %
-;
-ΔΔ% &
-result
-ΕΕ 
-.
-ΕΕ 
-Data
-ΕΕ 
-=
-ΕΕ 
-	dataTable
-ΕΕ '
-;
-ΕΕ' (
-result
-ΖΖ 
-.
-ΖΖ 
-AffectedRows
-ΖΖ #
-=
-ΖΖ$ %
-	dataTable
-ΖΖ& /
-.
-ΖΖ/ 0
-Rows
-ΖΖ0 4
-.
-ΖΖ4 5
-Count
-ΖΖ5 :
-;
-ΖΖ: ;
-result
-ΗΗ 
-.
-ΗΗ 
-ExecutionTimeMs
-ΗΗ &
-=
-ΗΗ' (
-	stopwatch
-ΗΗ) 2
-.
-ΗΗ2 3!
-ElapsedMilliseconds
-ΗΗ3 F
-;
-ΗΗF G
-return
-ΘΘ 
-result
-ΘΘ 
-;
-ΘΘ 
-}
-ΙΙ 
-catch
-ΚΚ 
-(
-ΚΚ 
-MySqlException
-ΚΚ !
-ex
-ΚΚ" $
-)
-ΚΚ$ %
-when
-ΚΚ& *
-(
-ΚΚ+ ,
-IsTransientError
-ΚΚ, <
-(
-ΚΚ< =
-ex
-ΚΚ= ?
-)
-ΚΚ? @
-&&
-ΚΚA C
-attempt
-ΚΚD K
-<
-ΚΚL M
-
-MaxRetries
-ΚΚN X
-)
-ΚΚX Y
-{
-ΛΛ 
-await
-ΜΜ 
-Task
-ΜΜ 
-.
-ΜΜ 
-Delay
-ΜΜ  
-(
-ΜΜ  !
-RetryDelaysMs
-ΜΜ! .
-[
-ΜΜ. /
-attempt
-ΜΜ/ 6
--
-ΜΜ7 8
-$num
-ΜΜ9 :
-]
-ΜΜ: ;
-)
-ΜΜ; <
-;
-ΜΜ< =
-continue
-ΝΝ 
-;
-ΝΝ 
-}
-ΞΞ 
-catch
-ΟΟ 
-(
-ΟΟ 
-	Exception
-ΟΟ 
-ex
-ΟΟ 
-)
-ΟΟ  
-{
-ΠΠ 
-	stopwatch
-ΡΡ 
-.
-ΡΡ 
-Stop
-ΡΡ 
-(
-ΡΡ 
-)
-ΡΡ  
-;
-ΡΡ  !
-result
-ÒÒ 
-.
-ÒÒ 
-Success
-ÒÒ 
-=
-ÒÒ  
-false
-ÒÒ! &
-;
-ÒÒ& '
-result
-ΣΣ 
-.
-ΣΣ 
-ErrorMessage
-ΣΣ #
-=
-ΣΣ$ %
-$"
-ΣΣ& (
-$str
-ΣΣ( :
-{
-ΣΣ: ;
-procedureName
-ΣΣ; H
-}
-ΣΣH I
-$str
-ΣΣI S
-{
-ΣΣS T
-ex
-ΣΣT V
-.
-ΣΣV W
-Message
-ΣΣW ^
-}
-ΣΣ^ _
-"
-ΣΣ_ `
-;
-ΣΣ` a
-result
-ΤΤ 
-.
-ΤΤ 
-Severity
-ΤΤ 
-=
-ΤΤ  ! 
-Enum_ErrorSeverity
-ΤΤ" 4
-.
-ΤΤ4 5
-Error
-ΤΤ5 :
-;
-ΤΤ: ;
-result
-ΥΥ 
-.
-ΥΥ 
-ExecutionTimeMs
-ΥΥ &
-=
-ΥΥ' (
-	stopwatch
-ΥΥ) 2
-.
-ΥΥ2 3!
-ElapsedMilliseconds
-ΥΥ3 F
-;
-ΥΥF G
-result
-ΦΦ 
-.
-ΦΦ 
-	Exception
-ΦΦ  
-=
-ΦΦ! "
-ex
-ΦΦ# %
-;
-ΦΦ% &
-return
-ΧΧ 
-result
-ΧΧ 
-;
-ΧΧ 
-}
-ΨΨ 
-}
-ΩΩ 	
-	stopwatch
-ΫΫ 
-.
-ΫΫ 
-Stop
-ΫΫ 
-(
-ΫΫ 
-)
-ΫΫ 
-;
-ΫΫ 
-result
-άά 
-.
-άά 
-Success
-άά 
-=
-άά 
-false
-άά 
-;
-άά 
-result
-έέ 
-.
-έέ 
-ErrorMessage
-έέ 
-=
-έέ 
-$"
-έέ  
-$str
-έέ  2
-{
-έέ2 3
-procedureName
-έέ3 @
-}
-έέ@ A
-$str
-έέA P
-{
-έέP Q
-
-MaxRetries
-έέQ [
-}
-έέ[ \
-$str
-έέ\ e
-"
-έέe f
-;
-έέf g
-result
-ήή 
-.
-ήή 
-Severity
-ήή 
-=
-ήή  
-Enum_ErrorSeverity
-ήή ,
-.
-ήή, -
-Critical
-ήή- 5
-;
-ήή5 6
-result
-ίί 
-.
-ίί 
-ExecutionTimeMs
-ίί 
-=
-ίί  
-	stopwatch
-ίί! *
-.
-ίί* +!
-ElapsedMilliseconds
-ίί+ >
-;
-ίί> ?
-return
-ΰΰ 
-result
-ΰΰ 
-;
-ΰΰ 
-}
-αα 
-public
-ζζ 
-
-static
-ζζ 
-async
-ζζ 
-Task
-ζζ 
-<
-ζζ 
-Model_Dao_Result
-ζζ -
->
-ζζ- .'
-ExecuteInTransactionAsync
-ζζ/ H
-(
-ζζH I
-MySqlConnection
-ηη 
-
-connection
-ηη "
-,
-ηη" #
-MySqlTransaction
-θθ 
-transaction
-θθ $
-,
-θθ$ %
-string
-ιι 
-procedureName
-ιι 
-,
-ιι 
-
-Dictionary
-κκ 
-<
-κκ 
-string
-κκ 
-,
-κκ 
-object
-κκ !
->
-κκ! "
-?
-κκ" #
-
-parameters
-κκ$ .
-=
-κκ/ 0
-null
-κκ1 5
-)
-κκ5 6
-{
-λλ 
-var
-μμ 
-result
-μμ 
-=
-μμ 
-new
-μμ 
-Model_Dao_Result
-μμ )
-(
-μμ) *
-)
-μμ* +
-;
-μμ+ ,
-var
-νν 
-	stopwatch
-νν 
-=
-νν 
-	Stopwatch
-νν !
-.
-νν! "
-StartNew
-νν" *
-(
-νν* +
-)
-νν+ ,
-;
-νν, -
-try
-οο 
-{
-ππ 	
-using
-ρρ 
-var
-ρρ 
-command
-ρρ 
-=
-ρρ 
-new
-ρρ  #
-MySqlCommand
-ρρ$ 0
-(
-ρρ0 1
-procedureName
-ρρ1 >
-,
-ρρ> ?
-
-connection
-ρρ@ J
-,
-ρρJ K
-transaction
-ρρL W
-)
-ρρW X
-{
-ςς 
-CommandType
-σσ 
-=
-σσ 
-CommandType
-σσ )
-.
-σσ) *
-StoredProcedure
-σσ* 9
-}
-ττ 
-;
-ττ 
-AddParameters
-φφ 
-(
-φφ 
-command
-φφ !
-,
-φφ! "
-
-parameters
-φφ# -
-)
-φφ- .
-;
-φφ. /
-var
-ψψ 
-affectedRows
-ψψ 
-=
-ψψ 
-await
-ψψ $
-command
-ψψ% ,
-.
-ψψ, -"
-ExecuteNonQueryAsync
-ψψ- A
-(
-ψψA B
-)
-ψψB C
-;
-ψψC D
-	stopwatch
-ϊϊ 
-.
-ϊϊ 
-Stop
-ϊϊ 
-(
-ϊϊ 
-)
-ϊϊ 
-;
-ϊϊ 
-result
-ϋϋ 
-.
-ϋϋ 
-Success
-ϋϋ 
-=
-ϋϋ 
-true
-ϋϋ !
-;
-ϋϋ! "
-result
-όό 
-.
-όό 
-AffectedRows
-όό 
-=
-όό  !
-affectedRows
-όό" .
-;
-όό. /
-result
-ύύ 
-.
-ύύ 
-ExecutionTimeMs
-ύύ "
-=
-ύύ# $
-	stopwatch
-ύύ% .
-.
-ύύ. /!
-ElapsedMilliseconds
-ύύ/ B
-;
-ύύB C
-return
-ώώ 
-result
-ώώ 
-;
-ώώ 
-}
-ÿÿ 	
-catch
-€€ 
-(
-€€ 
-	Exception
-€€ 
-ex
-€€ 
-)
-€€ 
-{
- 	
-	stopwatch
-‚‚ 
-.
-‚‚ 
-Stop
-‚‚ 
-(
-‚‚ 
-)
-‚‚ 
-;
-‚‚ 
-result
-ƒƒ 
-.
-ƒƒ 
-Success
-ƒƒ 
-=
-ƒƒ 
-false
-ƒƒ "
-;
-ƒƒ" #
-result
-„„ 
-.
-„„ 
-ErrorMessage
-„„ 
-=
-„„  !
-$"
-„„" $
-$str
-„„$ 6
-{
-„„6 7
-procedureName
-„„7 D
-}
-„„D E
-$str
-„„E ^
-{
-„„^ _
-ex
-„„_ a
-.
-„„a b
-Message
-„„b i
-}
-„„i j
-"
-„„j k
-;
-„„k l
-result
-…… 
-.
-…… 
-Severity
-…… 
-=
-……  
-Enum_ErrorSeverity
-…… 0
-.
-……0 1
-Error
-……1 6
-;
-……6 7
-result
-†† 
-.
-†† 
-ExecutionTimeMs
-†† "
-=
-††# $
-	stopwatch
-††% .
-.
-††. /!
-ElapsedMilliseconds
-††/ B
-;
-††B C
-result
-‡‡ 
-.
-‡‡ 
-	Exception
-‡‡ 
-=
-‡‡ 
-ex
-‡‡ !
-;
-‡‡! "
-return
- 
-result
- 
-;
- 
-}
-‰‰ 	
-}
- 
-private
- 
-static
- 
-void
- 
-AddParameters
- %
-(
-% &
-MySqlCommand
-& 2
-command
-3 :
-,
-: ;
-
-Dictionary
-< F
-<
-F G
-string
-G M
-,
-M N
-object
-O U
->
-U V
-?
-V W
-
-parameters
-X b
-)
-b c
-{
- 
-if
- 
-
-(
- 
-
-parameters
- 
-!=
- 
-null
- 
-)
- 
-{
- 	
-foreach
- 
-(
- 
-var
- 
-param
- 
-in
- !
-
-parameters
-" ,
-)
-, -
-{
-‘‘ 
-string
-““ 
-	paramName
-““  
-=
-““! "
-param
-““# (
-.
-““( )
-Key
-““) ,
-.
-““, -
-
-StartsWith
-““- 7
-(
-““7 8
-$str
-““8 <
-)
-““< =
-?
-““> ?
-$str
-““@ C
-+
-““D E
-param
-““F K
-.
-““K L
-Key
-““L O
-:
-““P Q
-$str
-““R W
-+
-““X Y
-param
-““Z _
-.
-““_ `
-Key
-““` c
-;
-““c d
-string
-›› 
-	cleanName
-››  
-=
-››! "
-param
-››# (
-.
-››( )
-Key
-››) ,
-.
-››, -
-	TrimStart
-››- 6
-(
-››6 7
-$char
-››7 :
-)
-››: ;
-;
-››; <
-string
- 
-	finalName
-  
-=
-! "
-	cleanName
-# ,
-.
-, -
-
-StartsWith
-- 7
-(
-7 8
-$str
-8 <
-)
-< =
-?
-> ?
-$str
-@ C
-+
-D E
-	cleanName
-F O
-:
-P Q
-$str
-R W
-+
-X Y
-	cleanName
-Z c
-;
-c d
-command
- 
-.
- 
-
-Parameters
- "
-.
-" #
-AddWithValue
-# /
-(
-/ 0
-	finalName
-0 9
-,
-9 :
-param
-; @
-.
-@ A
-Value
-A F
-??
-G I
-DBNull
-J P
-.
-P Q
-Value
-Q V
-)
-V W
-;
-W X
-}
- 
-}
-   	
-}
-΅΅ 
-private
-¦¦ 
-static
-¦¦ 
-bool
-¦¦ 
-IsTransientError
-¦¦ (
-(
-¦¦( )
-MySqlException
-¦¦) 7
-ex
-¦¦8 :
-)
-¦¦: ;
-{
-§§ 
-return
-­­ 
-ex
-­­ 
-.
-­­ 
-Number
-­­ 
-==
-­­ 
-$num
-­­  
-||
-­­! #
-ex
-­­$ &
-.
-­­& '
-Number
-­­' -
-==
-­­. 0
-$num
-­­1 5
-||
-­­6 8
-ex
-®® 
-.
-®® 
-Number
-®® 
-==
-®® 
-$num
-®®  
-||
-®®! #
-ex
-®®$ &
-.
-®®& '
-Number
-®®' -
-==
-®®. 0
-$num
-®®1 5
-;
-®®5 6
-}
-―― 
-}°° ΝΪ
+}&& ΝΪ
 YC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_ReceivingLoad.cs
 	namespace
 
@@ -81181,320 +78055,7 @@ parameters
 °° 	
 }
 ±± 
-}²² λ)
-YC:\Users\johnk\source\repos\MTM_Receiving_Application\Models\Dunnage\Model_DunnageType.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Models$ *
-.* +
-Dunnage+ 2
-;2 3
-public 
-class 
-Model_DunnageType 
-:  "
-INotifyPropertyChanged! 7
-{		 
-private
-
- 
-int
-
- 
-_id
-
- 
-;
-
- 
-private 
-string 
-	_typeName 
-= 
-string %
-.% &
-Empty& +
-;+ ,
-private 
-string 
-
-_specsJson 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-string 
-
-_createdBy 
-= 
-string  &
-.& '
-Empty' ,
-;, -
-private 
-DateTime 
-_createdDate !
-=" #
-DateTime$ ,
-., -
-Now- 0
-;0 1
-private 
-string 
-? 
-_modifiedBy 
-;  
-private 
-DateTime 
-? 
-_modifiedDate #
-;# $
-public 
-
-int 
-Id 
-{ 
-get 
-=> 
-_id 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-_id 
-,  
-value! &
-)& '
-;' (
-} 
-public 
-
-string 
-TypeName 
-{ 
-get 
-=> 
-	_typeName 
-; 
-set 
-=> 
-SetField 
-( 
-ref 
-	_typeName %
-,% &
-value' ,
-), -
-;- .
-} 
-public 
-
-string 
-	SpecsJson 
-{ 
-get   
-=>   
-
-_specsJson   
-;   
-set!! 
-=>!! 
-SetField!! 
-(!! 
-ref!! 
-
-_specsJson!! &
-,!!& '
-value!!( -
-)!!- .
-;!!. /
-}"" 
-public$$ 
-
-string$$ 
-	CreatedBy$$ 
-{%% 
-get&& 
-=>&& 
-
-_createdBy&& 
-;&& 
-set'' 
-=>'' 
-SetField'' 
-('' 
-ref'' 
-
-_createdBy'' &
-,''& '
-value''( -
-)''- .
-;''. /
-}(( 
-public** 
-
-DateTime** 
-CreatedDate** 
-{++ 
-get,, 
-=>,, 
-_createdDate,, 
-;,, 
-set-- 
-=>-- 
-SetField-- 
-(-- 
-ref-- 
-_createdDate-- (
-,--( )
-value--* /
-)--/ 0
-;--0 1
-}.. 
-public00 
-
-string00 
-?00 
-
-ModifiedBy00 
-{11 
-get22 
-=>22 
-_modifiedBy22 
-;22 
-set33 
-=>33 
-SetField33 
-(33 
-ref33 
-_modifiedBy33 '
-,33' (
-value33) .
-)33. /
-;33/ 0
-}44 
-public66 
-
-DateTime66 
-?66 
-ModifiedDate66 !
-{77 
-get88 
-=>88 
-_modifiedDate88 
-;88 
-set99 
-=>99 
-SetField99 
-(99 
-ref99 
-_modifiedDate99 )
-,99) *
-value99+ 0
-)990 1
-;991 2
-}:: 
-public<< 
-
-event<< '
-PropertyChangedEventHandler<< ,
-?<<, -
-PropertyChanged<<. =
-;<<= >
-	protected>> 
-virtual>> 
-void>> 
-OnPropertyChanged>> ,
-(>>, -
-[>>- .
-CallerMemberName>>. >
-]>>> ?
-string>>@ F
-?>>F G
-propertyName>>H T
-=>>U V
-null>>W [
-)>>[ \
-{?? 
-PropertyChanged@@ 
-?@@ 
-.@@ 
-Invoke@@ 
-(@@  
-this@@  $
-,@@$ %
-new@@& )$
-PropertyChangedEventArgs@@* B
-(@@B C
-propertyName@@C O
-)@@O P
-)@@P Q
-;@@Q R
-}AA 
-	protectedCC 
-boolCC 
-SetFieldCC 
-<CC 
-TCC 
->CC 
-(CC 
-refCC "
-TCC# $
-fieldCC% *
-,CC* +
-TCC, -
-valueCC. 3
-,CC3 4
-[CC5 6
-CallerMemberNameCC6 F
-]CCF G
-stringCCH N
-?CCN O
-propertyNameCCP \
-=CC] ^
-nullCC_ c
-)CCc d
-{DD 
-ifEE 
-
-(EE 
-EqualityComparerEE 
-<EE 
-TEE 
->EE 
-.EE  
-DefaultEE  '
-.EE' (
-EqualsEE( .
-(EE. /
-fieldEE/ 4
-,EE4 5
-valueEE6 ;
-)EE; <
-)EE< =
-returnEE> D
-falseEEE J
-;EEJ K
-fieldFF 
-=FF 
-valueFF 
-;FF 
-OnPropertyChangedGG 
-(GG 
-propertyNameGG &
-)GG& '
-;GG' (
-returnHH 
-trueHH 
-;HH 
-}II 
-}JJ γ/
+}²² γ/
 WC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_DunnageLine.cs
 	namespace		 	%
 MTM_Receiving_Application		
@@ -81826,349 +78387,7 @@ showDialogYY 
 ;]] 
 }^^ 	
 }__ 
-}`` Ò1
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_CarrierDeliveryLabel.cs
-	namespace		 	%
-MTM_Receiving_Application		
- #
-.		# $
-Data		$ (
-.		( )
-	Receiving		) 2
-;		2 3
-public 
-static 
-class $
-Dao_CarrierDeliveryLabel ,
-{ 
-private 
-static !
-IService_ErrorHandler (
-?( )
-_errorHandler* 7
-;7 8
-public 
-
-static 
-void 
-SetErrorHandler &
-(& '!
-IService_ErrorHandler' <
-errorHandler= I
-)I J
-{ 
-_errorHandler 
-= 
-errorHandler $
-;$ %
-} 
-public!! 
-
-static!! 
-async!! 
-Task!! 
-<!! 
-Model_Dao_Result!! -
->!!- .+
-InsertCarrierDeliveryLabelAsync!!/ N
-(!!N O&
-Model_CarrierDeliveryLabel!!O i
-label!!j o
-)!!o p
-{"" 
-try## 
-{$$ 	
-string&& 
-connectionString&& #
-=&&$ %%
-Helper_Database_Variables&&& ?
-.&&? @
-GetConnectionString&&@ S
-(&&S T
-useProduction&&T a
-:&&a b
-true&&c g
-)&&g h
-;&&h i
-var)) 
-
-parameters)) 
-=)) 
-new))  
-MySqlParameter))! /
-[))/ 0
-]))0 1
-{** 
-new++ 
-MySqlParameter++ "
-(++" #
-$str++# 1
-,++1 2
-label++3 8
-.++8 9
-	DeliverTo++9 B
-??++C E
-string++F L
-.++L M
-Empty++M R
-)++R S
-,++S T
-new,, 
-MySqlParameter,, "
-(,," #
-$str,,# 2
-,,,2 3
-label,,4 9
-.,,9 :
-
-Department,,: D
-??,,E G
-string,,H N
-.,,N O
-Empty,,O T
-),,T U
-,,,U V
-new-- 
-MySqlParameter-- "
-(--" #
-$str--# :
-,--: ;
-label--< A
-.--A B
-PackageDescription--B T
-??--U W
-string--X ^
-.--^ _
-Empty--_ d
-)--d e
-,--e f
-new.. 
-MySqlParameter.. "
-(.." #
-$str..# 0
-,..0 1
-(..2 3
-object..3 9
-?..9 :
-)..: ;
-label..; @
-...@ A
-PONumber..A I
-??..J L
-DBNull..M S
-...S T
-Value..T Y
-)..Y Z
-,..Z [
-new// 
-MySqlParameter// "
-(//" #
-$str//# 7
-,//7 8
-label//9 >
-.//> ?
-WorkOrderNumber//? N
-??//O Q
-string//R X
-.//X Y
-Empty//Y ^
-)//^ _
-,//_ `
-new00 
-MySqlParameter00 "
-(00" #
-$str00# 6
-,006 7
-label008 =
-.00= >
-EmployeeNumber00> L
-)00L M
-,00M N
-new11 
-MySqlParameter11 "
-(11" #
-$str11# ,
-,11, -
-label11. 3
-.113 4
-Date114 8
-)118 9
-,119 :
-new22 
-MySqlParameter22 "
-(22" #
-$str22# .
-,22. /
-MySqlDbType220 ;
-.22; <
-Int3222< A
-)22A B
-{22C D
-	Direction22E N
-=22O P
-System22Q W
-.22W X
-Data22X \
-.22\ ]
-ParameterDirection22] o
-.22o p
-Output22p v
-}22w x
-,22x y
-new33 
-MySqlParameter33 "
-(33" #
-$str33# 0
-,330 1
-MySqlDbType332 =
-.33= >
-VarChar33> E
-,33E F
-$num33G J
-)33J K
-{33L M
-	Direction33N W
-=33X Y
-System33Z `
-.33` a
-Data33a e
-.33e f
-ParameterDirection33f x
-.33x y
-Output33y 
-}
-33€ 
-}44 
-;44 
-if77 
-(77 
-!77 +
-Helper_Database_StoredProcedure77 0
-.770 1
-ValidateParameters771 C
-(77C D
-
-parameters77D N
-)77N O
-)77O P
-{88 
-return99 
-new99 
-Model_Dao_Result99 +
-{:: 
-Success;; 
-=;; 
-false;; #
-,;;# $
-ErrorMessage<<  
-=<<! "
-$str<<# O
-,<<O P
-Severity== 
-=== 
-Models== %
-.==% &
-Enums==& +
-.==+ ,
-Enum_ErrorSeverity==, >
-.==> ?
-Warning==? F
-}>> 
-;>> 
-}?? 
-varBB 
-resultBB 
-=BB 
-awaitBB +
-Helper_Database_StoredProcedureBB >
-.BB> ?
-ExecuteAsyncBB? K
-(BBK L
-$strCC /
-,CC/ 0
-
-parametersDD 
-,DD 
-connectionStringEE  
-)FF 
-;FF 
-returnHH 
-resultHH 
-;HH 
-}II 	
-catchJJ 
-(JJ 
-	ExceptionJJ 
-exJJ 
-)JJ 
-{KK 	
-varLL 
-errorResultLL 
-=LL 
-newLL !
-Model_Dao_ResultLL" 2
-{MM 
-SuccessNN 
-=NN 
-falseNN 
-,NN  
-ErrorMessageOO 
-=OO 
-$"OO !
-$strOO! T
-{OOT U
-exOOU W
-.OOW X
-MessageOOX _
-}OO_ `
-"OO` a
-,OOa b
-SeverityPP 
-=PP 
-ModelsPP !
-.PP! "
-EnumsPP" '
-.PP' (
-Enum_ErrorSeverityPP( :
-.PP: ;
-ErrorPP; @
-}QQ 
-;QQ 
-ifTT 
-(TT 
-_errorHandlerTT 
-!=TT  
-nullTT! %
-)TT% &
-{UU 
-awaitVV 
-_errorHandlerVV #
-.VV# $
-HandleErrorAsyncVV$ 4
-(VV4 5
-errorResultWW 
-.WW  
-ErrorMessageWW  ,
-,WW, -
-errorResultXX 
-.XX  
-SeverityXX  (
-,XX( )
-exYY 
-,YY 
-
-showDialogZZ 
-:ZZ 
-falseZZ  %
-)[[ 
-;[[ 
-}\\ 
-return^^ 
-errorResult^^ 
-;^^ 
-}__ 	
-}`` 
-}aa U
+}`` U
 [C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\InforVisual\Dao_InforVisualPO.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -82793,7 +79012,3446 @@ Parametersww 
  	
 }
 ‚‚ 
-}ƒƒ ¥m
+}ƒƒ δ¦
+iC:\Users\johnk\source\repos\MTM_Receiving_Application\Helpers\Database\Helper_Database_StoredProcedure.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Helpers$ +
+.+ ,
+Database, 4
+;4 5
+public 
+static 
+class +
+Helper_Database_StoredProcedure 3
+{ 
+private 
+const 
+int 
+
+MaxRetries  
+=! "
+$num# $
+;$ %
+private 
+static 
+readonly 
+int 
+[  
+]  !
+RetryDelaysMs" /
+=0 1
+{2 3
+$num4 7
+,7 8
+$num9 <
+,< =
+$num> A
+}B C
+;C D
+public 
+
+static 
+async 
+Task 
+< 
+Model_Dao_Result -
+>- .
+ExecuteAsync/ ;
+(; <
+string 
+procedureName 
+, 
+MySqlParameter 
+[ 
+] 
+
+parameters #
+,# $
+string 
+connectionString 
+)  
+{ 
+var 
+result 
+= 
+new 
+Model_Dao_Result )
+() *
+)* +
+;+ ,
+var 
+	stopwatch 
+= 
+	Stopwatch !
+.! "
+StartNew" *
+(* +
+)+ ,
+;, -
+int   
+attempt   
+=   
+$num   
+;   
+while"" 
+("" 
+attempt"" 
+<"" 
+
+MaxRetries"" #
+)""# $
+{## 	
+attempt$$ 
+++$$ 
+;$$ 
+try&& 
+{'' 
+using(( 
+var(( 
+
+connection(( $
+=((% &
+new((' *
+MySqlConnection((+ :
+(((: ;
+connectionString((; K
+)((K L
+;((L M
+await)) 
+
+connection))  
+.))  !
+	OpenAsync))! *
+())* +
+)))+ ,
+;)), -
+using++ 
+var++ 
+command++ !
+=++" #
+new++$ '
+MySqlCommand++( 4
+(++4 5
+procedureName++5 B
+,++B C
+
+connection++D N
+)++N O
+{,, 
+CommandType-- 
+=--  !
+CommandType--" -
+.--- .
+StoredProcedure--. =
+}.. 
+;.. 
+if00 
+(00 
+
+parameters00 
+!=00 !
+null00" &
+)00& '
+{11 
+command22 
+.22 
+
+Parameters22 &
+.22& '
+AddRange22' /
+(22/ 0
+
+parameters220 :
+)22: ;
+;22; <
+}33 
+var55 
+affectedRows55  
+=55! "
+await55# (
+command55) 0
+.550 1 
+ExecuteNonQueryAsync551 E
+(55E F
+)55F G
+;55G H
+foreach88 
+(88 
+var88 
+param88 "
+in88# %
+command88& -
+.88- .
+
+Parameters88. 8
+)888 9
+{99 
+if:: 
+(:: 
+param:: 
+is::  
+MySqlParameter::! /
+p::0 1
+&&::2 4
+(::5 6
+p::6 7
+.::7 8
+	Direction::8 A
+==::B D
+ParameterDirection::E W
+.::W X
+Output::X ^
+||::_ a
+p::b c
+.::c d
+	Direction::d m
+==::n p
+ParameterDirection	::q ƒ
+.
+::ƒ „
+InputOutput
+::„ 
+)
+:: 
+)
+:: ‘
+{;; 
+}>> 
+}?? 
+	stopwatchAA 
+.AA 
+StopAA 
+(AA 
+)AA  
+;AA  !
+resultBB 
+.BB 
+SuccessBB 
+=BB  
+trueBB! %
+;BB% &
+resultCC 
+.CC 
+AffectedRowsCC #
+=CC$ %
+affectedRowsCC& 2
+;CC2 3
+resultDD 
+.DD 
+ExecutionTimeMsDD &
+=DD' (
+	stopwatchDD) 2
+.DD2 3
+ElapsedMillisecondsDD3 F
+;DDF G
+returnEE 
+resultEE 
+;EE 
+}FF 
+catchGG 
+(GG 
+MySqlExceptionGG !
+exGG" $
+)GG$ %
+whenGG& *
+(GG+ ,
+IsTransientErrorGG, <
+(GG< =
+exGG= ?
+)GG? @
+&&GGA C
+attemptGGD K
+<GGL M
+
+MaxRetriesGGN X
+)GGX Y
+{HH 
+awaitII 
+TaskII 
+.II 
+DelayII  
+(II  !
+RetryDelaysMsII! .
+[II. /
+attemptII/ 6
+-II7 8
+$numII9 :
+]II: ;
+)II; <
+;II< =
+continueJJ 
+;JJ 
+}KK 
+catchLL 
+(LL 
+	ExceptionLL 
+exLL 
+)LL  
+{MM 
+	stopwatchNN 
+.NN 
+StopNN 
+(NN 
+)NN  
+;NN  !
+returnOO $
+Model_Dao_Result_FactoryOO /
+.OO/ 0
+FailureOO0 7
+(OO7 8
+$"OO8 :
+$strOO: L
+{OOL M
+procedureNameOOM Z
+}OOZ [
+$strOO[ e
+{OOe f
+exOOf h
+.OOh i
+MessageOOi p
+}OOp q
+"OOq r
+,OOr s
+exOOt v
+)OOv w
+;OOw x
+}PP 
+}QQ 	
+	stopwatchSS 
+.SS 
+StopSS 
+(SS 
+)SS 
+;SS 
+returnTT $
+Model_Dao_Result_FactoryTT '
+.TT' (
+FailureTT( /
+(TT/ 0
+$"TT0 2
+$strTT2 D
+{TTD E
+procedureNameTTE R
+}TTR S
+$strTTS b
+{TTb c
+
+MaxRetriesTTc m
+}TTm n
+$strTTn w
+"TTw x
+)TTx y
+;TTy z
+}UU 
+publicZZ 
+
+staticZZ 
+boolZZ 
+ValidateParametersZZ )
+(ZZ) *
+MySqlParameterZZ* 8
+[ZZ8 9
+]ZZ9 :
+
+parametersZZ; E
+)ZZE F
+{[[ 
+if\\ 
+
+(\\ 
+
+parameters\\ 
+==\\ 
+null\\ 
+)\\ 
+return\\  &
+true\\' +
+;\\+ ,
+foreach^^ 
+(^^ 
+var^^ 
+param^^ 
+in^^ 
+
+parameters^^ (
+)^^( )
+{__ 	
+if`` 
+(`` 
+param`` 
+.`` 
+Value`` 
+==`` 
+null`` #
+&&``$ &
+param``' ,
+.``, -
+	Direction``- 6
+==``7 9
+ParameterDirection``: L
+.``L M
+Input``M R
+)``R S
+{aa 
+returncc 
+falsecc 
+;cc 
+}dd 
+}ee 	
+returnff 
+trueff 
+;ff 
+}gg 
+publicll 
+
+staticll 
+asyncll 
+Taskll 
+<ll 
+Model_Dao_Resultll -
+>ll- . 
+ExecuteNonQueryAsyncll/ C
+(llC D
+stringmm 
+connectionStringmm 
+,mm  
+stringnn 
+procedureNamenn 
+,nn 
+
+Dictionaryoo 
+<oo 
+stringoo 
+,oo 
+objectoo !
+>oo! "
+?oo" #
+
+parametersoo$ .
+=oo/ 0
+nulloo1 5
+)oo5 6
+{pp 
+varqq 
+resultqq 
+=qq 
+newqq 
+Model_Dao_Resultqq )
+(qq) *
+)qq* +
+;qq+ ,
+varrr 
+	stopwatchrr 
+=rr 
+	Stopwatchrr !
+.rr! "
+StartNewrr" *
+(rr* +
+)rr+ ,
+;rr, -
+intss 
+attemptss 
+=ss 
+$numss 
+;ss 
+whileuu 
+(uu 
+attemptuu 
+<uu 
+
+MaxRetriesuu #
+)uu# $
+{vv 	
+attemptww 
+++ww 
+;ww 
+tryyy 
+{zz 
+using{{ 
+var{{ 
+
+connection{{ $
+={{% &
+new{{' *
+MySqlConnection{{+ :
+({{: ;
+connectionString{{; K
+){{K L
+;{{L M
+await|| 
+
+connection||  
+.||  !
+	OpenAsync||! *
+(||* +
+)||+ ,
+;||, -
+using~~ 
+var~~ 
+command~~ !
+=~~" #
+new~~$ '
+MySqlCommand~~( 4
+(~~4 5
+procedureName~~5 B
+,~~B C
+
+connection~~D N
+)~~N O
+{ 
+CommandType
+€€ 
+=
+€€  !
+CommandType
+€€" -
+.
+€€- .
+StoredProcedure
+€€. =
+}
+ 
+;
+ 
+AddParameters
+ƒƒ 
+(
+ƒƒ 
+command
+ƒƒ %
+,
+ƒƒ% &
+
+parameters
+ƒƒ' 1
+)
+ƒƒ1 2
+;
+ƒƒ2 3
+var
+…… 
+affectedRows
+……  
+=
+……! "
+await
+……# (
+command
+……) 0
+.
+……0 1"
+ExecuteNonQueryAsync
+……1 E
+(
+……E F
+)
+……F G
+;
+……G H
+	stopwatch
+‡‡ 
+.
+‡‡ 
+Stop
+‡‡ 
+(
+‡‡ 
+)
+‡‡  
+;
+‡‡  !
+result
+ 
+.
+ 
+Success
+ 
+=
+  
+true
+! %
+;
+% &
+result
+‰‰ 
+.
+‰‰ 
+AffectedRows
+‰‰ #
+=
+‰‰$ %
+affectedRows
+‰‰& 2
+;
+‰‰2 3
+result
+ 
+.
+ 
+ExecutionTimeMs
+ &
+=
+' (
+	stopwatch
+) 2
+.
+2 3!
+ElapsedMilliseconds
+3 F
+;
+F G
+return
+‹‹ 
+result
+‹‹ 
+;
+‹‹ 
+}
+ 
+catch
+ 
+(
+ 
+MySqlException
+ !
+ex
+" $
+)
+$ %
+when
+& *
+(
++ ,
+IsTransientError
+, <
+(
+< =
+ex
+= ?
+)
+? @
+&&
+A C
+attempt
+D K
+<
+L M
+
+MaxRetries
+N X
+)
+X Y
+{
+ 
+await
+ 
+Task
+ 
+.
+ 
+Delay
+  
+(
+  !
+RetryDelaysMs
+! .
+[
+. /
+attempt
+/ 6
+-
+7 8
+$num
+9 :
+]
+: ;
+)
+; <
+;
+< =
+continue
+ 
+;
+ 
+}
+‘‘ 
+catch
+’’ 
+(
+’’ 
+	Exception
+’’ 
+ex
+’’ 
+)
+’’  
+{
+““ 
+	stopwatch
+”” 
+.
+”” 
+Stop
+”” 
+(
+”” 
+)
+””  
+;
+””  !
+result
+•• 
+.
+•• 
+Success
+•• 
+=
+••  
+false
+••! &
+;
+••& '
+result
+–– 
+.
+–– 
+ErrorMessage
+–– #
+=
+––$ %
+$"
+––& (
+$str
+––( :
+{
+––: ;
+procedureName
+––; H
+}
+––H I
+$str
+––I S
+{
+––S T
+ex
+––T V
+.
+––V W
+Message
+––W ^
+}
+––^ _
+"
+––_ `
+;
+––` a
+result
+—— 
+.
+—— 
+Severity
+—— 
+=
+——  ! 
+Enum_ErrorSeverity
+——" 4
+.
+——4 5
+Error
+——5 :
+;
+——: ;
+result
+ 
+.
+ 
+ExecutionTimeMs
+ &
+=
+' (
+	stopwatch
+) 2
+.
+2 3!
+ElapsedMilliseconds
+3 F
+;
+F G
+result
+™™ 
+.
+™™ 
+	Exception
+™™  
+=
+™™! "
+ex
+™™# %
+;
+™™% &
+return
+ 
+result
+ 
+;
+ 
+}
+›› 
+}
+ 	
+	stopwatch
+ 
+.
+ 
+Stop
+ 
+(
+ 
+)
+ 
+;
+ 
+result
+ 
+.
+ 
+Success
+ 
+=
+ 
+false
+ 
+;
+ 
+result
+   
+.
+   
+ErrorMessage
+   
+=
+   
+$"
+    
+$str
+    2
+{
+  2 3
+procedureName
+  3 @
+}
+  @ A
+$str
+  A P
+{
+  P Q
+
+MaxRetries
+  Q [
+}
+  [ \
+$str
+  \ e
+"
+  e f
+;
+  f g
+result
+΅΅ 
+.
+΅΅ 
+Severity
+΅΅ 
+=
+΅΅  
+Enum_ErrorSeverity
+΅΅ ,
+.
+΅΅, -
+Critical
+΅΅- 5
+;
+΅΅5 6
+result
+ΆΆ 
+.
+ΆΆ 
+ExecutionTimeMs
+ΆΆ 
+=
+ΆΆ  
+	stopwatch
+ΆΆ! *
+.
+ΆΆ* +!
+ElapsedMilliseconds
+ΆΆ+ >
+;
+ΆΆ> ?
+return
+££ 
+result
+££ 
+;
+££ 
+}
+¤¤ 
+public
+©© 
+
+static
+©© 
+async
+©© 
+Task
+©© 
+<
+©© 
+Model_Dao_Result
+©© -
+<
+©©- .
+T
+©©. /
+>
+©©/ 0
+>
+©©0 1 
+ExecuteSingleAsync
+©©2 D
+<
+©©D E
+T
+©©E F
+>
+©©F G
+(
+©©G H
+string
+ªª 
+connectionString
+ªª 
+,
+ªª  
+string
+«« 
+procedureName
+«« 
+,
+«« 
+Func
+¬¬ 
+<
+¬¬ 
+IDataReader
+¬¬ 
+,
+¬¬ 
+T
+¬¬ 
+>
+¬¬ 
+mapper
+¬¬ #
+,
+¬¬# $
+
+Dictionary
+­­ 
+<
+­­ 
+string
+­­ 
+,
+­­ 
+object
+­­ !
+>
+­­! "
+?
+­­" #
+
+parameters
+­­$ .
+=
+­­/ 0
+null
+­­1 5
+)
+­­5 6
+{
+®® 
+var
+―― 
+result
+―― 
+=
+―― 
+new
+―― 
+Model_Dao_Result
+―― )
+<
+――) *
+T
+――* +
+>
+――+ ,
+(
+――, -
+)
+――- .
+;
+――. /
+var
+°° 
+	stopwatch
+°° 
+=
+°° 
+	Stopwatch
+°° !
+.
+°°! "
+StartNew
+°°" *
+(
+°°* +
+)
+°°+ ,
+;
+°°, -
+int
+±± 
+attempt
+±± 
+=
+±± 
+$num
+±± 
+;
+±± 
+while
+³³ 
+(
+³³ 
+attempt
+³³ 
+<
+³³ 
+
+MaxRetries
+³³ #
+)
+³³# $
+{
+΄΄ 	
+attempt
+µµ 
+++
+µµ 
+;
+µµ 
+try
+·· 
+{
+ΈΈ 
+using
+ΉΉ 
+var
+ΉΉ 
+
+connection
+ΉΉ $
+=
+ΉΉ% &
+new
+ΉΉ' *
+MySqlConnection
+ΉΉ+ :
+(
+ΉΉ: ;
+connectionString
+ΉΉ; K
+)
+ΉΉK L
+;
+ΉΉL M
+await
+ΊΊ 
+
+connection
+ΊΊ  
+.
+ΊΊ  !
+	OpenAsync
+ΊΊ! *
+(
+ΊΊ* +
+)
+ΊΊ+ ,
+;
+ΊΊ, -
+using
+ΌΌ 
+var
+ΌΌ 
+command
+ΌΌ !
+=
+ΌΌ" #
+new
+ΌΌ$ '
+MySqlCommand
+ΌΌ( 4
+(
+ΌΌ4 5
+procedureName
+ΌΌ5 B
+,
+ΌΌB C
+
+connection
+ΌΌD N
+)
+ΌΌN O
+{
+½½ 
+CommandType
+ΎΎ 
+=
+ΎΎ  !
+CommandType
+ΎΎ" -
+.
+ΎΎ- .
+StoredProcedure
+ΎΎ. =
+}
+ΏΏ 
+;
+ΏΏ 
+AddParameters
+ΑΑ 
+(
+ΑΑ 
+command
+ΑΑ %
+,
+ΑΑ% &
+
+parameters
+ΑΑ' 1
+)
+ΑΑ1 2
+;
+ΑΑ2 3
+using
+ΓΓ 
+var
+ΓΓ 
+reader
+ΓΓ  
+=
+ΓΓ! "
+await
+ΓΓ# (
+command
+ΓΓ) 0
+.
+ΓΓ0 1 
+ExecuteReaderAsync
+ΓΓ1 C
+(
+ΓΓC D
+)
+ΓΓD E
+;
+ΓΓE F
+if
+ΕΕ 
+(
+ΕΕ 
+await
+ΕΕ 
+reader
+ΕΕ  
+.
+ΕΕ  !
+	ReadAsync
+ΕΕ! *
+(
+ΕΕ* +
+)
+ΕΕ+ ,
+)
+ΕΕ, -
+{
+ΖΖ 
+result
+ΗΗ 
+.
+ΗΗ 
+Data
+ΗΗ 
+=
+ΗΗ  !
+mapper
+ΗΗ" (
+(
+ΗΗ( )
+reader
+ΗΗ) /
+)
+ΗΗ/ 0
+;
+ΗΗ0 1
+result
+ΘΘ 
+.
+ΘΘ 
+Success
+ΘΘ "
+=
+ΘΘ# $
+true
+ΘΘ% )
+;
+ΘΘ) *
+result
+ΙΙ 
+.
+ΙΙ 
+AffectedRows
+ΙΙ '
+=
+ΙΙ( )
+$num
+ΙΙ* +
+;
+ΙΙ+ ,
+}
+ΚΚ 
+else
+ΛΛ 
+{
+ΜΜ 
+result
+ΝΝ 
+.
+ΝΝ 
+Success
+ΝΝ "
+=
+ΝΝ# $
+false
+ΝΝ% *
+;
+ΝΝ* +
+result
+ΞΞ 
+.
+ΞΞ 
+ErrorMessage
+ΞΞ '
+=
+ΞΞ( )
+$str
+ΞΞ* ;
+;
+ΞΞ; <
+result
+ΟΟ 
+.
+ΟΟ 
+Severity
+ΟΟ #
+=
+ΟΟ$ % 
+Enum_ErrorSeverity
+ΟΟ& 8
+.
+ΟΟ8 9
+Info
+ΟΟ9 =
+;
+ΟΟ= >
+}
+ΠΠ 
+	stopwatch
+ÒÒ 
+.
+ÒÒ 
+Stop
+ÒÒ 
+(
+ÒÒ 
+)
+ÒÒ  
+;
+ÒÒ  !
+result
+ΣΣ 
+.
+ΣΣ 
+ExecutionTimeMs
+ΣΣ &
+=
+ΣΣ' (
+	stopwatch
+ΣΣ) 2
+.
+ΣΣ2 3!
+ElapsedMilliseconds
+ΣΣ3 F
+;
+ΣΣF G
+return
+ΤΤ 
+result
+ΤΤ 
+;
+ΤΤ 
+}
+ΥΥ 
+catch
+ΦΦ 
+(
+ΦΦ 
+MySqlException
+ΦΦ !
+ex
+ΦΦ" $
+)
+ΦΦ$ %
+when
+ΦΦ& *
+(
+ΦΦ+ ,
+IsTransientError
+ΦΦ, <
+(
+ΦΦ< =
+ex
+ΦΦ= ?
+)
+ΦΦ? @
+&&
+ΦΦA C
+attempt
+ΦΦD K
+<
+ΦΦL M
+
+MaxRetries
+ΦΦN X
+)
+ΦΦX Y
+{
+ΧΧ 
+await
+ΨΨ 
+Task
+ΨΨ 
+.
+ΨΨ 
+Delay
+ΨΨ  
+(
+ΨΨ  !
+RetryDelaysMs
+ΨΨ! .
+[
+ΨΨ. /
+attempt
+ΨΨ/ 6
+-
+ΨΨ7 8
+$num
+ΨΨ9 :
+]
+ΨΨ: ;
+)
+ΨΨ; <
+;
+ΨΨ< =
+continue
+ΩΩ 
+;
+ΩΩ 
+}
+ΪΪ 
+catch
+ΫΫ 
+(
+ΫΫ 
+	Exception
+ΫΫ 
+ex
+ΫΫ 
+)
+ΫΫ  
+{
+άά 
+	stopwatch
+έέ 
+.
+έέ 
+Stop
+έέ 
+(
+έέ 
+)
+έέ  
+;
+έέ  !
+return
+ήή &
+Model_Dao_Result_Factory
+ήή /
+.
+ήή/ 0
+Failure
+ήή0 7
+<
+ήή7 8
+T
+ήή8 9
+>
+ήή9 :
+(
+ήή: ;
+$"
+ήή; =
+$str
+ήή= O
+{
+ήήO P
+procedureName
+ήήP ]
+}
+ήή] ^
+$str
+ήή^ h
+{
+ήήh i
+ex
+ήήi k
+.
+ήήk l
+Message
+ήήl s
+}
+ήήs t
+"
+ήήt u
+,
+ήήu v
+ex
+ήήw y
+)
+ήήy z
+;
+ήήz {
+}
+ίί 
+}
+ΰΰ 	
+	stopwatch
+ββ 
+.
+ββ 
+Stop
+ββ 
+(
+ββ 
+)
+ββ 
+;
+ββ 
+return
+γγ &
+Model_Dao_Result_Factory
+γγ '
+.
+γγ' (
+Failure
+γγ( /
+<
+γγ/ 0
+T
+γγ0 1
+>
+γγ1 2
+(
+γγ2 3
+$"
+γγ3 5
+$str
+γγ5 G
+{
+γγG H
+procedureName
+γγH U
+}
+γγU V
+$str
+γγV e
+{
+γγe f
+
+MaxRetries
+γγf p
+}
+γγp q
+$str
+γγq z
+"
+γγz {
+)
+γγ{ |
+;
+γγ| }
+}
+δδ 
+public
+ιι 
+
+static
+ιι 
+async
+ιι 
+Task
+ιι 
+<
+ιι 
+Model_Dao_Result
+ιι -
+<
+ιι- .
+List
+ιι. 2
+<
+ιι2 3
+T
+ιι3 4
+>
+ιι4 5
+>
+ιι5 6
+>
+ιι6 7
+ExecuteListAsync
+ιι8 H
+<
+ιιH I
+T
+ιιI J
+>
+ιιJ K
+(
+ιιK L
+string
+κκ 
+connectionString
+κκ 
+,
+κκ  
+string
+λλ 
+procedureName
+λλ 
+,
+λλ 
+Func
+μμ 
+<
+μμ 
+IDataReader
+μμ 
+,
+μμ 
+T
+μμ 
+>
+μμ 
+mapper
+μμ #
+,
+μμ# $
+
+Dictionary
+νν 
+<
+νν 
+string
+νν 
+,
+νν 
+object
+νν !
+>
+νν! "
+?
+νν" #
+
+parameters
+νν$ .
+=
+νν/ 0
+null
+νν1 5
+)
+νν5 6
+{
+ξξ 
+var
+οο 
+result
+οο 
+=
+οο 
+new
+οο 
+Model_Dao_Result
+οο )
+<
+οο) *
+List
+οο* .
+<
+οο. /
+T
+οο/ 0
+>
+οο0 1
+>
+οο1 2
+(
+οο2 3
+)
+οο3 4
+;
+οο4 5
+var
+ππ 
+	stopwatch
+ππ 
+=
+ππ 
+	Stopwatch
+ππ !
+.
+ππ! "
+StartNew
+ππ" *
+(
+ππ* +
+)
+ππ+ ,
+;
+ππ, -
+int
+ρρ 
+attempt
+ρρ 
+=
+ρρ 
+$num
+ρρ 
+;
+ρρ 
+while
+σσ 
+(
+σσ 
+attempt
+σσ 
+<
+σσ 
+
+MaxRetries
+σσ #
+)
+σσ# $
+{
+ττ 	
+attempt
+υυ 
+++
+υυ 
+;
+υυ 
+try
+χχ 
+{
+ψψ 
+using
+ωω 
+var
+ωω 
+
+connection
+ωω $
+=
+ωω% &
+new
+ωω' *
+MySqlConnection
+ωω+ :
+(
+ωω: ;
+connectionString
+ωω; K
+)
+ωωK L
+;
+ωωL M
+await
+ϊϊ 
+
+connection
+ϊϊ  
+.
+ϊϊ  !
+	OpenAsync
+ϊϊ! *
+(
+ϊϊ* +
+)
+ϊϊ+ ,
+;
+ϊϊ, -
+using
+όό 
+var
+όό 
+command
+όό !
+=
+όό" #
+new
+όό$ '
+MySqlCommand
+όό( 4
+(
+όό4 5
+procedureName
+όό5 B
+,
+όόB C
+
+connection
+όόD N
+)
+όόN O
+{
+ύύ 
+CommandType
+ώώ 
+=
+ώώ  !
+CommandType
+ώώ" -
+.
+ώώ- .
+StoredProcedure
+ώώ. =
+}
+ÿÿ 
+;
+ÿÿ 
+AddParameters
+ 
+(
+ 
+command
+ %
+,
+% &
+
+parameters
+' 1
+)
+1 2
+;
+2 3
+using
+ƒƒ 
+var
+ƒƒ 
+reader
+ƒƒ  
+=
+ƒƒ! "
+await
+ƒƒ# (
+command
+ƒƒ) 0
+.
+ƒƒ0 1 
+ExecuteReaderAsync
+ƒƒ1 C
+(
+ƒƒC D
+)
+ƒƒD E
+;
+ƒƒE F
+var
+„„ 
+list
+„„ 
+=
+„„ 
+new
+„„ 
+List
+„„ #
+<
+„„# $
+T
+„„$ %
+>
+„„% &
+(
+„„& '
+)
+„„' (
+;
+„„( )
+while
+†† 
+(
+†† 
+await
+†† 
+reader
+†† #
+.
+††# $
+	ReadAsync
+††$ -
+(
+††- .
+)
+††. /
+)
+††/ 0
+{
+‡‡ 
+list
+ 
+.
+ 
+Add
+ 
+(
+ 
+mapper
+ #
+(
+# $
+reader
+$ *
+)
+* +
+)
++ ,
+;
+, -
+}
+‰‰ 
+result
+‹‹ 
+.
+‹‹ 
+Data
+‹‹ 
+=
+‹‹ 
+list
+‹‹ "
+;
+‹‹" #
+result
+ 
+.
+ 
+Success
+ 
+=
+  
+true
+! %
+;
+% &
+result
+ 
+.
+ 
+AffectedRows
+ #
+=
+$ %
+list
+& *
+.
+* +
+Count
++ 0
+;
+0 1
+	stopwatch
+ 
+.
+ 
+Stop
+ 
+(
+ 
+)
+  
+;
+  !
+result
+ 
+.
+ 
+ExecutionTimeMs
+ &
+=
+' (
+	stopwatch
+) 2
+.
+2 3!
+ElapsedMilliseconds
+3 F
+;
+F G
+return
+‘‘ 
+result
+‘‘ 
+;
+‘‘ 
+}
+’’ 
+catch
+““ 
+(
+““ 
+MySqlException
+““ !
+ex
+““" $
+)
+““$ %
+when
+““& *
+(
+““+ ,
+IsTransientError
+““, <
+(
+““< =
+ex
+““= ?
+)
+““? @
+&&
+““A C
+attempt
+““D K
+<
+““L M
+
+MaxRetries
+““N X
+)
+““X Y
+{
+”” 
+await
+•• 
+Task
+•• 
+.
+•• 
+Delay
+••  
+(
+••  !
+RetryDelaysMs
+••! .
+[
+••. /
+attempt
+••/ 6
+-
+••7 8
+$num
+••9 :
+]
+••: ;
+)
+••; <
+;
+••< =
+continue
+–– 
+;
+–– 
+}
+—— 
+catch
+ 
+(
+ 
+	Exception
+ 
+ex
+ 
+)
+  
+{
+™™ 
+	stopwatch
+ 
+.
+ 
+Stop
+ 
+(
+ 
+)
+  
+;
+  !
+return
+›› &
+Model_Dao_Result_Factory
+›› /
+.
+››/ 0
+Failure
+››0 7
+<
+››7 8
+List
+››8 <
+<
+››< =
+T
+››= >
+>
+››> ?
+>
+››? @
+(
+››@ A
+$"
+››A C
+$str
+››C U
+{
+››U V
+procedureName
+››V c
+}
+››c d
+$str
+››d n
+{
+››n o
+ex
+››o q
+.
+››q r
+Message
+››r y
+}
+››y z
+"
+››z {
+,
+››{ |
+ex
+››} 
+)›› €
+;››€ 
+}
+ 
+}
+ 	
+	stopwatch
+ 
+.
+ 
+Stop
+ 
+(
+ 
+)
+ 
+;
+ 
+return
+   &
+Model_Dao_Result_Factory
+   '
+.
+  ' (
+Failure
+  ( /
+<
+  / 0
+List
+  0 4
+<
+  4 5
+T
+  5 6
+>
+  6 7
+>
+  7 8
+(
+  8 9
+$"
+  9 ;
+$str
+  ; M
+{
+  M N
+procedureName
+  N [
+}
+  [ \
+$str
+  \ k
+{
+  k l
+
+MaxRetries
+  l v
+}
+  v w
+$str  w €
+"  € 
+)   ‚
+;  ‚ ƒ
+}
+΅΅ 
+public
+¦¦ 
+
+static
+¦¦ 
+async
+¦¦ 
+Task
+¦¦ 
+<
+¦¦ 
+Model_Dao_Result
+¦¦ -
+<
+¦¦- .
+	DataTable
+¦¦. 7
+>
+¦¦7 8
+>
+¦¦8 9#
+ExecuteDataTableAsync
+¦¦: O
+(
+¦¦O P
+string
+§§ 
+connectionString
+§§ 
+,
+§§  
+string
+¨¨ 
+procedureName
+¨¨ 
+,
+¨¨ 
+
+Dictionary
+©© 
+<
+©© 
+string
+©© 
+,
+©© 
+object
+©© !
+>
+©©! "
+?
+©©" #
+
+parameters
+©©$ .
+=
+©©/ 0
+null
+©©1 5
+)
+©©5 6
+{
+ªª 
+var
+«« 
+result
+«« 
+=
+«« 
+new
+«« 
+Model_Dao_Result
+«« )
+<
+««) *
+	DataTable
+««* 3
+>
+««3 4
+(
+««4 5
+)
+««5 6
+;
+««6 7
+var
+¬¬ 
+	stopwatch
+¬¬ 
+=
+¬¬ 
+	Stopwatch
+¬¬ !
+.
+¬¬! "
+StartNew
+¬¬" *
+(
+¬¬* +
+)
+¬¬+ ,
+;
+¬¬, -
+int
+­­ 
+attempt
+­­ 
+=
+­­ 
+$num
+­­ 
+;
+­­ 
+while
+―― 
+(
+―― 
+attempt
+―― 
+<
+―― 
+
+MaxRetries
+―― #
+)
+――# $
+{
+°° 	
+attempt
+±± 
+++
+±± 
+;
+±± 
+try
+³³ 
+{
+΄΄ 
+using
+µµ 
+var
+µµ 
+
+connection
+µµ $
+=
+µµ% &
+new
+µµ' *
+MySqlConnection
+µµ+ :
+(
+µµ: ;
+connectionString
+µµ; K
+)
+µµK L
+;
+µµL M
+await
+¶¶ 
+
+connection
+¶¶  
+.
+¶¶  !
+	OpenAsync
+¶¶! *
+(
+¶¶* +
+)
+¶¶+ ,
+;
+¶¶, -
+using
+ΈΈ 
+var
+ΈΈ 
+command
+ΈΈ !
+=
+ΈΈ" #
+new
+ΈΈ$ '
+MySqlCommand
+ΈΈ( 4
+(
+ΈΈ4 5
+procedureName
+ΈΈ5 B
+,
+ΈΈB C
+
+connection
+ΈΈD N
+)
+ΈΈN O
+{
+ΉΉ 
+CommandType
+ΊΊ 
+=
+ΊΊ  !
+CommandType
+ΊΊ" -
+.
+ΊΊ- .
+StoredProcedure
+ΊΊ. =
+}
+»» 
+;
+»» 
+AddParameters
+½½ 
+(
+½½ 
+command
+½½ %
+,
+½½% &
+
+parameters
+½½' 1
+)
+½½1 2
+;
+½½2 3
+using
+ΏΏ 
+var
+ΏΏ 
+reader
+ΏΏ  
+=
+ΏΏ! "
+await
+ΏΏ# (
+command
+ΏΏ) 0
+.
+ΏΏ0 1 
+ExecuteReaderAsync
+ΏΏ1 C
+(
+ΏΏC D
+)
+ΏΏD E
+;
+ΏΏE F
+var
+ΐΐ 
+	dataTable
+ΐΐ 
+=
+ΐΐ 
+new
+ΐΐ  #
+	DataTable
+ΐΐ$ -
+(
+ΐΐ- .
+)
+ΐΐ. /
+;
+ΐΐ/ 0
+	dataTable
+ΑΑ 
+.
+ΑΑ 
+Load
+ΑΑ 
+(
+ΑΑ 
+reader
+ΑΑ %
+)
+ΑΑ% &
+;
+ΑΑ& '
+	stopwatch
+ΓΓ 
+.
+ΓΓ 
+Stop
+ΓΓ 
+(
+ΓΓ 
+)
+ΓΓ  
+;
+ΓΓ  !
+result
+ΔΔ 
+.
+ΔΔ 
+Success
+ΔΔ 
+=
+ΔΔ  
+true
+ΔΔ! %
+;
+ΔΔ% &
+result
+ΕΕ 
+.
+ΕΕ 
+Data
+ΕΕ 
+=
+ΕΕ 
+	dataTable
+ΕΕ '
+;
+ΕΕ' (
+result
+ΖΖ 
+.
+ΖΖ 
+AffectedRows
+ΖΖ #
+=
+ΖΖ$ %
+	dataTable
+ΖΖ& /
+.
+ΖΖ/ 0
+Rows
+ΖΖ0 4
+.
+ΖΖ4 5
+Count
+ΖΖ5 :
+;
+ΖΖ: ;
+result
+ΗΗ 
+.
+ΗΗ 
+ExecutionTimeMs
+ΗΗ &
+=
+ΗΗ' (
+	stopwatch
+ΗΗ) 2
+.
+ΗΗ2 3!
+ElapsedMilliseconds
+ΗΗ3 F
+;
+ΗΗF G
+return
+ΘΘ 
+result
+ΘΘ 
+;
+ΘΘ 
+}
+ΙΙ 
+catch
+ΚΚ 
+(
+ΚΚ 
+MySqlException
+ΚΚ !
+ex
+ΚΚ" $
+)
+ΚΚ$ %
+when
+ΚΚ& *
+(
+ΚΚ+ ,
+IsTransientError
+ΚΚ, <
+(
+ΚΚ< =
+ex
+ΚΚ= ?
+)
+ΚΚ? @
+&&
+ΚΚA C
+attempt
+ΚΚD K
+<
+ΚΚL M
+
+MaxRetries
+ΚΚN X
+)
+ΚΚX Y
+{
+ΛΛ 
+await
+ΜΜ 
+Task
+ΜΜ 
+.
+ΜΜ 
+Delay
+ΜΜ  
+(
+ΜΜ  !
+RetryDelaysMs
+ΜΜ! .
+[
+ΜΜ. /
+attempt
+ΜΜ/ 6
+-
+ΜΜ7 8
+$num
+ΜΜ9 :
+]
+ΜΜ: ;
+)
+ΜΜ; <
+;
+ΜΜ< =
+continue
+ΝΝ 
+;
+ΝΝ 
+}
+ΞΞ 
+catch
+ΟΟ 
+(
+ΟΟ 
+	Exception
+ΟΟ 
+ex
+ΟΟ 
+)
+ΟΟ  
+{
+ΠΠ 
+	stopwatch
+ΡΡ 
+.
+ΡΡ 
+Stop
+ΡΡ 
+(
+ΡΡ 
+)
+ΡΡ  
+;
+ΡΡ  !
+result
+ÒÒ 
+.
+ÒÒ 
+Success
+ÒÒ 
+=
+ÒÒ  
+false
+ÒÒ! &
+;
+ÒÒ& '
+result
+ΣΣ 
+.
+ΣΣ 
+ErrorMessage
+ΣΣ #
+=
+ΣΣ$ %
+$"
+ΣΣ& (
+$str
+ΣΣ( :
+{
+ΣΣ: ;
+procedureName
+ΣΣ; H
+}
+ΣΣH I
+$str
+ΣΣI S
+{
+ΣΣS T
+ex
+ΣΣT V
+.
+ΣΣV W
+Message
+ΣΣW ^
+}
+ΣΣ^ _
+"
+ΣΣ_ `
+;
+ΣΣ` a
+result
+ΤΤ 
+.
+ΤΤ 
+Severity
+ΤΤ 
+=
+ΤΤ  ! 
+Enum_ErrorSeverity
+ΤΤ" 4
+.
+ΤΤ4 5
+Error
+ΤΤ5 :
+;
+ΤΤ: ;
+result
+ΥΥ 
+.
+ΥΥ 
+ExecutionTimeMs
+ΥΥ &
+=
+ΥΥ' (
+	stopwatch
+ΥΥ) 2
+.
+ΥΥ2 3!
+ElapsedMilliseconds
+ΥΥ3 F
+;
+ΥΥF G
+result
+ΦΦ 
+.
+ΦΦ 
+	Exception
+ΦΦ  
+=
+ΦΦ! "
+ex
+ΦΦ# %
+;
+ΦΦ% &
+return
+ΧΧ 
+result
+ΧΧ 
+;
+ΧΧ 
+}
+ΨΨ 
+}
+ΩΩ 	
+	stopwatch
+ΫΫ 
+.
+ΫΫ 
+Stop
+ΫΫ 
+(
+ΫΫ 
+)
+ΫΫ 
+;
+ΫΫ 
+result
+άά 
+.
+άά 
+Success
+άά 
+=
+άά 
+false
+άά 
+;
+άά 
+result
+έέ 
+.
+έέ 
+ErrorMessage
+έέ 
+=
+έέ 
+$"
+έέ  
+$str
+έέ  2
+{
+έέ2 3
+procedureName
+έέ3 @
+}
+έέ@ A
+$str
+έέA P
+{
+έέP Q
+
+MaxRetries
+έέQ [
+}
+έέ[ \
+$str
+έέ\ e
+"
+έέe f
+;
+έέf g
+result
+ήή 
+.
+ήή 
+Severity
+ήή 
+=
+ήή  
+Enum_ErrorSeverity
+ήή ,
+.
+ήή, -
+Critical
+ήή- 5
+;
+ήή5 6
+result
+ίί 
+.
+ίί 
+ExecutionTimeMs
+ίί 
+=
+ίί  
+	stopwatch
+ίί! *
+.
+ίί* +!
+ElapsedMilliseconds
+ίί+ >
+;
+ίί> ?
+return
+ΰΰ 
+result
+ΰΰ 
+;
+ΰΰ 
+}
+αα 
+public
+ζζ 
+
+static
+ζζ 
+async
+ζζ 
+Task
+ζζ 
+<
+ζζ 
+Model_Dao_Result
+ζζ -
+>
+ζζ- .'
+ExecuteInTransactionAsync
+ζζ/ H
+(
+ζζH I
+MySqlConnection
+ηη 
+
+connection
+ηη "
+,
+ηη" #
+MySqlTransaction
+θθ 
+transaction
+θθ $
+,
+θθ$ %
+string
+ιι 
+procedureName
+ιι 
+,
+ιι 
+
+Dictionary
+κκ 
+<
+κκ 
+string
+κκ 
+,
+κκ 
+object
+κκ !
+>
+κκ! "
+?
+κκ" #
+
+parameters
+κκ$ .
+=
+κκ/ 0
+null
+κκ1 5
+)
+κκ5 6
+{
+λλ 
+var
+μμ 
+result
+μμ 
+=
+μμ 
+new
+μμ 
+Model_Dao_Result
+μμ )
+(
+μμ) *
+)
+μμ* +
+;
+μμ+ ,
+var
+νν 
+	stopwatch
+νν 
+=
+νν 
+	Stopwatch
+νν !
+.
+νν! "
+StartNew
+νν" *
+(
+νν* +
+)
+νν+ ,
+;
+νν, -
+try
+οο 
+{
+ππ 	
+using
+ρρ 
+var
+ρρ 
+command
+ρρ 
+=
+ρρ 
+new
+ρρ  #
+MySqlCommand
+ρρ$ 0
+(
+ρρ0 1
+procedureName
+ρρ1 >
+,
+ρρ> ?
+
+connection
+ρρ@ J
+,
+ρρJ K
+transaction
+ρρL W
+)
+ρρW X
+{
+ςς 
+CommandType
+σσ 
+=
+σσ 
+CommandType
+σσ )
+.
+σσ) *
+StoredProcedure
+σσ* 9
+}
+ττ 
+;
+ττ 
+AddParameters
+φφ 
+(
+φφ 
+command
+φφ !
+,
+φφ! "
+
+parameters
+φφ# -
+)
+φφ- .
+;
+φφ. /
+var
+ψψ 
+affectedRows
+ψψ 
+=
+ψψ 
+await
+ψψ $
+command
+ψψ% ,
+.
+ψψ, -"
+ExecuteNonQueryAsync
+ψψ- A
+(
+ψψA B
+)
+ψψB C
+;
+ψψC D
+	stopwatch
+ϊϊ 
+.
+ϊϊ 
+Stop
+ϊϊ 
+(
+ϊϊ 
+)
+ϊϊ 
+;
+ϊϊ 
+result
+ϋϋ 
+.
+ϋϋ 
+Success
+ϋϋ 
+=
+ϋϋ 
+true
+ϋϋ !
+;
+ϋϋ! "
+result
+όό 
+.
+όό 
+AffectedRows
+όό 
+=
+όό  !
+affectedRows
+όό" .
+;
+όό. /
+result
+ύύ 
+.
+ύύ 
+ExecutionTimeMs
+ύύ "
+=
+ύύ# $
+	stopwatch
+ύύ% .
+.
+ύύ. /!
+ElapsedMilliseconds
+ύύ/ B
+;
+ύύB C
+return
+ώώ 
+result
+ώώ 
+;
+ώώ 
+}
+ÿÿ 	
+catch
+€€ 
+(
+€€ 
+	Exception
+€€ 
+ex
+€€ 
+)
+€€ 
+{
+ 	
+	stopwatch
+‚‚ 
+.
+‚‚ 
+Stop
+‚‚ 
+(
+‚‚ 
+)
+‚‚ 
+;
+‚‚ 
+result
+ƒƒ 
+.
+ƒƒ 
+Success
+ƒƒ 
+=
+ƒƒ 
+false
+ƒƒ "
+;
+ƒƒ" #
+result
+„„ 
+.
+„„ 
+ErrorMessage
+„„ 
+=
+„„  !
+$"
+„„" $
+$str
+„„$ 6
+{
+„„6 7
+procedureName
+„„7 D
+}
+„„D E
+$str
+„„E ^
+{
+„„^ _
+ex
+„„_ a
+.
+„„a b
+Message
+„„b i
+}
+„„i j
+"
+„„j k
+;
+„„k l
+result
+…… 
+.
+…… 
+Severity
+…… 
+=
+……  
+Enum_ErrorSeverity
+…… 0
+.
+……0 1
+Error
+……1 6
+;
+……6 7
+result
+†† 
+.
+†† 
+ExecutionTimeMs
+†† "
+=
+††# $
+	stopwatch
+††% .
+.
+††. /!
+ElapsedMilliseconds
+††/ B
+;
+††B C
+result
+‡‡ 
+.
+‡‡ 
+	Exception
+‡‡ 
+=
+‡‡ 
+ex
+‡‡ !
+;
+‡‡! "
+return
+ 
+result
+ 
+;
+ 
+}
+‰‰ 	
+}
+ 
+private
+ 
+static
+ 
+void
+ 
+AddParameters
+ %
+(
+% &
+MySqlCommand
+& 2
+command
+3 :
+,
+: ;
+
+Dictionary
+< F
+<
+F G
+string
+G M
+,
+M N
+object
+O U
+>
+U V
+?
+V W
+
+parameters
+X b
+)
+b c
+{
+ 
+if
+ 
+
+(
+ 
+
+parameters
+ 
+!=
+ 
+null
+ 
+)
+ 
+{
+ 	
+foreach
+ 
+(
+ 
+var
+ 
+param
+ 
+in
+ !
+
+parameters
+" ,
+)
+, -
+{
+‘‘ 
+string
+““ 
+	paramName
+““  
+=
+““! "
+param
+““# (
+.
+““( )
+Key
+““) ,
+.
+““, -
+
+StartsWith
+““- 7
+(
+““7 8
+$str
+““8 <
+)
+““< =
+?
+““> ?
+$str
+““@ C
++
+““D E
+param
+““F K
+.
+““K L
+Key
+““L O
+:
+““P Q
+$str
+““R W
++
+““X Y
+param
+““Z _
+.
+““_ `
+Key
+““` c
+;
+““c d
+string
+›› 
+	cleanName
+››  
+=
+››! "
+param
+››# (
+.
+››( )
+Key
+››) ,
+.
+››, -
+	TrimStart
+››- 6
+(
+››6 7
+$char
+››7 :
+)
+››: ;
+;
+››; <
+string
+ 
+	finalName
+  
+=
+! "
+	cleanName
+# ,
+.
+, -
+
+StartsWith
+- 7
+(
+7 8
+$str
+8 <
+)
+< =
+?
+> ?
+$str
+@ C
++
+D E
+	cleanName
+F O
+:
+P Q
+$str
+R W
++
+X Y
+	cleanName
+Z c
+;
+c d
+command
+ 
+.
+ 
+
+Parameters
+ "
+.
+" #
+AddWithValue
+# /
+(
+/ 0
+	finalName
+0 9
+,
+9 :
+param
+; @
+.
+@ A
+Value
+A F
+??
+G I
+DBNull
+J P
+.
+P Q
+Value
+Q V
+)
+V W
+;
+W X
+}
+ 
+}
+   	
+}
+΅΅ 
+private
+¦¦ 
+static
+¦¦ 
+bool
+¦¦ 
+IsTransientError
+¦¦ (
+(
+¦¦( )
+MySqlException
+¦¦) 7
+ex
+¦¦8 :
+)
+¦¦: ;
+{
+§§ 
+return
+­­ 
+ex
+­­ 
+.
+­­ 
+Number
+­­ 
+==
+­­ 
+$num
+­­  
+||
+­­! #
+ex
+­­$ &
+.
+­­& '
+Number
+­­' -
+==
+­­. 0
+$num
+­­1 5
+||
+­­6 8
+ex
+®® 
+.
+®® 
+Number
+®® 
+==
+®® 
+$num
+®®  
+||
+®®! #
+ex
+®®$ &
+.
+®®& '
+Number
+®®' -
+==
+®®. 0
+$num
+®®1 5
+;
+®®5 6
+}
+―― 
+}°° ¥m
 ]C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\InforVisual\Dao_InforVisualPart.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -83827,878 +83485,7 @@ PartStatus
    	
 }
 ΅΅ 
-}ΆΆ Ιb
-\C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_InventoriedDunnage.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-Data$ (
-.( )
-Dunnage) 0
-;0 1
-public 
-class "
-Dao_InventoriedDunnage #
-{ 
-private 
-readonly 
-string 
-_connectionString -
-;- .
-public 
-"
-Dao_InventoriedDunnage !
-(! "
-string" (
-connectionString) 9
-)9 :
-{ 
-_connectionString 
-= 
-connectionString ,
-;, -
-} 
-public 
-
-virtual 
-async 
-Task 
-< 
-Model_Dao_Result .
-<. /
-List/ 3
-<3 4$
-Model_InventoriedDunnage4 L
->L M
->M N
->N O
-GetAllAsyncP [
-([ \
-)\ ]
-{ 
-return 
-await +
-Helper_Database_StoredProcedure 4
-.4 5
-ExecuteListAsync5 E
-<E F$
-Model_InventoriedDunnageF ^
->^ _
-(_ `
-_connectionString 
-, 
-$str ,
-,, -
-MapFromReader 
-) 	
-;	 
-
-} 
-public 
-
-virtual 
-async 
-Task 
-< 
-Model_Dao_Result .
-<. /
-bool/ 3
->3 4
->4 5
-
-CheckAsync6 @
-(@ A
-stringA G
-partIdH N
-)N O
-{   
-var!! 
-
-parameters!! 
-=!! 
-new!! 
-
-Dictionary!! '
-<!!' (
-string!!( .
-,!!. /
-object!!0 6
->!!6 7
-{"" 	
-{## 
-$str## 
-,## 
-partId## 
-}##  !
-}$$ 	
-;$$	 
-
-return&& 
-await&& +
-Helper_Database_StoredProcedure&& 4
-.&&4 5
-ExecuteSingleAsync&&5 G
-<&&G H
-bool&&H L
->&&L M
-(&&M N
-_connectionString'' 
-,'' 
-$str(( *
-,((* +
-reader)) 
-=>)) 
-reader)) 
-.)) 
-
-GetBoolean)) '
-())' (
-reader))( .
-.)). /
-
-GetOrdinal))/ 9
-())9 :
-$str)): N
-)))N O
-)))O P
-,))P Q
-
-parameters** 
-)++ 	
-;++	 
-
-},, 
-public.. 
-
-virtual.. 
-async.. 
-Task.. 
-<.. 
-Model_Dao_Result.. .
-<... /$
-Model_InventoriedDunnage../ G
->..G H
->..H I
-GetByPartAsync..J X
-(..X Y
-string..Y _
-partId..` f
-)..f g
-{// 
-var00 
-
-parameters00 
-=00 
-new00 
-
-Dictionary00 '
-<00' (
-string00( .
-,00. /
-object000 6
->006 7
-{11 	
-{22 
-$str22 
-,22 
-partId22 
-}22  !
-}33 	
-;33	 
-
-return55 
-await55 +
-Helper_Database_StoredProcedure55 4
-.554 5
-ExecuteSingleAsync555 G
-<55G H$
-Model_InventoriedDunnage55H `
->55` a
-(55a b
-_connectionString66 
-,66 
-$str77 0
-,770 1
-MapFromReader88 
-,88 
-
-parameters99 
-):: 	
-;::	 
-
-};; 
-public== 
-
-virtual== 
-async== 
-Task== 
-<== 
-Model_Dao_Result== .
-<==. /
-int==/ 2
->==2 3
->==3 4
-InsertAsync==5 @
-(==@ A
-string==A G
-partId==H N
-,==N O
-string==P V
-inventoryMethod==W f
-,==f g
-string==h n
-notes==o t
-,==t u
-string==v |
-user	==} 
-)
-== ‚
-{>> 
-var?? 
-pNewId?? 
-=?? 
-new?? 
-MySqlParameter?? '
-(??' (
-$str??( 3
-,??3 4
-MySqlDbType??5 @
-.??@ A
-Int32??A F
-)??F G
-{@@ 	
-	DirectionAA 
-=AA 
-ParameterDirectionAA *
-.AA* +
-OutputAA+ 1
-}BB 	
-;BB	 
-
-varDD 
-
-parametersDD 
-=DD 
-newDD 
-MySqlParameterDD +
-[DD+ ,
-]DD, -
-{EE 	
-newFF 
-MySqlParameterFF 
-(FF 
-$strFF +
-,FF+ ,
-partIdFF- 3
-)FF3 4
-,FF4 5
-newGG 
-MySqlParameterGG 
-(GG 
-$strGG 4
-,GG4 5
-inventoryMethodGG6 E
-)GGE F
-,GGF G
-newHH 
-MySqlParameterHH 
-(HH 
-$strHH )
-,HH) *
-notesHH+ 0
-)HH0 1
-,HH1 2
-newII 
-MySqlParameterII 
-(II 
-$strII (
-,II( )
-userII* .
-)II. /
-,II/ 0
-pNewIdJJ 
-}KK 	
-;KK	 
-
-varMM 
-resultMM 
-=MM 
-awaitMM +
-Helper_Database_StoredProcedureMM :
-.MM: ;
-ExecuteAsyncMM; G
-(MMG H
-$strNN +
-,NN+ ,
-
-parametersOO 
-,OO 
-_connectionStringPP 
-)QQ 	
-;QQ	 
-
-ifSS 
-
-(SS 
-resultSS 
-.SS 
-	IsSuccessSS 
-)SS 
-{TT 	
-ifUU 
-(UU 
-pNewIdUU 
-.UU 
-ValueUU 
-!=UU 
-nullUU  $
-&&UU% '
-pNewIdUU( .
-.UU. /
-ValueUU/ 4
-!=UU5 7
-DBNullUU8 >
-.UU> ?
-ValueUU? D
-)UUD E
-{VV 
-returnWW $
-Model_Dao_Result_FactoryWW /
-.WW/ 0
-SuccessWW0 7
-<WW7 8
-intWW8 ;
->WW; <
-(WW< =
-ConvertWW= D
-.WWD E
-ToInt32WWE L
-(WWL M
-pNewIdWWM S
-.WWS T
-ValueWWT Y
-)WWY Z
-)WWZ [
-;WW[ \
-}XX 
-returnYY $
-Model_Dao_Result_FactoryYY +
-.YY+ ,
-FailureYY, 3
-<YY3 4
-intYY4 7
->YY7 8
-(YY8 9
-$strYY9 T
-)YYT U
-;YYU V
-}ZZ 	
-return\\ $
-Model_Dao_Result_Factory\\ '
-.\\' (
-Failure\\( /
-<\\/ 0
-int\\0 3
->\\3 4
-(\\4 5
-result\\5 ;
-.\\; <
-ErrorMessage\\< H
-,\\H I
-result\\J P
-.\\P Q
-	Exception\\Q Z
-)\\Z [
-;\\[ \
-}]] 
-public__ 
-
-virtual__ 
-async__ 
-Task__ 
-<__ 
-Model_Dao_Result__ .
->__. /
-UpdateAsync__0 ;
-(__; <
-int__< ?
-id__@ B
-,__B C
-string__D J
-inventoryMethod__K Z
-,__Z [
-string__\ b
-notes__c h
-,__h i
-string__j p
-user__q u
-)__u v
-{`` 
-varaa 
-
-parametersaa 
-=aa 
-newaa 
-
-Dictionaryaa '
-<aa' (
-stringaa( .
-,aa. /
-objectaa0 6
->aa6 7
-{bb 	
-{cc 
-$strcc 
-,cc 
-idcc 
-}cc 
-,cc 
-{dd 
-$strdd  
-,dd  !
-inventoryMethoddd" 1
-}dd2 3
-,dd3 4
-{ee 
-$stree 
-,ee 
-notesee 
-}ee 
-,ee 
-{ff 
-$strff 
-,ff 
-userff 
-}ff 
-}gg 	
-;gg	 
-
-returnii 
-awaitii +
-Helper_Database_StoredProcedureii 4
-.ii4 5 
-ExecuteNonQueryAsyncii5 I
-(iiI J
-_connectionStringjj 
-,jj 
-$strkk +
-,kk+ ,
-
-parametersll 
-)mm 	
-;mm	 
-
-}nn 
-publicpp 
-
-virtualpp 
-asyncpp 
-Taskpp 
-<pp 
-Model_Dao_Resultpp .
->pp. /
-DeleteAsyncpp0 ;
-(pp; <
-intpp< ?
-idpp@ B
-)ppB C
-{qq 
-varrr 
-
-parametersrr 
-=rr 
-newrr 
-
-Dictionaryrr '
-<rr' (
-stringrr( .
-,rr. /
-objectrr0 6
->rr6 7
-{ss 	
-{tt 
-$strtt 
-,tt 
-idtt 
-}tt 
-}uu 	
-;uu	 
-
-returnww 
-awaitww +
-Helper_Database_StoredProcedureww 4
-.ww4 5 
-ExecuteNonQueryAsyncww5 I
-(wwI J
-_connectionStringxx 
-,xx 
-$stryy +
-,yy+ ,
-
-parameterszz 
-){{ 	
-;{{	 
-
-}|| 
-private~~ $
-Model_InventoriedDunnage~~ $
-MapFromReader~~% 2
-(~~2 3
-IDataReader~~3 >
-reader~~? E
-)~~E F
-{ 
-return
-€€ 
-new
-€€ &
-Model_InventoriedDunnage
-€€ +
-{
- 	
-Id
-‚‚ 
-=
-‚‚ 
-reader
-‚‚ 
-.
-‚‚ 
-GetInt32
-‚‚  
-(
-‚‚  !
-reader
-‚‚! '
-.
-‚‚' (
-
-GetOrdinal
-‚‚( 2
-(
-‚‚2 3
-$str
-‚‚3 7
-)
-‚‚7 8
-)
-‚‚8 9
-,
-‚‚9 :
-PartId
-ƒƒ 
-=
-ƒƒ 
-reader
-ƒƒ 
-.
-ƒƒ 
-	GetString
-ƒƒ %
-(
-ƒƒ% &
-reader
-ƒƒ& ,
-.
-ƒƒ, -
-
-GetOrdinal
-ƒƒ- 7
-(
-ƒƒ7 8
-$str
-ƒƒ8 A
-)
-ƒƒA B
-)
-ƒƒB C
-,
-ƒƒC D
-InventoryMethod
-„„ 
-=
-„„ 
-reader
-„„ $
-.
-„„$ %
-IsDBNull
-„„% -
-(
-„„- .
-reader
-„„. 4
-.
-„„4 5
-
-GetOrdinal
-„„5 ?
-(
-„„? @
-$str
-„„@ R
-)
-„„R S
-)
-„„S T
-?
-„„U V
-null
-„„W [
-:
-„„\ ]
-reader
-„„^ d
-.
-„„d e
-	GetString
-„„e n
-(
-„„n o
-reader
-„„o u
-.
-„„u v
-
-GetOrdinal„„v €
-(„„€ 
-$str„„ “
-)„„“ ”
-)„„” •
-,„„• –
-Notes
-…… 
-=
-…… 
-reader
-…… 
-.
-…… 
-IsDBNull
-…… #
-(
-……# $
-reader
-……$ *
-.
-……* +
-
-GetOrdinal
-……+ 5
-(
-……5 6
-$str
-……6 =
-)
-……= >
-)
-……> ?
-?
-……@ A
-null
-……B F
-:
-……G H
-reader
-……I O
-.
-……O P
-	GetString
-……P Y
-(
-……Y Z
-reader
-……Z `
-.
-……` a
-
-GetOrdinal
-……a k
-(
-……k l
-$str
-……l s
-)
-……s t
-)
-……t u
-,
-……u v
-	CreatedBy
-†† 
-=
-†† 
-reader
-†† 
-.
-†† 
-	GetString
-†† (
-(
-††( )
-reader
-††) /
-.
-††/ 0
-
-GetOrdinal
-††0 :
-(
-††: ;
-$str
-††; G
-)
-††G H
-)
-††H I
-,
-††I J
-CreatedDate
-‡‡ 
-=
-‡‡ 
-reader
-‡‡  
-.
-‡‡  !
-GetDateTime
-‡‡! ,
-(
-‡‡, -
-reader
-‡‡- 3
-.
-‡‡3 4
-
-GetOrdinal
-‡‡4 >
-(
-‡‡> ?
-$str
-‡‡? M
-)
-‡‡M N
-)
-‡‡N O
-,
-‡‡O P
-
-ModifiedBy
- 
-=
- 
-reader
- 
-.
-  
-IsDBNull
-  (
-(
-( )
-reader
-) /
-.
-/ 0
-
-GetOrdinal
-0 :
-(
-: ;
-$str
-; H
-)
-H I
-)
-I J
-?
-K L
-null
-M Q
-:
-R S
-reader
-T Z
-.
-Z [
-	GetString
-[ d
-(
-d e
-reader
-e k
-.
-k l
-
-GetOrdinal
-l v
-(
-v w
-$strw „
-)„ …
-)… †
-,† ‡
-ModifiedDate
-‰‰ 
-=
-‰‰ 
-reader
-‰‰ !
-.
-‰‰! "
-IsDBNull
-‰‰" *
-(
-‰‰* +
-reader
-‰‰+ 1
-.
-‰‰1 2
-
-GetOrdinal
-‰‰2 <
-(
-‰‰< =
-$str
-‰‰= L
-)
-‰‰L M
-)
-‰‰M N
-?
-‰‰O P
-null
-‰‰Q U
-:
-‰‰V W
-reader
-‰‰X ^
-.
-‰‰^ _
-GetDateTime
-‰‰_ j
-(
-‰‰j k
-reader
-‰‰k q
-.
-‰‰q r
-
-GetOrdinal
-‰‰r |
-(
-‰‰| }
-$str‰‰} 
-)‰‰ 
-)‰‰ 
-}
- 	
-;
-	 
-
-}
-‹‹ 
-} g
+}ΆΆ g
 UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnageType.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -86694,7 +85481,349 @@ GetOrdinal
 
 }
 ¨¨ 
-}©© πr
+}©© Ò1
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Receiving\Dao_CarrierDeliveryLabel.cs
+	namespace		 	%
+MTM_Receiving_Application		
+ #
+.		# $
+Data		$ (
+.		( )
+	Receiving		) 2
+;		2 3
+public 
+static 
+class $
+Dao_CarrierDeliveryLabel ,
+{ 
+private 
+static !
+IService_ErrorHandler (
+?( )
+_errorHandler* 7
+;7 8
+public 
+
+static 
+void 
+SetErrorHandler &
+(& '!
+IService_ErrorHandler' <
+errorHandler= I
+)I J
+{ 
+_errorHandler 
+= 
+errorHandler $
+;$ %
+} 
+public!! 
+
+static!! 
+async!! 
+Task!! 
+<!! 
+Model_Dao_Result!! -
+>!!- .+
+InsertCarrierDeliveryLabelAsync!!/ N
+(!!N O&
+Model_CarrierDeliveryLabel!!O i
+label!!j o
+)!!o p
+{"" 
+try## 
+{$$ 	
+string&& 
+connectionString&& #
+=&&$ %%
+Helper_Database_Variables&&& ?
+.&&? @
+GetConnectionString&&@ S
+(&&S T
+useProduction&&T a
+:&&a b
+true&&c g
+)&&g h
+;&&h i
+var)) 
+
+parameters)) 
+=)) 
+new))  
+MySqlParameter))! /
+[))/ 0
+]))0 1
+{** 
+new++ 
+MySqlParameter++ "
+(++" #
+$str++# 1
+,++1 2
+label++3 8
+.++8 9
+	DeliverTo++9 B
+??++C E
+string++F L
+.++L M
+Empty++M R
+)++R S
+,++S T
+new,, 
+MySqlParameter,, "
+(,," #
+$str,,# 2
+,,,2 3
+label,,4 9
+.,,9 :
+
+Department,,: D
+??,,E G
+string,,H N
+.,,N O
+Empty,,O T
+),,T U
+,,,U V
+new-- 
+MySqlParameter-- "
+(--" #
+$str--# :
+,--: ;
+label--< A
+.--A B
+PackageDescription--B T
+??--U W
+string--X ^
+.--^ _
+Empty--_ d
+)--d e
+,--e f
+new.. 
+MySqlParameter.. "
+(.." #
+$str..# 0
+,..0 1
+(..2 3
+object..3 9
+?..9 :
+)..: ;
+label..; @
+...@ A
+PONumber..A I
+??..J L
+DBNull..M S
+...S T
+Value..T Y
+)..Y Z
+,..Z [
+new// 
+MySqlParameter// "
+(//" #
+$str//# 7
+,//7 8
+label//9 >
+.//> ?
+WorkOrderNumber//? N
+??//O Q
+string//R X
+.//X Y
+Empty//Y ^
+)//^ _
+,//_ `
+new00 
+MySqlParameter00 "
+(00" #
+$str00# 6
+,006 7
+label008 =
+.00= >
+EmployeeNumber00> L
+)00L M
+,00M N
+new11 
+MySqlParameter11 "
+(11" #
+$str11# ,
+,11, -
+label11. 3
+.113 4
+Date114 8
+)118 9
+,119 :
+new22 
+MySqlParameter22 "
+(22" #
+$str22# .
+,22. /
+MySqlDbType220 ;
+.22; <
+Int3222< A
+)22A B
+{22C D
+	Direction22E N
+=22O P
+System22Q W
+.22W X
+Data22X \
+.22\ ]
+ParameterDirection22] o
+.22o p
+Output22p v
+}22w x
+,22x y
+new33 
+MySqlParameter33 "
+(33" #
+$str33# 0
+,330 1
+MySqlDbType332 =
+.33= >
+VarChar33> E
+,33E F
+$num33G J
+)33J K
+{33L M
+	Direction33N W
+=33X Y
+System33Z `
+.33` a
+Data33a e
+.33e f
+ParameterDirection33f x
+.33x y
+Output33y 
+}
+33€ 
+}44 
+;44 
+if77 
+(77 
+!77 +
+Helper_Database_StoredProcedure77 0
+.770 1
+ValidateParameters771 C
+(77C D
+
+parameters77D N
+)77N O
+)77O P
+{88 
+return99 
+new99 
+Model_Dao_Result99 +
+{:: 
+Success;; 
+=;; 
+false;; #
+,;;# $
+ErrorMessage<<  
+=<<! "
+$str<<# O
+,<<O P
+Severity== 
+=== 
+Models== %
+.==% &
+Enums==& +
+.==+ ,
+Enum_ErrorSeverity==, >
+.==> ?
+Warning==? F
+}>> 
+;>> 
+}?? 
+varBB 
+resultBB 
+=BB 
+awaitBB +
+Helper_Database_StoredProcedureBB >
+.BB> ?
+ExecuteAsyncBB? K
+(BBK L
+$strCC /
+,CC/ 0
+
+parametersDD 
+,DD 
+connectionStringEE  
+)FF 
+;FF 
+returnHH 
+resultHH 
+;HH 
+}II 	
+catchJJ 
+(JJ 
+	ExceptionJJ 
+exJJ 
+)JJ 
+{KK 	
+varLL 
+errorResultLL 
+=LL 
+newLL !
+Model_Dao_ResultLL" 2
+{MM 
+SuccessNN 
+=NN 
+falseNN 
+,NN  
+ErrorMessageOO 
+=OO 
+$"OO !
+$strOO! T
+{OOT U
+exOOU W
+.OOW X
+MessageOOX _
+}OO_ `
+"OO` a
+,OOa b
+SeverityPP 
+=PP 
+ModelsPP !
+.PP! "
+EnumsPP" '
+.PP' (
+Enum_ErrorSeverityPP( :
+.PP: ;
+ErrorPP; @
+}QQ 
+;QQ 
+ifTT 
+(TT 
+_errorHandlerTT 
+!=TT  
+nullTT! %
+)TT% &
+{UU 
+awaitVV 
+_errorHandlerVV #
+.VV# $
+HandleErrorAsyncVV$ 4
+(VV4 5
+errorResultWW 
+.WW  
+ErrorMessageWW  ,
+,WW, -
+errorResultXX 
+.XX  
+SeverityXX  (
+,XX( )
+exYY 
+,YY 
+
+showDialogZZ 
+:ZZ 
+falseZZ  %
+)[[ 
+;[[ 
+}\\ 
+return^^ 
+errorResult^^ 
+;^^ 
+}__ 	
+}`` 
+}aa πr
 UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_DunnagePart.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -88676,7 +87805,878 @@ GetOrdinal
 
 }
 ™™ 
-} ΚΩ
+} Ιb
+\C:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Dunnage\Dao_InventoriedDunnage.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+Data$ (
+.( )
+Dunnage) 0
+;0 1
+public 
+class "
+Dao_InventoriedDunnage #
+{ 
+private 
+readonly 
+string 
+_connectionString -
+;- .
+public 
+"
+Dao_InventoriedDunnage !
+(! "
+string" (
+connectionString) 9
+)9 :
+{ 
+_connectionString 
+= 
+connectionString ,
+;, -
+} 
+public 
+
+virtual 
+async 
+Task 
+< 
+Model_Dao_Result .
+<. /
+List/ 3
+<3 4$
+Model_InventoriedDunnage4 L
+>L M
+>M N
+>N O
+GetAllAsyncP [
+([ \
+)\ ]
+{ 
+return 
+await +
+Helper_Database_StoredProcedure 4
+.4 5
+ExecuteListAsync5 E
+<E F$
+Model_InventoriedDunnageF ^
+>^ _
+(_ `
+_connectionString 
+, 
+$str ,
+,, -
+MapFromReader 
+) 	
+;	 
+
+} 
+public 
+
+virtual 
+async 
+Task 
+< 
+Model_Dao_Result .
+<. /
+bool/ 3
+>3 4
+>4 5
+
+CheckAsync6 @
+(@ A
+stringA G
+partIdH N
+)N O
+{   
+var!! 
+
+parameters!! 
+=!! 
+new!! 
+
+Dictionary!! '
+<!!' (
+string!!( .
+,!!. /
+object!!0 6
+>!!6 7
+{"" 	
+{## 
+$str## 
+,## 
+partId## 
+}##  !
+}$$ 	
+;$$	 
+
+return&& 
+await&& +
+Helper_Database_StoredProcedure&& 4
+.&&4 5
+ExecuteSingleAsync&&5 G
+<&&G H
+bool&&H L
+>&&L M
+(&&M N
+_connectionString'' 
+,'' 
+$str(( *
+,((* +
+reader)) 
+=>)) 
+reader)) 
+.)) 
+
+GetBoolean)) '
+())' (
+reader))( .
+.)). /
+
+GetOrdinal))/ 9
+())9 :
+$str)): N
+)))N O
+)))O P
+,))P Q
+
+parameters** 
+)++ 	
+;++	 
+
+},, 
+public.. 
+
+virtual.. 
+async.. 
+Task.. 
+<.. 
+Model_Dao_Result.. .
+<... /$
+Model_InventoriedDunnage../ G
+>..G H
+>..H I
+GetByPartAsync..J X
+(..X Y
+string..Y _
+partId..` f
+)..f g
+{// 
+var00 
+
+parameters00 
+=00 
+new00 
+
+Dictionary00 '
+<00' (
+string00( .
+,00. /
+object000 6
+>006 7
+{11 	
+{22 
+$str22 
+,22 
+partId22 
+}22  !
+}33 	
+;33	 
+
+return55 
+await55 +
+Helper_Database_StoredProcedure55 4
+.554 5
+ExecuteSingleAsync555 G
+<55G H$
+Model_InventoriedDunnage55H `
+>55` a
+(55a b
+_connectionString66 
+,66 
+$str77 0
+,770 1
+MapFromReader88 
+,88 
+
+parameters99 
+):: 	
+;::	 
+
+};; 
+public== 
+
+virtual== 
+async== 
+Task== 
+<== 
+Model_Dao_Result== .
+<==. /
+int==/ 2
+>==2 3
+>==3 4
+InsertAsync==5 @
+(==@ A
+string==A G
+partId==H N
+,==N O
+string==P V
+inventoryMethod==W f
+,==f g
+string==h n
+notes==o t
+,==t u
+string==v |
+user	==} 
+)
+== ‚
+{>> 
+var?? 
+pNewId?? 
+=?? 
+new?? 
+MySqlParameter?? '
+(??' (
+$str??( 3
+,??3 4
+MySqlDbType??5 @
+.??@ A
+Int32??A F
+)??F G
+{@@ 	
+	DirectionAA 
+=AA 
+ParameterDirectionAA *
+.AA* +
+OutputAA+ 1
+}BB 	
+;BB	 
+
+varDD 
+
+parametersDD 
+=DD 
+newDD 
+MySqlParameterDD +
+[DD+ ,
+]DD, -
+{EE 	
+newFF 
+MySqlParameterFF 
+(FF 
+$strFF +
+,FF+ ,
+partIdFF- 3
+)FF3 4
+,FF4 5
+newGG 
+MySqlParameterGG 
+(GG 
+$strGG 4
+,GG4 5
+inventoryMethodGG6 E
+)GGE F
+,GGF G
+newHH 
+MySqlParameterHH 
+(HH 
+$strHH )
+,HH) *
+notesHH+ 0
+)HH0 1
+,HH1 2
+newII 
+MySqlParameterII 
+(II 
+$strII (
+,II( )
+userII* .
+)II. /
+,II/ 0
+pNewIdJJ 
+}KK 	
+;KK	 
+
+varMM 
+resultMM 
+=MM 
+awaitMM +
+Helper_Database_StoredProcedureMM :
+.MM: ;
+ExecuteAsyncMM; G
+(MMG H
+$strNN +
+,NN+ ,
+
+parametersOO 
+,OO 
+_connectionStringPP 
+)QQ 	
+;QQ	 
+
+ifSS 
+
+(SS 
+resultSS 
+.SS 
+	IsSuccessSS 
+)SS 
+{TT 	
+ifUU 
+(UU 
+pNewIdUU 
+.UU 
+ValueUU 
+!=UU 
+nullUU  $
+&&UU% '
+pNewIdUU( .
+.UU. /
+ValueUU/ 4
+!=UU5 7
+DBNullUU8 >
+.UU> ?
+ValueUU? D
+)UUD E
+{VV 
+returnWW $
+Model_Dao_Result_FactoryWW /
+.WW/ 0
+SuccessWW0 7
+<WW7 8
+intWW8 ;
+>WW; <
+(WW< =
+ConvertWW= D
+.WWD E
+ToInt32WWE L
+(WWL M
+pNewIdWWM S
+.WWS T
+ValueWWT Y
+)WWY Z
+)WWZ [
+;WW[ \
+}XX 
+returnYY $
+Model_Dao_Result_FactoryYY +
+.YY+ ,
+FailureYY, 3
+<YY3 4
+intYY4 7
+>YY7 8
+(YY8 9
+$strYY9 T
+)YYT U
+;YYU V
+}ZZ 	
+return\\ $
+Model_Dao_Result_Factory\\ '
+.\\' (
+Failure\\( /
+<\\/ 0
+int\\0 3
+>\\3 4
+(\\4 5
+result\\5 ;
+.\\; <
+ErrorMessage\\< H
+,\\H I
+result\\J P
+.\\P Q
+	Exception\\Q Z
+)\\Z [
+;\\[ \
+}]] 
+public__ 
+
+virtual__ 
+async__ 
+Task__ 
+<__ 
+Model_Dao_Result__ .
+>__. /
+UpdateAsync__0 ;
+(__; <
+int__< ?
+id__@ B
+,__B C
+string__D J
+inventoryMethod__K Z
+,__Z [
+string__\ b
+notes__c h
+,__h i
+string__j p
+user__q u
+)__u v
+{`` 
+varaa 
+
+parametersaa 
+=aa 
+newaa 
+
+Dictionaryaa '
+<aa' (
+stringaa( .
+,aa. /
+objectaa0 6
+>aa6 7
+{bb 	
+{cc 
+$strcc 
+,cc 
+idcc 
+}cc 
+,cc 
+{dd 
+$strdd  
+,dd  !
+inventoryMethoddd" 1
+}dd2 3
+,dd3 4
+{ee 
+$stree 
+,ee 
+notesee 
+}ee 
+,ee 
+{ff 
+$strff 
+,ff 
+userff 
+}ff 
+}gg 	
+;gg	 
+
+returnii 
+awaitii +
+Helper_Database_StoredProcedureii 4
+.ii4 5 
+ExecuteNonQueryAsyncii5 I
+(iiI J
+_connectionStringjj 
+,jj 
+$strkk +
+,kk+ ,
+
+parametersll 
+)mm 	
+;mm	 
+
+}nn 
+publicpp 
+
+virtualpp 
+asyncpp 
+Taskpp 
+<pp 
+Model_Dao_Resultpp .
+>pp. /
+DeleteAsyncpp0 ;
+(pp; <
+intpp< ?
+idpp@ B
+)ppB C
+{qq 
+varrr 
+
+parametersrr 
+=rr 
+newrr 
+
+Dictionaryrr '
+<rr' (
+stringrr( .
+,rr. /
+objectrr0 6
+>rr6 7
+{ss 	
+{tt 
+$strtt 
+,tt 
+idtt 
+}tt 
+}uu 	
+;uu	 
+
+returnww 
+awaitww +
+Helper_Database_StoredProcedureww 4
+.ww4 5 
+ExecuteNonQueryAsyncww5 I
+(wwI J
+_connectionStringxx 
+,xx 
+$stryy +
+,yy+ ,
+
+parameterszz 
+){{ 	
+;{{	 
+
+}|| 
+private~~ $
+Model_InventoriedDunnage~~ $
+MapFromReader~~% 2
+(~~2 3
+IDataReader~~3 >
+reader~~? E
+)~~E F
+{ 
+return
+€€ 
+new
+€€ &
+Model_InventoriedDunnage
+€€ +
+{
+ 	
+Id
+‚‚ 
+=
+‚‚ 
+reader
+‚‚ 
+.
+‚‚ 
+GetInt32
+‚‚  
+(
+‚‚  !
+reader
+‚‚! '
+.
+‚‚' (
+
+GetOrdinal
+‚‚( 2
+(
+‚‚2 3
+$str
+‚‚3 7
+)
+‚‚7 8
+)
+‚‚8 9
+,
+‚‚9 :
+PartId
+ƒƒ 
+=
+ƒƒ 
+reader
+ƒƒ 
+.
+ƒƒ 
+	GetString
+ƒƒ %
+(
+ƒƒ% &
+reader
+ƒƒ& ,
+.
+ƒƒ, -
+
+GetOrdinal
+ƒƒ- 7
+(
+ƒƒ7 8
+$str
+ƒƒ8 A
+)
+ƒƒA B
+)
+ƒƒB C
+,
+ƒƒC D
+InventoryMethod
+„„ 
+=
+„„ 
+reader
+„„ $
+.
+„„$ %
+IsDBNull
+„„% -
+(
+„„- .
+reader
+„„. 4
+.
+„„4 5
+
+GetOrdinal
+„„5 ?
+(
+„„? @
+$str
+„„@ R
+)
+„„R S
+)
+„„S T
+?
+„„U V
+null
+„„W [
+:
+„„\ ]
+reader
+„„^ d
+.
+„„d e
+	GetString
+„„e n
+(
+„„n o
+reader
+„„o u
+.
+„„u v
+
+GetOrdinal„„v €
+(„„€ 
+$str„„ “
+)„„“ ”
+)„„” •
+,„„• –
+Notes
+…… 
+=
+…… 
+reader
+…… 
+.
+…… 
+IsDBNull
+…… #
+(
+……# $
+reader
+……$ *
+.
+……* +
+
+GetOrdinal
+……+ 5
+(
+……5 6
+$str
+……6 =
+)
+……= >
+)
+……> ?
+?
+……@ A
+null
+……B F
+:
+……G H
+reader
+……I O
+.
+……O P
+	GetString
+……P Y
+(
+……Y Z
+reader
+……Z `
+.
+……` a
+
+GetOrdinal
+……a k
+(
+……k l
+$str
+……l s
+)
+……s t
+)
+……t u
+,
+……u v
+	CreatedBy
+†† 
+=
+†† 
+reader
+†† 
+.
+†† 
+	GetString
+†† (
+(
+††( )
+reader
+††) /
+.
+††/ 0
+
+GetOrdinal
+††0 :
+(
+††: ;
+$str
+††; G
+)
+††G H
+)
+††H I
+,
+††I J
+CreatedDate
+‡‡ 
+=
+‡‡ 
+reader
+‡‡  
+.
+‡‡  !
+GetDateTime
+‡‡! ,
+(
+‡‡, -
+reader
+‡‡- 3
+.
+‡‡3 4
+
+GetOrdinal
+‡‡4 >
+(
+‡‡> ?
+$str
+‡‡? M
+)
+‡‡M N
+)
+‡‡N O
+,
+‡‡O P
+
+ModifiedBy
+ 
+=
+ 
+reader
+ 
+.
+  
+IsDBNull
+  (
+(
+( )
+reader
+) /
+.
+/ 0
+
+GetOrdinal
+0 :
+(
+: ;
+$str
+; H
+)
+H I
+)
+I J
+?
+K L
+null
+M Q
+:
+R S
+reader
+T Z
+.
+Z [
+	GetString
+[ d
+(
+d e
+reader
+e k
+.
+k l
+
+GetOrdinal
+l v
+(
+v w
+$strw „
+)„ …
+)… †
+,† ‡
+ModifiedDate
+‰‰ 
+=
+‰‰ 
+reader
+‰‰ !
+.
+‰‰! "
+IsDBNull
+‰‰" *
+(
+‰‰* +
+reader
+‰‰+ 1
+.
+‰‰1 2
+
+GetOrdinal
+‰‰2 <
+(
+‰‰< =
+$str
+‰‰= L
+)
+‰‰L M
+)
+‰‰M N
+?
+‰‰O P
+null
+‰‰Q U
+:
+‰‰V W
+reader
+‰‰X ^
+.
+‰‰^ _
+GetDateTime
+‰‰_ j
+(
+‰‰j k
+reader
+‰‰k q
+.
+‰‰q r
+
+GetOrdinal
+‰‰r |
+(
+‰‰| }
+$str‰‰} 
+)‰‰ 
+)‰‰ 
+}
+ 	
+;
+	 
+
+}
+‹‹ 
+} ΚΩ
 UC:\Users\johnk\source\repos\MTM_Receiving_Application\Data\Authentication\Dao_User.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -92748,7 +92748,118 @@ targetType5 ?
 ;"" 
 }## 	
 }$$ 
-}%% ϊ
+}%% Θ
+aC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BooleanToVisibility.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+
+Converters$ .
+{ 
+public 
+
+class )
+Converter_BooleanToVisibility .
+:/ 0
+IValueConverter1 @
+{ 
+public		 
+object		 
+Convert		 
+(		 
+object		 $
+value		% *
+,		* +
+Type		, 0
+
+targetType		1 ;
+,		; <
+object		= C
+	parameter		D M
+,		M N
+string		O U
+language		V ^
+)		^ _
+{
+
+ 	
+bool 
+	boolValue 
+= 
+value "
+is# %
+bool& *
+b+ ,
+&&- /
+b0 1
+;1 2
+if 
+( 
+	parameter 
+is 
+string #
+s$ %
+&&& (
+s) *
+.* +
+Equals+ 1
+(1 2
+$str2 ;
+,; <
+StringComparison= M
+.M N
+OrdinalIgnoreCaseN _
+)_ `
+)` a
+{ 
+	boolValue 
+= 
+! 
+	boolValue &
+;& '
+} 
+return 
+	boolValue 
+? 
+
+Visibility )
+.) *
+Visible* 1
+:2 3
+
+Visibility4 >
+.> ?
+	Collapsed? H
+;H I
+} 	
+public 
+object 
+ConvertBack !
+(! "
+object" (
+value) .
+,. /
+Type0 4
+
+targetType5 ?
+,? @
+objectA G
+	parameterH Q
+,Q R
+stringS Y
+languageZ b
+)b c
+{ 	
+throw 
+new #
+NotImplementedException -
+(- .
+). /
+;/ 0
+} 	
+} 
+} ϊ
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BoolToString.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -92892,118 +93003,7 @@ targetType5 ?
 ;/ 0
 } 	
 } 
-} Θ
-aC:\Users\johnk\source\repos\MTM_Receiving_Application\Converters\Converter_BooleanToVisibility.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-
-Converters$ .
-{ 
-public 
-
-class )
-Converter_BooleanToVisibility .
-:/ 0
-IValueConverter1 @
-{ 
-public		 
-object		 
-Convert		 
-(		 
-object		 $
-value		% *
-,		* +
-Type		, 0
-
-targetType		1 ;
-,		; <
-object		= C
-	parameter		D M
-,		M N
-string		O U
-language		V ^
-)		^ _
-{
-
- 	
-bool 
-	boolValue 
-= 
-value "
-is# %
-bool& *
-b+ ,
-&&- /
-b0 1
-;1 2
-if 
-( 
-	parameter 
-is 
-string #
-s$ %
-&&& (
-s) *
-.* +
-Equals+ 1
-(1 2
-$str2 ;
-,; <
-StringComparison= M
-.M N
-OrdinalIgnoreCaseN _
-)_ `
-)` a
-{ 
-	boolValue 
-= 
-! 
-	boolValue &
-;& '
-} 
-return 
-	boolValue 
-? 
-
-Visibility )
-.) *
-Visible* 1
-:2 3
-
-Visibility4 >
-.> ?
-	Collapsed? H
-;H I
-} 	
-public 
-object 
-ConvertBack !
-(! "
-object" (
-value) .
-,. /
-Type0 4
-
-targetType5 ?
-,? @
-objectA G
-	parameterH Q
-,Q R
-stringS Y
-languageZ b
-)b c
-{ 	
-throw 
-new #
-NotImplementedException -
-(- .
-). /
-;/ 0
-} 	
-} 
-} ½
+} ½
 ZC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IWindowService.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -94426,7 +94426,94 @@ StartAsync 
 ) 
 ; 
 } 
-}		 Α
+}		 Ι
+`C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_InforVisual.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+	Contracts$ -
+.- .
+Services. 6
+{ 
+public 
+
+	interface  
+IService_InforVisual )
+{ 
+Task 
+< 
+Model_Dao_Result 
+< 
+Model_InforVisualPO 1
+?1 2
+>2 3
+>3 4
+GetPOWithPartsAsync5 H
+(H I
+stringI O
+poNumberP X
+)X Y
+;Y Z
+Task 
+< 
+Model_Dao_Result 
+< !
+Model_InforVisualPart 3
+?3 4
+>4 5
+>5 6
+GetPartByIDAsync7 G
+(G H
+stringH N
+partIDO U
+)U V
+;V W
+Task$$ 
+<$$ 
+Model_Dao_Result$$ 
+<$$ 
+decimal$$ %
+>$$% &
+>$$& ',
+ GetSameDayReceivingQuantityAsync$$( H
+($$H I
+string$$I O
+poNumber$$P X
+,$$X Y
+string$$Z `
+partID$$a g
+,$$g h
+DateTime$$i q
+date$$r v
+)$$v w
+;$$w x
+Task.. 
+<.. 
+Model_Dao_Result.. 
+<.. 
+int.. !
+>..! "
+>.." #%
+GetRemainingQuantityAsync..$ =
+(..= >
+string..> D
+poNumber..E M
+,..M N
+string..O U
+partID..V \
+)..\ ]
+;..] ^
+Task44 
+<44 
+bool44 
+>44 
+TestConnectionAsync44 &
+(44& '
+)44' (
+;44( )
+}55 
+}66 Α
 hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_ReceivingLine.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -94450,7 +94537,88 @@ hC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 lineH L
 )L M
 ;M N
-} Ω
+} ί
+aC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ErrorHandler.cs
+	namespace 	%
+MTM_Receiving_Application
+ #
+.# $
+	Contracts$ -
+.- .
+Services. 6
+;6 7
+public 
+	interface !
+IService_ErrorHandler &
+{ 
+Task 
+HandleErrorAsync	 
+( 
+string 
+errorMessage 
+, 
+Enum_ErrorSeverity 
+severity #
+,# $
+	Exception 
+? 
+	exception 
+= 
+null #
+,# $
+bool 
+
+showDialog 
+= 
+true 
+) 
+; 
+Task%% 
+LogErrorAsync%%	 
+(%% 
+string&& 
+errorMessage&& 
+,&& 
+Enum_ErrorSeverity'' 
+severity'' #
+,''# $
+	Exception(( 
+?(( 
+	exception(( 
+=(( 
+null(( #
+))) 
+;)) 
+Task22  
+ShowErrorDialogAsync22	 
+(22 
+string33 
+title33 
+,33 
+string44 
+message44 
+,44 
+Enum_ErrorSeverity55 
+severity55 #
+)66 
+;66 
+Task?? 
+HandleDaoErrorAsync??	 
+(?? 
+Model_Dao_Result@@ 
+result@@ 
+,@@  
+stringAA 
+operationNameAA 
+,AA 
+boolBB 
+
+showDialogBB 
+=BB 
+trueBB 
+)CC 
+;CC 
+}DD Ω
 dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_MySQL_Receiving.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -95140,88 +95308,38 @@ daysToKeepCC %
 $numCC( *
 )CC* +
 ;CC+ ,
-}DD ί
-aC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_ErrorHandler.cs
-	namespace 	%
-MTM_Receiving_Application
+}DD Ω
+_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Dispatcher.cs
+	namespace 	%
+MTM_Receiving_Application
  #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-;6 7
-public 
-	interface !
-IService_ErrorHandler &
-{ 
-Task 
-HandleErrorAsync	 
-( 
-string 
-errorMessage 
-, 
-Enum_ErrorSeverity 
-severity #
-,# $
-	Exception 
-? 
-	exception 
-= 
-null #
-,# $
-bool 
+.# $
+	Contracts$ -
+.- .
+Services. 6
+{ 
+public		 
+
+	interface		 
+IService_Dispatcher		 (
+{
+
+ $
+IService_DispatcherTimer  
+CreateTimer! ,
+(, -
+)- .
+;. /
+bool 
 
-showDialog 
-= 
-true 
-) 
-; 
-Task%% 
-LogErrorAsync%%	 
-(%% 
-string&& 
-errorMessage&& 
-,&& 
-Enum_ErrorSeverity'' 
-severity'' #
-,''# $
-	Exception(( 
-?(( 
-	exception(( 
-=(( 
-null(( #
-))) 
-;)) 
-Task22  
-ShowErrorDialogAsync22	 
-(22 
-string33 
-title33 
-,33 
-string44 
-message44 
-,44 
-Enum_ErrorSeverity55 
-severity55 #
-)66 
-;66 
-Task?? 
-HandleDaoErrorAsync??	 
-(?? 
-Model_Dao_Result@@ 
-result@@ 
-,@@  
-stringAA 
-operationNameAA 
-,AA 
-boolBB 
-
-showDialogBB 
-=BB 
-trueBB 
-)CC 
-;CC 
-}DD 
+TryEnqueue 
+( 
+Action 
+callback '
+)' (
+;( )
+} 
+} 
 dC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_DunnageWorkflow.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -95333,38 +95451,7 @@ eC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IServi
 )P Q
 ;Q R
 } 
-} Ω
-_C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Dispatcher.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-{ 
-public		 
-
-	interface		 
-IService_Dispatcher		 (
-{
-
- $
-IService_DispatcherTimer  
-CreateTimer! ,
-(, -
-)- .
-;. /
-bool 
-
-TryEnqueue 
-( 
-Action 
-callback '
-)' (
-;( )
-} 
-} β"
+} β"
 ^C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_CSVWriter.cs
 	namespace 	%
 MTM_Receiving_Application
@@ -95606,94 +95693,7 @@ LocalError\\ !
 ;gg0 1
 }gg2 3
 }hh 
-}ii Ι
-`C:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_InforVisual.cs
-	namespace 	%
-MTM_Receiving_Application
- #
-.# $
-	Contracts$ -
-.- .
-Services. 6
-{ 
-public 
-
-	interface  
-IService_InforVisual )
-{ 
-Task 
-< 
-Model_Dao_Result 
-< 
-Model_InforVisualPO 1
-?1 2
->2 3
->3 4
-GetPOWithPartsAsync5 H
-(H I
-stringI O
-poNumberP X
-)X Y
-;Y Z
-Task 
-< 
-Model_Dao_Result 
-< !
-Model_InforVisualPart 3
-?3 4
->4 5
->5 6
-GetPartByIDAsync7 G
-(G H
-stringH N
-partIDO U
-)U V
-;V W
-Task$$ 
-<$$ 
-Model_Dao_Result$$ 
-<$$ 
-decimal$$ %
->$$% &
->$$& ',
- GetSameDayReceivingQuantityAsync$$( H
-($$H I
-string$$I O
-poNumber$$P X
-,$$X Y
-string$$Z `
-partID$$a g
-,$$g h
-DateTime$$i q
-date$$r v
-)$$v w
-;$$w x
-Task.. 
-<.. 
-Model_Dao_Result.. 
-<.. 
-int.. !
->..! "
->.." #%
-GetRemainingQuantityAsync..$ =
-(..= >
-string..> D
-poNumber..E M
-,..M N
-string..O U
-partID..V \
-)..\ ]
-;..] ^
-Task44 
-<44 
-bool44 
->44 
-TestConnectionAsync44 &
-(44& '
-)44' (
-;44( )
-}55 
-}66 6
+}ii 6
 cC:\Users\johnk\source\repos\MTM_Receiving_Application\Contracts\Services\IService_Authentication.cs
 	namespace 	%
 MTM_Receiving_Application
