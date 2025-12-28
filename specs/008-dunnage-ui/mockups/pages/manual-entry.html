@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Entry Mode</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/winui-theme.css">
+</head>
+
+<body>
+    <div class="wizard-container">
+        <div class="wizard-step">
+            <!-- InfoBar for status messages -->
+            <div class="infobar infobar-info margin-bottom-lg">
+                <span class="infobar-icon">ℹ️</span>
+                <span>Workflow cleared. Please select a mode.</span>
+            </div>
+
+            <div class="flex flex-between margin-bottom-lg">
+                <h2 class="subtitle-text">Manual Entry Mode</h2>
+                <div class="flex spacing-md">
+                    <button class="button" onclick="addRow()">➕ Add Row</button>
+                    <button class="button" onclick="addMultipleRows()">➕ Add Multiple</button>
+                    <button class="button" onclick="removeSelectedRows()">🗑️ Remove Row</button>
+                    <button class="button" onclick="autoFillSelected()">🔄 Auto-Fill</button>
+                    <button class="button button-accent" onclick="goBackToModeSelection()">Mode Selection</button>
+                </div>
+            </div>
+
+            <!-- Manual Entry DataGrid -->
+            <div style="overflow-x: auto;">
+                <table class="datagrid" id="manualEntryGrid">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">#</th>
+                            <th style="width: 180px;">Type *</th>
+                            <th style="width: 150px;">Part ID *</th>
+                            <th style="width: 100px;">Quantity *</th>
+                            <th style="width: 130px;">PO Number</th>
+                            <th style="width: 130px;">Location</th>
+                            <th style="width: 100px;">Width</th>
+                            <th style="width: 100px;">Height</th>
+                            <th style="width: 100px;">Depth</th>
+                            <th style="width: 80px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manualEntryBody">
+                        <!-- Rows dynamically added -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="margin-top-lg flex flex-between">
+                <div class="caption-text text-secondary">
+                    * Required fields. Press Enter or Tab to navigate between cells.
+                </div>
+                <div>
+                    <button class="button button-accent" onclick="saveManualEntries()">Save & Finish</button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card margin-top-lg" style="max-width: 400px;">
+                <h3 class="body-strong margin-bottom-md">Session Summary</h3>
+                <div class="flex flex-between margin-bottom-sm">
+                    <span class="body-text">Valid Rows:</span>
+                    <span class="body-strong text-success" id="validRowCount">0</span>
+                </div>
+                <div class="flex flex-between">
+                    <span class="body-text">Incomplete Rows:</span>
+                    <span class="body-strong text-warning" id="invalidRowCount">0</span>
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/wizard-data.js"></script>
+        <script src="../js/manual-entry.js"></script>
+</body>
+
+</html>

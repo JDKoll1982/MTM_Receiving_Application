@@ -1,0 +1,433 @@
+/* WinUI 3 Theme Variables */
+:root {
+    /* Mica Background */
+    --mica-background: #f3f3f3;
+    --mica-background-dark: #202020;
+
+    /* Card Colors */
+    --card-background: #ffffff;
+    --card-background-secondary: #f9f9f9;
+    --card-border: #e5e5e5;
+    --card-hover: #f0f0f0;
+
+    /* Accent Colors (Blue) */
+    --accent-default: #0078d4;
+    --accent-secondary: #005a9e;
+    --accent-tertiary: #004578;
+    --accent-light: #4ca3e8;
+
+    /* Text Colors */
+    --text-primary: #1f1f1f;
+    --text-secondary: #605e5c;
+    --text-tertiary: #8a8886;
+    --text-on-accent: #ffffff;
+
+    /* State Colors */
+    --success: #107c10;
+    --warning: #ff8c00;
+    --error: #d13438;
+    --info: #0078d4;
+
+    /* Control Colors */
+    --control-fill-default: #ffffff;
+    --control-fill-secondary: #f3f2f1;
+    --control-stroke-default: #8a8886;
+    --control-stroke-secondary: #d2d0ce;
+
+    /* Shadows */
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
+
+    /* Border Radius */
+    --radius-small: 4px;
+    --radius-medium: 8px;
+    --radius-large: 12px;
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-xxl: 32px;
+}
+
+/* Typography */
+.title-text {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 36px;
+    color: var(--text-primary);
+}
+
+.subtitle-text {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+    color: var(--text-primary);
+}
+
+.body-text {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--text-primary);
+}
+
+.body-strong {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--text-primary);
+}
+
+.caption-text {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+/* Button Styles */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--control-stroke-secondary);
+    background: var(--control-fill-default);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-height: 32px;
+}
+
+.button:hover {
+    background: var(--control-fill-secondary);
+    border-color: var(--control-stroke-default);
+}
+
+.button:active {
+    background: var(--card-border);
+}
+
+.button-accent {
+    background: var(--accent-default);
+    color: var(--text-on-accent);
+    border-color: var(--accent-default);
+}
+
+.button-accent:hover {
+    background: var(--accent-secondary);
+    border-color: var(--accent-secondary);
+}
+
+.button-accent:active {
+    background: var(--accent-tertiary);
+}
+
+.button-large {
+    min-height: 40px;
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+/* Card Styles */
+.card {
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-card);
+    transition: all 0.15s ease;
+}
+
+.card:hover {
+    background: var(--card-hover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card-clickable {
+    cursor: pointer;
+}
+
+/* InfoBar Styles */
+.infobar {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-small);
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid;
+    gap: var(--spacing-sm);
+}
+
+.infobar-info {
+    background: #e6f4ff;
+    border-left-color: var(--info);
+    color: #003a8c;
+}
+
+.infobar-success {
+    background: #e8f5e9;
+    border-left-color: var(--success);
+    color: #1b5e20;
+}
+
+.infobar-warning {
+    background: #fff3e0;
+    border-left-color: var(--warning);
+    color: #e65100;
+}
+
+.infobar-error {
+    background: #ffebee;
+    border-left-color: var(--error);
+    color: #b71c1c;
+}
+
+.infobar-icon {
+    font-size: 20px;
+}
+
+/* Input Controls */
+.textbox,
+.numberbox {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--control-stroke-secondary);
+    border-radius: var(--radius-small);
+    background: var(--control-fill-default);
+    color: var(--text-primary);
+    transition: all 0.15s ease;
+}
+
+.textbox:focus,
+.numberbox:focus {
+    outline: none;
+    border-color: var(--accent-default);
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.textbox:hover,
+.numberbox:hover {
+    border-color: var(--control-stroke-default);
+}
+
+.combobox {
+    position: relative;
+    width: 100%;
+}
+
+.combobox select {
+    width: 100%;
+    padding: 8px 32px 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--control-stroke-secondary);
+    border-radius: var(--radius-small);
+    background: var(--control-fill-default);
+    color: var(--text-primary);
+    cursor: pointer;
+    appearance: none;
+}
+
+.combobox::after {
+    content: '▼';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+}
+
+.checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--accent-default);
+}
+
+/* Progress Controls */
+.progress-ring {
+    width: 64px;
+    height: 64px;
+    border: 4px solid var(--card-border);
+    border-top-color: var(--accent-default);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--card-border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--accent-default);
+    transition: width 0.3s ease;
+}
+
+/* DataGrid Styles */
+.datagrid {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-background);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.datagrid th {
+    background: var(--card-background-secondary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.datagrid td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--card-border);
+    color: var(--text-primary);
+}
+
+.datagrid tr:hover {
+    background: var(--card-hover);
+}
+
+.datagrid tr:last-child td {
+    border-bottom: none;
+}
+
+/* Form Label */
+.form-label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Spacing Utilities */
+.spacing-xs {
+    gap: var(--spacing-xs);
+}
+
+.spacing-sm {
+    gap: var(--spacing-sm);
+}
+
+.spacing-md {
+    gap: var(--spacing-md);
+}
+
+.spacing-lg {
+    gap: var(--spacing-lg);
+}
+
+.spacing-xl {
+    gap: var(--spacing-xl);
+}
+
+.spacing-xxl {
+    gap: var(--spacing-xxl);
+}
+
+.margin-top-sm {
+    margin-top: var(--spacing-sm);
+}
+
+.margin-top-md {
+    margin-top: var(--spacing-md);
+}
+
+.margin-top-lg {
+    margin-top: var(--spacing-lg);
+}
+
+.margin-bottom-sm {
+    margin-bottom: var(--spacing-sm);
+}
+
+.margin-bottom-md {
+    margin-bottom: var(--spacing-md);
+}
+
+.margin-bottom-lg {
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Flexbox Utilities */
+.flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-center {
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-between {
+    justify-content: space-between;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+/* Text Utilities */
+.text-center {
+    text-align: center;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-error {
+    color: var(--error);
+}
+
+.text-warning {
+    color: var(--warning);
+}

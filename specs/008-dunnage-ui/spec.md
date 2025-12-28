@@ -1,6 +1,6 @@
 # Feature Specification: Dunnage Wizard Workflow UI
 
-**Feature Branch**: `008-dunnage-wizard-ui`  
+**Feature Branch**: `008-dunnage-ui`  
 **Created**: 2025-12-26  
 **Status**:  Ready for Implementation  
 **Parent Feature**:  Dunnage Receiving System V2  
@@ -10,25 +10,37 @@
 
 Create the complete wizard workflow user interface for guided dunnage receiving.  This includes the main orchestrator page and all step-specific views (Mode Selection → Type Selection → Part Selection → Quantity Entry → Details Entry → Review & Save).
 
-**Architecture Principle**: Strict MVVM pattern with compile-time bindings (`x: Bind`). Each step is a separate UserControl with dedicated ViewModel.  Main orchestrator manages step visibility. 
+**Architecture Principle**: Strict MVVM pattern with compile-time bindings (`x:Bind`). Each step is a separate UserControl with dedicated ViewModel.  Main orchestrator manages step visibility.
+
+**Design Reference**: A complete HTML/CSS/JavaScript mockup is available in `specs/008-dunnage-ui/mockups/` and MUST be used as the visual design reference during implementation. The mockup demonstrates:
+- Exact layout and spacing for all workflow modes (Wizard, Manual Entry, Edit Mode)
+- Button placement, grid structures, and form layouts
+- InfoBar positioning and messaging patterns
+- Mode selection card design with default preference checkboxes
+- Pagination controls and navigation patterns matching existing Receiving workflow UI
+
+All XAML views should replicate the mockup's structure using WinUI 3 controls with equivalent styling from the application's theme. 
 
 ## User Scenarios & Testing
 
 ### User Story 1 - Wizard Orchestration & Mode Selection (Priority: P1)
 
-As a **receiving user**, I need to select between Wizard, Manual Entry, or Edit Mode so that I can choose the workflow that matches my receiving scenario.
+As a **receiving user**, I need to select between Wizard, Manual Entry, or Edit Mode so that I can choose the workflow that matches my receiving scenario, and optionally set a default mode to skip this selection in future sessions.
 
-**Why this priority**: Mode selection is the entry point for all dunnage workflows. Without it, users cannot access any functionality.
+**Why this priority**: Mode selection is the entry point for all dunnage workflows. Without it, users cannot access any functionality. Default mode preference improves efficiency for users who always use the same workflow.
 
-**Independent Test**: Can be tested by launching the Dunnage page, verifying mode selection view displays with 3 options, clicking each option, and confirming correct workflow navigation.
+**Independent Test**: Can be tested by launching the Dunnage page, verifying mode selection view displays with 3 options, clicking each option, confirming correct workflow navigation, and testing default mode persistence.
 
 **Acceptance Scenarios**: 
 
-1. **Given** user navigates to Dunnage Label page, **When** page loads, **Then** mode selection view is visible with Wizard, Manual Entry, and Edit Mode cards
-2. **Given** mode selection view is displayed, **When** user clicks "Select Wizard Mode", **Then** type selection view becomes visible and mode selection hides
-3. **Given** mode selection view is displayed, **When** user clicks "Select Manual Mode", **Then** manual entry grid view becomes visible
-4. **Given** mode selection view is displayed, **When** user clicks "Select Edit Mode", **Then** edit mode view becomes visible
+1. **Given** user navigates to Dunnage Label page, **When** page loads, **Then** mode selection view is visible with Wizard, Manual Entry, and Edit Mode cards, each with "Set as default mode" checkbox
+2. **Given** mode selection view is displayed, **When** user clicks "Guided Wizard" card, **Then** type selection view becomes visible and mode selection hides
+3. **Given** mode selection view is displayed, **When** user clicks "Manual Entry" card, **Then** manual entry grid view becomes visible
+4. **Given** mode selection view is displayed, **When** user clicks "Edit Mode" card, **Then** edit mode view becomes visible
 5. **Given** wizard orchestrator ViewModel, **When** step changes, **Then** corresponding view visibility property updates and only one step view is visible
+6. **Given** user checks "Set as default mode" on Wizard card, **When** checkbox is checked, **Then** preference is saved and page automatically navigates to Wizard mode on next launch
+7. **Given** user has set a default mode, **When** page loads, **Then** mode selection is skipped and default mode view displays immediately
+8. **Given** user is in any workflow mode, **When** "Mode Selection" button is clicked, **Then** all workflows hide and mode selection view becomes visible (clears default temporarily)
 
 ---
 
@@ -134,47 +146,57 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 
 ### Functional Requirements - Main Orchestrator
 
-#### DunnageLabelPage. xaml + DunnageWorkflowViewModel
+#### DunnageLabelPage.xaml + DunnageWorkflowViewModel
 - **FR-001**: Page MUST provide navigation from MainWindow NavigationView menu
 - **FR-002**: Page MUST host all wizard step UserControls with visibility bindings
-- **FR-003**: ViewModel MUST manage step visibility flags:  IsModeSelectionVisible, IsTypeSelectionVisible, IsPartSelectionVisible, IsQuantityEntryVisible, IsDetailsEntryVisible, IsReviewVisible
+- **FR-003**: ViewModel MUST manage step visibility flags: IsModeSelectionVisible, IsManualEntryVisible, IsEditModeVisible, IsTypeSelectionVisible, IsPartSelectionVisible, IsQuantityEntryVisible, IsDetailsEntryVisible, IsReviewVisible
 - **FR-004**: ViewModel MUST inject IService_DunnageWorkflow for state management
 - **FR-005**: ViewModel MUST subscribe to workflow StepChanged event and update visibility flags
 - **FR-006**: Only ONE step view MUST be visible at any time (mutual exclusion)
+- **FR-007**: Page MUST display InfoBar at top for status messages with severity (Info, Success, Warning, Error)
+- **FR-008**: ViewModel MUST provide IsStatusOpen, StatusMessage, and StatusSeverity properties for InfoBar binding
+- **FR-009**: ViewModel MUST provide ReturnToModeSelectionCommand accessible from all workflow modes
+- **FR-010**: "Mode Selection" button MUST be visible in all non-mode-selection views
 
 ### Functional Requirements - Mode Selection
 
 #### DunnageModeSelectionView.xaml + DunnageModeSelectionViewModel
-- **FR-007**: View MUST display 3 cards:  Wizard Mode, Manual Entry Mode, Edit Mode
-- **FR-008**: Each card MUST show mode icon, title, and description
-- **FR-009**: Wizard card MUST describe "Step-by-step guided entry:  Type → Part → Quantity → Details → Review"
-- **FR-010**: Manual card MUST describe "Grid-based batch entry: Fill multiple rows in a data grid"
-- **FR-011**: Edit card MUST describe "Review & Edit: View and modify history records with search and filter"
-- **FR-012**: ViewModel MUST provide SelectWizardModeCommand, SelectManualModeCommand, SelectEditModeCommand
-- **FR-013**: Commands MUST call workflow service to transition to appropriate step/mode
+- **FR-011**: View MUST display 3 cards: Guided Wizard Mode, Manual Entry Mode, Edit Mode
+- **FR-012**: Each card MUST show mode icon, title, and description
+- **FR-013**: Wizard card MUST describe "Step-by-step process for standard receiving workflow"
+- **FR-014**: Manual card MUST describe "Customizable grid for bulk data entry and editing"
+- **FR-015**: Edit card MUST describe "Edit existing loads without adding new ones"
+- **FR-016**: Each card MUST have "Set as default mode" checkbox below it
+- **FR-017**: ViewModel MUST provide SelectGuidedModeCommand, SelectManualModeCommand, SelectEditModeCommand
+- **FR-018**: ViewModel MUST provide IsGuidedModeDefault, IsManualModeDefault, IsEditModeDefault properties
+- **FR-019**: ViewModel MUST provide SetGuidedAsDefaultCommand, SetManualAsDefaultCommand, SetEditAsDefaultCommand
+- **FR-020**: Commands MUST save preference using IService_UserPreferences
+- **FR-021**: Commands MUST call workflow service to transition to appropriate step/mode
+- **FR-022**: ViewModel MUST check default mode preference on initialization and auto-navigate if set
+- **FR-023**: Only ONE mode can be set as default at a time (mutually exclusive checkboxes)
 
 ### Functional Requirements - Type Selection
 
 #### DunnageTypeSelectionView.xaml + DunnageTypeSelectionViewModel
-- **FR-014**: View MUST display types in 3x3 button grid (9 types per page)
-- **FR-015**: View MUST provide pagination controls:  Previous Page, Page X of Y, Next Page
-- **FR-016**: View MUST provide "+ Add New Type" quick add button
-- **FR-017**: ViewModel MUST load all types from `IService_MySQL_Dunnage` on initialization
-- **FR-018**: ViewModel MUST calculate total pages:  Ceiling(TotalTypes / 9)
-- **FR-019**: ViewModel MUST maintain CurrentPage property and update DisplayedTypes collection when page changes
-- **FR-020**: ViewModel MUST provide SelectTypeCommand that stores type in session and advances workflow
-- **FR-021**: ViewModel MUST provide NextPageCommand, PreviousPageCommand with enable/disable logic
-- **FR-022**: Quick add button MUST open dialog/flyout without leaving wizard (session preservation)
+- **FR-024**: View MUST display types in 3x3 button grid (9 types per page)
+- **FR-025**: View MUST provide pagination controls: Previous Page, Page X of Y, Next Page
+- **FR-026**: View MUST provide "+ Add New Type" quick add button
+- **FR-027**: ViewModel MUST load all types from `IService_MySQL_Dunnage` on initialization
+- **FR-028**: ViewModel MUST calculate total pages: Ceiling(TotalTypes / 9)
+- **FR-029**: ViewModel MUST maintain CurrentPage property and update DisplayedTypes collection when page changes
+- **FR-030**: ViewModel MUST provide SelectTypeCommand that stores type in session and advances workflow
+- **FR-031**: ViewModel MUST provide NextPageCommand, PreviousPageCommand with enable/disable logic
+- **FR-032**: Quick add button MUST open dialog/flyout without leaving wizard (session preservation)
 
 ### Functional Requirements - Part Selection
 
 #### DunnagePartSelectionView.xaml + DunnagePartSelectionViewModel
-- **FR-023**: View MUST display ComboBox with parts filtered by selected type
-- **FR-024**: View MUST display "+ Add New Part" quick add button
-- **FR-025**: View MUST display InfoBar for inventory notification (initially hidden)
-- **FR-026**: View MUST display part details panel (Type, spec values, inventory status)
-- **FR-027**: ViewModel MUST load parts for selected type using `IService_MySQL_Dunnage.GetPartsByTypeAsync`
-- **FR-028**: ViewModel MUST call `IService_MySQL_Dunnage.IsPartInventoriedAsync` when part is selected
+- **FR-033**: View MUST display ComboBox with parts filtered by selected type
+- **FR-034**: View MUST display "+ Add New Part" quick add button
+- **FR-035**: View MUST display InfoBar for inventory notification (initially hidden)
+- **FR-036**: View MUST display part details panel (Type, spec values, inventory status)
+- **FR-037**: ViewModel MUST load parts for selected type using `IService_MySQL_Dunnage.GetPartsByTypeAsync`
+- **FR-038**: ViewModel MUST call `IService_MySQL_Dunnage.IsPartInventoriedAsync` when part is selected
 - **FR-029**: ViewModel MUST display InfoBar if part is inventoried with method "Adjust In" (no PO yet)
 - **FR-030**: ViewModel MUST provide SelectPartCommand that stores part in session and advances workflow
 - **FR-031**: InfoBar message MUST be "⚠️ This part requires inventory in Visual. Method: Adjust In"
@@ -219,6 +241,52 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **FR-058**: Save success MUST display TeachingTip or InfoBar with "Successfully saved X loads and exported labels"
 - **FR-059**: Save success MUST clear session and return to mode selection
 
+### Functional Requirements - Manual Entry Mode
+
+#### DunnageManualEntryView.xaml + DunnageManualEntryViewModel
+- **FR-060**: View MUST display editable DataGrid for batch entry with columns: Type, Part ID, Quantity, PO Number, Location, Specs
+- **FR-061**: View MUST provide "Add Row" button to add single empty row
+- **FR-062**: View MUST provide "Add Multiple" button to add N empty rows via dialog
+- **FR-063**: View MUST provide "Remove Row" button to delete selected rows
+- **FR-064**: View MUST provide "Auto-Fill" button to populate specs based on selected part
+- **FR-065**: View MUST provide "Mode Selection" button to return to mode selection
+- **FR-066**: View MUST display InfoBar at top showing "Workflow cleared. Please select a mode" initially
+- **FR-067**: View MUST display "Save & Finish" button to persist all valid rows
+- **FR-068**: ViewModel MUST provide ObservableCollection<Model_DunnageLoad> for grid binding
+- **FR-069**: ViewModel MUST validate rows: Type, Part ID, and Quantity > 0 are required
+- **FR-070**: ViewModel MUST highlight invalid rows visually (background color or border)
+- **FR-071**: ViewModel MUST provide AddRowCommand that appends new Model_DunnageLoad to collection
+- **FR-072**: ViewModel MUST provide AddMultipleCommand that shows dialog and adds N rows
+- **FR-073**: ViewModel MUST provide RemoveRowCommand that removes selected rows
+- **FR-074**: ViewModel MUST provide AutoFillCommand that populates part specs from database
+- **FR-075**: ViewModel MUST provide SaveAllCommand that validates and persists valid rows only
+- **FR-076**: Save operation MUST call IService_MySQL_Dunnage.SaveLoadsAsync with valid rows
+- **FR-077**: Save operation MUST export CSV via IService_DunnageCSVWriter.WriteToCSVAsync
+- **FR-078**: Save success MUST display count of saved rows and clear grid
+
+### Functional Requirements - Edit Mode
+
+#### DunnageEditModeView.xaml + DunnageEditModeViewModel
+- **FR-079**: View MUST display filter toolbar with "Load Data From" buttons: Current Memory, Current Labels, History
+- **FR-080**: View MUST provide date range filter with DatePickers (From/To) and quick buttons (Last Week, Today, This Week, December, Oct-Dec, Show All)
+- **FR-081**: View MUST display editable DataGrid showing historical loads
+- **FR-082**: View MUST provide "Select All" button to select all filtered rows
+- **FR-083**: View MUST provide "Remove Row" button to delete selected rows from database
+- **FR-084**: View MUST provide "Mode Selection" button to return to mode selection
+- **FR-085**: View MUST display InfoBar showing "Workflow cleared. Please select a mode" initially
+- **FR-086**: View MUST display "Save & Finish" button to commit edits
+- **FR-087**: View MUST display pagination controls at bottom (First, Previous, Page X of Y, Go, Next, Last)
+- **FR-088**: ViewModel MUST provide LoadFromMemoryCommand that loads current session loads
+- **FR-089**: ViewModel MUST provide LoadFromLabelsCommand that loads last exported CSV
+- **FR-090**: ViewModel MUST provide LoadFromHistoryCommand that queries database for loads within date range
+- **FR-091**: ViewModel MUST filter loads by date range using IService_MySQL_Dunnage.GetLoadsByDateRangeAsync
+- **FR-092**: ViewModel MUST support pagination with configurable page size (default 50 rows per page)
+- **FR-093**: ViewModel MUST provide SelectAllCommand, RemoveRowCommand
+- **FR-094**: ViewModel MUST provide SaveAllCommand that updates modified rows in database
+- **FR-095**: Remove operation MUST call IService_MySQL_Dunnage.DeleteLoadsAsync with selected load IDs
+- **FR-096**: Save operation MUST call IService_MySQL_Dunnage.UpdateLoadsAsync with edited rows
+- **FR-097**: Save success MUST display count of updated/deleted rows
+
 ## Success Criteria
 
 ### Measurable Outcomes
@@ -233,6 +301,10 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **SC-008**: Validation prevents advancement with invalid data (quantity=0, required specs missing)
 - **SC-009**: Quick add dialogs open without losing wizard session state
 - **SC-010**: Back navigation preserves previously entered values
+- **SC-011**: Manual Entry mode allows batch entry of 10+ rows in under 3 minutes
+- **SC-012**: Edit Mode loads and filters 100+ historical records in under 2 seconds
+- **SC-013**: Default mode preference persists across application sessions
+- **SC-014**: InfoBar messages display with appropriate severity and dismiss correctly
 
 ## Non-Functional Requirements
 
@@ -243,6 +315,50 @@ As a **receiving user**, I need to review all entered data, save it as a batch, 
 - **NFR-005**: Spec input controls MUST display unit labels where applicable (e.g., "inches")
 - **NFR-006**: All user-facing text MUST be clear and concise (no technical jargon)
 - **NFR-007**: InfoBar severity MUST be "Informational" (blue, not warning/error)
+- **NFR-008**: UI layout MUST match mockup in `specs/008-dunnage-ui/mockups/` for consistency with existing Receiving workflow
+
+## Implementation Guidance
+
+### Design Reference Priority
+
+When implementing this feature, follow this reference hierarchy:
+
+1. **Primary**: This specification (`specs/008-dunnage-ui/spec.md`) - Authoritative requirements, functional specifications, and acceptance criteria
+2. **Secondary**: HTML Mockup (`specs/008-dunnage-ui/mockups/`) - Visual design reference for layout, spacing, and UI patterns
+3. **Tertiary**: Existing Receiving Workflow UI - Fallback for any patterns, behaviors, or implementation details not covered by spec or mockup
+
+### Using the Mockup
+
+The HTML mockup in `specs/008-dunnage-ui/mockups/` serves as a **visual design reference only** during implementation. It demonstrates UI structure and interaction patterns but does NOT supersede functional requirements in this specification.
+
+**What the mockup provides:**
+
+1. **Visual Layout**: Exact spacing, alignment, and control placement
+2. **Grid Structures**: DataGrid column widths, row heights, and scroll behavior
+3. **Button Placement**: Toolbar buttons, navigation controls, and action buttons positioned
+4. **InfoBar Patterns**: Status messages, severity colors, and positioning examples
+5. **Mode Selection Cards**: Card layout, checkbox placement, and descriptions
+6. **Form Layouts**: Input field widths, label alignment, and grouping
+
+**When mockup is insufficient:**
+
+- Refer to existing **Receiving Workflow** pages (Receiving Labels) for similar patterns
+- Match button styles, grid behaviors, navigation patterns, and error handling from Receiving UI
+- Maintain consistency with established application conventions (e.g., "Mode Selection" button placement, InfoBar usage, validation patterns)
+
+### Mockup Files
+
+- **`index.html`** - Mode selection landing page
+- **`pages/dunnage-wizard.html`** - Guided wizard with all 6 steps
+- **`pages/manual-entry.html`** - Grid-based batch entry mode
+- **`pages/edit-mode.html`** - History review and editing mode
+- **`css/styles.css`** - Custom component styles
+- **`css/winui-theme.css`** - WinUI 3 color theme variables
+- **`js/*.js`** - Functional logic demonstrating workflows
+
+### Testing the Mockup
+
+Open `specs/008-dunnage-ui/mockups/index.html` in a web browser to interact with all three workflow modes and verify expected behavior before implementing in WinUI 3.
 
 ## Out of Scope
 

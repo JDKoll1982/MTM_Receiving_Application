@@ -1,0 +1,416 @@
+/* Main Layout Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--mica-background);
+    overflow: hidden;
+}
+
+.main-window {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Navigation View */
+.navigation-view {
+    width: 320px;
+    background: var(--card-background);
+    border-right: 1px solid var(--card-border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.nav-pane-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.nav-menu-items {
+    flex: 1;
+    padding: var(--spacing-sm) 0;
+}
+
+.nav-settings {
+    border-top: 1px solid var(--card-border);
+    padding: var(--spacing-sm) 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background 0.15s ease;
+    gap: var(--spacing-md);
+}
+
+.nav-item:hover {
+    background: var(--card-hover);
+}
+
+.nav-item.active {
+    background: var(--card-background-secondary);
+    border-left: 3px solid var(--accent-default);
+}
+
+.nav-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.nav-text {
+    font-size: 14px;
+}
+
+/* Content Area */
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--card-background);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.person-picture {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-default);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.user-display {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Content Frame */
+.content-frame {
+    flex: 1;
+    overflow: hidden;
+    background: var(--mica-background);
+}
+
+.content-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Wizard Container */
+.wizard-container {
+    padding: var(--spacing-xxl);
+    height: 100%;
+    overflow-y: auto;
+}
+
+.wizard-step {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Mode Selection Cards */
+.mode-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.mode-card {
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-xl);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-card);
+}
+
+.mode-card:hover {
+    background: var(--card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.mode-card-icon {
+    font-size: 48px;
+    margin-bottom: var(--spacing-md);
+    color: var(--accent-default);
+}
+
+.mode-card-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.mode-card-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Type Selection Grid */
+.type-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    max-width: 900px;
+    margin: var(--spacing-xl) auto;
+}
+
+.type-button {
+    background: var(--card-background);
+    border: 2px solid var(--card-border);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-xl);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.type-button:hover {
+    background: var(--accent-light);
+    border-color: var(--accent-default);
+    color: var(--text-on-accent);
+    transform: scale(1.02);
+}
+
+.type-button:active {
+    transform: scale(0.98);
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: var(--text-secondary);
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Form Container */
+.form-container {
+    max-width: 600px;
+    margin: var(--spacing-xl) auto;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--card-border);
+}
+
+/* Spec Inputs Container */
+.spec-inputs-container {
+    background: var(--card-background-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.spec-inputs-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.spec-input-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+/* Review Grid */
+.review-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.review-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Part Details Panel */
+.part-details-panel {
+    background: var(--card-background-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.part-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.part-detail-row:last-child {
+    border-bottom: none;
+}
+
+.part-detail-label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.part-detail-value {
+    color: var(--text-secondary);
+}
+
+/* Quick Add Button */
+.quick-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px dashed var(--control-stroke-secondary);
+    background: transparent;
+    color: var(--accent-default);
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.quick-add-button:hover {
+    background: var(--card-background-secondary);
+    border-color: var(--accent-default);
+}
+
+/* Center Content */
+.center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+/* Hidden */
+.hidden {
+    display: none !important;
+}
+
+/* Modal Dialog */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-background);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-flyout);
+}
+
+/* Wizard Navigation */
+.wizard-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-xxl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--card-border);
+}
+
+.wizard-step-indicator {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--card-border);
+}
+
+.step-dot.active {
+    background: var(--accent-default);
+    width: 12px;
+    height: 12px;
+}
+
+.step-dot.completed {
+    background: var(--success);
+}
