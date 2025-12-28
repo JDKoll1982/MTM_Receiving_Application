@@ -1,5 +1,25 @@
 {
 	"version": "2.0.0",
+	"inputs": [
+		{
+			"id": "sonarToken",
+			"type": "promptString",
+			"description": "Enter your SonarQube/SonarCloud Token",
+			"password": true
+		},
+		{
+			"id": "sonarHost",
+			"type": "promptString",
+			"description": "Enter SonarQube Server URL",
+			"default": "https://sonarcloud.io"
+		},
+		{
+			"id": "sonarOrg",
+			"type": "promptString",
+			"description": "Enter SonarCloud Organization Key",
+			"default": "john-koll"
+		}
+	],
 	"tasks": [
 		{
 			"label": "build-x64",
@@ -22,6 +42,25 @@
 				"showReuseMessage": false,
 				"clear": true
 			}
+		},
+		{
+			"label": "Run Sonar Analysis",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/Scripts/Run-SonarAnalysis.ps1",
+				"-Token",
+				"${input:sonarToken}",
+				"-HostUrl",
+				"${input:sonarHost}",
+				"-Organization",
+				"${input:sonarOrg}"
+			],
+			"problemMatcher": [],
+			"group": "none"
 		}
 	]
 }

@@ -1,0 +1,1 @@
+€RVC:\Users\johnk\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj¢net8.0-windows10.0.19041.0òCSharp12
