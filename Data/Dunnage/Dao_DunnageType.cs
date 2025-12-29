@@ -144,6 +144,44 @@ public class Dao_DunnageType
         );
     }
 
+    /// <summary>
+    /// Check if a dunnage type name already exists (for duplicate detection during create/update)
+    /// </summary>
+    /// <param name="typeName">Type name to check</param>
+    /// <param name="excludeId">ID to exclude from check (null for new types, type ID for updates)</param>
+    /// <returns>True if duplicate exists, false otherwise</returns>
+    public virtual async Task<Model_Dao_Result<bool>> CheckDuplicateNameAsync(string typeName, int? excludeId = null)
+    {
+        var pExists = new MySqlParameter("@p_exists", MySqlDbType.Bit)
+        {
+            Direction = ParameterDirection.Output
+        };
+
+        var parameters = new MySqlParameter[]
+        {
+            new MySqlParameter("@p_type_name", typeName),
+            new MySqlParameter("@p_exclude_id", excludeId.HasValue ? (object)excludeId.Value : DBNull.Value),
+            pExists
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteAsync(
+            "sp_dunnage_types_check_duplicate",
+            parameters,
+            _connectionString
+        );
+
+        if (result.IsSuccess)
+        {
+            if (pExists.Value != null && pExists.Value != DBNull.Value)
+            {
+                return Model_Dao_Result_Factory.Success<bool>(Convert.ToBoolean(pExists.Value));
+            }
+            return Model_Dao_Result_Factory.Success<bool>(false);
+        }
+
+        return Model_Dao_Result_Factory.Failure<bool>(result.ErrorMessage, result.Exception);
+    }
+
     private Model_DunnageType MapFromReader(IDataReader reader)
     {
         return new Model_DunnageType

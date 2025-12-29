@@ -35,6 +35,16 @@ namespace MTM_Receiving_Application.Services.Receiving
 
         public async Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads)
         {
+            // Default to DunnageData.csv for backward compatibility
+            return await WriteToCsvAsync(loads, "DunnageData");
+        }
+
+        /// <summary>
+        /// Write dunnage loads to CSV file (wizard workflow export)
+        /// Uses fixed columns based on selected type's specs
+        /// </summary>
+        public async Task<Model_CSVWriteResult> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName)
+        {
             if (loads == null || loads.Count == 0)
             {
                 return new Model_CSVWriteResult { ErrorMessage = "No loads to export." };
@@ -77,7 +87,8 @@ namespace MTM_Receiving_Application.Services.Receiving
                 }
 
                 // Write to local path
-                var localPath = GetLocalPath();
+                string filename = $"{typeName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                var localPath = GetLocalCsvPath(filename);
                 await WriteCsvFileAsync(localPath, records);
 
                 // Write to network path
@@ -85,7 +96,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                 bool networkSuccess = false;
                 try
                 {
-                    networkPath = GetNetworkPath();
+                    networkPath = GetNetworkCsvPath(filename);
                     // Ensure directory exists for network path
                     var networkDir = Path.GetDirectoryName(networkPath);
                     if (!string.IsNullOrEmpty(networkDir) && !Directory.Exists(networkDir))
@@ -97,7 +108,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Failed to write to network path", ex, "Service_DunnageCSVWriter.WriteToCSVAsync");
+                    _logger.LogError("Failed to write to network path", ex, "Service_DunnageCSVWriter.WriteToCsvAsync");
                     // FR-044: Network failure graceful handling
                 }
 
@@ -107,6 +118,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                     LocalFilePath = localPath,
                     NetworkSuccess = networkSuccess,
                     NetworkFilePath = networkPath,
+                    RecordsWritten = records.Count,
                     ErrorMessage = networkSuccess ? "" : "Network write failed. See logs."
                 };
             }
@@ -117,16 +129,189 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
         }
 
-        private async Task WriteCsvFileAsync(string path, IEnumerable<dynamic> records)
+        /// <summary>
+        /// Write dunnage loads to CSV with dynamic columns for all spec keys
+        /// Used for Manual Entry and Edit Mode exports (all types in one file)
+        /// </summary>
+        public async Task<Model_CSVWriteResult> WriteDynamicCsvAsync(
+            List<Model_DunnageLoad> loads,
+            List<string> allSpecKeys,
+            string? filename = null)
         {
-            await using (var writer = new StreamWriter(path))
-            await using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            if (loads == null || loads.Count == 0)
             {
-                await csv.WriteRecordsAsync(records);
+                return new Model_CSVWriteResult { ErrorMessage = "No loads to export." };
+            }
+
+            try
+            {
+                // Use provided spec keys or fetch all
+                var specKeys = allSpecKeys ?? await _dunnageService.GetAllSpecKeysAsync();
+                specKeys.Sort(); // Alphabetically sorted
+
+                // Prepare records
+                var records = new List<dynamic>();
+                foreach (var load in loads)
+                {
+                    dynamic record = new ExpandoObject();
+                    var dict = (IDictionary<string, object>)record;
+
+                    // Fixed columns
+                    dict["ID"] = load.LoadUuid;
+                    dict["PartID"] = load.PartId;
+                    dict["DunnageType"] = load.DunnageType ?? string.Empty;
+                    dict["Quantity"] = load.Quantity;
+                    dict["PONumber"] = load.PoNumber ?? string.Empty;
+                    dict["ReceivedDate"] = load.ReceivedDate.ToString("yyyy-MM-dd HH:mm:ss");
+                    dict["UserId"] = load.CreatedBy;
+                    dict["Location"] = load.Location ?? string.Empty;
+                    dict["LabelNumber"] = load.LabelNumber ?? string.Empty;
+
+                    // Dynamic spec columns
+                    foreach (var key in specKeys)
+                    {
+                        if (load.Specs != null && load.Specs.TryGetValue(key, out object? value))
+                        {
+                            dict[key] = value;
+                        }
+                        else
+                        {
+                            dict[key] = ""; // Blank cell for specs not applicable to this load's type
+                        }
+                    }
+                    records.Add(record);
+                }
+
+                // Generate filename if not provided
+                string csvFilename = filename ?? $"DunnageData_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+
+                // Write to local path
+                var localPath = GetLocalCsvPath(csvFilename);
+                await WriteCsvFileAsync(localPath, records);
+
+                // Write to network path (best-effort)
+                string networkPath = "";
+                bool networkSuccess = false;
+                string? networkError = null;
+
+                if (await IsNetworkPathAvailableAsync())
+                {
+                    try
+                    {
+                        networkPath = GetNetworkCsvPath(csvFilename);
+                        var networkDir = Path.GetDirectoryName(networkPath);
+                        if (!string.IsNullOrEmpty(networkDir) && !Directory.Exists(networkDir))
+                        {
+                            Directory.CreateDirectory(networkDir);
+                        }
+                        await WriteCsvFileAsync(networkPath, records);
+                        networkSuccess = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        networkError = ex.Message;
+                        _logger.LogError("Failed to write to network path", ex, "Service_DunnageCSVWriter.WriteDynamicCsvAsync");
+                    }
+                }
+
+                return new Model_CSVWriteResult
+                {
+                    LocalSuccess = true,
+                    LocalFilePath = localPath,
+                    NetworkSuccess = networkSuccess,
+                    NetworkFilePath = networkPath,
+                    NetworkError = networkError,
+                    RecordsWritten = records.Count
+                };
+            }
+            catch (Exception ex)
+            {
+                await _errorHandler.HandleErrorAsync($"Dynamic CSV export failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
+                return new Model_CSVWriteResult
+                {
+                    LocalSuccess = false,
+                    ErrorMessage = $"Export failed: {ex.Message}"
+                };
             }
         }
 
-        private string GetLocalPath()
+        /// <summary>
+        /// Export selected loads from DataGrid (Manual Entry or Edit Mode)
+        /// Includes dynamic spec columns based on types in selection
+        /// </summary>
+        public async Task<Model_CSVWriteResult> ExportSelectedLoadsAsync(
+            List<Model_DunnageLoad> selectedLoads,
+            bool includeAllSpecColumns = false)
+        {
+            if (selectedLoads == null || selectedLoads.Count == 0)
+            {
+                return new Model_CSVWriteResult { ErrorMessage = "No loads selected for export." };
+            }
+
+            try
+            {
+                List<string> specKeys;
+
+                if (includeAllSpecColumns)
+                {
+                    // Include all spec keys across all types
+                    specKeys = await _dunnageService.GetAllSpecKeysAsync();
+                }
+                else
+                {
+                    // Only include spec keys used by selected loads' types
+                    var typeIds = selectedLoads
+                        .Where(l => l.TypeId.HasValue)
+                        .Select(l => l.TypeId!.Value)
+                        .Distinct()
+                        .ToList();
+
+                    specKeys = new List<string>();
+                    foreach (var typeId in typeIds)
+                    {
+                        var specs = await _dunnageService.GetSpecsForTypeAsync(typeId);
+                        if (specs.IsSuccess && specs.Data != null)
+                        {
+                            var keys = specs.Data.Select(s => s.SpecKey).Distinct();
+                            specKeys.AddRange(keys);
+                        }
+                    }
+                    specKeys = specKeys.Distinct().ToList();
+                }
+
+                string filename = $"DunnageSelection_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                return await WriteDynamicCsvAsync(selectedLoads, specKeys, filename);
+            }
+            catch (Exception ex)
+            {
+                await _errorHandler.HandleErrorAsync($"Selected loads export failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
+                return new Model_CSVWriteResult { ErrorMessage = $"Export failed: {ex.Message}" };
+            }
+        }
+
+        /// <summary>
+        /// Validate network path availability (for dual-path writing)
+        /// </summary>
+        public async Task<bool> IsNetworkPathAvailableAsync(int timeout = 3)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    var networkRoot = @"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files";
+                    return Directory.Exists(networkRoot);
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+        }
+
+        /// <summary>
+        /// Get local CSV file path for current user
+        /// </summary>
+        public string GetLocalCsvPath(string filename)
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var folder = Path.Combine(appData, "MTM_Receiving_Application");
@@ -134,14 +319,26 @@ namespace MTM_Receiving_Application.Services.Receiving
             {
                 Directory.CreateDirectory(folder);
             }
-            return Path.Combine(folder, "DunnageData.csv");
+            return Path.Combine(folder, filename);
         }
 
-        private string GetNetworkPath()
+        /// <summary>
+        /// Get network CSV file path for current user
+        /// </summary>
+        public string GetNetworkCsvPath(string filename)
         {
             var username = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
             var folder = $@"\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\{username}";
-            return Path.Combine(folder, "DunnageData.csv");
+            return Path.Combine(folder, filename);
+        }
+
+        private async Task WriteCsvFileAsync(string path, IEnumerable<dynamic> records)
+        {
+            await using (var writer = new StreamWriter(path))
+            await using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                await csv.WriteRecordsAsync(records);
+            }
         }
     }
 }

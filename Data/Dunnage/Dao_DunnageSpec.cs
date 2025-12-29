@@ -152,6 +152,19 @@ public class Dao_DunnageSpec
         );
     }
 
+    /// <summary>
+    /// Get union of all unique spec keys across all types (for dynamic CSV columns)
+    /// </summary>
+    /// <returns>List of distinct spec keys ordered alphabetically</returns>
+    public virtual async Task<Model_Dao_Result<List<string>>> GetAllSpecKeysAsync()
+    {
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<string>(
+            _connectionString,
+            "sp_dunnage_specs_get_all_keys",
+            reader => reader.GetString(reader.GetOrdinal("SpecKey"))
+        );
+    }
+
     private Model_DunnageSpec MapFromReader(IDataReader reader)
     {
         return new Model_DunnageSpec
