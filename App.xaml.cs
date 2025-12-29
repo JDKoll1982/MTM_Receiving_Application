@@ -108,6 +108,7 @@ public partial class App : Application
                 services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
                 services.AddTransient<IService_DunnageCSVWriter, Service_DunnageCSVWriter>();
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
+                services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 
                 // ViewModels
                 services.AddTransient<Shared_MainWindowViewModel>();
@@ -139,11 +140,19 @@ public partial class App : Application
                 services.AddTransient<Dunnage_ReviewViewModel>();
                 services.AddTransient<Dunnage_ManualEntryViewModel>();
                 services.AddTransient<Dunnage_EditModeViewModel>();
+                services.AddTransient<Dunnage_AdminMainViewModel>();
+                services.AddTransient<Dunnage_AdminTypesViewModel>();
+                services.AddTransient<Dunnage_AdminPartsViewModel>();
 
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
+                
+                // Dunnage Admin Views
+                services.AddTransient<Views.Dunnage.Dunnage_AdminMainView>();
+                services.AddTransient<Views.Dunnage.Dunnage_AdminTypesView>();
+                services.AddTransient<Views.Dunnage.Dunnage_AdminPartsView>();
 
                 // Windows
                 services.AddTransient<Views.Shared.Shared_SplashScreenWindow>();

@@ -137,15 +137,15 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 3
 
-- [X] T052 [P] [US3] Create Dunnage_EditModeViewModel.cs in ViewModels/Dunnage/
-- [X] T053 [P] [US3] Create Dunnage_EditModeView.xaml in Views/Dunnage/
-- [X] T054 [US3] Create Dunnage_EditModeView.xaml.cs code-behind in Views/Dunnage/
-- [X] T055 [P] [US3] Implement LoadFromHistoryCommand in Dunnage_EditModeViewModel.cs (calls GetLoadsByDateRangeAsync)
-- [X] T056 [P] [US3] Add date filter toolbar with Start/End CalendarDatePickers in Dunnage_EditModeView.xaml
-- [X] T057 [US3] Implement SaveChangesCommand with UpdateLoadAsync calls in Dunnage_EditModeViewModel.cs
-- [X] T058 [P] [US3] Implement RemoveRowCommand with DeleteLoadAsync and confirmation dialog in Dunnage_EditModeViewModel.cs
-- [X] T059 [P] [US3] Add checkbox column for multi-select in Dunnage_EditModeView.xaml DataGrid
-- [X] T060 [US3] Register Dunnage_EditModeViewModel and Dunnage_EditModeView in App.xaml.cs DI container
+- [ ] T052 [P] [US3] Create Dunnage_EditModeViewModel.cs in ViewModels/Dunnage/
+- [ ] T053 [P] [US3] Create Dunnage_EditModeView.xaml in Views/Dunnage/
+- [ ] T054 [US3] Create Dunnage_EditModeView.xaml.cs code-behind in Views/Dunnage/
+- [ ] T055 [P] [US3] Implement LoadFromHistoryCommand in Dunnage_EditModeViewModel.cs (calls GetLoadsByDateRangeAsync)
+- [ ] T056 [P] [US3] Add date filter toolbar with Start/End CalendarDatePickers in Dunnage_EditModeView.xaml
+- [ ] T057 [US3] Implement SaveChangesCommand with UpdateLoadAsync calls in Dunnage_EditModeViewModel.cs
+- [ ] T058 [P] [US3] Implement RemoveRowCommand with DeleteLoadAsync and confirmation dialog in Dunnage_EditModeViewModel.cs
+- [ ] T059 [P] [US3] Add checkbox column for multi-select in Dunnage_EditModeView.xaml DataGrid
+- [ ] T060 [US3] Register Dunnage_EditModeViewModel and Dunnage_EditModeView in App.xaml.cs DI container
 
 **Checkpoint**: User Story 3 complete - edit mode with history loading functional
 
@@ -159,15 +159,15 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 4
 
-- [X] T061 [P] [US4] Create Dunnage_AdminMainViewModel.cs in ViewModels/Dunnage/
-- [X] T062 [P] [US4] Create Dunnage_AdminMainView.xaml in Views/Dunnage/
-- [X] T063 [US4] Create Dunnage_AdminMainView.xaml.cs code-behind in Views/Dunnage/
-- [X] T064 [P] [US4] Implement navigation commands (NavigateToManageTypes, NavigateToManageSpecs, NavigateToManageParts, NavigateToInventoriedList) in Dunnage_AdminMainViewModel.cs
-- [X] T065 [P] [US4] Implement ReturnToMainNavigationCommand in Dunnage_AdminMainViewModel.cs
-- [X] T066 [P] [US4] Add 4 navigation cards (2x2 grid) with icons, titles, descriptions in Dunnage_AdminMainView.xaml
-- [X] T067 [P] [US4] Implement visibility management flags (IsMainNavigationVisible, IsManageTypesVisible, etc.) in Dunnage_AdminMainViewModel.cs
-- [X] T068 [US4] Add Settings page integration - "Launch Dunnage Admin" button in Settings/SettingsPage.xaml
-- [X] T069 [US4] Register Dunnage_AdminMainViewModel and Dunnage_AdminMainView in App.xaml.cs DI container
+- [ ] T061 [P] [US4] Create Dunnage_AdminMainViewModel.cs in ViewModels/Dunnage/
+- [ ] T062 [P] [US4] Create Dunnage_AdminMainView.xaml in Views/Dunnage/
+- [ ] T063 [US4] Create Dunnage_AdminMainView.xaml.cs code-behind in Views/Dunnage/
+- [ ] T064 [P] [US4] Implement navigation commands (NavigateToManageTypes, NavigateToManageSpecs, NavigateToManageParts, NavigateToInventoriedList) in Dunnage_AdminMainViewModel.cs
+- [ ] T065 [P] [US4] Implement ReturnToMainNavigationCommand in Dunnage_AdminMainViewModel.cs
+- [ ] T066 [P] [US4] Add 4 navigation cards (2x2 grid) with icons, titles, descriptions in Dunnage_AdminMainView.xaml
+- [ ] T067 [P] [US4] Implement visibility management flags (IsMainNavigationVisible, IsManageTypesVisible, etc.) in Dunnage_AdminMainViewModel.cs
+- [ ] T068 [US4] Add Settings page integration - "Launch Dunnage Admin" button in Settings/SettingsPage.xaml
+- [ ] T069 [US4] Register Dunnage_AdminMainViewModel and Dunnage_AdminMainView in App.xaml.cs DI container
 
 **Checkpoint**: User Story 4 complete - admin navigation hub functional
 
@@ -181,16 +181,16 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 5
 
-- [X] T070 [P] [US5] Create Dunnage_AdminTypesViewModel.cs in ViewModels/Dunnage/
-- [X] T071 [P] [US5] Create Dunnage_AdminTypesView.xaml in Views/Dunnage/
-- [X] T072 [US5] Create Dunnage_AdminTypesView.xaml.cs code-behind in Views/Dunnage/
-- [X] T073 [P] [US5] Implement LoadTypesCommand in Dunnage_AdminTypesViewModel.cs (calls GetAllTypesAsync)
-- [X] T074 [P] [US5] Implement ShowEditTypeCommand with ContentDialog in Dunnage_AdminTypesViewModel.cs
-- [X] T075 [US5] Implement ShowDeleteConfirmationCommand with impact analysis (GetPartCountByTypeAsync, GetTransactionCountByTypeAsync) in Dunnage_AdminTypesViewModel.cs
-- [X] T076 [P] [US5] Implement DeleteTypeCommand with "DELETE" confirmation requirement in Dunnage_AdminTypesViewModel.cs
-- [X] T077 [P] [US5] Add DataGrid with columns (TypeName, DateAdded, AddedBy, LastModified, Actions) in Dunnage_AdminTypesView.xaml
-- [X] T078 [P] [US5] Add toolbar with "+ Add New Type" and "Back to Management" buttons in Dunnage_AdminTypesView.xaml
-- [X] T079 [US5] Register Dunnage_AdminTypesViewModel and Dunnage_AdminTypesView in App.xaml.cs DI container
+- [ ] T070 [P] [US5] Create Dunnage_AdminTypesViewModel.cs in ViewModels/Dunnage/
+- [ ] T071 [P] [US5] Create Dunnage_AdminTypesView.xaml in Views/Dunnage/
+- [ ] T072 [US5] Create Dunnage_AdminTypesView.xaml.cs code-behind in Views/Dunnage/
+- [ ] T073 [P] [US5] Implement LoadTypesCommand in Dunnage_AdminTypesViewModel.cs (calls GetAllTypesAsync)
+- [ ] T074 [P] [US5] Implement ShowEditTypeCommand with ContentDialog in Dunnage_AdminTypesViewModel.cs
+- [ ] T075 [US5] Implement ShowDeleteConfirmationCommand with impact analysis (GetPartCountByTypeAsync, GetTransactionCountByTypeAsync) in Dunnage_AdminTypesViewModel.cs
+- [ ] T076 [P] [US5] Implement DeleteTypeCommand with "DELETE" confirmation requirement in Dunnage_AdminTypesViewModel.cs
+- [ ] T077 [P] [US5] Add DataGrid with columns (TypeName, DateAdded, AddedBy, LastModified, Actions) in Dunnage_AdminTypesView.xaml
+- [ ] T078 [P] [US5] Add toolbar with "+ Add New Type" and "Back to Management" buttons in Dunnage_AdminTypesView.xaml
+- [ ] T079 [US5] Register Dunnage_AdminTypesViewModel and Dunnage_AdminTypesView in App.xaml.cs DI container
 
 **Checkpoint**: User Story 5 complete - type management CRUD operational (Note: Add New Type Dialog is separate story US10)
 
@@ -204,18 +204,18 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 6
 
-- [X] T080 [P] [US6] Create Dunnage_AdminPartsViewModel.cs in ViewModels/Dunnage/
-- [X] T081 [P] [US6] Create Dunnage_AdminPartsView.xaml in Views/Dunnage/
-- [X] T082 [US6] Create Dunnage_AdminPartsView.xaml.cs code-behind in Views/Dunnage/
-- [X] T083 [P] [US6] Implement LoadPartsCommand with pagination (IService_Pagination) in Dunnage_AdminPartsViewModel.cs
-- [X] T084 [P] [US6] Implement FilterByTypeCommand in Dunnage_AdminPartsViewModel.cs (calls GetPartsByTypeAsync)
-- [X] T085 [P] [US6] Implement SearchPartsCommand in Dunnage_AdminPartsViewModel.cs (calls SearchPartsAsync)
-- [X] T086 [US6] Create AddPartDialog.xaml multi-step ContentDialog (Step 1: Select Type, Step 2: Enter PartID, Step 3: Enter spec values) in Views/Dunnage/Dialogs/
-- [X] T087 [US6] Implement ShowAddPartCommand with dialog logic in Dunnage_AdminPartsViewModel.cs
-- [X] T088 [P] [US6] Implement ShowDeleteConfirmationCommand with transaction count check in Dunnage_AdminPartsViewModel.cs
-- [X] T089 [P] [US6] Add DataGrid with dynamic spec columns and pagination controls (20 items per page) in Dunnage_AdminPartsView.xaml
-- [X] T090 [P] [US6] Add toolbar with "+ Add New Part", Type filter ComboBox, Search TextBox in Dunnage_AdminPartsView.xaml
-- [X] T091 [US6] Register Dunnage_AdminPartsViewModel and Dunnage_AdminPartsView in App.xaml.cs DI container
+- [ ] T080 [P] [US6] Create Dunnage_AdminPartsViewModel.cs in ViewModels/Dunnage/
+- [ ] T081 [P] [US6] Create Dunnage_AdminPartsView.xaml in Views/Dunnage/
+- [ ] T082 [US6] Create Dunnage_AdminPartsView.xaml.cs code-behind in Views/Dunnage/
+- [ ] T083 [P] [US6] Implement LoadPartsCommand with pagination (IService_Pagination) in Dunnage_AdminPartsViewModel.cs
+- [ ] T084 [P] [US6] Implement FilterByTypeCommand in Dunnage_AdminPartsViewModel.cs (calls GetPartsByTypeAsync)
+- [ ] T085 [P] [US6] Implement SearchPartsCommand in Dunnage_AdminPartsViewModel.cs (calls SearchPartsAsync)
+- [ ] T086 [US6] Create AddPartDialog.xaml multi-step ContentDialog (Step 1: Select Type, Step 2: Enter PartID, Step 3: Enter spec values) in Views/Dunnage/Dialogs/
+- [ ] T087 [US6] Implement ShowAddPartCommand with dialog logic in Dunnage_AdminPartsViewModel.cs
+- [ ] T088 [P] [US6] Implement ShowDeleteConfirmationCommand with transaction count check in Dunnage_AdminPartsViewModel.cs
+- [ ] T089 [P] [US6] Add DataGrid with dynamic spec columns and pagination controls (20 items per page) in Dunnage_AdminPartsView.xaml
+- [ ] T090 [P] [US6] Add toolbar with "+ Add New Part", Type filter ComboBox, Search TextBox in Dunnage_AdminPartsView.xaml
+- [ ] T091 [US6] Register Dunnage_AdminPartsViewModel and Dunnage_AdminPartsView in App.xaml.cs DI container
 
 **Checkpoint**: User Story 6 complete - part management with search/filter functional
 
@@ -229,10 +229,10 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 7
 
-- [X] T092 [US7] Implement GetAllSpecKeysAsync method in Service_DunnageCSVWriter.cs (calls Dao_DunnageSpec.GetAllSpecKeysAsync)
-- [X] T093 [P] [US7] Implement dynamic CSV header generation logic in Service_DunnageCSVWriter.cs (fixed columns + alphabetical spec columns)
-- [X] T094 [P] [US7] Implement row writing logic with spec value lookup from part's DunnageSpecValues JSON in Service_DunnageCSVWriter.cs
-- [X] T095 [US7] Add unit tests for GetAllSpecKeysAsync in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
+- [ ] T092 [US7] Implement GetAllSpecKeysAsync method in Service_DunnageCSVWriter.cs (calls Dao_DunnageSpec.GetAllSpecKeysAsync)
+- [ ] T093 [P] [US7] Implement dynamic CSV header generation logic in Service_DunnageCSVWriter.cs (fixed columns + alphabetical spec columns)
+- [ ] T094 [P] [US7] Implement row writing logic with spec value lookup from part's DunnageSpecValues JSON in Service_DunnageCSVWriter.cs
+- [ ] T095 [US7] Add unit tests for GetAllSpecKeysAsync in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
 
 **Checkpoint**: User Story 7 complete - dynamic column generation working
 
@@ -246,13 +246,13 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 8
 
-- [X] T096 [US8] Implement local path write logic in Service_DunnageCSVWriter.cs (%APPDATA%\MTM_Receiving_Application\DunnageData.csv)
-- [X] T097 [P] [US8] Implement network path reachability check with 3-second timeout in Service_DunnageCSVWriter.cs
-- [X] T098 [P] [US8] Implement network path write logic with user folder creation in Service_DunnageCSVWriter.cs (\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\{Username}\DunnageData.csv)
-- [X] T099 [US8] Implement username sanitization for valid file paths in Service_DunnageCSVWriter.cs
-- [X] T100 [P] [US8] Implement error handling - local failure fails operation, network failure logs warning only in Service_DunnageCSVWriter.cs
-- [X] T101 [P] [US8] Implement Model_CSVWriteResult return with LocalSuccess, NetworkSuccess, ErrorMessage properties in Service_DunnageCSVWriter.cs
-- [X] T102 [US8] Add unit tests for dual-path write scenarios in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
+- [ ] T096 [US8] Implement local path write logic in Service_DunnageCSVWriter.cs (%APPDATA%\MTM_Receiving_Application\DunnageData.csv)
+- [ ] T097 [P] [US8] Implement network path reachability check with 3-second timeout in Service_DunnageCSVWriter.cs
+- [ ] T098 [P] [US8] Implement network path write logic with user folder creation in Service_DunnageCSVWriter.cs (\\mtmanu-fs01\Expo Drive\Receiving\MTM Receiving Application\User CSV Files\{Username}\DunnageData.csv)
+- [ ] T099 [US8] Implement username sanitization for valid file paths in Service_DunnageCSVWriter.cs
+- [ ] T100 [P] [US8] Implement error handling - local failure fails operation, network failure logs warning only in Service_DunnageCSVWriter.cs
+- [ ] T101 [P] [US8] Implement Model_CSVWriteResult return with LocalSuccess, NetworkSuccess, ErrorMessage properties in Service_DunnageCSVWriter.cs
+- [ ] T102 [US8] Add unit tests for dual-path write scenarios in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
 
 **Checkpoint**: User Story 8 complete - dual-path writing with local-first strategy functional
 
