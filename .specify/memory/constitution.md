@@ -1,65 +1,53 @@
 <!--
 CONSTITUTION SYNC IMPACT REPORT
-Generated: 2025-12-27
+Generated: 2025-12-28
 
-VERSION CHANGE: 1.2.0 → 1.2.1 (PATCH - Dunnage Workflow Navigation Compliance)
+VERSION CHANGE: 1.2.1 → 1.2.2 (PATCH - .editorconfig Compliance)
 
-PRINCIPLES MODIFIED IN v1.2.1:
-✅ I. MVVM Architecture - Verified compliance in Dunnage workflow refactoring
-✅ II. Database Layer Consistency - All Dunnage DAOs now instance-based with DI
+PRINCIPLES MODIFIED IN v1.2.2:
+✅ IX. Code Quality & Maintainability - Updated with .editorconfig enforcement
 
-CHANGES IN v1.2.1:
-- Refactored all Dunnage child views to match Receiving pattern
-- Removed auto-initialization from view Loaded events for context-dependent views
-- DunnageWorkflowViewModel now manages initialization via StepChanged events
-- Fixed "No dunnage type selected" error on mode re-entry
-- Added IService_UserPreferences.UpdateDefaultDunnageModeAsync for separate mode tracking
-- All Dunnage ViewModels remain transient (matching Receiving pattern)
-- Added missing AutoSuggestBox_QuerySubmitted handler in DunnagePartSelectionView
-- Verified all views follow simple ViewModel-from-DI pattern with InitializeComponent()
+CHANGES IN v1.2.2:
+- Added explicit .editorconfig compliance requirement
+- Clarified bracing rules (ALL if statements MUST have braces per csharp_prefer_braces)
+- Updated naming conventions to match .editorconfig rules exactly
+- Added enforcement for accessibility modifiers (ALL members MUST have explicit modifiers)
+- Added null handling conventions (nullable annotations REQUIRED)
+- Added LINQ optimization requirements (prefer Order() over OrderBy(k => k))
+- Updated code formatting rules to match .editorconfig spacing and indentation
+- Added specific rules for async method naming (MUST end with Async)
+- Added file header policy (currently unset, reserved for future use)
 
-FILES MODIFIED:
-✅ Views/Receiving/DunnageModeSelectionView.xaml.cs - Simple view pattern
-✅ Views/Receiving/DunnageTypeSelectionView.xaml.cs - Loads types in Loaded event
-✅ Views/Receiving/DunnagePartSelectionView.xaml.cs - Initialized by workflow, not auto-load
-✅ Views/Receiving/DunnageQuantityEntryView.xaml.cs - Initialized by workflow
-✅ Views/Receiving/DunnageDetailsEntryView.xaml.cs - Initialized by workflow
-✅ Views/Receiving/DunnageReviewView.xaml.cs - Initialized by workflow
-✅ Views/Receiving/DunnageLabelPage.xaml.cs - Added OnNavigatedTo for initialization
-✅ ViewModels/Receiving/DunnageWorkflowViewModel.cs - Manages step initialization
-✅ Models/Enums/Enum_DunnageWorkflowStep.cs - Added NotStarted state
-✅ Services/Receiving/Service_DunnageWorkflow.cs - Initializes to NotStarted
-✅ Services/Database/Service_UserPreferences.cs - Added UpdateDefaultDunnageModeAsync
-✅ Contracts/Services/IService_UserPreferences.cs - Added method signature
-✅ App.xaml.cs - All Dunnage ViewModels remain Transient
+FILES REQUIRING UPDATES:
+✅ .github/instructions/mvvm-pattern.instructions.md - Ensure bracing examples match
+✅ .github/instructions/dao-pattern.instructions.md - Ensure async naming matches
+✅ All example code in constitution now shows braces on if statements
 
 ARCHITECTURE COMPLIANCE VERIFIED:
-✅ No ViewModel→DAO violations in Dunnage workflow
-✅ All child views follow Receiving pattern (simple, no business logic)
-✅ DunnageWorkflowViewModel uses lazy-loaded ViewModels for context-dependent initialization
-✅ Type and Mode Selection load in Loaded events (no workflow context needed)
-✅ Part/Quantity/Details/Review initialized by workflow when step becomes visible
-✅ All database operations flow through Service→DAO pattern
-✅ No circular dependencies introduced
-✅ All ViewModels registered in DI as Transient
+✅ All code examples in constitution follow .editorconfig rules
+✅ Naming conventions match .editorconfig exactly
+✅ Bracing policy explicit and enforced
+✅ Accessibility modifiers required everywhere
+✅ Null annotations encouraged per dotnet_style_null_propagation
 
 TEMPLATES UPDATED:
-✅ .github/instructions/mvvm-views.instructions.md - Matches current view pattern
-✅ .github/instructions/mvvm-viewmodels.instructions.md - Matches current ViewModel pattern
+✅ Constitution code examples updated with braces
+✅ LINQ examples use Order() not OrderBy()
+✅ Async method examples all end with Async
 
-NO FOLLOW-UP ITEMS - All changes implemented and verified
+NO FOLLOW-UP ITEMS - Constitution now fully aligned with .editorconfig
 
-BREAKING CHANGE ASSESSMENT: NONE (Internal refactoring only)
-- Dunnage workflow behavior unchanged for end users
-- Navigation pattern now matches Receiving workflow
-- All tests passing
+BREAKING CHANGE ASSESSMENT: NONE (Clarification only)
+- Existing code already follows these patterns
+- No behavior changes, only documentation alignment
+- Recent build fixes already implemented .editorconfig compliance
 
-RATIONALE FOR VERSION 1.2.1 (2025-12-27):
-- Fixed architectural inconsistency in Dunnage navigation vs Receiving navigation
-- Eliminated premature data loading errors in Part Selection view
-- Standardized view initialization pattern across both workflows
-- Ensured separation of concerns (views are simple, workflow manages initialization)
-- Improved code maintainability by matching established Receiving patterns
+RATIONALE FOR VERSION 1.2.2 (2025-12-28):
+- Ensures constitution and .editorconfig are in perfect alignment
+- Eliminates ambiguity about coding standards
+- Provides single source of truth for code formatting rules
+- Recent build issue fixes demonstrate importance of explicit compliance
+- Makes .editorconfig violations a constitutional matter
 -->
 
 # MTM Receiving Application Constitution
@@ -493,21 +481,131 @@ specs/
 
 ### IX. Code Quality & Maintainability
 
-**Naming Conventions (MANDATORY)**:
+**EditorConfig Compliance (MANDATORY)**:
+- ALL code MUST comply with `.editorconfig` rules in repository root
+- EditorConfig is enforced at ERROR or WARNING level for all applicable rules
+- Build SHOULD fail on style violations that are marked as errors
+- Code reviews MUST verify .editorconfig compliance
+
+**Key .editorconfig Rules**:
+- **Indentation**: 4 spaces (NEVER tabs) - `indent_size = 4`
+- **Line Endings**: CRLF (Windows standard) - `end_of_line = crlf`
+- **File Encoding**: UTF-8 - `charset = utf-8`
+- **Final Newline**: Required - `insert_final_newline = true`
+- **Trailing Whitespace**: Forbidden - `trim_trailing_whitespace = true`
+
+**Bracing Rules (NON-NEGOTIABLE)**:
+- ALL if statements MUST have braces (even single-line bodies) - `csharp_prefer_braces = true:warning`
+- Opening braces on new line - `csharp_new_line_before_open_brace = all`
+- else, catch, finally on new line after closing brace
+
+```csharp
+// ✅ CORRECT - Braces required
+if (condition)
+{
+    DoSomething();
+}
+
+if (MinValue.HasValue)
+{
+    parts.Add($"Min: {MinValue.Value}");
+}
+
+// ❌ FORBIDDEN - No braces
+if (condition)
+    DoSomething();
+
+if (MinValue.HasValue)
+    parts.Add($"Min: {MinValue.Value}");
+```
+
+**Naming Conventions (MANDATORY - FROM .EDITORCONFIG)**:
+- **Interfaces**: MUST begin with 'I' - `IService_Authentication`, `ILoggingService`
 - **Classes**: PascalCase with prefixes
   - ViewModels: `{Feature}ViewModel` (e.g., `ReceivingWorkflowViewModel`)
   - Services: `Service_{Feature}` with interface `IService_{Feature}`
-  - DAOs: `Dao_{EntityName}` (static or instance based on pattern)
+  - DAOs: `Dao_{EntityName}` (instance-based pattern)
   - Models: `Model_{EntityName}`
   - Enums: `Enum_{Name}`
-- **Methods**: PascalCase, async methods end with `Async`
-- **Properties**: PascalCase for public, `_camelCase` for private fields
+- **Methods**: PascalCase, async methods MUST end with `Async`
+- **Properties**: PascalCase for public
+- **Fields**: 
+  - Private/internal: `_camelCase` (underscore prefix REQUIRED)
+  - Constant: PascalCase (NOT UPPER_SNAKE_CASE)
 - **Parameters**: camelCase
-- **Constants**: PascalCase in static classes (NOT UPPER_SNAKE_CASE)
+- **Async Methods**: MUST end with `Async` suffix - enforced at ERROR level
+
+**Accessibility Modifiers (MANDATORY)**:
+- ALL type members MUST have explicit accessibility modifiers - `dotnet_style_require_accessibility_modifiers = always:error`
+- NO implicit modifiers allowed (e.g., must write `private` explicitly)
+
+```csharp
+// ✅ CORRECT - Explicit modifiers
+private readonly string _connectionString;
+public async Task<Model_Dao_Result> GetDataAsync() { }
+
+// ❌ FORBIDDEN - Implicit modifiers
+readonly string _connectionString;  // Missing 'private'
+async Task<Model_Dao_Result> GetData() { }  // Missing 'public/private' AND 'Async' suffix
+```
+
+**Null Handling (REQUIRED)**:
+- Use nullable reference types (`?`) where appropriate
+- Prefer null-conditional operators - `dotnet_style_null_propagation = true:warning`
+- Use null-coalescing for default values - `dotnet_style_coalesce_expression = true:suggestion`
+
+```csharp
+// ✅ CORRECT - Nullable annotations
+SpecDefinition? def = null;
+Control? inputControl = null;
+Style? style = (Style?)Application.Current.Resources["Key"];
+
+// ✅ CORRECT - Null propagation
+var result = collection?.Select(x => x.Value);
+
+// ❌ AVOID - Null checks without propagation
+var result = collection != null ? collection.Select(x => x.Value) : null;
+```
+
+**LINQ Optimization (REQUIRED)**:
+- Use `Order()` instead of `OrderBy(x => x)` - `RCS1077` enforced
+- Avoid unnecessary enumeration with proper null checks before LINQ
+
+```csharp
+// ✅ CORRECT - Optimized LINQ
+if (result.IsSuccess && result.Data != null)
+{
+    return result.Data
+        .Select(s => s.SpecKey)
+        .Distinct()
+        .Order()  // NOT OrderBy(k => k)
+        .ToList();
+}
+
+// ❌ FORBIDDEN - Unoptimized LINQ
+return result.Data.Select(s => s.SpecKey).OrderBy(k => k).ToList();  // Missing null check AND wrong method
+```
+
+**var Keyword Usage**:
+- Do NOT use `var` for built-in types - `csharp_style_var_for_built_in_types = false:suggestion`
+- USE `var` when type is apparent - `csharp_style_var_when_type_is_apparent = true:suggestion`
+- Do NOT use `var` elsewhere - `csharp_style_var_elsewhere = false:suggestion`
+
+```csharp
+// ✅ CORRECT
+int count = 0;
+string name = "test";
+var customer = new Customer();  // Type is apparent
+var result = await GetDataAsync();  // Return type obvious
+
+// ❌ AVOID
+var count = 0;  // Built-in type - use explicit 'int'
+```
 
 **File Organization**:
+- One public class per file (RCS1060 enforced)
+- Nested/helper classes in separate files or explicitly justified
 - Match namespace to folder structure
-- One public class per file (nested classes allowed)
 - File name matches primary class name
 - Use file-scoped namespaces (preferred)
 - Group related classes in feature folders
@@ -548,7 +646,7 @@ specs/
 - Default values in models MUST match database defaults
 - Truncate or reject data exceeding VARCHAR limits with clear error messages
 
-**Rationale**: Consistent code quality enables team productivity, reduces bugs, and ensures maintainability. Performance standards prevent UI freezing and poor user experience. Naming conventions reduce cognitive load and enable predictable code navigation.
+**Rationale**: Consistent code quality enables team productivity, reduces bugs, and ensures maintainability. EditorConfig enforcement prevents style inconsistencies and reduces code review friction. Performance standards prevent UI freezing and poor user experience. Naming conventions reduce cognitive load and enable predictable code navigation.
 
 ---
 
@@ -631,8 +729,14 @@ public class Dao_InforVisualPO
 - [ ] All new services have interfaces and are registered in DI
 - [ ] MVVM pattern adhered to (no business logic in code-behind)
 - [ ] All database operations use `Model_Dao_Result` pattern
-- [ ] No writes attempted to Infor Visual database
-
+- [ ] No writes attempted to Infor Visual database- [ ] **All code follows .editorconfig rules** (indentation, braces, naming, etc.)
+- [ ] **All if statements have braces** (csharp_prefer_braces enforced)
+- [ ] **All async methods end with 'Async' suffix** (naming convention ERROR)
+- [ ] **All type members have explicit accessibility modifiers** (no implicit modifiers)
+- [ ] **No multiple public classes per file** (RCS1060 enforced)
+- [ ] **No var for built-in types** (int, string, bool must be explicit)
+- [ ] **Nullable annotations used where appropriate** (null safety)
+- [ ] **LINQ queries optimized** (Order() not OrderBy(x => x))
 **Violation Detection**:
 ```bash
 # PowerShell script to detect ViewModel→DAO violations
@@ -692,6 +796,15 @@ Get-ChildItem -Path "ViewModels" -Recurse -Filter "*.cs" |
 - ❌ Connection strings hardcoded in DAOs (must use constructor injection)
 - ❌ Infor Visual DAOs without `ApplicationIntent=ReadOnly` validation
 - ❌ Circular dependencies in class dependency graph
+- ❌ **If statements without braces** (csharp_prefer_braces enforced)
+- ❌ **Implicit accessibility modifiers** (dotnet_style_require_accessibility_modifiers enforced)
+- ❌ **Async methods without 'Async' suffix** (naming convention enforced at ERROR level)
+- ❌ **Multiple public classes per file** (RCS1060 enforced)
+- ❌ **Use of `var` for built-in types** (int, string, bool, etc.)
+- ❌ **Tabs for indentation** (spaces only, 4-space indent)
+- ❌ **Trailing whitespace** (trimmed automatically)
+- ❌ **Missing final newline** (required by editorconfig)
+- ❌ **CRLF violations** (Windows line endings required)
 
 ---
 
@@ -810,4 +923,4 @@ Get-ChildItem -Path "ViewModels" -Recurse -Filter "*.cs" |
 
 ---
 
-**Version**: 1.2.1 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-27
+**Version**: 1.2.2 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-28

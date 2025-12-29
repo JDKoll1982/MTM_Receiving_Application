@@ -88,16 +88,9 @@ As a **receiving user**, I need to enter the quantity being received so that the
 
 ### User Story 5 - Dynamic Details Entry with Spec Inputs (Priority: P1)
 
-As a **receiving user**, I need to enter PO number, location, and dynamic specification values (generated from type's spec schema) so that I can provide complete receiving information.
+*Implemented in Quick Add Part Dialog*
 
-**Why this priority**: Details entry captures all optional/variable data.  Dynamic spec generation is core architectural feature.
-
-**Independent Test**: Can be tested by viewing details form, verifying spec input controls match selected type's schema (TextBox for numbers, CheckBox for boolean), entering values, and confirming inventory method updates when PO changes.
-
-**Acceptance Scenarios**:
-
-1. **Given** selected type "Pallet" has specs (Width, Height, Depth, IsInventoriedToVisual), **When** details view loads, **Then** 4 input controls are generated matching data types
-2. **Given** spec "Width" (number type), **When** form renders, **Then** NumberBox control displays with label "Width" and unit "inches"
+---
 3. **Given** spec "IsInventoriedToVisual" (boolean type), **When** form renders, **Then** CheckBox control displays with label
 4. **Given** details form with inventoried part, **When** user enters PO Number "PO123456", **Then** inventory method updates to "Receive In" and InfoBar message updates
 5. **Given** details form with inventoried part, **When** user clears PO Number, **Then** inventory method reverts to "Adjust In"

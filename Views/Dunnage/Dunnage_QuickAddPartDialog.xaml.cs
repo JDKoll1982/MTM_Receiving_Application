@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Text.Json;
+using MTM_Receiving_Application.Models.Dunnage;
 
 namespace MTM_Receiving_Application.Views.Dunnage;
 
@@ -12,38 +13,142 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
     public string TypeName { get; private set; } = string.Empty;
     public string SpecValuesJson { get; private set; } = string.Empty;
 
-    public Dunnage_QuickAddPartDialog(int typeId, string typeName)
+    private readonly List<Model_DunnageSpec> _specs;
+    private readonly Dictionary<string, Control> _specInputs = new();
+
+    public Dunnage_QuickAddPartDialog(int typeId, string typeName, List<Model_DunnageSpec> specs)
     {
         InitializeComponent();
 
         TypeId = typeId;
         TypeName = typeName;
         TypeNameTextBlock.Text = typeName;
+        _specs = specs;
+
+        GenerateSpecFields();
+        UpdatePartId();
     }
 
-    private void OnPartIdChanged(object sender, TextChangedEventArgs e)
+    private void GenerateSpecFields()
     {
-        var textBox = (TextBox)sender;
-        PartIdValidationTextBlock.Visibility = string.IsNullOrWhiteSpace(textBox.Text)
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        if (_specs == null || _specs.Count == 0)
+            return;
+
+        foreach (var spec in _specs)
+        {
+            SpecDefinition? def = null;
+            try
+            {
+                def = JsonSerializer.Deserialize<SpecDefinition>(spec.SpecValue);
+            }
+            catch
+            {
+                // Intentionally empty - fallback to null
+            }
+
+            if (def == null)
+            {
+                def = new SpecDefinition { DataType = "Text" }; // Fallback
+            }
+
+            var stackPanel = new StackPanel { Spacing = 4 };
+
+            var labelText = spec.SpecKey;
+            if (def.Required)
+            {
+                labelText += " *";
+            }
+
+            if (!string.IsNullOrEmpty(def.Unit))
+            {
+                labelText += $" ({def.Unit})";
+            }
+
+            var label = new TextBlock
+            {
+                Text = labelText,
+                Style = (Style?)Application.Current.Resources["CaptionTextBlockStyle"]
+            };
+            stackPanel.Children.Add(label);
+
+            Control? inputControl = null;
+
+            if (def.DataType == "Number")
+            {
+                var numberBox = new NumberBox
+                {
+                    PlaceholderText = "0",
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact
+                };
+                if (def.MinValue.HasValue)
+                    numberBox.Minimum = def.MinValue.Value;
+                if (def.MaxValue.HasValue)
+                    numberBox.Maximum = def.MaxValue.Value;
+
+                inputControl = numberBox;
+            }
+            else if (def.DataType == "Boolean")
+            {
+                var checkBox = new CheckBox
+                {
+                    Content = "Yes"
+                };
+                inputControl = checkBox;
+            }
+            else // Text
+            {
+                var textBox = new TextBox
+                {
+                    PlaceholderText = $"Enter {spec.SpecKey.ToLower()}",
+                    MaxLength = 100
+                };
+                inputControl = textBox;
+            }
+
+            stackPanel.Children.Add(inputControl);
+            DynamicSpecsPanel.Children.Add(stackPanel);
+            _specInputs[spec.SpecKey] = inputControl;
+        }
+    }
+
+    private void OnDimensionChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        UpdatePartId();
+    }
+
+    private void UpdatePartId()
+    {
+        var width = double.IsNaN(WidthNumberBox.Value) ? 0 : WidthNumberBox.Value;
+        var height = double.IsNaN(HeightNumberBox.Value) ? 0 : HeightNumberBox.Value;
+        var depth = double.IsNaN(DepthNumberBox.Value) ? 0 : DepthNumberBox.Value;
+
+        PartIdTextBox.Text = $"{TypeName} ({width}x{height}x{depth})";
     }
 
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        // Validate Part ID
-        if (string.IsNullOrWhiteSpace(PartIdTextBox.Text))
-        {
-            PartIdValidationTextBlock.Visibility = Visibility.Visible;
-            args.Cancel = true;
-            return;
-        }
-
         // Set Part ID
         PartId = PartIdTextBox.Text.Trim();
 
         // Build spec values dictionary
         var specValues = new Dictionary<string, object>();
+
+        // Add dynamic specs
+        foreach (var kvp in _specInputs)
+        {
+            if (kvp.Value is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text))
+            {
+                specValues[kvp.Key] = tb.Text.Trim();
+            }
+            else if (kvp.Value is NumberBox nb && !double.IsNaN(nb.Value))
+            {
+                specValues[kvp.Key] = nb.Value;
+            }
+            else if (kvp.Value is CheckBox cb)
+            {
+                specValues[kvp.Key] = cb.IsChecked ?? false;
+            }
+        }
 
         // Add dimensions if provided
         if (!double.IsNaN(WidthNumberBox.Value) && WidthNumberBox.Value > 0)

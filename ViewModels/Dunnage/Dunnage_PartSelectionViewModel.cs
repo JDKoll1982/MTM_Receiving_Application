@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -258,8 +259,14 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
         {
             _logger.LogInfo($"Quick Add Part requested for type {SelectedTypeName}", "PartSelection");
 
-            // Show dialog with type pre-selected
-            var dialog = new Views.Dunnage.Dunnage_QuickAddPartDialog(SelectedTypeId, SelectedTypeName)
+            // Fetch specs for the selected type
+            var specsResult = await _dunnageService.GetSpecsForTypeAsync(SelectedTypeId);
+            var specs = (specsResult.IsSuccess && specsResult.Data != null)
+                ? specsResult.Data
+                : new List<Model_DunnageSpec>();
+
+            // Show dialog with type pre-selected and specs
+            var dialog = new Views.Dunnage.Dunnage_QuickAddPartDialog(SelectedTypeId, SelectedTypeName, specs)
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot
             };

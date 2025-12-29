@@ -50,7 +50,7 @@ public class Dao_DunnageType
         );
     }
 
-    public virtual async Task<Model_Dao_Result<int>> InsertAsync(string typeName, string user)
+    public virtual async Task<Model_Dao_Result<int>> InsertAsync(string typeName, string icon, string user)
     {
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
@@ -60,6 +60,7 @@ public class Dao_DunnageType
         var parameters = new MySqlParameter[]
         {
             new MySqlParameter("@p_type_name", typeName),
+            new MySqlParameter("@p_icon", icon),
             new MySqlParameter("@p_user", user),
             pNewId
         };
@@ -82,12 +83,13 @@ public class Dao_DunnageType
         return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
     }
 
-    public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string typeName, string user)
+    public virtual async Task<Model_Dao_Result> UpdateAsync(int id, string typeName, string icon, string user)
     {
         var parameters = new Dictionary<string, object>
         {
             { "id", id },
             { "type_name", typeName },
+            { "icon", icon },
             { "user", user }
         };
 
@@ -148,6 +150,7 @@ public class Dao_DunnageType
         {
             Id = reader.GetInt32(reader.GetOrdinal("id")),
             TypeName = reader.GetString(reader.GetOrdinal("type_name")),
+            Icon = reader.IsDBNull(reader.GetOrdinal("icon")) ? "\uDB81\uDF20" : reader.GetString(reader.GetOrdinal("icon")),
             CreatedBy = reader.GetString(reader.GetOrdinal("created_by")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
             ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by")) ? null : reader.GetString(reader.GetOrdinal("modified_by")),

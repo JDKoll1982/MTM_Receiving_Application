@@ -52,19 +52,7 @@ As an **administrator**, I need to view, add, edit, and delete dunnage types wit
 
 ### User Story 3 - Specification Schema Management (Priority: P1)
 
-As an **administrator**, I need to add, edit, and delete specification fields for each type so that I can customize the data captured for different dunnage categories.
-
-**Why this priority**:  Spec schemas define the dynamic data structure for parts. Essential for system flexibility. 
-
-**Independent Test**: Can be tested by selecting type "Pallet", adding new spec field "Material" (text type), editing "Width" to change max value to 120, and deleting unused custom spec. 
-
-**Acceptance Scenarios**: 
-
-1. **Given** spec management view loads, **When** user selects type "Pallet" from dropdown, **Then** spec fields for Pallet display in DataGrid (SpecKey, DataType, Required, DefaultValue, Actions)
-2. **Given** spec grid for selected type, **When** user clicks "+ Add Spec Field", **Then** dialog opens with inputs:  SpecKey (text), DataType (dropdown:  number/text/boolean), Required (checkbox), DefaultValue, Validation rules
-3. **Given** add spec dialog with DataType "number", **When** validation section displays, **Then** inputs show: MinValue, MaxValue, Unit (e.g., "inches")
-4. **Given** spec "Width" selected, **When** user clicks Edit, **Then** dialog pre-populates with current values and allows modification
-5. **Given** spec "Material" with 8 parts using it, **When** user clicks Delete, **Then** confirmation shows "⚠️ 8 parts will have this spec value removed. Continue?"
+*Implemented in Quick Add Type Dialog*
 
 ---
 

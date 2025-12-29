@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -250,7 +252,8 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
                 // Insert new type
                 var newType = new Model_DunnageType
                 {
-                    TypeName = typeName
+                    TypeName = typeName,
+                    Icon = iconGlyph
                     // Note: Icon storage would need to be added to database schema
                 };
 
@@ -259,6 +262,27 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
                 if (insertResult.IsSuccess)
                 {
                     _logger.LogInfo($"Successfully added type: {typeName}", "TypeSelection");
+
+                    // Insert specs
+                    foreach (var specItem in dialog.Specs)
+                    {
+                        var specDef = new SpecDefinition
+                        {
+                            DataType = specItem.DataType,
+                            Required = specItem.IsRequired,
+                            Unit = specItem.Unit,
+                            MinValue = specItem.MinValue,
+                            MaxValue = specItem.MaxValue
+                        };
+
+                        var specModel = new Model_DunnageSpec
+                        {
+                            TypeId = newType.Id,
+                            SpecKey = specItem.Name,
+                            SpecValue = JsonSerializer.Serialize(specDef)
+                        };
+                        await _dunnageService.InsertSpecAsync(specModel);
+                    }
 
                     // Reload types to show new type
                     await LoadTypesAsync();
@@ -283,6 +307,178 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
                 ex,
                 true
             );
+        }
+    }
+
+    [RelayCommand]
+    private async Task EditTypeAsync(Model_DunnageType type)
+    {
+        if (type == null)
+            return;
+
+        try
+        {
+            _logger.LogInfo($"Edit Type requested for {type.TypeName}", "TypeSelection");
+
+            var dialog = new Views.Dunnage.Dunnage_QuickAddTypeDialog
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot
+            };
+
+            if (dialog.XamlRoot == null)
+                return;
+
+            // Load existing specs
+            var specsResult = await _dunnageService.GetSpecsForTypeAsync(type.Id);
+            var existingSpecsDict = new Dictionary<string, SpecDefinition>();
+
+            if (specsResult.IsSuccess && specsResult.Data != null)
+            {
+                foreach (var s in specsResult.Data)
+                {
+                    try
+                    {
+                        var def = JsonSerializer.Deserialize<SpecDefinition>(s.SpecValue);
+                        if (def != null)
+                            existingSpecsDict[s.SpecKey] = def;
+                        else
+                            existingSpecsDict[s.SpecKey] = new SpecDefinition(); // Fallback
+                    }
+                    catch
+                    {
+                        existingSpecsDict[s.SpecKey] = new SpecDefinition(); // Fallback for empty/invalid JSON
+                    }
+                }
+            }
+
+            dialog.InitializeForEdit(type.TypeName, type.Icon, existingSpecsDict);
+
+            var result = await dialog.ShowAsync();
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                var newName = dialog.TypeName;
+                var newIcon = dialog.SelectedIconGlyph;
+                var newSpecs = dialog.Specs; // Collection of SpecItem
+
+                // Update Type info
+                if (newName != type.TypeName || newIcon != type.Icon)
+                {
+                    type.TypeName = newName;
+                    type.Icon = newIcon;
+
+                    var updateResult = await _dunnageService.UpdateTypeAsync(type);
+                    if (!updateResult.IsSuccess)
+                    {
+                        await _errorHandler.HandleDaoErrorAsync(updateResult, nameof(EditTypeAsync), true);
+                        return;
+                    }
+                }
+
+                // Update Specs
+                // 1. Find removed specs
+                var newSpecNames = newSpecs.Select(s => s.Name).ToList();
+                var removedSpecKeys = existingSpecsDict.Keys.Except(newSpecNames).ToList();
+
+                foreach (var specKey in removedSpecKeys)
+                {
+                    var specToDelete = specsResult.Data?.FirstOrDefault(s => s.SpecKey == specKey);
+                    if (specToDelete != null)
+                    {
+                        await _dunnageService.DeleteSpecAsync(specToDelete.Id);
+                    }
+                }
+
+                // 2. Find added or updated specs
+                foreach (var specItem in newSpecs)
+                {
+                    var specDef = new SpecDefinition
+                    {
+                        DataType = specItem.DataType,
+                        Required = specItem.IsRequired,
+                        Unit = specItem.Unit,
+                        MinValue = specItem.MinValue,
+                        MaxValue = specItem.MaxValue
+                    };
+                    var json = JsonSerializer.Serialize(specDef);
+
+                    if (existingSpecsDict.ContainsKey(specItem.Name))
+                    {
+                        // Update existing? 
+                        // We need to check if definition changed.
+                        // For simplicity, we can just update the value if it's different.
+                        var existingModel = specsResult.Data?.FirstOrDefault(s => s.SpecKey == specItem.Name);
+                        if (existingModel != null && existingModel.SpecValue != json)
+                        {
+                            existingModel.SpecValue = json;
+                            await _dunnageService.UpdateSpecAsync(existingModel);
+                        }
+                    }
+                    else
+                    {
+                        // Insert new
+                        var specModel = new Model_DunnageSpec
+                        {
+                            TypeId = type.Id,
+                            SpecKey = specItem.Name,
+                            SpecValue = json
+                        };
+                        await _dunnageService.InsertSpecAsync(specModel);
+                    }
+                }
+
+                _logger.LogInfo($"Successfully updated type: {type.TypeName}", "TypeSelection");
+                await LoadTypesAsync();
+                StatusMessage = $"Updated type: {type.TypeName}";
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync("Error updating dunnage type", Enum_ErrorSeverity.Error, ex, true);
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteTypeAsync(Model_DunnageType type)
+    {
+        if (type == null)
+            return;
+
+        try
+        {
+            _logger.LogInfo($"Delete Type requested for {type.TypeName}", "TypeSelection");
+
+            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot,
+                Title = "Delete Dunnage Type",
+                Content = $"Are you sure you want to delete '{type.TypeName}'? This action cannot be undone.",
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                var deleteResult = await _dunnageService.DeleteTypeAsync(type.Id);
+
+                if (deleteResult.IsSuccess)
+                {
+                    _logger.LogInfo($"Successfully deleted type: {type.TypeName}", "TypeSelection");
+                    await LoadTypesAsync();
+                    StatusMessage = $"Deleted type: {type.TypeName}";
+                }
+                else
+                {
+                    await _errorHandler.HandleDaoErrorAsync(deleteResult, nameof(DeleteTypeAsync), true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync("Error deleting dunnage type", Enum_ErrorSeverity.Error, ex, true);
         }
     }
 

@@ -9,6 +9,7 @@ BEGIN
     SELECT 
         id,
         type_name,
+        icon,
         created_by,
         created_date,
         modified_by,

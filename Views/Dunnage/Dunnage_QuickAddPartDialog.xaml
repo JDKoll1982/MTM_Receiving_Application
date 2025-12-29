@@ -34,26 +34,24 @@
 
             <!-- Part ID Field -->
             <StackPanel Spacing="8">
-                <TextBlock Text="Part ID" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                <TextBlock Text="Part ID (Auto-generated)" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                 <TextBox 
                     x:Name="PartIdTextBox"
-                    PlaceholderText="e.g., PALLET-48X40, CRATE-LARGE"
-                    MaxLength="100"
-                    TextChanged="OnPartIdChanged"/>
+                    IsReadOnly="True"
+                    PlaceholderText="Auto-generated based on dimensions"
+                    MaxLength="100"/>
                 <TextBlock 
-                    x:Name="PartIdValidationTextBlock"
-                    Text="Part ID is required"
-                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                    Visibility="Collapsed"
+                    Text="Part ID is generated from Type and Dimensions"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"/>
             </StackPanel>
 
             <!-- Specifications Section -->
             <StackPanel Spacing="12">
-                <TextBlock Text="Specifications (Optional)" 
+                <TextBlock Text="Specifications" 
                            Style="{StaticResource BodyStrongTextBlockStyle}"/>
                 <TextBlock 
-                    Text="Enter dimensions or other specifications for this part"
+                    Text="Enter dimensions to generate the Part ID"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"/>
 
@@ -68,33 +66,39 @@
                     <StackPanel Grid.Column="0" Spacing="4">
                         <TextBlock Text="Width (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
                         <NumberBox x:Name="WidthNumberBox"
-                                   PlaceholderText="e.g., 48"
+                                   PlaceholderText="0"
                                    Minimum="0"
                                    Maximum="999"
-                                   SpinButtonPlacementMode="Compact"/>
+                                   SpinButtonPlacementMode="Compact"
+                                   ValueChanged="OnDimensionChanged"/>
                     </StackPanel>
 
                     <!-- Height -->
                     <StackPanel Grid.Column="1" Spacing="4">
                         <TextBlock Text="Height (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
                         <NumberBox x:Name="HeightNumberBox"
-                                   PlaceholderText="e.g., 40"
+                                   PlaceholderText="0"
                                    Minimum="0"
                                    Maximum="999"
-                                   SpinButtonPlacementMode="Compact"/>
+                                   SpinButtonPlacementMode="Compact"
+                                   ValueChanged="OnDimensionChanged"/>
                     </StackPanel>
 
                     <!-- Depth -->
                     <StackPanel Grid.Column="2" Spacing="4">
                         <TextBlock Text="Depth (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
                         <NumberBox x:Name="DepthNumberBox"
-                                   PlaceholderText="e.g., 6"
+                                   PlaceholderText="0"
                                    Minimum="0"
                                    Maximum="999"
-                                   SpinButtonPlacementMode="Compact"/>
+                                   SpinButtonPlacementMode="Compact"
+                                   ValueChanged="OnDimensionChanged"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
+
+            <!-- Dynamic Specs Container -->
+            <StackPanel x:Name="DynamicSpecsPanel" Spacing="12"/>
 
             <!-- Additional Notes -->
             <StackPanel Spacing="8">

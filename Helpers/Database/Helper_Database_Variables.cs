@@ -10,13 +10,13 @@ public static class Helper_Database_Variables
     /// Server: localhost, Port: 3306, Database: mtm_receiving_application
     /// </summary>
     public static string ProductionConnectionString { get; } =
-        "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
+        "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;CharSet=utf8mb4;";
 
     /// <summary>
     /// Test MySQL connection string (same as production for now)
     /// </summary>
     public static string TestConnectionString { get; } =
-        "Server=localhost;Port=3306;Database=mtm_receiving_application_test;Uid=root;Pwd=root;";
+        "Server=localhost;Port=3306;Database=mtm_receiving_application_test;Uid=root;Pwd=root;CharSet=utf8mb4;";
 
     /// <summary>
     /// Gets the connection string based on current environment

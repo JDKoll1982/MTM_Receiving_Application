@@ -9,6 +9,7 @@ public class Model_DunnageType : INotifyPropertyChanged
 {
     private int _id;
     private string _typeName = string.Empty;
+    private string _icon = "\uDB81\uDF20"; // Default to box icon (Fluent System Icons)
     private string _specsJson = string.Empty;
     private string _createdBy = string.Empty;
     private DateTime _createdDate = DateTime.Now;
@@ -25,6 +26,12 @@ public class Model_DunnageType : INotifyPropertyChanged
     {
         get => _typeName;
         set => SetField(ref _typeName, value);
+    }
+
+    public string Icon
+    {
+        get => _icon;
+        set => SetField(ref _icon, value);
     }
 
     public string SpecsJson

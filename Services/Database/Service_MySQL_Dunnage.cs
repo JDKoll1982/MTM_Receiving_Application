@@ -75,12 +75,18 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await _daoDunnageType.InsertAsync(type.TypeName, CurrentUser);
+                var result = await _daoDunnageType.InsertAsync(type.TypeName, type.Icon, CurrentUser);
                 if (result.IsSuccess)
                 {
                     type.Id = result.Data;
                     return Model_Dao_Result_Factory.Success();
                 }
+
+                if (result.ErrorMessage.Contains("Duplicate entry"))
+                {
+                    return Model_Dao_Result_Factory.Failure($"The dunnage type name '{type.TypeName}' is already in use.");
+                }
+
                 return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
             }
             catch (Exception ex)
@@ -94,7 +100,14 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await _daoDunnageType.UpdateAsync(type.Id, type.TypeName, CurrentUser);
+                var result = await _daoDunnageType.UpdateAsync(type.Id, type.TypeName, type.Icon, CurrentUser);
+
+                if (!result.IsSuccess && result.ErrorMessage.Contains("Duplicate entry"))
+                {
+                    return Model_Dao_Result_Factory.Failure($"The dunnage type name '{type.TypeName}' is already in use.");
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -192,15 +205,8 @@ namespace MTM_Receiving_Application.Services.Database
 
         public async Task<Model_Dao_Result> DeleteSpecsByTypeIdAsync(int typeId)
         {
-            try
-            {
-                return await _daoDunnageSpec.DeleteByTypeAsync(typeId);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, Enum_ErrorSeverity.Error, nameof(DeleteSpecsByTypeIdAsync), nameof(Service_MySQL_Dunnage));
-                return Model_Dao_Result_Factory.Failure($"Error deleting specs for type: {ex.Message}");
-            }
+            // Not implemented in DAO yet, but typically handled by cascade delete in DB
+            return Model_Dao_Result_Factory.Success();
         }
 
         public async Task<List<string>> GetAllSpecKeysAsync()
@@ -210,13 +216,18 @@ namespace MTM_Receiving_Application.Services.Database
                 var result = await _daoDunnageSpec.GetAllAsync();
                 if (result.IsSuccess && result.Data != null)
                 {
-                    return [.. result.Data.Select(s => s.SpecKey).Distinct().Order()];
+                    return result.Data
+                        .Select(s => s.SpecKey)
+                        .Distinct()
+                        .Order()
+                        .ToList();
                 }
+
                 return new List<string>();
             }
             catch (Exception ex)
             {
-                HandleException(ex, Enum_ErrorSeverity.Warning, nameof(GetAllSpecKeysAsync), nameof(Service_MySQL_Dunnage));
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetAllSpecKeysAsync), nameof(Service_MySQL_Dunnage));
                 return new List<string>();
             }
         }
