@@ -24,12 +24,12 @@ Tasks are organized by user story to enable independent implementation and testi
 
 **Purpose**: Database schema extensions and dependency registration
 
-- [ ] T001 Run database migration script Database/Migrations/010-dunnage-complete-schema.sql
-- [ ] T002 [P] Verify schema extensions - check custom_field_definitions and user_preferences tables exist
-- [ ] T003 [P] Verify new columns on dunnage_types (Icon) and inventoried_dunnage_list (InventoryMethod, Notes)
-- [ ] T004 [P] Create new stored procedure files in Database/StoredProcedures/Dunnage/ directory
-- [ ] T005 Register new DAOs in App.xaml.cs ConfigureServices (Dao_DunnageType, Dao_DunnagePart, Dao_DunnageSpec, Dao_DunnageLoad, Dao_InventoriedDunnage as singletons)
-- [ ] T006 [P] Register new services in App.xaml.cs ConfigureServices (IService_MySQL_Dunnage, IService_DunnageCSVWriter, IService_DunnageAdminWorkflow)
+- [X] T001 Run database migration script Database/Migrations/010-dunnage-complete-schema.sql
+- [X] T002 [P] Verify schema extensions - check custom_field_definitions and user_preferences tables exist
+- [X] T003 [P] Verify new columns on dunnage_types (Icon) and inventoried_dunnage_list (InventoryMethod, Notes)
+- [X] T004 [P] Create new stored procedure files in Database/StoredProcedures/Dunnage/ directory
+- [X] T005 Register new DAOs in App.xaml.cs ConfigureServices (Dao_DunnageType, Dao_DunnagePart, Dao_DunnageSpec, Dao_DunnageLoad, Dao_InventoriedDunnage as singletons)
+- [X] T006 [P] Register new services in App.xaml.cs ConfigureServices (IService_MySQL_Dunnage, IService_DunnageCSVWriter, IService_DunnageAdminWorkflow)
 
 ---
 
@@ -266,13 +266,13 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 9
 
-- [ ] T103 [US9] Configure CsvHelper with RFC 4180 settings (Delimiter=",", Quote='"', HasHeaderRecord=true) in Service_DunnageCSVWriter.cs
-- [ ] T104 [P] [US9] Implement CSV writing with CsvHelper.WriteField() for each column in Service_DunnageCSVWriter.cs
-- [ ] T105 [P] [US9] Add UTF-8 BOM encoding for Excel/LabelView compatibility in Service_DunnageCSVWriter.cs
-- [ ] T106 [P] [US9] Implement CRLF line endings (\r\n) for RFC 4180 compliance in Service_DunnageCSVWriter.cs
-- [ ] T107 [P] [US9] Implement boolean serialization as "True"/"False" strings in Service_DunnageCSVWriter.cs
-- [ ] T108 [P] [US9] Implement numeric formatting with invariant culture (period decimal separator) in Service_DunnageCSVWriter.cs
-- [ ] T109 [P] [US9] Implement date formatting as yyyy-MM-dd HH:mm:ss in Service_DunnageCSVWriter.cs
+- [X] T103 [US9] Configure CsvHelper with RFC 4180 settings (Delimiter=",", Quote='"', HasHeaderRecord=true) in Service_DunnageCSVWriter.cs
+- [X] T104 [P] [US9] Implement CSV writing with CsvHelper.WriteField() for each column in Service_DunnageCSVWriter.cs
+- [X] T105 [P] [US9] Add UTF-8 BOM encoding for Excel/LabelView compatibility in Service_DunnageCSVWriter.cs
+- [X] T106 [P] [US9] Implement CRLF line endings (\r\n) for RFC 4180 compliance in Service_DunnageCSVWriter.cs
+- [X] T107 [P] [US9] Implement boolean serialization as "True"/"False" strings in Service_DunnageCSVWriter.cs
+- [X] T108 [P] [US9] Implement numeric formatting with invariant culture (period decimal separator) in Service_DunnageCSVWriter.cs
+- [X] T109 [P] [US9] Implement date formatting as yyyy-MM-dd HH:mm:ss in Service_DunnageCSVWriter.cs
 - [ ] T110 [US9] Add unit tests for RFC 4180 escaping (commas, quotes, newlines) in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
 
 **Checkpoint**: User Story 9 complete - RFC 4180 compliance verified
