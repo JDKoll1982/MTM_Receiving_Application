@@ -21,6 +21,17 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
+
+        // Subscribe to workflow step changes to re-initialize when this step is reached
+        _workflowService.StepChanged += OnWorkflowStepChanged;
+    }
+
+    private void OnWorkflowStepChanged(object? sender, EventArgs e)
+    {
+        if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.QuantityEntry)
+        {
+            LoadContextData();
+        }
     }
 
     #region Observable Properties

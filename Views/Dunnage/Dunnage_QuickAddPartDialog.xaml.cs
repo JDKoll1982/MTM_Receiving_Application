@@ -36,6 +36,14 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
 
         foreach (var spec in _specs)
         {
+            // Skip dimensions as they are handled by the static fields
+            if (string.Equals(spec.SpecKey, "Width", System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(spec.SpecKey, "Height", System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(spec.SpecKey, "Depth", System.StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             SpecDefinition? def = null;
             try
             {
@@ -73,7 +81,7 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
 
             Control? inputControl = null;
 
-            if (def.DataType == "Number")
+            if (string.Equals(def.DataType, "Number", System.StringComparison.OrdinalIgnoreCase))
             {
                 var numberBox = new NumberBox
                 {
@@ -87,7 +95,7 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
 
                 inputControl = numberBox;
             }
-            else if (def.DataType == "Boolean")
+            else if (string.Equals(def.DataType, "Boolean", System.StringComparison.OrdinalIgnoreCase))
             {
                 var checkBox = new CheckBox
                 {

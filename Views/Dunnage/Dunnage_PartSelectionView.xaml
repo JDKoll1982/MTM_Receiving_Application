@@ -5,8 +5,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
+    xmlns:views="using:MTM_Receiving_Application.Views.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
+    x:DataType="views:Dunnage_PartSelectionView"
     Loaded="OnLoaded">
+
+    <UserControl.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Padding="24">
         <Grid.RowDefinitions>
@@ -55,7 +62,7 @@
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="20"
-                        Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay}">
+                        Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Grid RowSpacing="12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -99,7 +106,7 @@
                         <StackPanel Grid.Row="2" 
                                     Orientation="Horizontal" 
                                     Spacing="8"
-                                    Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay}">
+                                    Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <FontIcon Glyph="&#xE946;" 
                                       FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                       FontSize="16" 

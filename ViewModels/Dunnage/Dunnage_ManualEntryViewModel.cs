@@ -156,7 +156,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 int count = dialog.RowCount;
-                
+
                 for (int i = 0; i < count; i++)
                 {
                     var newLoad = new Model_DunnageLoad
@@ -305,7 +305,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
             }
 
             // Auto-fill Spec Values from part master data
-            if (part.SpecValuesDict != null && part.SpecValuesDict.Count > 0)
+            if (part.SpecValuesDict?.Count > 0)
             {
                 SelectedLoad.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
                 _logger.LogInfo($"Auto-filled {part.SpecValuesDict.Count} spec values for Part ID: {SelectedLoad.PartId}", "ManualEntry");
@@ -545,7 +545,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
                 }
 
                 // Auto-fill specs from part master
-                if (part.SpecValuesDict != null && part.SpecValuesDict.Count > 0)
+                if (part.SpecValuesDict?.Count > 0)
                 {
                     load.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
                 }

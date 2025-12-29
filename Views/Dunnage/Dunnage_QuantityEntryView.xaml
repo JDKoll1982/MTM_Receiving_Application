@@ -4,8 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MTM_Receiving_Application.Views.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
+    x:DataType="views:Dunnage_QuantityEntryView"
     Loaded="OnLoaded">
+
+    <UserControl.Resources>
+        <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Padding="24">
         <Grid.RowDefinitions>
@@ -66,7 +73,7 @@
                 <!-- Validation Message -->
                 <TextBlock Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                           Visibility="{x:Bind ViewModel.ValidationMessage, Mode=OneWay, Converter={StaticResource EmptyStringToCollapsedConverter}}"
+                           Visibility="{x:Bind ViewModel.ValidationMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}"
                            TextWrapping="Wrap"/>
 
                 <!-- Info Panel -->

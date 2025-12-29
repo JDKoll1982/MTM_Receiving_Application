@@ -4,8 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MTM_Receiving_Application.Views.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
+    x:DataType="views:Dunnage_DetailsEntryView"
     Loaded="OnLoaded">
+
+    <UserControl.Resources>
+        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Padding="24">
         <Grid.RowDefinitions>
@@ -93,7 +100,7 @@
                     <!-- Placeholder when no specs -->
                     <TextBlock Text="No specifications configured for this type."
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Visibility="{x:Bind ViewModel.SpecInputs.Count, Mode=OneWay, Converter={StaticResource ZeroToVisibleConverter}}"
+                               Visibility="{x:Bind ViewModel.SpecInputs.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter='Inverse'}"
                                Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
 

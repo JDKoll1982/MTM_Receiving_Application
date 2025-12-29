@@ -29,6 +29,17 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
+
+        // Subscribe to workflow step changes to re-initialize when this step is reached
+        _workflowService.StepChanged += OnWorkflowStepChanged;
+    }
+
+    private void OnWorkflowStepChanged(object? sender, EventArgs e)
+    {
+        if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.DetailsEntry)
+        {
+            _ = LoadSpecsForSelectedPartAsync();
+        }
     }
 
     #region Observable Properties

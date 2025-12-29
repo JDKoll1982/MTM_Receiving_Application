@@ -126,7 +126,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
             CurrentPage = _paginationService.CurrentPage;
 
             // Load first page
-            LoadPage(1);
+            LoadPage();
 
             UpdateNavigationButtons();
             StatusMessage = $"Loaded {TotalRecords} parts";
@@ -183,7 +183,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
             TotalPages = _paginationService.TotalPages;
             CurrentPage = _paginationService.CurrentPage;
 
-            LoadPage(1);
+            LoadPage();
             UpdateNavigationButtons();
 
             StatusMessage = $"Filtered {TotalRecords} parts";
@@ -235,7 +235,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
             TotalPages = _paginationService.TotalPages;
             CurrentPage = _paginationService.CurrentPage;
 
-            LoadPage(1);
+            LoadPage();
             UpdateNavigationButtons();
 
             StatusMessage = $"Found {TotalRecords} parts";
@@ -275,7 +275,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
     {
         if (_paginationService.NextPage())
         {
-            LoadPage(_paginationService.CurrentPage);
+            LoadPage();
         }
     }
 
@@ -284,7 +284,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
     {
         if (_paginationService.PreviousPage())
         {
-            LoadPage(_paginationService.CurrentPage);
+            LoadPage();
         }
     }
 
@@ -293,7 +293,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
     {
         if (_paginationService.FirstPage())
         {
-            LoadPage(_paginationService.CurrentPage);
+            LoadPage();
         }
     }
 
@@ -302,14 +302,14 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
     {
         if (_paginationService.LastPage())
         {
-            LoadPage(_paginationService.CurrentPage);
+            LoadPage();
         }
     }
 
-    private void LoadPage(int pageNumber)
+    private void LoadPage()
     {
         var pageItems = _paginationService.GetCurrentPageItems<Model_DunnagePart>();
-        
+
         Parts.Clear();
         foreach (var item in pageItems)
         {
@@ -323,7 +323,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
 
     private void OnPageChanged(object? sender, EventArgs e)
     {
-        LoadPage(_paginationService.CurrentPage);
+        LoadPage();
     }
 
     private void UpdateNavigationButtons()

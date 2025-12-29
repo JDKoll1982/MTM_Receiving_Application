@@ -47,19 +47,20 @@ namespace MTM_Receiving_Application.Services.Receiving
                 Delimiter = ",",              // Standard comma delimiter
                 Quote = '"',                  // Double quote for field escaping
                 HasHeaderRecord = true,       // Include header row
-                
+
                 // T106: CRLF line endings
                 NewLine = "\r\n",            // RFC 4180 requires CRLF
-                
+
                 // T104: Automatic escaping for special characters (commas, quotes, newlines)
-                ShouldQuote = args => args.Field.Contains(",") || 
-                                     args.Field.Contains("\"") || 
-                                     args.Field.Contains("\n") ||
-                                     args.Field.Contains("\r"),
-                
+                ShouldQuote = args => !string.IsNullOrEmpty(args.Field) &&
+                                     (args.Field.Contains(",") ||
+                                      args.Field.Contains("\"") ||
+                                      args.Field.Contains("\n") ||
+                                      args.Field.Contains("\r")),
+
                 // T105: UTF-8 with BOM for Excel/LabelView compatibility
                 Encoding = Encoding.UTF8,
-                
+
                 // T108: Invariant culture for numeric formatting (period as decimal separator)
                 // Already handled by CultureInfo.InvariantCulture
             };
@@ -368,7 +369,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             // T105: UTF-8 with BOM for Excel/LabelView compatibility
             var encoding = new UTF8Encoding(true); // true = include BOM
-            
+
             await using (var writer = new StreamWriter(path, false, encoding))
             await using (var csv = new CsvWriter(writer, GetRfc4180Configuration()))
             {
@@ -377,37 +378,11 @@ namespace MTM_Receiving_Application.Services.Receiving
         }
 
         /// <summary>
-        /// Format boolean values as "True"/"False" strings (T107)
-        /// </summary>
-        private string FormatBoolean(bool value)
-        {
-            return value ? "True" : "False";
-        }
-
-        /// <summary>
         /// Format date/time values as yyyy-MM-dd HH:mm:ss (T109)
         /// </summary>
         private string FormatDateTime(DateTime value)
         {
             return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-        }
-
-        /// <summary>
-        /// Format numeric values with invariant culture (T108)
-        /// Ensures period as decimal separator regardless of user locale
-        /// </summary>
-        private string FormatNumeric(object value)
-        {
-            if (value is decimal decimalValue)
-                return decimalValue.ToString(CultureInfo.InvariantCulture);
-            if (value is double doubleValue)
-                return doubleValue.ToString(CultureInfo.InvariantCulture);
-            if (value is float floatValue)
-                return floatValue.ToString(CultureInfo.InvariantCulture);
-            if (value is int intValue)
-                return intValue.ToString(CultureInfo.InvariantCulture);
-            
-            return value?.ToString() ?? "";
         }
     }
 }

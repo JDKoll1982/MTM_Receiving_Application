@@ -7,6 +7,9 @@ public class SpecDefinition
     [JsonPropertyName("dataType")]
     public string DataType { get; set; } = "Text"; // Text, Number, Boolean
 
+    [JsonPropertyName("type")]
+    public string Type { get => DataType; set => DataType = value; }
+
     [JsonPropertyName("required")]
     public bool Required { get; set; } = false;
 
