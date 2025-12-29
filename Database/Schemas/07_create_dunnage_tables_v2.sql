@@ -4,6 +4,8 @@
 -- Description: Re-creates dunnage tables to match approved data model
 -- =============================================
 
+SET FOREIGN_KEY_CHECKS = 0;
+
 -- Drop tables in reverse dependency order
 DROP TABLE IF EXISTS inventoried_dunnage;
 DROP TABLE IF EXISTS dunnage_loads;
@@ -16,6 +18,12 @@ DROP TABLE IF EXISTS dunnage_part_numbers;
 
 -- Finally drop the base table
 DROP TABLE IF EXISTS dunnage_types;
+
+-- Drop new tables if they exist
+DROP TABLE IF EXISTS custom_field_definitions;
+DROP TABLE IF EXISTS user_preferences;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================
 -- Table 1: dunnage_types

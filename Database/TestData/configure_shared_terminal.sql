@@ -11,14 +11,14 @@ SELECT
 -- Example: If your computer is DESKTOP-ABC123, use that exact name
 
 -- Uncomment and modify this line after checking computer name:
--- INSERT INTO workstation_config (computer_name, workstation_type, description)
+-- INSERT INTO workstation_config (workstation_name, workstation_type, description)
 -- VALUES ('YOUR_COMPUTER_NAME', 'shared_terminal', 'Test shared terminal for PIN login')
 -- ON DUPLICATE KEY UPDATE 
 --     workstation_type = 'shared_terminal',
 --     description = 'Test shared terminal for PIN login';
 
 -- To switch back to personal workstation (Windows auto-login):
--- DELETE FROM workstation_config WHERE computer_name = 'YOUR_COMPUTER_NAME';
+-- DELETE FROM workstation_config WHERE workstation_name = 'YOUR_COMPUTER_NAME';
 
 -- View all configured workstations:
 SELECT * FROM workstation_config;

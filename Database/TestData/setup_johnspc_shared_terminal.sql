@@ -2,7 +2,7 @@
 USE mtm_receiving_application;
 
 -- Insert or update workstation configuration
-INSERT INTO workstation_config (computer_name, workstation_type, description)
+INSERT INTO workstation_config (workstation_name, workstation_type, description)
 VALUES ('JOHNSPC', 'shared_terminal', 'Development workstation - PIN testing')
 ON DUPLICATE KEY UPDATE 
     workstation_type = 'shared_terminal',
@@ -10,7 +10,7 @@ ON DUPLICATE KEY UPDATE
 
 -- Verify the configuration
 SELECT 
-    computer_name,
+    workstation_name,
     workstation_type,
     description,
     created_date

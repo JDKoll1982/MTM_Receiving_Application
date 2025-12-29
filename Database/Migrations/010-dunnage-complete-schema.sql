@@ -13,16 +13,29 @@ USE mtm_receiving_application;
 -- ============================================
 
 -- Add Icon column to dunnage_types
-ALTER TABLE dunnage_types 
-ADD COLUMN Icon VARCHAR(10) NOT NULL DEFAULT '&#xE7B8;' COMMENT 'Segoe Fluent Icon glyph (e.g., &#xE7B8; = Box)' 
-AFTER DunnageType;
+SET @column_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'mtm_receiving_application' 
+    AND TABLE_NAME = 'dunnage_types' 
+    AND COLUMN_NAME = 'icon'
+);
 
--- Add InventoryMethod and Notes columns to inventoried_dunnage_list
-ALTER TABLE inventoried_dunnage_list
-ADD COLUMN InventoryMethod VARCHAR(50) NOT NULL DEFAULT 'Both' COMMENT 'Visual ERP inventory tracking method: Adjust In, Receive In, Both' 
-AFTER RequiresInventory,
-ADD COLUMN Notes TEXT NULL COMMENT 'Optional notes about why part requires inventory tracking' 
-AFTER InventoryMethod;
+SET @sql = IF(@column_exists = 0,
+    'ALTER TABLE dunnage_types ADD COLUMN icon VARCHAR(10) NOT NULL DEFAULT ''&#xE7B8;'' COMMENT ''Segoe Fluent Icon glyph (e.g., &#xE7B8; = Box)'' AFTER type_name',
+    'SELECT ''Column icon already exists in dunnage_types'' AS message'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- NOTE: inventory_method and notes columns are already included in 07_create_dunnage_tables_v2.sql
+-- ALTER TABLE inventoried_dunnage
+-- ADD COLUMN inventory_method VARCHAR(50) NOT NULL DEFAULT 'Both' COMMENT 'Visual ERP inventory tracking method: Adjust In, Receive In, Both' 
+-- AFTER requires_inventory,
+-- ADD COLUMN notes TEXT NULL COMMENT 'Optional notes about why part requires inventory tracking' 
+-- AFTER inventory_method;
 
 -- ============================================
 -- SECTION 2: CREATE NEW TABLES
@@ -60,10 +73,40 @@ CREATE TABLE IF NOT EXISTS user_preferences (
 -- ============================================
 
 -- Index for Edit Mode date filtering
-CREATE INDEX IDX_LOADS_DATE ON dunnage_loads(ReceivedDate) COMMENT 'Edit Mode date range filtering';
+SET @index_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.STATISTICS 
+    WHERE TABLE_SCHEMA = 'mtm_receiving_application' 
+    AND TABLE_NAME = 'dunnage_loads' 
+    AND INDEX_NAME = 'IDX_LOADS_DATE'
+);
+
+SET @sql = IF(@index_exists = 0,
+    'CREATE INDEX IDX_LOADS_DATE ON dunnage_loads(received_date) COMMENT ''Edit Mode date range filtering''',
+    'SELECT ''Index IDX_LOADS_DATE already exists'' AS message'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Index for Edit Mode user filtering
-CREATE INDEX IDX_LOADS_USER ON dunnage_loads(UserId) COMMENT 'Edit Mode user filtering';
+SET @index_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.STATISTICS 
+    WHERE TABLE_SCHEMA = 'mtm_receiving_application' 
+    AND TABLE_NAME = 'dunnage_loads' 
+    AND INDEX_NAME = 'IDX_LOADS_USER'
+);
+
+SET @sql = IF(@index_exists = 0,
+    'CREATE INDEX IDX_LOADS_USER ON dunnage_loads(created_by) COMMENT ''Edit Mode user filtering''',
+    'SELECT ''Index IDX_LOADS_USER already exists'' AS message'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- ============================================
 -- SECTION 4: OPTIONAL DEFAULT PREFERENCES
@@ -93,13 +136,13 @@ SELECT 'Icon column added to dunnage_types' AS Status
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_SCHEMA = 'mtm_receiving_application'
   AND TABLE_NAME = 'dunnage_types'
-  AND COLUMN_NAME = 'Icon';
+  AND COLUMN_NAME = 'icon';
 
-SELECT 'InventoryMethod column added to inventoried_dunnage_list' AS Status
+SELECT 'inventory_method column exists in inventoried_dunnage' AS Status
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_SCHEMA = 'mtm_receiving_application'
-  AND TABLE_NAME = 'inventoried_dunnage_list'
-  AND COLUMN_NAME = 'InventoryMethod';
+  AND TABLE_NAME = 'inventoried_dunnage'
+  AND COLUMN_NAME = 'inventory_method';
 
 -- ============================================
 -- ROLLBACK SCRIPT (USE ONLY IF MIGRATION FAILS)
@@ -115,9 +158,9 @@ DROP INDEX IF EXISTS IDX_LOADS_DATE ON dunnage_loads;
 DROP INDEX IF EXISTS IDX_LOADS_USER ON dunnage_loads;
 
 -- Remove new columns (MySQL 5.7.24 syntax)
-ALTER TABLE dunnage_types DROP COLUMN Icon;
-ALTER TABLE inventoried_dunnage_list DROP COLUMN InventoryMethod;
-ALTER TABLE inventoried_dunnage_list DROP COLUMN Notes;
+ALTER TABLE dunnage_types DROP COLUMN icon;
+-- ALTER TABLE inventoried_dunnage DROP COLUMN inventory_method;
+-- ALTER TABLE inventoried_dunnage DROP COLUMN notes;
 */
 
 COMMIT;

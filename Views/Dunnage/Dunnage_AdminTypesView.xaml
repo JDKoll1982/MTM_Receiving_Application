@@ -5,9 +5,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded">
+
+    <Page.Resources>
+        <converters:Converter_IconCodeToGlyph x:Key="IconCodeToGlyphConverter"/>
+    </Page.Resources>
 
     <Grid Padding="24">
         <Grid.RowDefinitions>
@@ -80,12 +85,19 @@
 
                     <controls:DataGrid.Columns>
                         <!-- Icon Column -->
-                        <controls:DataGridTextColumn 
-                            Header="Icon" 
-                            Binding="{Binding Icon}"
-                            Width="60"
-                            FontSize="24"
-                            CanUserResize="False"/>
+                        <controls:DataGridTemplateColumn Header="Icon" Width="60">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <FontIcon 
+                                        Glyph="{Binding Icon, Converter={StaticResource IconCodeToGlyphConverter}}" 
+                                        FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                                        FontSize="24"
+                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
 
                         <!-- Type Name Column -->
                         <controls:DataGridTextColumn 

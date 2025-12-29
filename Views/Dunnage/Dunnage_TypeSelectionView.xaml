@@ -7,8 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Dunnage"
     xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
     Loaded="OnLoaded">
+
+    <UserControl.Resources>
+        <converters:Converter_IconCodeToGlyph x:Key="IconCodeToGlyphConverter"/>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -69,7 +74,7 @@
 
                             <!-- Icon -->
                             <FontIcon Grid.Row="0" 
-                                      Glyph="{x:Bind Icon}" 
+                                      Glyph="{x:Bind Icon, Mode=OneWay, Converter={StaticResource IconCodeToGlyphConverter}}" 
                                       FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                       FontSize="48" 
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"

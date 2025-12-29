@@ -56,7 +56,8 @@ function Execute-SqlFile {
                     $null = Get-Command mysql -ErrorAction Stop
                     $mysqlCmd = "mysql"
                     break
-                } catch { }
+                }
+                catch { }
             }
         }
         
@@ -93,7 +94,8 @@ function Execute-SqlFile {
             if ($stdout) { Write-Host "  Output: $stdout" -ForegroundColor Gray }
             Write-Host ""
             return $true
-        } else {
+        }
+        else {
             Write-Host "  ERROR: MySQL returned exit code $($process.ExitCode)" -ForegroundColor Red
             if ($stderr) { Write-Host "  Error: $stderr" -ForegroundColor Red }
             Write-Host ""
@@ -120,7 +122,9 @@ $schemaFiles = @(
     "$ProjectRoot\Database\Schemas\03_create_receiving_tables.sql",
     "$ProjectRoot\Database\Schemas\04_create_package_preferences.sql",
     "$ProjectRoot\Database\Schemas\05_add_default_mode_to_users.sql",
-    "$ProjectRoot\Database\Schemas\07_create_dunnage_tables_v2.sql"
+    "$ProjectRoot\Database\Schemas\07_create_dunnage_tables_v2.sql",
+    "$ProjectRoot\Database\Schemas\08_add_icon_to_dunnage_types.sql",
+    "$ProjectRoot\Database\Schemas\09_fix_bad_icon_data.sql"
 )
 
 foreach ($file in $schemaFiles) {
@@ -128,6 +132,18 @@ foreach ($file in $schemaFiles) {
     if (-not (Execute-SqlFile -FilePath $file -Description $fileName)) {
         Write-Host "Schema deployment failed. Stopping." -ForegroundColor Red
         exit 1
+    }
+}
+
+# Step 1.5: Deploy Migration Files
+Write-Host "STEP 1.5: Deploying Database Migrations" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$migrationFiles = Get-ChildItem -Path "$ProjectRoot\Database\Migrations" -Filter "*.sql" | Sort-Object Name
+foreach ($file in $migrationFiles) {
+    $description = "Migration: $($file.Name)"
+    if (-not (Execute-SqlFile -FilePath $file.FullName -Description $description)) {
+        Write-Host "Migration deployment failed. Skipping." -ForegroundColor Yellow
     }
 }
 
@@ -150,6 +166,24 @@ foreach ($dir in $storedProcDirs) {
                 Write-Host "Stored procedure deployment failed. Stopping." -ForegroundColor Red
                 exit 1
             }
+        }
+    }
+}
+
+# Step 3: Deploy Test Data
+Write-Host "STEP 3: Deploying Test Data" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$testDataFiles = @(
+    "$ProjectRoot\Database\TestData\insert_test_data.sql",
+    "$ProjectRoot\Database\TestData\010_seed_dunnage_complete.sql"
+)
+
+foreach ($file in $testDataFiles) {
+    if (Test-Path $file) {
+        $fileName = Split-Path $file -Leaf
+        if (-not (Execute-SqlFile -FilePath $file -Description $fileName)) {
+            Write-Host "Test data deployment failed. Skipping." -ForegroundColor Yellow
         }
     }
 }

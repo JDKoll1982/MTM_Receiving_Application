@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MTM_Receiving_Application.Views.Dunnage"
     xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     Title="Add New Dunnage Type"
     PrimaryButtonText="Add Type"
     CloseButtonText="Cancel"
@@ -14,6 +15,7 @@
     Width="900">
 
     <ContentDialog.Resources>
+        <converters:Converter_IconCodeToGlyph x:Key="IconCodeToGlyphConverter"/>
         <!-- Help Button Style -->
         <Style x:Key="HelpButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -111,7 +113,7 @@
                         ToolTipService.ToolTip="Click to browse and select an icon from the icon library">
                     <StackPanel Orientation="Horizontal" Spacing="12">
                         <FontIcon x:Name="SelectedIconDisplay" 
-                                  Glyph="&#xE7B8;" 
+                                  Glyph="{x:Bind SelectedIconGlyph, Mode=OneWay, Converter={StaticResource IconCodeToGlyphConverter}}" 
                                   FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                   FontSize="24"
                                   Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>

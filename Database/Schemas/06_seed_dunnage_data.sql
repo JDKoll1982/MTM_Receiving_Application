@@ -9,7 +9,7 @@
 -- Seed Dunnage Types
 -- =============================================
 
-INSERT INTO dunnage_types (DunnageType, EntryDate, EntryUser, AlterDate, AlterUser) VALUES
+INSERT IGNORE INTO dunnage_types (DunnageType, EntryDate, EntryUser, AlterDate, AlterUser) VALUES
 ('Pallet', NOW(), 'SYSTEM', NULL, NULL),
 ('Crate', NOW(), 'SYSTEM', NULL, NULL),
 ('Box', NOW(), 'SYSTEM', NULL, NULL),
@@ -28,7 +28,7 @@ INSERT INTO dunnage_types (DunnageType, EntryDate, EntryUser, AlterDate, AlterUs
 -- =============================================
 
 -- Default spec schema for all types (Width, Height, Depth in inches, IsInventoriedToVisual flag)
-INSERT INTO dunnage_specs (DunnageTypeID, DunnageSpecs, SpecAlterDate, SpecAlterUser)
+INSERT IGNORE INTO dunnage_specs (DunnageTypeID, DunnageSpecs, SpecAlterDate, SpecAlterUser)
 SELECT 
     ID,
     JSON_OBJECT(

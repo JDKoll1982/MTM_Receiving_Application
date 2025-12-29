@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MTM_Receiving_Application.Models.Dunnage;
 using System.Linq;
+using System.Net;
 
 namespace MTM_Receiving_Application.Views.Dunnage;
 
@@ -18,6 +19,26 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
     public string TypeName { get; private set; } = string.Empty;
     public string SelectedIconGlyph { get; private set; } = "\uDB81\uDF20";
     public ObservableCollection<Model_SpecItem> Specs { get; } = new();
+
+    private string DecodeIcon(string icon)
+    {
+        if (string.IsNullOrWhiteSpace(icon))
+            return "\uDB81\uDF20";
+
+        // If it's an HTML entity, decode it
+        if (icon.StartsWith("&#") && icon.EndsWith(";"))
+        {
+            return WebUtility.HtmlDecode(icon);
+        }
+
+        // If it's a raw hex code (4 chars), convert it
+        if (icon.Length == 4 && int.TryParse(icon, System.Globalization.NumberStyles.HexNumber, null, out int code))
+        {
+            return ((char)code).ToString();
+        }
+
+        return icon;
+    }
 
     public bool IsIconSelected
     {
@@ -55,13 +76,15 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
         Title = "Edit Dunnage Type";
         PrimaryButtonText = "Save Changes";
 
+        string decodedIcon = DecodeIcon(iconGlyph);
+
         TypeNameTextBox.Text = typeName;
-        _selectedIcon = iconGlyph;
-        SelectedIconDisplay.Glyph = iconGlyph;
+        _selectedIcon = decodedIcon;
+        SelectedIconDisplay.Glyph = decodedIcon;
         SelectedIconNameText.Text = "Current Icon";
 
         TypeName = typeName;
-        SelectedIconGlyph = iconGlyph;
+        SelectedIconGlyph = decodedIcon;
 
         Specs.Clear();
         foreach (var kvp in specs)
