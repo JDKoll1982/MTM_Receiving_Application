@@ -318,7 +318,7 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 11
 
-- [ ] T129 [US11] Implement validation properties (TypeNameError, FieldNameError) in Dunnage_AddTypeDialogViewModel.cs
+- [X] T129 [US11] Implement validation properties (TypeNameError, FieldNameError) in Dunnage_AddTypeDialogViewModel.cs
 - [X] T130 [P] [US11] Implement DispatcherTimer with 300ms interval for debouncing in Dunnage_AddTypeDialogViewModel.cs
 - [X] T131 [P] [US11] Implement ValidateTypeName method (required, max 100 chars, check duplicate) in Dunnage_AddTypeDialogViewModel.cs
 - [X] T132 [P] [US11] Implement ValidateFieldName method (required, unique, max 100 chars, no special chars <>{}[]|\) in Dunnage_AddTypeDialogViewModel.cs

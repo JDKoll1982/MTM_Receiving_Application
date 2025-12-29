@@ -10,6 +10,7 @@ public sealed partial class Dunnage_AddTypeDialog : ContentDialog
     public Dunnage_AddTypeDialog()
     {
         ViewModel = App.GetService<Dunnage_AddTypeDialogViewModel>();
+        DataContext = ViewModel;
         InitializeComponent();
     }
 }

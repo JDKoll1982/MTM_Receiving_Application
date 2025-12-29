@@ -65,4 +65,10 @@ public interface IService_ErrorHandler
         string operationName,
         bool showDialog = true
     );
+
+    // Aliases for compatibility (spec 010-dunnage-complete)
+
+    public Task ShowUserErrorAsync(string message, string title, string method);
+
+    public void HandleException(Exception ex, Enum_ErrorSeverity severity, string method, string className);
 }

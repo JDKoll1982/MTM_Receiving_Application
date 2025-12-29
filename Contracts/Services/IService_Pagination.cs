@@ -57,27 +57,27 @@ namespace MTM_Receiving_Application.Contracts.Services
         /// <summary>
         /// Moves to the next page.
         /// </summary>
-        public void NextPage();
+        public bool NextPage();
 
         /// <summary>
         /// Moves to the previous page.
         /// </summary>
-        public void PreviousPage();
+        public bool PreviousPage();
 
         /// <summary>
         /// Moves to the first page.
         /// </summary>
-        public void FirstPage();
+        public bool FirstPage();
 
         /// <summary>
         /// Moves to the last page.
         /// </summary>
-        public void LastPage();
+        public bool LastPage();
 
         /// <summary>
         /// Moves to a specific page.
         /// </summary>
         /// <param name="pageNumber">The page number to move to.</param>
-        public void GoToPage(int pageNumber);
+        public bool GoToPage(int pageNumber);
     }
 }

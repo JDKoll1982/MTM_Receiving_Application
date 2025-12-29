@@ -11,22 +11,32 @@ public enum Enum_ErrorSeverity
     Info = 0,
 
     /// <summary>
+    /// Low severity - minor issue
+    /// </summary>
+    Low = 1,
+
+    /// <summary>
     /// Warning - potential issue but operation continues
     /// </summary>
-    Warning = 1,
+    Warning = 2,
+
+    /// <summary>
+    /// Medium severity - significant issue but application continues
+    /// </summary>
+    Medium = 3,
 
     /// <summary>
     /// Error - operation failed but application continues
     /// </summary>
-    Error = 2,
+    Error = 4,
 
     /// <summary>
     /// Critical - serious issue requiring immediate attention
     /// </summary>
-    Critical = 3,
+    Critical = 5,
 
     /// <summary>
     /// Fatal - application cannot continue
     /// </summary>
-    Fatal = 4
+    Fatal = 6
 }

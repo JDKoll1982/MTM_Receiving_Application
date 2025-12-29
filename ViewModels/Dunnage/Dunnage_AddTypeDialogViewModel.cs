@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.ViewModels.Dunnage;
 /// <summary>
 /// ViewModel for Add New Type Dialog with real-time validation and custom field preview
 /// </summary>
-public partial class Dunnage_AddTypeDialogViewModel : BaseViewModel
+public partial class Dunnage_AddTypeDialogViewModel : Shared_BaseViewModel
 {
     #region Dependencies
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -82,7 +82,7 @@ public partial class Dunnage_AddTypeDialogViewModel : BaseViewModel
     public Dunnage_AddTypeDialogViewModel(
         IService_MySQL_Dunnage dunnageService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
         _dunnageService = dunnageService;
@@ -102,7 +102,8 @@ public partial class Dunnage_AddTypeDialogViewModel : BaseViewModel
     [RelayCommand]
     private async Task SaveTypeAsync()
     {
-        if (IsBusy || !CanSave) return;
+        if (IsBusy || !CanSave)
+            return;
 
         try
         {
@@ -113,7 +114,7 @@ public partial class Dunnage_AddTypeDialogViewModel : BaseViewModel
             var typeResult = await _dunnageService.InsertTypeAsync(TypeName, SelectedIcon);
             if (!typeResult.IsSuccess)
             {
-                _errorHandler.ShowUserError(typeResult.ErrorMessage, "Save Failed", nameof(SaveTypeAsync));
+                await _errorHandler.ShowUserErrorAsync(typeResult.ErrorMessage, "Save Failed", nameof(SaveTypeAsync));
                 return;
             }
 
@@ -124,7 +125,7 @@ public partial class Dunnage_AddTypeDialogViewModel : BaseViewModel
                 var fieldResult = await _dunnageService.InsertCustomFieldAsync(typeId, field);
                 if (!fieldResult.IsSuccess)
                 {
-                    _errorHandler.ShowUserError($"Failed to save field '{field.FieldName}': {fieldResult.ErrorMessage}", 
+                    await _errorHandler.ShowUserErrorAsync($"Failed to save field '{field.FieldName}': {fieldResult.ErrorMessage}",
                         "Save Failed", nameof(SaveTypeAsync));
                     return;
                 }
@@ -137,7 +138,7 @@ public partial class Dunnage_AddTypeDialogViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Medium, 
+            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(SaveTypeAsync), nameof(Dunnage_AddTypeDialogViewModel));
         }
         finally

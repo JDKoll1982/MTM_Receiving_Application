@@ -39,7 +39,7 @@ namespace MTM_Receiving_Application.Contracts.Services
         public Task<Model_Dao_Result> InsertPartAsync(Model_DunnagePart part);
         public Task<Model_Dao_Result> UpdatePartAsync(Model_DunnagePart part);
         public Task<Model_Dao_Result> DeletePartAsync(string partId);
-        public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(string searchText, int? typeId);
+        public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(string searchText, int? typeId = null);
 
         // ==================== Load Operations (6 methods) ====================
 
@@ -61,10 +61,15 @@ namespace MTM_Receiving_Application.Contracts.Services
 
         // ==================== Impact Analysis (4 methods) ====================
 
-        public Task<int> GetPartCountByTypeIdAsync(int typeId);
-        public Task<int> GetTransactionCountByPartIdAsync(string partId);
-        public Task<int> GetTransactionCountByTypeIdAsync(int typeId);
-        public Task<int> GetPartCountBySpecKeyAsync(int typeId, string specKey);
+        public Task<Model_Dao_Result<int>> GetPartCountByTypeIdAsync(int typeId);
+        public Task<Model_Dao_Result<int>> GetTransactionCountByPartIdAsync(string partId);
+        public Task<Model_Dao_Result<int>> GetTransactionCountByTypeIdAsync(int typeId);
+        public Task<Model_Dao_Result<int>> GetPartCountBySpecKeyAsync(int typeId, string specKey);
+
+        // Aliases for compatibility (spec 010-dunnage-complete)
+        public Task<Model_Dao_Result<int>> GetPartCountByTypeAsync(int typeId) => GetPartCountByTypeIdAsync(typeId);
+        public Task<Model_Dao_Result<int>> GetTransactionCountByTypeAsync(int typeId) => GetTransactionCountByTypeIdAsync(typeId);
+        public Task<Model_Dao_Result<int>> GetTransactionCountByPartAsync(string partId) => GetTransactionCountByPartIdAsync(partId);
 
         // ==================== Custom Field Operations (3 methods) ====================
 

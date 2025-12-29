@@ -2,6 +2,17 @@
   rankdir=LR;
   node [shape=box, style=filled, fontname="Segoe UI"];
   edge [fontname="Segoe UI", fontsize=10];
-  ROOT [label="Build Issues\nTotal: 0", fillcolor="lightblue", shape=doubleoctagon];
-  "Good Job!" [shape=box, style=filled, fillcolor=green];
+  ROOT [label="Build Issues\nTotal: 8", fillcolor="lightblue", shape=doubleoctagon];
+  "Dunnage_AddTypeDialogViewModel.cs" [label="Dunnage_AddTypeDialogViewModel.cs\n(4)", fillcolor="lightpink"];
+  ROOT -> "Dunnage_AddTypeDialogViewModel.cs";
+  "Dunnage_AddTypeDialogViewModel.cs_CS1061" [label="CS1061", fillcolor="red", shape=ellipse];
+  "Dunnage_AddTypeDialogViewModel.cs" -> "Dunnage_AddTypeDialogViewModel.cs_CS1061" [label="4"];
+  "Service_DunnageCSVWriter.cs" [label="Service_DunnageCSVWriter.cs\n(2)", fillcolor="lightyellow"];
+  ROOT -> "Service_DunnageCSVWriter.cs";
+  "Service_DunnageCSVWriter.cs_CS8602" [label="CS8602", fillcolor="orange", shape=ellipse];
+  "Service_DunnageCSVWriter.cs" -> "Service_DunnageCSVWriter.cs_CS8602" [label="2"];
+  "Microsoft.UI.Xaml.Markup.Compiler.interop.targets" [label="Microsoft.UI.Xaml.Markup.Compiler.interop.targets\n(2)", fillcolor="lightpink"];
+  ROOT -> "Microsoft.UI.Xaml.Markup.Compiler.interop.targets";
+  "Microsoft.UI.Xaml.Markup.Compiler.interop.targets_MSB3073" [label="MSB3073", fillcolor="red", shape=ellipse];
+  "Microsoft.UI.Xaml.Markup.Compiler.interop.targets" -> "Microsoft.UI.Xaml.Markup.Compiler.interop.targets_MSB3073" [label="2"];
 }

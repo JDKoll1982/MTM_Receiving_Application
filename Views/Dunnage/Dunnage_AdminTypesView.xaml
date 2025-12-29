@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded">
@@ -63,7 +64,7 @@
             CornerRadius="8"
             Padding="1">
             <Grid>
-                <DataGrid
+                <controls:DataGrid
                     ItemsSource="{x:Bind ViewModel.Types, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.SelectedType, Mode=TwoWay}"
                     AutoGenerateColumns="False"
@@ -77,9 +78,9 @@
                     HorizontalScrollBarVisibility="Auto"
                     AlternatingRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}">
 
-                    <DataGrid.Columns>
+                    <controls:DataGrid.Columns>
                         <!-- Icon Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Icon" 
                             Binding="{Binding Icon}"
                             Width="60"
@@ -87,41 +88,41 @@
                             CanUserResize="False"/>
 
                         <!-- Type Name Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Type Name" 
                             Binding="{Binding DunnageType}"
                             Width="2*"
                             CanUserResize="True"/>
 
                         <!-- Date Added Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Date Added" 
                             Binding="{Binding DateAdded, Converter={StaticResource DateTimeToStringConverter}}"
                             Width="*"
                             CanUserResize="True"/>
 
                         <!-- Added By Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Added By" 
                             Binding="{Binding AddedBy}"
                             Width="*"
                             CanUserResize="True"/>
 
                         <!-- Last Modified Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Last Modified" 
                             Binding="{Binding LastModified, Converter={StaticResource DateTimeToStringConverter}}"
                             Width="*"
                             CanUserResize="True"/>
 
                         <!-- Modified By Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Modified By" 
                             Binding="{Binding ModifiedBy}"
                             Width="*"
                             CanUserResize="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
 
                 <!-- Empty State -->
                 <StackPanel 

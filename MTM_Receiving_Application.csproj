@@ -41,11 +41,14 @@
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
-  <!-- Exclude scripts folder from compilation -->
+  <!-- Exclude scripts and specs folder from compilation -->
   <ItemGroup>
     <Compile Remove="scripts\**" />
     <EmbeddedResource Remove="scripts\**" />
     <None Remove="scripts\**" />
+    <Compile Remove="specs\**" />
+    <EmbeddedResource Remove="specs\**" />
+    <None Remove="specs\**" />
   </ItemGroup>
 
   <!-- Documentation Files -->

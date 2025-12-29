@@ -1,85 +1,62 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_Receiving_Application.Models.Dunnage;
 
-public class Model_DunnageType : INotifyPropertyChanged
+/// <summary>
+/// Represents a dunnage type classification.
+/// Database Table: dunnage_types
+/// </summary>
+public partial class Model_DunnageType : ObservableObject
 {
+    [ObservableProperty]
     private int _id;
+
+    [ObservableProperty]
     private string _typeName = string.Empty;
+
+    [ObservableProperty]
     private string _icon = "\uDB81\uDF20"; // Default to box icon (Fluent System Icons)
+
+    [ObservableProperty]
     private string _specsJson = string.Empty;
+
+    [ObservableProperty]
     private string _createdBy = string.Empty;
+
+    [ObservableProperty]
     private DateTime _createdDate = DateTime.Now;
+
+    [ObservableProperty]
     private string? _modifiedBy;
+
+    [ObservableProperty]
     private DateTime? _modifiedDate;
 
-    public int Id
+    // Aliases for ViewModel compatibility (spec 010-dunnage-complete)
+
+    public string DunnageType
     {
-        get => _id;
-        set => SetField(ref _id, value);
+        get => TypeName;
+        set => TypeName = value;
     }
 
-    public string TypeName
+    public DateTime DateAdded
     {
-        get => _typeName;
-        set => SetField(ref _typeName, value);
+        get => CreatedDate;
+        set => CreatedDate = value;
     }
 
-    public string Icon
+    public string AddedBy
     {
-        get => _icon;
-        set => SetField(ref _icon, value);
+        get => CreatedBy;
+        set => CreatedBy = value;
     }
 
-    public string SpecsJson
+    public DateTime? LastModified
     {
-        get => _specsJson;
-        set => SetField(ref _specsJson, value);
-    }
-
-    public string CreatedBy
-    {
-        get => _createdBy;
-        set => SetField(ref _createdBy, value);
-    }
-
-    public DateTime CreatedDate
-    {
-        get => _createdDate;
-        set => SetField(ref _createdDate, value);
-    }
-
-    public string? ModifiedBy
-    {
-        get => _modifiedBy;
-        set => SetField(ref _modifiedBy, value);
-    }
-
-    public DateTime? ModifiedDate
-    {
-        get => _modifiedDate;
-        set => SetField(ref _modifiedDate, value);
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value))
-        {
-            return false;
-        }
-
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
+        get => ModifiedDate;
+        set => ModifiedDate = value;
     }
 }

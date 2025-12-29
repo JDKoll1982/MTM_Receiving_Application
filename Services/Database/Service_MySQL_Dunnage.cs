@@ -20,6 +20,8 @@ namespace MTM_Receiving_Application.Services.Database
         private readonly Dao_DunnagePart _daoDunnagePart;
         private readonly Dao_DunnageSpec _daoDunnageSpec;
         private readonly Dao_InventoriedDunnage _daoInventoriedDunnage;
+        private readonly Dao_DunnageCustomField _daoCustomField;
+        private readonly Dao_DunnageUserPreference _daoUserPreference;
 
         private string CurrentUser => _sessionManager.CurrentSession?.User.WindowsUsername ?? "System";
 
@@ -31,7 +33,9 @@ namespace MTM_Receiving_Application.Services.Database
             Dao_DunnageType daoDunnageType,
             Dao_DunnagePart daoDunnagePart,
             Dao_DunnageSpec daoDunnageSpec,
-            Dao_InventoriedDunnage daoInventoriedDunnage)
+            Dao_InventoriedDunnage daoInventoriedDunnage,
+            Dao_DunnageCustomField daoCustomField,
+            Dao_DunnageUserPreference daoUserPreference)
         {
             _errorHandler = errorHandler;
             _logger = logger;
@@ -41,6 +45,8 @@ namespace MTM_Receiving_Application.Services.Database
             _daoDunnagePart = daoDunnagePart;
             _daoDunnageSpec = daoDunnageSpec;
             _daoInventoriedDunnage = daoInventoriedDunnage;
+            _daoCustomField = daoCustomField;
+            _daoUserPreference = daoUserPreference;
         }
 
         // ==================== Type Operations ====================
@@ -68,6 +74,19 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetTypeByIdAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure<Model_DunnageType>($"Error retrieving dunnage type: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result<int>> InsertTypeAsync(string typeName, string icon)
+        {
+            try
+            {
+                return await _daoDunnageType.InsertAsync(typeName, icon, CurrentUser);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(InsertTypeAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<int>($"Error inserting dunnage type: {ex.Message}");
             }
         }
 
@@ -140,6 +159,24 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(DeleteTypeAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error deleting dunnage type: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result<int>> CheckDuplicateTypeNameAsync(string typeName)
+        {
+            try
+            {
+                var result = await _daoDunnageType.CheckDuplicateNameAsync(typeName);
+                if (result.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Success<int>(result.Data ? 1 : 0);
+                }
+                return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(CheckDuplicateTypeNameAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<int>($"Error checking duplicate type name: {ex.Message}");
             }
         }
 
@@ -503,43 +540,130 @@ namespace MTM_Receiving_Application.Services.Database
 
         // ==================== Impact Analysis ====================
 
-        public async Task<int> GetPartCountByTypeIdAsync(int typeId)
+        public async Task<Model_Dao_Result<int>> GetPartCountByTypeIdAsync(int typeId)
         {
             try
             {
-                var result = await _daoDunnagePart.GetByTypeAsync(typeId);
-                return result.IsSuccess ? (result.Data?.Count ?? 0) : 0;
+                return await _daoDunnageType.CountPartsAsync(typeId);
             }
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Warning, nameof(GetPartCountByTypeIdAsync), nameof(Service_MySQL_Dunnage));
-                return 0;
+                return Model_Dao_Result_Factory.Failure<int>($"Error counting parts: {ex.Message}");
             }
         }
 
-        public async Task<int> GetTransactionCountByPartIdAsync(string partId)
-        {
-            // Not implemented in DAO.
-            return 0;
-        }
-
-        public async Task<int> GetTransactionCountByTypeIdAsync(int typeId)
-        {
-            // Not implemented in DAO.
-            return 0;
-        }
-
-        public async Task<int> GetPartCountBySpecKeyAsync(int typeId, string specKey)
+        public async Task<Model_Dao_Result<int>> GetTransactionCountByPartIdAsync(string partId)
         {
             try
             {
-                var result = await _daoDunnageSpec.CountPartsUsingSpecAsync(typeId, specKey);
-                return result.IsSuccess ? result.Data : 0;
+                return await _daoDunnagePart.CountTransactionsAsync(partId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Warning, nameof(GetTransactionCountByPartIdAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<int>($"Error counting transactions: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result<int>> GetTransactionCountByTypeIdAsync(int typeId)
+        {
+            try
+            {
+                return await _daoDunnageType.CountTransactionsAsync(typeId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Warning, nameof(GetTransactionCountByTypeIdAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<int>($"Error counting transactions: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result<int>> GetPartCountBySpecKeyAsync(int typeId, string specKey)
+        {
+            try
+            {
+                return await _daoDunnageSpec.CountPartsUsingSpecAsync(typeId, specKey);
             }
             catch (Exception ex)
             {
                 HandleException(ex, Enum_ErrorSeverity.Warning, nameof(GetPartCountBySpecKeyAsync), nameof(Service_MySQL_Dunnage));
-                return 0;
+                return Model_Dao_Result_Factory.Failure<int>($"Error counting parts using spec: {ex.Message}");
+            }
+        }
+
+        // ==================== Custom Field Operations ====================
+
+        public async Task<Model_Dao_Result> InsertCustomFieldAsync(int typeId, Model_CustomFieldDefinition field)
+        {
+            try
+            {
+                var result = await _daoCustomField.InsertAsync(typeId, field, CurrentUser);
+                if (result.IsSuccess)
+                {
+                    field.Id = result.Data;
+                    return Model_Dao_Result_Factory.Success();
+                }
+                return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(InsertCustomFieldAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error inserting custom field: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetCustomFieldsByTypeAsync(int typeId)
+        {
+            try
+            {
+                return await _daoCustomField.GetByTypeAsync(typeId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetCustomFieldsByTypeAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<List<Model_CustomFieldDefinition>>($"Error retrieving custom fields: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result> DeleteCustomFieldAsync(int fieldId)
+        {
+            try
+            {
+                return await _daoCustomField.DeleteAsync(fieldId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(DeleteCustomFieldAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error deleting custom field: {ex.Message}");
+            }
+        }
+
+        // ==================== User Preference Operations ====================
+
+        public async Task<Model_Dao_Result> UpsertUserPreferenceAsync(string key, string value)
+        {
+            try
+            {
+                return await _daoUserPreference.UpsertAsync(CurrentUser, key, value);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(UpsertUserPreferenceAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure($"Error saving user preference: {ex.Message}");
+            }
+        }
+
+        public async Task<Model_Dao_Result<List<Model_IconDefinition>>> GetRecentlyUsedIconsAsync(int count)
+        {
+            try
+            {
+                return await _daoUserPreference.GetRecentlyUsedIconsAsync(CurrentUser, count);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(GetRecentlyUsedIconsAsync), nameof(Service_MySQL_Dunnage));
+                return Model_Dao_Result_Factory.Failure<List<Model_IconDefinition>>($"Error retrieving recent icons: {ex.Message}");
             }
         }
 

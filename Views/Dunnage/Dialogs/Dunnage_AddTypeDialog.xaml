@@ -3,6 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:MTM_Receiving_Application.Views.Dunnage.Controls"
+    xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
+    xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Dunnage"
+    x:Name="Root"
     Title="Add New Dunnage Type"
     PrimaryButtonText="Save Type"
     CloseButtonText="Cancel"
@@ -121,8 +124,7 @@
                     Margin="0,8,0,0" />
 
                 <ItemsRepeater
-                    ItemsSource="{x:Bind ViewModel.CustomFields, Mode=OneWay}"
-                    CanReorderItems="True">
+                    ItemsSource="{x:Bind ViewModel.CustomFields, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_CustomFieldDefinition">
                             <Border

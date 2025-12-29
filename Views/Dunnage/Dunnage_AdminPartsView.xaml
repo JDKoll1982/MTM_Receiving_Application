@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded">
@@ -108,7 +109,7 @@
             CornerRadius="8"
             Padding="1">
             <Grid>
-                <DataGrid
+                <controls:DataGrid
                     ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
                     AutoGenerateColumns="False"
@@ -122,43 +123,43 @@
                     HorizontalScrollBarVisibility="Auto"
                     AlternatingRowBackground="{ThemeResource SubtleFillColorSecondaryBrush}">
 
-                    <DataGrid.Columns>
+                    <controls:DataGrid.Columns>
                         <!-- Part ID Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Part ID" 
                             Binding="{Binding PartId}"
                             Width="2*"
                             CanUserResize="True"/>
 
                         <!-- Type Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Type" 
                             Binding="{Binding DunnageTypeName}"
                             Width="*"
                             CanUserResize="True"/>
 
                         <!-- Spec Values Column (Note: Dynamic spec columns would require code-behind) -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Specifications" 
                             Binding="{Binding DunnageSpecValuesJson}"
                             Width="2*"
                             CanUserResize="True"/>
 
                         <!-- Date Added Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Date Added" 
                             Binding="{Binding CreatedDate, Converter={StaticResource DateTimeToStringConverter}}"
                             Width="*"
                             CanUserResize="True"/>
 
                         <!-- Added By Column -->
-                        <DataGridTextColumn 
+                        <controls:DataGridTextColumn 
                             Header="Added By" 
                             Binding="{Binding CreatedBy}"
                             Width="*"
                             CanUserResize="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
 
                 <!-- Empty State -->
                 <StackPanel 

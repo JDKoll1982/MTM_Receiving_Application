@@ -71,43 +71,51 @@ namespace MTM_Receiving_Application.Services
                 .Cast<T>();
         }
 
-        public void NextPage()
+        public bool NextPage()
         {
             if (HasNextPage)
             {
                 CurrentPage++;
                 OnPageChanged();
+                return true;
             }
+            return false;
         }
 
-        public void PreviousPage()
+        public bool PreviousPage()
         {
             if (HasPreviousPage)
             {
                 CurrentPage--;
                 OnPageChanged();
+                return true;
             }
+            return false;
         }
 
-        public void FirstPage()
+        public bool FirstPage()
         {
             if (CurrentPage != 1)
             {
                 CurrentPage = 1;
                 OnPageChanged();
+                return true;
             }
+            return false;
         }
 
-        public void LastPage()
+        public bool LastPage()
         {
             if (CurrentPage != TotalPages)
             {
                 CurrentPage = TotalPages;
                 OnPageChanged();
+                return true;
             }
+            return false;
         }
 
-        public void GoToPage(int pageNumber)
+        public bool GoToPage(int pageNumber)
         {
             if (pageNumber < 1)
             {
@@ -123,7 +131,9 @@ namespace MTM_Receiving_Application.Services
             {
                 CurrentPage = pageNumber;
                 OnPageChanged();
+                return true;
             }
+            return false;
         }
 
         private void OnPageChanged()

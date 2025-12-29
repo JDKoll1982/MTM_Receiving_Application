@@ -161,6 +161,16 @@ public class Service_ErrorHandler : IService_ErrorHandler
         );
     }
 
+    public Task ShowUserErrorAsync(string message, string title, string method)
+    {
+        return ShowErrorDialogAsync(title, message, Enum_ErrorSeverity.Error);
+    }
+
+    public void HandleException(Exception ex, Enum_ErrorSeverity severity, string method, string className)
+    {
+        _ = HandleErrorAsync($"Exception in {className}.{method}: {ex.Message}", severity, ex, true);
+    }
+
     /// <summary>
     /// Gets appropriate dialog title based on severity
     /// </summary>

@@ -40,7 +40,7 @@
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="6" />
-                </ItemsWrapGrid>
+                </ItemsPanelTemplate>
             </GridView.ItemsPanel>
             <!-- Sample icons (18 visible in 3 rows of 6) -->
             <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Box">

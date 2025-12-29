@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Contracts.Services;
 
@@ -46,6 +47,16 @@ public interface IService_LoggingUtility
     /// <param name="exception">Optional exception that caused the error</param>
     /// <param name="context">Optional context information</param>
     public void LogFatal(string message, Exception? exception = null, string? context = null);
+
+    /// <summary>
+    /// Logs an informational message asynchronously.
+    /// </summary>
+    public Task LogInfoAsync(string message, string? context = null);
+
+    /// <summary>
+    /// Logs an error message asynchronously.
+    /// </summary>
+    public Task LogErrorAsync(string message, Exception? exception = null, string? context = null);
 
     /// <summary>
     /// Gets the path to the current log file.

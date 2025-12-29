@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using MTM_Receiving_Application.Contracts.Services;
 
 namespace MTM_Receiving_Application.Services.Database;
@@ -102,6 +103,18 @@ public class Service_LoggingUtility : IService_LoggingUtility
     public void LogFatal(string message, Exception? exception = null, string? context = null)
     {
         WriteLog("FATAL", message, exception, context);
+    }
+
+    public Task LogInfoAsync(string message, string? context = null)
+    {
+        LogInfo(message, context);
+        return Task.CompletedTask;
+    }
+
+    public Task LogErrorAsync(string message, Exception? exception = null, string? context = null)
+    {
+        LogError(message, exception, context);
+        return Task.CompletedTask;
     }
 
     /// <summary>

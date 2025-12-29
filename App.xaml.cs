@@ -66,6 +66,8 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_DunnagePart(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageSpec(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_InventoriedDunnage(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_DunnageCustomField(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_DunnageUserPreference(mySqlConnectionString));
 
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp => new Dao_InforVisualPO(inforVisualConnectionString));
@@ -149,7 +151,7 @@ public partial class App : Application
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
-                
+
                 // Dunnage Admin Views
                 services.AddTransient<Views.Dunnage.Dunnage_AdminMainView>();
                 services.AddTransient<Views.Dunnage.Dunnage_AdminTypesView>();
