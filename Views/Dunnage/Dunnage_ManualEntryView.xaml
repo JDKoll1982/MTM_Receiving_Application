@@ -36,6 +36,12 @@
                         <TextBlock Text="Add Row"/>
                     </StackPanel>
                 </Button>
+                <Button Command="{x:Bind ViewModel.AddMultipleRowsCommand}" ToolTipService.ToolTip="Add multiple rows at once (up to 100)">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE710;"/>
+                        <TextBlock Text="Add Multiple"/>
+                    </StackPanel>
+                </Button>
                 <Button Command="{x:Bind ViewModel.RemoveRowCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>

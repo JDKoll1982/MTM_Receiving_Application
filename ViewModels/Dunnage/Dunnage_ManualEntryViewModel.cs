@@ -54,6 +54,9 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [ObservableProperty]
     private ObservableCollection<Model_DunnagePart> _availableParts = new();
 
+    [ObservableProperty]
+    private List<string> _specColumnHeaders = new();
+
     #endregion
 
     #region Initialization
@@ -86,6 +89,9 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
                     AvailableParts.Add(part);
                 }
             }
+
+            // Load dynamic spec columns
+            await LoadSpecColumnsAsync();
 
             // Add initial empty row
             AddRow();
@@ -129,27 +135,53 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     }
 
     [RelayCommand]
-    private void AddMultiple(string countStr)
+    private async Task AddMultipleRowsAsync()
     {
-        if (!int.TryParse(countStr, out int count) || count <= 0 || count > 100)
+        try
         {
-            StatusMessage = "Please enter a number between 1 and 100";
-            return;
-        }
-
-        for (int i = 0; i < count; i++)
-        {
-            var newLoad = new Model_DunnageLoad
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
             {
-                Quantity = 1,
-                CreatedDate = DateTime.Now,
-                CreatedBy = Environment.UserName
-            };
-            Loads.Add(newLoad);
-        }
+                _logger.LogError("Cannot show dialog: XamlRoot is null", null, "ManualEntry");
+                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error, null, true);
+                return;
+            }
 
-        UpdateCanSave();
-        _logger.LogInfo($"Added {count} rows, total: {Loads.Count}", "ManualEntry");
+            var dialog = new Views.Dunnage.Dialogs.AddMultipleRowsDialog
+            {
+                XamlRoot = xamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                int count = dialog.RowCount;
+                
+                for (int i = 0; i < count; i++)
+                {
+                    var newLoad = new Model_DunnageLoad
+                    {
+                        Quantity = 1,
+                        CreatedDate = DateTime.Now,
+                        CreatedBy = Environment.UserName
+                    };
+                    Loads.Add(newLoad);
+                }
+
+                UpdateCanSave();
+                StatusMessage = $"Added {count} rows (Total: {Loads.Count})";
+                _logger.LogInfo($"Added {count} rows via dialog, total: {Loads.Count}", "ManualEntry");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error adding multiple rows",
+                Enum_ErrorSeverity.Warning,
+                ex,
+                true
+            );
+        }
     }
 
     [RelayCommand]
@@ -232,48 +264,66 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task AutoFillAsync()
     {
-        if (Loads.Count == 0)
+        if (SelectedLoad == null)
         {
+            StatusMessage = "Please select a row first";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(SelectedLoad.PartId))
+        {
+            StatusMessage = "Please enter a Part ID first";
             return;
         }
 
         try
         {
             IsBusy = true;
-            StatusMessage = "Auto-filling data...";
+            StatusMessage = "Auto-filling from part master data...";
 
-            // Auto-fill logic: for each load, populate missing fields intelligently
-            foreach (var load in Loads)
+            // Get part by ID
+            var partResult = await _dunnageService.GetPartByIdAsync(SelectedLoad.PartId);
+            if (!partResult.Success || partResult.Data == null)
             {
-                // If part ID is set but type name is missing, look up the type
-                if (!string.IsNullOrWhiteSpace(load.PartId) && string.IsNullOrWhiteSpace(load.TypeName))
-                {
-                    var part = AvailableParts.FirstOrDefault(p => p.PartId == load.PartId);
-                    if (part != null)
-                    {
-                        var type = AvailableTypes.FirstOrDefault(t => t.Id == part.TypeId);
-                        if (type != null)
-                        {
-                            load.TypeName = type.TypeName;
-                        }
-                    }
-                }
-
-                // Set default quantity if missing
-                if (load.Quantity <= 0)
-                {
-                    load.Quantity = 1;
-                }
-
-                // Set default inventory method
-                if (string.IsNullOrWhiteSpace(load.InventoryMethod))
-                {
-                    load.InventoryMethod = string.IsNullOrWhiteSpace(load.PoNumber) ? "Adjust In" : "Receive In";
-                }
+                await _errorHandler.HandleErrorAsync(
+                    $"Part ID '{SelectedLoad.PartId}' not found in master data",
+                    Enum_ErrorSeverity.Warning,
+                    null,
+                    true);
+                StatusMessage = "Part not found - please check Part ID";
+                return;
             }
 
-            StatusMessage = "Auto-fill completed";
-            _logger.LogInfo("Auto-fill executed", "ManualEntry");
+            var part = partResult.Data;
+
+            // Auto-fill Type
+            var type = AvailableTypes.FirstOrDefault(t => t.Id == part.TypeId);
+            if (type != null)
+            {
+                SelectedLoad.TypeName = type.TypeName;
+                SelectedLoad.DunnageType = type.TypeName;
+            }
+
+            // Auto-fill Spec Values from part master data
+            if (part.SpecValuesDict != null && part.SpecValuesDict.Count > 0)
+            {
+                SelectedLoad.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
+                _logger.LogInfo($"Auto-filled {part.SpecValuesDict.Count} spec values for Part ID: {SelectedLoad.PartId}", "ManualEntry");
+            }
+
+            // Set default values
+            if (SelectedLoad.Quantity <= 0)
+            {
+                SelectedLoad.Quantity = 1;
+            }
+
+            if (string.IsNullOrWhiteSpace(SelectedLoad.InventoryMethod))
+            {
+                SelectedLoad.InventoryMethod = string.IsNullOrWhiteSpace(SelectedLoad.PoNumber) ? "Adjust In" : "Receive In";
+            }
+
+            StatusMessage = $"Auto-filled data for Part ID: {SelectedLoad.PartId}";
+            _logger.LogInfo($"Auto-fill completed for Part ID: {SelectedLoad.PartId}", "ManualEntry");
         }
         catch (Exception ex)
         {
@@ -455,6 +505,59 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     #endregion
 
     #region Helper Methods
+
+    private async Task LoadSpecColumnsAsync()
+    {
+        try
+        {
+            var specKeys = await _dunnageService.GetAllSpecKeysAsync();
+            SpecColumnHeaders = specKeys;
+            _logger.LogInfo($"Loaded {SpecColumnHeaders.Count} dynamic spec columns", "ManualEntry");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Failed to load spec columns: {ex.Message}", ex, "ManualEntry");
+        }
+    }
+
+    /// <summary>
+    /// Handles PartID change to trigger auto-fill
+    /// </summary>
+    public async Task OnPartIdChangedAsync(Model_DunnageLoad load)
+    {
+        if (load == null || string.IsNullOrWhiteSpace(load.PartId))
+        {
+            return;
+        }
+
+        try
+        {
+            // Auto-populate type and specs when PartID is entered
+            var partResult = await _dunnageService.GetPartByIdAsync(load.PartId);
+            if (partResult.Success && partResult.Data != null)
+            {
+                var part = partResult.Data;
+                var type = AvailableTypes.FirstOrDefault(t => t.Id == part.TypeId);
+                if (type != null)
+                {
+                    load.TypeName = type.TypeName;
+                    load.DunnageType = type.TypeName;
+                }
+
+                // Auto-fill specs from part master
+                if (part.SpecValuesDict != null && part.SpecValuesDict.Count > 0)
+                {
+                    load.SpecValues = new Dictionary<string, object>(part.SpecValuesDict);
+                }
+
+                _logger.LogInfo($"Auto-populated data for Part ID: {load.PartId}", "ManualEntry");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error auto-populating part data: {ex.Message}", ex, "ManualEntry");
+        }
+    }
 
     private void UpdateCanSave()
     {

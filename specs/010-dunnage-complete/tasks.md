@@ -94,18 +94,18 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 1
 
-- [ ] T035 [P] [US1] Create Dunnage_ManualEntryViewModel.cs in ViewModels/Dunnage/
-- [ ] T036 [P] [US1] Create Dunnage_ManualEntryView.xaml in Views/Dunnage/
-- [ ] T037 [US1] Create Dunnage_ManualEntryView.xaml.cs code-behind in Views/Dunnage/
-- [ ] T038 [P] [US1] Implement AddRowCommand in Dunnage_ManualEntryViewModel.cs
-- [ ] T039 [P] [US1] Implement RemoveRowCommand in Dunnage_ManualEntryViewModel.cs
-- [ ] T040 [US1] Create AddMultipleRowsDialog.xaml ContentDialog in Views/Dunnage/Dialogs/
-- [ ] T041 [US1] Implement AddMultipleRowsCommand with dialog logic in Dunnage_ManualEntryViewModel.cs
-- [ ] T042 [US1] Implement SaveCommand with batch insert to database in Dunnage_ManualEntryViewModel.cs
-- [ ] T043 [P] [US1] Add dynamic spec column generation logic in Dunnage_ManualEntryViewModel.cs (calls GetAllSpecKeysAsync)
-- [ ] T044 [P] [US1] Bind DataGrid columns to ObservableCollection in Dunnage_ManualEntryView.xaml
-- [ ] T045 [US1] Implement toolbar with Add Row, Add Multiple, Remove Row, Save buttons in Dunnage_ManualEntryView.xaml
-- [ ] T046 [US1] Register Dunnage_ManualEntryViewModel and Dunnage_ManualEntryView in App.xaml.cs DI container
+- [X] T035 [P] [US1] Create Dunnage_ManualEntryViewModel.cs in ViewModels/Dunnage/
+- [X] T036 [P] [US1] Create Dunnage_ManualEntryView.xaml in Views/Dunnage/
+- [X] T037 [US1] Create Dunnage_ManualEntryView.xaml.cs code-behind in Views/Dunnage/
+- [X] T038 [P] [US1] Implement AddRowCommand in Dunnage_ManualEntryViewModel.cs
+- [X] T039 [P] [US1] Implement RemoveRowCommand in Dunnage_ManualEntryViewModel.cs
+- [X] T040 [US1] Create AddMultipleRowsDialog.xaml ContentDialog in Views/Dunnage/Dialogs/
+- [X] T041 [US1] Implement AddMultipleRowsCommand with dialog logic in Dunnage_ManualEntryViewModel.cs
+- [X] T042 [US1] Implement SaveCommand with batch insert to database in Dunnage_ManualEntryViewModel.cs
+- [X] T043 [P] [US1] Add dynamic spec column generation logic in Dunnage_ManualEntryViewModel.cs (calls GetAllSpecKeysAsync)
+- [X] T044 [P] [US1] Bind DataGrid columns to ObservableCollection in Dunnage_ManualEntryView.xaml
+- [X] T045 [US1] Implement toolbar with Add Row, Add Multiple, Remove Row, Save buttons in Dunnage_ManualEntryView.xaml
+- [X] T046 [US1] Register Dunnage_ManualEntryViewModel and Dunnage_ManualEntryView in App.xaml.cs DI container
 
 **Checkpoint**: User Story 1 complete - manual entry grid with batch operations functional and testable
 
@@ -119,11 +119,11 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 2
 
-- [ ] T047 [US2] Implement AutoFillCommand in Dunnage_ManualEntryViewModel.cs (queries GetPartByIdAsync from Service_MySQL_Dunnage)
-- [ ] T048 [US2] Add PartID selection change handler to trigger auto-fill in Dunnage_ManualEntryViewModel.cs
-- [ ] T049 [P] [US2] Implement spec value deserialization logic (JSON to dictionary) in Dunnage_ManualEntryViewModel.cs
-- [ ] T050 [P] [US2] Add "Auto-Fill" toolbar button in Dunnage_ManualEntryView.xaml
-- [ ] T051 [US2] Implement validation for invalid PartID (part not found error) in Dunnage_ManualEntryViewModel.cs
+- [X] T047 [US2] Implement AutoFillCommand in Dunnage_ManualEntryViewModel.cs (queries GetPartByIdAsync from Service_MySQL_Dunnage)
+- [X] T048 [US2] Add PartID selection change handler to trigger auto-fill in Dunnage_ManualEntryViewModel.cs
+- [X] T049 [P] [US2] Implement spec value deserialization logic (JSON to dictionary) in Dunnage_ManualEntryViewModel.cs
+- [X] T050 [P] [US2] Add "Auto-Fill" toolbar button in Dunnage_ManualEntryView.xaml
+- [X] T051 [US2] Implement validation for invalid PartID (part not found error) in Dunnage_ManualEntryViewModel.cs
 
 **Checkpoint**: User Story 2 complete - auto-fill functionality working independently
 
