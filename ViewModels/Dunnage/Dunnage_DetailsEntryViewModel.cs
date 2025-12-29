@@ -20,15 +20,18 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
+    private readonly IService_Dispatcher _dispatcher;
 
     public Dunnage_DetailsEntryViewModel(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
+        IService_Dispatcher dispatcher,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
+        _dispatcher = dispatcher;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -38,7 +41,10 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
     {
         if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.DetailsEntry)
         {
-            _ = LoadSpecsForSelectedPartAsync();
+            _dispatcher.TryEnqueue(async () =>
+            {
+                await LoadSpecsForSelectedPartAsync();
+            });
         }
     }
 

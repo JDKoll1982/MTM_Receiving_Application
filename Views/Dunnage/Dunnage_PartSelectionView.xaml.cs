@@ -16,6 +16,7 @@ public sealed partial class Dunnage_PartSelectionView : UserControl
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        System.Diagnostics.Debug.WriteLine("Dunnage_PartSelectionView: OnLoaded called");
         await ViewModel.InitializeAsync();
     }
 }

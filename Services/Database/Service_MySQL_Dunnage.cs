@@ -286,9 +286,12 @@ namespace MTM_Receiving_Application.Services.Database
 
         public async Task<Model_Dao_Result<List<Model_DunnagePart>>> GetPartsByTypeAsync(int typeId)
         {
+            _logger.LogInfo($"Service_MySQL_Dunnage: GetPartsByTypeAsync called for typeId={typeId}", "DunnageService");
             try
             {
-                return await _daoDunnagePart.GetByTypeAsync(typeId);
+                var result = await _daoDunnagePart.GetByTypeAsync(typeId);
+                _logger.LogInfo($"Service_MySQL_Dunnage: GetPartsByTypeAsync returned {result.Data?.Count ?? 0} parts", "DunnageService");
+                return result;
             }
             catch (Exception ex)
             {

@@ -19,25 +19,34 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
+    private readonly IService_Dispatcher _dispatcher;
 
     public Dunnage_PartSelectionViewModel(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
+        IService_Dispatcher dispatcher,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
+        _dispatcher = dispatcher;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
+        _logger.LogInfo("PartSelection: ViewModel constructed and subscribed to StepChanged", "PartSelection");
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
     {
+        _logger.LogInfo($"PartSelection: Workflow step changed to {_workflowService.CurrentStep}", "PartSelection");
         if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.PartSelection)
         {
-            _ = InitializeAsync();
+            _logger.LogInfo("PartSelection: Step is PartSelection, calling InitializeAsync via dispatcher", "PartSelection");
+            _dispatcher.TryEnqueue(async () =>
+            {
+                await InitializeAsync();
+            });
         }
     }
 
@@ -79,8 +88,10 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     /// </summary>
     public async Task InitializeAsync()
     {
+        _logger.LogInfo("PartSelection: InitializeAsync called", "PartSelection");
         if (IsBusy)
         {
+            _logger.LogInfo("PartSelection: InitializeAsync returning because IsBusy is true", "PartSelection");
             return;
         }
 
@@ -93,12 +104,16 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
             SelectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
             SelectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
 
+            _logger.LogInfo($"PartSelection: SelectedTypeId={SelectedTypeId}, SelectedTypeName={SelectedTypeName}", "PartSelection");
+
             await LoadPartsAsync();
 
             StatusMessage = $"Loaded {AvailableParts.Count} parts for {SelectedTypeName}";
+            _logger.LogInfo($"PartSelection: {StatusMessage}", "PartSelection");
         }
         catch (Exception ex)
         {
+            _logger.LogError($"PartSelection: Failed to initialize: {ex.Message}", ex, "PartSelection");
             await _errorHandler.HandleErrorAsync(
                 "Failed to initialize part selection",
                 Enum_ErrorSeverity.Error,
@@ -120,8 +135,10 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     [RelayCommand]
     private async Task LoadPartsAsync()
     {
-        if (IsBusy || SelectedTypeId == 0)
+        _logger.LogInfo($"PartSelection: LoadPartsAsync called with SelectedTypeId={SelectedTypeId}", "PartSelection");
+        if (SelectedTypeId == 0)
         {
+            _logger.LogInfo("PartSelection: SelectedTypeId is 0, returning from LoadPartsAsync", "PartSelection");
             return;
         }
 
@@ -129,6 +146,7 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
         {
             IsBusy = true;
 
+            _logger.LogInfo($"PartSelection: Calling _dunnageService.GetPartsByTypeAsync({SelectedTypeId})", "PartSelection");
             var result = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
 
             if (result.IsSuccess && result.Data != null)
@@ -139,10 +157,11 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
                     AvailableParts.Add(part);
                 }
 
-                _logger.LogInfo($"Loaded {AvailableParts.Count} parts for type ID {SelectedTypeId}", "PartSelection");
+                _logger.LogInfo($"PartSelection: Successfully loaded {AvailableParts.Count} parts", "PartSelection");
             }
             else
             {
+                _logger.LogWarning($"PartSelection: Failed to load parts: {result.ErrorMessage}", "PartSelection");
                 await _errorHandler.HandleDaoErrorAsync(
                     result,
                     nameof(LoadPartsAsync),
@@ -152,6 +171,7 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
         }
         catch (Exception ex)
         {
+            _logger.LogError($"PartSelection: Error in LoadPartsAsync: {ex.Message}", ex, "PartSelection");
             await _errorHandler.HandleErrorAsync(
                 "Error loading parts",
                 Enum_ErrorSeverity.Error,

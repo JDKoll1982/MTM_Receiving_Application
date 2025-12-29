@@ -20,6 +20,7 @@ public sealed partial class Dunnage_TypeSelectionView : UserControl
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        System.Diagnostics.Debug.WriteLine("Dunnage_TypeSelectionView: OnLoaded called");
         await ViewModel.InitializeAsync();
     }
 

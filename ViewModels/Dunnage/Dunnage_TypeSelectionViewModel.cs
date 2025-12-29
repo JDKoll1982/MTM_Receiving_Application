@@ -197,17 +197,22 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
             IsBusy = true;
             SelectedType = type;
 
-            _logger.LogInfo($"Selected dunnage type: {type.TypeName} (ID: {type.Id})");
+            _logger.LogInfo($"TypeSelection: Selected dunnage type: {type.TypeName} (ID: {type.Id})", "TypeSelection");
 
             // Set in workflow session
+            _workflowService.CurrentSession.SelectedType = type;
             _workflowService.CurrentSession.SelectedTypeId = type.Id;
             _workflowService.CurrentSession.SelectedTypeName = type.TypeName;
 
+            _logger.LogInfo($"TypeSelection: Session updated - SelectedTypeId={_workflowService.CurrentSession.SelectedTypeId}", "TypeSelection");
+
             // Navigate to part selection
+            _logger.LogInfo("TypeSelection: Navigating to PartSelection step", "TypeSelection");
             _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);
         }
         catch (Exception ex)
         {
+            _logger.LogError($"TypeSelection: Error selecting type: {ex.Message}", ex, "TypeSelection");
             await _errorHandler.HandleErrorAsync(
                 "Error selecting dunnage type",
                 Enum_ErrorSeverity.Error,

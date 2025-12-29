@@ -30,17 +30,21 @@ public class Dao_DunnagePart
 
     public virtual async Task<Model_Dao_Result<List<Model_DunnagePart>>> GetByTypeAsync(int typeId)
     {
+        System.Diagnostics.Debug.WriteLine($"Dao_DunnagePart: GetByTypeAsync called for typeId={typeId}");
         var parameters = new Dictionary<string, object>
         {
             { "type_id", typeId }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePart>(
+        var result = await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePart>(
             _connectionString,
             "sp_dunnage_parts_get_by_type",
             MapFromReader,
             parameters
         );
+
+        System.Diagnostics.Debug.WriteLine($"Dao_DunnagePart: GetByTypeAsync returned {result.Data?.Count ?? 0} parts. Success: {result.IsSuccess}");
+        return result;
     }
 
     public virtual async Task<Model_Dao_Result<Model_DunnagePart>> GetByIdAsync(string partId)
