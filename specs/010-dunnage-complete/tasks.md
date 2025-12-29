@@ -273,7 +273,7 @@ Tasks are organized by user story to enable independent implementation and testi
 - [X] T107 [P] [US9] Implement boolean serialization as "True"/"False" strings in Service_DunnageCSVWriter.cs
 - [X] T108 [P] [US9] Implement numeric formatting with invariant culture (period decimal separator) in Service_DunnageCSVWriter.cs
 - [X] T109 [P] [US9] Implement date formatting as yyyy-MM-dd HH:mm:ss in Service_DunnageCSVWriter.cs
-- [ ] T110 [US9] Add unit tests for RFC 4180 escaping (commas, quotes, newlines) in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
+- [X] T110 [US9] Add unit tests for RFC 4180 escaping (commas, quotes, newlines) in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
 
 **Checkpoint**: User Story 9 complete - RFC 4180 compliance verified
 
@@ -287,24 +287,24 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 10
 
-- [ ] T111 [P] [US10] Create Dunnage_AddTypeDialogViewModel.cs in ViewModels/Dunnage/
-- [ ] T112 [P] [US10] Create Dunnage_AddTypeDialog.xaml ContentDialog in Views/Dunnage/Dialogs/
-- [ ] T113 [US10] Create Dunnage_AddTypeDialog.xaml.cs code-behind in Views/Dunnage/Dialogs/
-- [ ] T114 [P] [US10] Set ContentDialog MaxHeight="750" in Dunnage_AddTypeDialog.xaml
-- [ ] T115 [P] [US10] Implement Basic Information section (Type Name TextBox, Icon preview) in Dunnage_AddTypeDialog.xaml
-- [ ] T116 [US10] Create IconPickerControl.xaml user control with GridView (6-column, 18 icons visible) in Views/Dunnage/Controls/
-- [ ] T117 [P] [US10] Implement icon search filter with TextBox in IconPickerControl.xaml
-- [ ] T118 [P] [US10] Implement category tabs (All, Containers, Materials, Warnings, Tools) using TabView in IconPickerControl.xaml
-- [ ] T119 [P] [US10] Implement Recently Used section (top 6 icons from user preferences) in IconPickerControl.xaml
-- [ ] T120 [US10] Implement Custom Specifications section with "Add Field" button and preview list in Dunnage_AddTypeDialog.xaml
-- [ ] T121 [P] [US10] Implement field preview cards with Edit/Delete/Drag buttons in Dunnage_AddTypeDialog.xaml
-- [ ] T122 [P] [US10] Implement ItemsRepeater with CanReorderItems="True" for drag-drop reordering in Dunnage_AddTypeDialog.xaml
-- [ ] T123 [US10] Implement AddFieldCommand in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T124 [P] [US10] Implement EditFieldCommand in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T125 [P] [US10] Implement DeleteFieldCommand in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T126 [US10] Implement field reordering logic - update DisplayOrder on DragItemsCompleted event in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T127 [US10] Implement SaveTypeCommand - calls InsertTypeAsync and InsertCustomFieldsAsync in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T128 [US10] Integrate dialog with Dunnage_AdminTypesViewModel.ShowAddTypeCommand
+- [X] T111 [P] [US10] Create Dunnage_AddTypeDialogViewModel.cs in ViewModels/Dunnage/
+- [X] T112 [P] [US10] Create Dunnage_AddTypeDialog.xaml ContentDialog in Views/Dunnage/Dialogs/
+- [X] T113 [US10] Create Dunnage_AddTypeDialog.xaml.cs code-behind in Views/Dunnage/Dialogs/
+- [X] T114 [P] [US10] Set ContentDialog MaxHeight="750" in Dunnage_AddTypeDialog.xaml
+- [X] T115 [P] [US10] Implement Basic Information section (Type Name TextBox, Icon preview) in Dunnage_AddTypeDialog.xaml
+- [X] T116 [US10] Create IconPickerControl.xaml user control with GridView (6-column, 18 icons visible) in Views/Dunnage/Controls/
+- [X] T117 [P] [US10] Implement icon search filter with TextBox in IconPickerControl.xaml
+- [X] T118 [P] [US10] Implement category tabs (All, Containers, Materials, Warnings, Tools) using TabView in IconPickerControl.xaml
+- [X] T119 [P] [US10] Implement Recently Used section (top 6 icons from user preferences) in IconPickerControl.xaml
+- [X] T120 [US10] Implement Custom Specifications section with "Add Field" button and preview list in Dunnage_AddTypeDialog.xaml
+- [X] T121 [P] [US10] Implement field preview cards with Edit/Delete/Drag buttons in Dunnage_AddTypeDialog.xaml
+- [X] T122 [P] [US10] Implement ItemsRepeater with CanReorderItems="True" for drag-drop reordering in Dunnage_AddTypeDialog.xaml
+- [X] T123 [US10] Implement AddFieldCommand in Dunnage_AddTypeDialogViewModel.cs
+- [X] T124 [P] [US10] Implement EditFieldCommand in Dunnage_AddTypeDialogViewModel.cs
+- [X] T125 [P] [US10] Implement DeleteFieldCommand in Dunnage_AddTypeDialogViewModel.cs
+- [X] T126 [US10] Implement field reordering logic - update DisplayOrder on DragItemsCompleted event in Dunnage_AddTypeDialogViewModel.cs
+- [X] T127 [US10] Implement SaveTypeCommand - calls InsertTypeAsync and InsertCustomFieldsAsync in Dunnage_AddTypeDialogViewModel.cs
+- [X] T128 [US10] Integrate dialog with Dunnage_AdminTypesViewModel.ShowAddTypeCommand
 
 **Checkpoint**: User Story 10 complete - Add New Type Dialog with no-scroll experience functional
 
@@ -319,17 +319,17 @@ Tasks are organized by user story to enable independent implementation and testi
 ### Implementation for User Story 11
 
 - [ ] T129 [US11] Implement validation properties (TypeNameError, FieldNameError) in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T130 [P] [US11] Implement DispatcherTimer with 300ms interval for debouncing in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T131 [P] [US11] Implement ValidateTypeName method (required, max 100 chars, check duplicate) in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T132 [P] [US11] Implement ValidateFieldName method (required, unique, max 100 chars, no special chars <>{}[]|\) in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T133 [US11] Add PropertyChanged handler to restart debounce timer on Type Name change in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T134 [P] [US11] Add PropertyChanged handler to restart debounce timer on Field Name change in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T135 [P] [US11] Add red border and error TextBlock bindings to Type Name TextBox in Dunnage_AddTypeDialog.xaml
-- [ ] T136 [P] [US11] Add red border and error TextBlock bindings to Field Name TextBox in Dunnage_AddTypeDialog.xaml
-- [ ] T137 [P] [US11] Implement character counter (42/100 characters) for Field Name in Dunnage_AddTypeDialog.xaml
-- [ ] T138 [US11] Implement duplicate type warning with yellow InfoBar and "View Existing Type" link in Dunnage_AddTypeDialog.xaml
-- [ ] T139 [P] [US11] Implement primary button disable when validation errors exist in Dunnage_AddTypeDialog.xaml (bind IsEnabled to CanSave property)
-- [ ] T140 [US11] Implement CanSave property logic in Dunnage_AddTypeDialogViewModel.cs (all required fields valid)
+- [X] T130 [P] [US11] Implement DispatcherTimer with 300ms interval for debouncing in Dunnage_AddTypeDialogViewModel.cs
+- [X] T131 [P] [US11] Implement ValidateTypeName method (required, max 100 chars, check duplicate) in Dunnage_AddTypeDialogViewModel.cs
+- [X] T132 [P] [US11] Implement ValidateFieldName method (required, unique, max 100 chars, no special chars <>{}[]|\) in Dunnage_AddTypeDialogViewModel.cs
+- [X] T133 [US11] Add PropertyChanged handler to restart debounce timer on Type Name change in Dunnage_AddTypeDialogViewModel.cs
+- [X] T134 [P] [US11] Add PropertyChanged handler to restart debounce timer on Field Name change in Dunnage_AddTypeDialogViewModel.cs
+- [X] T135 [P] [US11] Add red border and error TextBlock bindings to Type Name TextBox in Dunnage_AddTypeDialog.xaml
+- [X] T136 [P] [US11] Add red border and error TextBlock bindings to Field Name TextBox in Dunnage_AddTypeDialog.xaml
+- [X] T137 [P] [US11] Implement character counter (42/100 characters) for Field Name in Dunnage_AddTypeDialog.xaml
+- [X] T138 [US11] Implement duplicate type warning with yellow InfoBar and "View Existing Type" link in Dunnage_AddTypeDialog.xaml
+- [X] T139 [P] [US11] Implement primary button disable when validation errors exist in Dunnage_AddTypeDialog.xaml (bind IsEnabled to CanSave property)
+- [X] T140 [US11] Implement CanSave property logic in Dunnage_AddTypeDialogViewModel.cs (all required fields valid)
 
 **Checkpoint**: User Story 11 complete - real-time validation with 300ms debounce functional
 
@@ -343,16 +343,16 @@ Tasks are organized by user story to enable independent implementation and testi
 
 ### Implementation for User Story 12
 
-- [ ] T141 [US12] Implement CustomFields ObservableCollection in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T142 [P] [US12] Create custom field preview card template in Dunnage_AddTypeDialog.xaml (shows icon, name, type, required status)
-- [ ] T143 [P] [US12] Add Edit/Delete buttons to preview card (visible on hover) in Dunnage_AddTypeDialog.xaml
-- [ ] T144 [P] [US12] Add drag handle to preview card for reordering in Dunnage_AddTypeDialog.xaml
-- [ ] T145 [US12] Implement EditFieldCommand - populate "New Field" section with existing field data in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T146 [P] [US12] Implement DeleteFieldCommand - remove from CustomFields collection in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T147 [US12] Implement DragItemsCompleted event handler - update DisplayOrder (1, 2, 3...) based on new index in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T148 [P] [US12] Implement human-readable summary in preview card (e.g., "Number (1-9999, 2 decimals, Required)") in Dunnage_AddTypeDialog.xaml
-- [ ] T149 [P] [US12] Add maximum field limit (25 fields) with InfoBar warning at 10 fields in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T150 [US12] Disable "Add Field" button when 25 fields reached in Dunnage_AddTypeDialog.xaml
+- [X] T141 [US12] Implement CustomFields ObservableCollection in Dunnage_AddTypeDialogViewModel.cs
+- [X] T142 [P] [US12] Create custom field preview card template in Dunnage_AddTypeDialog.xaml (shows icon, name, type, required status)
+- [X] T143 [P] [US12] Add Edit/Delete buttons to preview card (visible on hover) in Dunnage_AddTypeDialog.xaml
+- [X] T144 [P] [US12] Add drag handle to preview card for reordering in Dunnage_AddTypeDialog.xaml
+- [X] T145 [US12] Implement EditFieldCommand - populate "New Field" section with existing field data in Dunnage_AddTypeDialogViewModel.cs
+- [X] T146 [P] [US12] Implement DeleteFieldCommand - remove from CustomFields collection in Dunnage_AddTypeDialogViewModel.cs
+- [X] T147 [US12] Implement DragItemsCompleted event handler - update DisplayOrder (1, 2, 3...) based on new index in Dunnage_AddTypeDialogViewModel.cs
+- [X] T148 [P] [US12] Implement human-readable summary in preview card (e.g., "Number (1-9999, 2 decimals, Required)") in Dunnage_AddTypeDialog.xaml
+- [X] T149 [P] [US12] Add maximum field limit (25 fields) with InfoBar warning at 10 fields in Dunnage_AddTypeDialogViewModel.cs
+- [X] T150 [US12] Disable "Add Field" button when 25 fields reached in Dunnage_AddTypeDialog.xaml
 
 **Checkpoint**: User Story 12 complete - custom field preview with edit/delete/reorder functional
 

@@ -143,6 +143,7 @@ public partial class App : Application
                 services.AddTransient<Dunnage_AdminMainViewModel>();
                 services.AddTransient<Dunnage_AdminTypesViewModel>();
                 services.AddTransient<Dunnage_AdminPartsViewModel>();
+                services.AddTransient<Dunnage_AddTypeDialogViewModel>();
 
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();

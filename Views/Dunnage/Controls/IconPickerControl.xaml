@@ -1,0 +1,103 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Views.Dunnage.Controls.IconPickerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="12">
+
+        <!-- Recently Used Section -->
+        <StackPanel Spacing="8">
+            <TextBlock Text="Recently Used" FontWeight="SemiBold" FontSize="12" />
+            <GridView
+                x:Name="RecentIconsGrid"
+                SelectionMode="Single"
+                MaxHeight="60"
+                SelectedItem="{x:Bind SelectedIcon, Mode=TwoWay}">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="6" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <!-- Icons will be populated from code-behind -->
+            </GridView>
+        </StackPanel>
+
+        <!-- Search Box -->
+        <TextBox
+            x:Name="SearchBox"
+            PlaceholderText="Search icons..."
+            TextChanged="OnSearchTextChanged" />
+
+        <!-- All Icons Grid -->
+        <GridView
+            x:Name="AllIconsGrid"
+            SelectionMode="Single"
+            SelectedItem="{x:Bind SelectedIcon, Mode=TwoWay}"
+            MaxHeight="300">
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="6" />
+                </ItemsWrapGrid>
+            </GridView.ItemsPanel>
+            <!-- Sample icons (18 visible in 3 rows of 6) -->
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Box">
+                <FontIcon Glyph="&#xF133;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Package">
+                <FontIcon Glyph="&#xE7B8;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Cube">
+                <FontIcon Glyph="&#xF158;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Folder">
+                <FontIcon Glyph="&#xE8B7;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Calendar">
+                <FontIcon Glyph="&#xE787;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Mail">
+                <FontIcon Glyph="&#xE715;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Flag">
+                <FontIcon Glyph="&#xE7C1;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Star">
+                <FontIcon Glyph="&#xE734;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Heart">
+                <FontIcon Glyph="&#xEB51;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Pin">
+                <FontIcon Glyph="&#xE718;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Tag">
+                <FontIcon Glyph="&#xE8EC;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Important">
+                <FontIcon Glyph="&#xE8C9;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Warning">
+                <FontIcon Glyph="&#xE7BA;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Info">
+                <FontIcon Glyph="&#xE946;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Document">
+                <FontIcon Glyph="&#xE8A5;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Image">
+                <FontIcon Glyph="&#xEB9F;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Music">
+                <FontIcon Glyph="&#xEC4F;" FontSize="24" />
+            </Border>
+            <Border Width="40" Height="40" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="4" Padding="4" ToolTipService.ToolTip="Video">
+                <FontIcon Glyph="&#xE714;" FontSize="24" />
+            </Border>
+        </GridView>
+
+    </StackPanel>
+</UserControl>

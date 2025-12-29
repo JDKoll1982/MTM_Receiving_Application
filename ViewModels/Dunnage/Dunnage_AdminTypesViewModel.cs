@@ -101,6 +101,45 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
 
     #endregion
 
+    #region Add Type
+
+    /// <summary>
+    /// Show Add New Type dialog
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowAddTypeAsync()
+    {
+        try
+        {
+            var dialog = new Views.Dunnage.Dialogs.Dunnage_AddTypeDialog
+            {
+                XamlRoot = _windowService.GetXamlRoot()
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                StatusMessage = "Type added successfully";
+                await _logger.LogInfoAsync("New dunnage type added via Add Type Dialog", "TypeManagement");
+
+                // Reload types to show the new type
+                await LoadTypesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error showing Add Type dialog",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+    }
+
+    #endregion
+
     #region Edit Type
 
     /// <summary>

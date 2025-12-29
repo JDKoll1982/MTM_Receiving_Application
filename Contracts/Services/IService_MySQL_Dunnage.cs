@@ -12,13 +12,15 @@ namespace MTM_Receiving_Application.Contracts.Services
     /// </summary>
     public interface IService_MySQL_Dunnage
     {
-        // ==================== Type Operations (5 methods) ====================
+        // ==================== Type Operations (7 methods) ====================
 
         public Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllTypesAsync();
         public Task<Model_Dao_Result<Model_DunnageType>> GetTypeByIdAsync(int typeId);
+        public Task<Model_Dao_Result<int>> InsertTypeAsync(string typeName, string icon);
         public Task<Model_Dao_Result> InsertTypeAsync(Model_DunnageType type);
         public Task<Model_Dao_Result> UpdateTypeAsync(Model_DunnageType type);
         public Task<Model_Dao_Result> DeleteTypeAsync(int typeId);
+        public Task<Model_Dao_Result<int>> CheckDuplicateTypeNameAsync(string typeName);
 
         // ==================== Spec Operations (6 methods) ====================
 
@@ -63,5 +65,16 @@ namespace MTM_Receiving_Application.Contracts.Services
         public Task<int> GetTransactionCountByPartIdAsync(string partId);
         public Task<int> GetTransactionCountByTypeIdAsync(int typeId);
         public Task<int> GetPartCountBySpecKeyAsync(int typeId, string specKey);
+
+        // ==================== Custom Field Operations (3 methods) ====================
+
+        public Task<Model_Dao_Result> InsertCustomFieldAsync(int typeId, Model_CustomFieldDefinition field);
+        public Task<Model_Dao_Result<List<Model_CustomFieldDefinition>>> GetCustomFieldsByTypeAsync(int typeId);
+        public Task<Model_Dao_Result> DeleteCustomFieldAsync(int fieldId);
+
+        // ==================== User Preference Operations (2 methods) ====================
+
+        public Task<Model_Dao_Result> UpsertUserPreferenceAsync(string key, string value);
+        public Task<Model_Dao_Result<List<Model_IconDefinition>>> GetRecentlyUsedIconsAsync(int count);
     }
 }
