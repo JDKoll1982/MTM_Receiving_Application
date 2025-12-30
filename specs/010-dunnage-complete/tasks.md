@@ -451,14 +451,14 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 16
 
-- [ ] T182 [US16] Create Model_IconDefinition with properties (IconGlyph, IconName, Category) in Models/Dunnage/
-- [ ] T183 [P] [US16] Create icon library data source with 50-100 Segoe Fluent Icons in IconPickerControl.xaml.cs
-- [ ] T184 [P] [US16] Implement icon search filter logic in IconPickerControl.xaml.cs (filters by IconName)
-- [ ] T185 [P] [US16] Implement category filtering (All, Containers, Materials, Warnings, Tools) using TabView in IconPickerControl.xaml
-- [ ] T186 [US16] Implement recently used icons section with top 6 most-used icons from user_preferences table in IconPickerControl.xaml
-- [ ] T187 [P] [US16] Implement icon selection handler - updates preview and adds accent border in IconPickerControl.xaml
-- [ ] T188 [P] [US16] Implement icon usage tracking - call sp_user_preferences_upsert when icon selected in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T189 [US16] Bind icon preview in Basic Information section to SelectedIcon property in Dunnage_AddTypeDialog.xaml
+- [X] T182 [US16] Create Model_IconDefinition with properties (IconGlyph, IconName, Category) in Models/Dunnage/
+- [X] T183 [P] [US16] Create icon library data source with 50-100 Segoe Fluent Icons in IconPickerControl.xaml.cs
+- [X] T184 [P] [US16] Implement icon search filter logic in IconPickerControl.xaml.cs (filters by IconName)
+- [X] T185 [P] [US16] Implement category filtering (All, Containers, Materials, Warnings, Tools) using TabView in IconPickerControl.xaml
+- [X] T186 [US16] Implement recently used icons section with top 6 most-used icons from user_preferences table in IconPickerControl.xaml
+- [X] T187 [P] [US16] Implement icon selection handler - updates preview and adds accent border in IconPickerControl.xaml
+- [X] T188 [P] [US16] Implement icon usage tracking - call sp_user_preferences_upsert when icon selected in Dunnage_AddTypeDialogViewModel.cs
+- [X] T189 [US16] Bind icon preview in Basic Information section to SelectedIcon property in Dunnage_AddTypeDialog.xaml
 
 **Checkpoint**: User Story 16 complete - visual icon picker with search functional
 
@@ -472,11 +472,11 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 17
 
-- [ ] T190 [P] [US17] Create sample CSV generation utility method in Service_DunnageCSVWriter.cs (generates test data with 20 loads, various types/specs)
-- [ ] T191 [P] [US17] Create LabelView integration documentation in docs/LabelView_Integration.md
-- [ ] T192 [P] [US17] Create CSV column mapping reference documentation in docs/CSV_Column_Reference.md
-- [ ] T193 [US17] Add validation for CSV import compatibility (all rows parse without errors) in Tests/Integration/CSV_Import_Tests.cs
-- [ ] T194 [P] [US17] Create test template examples for common label layouts in docs/LabelView_Templates/
+- [X] T190 [P] [US17] Create sample CSV generation utility method in Service_DunnageCSVWriter.cs (generates test data with 20 loads, various types/specs)
+- [X] T191 [P] [US17] Create LabelView integration documentation in docs/LabelView_Integration.md
+- [X] T192 [P] [US17] Create CSV column mapping reference documentation in docs/CSV_Column_Reference.md
+- [X] T193 [US17] Add validation for CSV import compatibility (all rows parse without errors) in Tests/Integration/CSV_Import_Tests.cs
+- [X] T194 [P] [US17] Create test template examples for common label layouts in docs/LabelView_Templates/
 
 **Checkpoint**: User Story 17 complete - LabelView integration validated with documentation
 
@@ -490,12 +490,12 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 18
 
-- [ ] T195 [US18] Implement detailed error logging for local write failures in Service_DunnageCSVWriter.cs (includes path, exception details)
-- [ ] T196 [P] [US18] Implement detailed error logging for network write failures in Service_DunnageCSVWriter.cs (includes network path, reachability check result)
-- [ ] T197 [P] [US18] Implement disk space error detection and logging in Service_DunnageCSVWriter.cs (logs required vs available space)
-- [ ] T198 [P] [US18] Implement encoding error logging with load ID and field name in Service_DunnageCSVWriter.cs
-- [ ] T199 [P] [US18] Implement comprehensive error log format (timestamp, username, load count, file paths attempted, exception details) in Service_DunnageCSVWriter.cs
-- [ ] T200 [US18] Add unit tests for error logging scenarios in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
+- [X] T195 [US18] Implement detailed error logging for local write failures in Service_DunnageCSVWriter.cs (includes path, exception details)
+- [X] T196 [P] [US18] Implement detailed error logging for network write failures in Service_DunnageCSVWriter.cs (includes network path, reachability check result)
+- [X] T197 [P] [US18] Implement disk space error detection and logging in Service_DunnageCSVWriter.cs (logs required vs available space)
+- [X] T198 [P] [US18] Implement encoding error logging with load ID and field name in Service_DunnageCSVWriter.cs
+- [X] T199 [P] [US18] Implement comprehensive error log format (timestamp, username, load count, file paths attempted, exception details) in Service_DunnageCSVWriter.cs
+- [X] T200 [US18] Add unit tests for error logging scenarios in Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
 
 **Checkpoint**: User Story 18 complete - export error handling with detailed logging functional
 
@@ -509,11 +509,11 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 19
 
-- [ ] T201 [US19] Add "Duplicate Type" context menu option to type management grid in Dunnage_AdminTypesView.xaml
-- [ ] T202 [P] [US19] Implement ShowDuplicateTypeCommand in Dunnage_AdminTypesViewModel.cs
-- [ ] T203 [US19] Pre-populate Dunnage_AddTypeDialog with source type data in ShowDuplicateTypeCommand (name + " (Copy)", icon, all custom fields with same order/type/required/validation)
-- [ ] T204 [P] [US19] Verify duplicated validation rules are copied to new type in Dunnage_AddTypeDialogViewModel.cs
-- [ ] T205 [US19] Implement SaveTypeCommand to create entirely new type record (not linked to original) in Dunnage_AddTypeDialogViewModel.cs
+- [X] T201 [US19] Add "Duplicate Type" context menu option to type management grid in Dunnage_AdminTypesView.xaml
+- [X] T202 [P] [US19] Implement ShowDuplicateTypeCommand in Dunnage_AdminTypesViewModel.cs
+- [X] T203 [US19] Pre-populate Dunnage_AddTypeDialog with source type data in ShowDuplicateTypeCommand (name + " (Copy)", icon, all custom fields with same order/type/required/validation)
+- [X] T204 [P] [US19] Verify duplicated validation rules are copied to new type in Dunnage_AddTypeDialogViewModel.cs
+- [X] T205 [US19] Implement SaveTypeCommand to create entirely new type record (not linked to original) in Dunnage_AddTypeDialogViewModel.cs
 
 **Checkpoint**: User Story 19 complete - type duplication functional
 
@@ -527,14 +527,14 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 20
 
-- [ ] T206 [P] [US20] Add "Validation Rules" expander section to Add Field form in Dunnage_AddTypeDialog.xaml
-- [ ] T207 [P] [US20] Implement Number field validation inputs (Min Value, Max Value, Decimal Places 0-4) in Dunnage_AddTypeDialog.xaml
-- [ ] T208 [P] [US20] Implement Text field validation inputs (Max Length, pattern options: Starts with, Ends with, Contains, Custom Regex) in Dunnage_AddTypeDialog.xaml
-- [ ] T209 [P] [US20] Implement Date field validation inputs (Min Date, Max Date with presets: Today, 30/60/90 days ago, Custom) in Dunnage_AddTypeDialog.xaml
-- [ ] T210 [US20] Implement ValidationRules property on Model_CustomFieldDefinition (JSON serialization) in Models/Dunnage/Model_CustomFieldDefinition.cs
-- [ ] T211 [P] [US20] Implement human-readable validation summary in field preview card (e.g., "Number (1-9999, 2 decimals, Required)") in Dunnage_AddTypeDialog.xaml
-- [ ] T212 [US20] Implement runtime validation enforcement in Dunnage_ManualEntryViewModel.cs (validates against rules during data entry)
-- [ ] T213 [P] [US20] Add unit tests for validation rule enforcement in Tests/Unit/ViewModels/Dunnage_ManualEntryViewModel_Tests.cs
+- [X] T206 [P] [US20] Add "Validation Rules" expander section to Add Field form in Dunnage_AddTypeDialog.xaml
+- [X] T207 [P] [US20] Implement Number field validation inputs (Min Value, Max Value, Decimal Places 0-4) in Dunnage_AddTypeDialog.xaml
+- [X] T208 [P] [US20] Implement Text field validation inputs (Max Length, pattern options: Starts with, Ends with, Contains, Custom Regex) in Dunnage_AddTypeDialog.xaml
+- [X] T209 [P] [US20] Implement Date field validation inputs (Min Date, Max Date with presets: Today, 30/60/90 days ago, Custom) in Dunnage_AddTypeDialog.xaml
+- [X] T210 [US20] Implement ValidationRules property on Model_CustomFieldDefinition (JSON serialization) in Models/Dunnage/Model_CustomFieldDefinition.cs
+- [X] T211 [P] [US20] Implement human-readable validation summary in field preview card (e.g., "Number (1-9999, 2 decimals, Required)") in Dunnage_AddTypeDialog.xaml
+- [X] T212 [US20] Implement runtime validation enforcement in Dunnage_ManualEntryViewModel.cs (validates against rules during data entry)
+- [X] T213 [P] [US20] Add unit tests for validation rule enforcement in Tests/Unit/ViewModels/Dunnage_ManualEntryViewModel_Tests.cs
 
 **Checkpoint**: User Story 20 complete - field validation rules builder functional
 
@@ -544,16 +544,16 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 **Purpose**: Final improvements affecting multiple user stories
 
-- [ ] T214 [P] Add navigation menu integration for all admin views in MainWindow.xaml NavigationView
-- [ ] T215 [P] Update application Help documentation with dunnage features in docs/User_Guide.md
-- [ ] T216 [P] Implement keyboard shortcuts (Ctrl+N for new type, Ctrl+S for save, Esc for cancel) in admin dialogs
-- [ ] T217 [P] Add accessibility attributes (AutomationProperties.Name) to all interactive controls
-- [ ] T218 Code cleanup and refactoring - remove commented code, ensure consistent naming
-- [ ] T219 [P] Performance optimization - ensure DataGrid virtualization enabled, CSV streaming for >1000 rows
-- [ ] T220 [P] Security review - validate all user inputs, sanitize file paths, prevent SQL injection (stored procedures already mitigate)
-- [ ] T221 Run quickstart.md validation - verify all test scenarios pass
-- [ ] T222 [P] Create CHANGELOG.md entry for feature release
-- [ ] T223 Final code review before merge - verify constitutional compliance
+- [X] T214 [P] Add navigation menu integration for all admin views in MainWindow.xaml NavigationView
+- [X] T215 [P] Update application Help documentation with dunnage features in docs/User_Guide.md
+- [X] T216 [P] Implement keyboard shortcuts (Ctrl+N for new type, Ctrl+S for save, Esc for cancel) in admin dialogs
+- [X] T217 [P] Add accessibility attributes (AutomationProperties.Name) to all interactive controls
+- [X] T218 Code cleanup and refactoring - remove commented code, ensure consistent naming
+- [X] T219 [P] Performance optimization - ensure DataGrid virtualization enabled, CSV streaming for >1000 rows
+- [X] T220 [P] Security review - validate all user inputs, sanitize file paths, prevent SQL injection (stored procedures already mitigate)
+- [X] T221 Run quickstart.md validation - verify all test scenarios pass
+- [X] T222 [P] Create CHANGELOG.md entry for feature release
+- [X] T223 Final code review before merge - verify constitutional compliance
 
 ---
 
