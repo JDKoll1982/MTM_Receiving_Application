@@ -426,18 +426,18 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 15
 
-- [ ] T170 [P] [US15] Create Dunnage_AdminInventoryViewModel.cs in ViewModels/Dunnage/
-- [ ] T171 [P] [US15] Create Dunnage_AdminInventoryView.xaml in Views/Dunnage/
-- [ ] T172 [US15] Create Dunnage_AdminInventoryView.xaml.cs code-behind in Views/Dunnage/
-- [ ] T173 [P] [US15] Implement LoadInventoriedPartsCommand in Dunnage_AdminInventoryViewModel.cs (calls GetAllInventoriedPartsAsync)
-- [ ] T174 [P] [US15] Create AddToInventoriedListDialog.xaml ContentDialog in Views/Dunnage/Dialogs/
-- [ ] T175 [US15] Implement ShowAddToListCommand with dialog logic in Dunnage_AdminInventoryViewModel.cs
-- [ ] T176 [P] [US15] Implement ShowEditEntryCommand with dialog logic (PartID readonly, method/notes editable) in Dunnage_AdminInventoryViewModel.cs
-- [ ] T177 [P] [US15] Implement ShowRemoveConfirmationCommand with informational warning in Dunnage_AdminInventoryViewModel.cs
-- [ ] T178 [P] [US15] Add DataGrid with columns (PartID, Type, InventoryMethod, Notes, DateAdded, AddedBy, Actions) in Dunnage_AdminInventoryView.xaml
-- [ ] T179 [P] [US15] Add toolbar with "+ Add Part to List" button in Dunnage_AdminInventoryView.xaml
-- [ ] T180 [P] [US15] Implement InventoryMethod dropdown (Adjust In, Receive In, Both) in AddToInventoriedListDialog.xaml
-- [ ] T181 [US15] Register Dunnage_AdminInventoryViewModel and Dunnage_AdminInventoryView in App.xaml.cs DI container
+- [X] T170 [P] [US15] Create Dunnage_AdminInventoryViewModel.cs in ViewModels/Dunnage/
+- [X] T171 [P] [US15] Create Dunnage_AdminInventoryView.xaml in Views/Dunnage/
+- [X] T172 [US15] Create Dunnage_AdminInventoryView.xaml.cs code-behind in Views/Dunnage/
+- [X] T173 [P] [US15] Implement LoadInventoriedPartsCommand in Dunnage_AdminInventoryViewModel.cs (calls GetAllAsync)
+- [X] T174 [P] [US15] Create AddToInventoriedListDialog.xaml ContentDialog in Views/Dunnage/Dialogs/
+- [X] T175 [US15] Implement ShowAddToListCommand with dialog logic in Dunnage_AdminInventoryViewModel.cs
+- [X] T176 [P] [US15] Implement ShowEditEntryCommand with dialog logic (PartID readonly, method/notes editable) in Dunnage_AdminInventoryViewModel.cs
+- [X] T177 [P] [US15] Implement ShowRemoveConfirmationCommand with informational warning in Dunnage_AdminInventoryViewModel.cs
+- [X] T178 [P] [US15] Add DataGrid with columns (PartID, InventoryMethod, Notes, DateAdded, AddedBy, LastModified, ModifiedBy) in Dunnage_AdminInventoryView.xaml
+- [X] T179 [P] [US15] Add toolbar with "+ Add Part to List" button in Dunnage_AdminInventoryView.xaml
+- [X] T180 [P] [US15] Implement InventoryMethod dropdown (Adjust In, Receive In, Both) in AddToInventoriedListDialog.xaml
+- [X] T181 [US15] Register Dunnage_AdminInventoryViewModel and Dunnage_AdminInventoryView in App.xaml.cs DI container
 
 **Checkpoint**: User Story 15 complete - inventoried list management functional
 

@@ -145,6 +145,7 @@ public partial class App : Application
                 services.AddTransient<Dunnage_AdminMainViewModel>();
                 services.AddTransient<Dunnage_AdminTypesViewModel>();
                 services.AddTransient<Dunnage_AdminPartsViewModel>();
+                services.AddTransient<Dunnage_AdminInventoryViewModel>();
                 services.AddTransient<Dunnage_AddTypeDialogViewModel>();
 
                 // Views
@@ -156,6 +157,10 @@ public partial class App : Application
                 services.AddTransient<Views.Dunnage.Dunnage_AdminMainView>();
                 services.AddTransient<Views.Dunnage.Dunnage_AdminTypesView>();
                 services.AddTransient<Views.Dunnage.Dunnage_AdminPartsView>();
+                services.AddTransient<Views.Dunnage.Dunnage_AdminInventoryView>();
+                
+                // Dunnage Dialogs
+                services.AddTransient<Views.Dunnage.Dialogs.AddToInventoriedListDialog>();
 
                 // Windows
                 services.AddTransient<Views.Shared.Shared_SplashScreenWindow>();
