@@ -43,6 +43,12 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         _workflowService = workflowService;
         _windowService = windowService;
 
+        // T166: Set page size to 50
+        _paginationService.PageSize = PAGE_SIZE;
+
+        // T167: Subscribe to PageChanged event
+        _paginationService.PageChanged += OnPageChanged;
+
         // Set default date range (last 7 days)
         ToDate = DateTimeOffset.Now;
         FromDate = DateTimeOffset.Now.AddDays(-7);
@@ -78,6 +84,36 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     private bool _canNavigate = false;
 
     private List<Model_DunnageLoad> _allLoads = new();
+
+    // T164: Dynamic button text for date filters
+    public string LastWeekButtonText => $"Last Week ({DateTime.Now.Date.AddDays(-7):MMM d} - {DateTime.Now.Date:MMM d})";
+    
+    public string TodayButtonText => $"Today ({DateTime.Now.Date:MMM d})";
+    
+    public string ThisWeekButtonText
+    {
+        get
+        {
+            var today = DateTime.Now.Date;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+            if (startOfWeek > today) startOfWeek = startOfWeek.AddDays(-7);
+            return $"This Week ({startOfWeek:MMM d} - {today:MMM d})";
+        }
+    }
+    
+    public string ThisMonthButtonText => $"This Month ({DateTime.Now:MMMM yyyy})";
+    
+    public string ThisQuarterButtonText
+    {
+        get
+        {
+            var today = DateTime.Now.Date;
+            var quarter = (today.Month - 1) / 3 + 1;
+            var startMonth = (quarter - 1) * 3 + 1;
+            var quarterStart = new DateTime(today.Year, startMonth, 1);
+            return $"This Quarter (Q{quarter} {today.Year})";
+        }
+    }
 
     #endregion
 
@@ -304,6 +340,20 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         }
     }
 
+    /// <summary>
+    /// T158: Set filter to last 7 days (today - 7 days to today)
+    /// </summary>
+    [RelayCommand]
+    private async Task SetFilterLastWeekAsync()
+    {
+        ToDate = DateTime.Now.Date;
+        FromDate = DateTime.Now.Date.AddDays(-7);
+        await LoadFromHistoryAsync();
+    }
+
+    /// <summary>
+    /// T159: Set filter to today only (today 00:00 to today 23:59)
+    /// </summary>
     [RelayCommand]
     private async Task SetFilterTodayAsync()
     {
@@ -312,16 +362,26 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         await LoadFromHistoryAsync();
     }
 
+    /// <summary>
+    /// T160: Set filter to this week (Monday to Sunday of current week)
+    /// </summary>
     [RelayCommand]
     private async Task SetFilterThisWeekAsync()
     {
         var today = DateTime.Now.Date;
-        var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+        var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+        if (startOfWeek > today) // If today is Sunday
+        {
+            startOfWeek = startOfWeek.AddDays(-7);
+        }
         FromDate = startOfWeek;
         ToDate = today;
         await LoadFromHistoryAsync();
     }
 
+    /// <summary>
+    /// T161: Set filter to this month (first to last day of current month)
+    /// </summary>
     [RelayCommand]
     private async Task SetFilterThisMonthAsync()
     {
@@ -331,6 +391,23 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         await LoadFromHistoryAsync();
     }
 
+    /// <summary>
+    /// T162: Set filter to this quarter (first to last day of current quarter)
+    /// </summary>
+    [RelayCommand]
+    private async Task SetFilterThisQuarterAsync()
+    {
+        var today = DateTime.Now.Date;
+        var quarter = (today.Month - 1) / 3 + 1;
+        var startMonth = (quarter - 1) * 3 + 1;
+        FromDate = new DateTime(today.Year, startMonth, 1);
+        ToDate = today;
+        await LoadFromHistoryAsync();
+    }
+
+    /// <summary>
+    /// T163: Clear date filters (show last year of data)
+    /// </summary>
     [RelayCommand]
     private async Task SetFilterShowAllAsync()
     {
@@ -584,6 +661,27 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     #endregion
 
     #region Helper Methods
+
+    /// <summary>
+    /// T167: Event handler for pagination service PageChanged event
+    /// </summary>
+    private void OnPageChanged(object? sender, EventArgs e)
+    {
+        // Update FilteredLoads with current page items
+        var pageLoads = _paginationService.GetCurrentPageItems<Model_DunnageLoad>();
+        
+        FilteredLoads.Clear();
+        foreach (var load in pageLoads)
+        {
+            FilteredLoads.Add(load);
+        }
+
+        CurrentPage = _paginationService.CurrentPage;
+        TotalPages = _paginationService.TotalPages;
+        StatusMessage = $"Page {CurrentPage} of {TotalPages}";
+        
+        _logger.LogInfo($"Page changed to {CurrentPage} of {TotalPages}", "EditMode");
+    }
 
     private void UpdateCanSave()
     {

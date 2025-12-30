@@ -400,19 +400,19 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 14
 
-- [ ] T157 [US14] Implement date filter properties (FilterStartDate, FilterEndDate) in Dunnage_EditModeViewModel.cs
-- [ ] T158 [P] [US14] Implement SetFilterLastWeekCommand (today - 7 days to today) in Dunnage_EditModeViewModel.cs
-- [ ] T159 [P] [US14] Implement SetFilterTodayCommand (today 00:00 to today 23:59) in Dunnage_EditModeViewModel.cs
-- [ ] T160 [P] [US14] Implement SetFilterThisWeekCommand (Monday to Sunday of current week) in Dunnage_EditModeViewModel.cs
-- [ ] T161 [P] [US14] Implement SetFilterThisMonthCommand (first to last day of current month) in Dunnage_EditModeViewModel.cs
-- [ ] T162 [P] [US14] Implement SetFilterThisQuarterCommand (first to last day of current quarter) in Dunnage_EditModeViewModel.cs
-- [ ] T163 [P] [US14] Implement SetFilterShowAllCommand (clear date filters) in Dunnage_EditModeViewModel.cs
-- [ ] T164 [P] [US14] Add dynamic button text (e.g., "This Week (Dec 23-29)", "This Month (December 2025)") in Dunnage_EditModeView.xaml
-- [ ] T165 [US14] Inject IService_Pagination into Dunnage_EditModeViewModel.cs constructor
-- [ ] T166 [P] [US14] Set ItemsPerPage to 50 and bind to pagination service in Dunnage_EditModeViewModel.cs
-- [ ] T167 [P] [US14] Subscribe to PageChanged event to update Loads ObservableCollection in Dunnage_EditModeViewModel.cs
-- [ ] T168 [P] [US14] Add pagination controls (First, Previous, Page X of Y, Go, Next, Last) in Dunnage_EditModeView.xaml
-- [ ] T169 [US14] Bind pagination control commands to IService_Pagination methods in Dunnage_EditModeView.xaml
+- [X] T157 [US14] Implement date filter properties (FilterStartDate, FilterEndDate) in Dunnage_EditModeViewModel.cs
+- [X] T158 [P] [US14] Implement SetFilterLastWeekCommand (today - 7 days to today) in Dunnage_EditModeViewModel.cs
+- [X] T159 [P] [US14] Implement SetFilterTodayCommand (today 00:00 to today 23:59) in Dunnage_EditModeViewModel.cs
+- [X] T160 [P] [US14] Implement SetFilterThisWeekCommand (Monday to Sunday of current week) in Dunnage_EditModeViewModel.cs
+- [X] T161 [P] [US14] Implement SetFilterThisMonthCommand (first to last day of current month) in Dunnage_EditModeViewModel.cs
+- [X] T162 [P] [US14] Implement SetFilterThisQuarterCommand (first to last day of current quarter) in Dunnage_EditModeViewModel.cs
+- [X] T163 [P] [US14] Implement SetFilterShowAllCommand (clear date filters) in Dunnage_EditModeViewModel.cs
+- [X] T164 [P] [US14] Add dynamic button text (e.g., "This Week (Dec 23-29)", "This Month (December 2025)") in Dunnage_EditModeView.xaml
+- [X] T165 [US14] Inject IService_Pagination into Dunnage_EditModeViewModel.cs constructor
+- [X] T166 [P] [US14] Set ItemsPerPage to 50 and bind to pagination service in Dunnage_EditModeViewModel.cs
+- [X] T167 [P] [US14] Subscribe to PageChanged event to update Loads ObservableCollection in Dunnage_EditModeViewModel.cs
+- [X] T168 [P] [US14] Add pagination controls (First, Previous, Page X of Y, Go, Next, Last) in Dunnage_EditModeView.xaml
+- [X] T169 [US14] Bind pagination control commands to IService_Pagination methods in Dunnage_EditModeView.xaml
 
 **Checkpoint**: User Story 14 complete - date filtering and pagination operational
 

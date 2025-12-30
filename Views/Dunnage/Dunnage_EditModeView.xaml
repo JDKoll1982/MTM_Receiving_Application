@@ -70,7 +70,7 @@
             </StackPanel>
         </Grid>
 
-        <!-- Date Filter Toolbar -->
+        <!-- Date Filter Toolbar - T164: Dynamic button text -->
         <Grid Grid.Row="1" Margin="0,0,0,12">
             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                 <TextBlock Text="Filter Date:" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -85,10 +85,25 @@
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
-                <Button Content="Today" Command="{x:Bind ViewModel.SetFilterTodayCommand}"/>
-                <Button Content="This Week" Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"/>
-                <Button Content="This Month" Command="{x:Bind ViewModel.SetFilterThisMonthCommand}"/>
-                <Button Content="Show All" Command="{x:Bind ViewModel.SetFilterShowAllCommand}"/>
+                <!-- T158, T159, T160, T161, T162, T163, T164: Date filter buttons with dynamic text -->
+                <Button Content="{x:Bind ViewModel.LastWeekButtonText, Mode=OneTime}" 
+                        Command="{x:Bind ViewModel.SetFilterLastWeekCommand}"
+                        ToolTipService.ToolTip="Show loads from last 7 days"/>
+                <Button Content="{x:Bind ViewModel.TodayButtonText, Mode=OneTime}" 
+                        Command="{x:Bind ViewModel.SetFilterTodayCommand}"
+                        ToolTipService.ToolTip="Show loads from today only"/>
+                <Button Content="{x:Bind ViewModel.ThisWeekButtonText, Mode=OneTime}" 
+                        Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"
+                        ToolTipService.ToolTip="Show loads from this week (Mon-Sun)"/>
+                <Button Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneTime}" 
+                        Command="{x:Bind ViewModel.SetFilterThisMonthCommand}"
+                        ToolTipService.ToolTip="Show loads from this month"/>
+                <Button Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneTime}" 
+                        Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}"
+                        ToolTipService.ToolTip="Show loads from this quarter"/>
+                <Button Content="Show All" 
+                        Command="{x:Bind ViewModel.SetFilterShowAllCommand}"
+                        ToolTipService.ToolTip="Show all loads from last year"/>
             </StackPanel>
         </Grid>
 
