@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using Microsoft.UI.Dispatching;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
@@ -27,7 +28,7 @@ public partial class Dunnage_AddTypeDialogViewModel : Shared_BaseViewModel
     private string _typeName = string.Empty;
 
     [ObservableProperty]
-    private string _selectedIcon = "Box"; // Default icon
+    private MaterialIconKind _selectedIcon = MaterialIconKind.PackageVariantClosed; // Default icon
 
     [ObservableProperty]
     private string _typeNameError = string.Empty;
@@ -111,7 +112,7 @@ public partial class Dunnage_AddTypeDialogViewModel : Shared_BaseViewModel
             StatusMessage = "Saving type...";
 
             // Save type to database
-            var typeResult = await _dunnageService.InsertTypeAsync(TypeName, SelectedIcon);
+            var typeResult = await _dunnageService.InsertTypeAsync(TypeName, SelectedIcon.ToString());
             if (!typeResult.IsSuccess)
             {
                 await _errorHandler.ShowUserErrorAsync(typeResult.ErrorMessage, "Save Failed", nameof(SaveTypeAsync));

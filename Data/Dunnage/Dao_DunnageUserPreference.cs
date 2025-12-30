@@ -47,8 +47,7 @@ public class Dao_DunnageUserPreference
             "sp_user_preferences_get_recent_icons",
             reader => new Model_IconDefinition
             {
-                IconName = reader.GetString(reader.GetOrdinal("icon_name")),
-                Glyph = reader.GetString(reader.GetOrdinal("glyph"))
+                IconName = reader.GetString(reader.GetOrdinal("icon_name"))
             },
             parameters
         );

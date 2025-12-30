@@ -1033,6 +1033,7 @@ Before submitting code, verify:
 - `Microsoft.Extensions.DependencyInjection` - DI container
 - `MySql.Data` - MySQL database access
 - `Microsoft.Data.SqlClient` - SQL Server access
+- `Material.Icons.WinUI3` - Material Design Icons
 
 **Databases**:
 - MySQL 8.x (Application data - `mtm_receiving_application`)

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:materialIcons="using:Material.Icons.WinUI3"
     mc:Ignorable="d"
     Title="Select Icon">
 
@@ -84,9 +85,8 @@
                             </VisualStateManager.VisualStateGroups>
                             
                             <StackPanel x:Name="ContentPanel" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Padding="12">
-                                <FontIcon Glyph="{Binding Glyph}" 
-                                          FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
-                                          FontSize="40"
+                                <materialIcons:MaterialIcon Kind="{Binding Kind}" 
+                                          Width="40" Height="40"
                                           Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                                 <TextBlock Text="{Binding Name}" 
                                            FontSize="14" 
@@ -114,10 +114,10 @@
             
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                 <Button x:Name="FirstPageButton" Click="OnFirstPageClick" Width="44" Height="36" CornerRadius="4" ToolTipService.ToolTip="First Page">
-                    <FontIcon Glyph="&#xE892;" FontSize="12"/>
+                    <materialIcons:MaterialIcon Kind="PageFirst" Width="16" Height="16"/>
                 </Button>
                 <Button x:Name="PreviousPageButton" Click="OnPreviousPageClick" Width="44" Height="36" CornerRadius="4" ToolTipService.ToolTip="Previous Page">
-                    <FontIcon Glyph="&#xE76B;" FontSize="12"/>
+                    <materialIcons:MaterialIcon Kind="ChevronLeft" Width="16" Height="16"/>
                 </Button>
                 
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="4" Padding="16,0" Height="36" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
@@ -125,10 +125,10 @@
                 </Border>
                 
                 <Button x:Name="NextPageButton" Click="OnNextPageClick" Width="44" Height="36" CornerRadius="4" ToolTipService.ToolTip="Next Page">
-                    <FontIcon Glyph="&#xE76C;" FontSize="12"/>
+                    <materialIcons:MaterialIcon Kind="ChevronRight" Width="16" Height="16"/>
                 </Button>
                 <Button x:Name="LastPageButton" Click="OnLastPageClick" Width="44" Height="36" CornerRadius="4" ToolTipService.ToolTip="Last Page">
-                    <FontIcon Glyph="&#xE893;" FontSize="12"/>
+                    <materialIcons:MaterialIcon Kind="PageLast" Width="16" Height="16"/>
                 </Button>
             </StackPanel>
         </Grid>

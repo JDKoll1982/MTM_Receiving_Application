@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Material.Icons;
 
 namespace MTM_Receiving_Application.Models.Dunnage;
 
@@ -58,5 +59,22 @@ public partial class Model_DunnageType : ObservableObject
     {
         get => ModifiedDate;
         set => ModifiedDate = value;
+    }
+
+    /// <summary>
+    /// Gets the MaterialIconKind enum for displaying the icon
+    /// </summary>
+    public MaterialIconKind IconKind
+    {
+        get
+        {
+            // Try to parse the Icon string as a MaterialIconKind enum
+            if (!string.IsNullOrEmpty(Icon) && Enum.TryParse<MaterialIconKind>(Icon, true, out var kind))
+            {
+                return kind;
+            }
+            // Default to PackageVariantClosed if parsing fails
+            return MaterialIconKind.PackageVariantClosed;
+        }
     }
 }

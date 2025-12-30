@@ -7,38 +7,19 @@ using System.Runtime.CompilerServices;
 using MTM_Receiving_Application.Models.Dunnage;
 using System.Linq;
 using System.Net;
+using Material.Icons;
 
 namespace MTM_Receiving_Application.Views.Dunnage;
 
 public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyPropertyChanged
 {
     private bool _isIconSelected;
-    private string _selectedIcon = "\uDB81\uDF20"; // Default box icon
+    private MaterialIconKind _selectedIcon = MaterialIconKind.PackageVariantClosed; // Default box icon
     private string _selectedIconName = "Box"; // Default icon name
 
     public string TypeName { get; private set; } = string.Empty;
-    public string SelectedIconGlyph { get; private set; } = "\uDB81\uDF20";
+    public MaterialIconKind SelectedIconKind { get; private set; } = MaterialIconKind.PackageVariantClosed;
     public ObservableCollection<Model_SpecItem> Specs { get; } = new();
-
-    private string DecodeIcon(string icon)
-    {
-        if (string.IsNullOrWhiteSpace(icon))
-            return "\uDB81\uDF20";
-
-        // If it's an HTML entity, decode it
-        if (icon.StartsWith("&#") && icon.EndsWith(";"))
-        {
-            return WebUtility.HtmlDecode(icon);
-        }
-
-        // If it's a raw hex code (4 chars), convert it
-        if (icon.Length == 4 && int.TryParse(icon, System.Globalization.NumberStyles.HexNumber, null, out int code))
-        {
-            return ((char)code).ToString();
-        }
-
-        return icon;
-    }
 
     public bool IsIconSelected
     {
@@ -69,22 +50,25 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
         }
     }
 
-    // Overload removed - use InitializeForEdit(string, string, Dictionary<string, SpecDefinition>) instead
-
-    public void InitializeForEdit(string typeName, string iconGlyph, Dictionary<string, SpecDefinition> specs)
+    public void InitializeForEdit(string typeName, string iconName, Dictionary<string, SpecDefinition> specs)
     {
         Title = "Edit Dunnage Type";
         PrimaryButtonText = "Save Changes";
 
-        string decodedIcon = DecodeIcon(iconGlyph);
+        // Try parse icon name, fallback to default
+        if (!System.Enum.TryParse<MaterialIconKind>(iconName, out var kind))
+        {
+            kind = MaterialIconKind.PackageVariantClosed;
+        }
 
         TypeNameTextBox.Text = typeName;
-        _selectedIcon = decodedIcon;
-        SelectedIconDisplay.Glyph = decodedIcon;
-        SelectedIconNameText.Text = "Current Icon";
+        _selectedIcon = kind;
+        SelectedIconDisplay.Kind = kind;
+        SelectedIconNameText.Text = kind.ToString();
+        IsIconSelected = true;
 
         TypeName = typeName;
-        SelectedIconGlyph = decodedIcon;
+        SelectedIconKind = kind;
 
         Specs.Clear();
         foreach (var kvp in specs)
@@ -184,12 +168,12 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
         await tcs.Task;
 
         // Check if icon was selected
-        if (iconWindow.IconWasSelected && iconWindow.SelectedIconGlyph != null)
+        if (iconWindow.IconWasSelected && iconWindow.SelectedIconKind.HasValue)
         {
-            _selectedIcon = iconWindow.SelectedIconGlyph;
+            _selectedIcon = iconWindow.SelectedIconKind.Value;
             _selectedIconName = iconWindow.SelectedIconName ?? "Icon";
 
-            SelectedIconDisplay.Glyph = _selectedIcon;
+            SelectedIconDisplay.Kind = _selectedIcon;
             SelectedIconNameText.Text = _selectedIconName;
             IsIconSelected = true;
         }
@@ -239,7 +223,7 @@ public sealed partial class Dunnage_QuickAddTypeDialog : ContentDialog, INotifyP
 
         // Set properties for caller to retrieve
         TypeName = input;
-        SelectedIconGlyph = _selectedIcon;
+        SelectedIconKind = _selectedIcon;
     }
 
     [System.Text.RegularExpressions.GeneratedRegex("^[a-zA-Z0-9]*$")]

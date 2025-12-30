@@ -68,6 +68,7 @@ _(Coming soon)_
 - **Database**: MySQL 8.0+ (application data), SQL Server (Infor Visual - READ ONLY)
 - **Dependency Injection**: Microsoft.Extensions.DependencyInjection
 - **UI Toolkit**: Windows App SDK 1.8
+- **Icons**: Material.Icons.WinUI3
 
 ## Development Guidelines
 

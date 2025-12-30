@@ -250,15 +250,15 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 var typeName = dialog.TypeName;
-                var iconGlyph = dialog.SelectedIconGlyph;
+                var iconName = dialog.SelectedIconKind.ToString();
 
-                _logger.LogInfo($"Adding new type: {typeName} with icon {iconGlyph}", "TypeSelection");
+                _logger.LogInfo($"Adding new type: {typeName} with icon {iconName}", "TypeSelection");
 
                 // Insert new type
                 var newType = new Model_DunnageType
                 {
                     TypeName = typeName,
-                    Icon = iconGlyph
+                    Icon = iconName
                     // Note: Icon storage would need to be added to database schema
                 };
 
@@ -319,7 +319,9 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     private async Task EditTypeAsync(Model_DunnageType type)
     {
         if (type == null)
+        {
             return;
+        }
 
         try
         {
@@ -331,7 +333,9 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
             };
 
             if (dialog.XamlRoot == null)
+            {
                 return;
+            }
 
             // Load existing specs
             var specsResult = await _dunnageService.GetSpecsForTypeAsync(type.Id);
@@ -345,9 +349,13 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
                     {
                         var def = JsonSerializer.Deserialize<SpecDefinition>(s.SpecValue);
                         if (def != null)
+                        {
                             existingSpecsDict[s.SpecKey] = def;
+                        }
                         else
+                        {
                             existingSpecsDict[s.SpecKey] = new SpecDefinition(); // Fallback
+                        }
                     }
                     catch
                     {
@@ -363,7 +371,7 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
             {
                 var newName = dialog.TypeName;
-                var newIcon = dialog.SelectedIconGlyph;
+                var newIcon = dialog.SelectedIconKind.ToString();
                 var newSpecs = dialog.Specs; // Collection of SpecItem
 
                 // Update Type info
@@ -447,7 +455,9 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     private async Task DeleteTypeAsync(Model_DunnageType type)
     {
         if (type == null)
+        {
             return;
+        }
 
         try
         {

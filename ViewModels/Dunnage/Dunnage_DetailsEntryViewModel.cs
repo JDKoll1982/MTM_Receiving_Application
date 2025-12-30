@@ -151,7 +151,7 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
 
                 // Get default value from part if available
                 string? defaultValue = null;
-                if (partSpecValues != null && partSpecValues.ContainsKey(spec.SpecKey))
+                if (partSpecValues?.ContainsKey(spec.SpecKey) == true)
                 {
                     defaultValue = partSpecValues[spec.SpecKey]?.ToString();
                 }

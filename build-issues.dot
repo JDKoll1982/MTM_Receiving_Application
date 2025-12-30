@@ -1,0 +1,7 @@
+﻿digraph BuildIssues {
+  rankdir=LR;
+  node [shape=box, style=filled, fontname="Segoe UI"];
+  edge [fontname="Segoe UI", fontsize=10];
+  ROOT [label="Build Issues\nTotal: 0", fillcolor="lightblue", shape=doubleoctagon];
+  "Good Job!" [shape=box, style=filled, fillcolor=green];
+}
