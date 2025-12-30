@@ -14,16 +14,15 @@
         <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid Padding="24">
+    <Grid Padding="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
             <TextBlock Text="Enter Quantity"
                        Style="{StaticResource TitleTextBlockStyle}"/>
             <TextBlock Text="Specify how many labels you need to generate."
@@ -33,56 +32,66 @@
 
         <!-- Context Banner -->
         <Border Grid.Row="1"
-                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
                 CornerRadius="8"
-                Padding="16"
-                Margin="0,0,0,24">
-            <StackPanel Spacing="8">
+                Padding="12"
+                Margin="0,0,0,12">
+            <StackPanel Spacing="6">
                 <TextBlock Text="Selection Summary"
                            FontWeight="SemiBold"
-                           Foreground="White"/>
+                           FontSize="13"/>
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="Type:" Foreground="White" Opacity="0.8"/>
+                    <TextBlock Text="Type:" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12"/>
                     <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"
                                FontWeight="SemiBold"
-                               Foreground="White"/>
+                               FontSize="12"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="Part:" Foreground="White" Opacity="0.8"/>
+                    <TextBlock Text="Part:" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12"/>
                     <TextBlock Text="{x:Bind ViewModel.SelectedPartName, Mode=OneWay}"
                                FontWeight="SemiBold"
-                               Foreground="White"/>
+                               FontSize="12"/>
                 </StackPanel>
             </StackPanel>
         </Border>
 
         <!-- Quantity Input -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="24" MaxWidth="600" HorizontalAlignment="Left">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="Quantity"
-                               Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <NumberBox Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}"
-                               Minimum="1"
-                               Maximum="9999"
-                               SpinButtonPlacementMode="Inline"
-                               HorizontalAlignment="Stretch"
-                               PlaceholderText="Enter quantity..."/>
-                </StackPanel>
-
-                <!-- Validation Message -->
-                <TextBlock Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
-                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                           Visibility="{x:Bind ViewModel.ValidationMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}"
-                           TextWrapping="Wrap"/>
-
-                <!-- Info Panel -->
+            <StackPanel Spacing="12">
+                <!-- Quantity Card -->
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="16">
-                    <StackPanel Spacing="8">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Quantity"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <NumberBox Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}"
+                                   Minimum="1"
+                                   Maximum="9999"
+                                   SpinButtonPlacementMode="Inline"
+                                   HorizontalAlignment="Stretch"
+                                   PlaceholderText="Enter quantity..."/>
+                        
+                        <!-- Validation Message -->
+                        <TextBlock Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
+                                   Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                   Visibility="{x:Bind ViewModel.ValidationMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}"
+                                   TextWrapping="Wrap"
+                                   FontSize="12"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Info Panel Card -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                    <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE946;" 
                                       FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
@@ -92,37 +101,11 @@
                         </StackPanel>
                         <TextBlock Text="You can adjust the quantity later if needed. The system will generate individual labels for each item."
                                    TextWrapping="Wrap"
+                                   FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
         </ScrollViewer>
-
-        <!-- Navigation Buttons -->
-        <Grid Grid.Row="3" Margin="0,24,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Button Grid.Column="0"
-                    Command="{x:Bind ViewModel.GoBackCommand}"
-                    HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE72B;" FontSize="16"/>
-                    <TextBlock Text="Back"/>
-                </StackPanel>
-            </Button>
-
-            <Button Grid.Column="1"
-                    Command="{x:Bind ViewModel.GoNextCommand}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="Next"/>
-                    <FontIcon Glyph="&#xE72A;" FontSize="16"/>
-                </StackPanel>
-            </Button>
-        </Grid>
     </Grid>
 </UserControl>

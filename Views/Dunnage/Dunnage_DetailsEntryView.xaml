@@ -12,18 +12,18 @@
 
     <UserControl.Resources>
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid Padding="24">
+    <Grid Padding="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
             <TextBlock Text="Enter Details"
                        Style="{StaticResource TitleTextBlockStyle}"/>
             <TextBlock Text="Provide PO number, location, and specifications for this dunnage."
@@ -38,121 +38,147 @@
                  Title="Inventory Action Required"
                  Message="{x:Bind ViewModel.InventoryNotificationMessage, Mode=OneWay}"
                  IsClosable="False"
-                 Margin="0,0,0,16"/>
+                 Margin="0,0,0,12"/>
 
         <!-- Details Form -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="24" MaxWidth="800" HorizontalAlignment="Stretch">
+            <StackPanel Spacing="12">
                 
-                <!-- PO Number and Location -->
-                <Grid ColumnSpacing="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <!-- PO Number and Location Card -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- PO Number -->
-                    <StackPanel Grid.Column="0" Spacing="8">
-                        <TextBlock Text="PO Number"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBox Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"
-                                 PlaceholderText="Enter PO number (optional)..."
-                                 HorizontalAlignment="Stretch"/>
-                        <TextBlock Text="Leave blank for non-PO dunnage"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   Style="{StaticResource CaptionTextBlockStyle}"/>
-                    </StackPanel>
+                        <!-- PO Number -->
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock Text="PO Number"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBox Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"
+                                     PlaceholderText="Enter PO number (optional)..."
+                                     HorizontalAlignment="Stretch"/>
+                            <TextBlock Text="Leave blank for non-PO dunnage"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
 
-                    <!-- Location -->
-                    <StackPanel Grid.Column="1" Spacing="8">
-                        <TextBlock Text="Location"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBox Text="{x:Bind ViewModel.Location, Mode=TwoWay}"
-                                 PlaceholderText="Enter location..."
-                                 HorizontalAlignment="Stretch"/>
-                        <TextBlock Text="Where this dunnage is located"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   Style="{StaticResource CaptionTextBlockStyle}"/>
-                    </StackPanel>
-                </Grid>
+                        <!-- Location -->
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <TextBlock Text="Location"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBox Text="{x:Bind ViewModel.Location, Mode=TwoWay}"
+                                     PlaceholderText="Enter location..."
+                                     HorizontalAlignment="Stretch"/>
+                            <TextBlock Text="Where this dunnage is located"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-                <!-- Dynamic Spec Inputs -->
-                <StackPanel Spacing="16">
-                    <TextBlock Text="Specifications"
-                               Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.SpecInputs, Mode=OneWay}">
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Spacing="8" Margin="0,0,0,16">
-                                    <TextBlock Text="{Binding SpecName}"
-                                               FontWeight="SemiBold"/>
-                                    
-                                    <!-- Text Input -->
-                                    <TextBox Text="{Binding Value, Mode=TwoWay}"
-                                             PlaceholderText="Enter value..."
-                                             HorizontalAlignment="Stretch"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-
-                    <!-- Placeholder when no specs -->
-                    <TextBlock Text="No specifications configured for this type."
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Visibility="{x:Bind ViewModel.SpecInputs.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter='Inverse'}"
-                               Style="{StaticResource BodyTextBlockStyle}"/>
-                </StackPanel>
-
-                <!-- Info Panel -->
+                <!-- Specifications Card (Read-Only) -->
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="16">
                     <StackPanel Spacing="8">
+                        <TextBlock Text="Specifications (from selected part)"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Column 1: Text Specs -->
+                            <StackPanel Grid.Column="0" Spacing="4" 
+                                        Visibility="{x:Bind ViewModel.HasTextSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.TextSpecs, Mode=OneWay}">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Spacing="2" Margin="0,0,0,6">
+                                                <TextBlock Text="{Binding SpecName}" FontWeight="SemiBold" FontSize="12"/>
+                                                <TextBox Text="{Binding Value, Mode=OneWay}" 
+                                                         IsReadOnly="True"
+                                                         Width="180"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </StackPanel>
+                            
+                            <!-- Column 2: Number Specs -->
+                            <StackPanel Grid.Column="1" Spacing="4"
+                                        Visibility="{x:Bind ViewModel.HasNumberSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.NumberSpecs, Mode=OneWay}">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Spacing="2" Margin="0,0,0,6">
+                                                <TextBlock Text="{Binding SpecName}" FontWeight="SemiBold" FontSize="12"/>
+                                                <TextBox Text="{Binding Value, Mode=OneWay}" 
+                                                         IsReadOnly="True"
+                                                         Width="180"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </StackPanel>
+                            
+                            <!-- Column 3: Boolean Specs -->
+                            <StackPanel Grid.Column="2" Spacing="4"
+                                        Visibility="{x:Bind ViewModel.HasBooleanSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.BooleanSpecs, Mode=OneWay}">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding SpecName}" 
+                                                      IsChecked="{Binding Value, Mode=OneWay}" 
+                                                      IsEnabled="False"
+                                                      Margin="0,0,0,6"/>
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Placeholder when no specs -->
+                        <TextBlock Text="No specifications configured for this type."
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Visibility="{x:Bind ViewModel.SpecInputs.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter='Inverse'}"
+                                   Style="{StaticResource BodyTextBlockStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Info Panel Card -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                    <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE946;" FontSize="16" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Note" FontWeight="SemiBold"/>
                         </StackPanel>
-                        <TextBlock TextWrapping="Wrap"
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                             <Run Text="• PO Number: Use if receiving against a purchase order"/>
                             <LineBreak/>
                             <Run Text="• Location: Physical location of the dunnage"/>
                             <LineBreak/>
-                            <Run Text="• Specifications: Additional details for identification"/>
+                            <Run Text="• Specifications: Pre-filled from the selected part"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
             </StackPanel>
         </ScrollViewer>
-
-        <!-- Navigation Buttons -->
-        <Grid Grid.Row="3" Margin="0,24,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Button Grid.Column="0"
-                    Command="{x:Bind ViewModel.GoBackCommand}"
-                    HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE72B;" FontSize="16"/>
-                    <TextBlock Text="Back"/>
-                </StackPanel>
-            </Button>
-
-            <Button Grid.Column="1"
-                    Command="{x:Bind ViewModel.GoNextCommand}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="Review"/>
-                    <FontIcon Glyph="&#xE72A;" FontSize="16"/>
-                </StackPanel>
-            </Button>
-        </Grid>
     </Grid>
 </UserControl>

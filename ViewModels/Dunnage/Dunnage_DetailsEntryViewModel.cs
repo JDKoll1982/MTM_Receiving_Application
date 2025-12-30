@@ -60,6 +60,24 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
     private ObservableCollection<Model_SpecInput> _specInputs = new();
 
     [ObservableProperty]
+    private ObservableCollection<Model_SpecInput> _textSpecs = new();
+
+    [ObservableProperty]
+    private ObservableCollection<Model_SpecInput> _numberSpecs = new();
+
+    [ObservableProperty]
+    private ObservableCollection<Model_SpecInput> _booleanSpecs = new();
+
+    [ObservableProperty]
+    private bool _hasTextSpecs = false;
+
+    [ObservableProperty]
+    private bool _hasNumberSpecs = false;
+
+    [ObservableProperty]
+    private bool _hasBooleanSpecs = false;
+
+    [ObservableProperty]
     private bool _isInventoryNotificationVisible = false;
 
     [ObservableProperty]
@@ -82,36 +100,126 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
             IsBusy = true;
             StatusMessage = "Loading spec inputs...";
 
-            var selectedType = _workflowService.CurrentSession.SelectedType;
-            if (selectedType == null)
+            var selectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
+            if (selectedTypeId <= 0)
             {
                 _logger.LogError("No type selected in workflow session", null, "DetailsEntry");
+                SpecInputs.Clear();
                 return;
             }
 
-            // Deserialize SpecsJson
-            var specs = DeserializeSpecsJson(selectedType.SpecsJson);
+            _logger.LogInfo($"Loading specs for type ID: {selectedTypeId}", "DetailsEntry");
 
-            // Create spec inputs
+            // Fetch specs from dunnage_specs table (NOT from SpecsJson field which doesn't exist)
+            var specsResult = await _dunnageService.GetSpecsForTypeAsync(selectedTypeId);
+            if (!specsResult.IsSuccess || specsResult.Data == null)
+            {
+                _logger.LogWarning($"No specs found for type {selectedTypeId}: {specsResult.ErrorMessage}", "DetailsEntry");
+                SpecInputs.Clear();
+                return;
+            }
+
+            var specs = specsResult.Data;
+            _logger.LogInfo($"Loaded {specs.Count} specs from database", "DetailsEntry");
+
+            // Get the selected part's spec values for defaults
+            var selectedPart = _workflowService.CurrentSession.SelectedPart;
+            Dictionary<string, object>? partSpecValues = null;
+            if (selectedPart != null && !string.IsNullOrWhiteSpace(selectedPart.SpecValues))
+            {
+                try
+                {
+                    partSpecValues = JsonSerializer.Deserialize<Dictionary<string, object>>(selectedPart.SpecValues);
+                    _logger.LogInfo($"Loaded spec values from part: {selectedPart.SpecValues}", "DetailsEntry");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to parse part spec values: {ex.Message}", ex, "DetailsEntry");
+                }
+            }
+
+            // Create spec inputs from database specs
             SpecInputs.Clear();
+            TextSpecs.Clear();
+            NumberSpecs.Clear();
+            BooleanSpecs.Clear();
+
             foreach (var spec in specs)
             {
+                // Parse spec_value JSON to get type, unit, required
+                var specValueDict = ParseSpecValue(spec.SpecValue);
+
+                // Get default value from part if available
+                string? defaultValue = null;
+                if (partSpecValues != null && partSpecValues.ContainsKey(spec.SpecKey))
+                {
+                    defaultValue = partSpecValues[spec.SpecKey]?.ToString();
+                }
+
+                var specType = specValueDict.ContainsKey("type") ? specValueDict["type"]?.ToString()?.ToLowerInvariant() ?? "text" : "text";
+
+                // Convert default value to appropriate type
+                object? typedValue = defaultValue;
+                if (!string.IsNullOrWhiteSpace(defaultValue))
+                {
+                    try
+                    {
+                        if (specType == "number")
+                        {
+                            typedValue = double.Parse(defaultValue);
+                        }
+                        else if (specType == "boolean")
+                        {
+                            typedValue = bool.Parse(defaultValue);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning($"Failed to convert value '{defaultValue}' to type '{specType}': {ex.Message}", "DetailsEntry");
+                        typedValue = defaultValue; // Keep as string if conversion fails
+                    }
+                }
+
                 var input = new Model_SpecInput
                 {
-                    SpecName = spec.Key,
-                    SpecType = DetermineSpecType(spec.Value),
-                    Unit = ExtractUnit(spec.Value),
-                    IsRequired = IsSpecRequired(spec.Value),
-                    Value = null
+                    SpecName = spec.SpecKey,
+                    SpecType = specType,
+                    Unit = specValueDict.ContainsKey("unit") ? specValueDict["unit"]?.ToString() : null,
+                    IsRequired = specValueDict.ContainsKey("required") && bool.Parse(specValueDict["required"]?.ToString() ?? "false"),
+                    Value = typedValue
                 };
 
                 SpecInputs.Add(input);
+
+                var typeFromDb = specValueDict.ContainsKey("type") ? specValueDict["type"]?.ToString() ?? "null" : "not found";
+                _logger.LogInfo($"Processing spec: {spec.SpecKey}, Type from DB: {typeFromDb}, Normalized: {specType}", "DetailsEntry");
+
+                // Add to type-specific collection
+                if (specType == "boolean")
+                {
+                    BooleanSpecs.Add(input);
+                    _logger.LogInfo($"Added {spec.SpecKey} to BooleanSpecs", "DetailsEntry");
+                }
+                else if (specType == "number")
+                {
+                    NumberSpecs.Add(input);
+                    _logger.LogInfo($"Added {spec.SpecKey} to NumberSpecs", "DetailsEntry");
+                }
+                else
+                {
+                    TextSpecs.Add(input);
+                    _logger.LogInfo($"Added {spec.SpecKey} to TextSpecs", "DetailsEntry");
+                }
             }
 
-            _logger.LogInfo($"Loaded {SpecInputs.Count} spec inputs", "DetailsEntry");
+            // Update visibility flags
+            HasTextSpecs = TextSpecs.Count > 0;
+            HasNumberSpecs = NumberSpecs.Count > 0;
+            HasBooleanSpecs = BooleanSpecs.Count > 0;
+
+            _logger.LogInfo($"Created {SpecInputs.Count} spec input controls (Text: {TextSpecs.Count}, Number: {NumberSpecs.Count}, Boolean: {BooleanSpecs.Count})", "DetailsEntry");
 
             // Check if part is inventoried
-            var selectedPart = _workflowService.CurrentSession.SelectedPart;
             if (selectedPart != null)
             {
                 var isInventoried = await _dunnageService.IsPartInventoriedAsync(selectedPart.PartId);
@@ -141,85 +249,23 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
 
     #region Spec Parsing Helpers
 
-    private Dictionary<string, object> DeserializeSpecsJson(string specsJson)
+    private Dictionary<string, object> ParseSpecValue(string specValue)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(specsJson))
+            if (string.IsNullOrWhiteSpace(specValue))
             {
                 return new Dictionary<string, object>();
             }
 
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(specsJson)
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(specValue)
                 ?? new Dictionary<string, object>();
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Failed to deserialize specs JSON: {ex.Message}", ex, "DetailsEntry");
+            _logger.LogError($"Failed to parse spec value JSON: {ex.Message}", ex, "DetailsEntry");
             return new Dictionary<string, object>();
         }
-    }
-
-    private string DetermineSpecType(object specValue)
-    {
-        if (specValue == null)
-        {
-            return "text";
-        }
-
-        var specStr = specValue.ToString()?.ToLowerInvariant() ?? string.Empty;
-
-        // Check for common patterns
-        if (specStr.Contains("number") || specStr.Contains("numeric") || specStr.Contains("mm") || specStr.Contains("inches"))
-        {
-            return "number";
-        }
-
-        if (specStr.Contains("bool") || specStr.Contains("yes/no") || specStr.Contains("true/false"))
-        {
-            return "boolean";
-        }
-
-        return "text";
-    }
-
-    private string? ExtractUnit(object specValue)
-    {
-        if (specValue == null)
-        {
-            return null;
-        }
-
-        var specStr = specValue.ToString() ?? string.Empty;
-
-        // Extract units like mm, inches, etc.
-        if (specStr.Contains("mm", StringComparison.OrdinalIgnoreCase))
-        {
-            return "mm";
-        }
-
-        if (specStr.Contains("inch", StringComparison.OrdinalIgnoreCase))
-        {
-            return "inches";
-        }
-
-        if (specStr.Contains("cm", StringComparison.OrdinalIgnoreCase))
-        {
-            return "cm";
-        }
-
-        return null;
-    }
-
-    private bool IsSpecRequired(object specValue)
-    {
-        if (specValue == null)
-        {
-            return false;
-        }
-
-        var specStr = specValue.ToString()?.ToLowerInvariant() ?? string.Empty;
-        return specStr.Contains("required");
     }
 
     #endregion

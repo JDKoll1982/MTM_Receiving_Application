@@ -1,6 +1,8 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using MTM_Receiving_Application.Models.Dunnage;
 
@@ -93,6 +95,7 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
                 if (def.MaxValue.HasValue)
                     numberBox.Maximum = def.MaxValue.Value;
 
+                numberBox.ValueChanged += (s, e) => UpdatePartId();
                 inputControl = numberBox;
             }
             else if (string.Equals(def.DataType, "Boolean", System.StringComparison.OrdinalIgnoreCase))
@@ -101,6 +104,8 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
                 {
                     Content = "Yes"
                 };
+                checkBox.Checked += (s, e) => UpdatePartId();
+                checkBox.Unchecked += (s, e) => UpdatePartId();
                 inputControl = checkBox;
             }
             else // Text
@@ -110,6 +115,7 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
                     PlaceholderText = $"Enter {spec.SpecKey.ToLower()}",
                     MaxLength = 100
                 };
+                textBox.TextChanged += (s, e) => UpdatePartId();
                 inputControl = textBox;
             }
 
@@ -126,11 +132,83 @@ public sealed partial class Dunnage_QuickAddPartDialog : ContentDialog
 
     private void UpdatePartId()
     {
-        var width = double.IsNaN(WidthNumberBox.Value) ? 0 : WidthNumberBox.Value;
-        var height = double.IsNaN(HeightNumberBox.Value) ? 0 : HeightNumberBox.Value;
-        var depth = double.IsNaN(DepthNumberBox.Value) ? 0 : DepthNumberBox.Value;
+        var parts = new List<string>();
 
-        PartIdTextBox.Text = $"{TypeName} ({width}x{height}x{depth})";
+        // 1. Type name
+        parts.Add(TypeName);
+
+        // 2. Text specs (if any)
+        var textSpecs = new List<string>();
+        foreach (var kvp in _specInputs)
+        {
+            if (kvp.Value is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text))
+            {
+                textSpecs.Add(tb.Text.Trim());
+            }
+        }
+
+        // 3. Number specs in parentheses with x separator
+        var numbers = new List<double>();
+        if (!double.IsNaN(WidthNumberBox.Value) && WidthNumberBox.Value > 0)
+            numbers.Add(WidthNumberBox.Value);
+        if (!double.IsNaN(HeightNumberBox.Value) && HeightNumberBox.Value > 0)
+            numbers.Add(HeightNumberBox.Value);
+        if (!double.IsNaN(DepthNumberBox.Value) && DepthNumberBox.Value > 0)
+            numbers.Add(DepthNumberBox.Value);
+
+        // Add other number specs from dynamic inputs
+        foreach (var kvp in _specInputs)
+        {
+            if (kvp.Value is NumberBox nb && !double.IsNaN(nb.Value) && nb.Value > 0)
+            {
+                numbers.Add(nb.Value);
+            }
+        }
+
+        if (numbers.Count > 0)
+        {
+            // Format numbers: remove decimals if whole numbers
+            var formattedNumbers = numbers.Select(n =>
+                n == Math.Floor(n) ? ((int)n).ToString() : n.ToString("0.##")
+            );
+            parts.Add($"({string.Join("x", formattedNumbers)})");
+        }
+
+        // 4. Boolean specs (only if true, abbreviated if >2 words)
+        var boolSpecs = new List<string>();
+        foreach (var kvp in _specInputs)
+        {
+            if (kvp.Value is CheckBox cb && cb.IsChecked == true)
+            {
+                var specName = kvp.Key;
+                var words = specName.Split(new[] { ' ', '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+                if (words.Length > 2)
+                {
+                    // Abbreviate: use first letter of each word
+                    boolSpecs.Add(string.Join("", words.Select(w => char.ToUpper(w[0]))));
+                }
+                else
+                {
+                    // Use full name
+                    boolSpecs.Add(specName);
+                }
+            }
+        }
+
+        if (boolSpecs.Count > 0)
+        {
+            parts.Add(string.Join(", ", boolSpecs));
+        }
+
+        // Add text specs if any
+        if (textSpecs.Count > 0)
+        {
+            // Insert text specs after type name
+            parts.Insert(1, string.Join(", ", textSpecs));
+        }
+
+        PartIdTextBox.Text = string.Join(" - ", parts);
     }
 
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

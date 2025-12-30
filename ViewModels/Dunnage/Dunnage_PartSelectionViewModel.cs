@@ -193,10 +193,17 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     {
         if (newValue != null)
         {
+            _logger.LogInfo($"Part selected via ComboBox: {newValue.PartId}", "PartSelection");
+
+            // Update workflow session immediately when part is selected
+            _workflowService.CurrentSession.SelectedPart = newValue;
+            _logger.LogInfo($"Updated workflow session with selected part: {newValue.PartId}", "PartSelection");
+
             _ = CheckInventoryStatusAsync(newValue);
         }
         else
         {
+            _workflowService.CurrentSession.SelectedPart = null;
             IsInventoryNotificationVisible = false;
         }
 

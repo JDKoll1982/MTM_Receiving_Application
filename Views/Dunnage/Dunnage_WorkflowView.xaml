@@ -59,27 +59,52 @@
         <!-- Navigation Buttons -->
         <Grid Grid.Row="2" Margin="24">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
             <!-- Left-aligned buttons -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12">
+                <!-- Mode Selection Button (visible in wizard steps) -->
                 <Button Content="Mode Selection" 
                         Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                         ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Background="Transparent" 
-                        BorderBrush="{ThemeResource SystemAccentColor}"/>
+                        Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Content="Mode Selection" 
+                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
+                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
+                        Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </StackPanel>
             
             <!-- Center help button -->
-            <Button Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Canvas.ZIndex="1000"
+            <Button Grid.Column="1"
                     HorizontalAlignment="Center"
                     Style="{StaticResource AccentButtonStyle}"
                     Padding="12,8"
-                    ToolTipService.ToolTip="Click for help about dunnage labels">
+                    x:Name="HelpButton"
+                    ToolTipService.ToolTip="Click for help about the current step"
+                    Loaded="HelpButton_Loaded">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE946;" 
                               FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
@@ -87,39 +112,78 @@
                     <TextBlock Text="Help"/>
                 </StackPanel>
                 <Button.Flyout>
-                    <Flyout>
-                        <StackPanel Spacing="20" Padding="4" MaxWidth="450">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Dunnage Labels" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                <Border Height="2" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="1" HorizontalAlignment="Left" Width="60"/>
-                                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Create labels for dunnage material (pallets, crates, blocking).</TextBlock>
-                            </StackPanel>
-                            
-                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="What is Dunnage?" FontWeight="SemiBold" FontSize="14"/>
-                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">Dunnage refers to packaging materials used to protect cargo during shipping: wooden pallets, crates, blocking materials, and protective wrapping.</TextBlock>
-                                </StackPanel>
-                            </Border>
-                            
-                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="Workflow Modes:" FontWeight="SemiBold" FontSize="14"/>
-                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Guided Wizard - Step-by-step process for single items</TextBlock>
-                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Manual Entry - Bulk data entry for multiple loads</TextBlock>
-                                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}">• Edit Mode - Review and edit historical data</TextBlock>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
+                    <Flyout x:Name="HelpFlyout">
+                        <ContentControl x:Name="HelpContentControl"/>
                     </Flyout>
                 </Button.Flyout>
             </Button>
             
-            <!-- Right-aligned navigation buttons (placeholder for future wizard steps) -->
-            <!--<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
-                <Button Content="Back" Command="{x:Bind ViewModel.PreviousStepCommand}"/>
-                <Button Content="Next" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
-            </StackPanel>-->
+            <!-- Right-aligned navigation buttons (wizard flow) -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                <!-- Back Button (not visible on first wizard step) -->
+                <Button Content="Back"
+                        Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnBackClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Left" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button Content="Back"
+                        Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnBackClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Left" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button Content="Back"
+                        Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnBackClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Left" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button Content="Back"
+                        Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnBackClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Left" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                
+                <!-- Next Button (wizard flow) -->
+                <Button Content="Next"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnNextClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Right" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button Content="Next"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnNextClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Right" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button Content="Next"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnNextClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Right" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button Content="Next"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="OnNextClick">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Right" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

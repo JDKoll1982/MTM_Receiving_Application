@@ -12,6 +12,21 @@ This task list implements a complete Dunnage Receiving System with 20 user stori
 
 Tasks are organized by user story to enable independent implementation and testing. Each story delivers standalone value and can be tested in isolation.
 
+## Recent UI Refinements (2025-12-29)
+
+The following wizard workflow UI improvements were completed (from spec 008-dunnage-ui):
+
+### ✅ Completed UI Enhancements
+- **Help System**: Converted from ContentDialog to Flyout with dynamic step-based content and event subscription to workflow.StepChanged
+- **Specifications Display**: Made all spec inputs read-only in Details Entry view with 3-column auto-sizing grid (text, number, boolean types)
+- **Card-Based Layouts**: Added card containers to all form sections (PO/Location, Specifications, Info panels) using theme resources
+- **Responsive Sizing**: Reduced padding (24px→16px) and spacing (24/16/12/8→12/8/6/4/2) to prevent scrollbars; all elements auto-resize with window
+- **Spec Value Pre-fill**: Implemented automatic population of spec inputs from part's spec_values JSON field with type conversion (string→double, string→bool)
+- **Part Naming Convention**: Updated QuickAddPartDialog to auto-generate part IDs as `{Type} - {Text} - ({Numbers}) - {Bool abbreviations}` with real-time updates
+- **Theme Consistency**: Applied WinUI 3 theme resources throughout (CardBackgroundFillColorDefaultBrush, AccentFillColorDefaultBrush, InfoBar Severity="Informational")
+
+Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dunnage_DetailsEntryViewModel.cs, Dunnage_QuantityEntryView.xaml, Dunnage_QuickAddPartDialog.xaml.cs
+
 ## Format: `[ID] [P?] [Story?] Description with file path`
 
 - **[P]**: Can run in parallel (different files, no dependencies on incomplete tasks)

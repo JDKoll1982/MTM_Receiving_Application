@@ -64,34 +64,40 @@
 
                     <!-- Width -->
                     <StackPanel Grid.Column="0" Spacing="4">
-                        <TextBlock Text="Width (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <NumberBox x:Name="WidthNumberBox"
+                        <TextBlock Text="Width (in)" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                        <NumberBox x:Name="WidthNumberBox" 
                                    PlaceholderText="0"
+                                   SpinButtonPlacementMode="Hidden"
                                    Minimum="0"
                                    Maximum="999"
-                                   SpinButtonPlacementMode="Compact"
+                                   SmallChange="1"
+                                   LargeChange="10"
                                    ValueChanged="OnDimensionChanged"/>
                     </StackPanel>
 
                     <!-- Height -->
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Height (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <NumberBox x:Name="HeightNumberBox"
+                        <TextBlock Text="Height (in)" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                        <NumberBox x:Name="HeightNumberBox" 
                                    PlaceholderText="0"
+                                   SpinButtonPlacementMode="Hidden"
                                    Minimum="0"
                                    Maximum="999"
-                                   SpinButtonPlacementMode="Compact"
+                                   SmallChange="1"
+                                   LargeChange="10"
                                    ValueChanged="OnDimensionChanged"/>
                     </StackPanel>
 
                     <!-- Depth -->
                     <StackPanel Grid.Column="2" Spacing="4">
-                        <TextBlock Text="Depth (in)" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <NumberBox x:Name="DepthNumberBox"
+                        <TextBlock Text="Depth (in)" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                        <NumberBox x:Name="DepthNumberBox" 
                                    PlaceholderText="0"
+                                   SpinButtonPlacementMode="Hidden"
                                    Minimum="0"
                                    Maximum="999"
-                                   SpinButtonPlacementMode="Compact"
+                                   SmallChange="1"
+                                   LargeChange="10"
                                    ValueChanged="OnDimensionChanged"/>
                     </StackPanel>
                 </Grid>

@@ -71,7 +71,14 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
             SelectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
             SelectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
 
-            _logger.LogInfo($"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}", "QuantityEntry");
+            // Initialize workflow session quantity with default value if not set
+            if (_workflowService.CurrentSession.Quantity <= 0)
+            {
+                _workflowService.CurrentSession.Quantity = Quantity;
+                _logger.LogInfo($"Initialized workflow session quantity to {Quantity}", "QuantityEntry");
+            }
+
+            _logger.LogInfo($"Loaded context: Type={SelectedTypeName}, Part={SelectedPartName}, Quantity={_workflowService.CurrentSession.Quantity}", "QuantityEntry");
         }
         catch (Exception ex)
         {
@@ -85,6 +92,10 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
 
     partial void OnQuantityChanged(int value)
     {
+        // Update workflow session immediately
+        _workflowService.CurrentSession.Quantity = value;
+        _logger.LogInfo($"Quantity changed to {value}, updated workflow session", "QuantityEntry");
+
         ValidateQuantity();
         GoNextCommand.NotifyCanExecuteChanged();
     }

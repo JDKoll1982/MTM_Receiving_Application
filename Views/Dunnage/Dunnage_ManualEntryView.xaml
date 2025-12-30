@@ -24,12 +24,8 @@
 
         <!-- Toolbar -->
         <Grid Grid.Row="0" Margin="0,0,0,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <StackPanel Orientation="Horizontal" Spacing="12" Padding="0,0,12,0">
                 <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE710;"/>
@@ -71,21 +67,8 @@
                 </Button>
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
-                
-                <Button Command="{x:Bind ViewModel.SaveToHistoryCommand}" ToolTipService.ToolTip="Save as 'In Progress' for later editing">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE74C;"/>
-                        <TextBlock Text="Save to History"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-            
-            <Button Grid.Column="1" 
-                    Content="Mode Selection" 
-                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                    ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                    Background="Transparent" 
-                    BorderBrush="{ThemeResource SystemAccentColor}"/>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <!-- Data Grid -->
