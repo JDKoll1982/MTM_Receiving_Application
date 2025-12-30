@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CsvHelper;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
 using MTM_Receiving_Application.Models.Enums;
@@ -81,6 +82,177 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     #endregion
 
     #region Load Data Commands
+
+    /// <summary>
+    /// T151: Load data from current workflow session (unsaved loads in memory)
+    /// </summary>
+    [RelayCommand]
+    private async Task LoadFromCurrentMemoryAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Loading session data...";
+
+            if (_workflowService.CurrentSession == null || _workflowService.CurrentSession.Loads.Count == 0)
+            {
+                // T156: Info message for empty session
+                await _errorHandler.HandleErrorAsync(
+                    "No unsaved loads in session",
+                    Enum_ErrorSeverity.Info,
+                    null,
+                    true
+                );
+                _allLoads = new List<Model_DunnageLoad>();
+                StatusMessage = "No data in session";
+                _logger.LogInfo("No unsaved loads found in current session", "EditMode");
+                return;
+            }
+
+            _allLoads = _workflowService.CurrentSession.Loads.ToList();
+            TotalRecords = _allLoads.Count;
+
+            // Set pagination source
+            _paginationService.SetSource(_allLoads);
+            TotalPages = _paginationService.TotalPages;
+            CurrentPage = _paginationService.CurrentPage;
+
+            // Load first page
+            LoadPage(1);
+
+            CanNavigate = TotalPages > 1;
+            StatusMessage = $"Loaded {TotalRecords} loads from session";
+
+            _logger.LogInfo($"Loaded {TotalRecords} loads from current session", "EditMode");
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error loading session data",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// T152: Load data from most recent CSV export (Current Labels)
+    /// T153: CSV parsing error handling with line number reporting
+    /// T155: Error handling for missing CSV file
+    /// </summary>
+    [RelayCommand]
+    private async Task LoadFromCurrentLabelsAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Loading label data...";
+
+            var username = Environment.UserName;
+            var localPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "MTM_Receiving_Application",
+                "DunnageData.csv"
+            );
+
+            // T155: Check if file exists
+            if (!System.IO.File.Exists(localPath))
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No label file found for current user",
+                    Enum_ErrorSeverity.Warning,
+                    null,
+                    true
+                );
+                _allLoads = new List<Model_DunnageLoad>();
+                StatusMessage = "No label file found";
+                _logger.LogWarning($"CSV file not found at {localPath}", "EditMode");
+                return;
+            }
+
+            // T152: Parse CSV using CsvHelper
+            using var reader = new System.IO.StreamReader(localPath);
+            using var csv = new CsvHelper.CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
+            
+            var loadsList = new List<Model_DunnageLoad>();
+            int lineNumber = 1; // Start at 1 (header is line 0)
+
+            try
+            {
+                csv.Read();
+                csv.ReadHeader();
+                
+                while (csv.Read())
+                {
+                    lineNumber++;
+                    try
+                    {
+                        var load = new Model_DunnageLoad
+                        {
+                            TypeName = csv.GetField<string>("Type") ?? string.Empty,
+                            PartId = csv.GetField<string>("PartID") ?? string.Empty,
+                            Quantity = csv.GetField<decimal>("Quantity"),
+                            PONumber = csv.GetField<string>("PO") ?? string.Empty,
+                            Location = csv.GetField<string>("Location") ?? string.Empty,
+                            TransactionDate = DateTime.TryParse(csv.GetField<string>("Date"), out var date) ? date : DateTime.Now
+                        };
+
+                        loadsList.Add(load);
+                    }
+                    catch (Exception rowEx)
+                    {
+                        // T153: Line-specific error reporting
+                        _logger.LogWarning($"Failed to parse line {lineNumber}: {rowEx.Message}", "EditMode");
+                    }
+                }
+            }
+            catch (Exception parseEx)
+            {
+                // T153: CSV parsing error with line number
+                await _errorHandler.HandleErrorAsync(
+                    $"CSV parsing error at line {lineNumber}: {parseEx.Message}",
+                    Enum_ErrorSeverity.Warning,
+                    parseEx,
+                    true
+                );
+                return;
+            }
+
+            _allLoads = loadsList;
+            TotalRecords = _allLoads.Count;
+
+            // Set pagination source
+            _paginationService.SetSource(_allLoads);
+            TotalPages = _paginationService.TotalPages;
+            CurrentPage = _paginationService.CurrentPage;
+
+            // Load first page
+            LoadPage(1);
+
+            CanNavigate = TotalPages > 1;
+            StatusMessage = $"Loaded {TotalRecords} loads from labels";
+
+            _logger.LogInfo($"Loaded {TotalRecords} loads from CSV file", "EditMode");
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error loading label data",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 
     [RelayCommand]
     private async Task LoadFromHistoryAsync()

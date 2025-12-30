@@ -23,14 +23,28 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Toolbar -->
+        <!-- Toolbar - T154: 3 data source buttons -->
         <Grid Grid.Row="0" Margin="0,0,0,12">
             <!-- Main Toolbar Area -->
             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <!-- Load Data Section -->
+                <!-- Load Data Section - T154 -->
                 <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
                 
-                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}">
+                <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}" ToolTipService.ToolTip="Load unsaved loads from current session">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE81D;"/>
+                        <TextBlock Text="Current Memory"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="Load from most recent CSV export">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE8E5;"/>
+                        <TextBlock Text="Current Labels"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="Load historical loads from database">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74C;"/>
                         <TextBlock Text="History"/>

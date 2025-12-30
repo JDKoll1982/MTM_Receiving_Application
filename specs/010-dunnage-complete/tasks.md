@@ -381,12 +381,12 @@ Files modified: Dunnage_WorkflowView.xaml.cs, Dunnage_DetailsEntryView.xaml, Dun
 
 ### Implementation for User Story 13
 
-- [ ] T151 [US13] Implement LoadFromCurrentMemoryCommand in Dunnage_EditModeViewModel.cs (retrieves Service_DunnageWorkflow.CurrentSession.Loads)
-- [ ] T152 [P] [US13] Implement LoadFromCurrentLabelsCommand in Dunnage_EditModeViewModel.cs (parses CSV from local path using CsvHelper)
-- [ ] T153 [P] [US13] Add CSV parsing error handling with line number reporting in Dunnage_EditModeViewModel.cs
-- [ ] T154 [P] [US13] Add "Load Data From" toolbar with 3 buttons (Current Memory, Current Labels, History) in Dunnage_EditModeView.xaml
-- [ ] T155 [US13] Implement error handling for missing CSV file ("No label file found for current user") in Dunnage_EditModeViewModel.cs
-- [ ] T156 [US13] Implement info message for empty session ("No unsaved loads in session") in Dunnage_EditModeViewModel.cs
+- [X] T151 [US13] Implement LoadFromCurrentMemoryCommand in Dunnage_EditModeViewModel.cs (retrieves Service_DunnageWorkflow.CurrentSession.Loads)
+- [X] T152 [P] [US13] Implement LoadFromCurrentLabelsCommand in Dunnage_EditModeViewModel.cs (parses CSV from local path using CsvHelper)
+- [X] T153 [P] [US13] Add CSV parsing error handling with line number reporting in Dunnage_EditModeViewModel.cs
+- [X] T154 [P] [US13] Add "Load Data From" toolbar with 3 buttons (Current Memory, Current Labels, History) in Dunnage_EditModeView.xaml
+- [X] T155 [US13] Implement error handling for missing CSV file ("No label file found for current user") in Dunnage_EditModeViewModel.cs
+- [X] T156 [US13] Implement info message for empty session ("No unsaved loads in session") in Dunnage_EditModeViewModel.cs
 
 **Checkpoint**: User Story 13 complete - edit mode supports 3 data sources
 
