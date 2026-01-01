@@ -80,11 +80,14 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             if (loads == null || loads.Count == 0)
             {
+                await _logger.LogWarningAsync("WriteToCsvAsync called with no loads to export");
                 return new Model_CSVWriteResult { ErrorMessage = "No loads to export." };
             }
 
             try
             {
+                await _logger.LogInfoAsync($"Starting CSV export for {loads.Count} loads of type '{typeName}'");
+
                 // FR-046: Get dynamic spec keys
                 var specKeys = await _dunnageService.GetAllSpecKeysAsync();
                 specKeys.Sort(); // FR-042: Alphabetically sorted
@@ -123,6 +126,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                 string filename = $"{typeName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
                 var localPath = GetLocalCsvPath(filename);
                 await WriteCsvFileAsync(localPath, records);
+                await _logger.LogInfoAsync($"Successfully wrote {records.Count} records to local CSV: {localPath}");
 
                 // Write to network path
                 string networkPath = "";
@@ -138,10 +142,11 @@ namespace MTM_Receiving_Application.Services.Receiving
                     }
                     await WriteCsvFileAsync(networkPath, records);
                     networkSuccess = true;
+                    await _logger.LogInfoAsync($"Successfully wrote {records.Count} records to network CSV: {networkPath}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Failed to write to network path", ex, "Service_DunnageCSVWriter.WriteToCsvAsync");
+                    await _logger.LogErrorAsync($"Failed to write to network path '{networkPath}': {ex.Message}");
                     // FR-044: Network failure graceful handling
                 }
 
@@ -157,6 +162,7 @@ namespace MTM_Receiving_Application.Services.Receiving
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"CSV export failed for type '{typeName}': {ex.Message}");
                 await _errorHandler.HandleErrorAsync($"Export failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
                 return new Model_CSVWriteResult { ErrorMessage = $"Export failed: {ex.Message}" };
             }
@@ -173,11 +179,14 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             if (loads == null || loads.Count == 0)
             {
+                await _logger.LogWarningAsync("WriteDynamicCsvAsync called with no loads to export");
                 return new Model_CSVWriteResult { ErrorMessage = "No loads to export." };
             }
 
             try
             {
+                await _logger.LogInfoAsync($"Starting dynamic CSV export for {loads.Count} loads");
+
                 // Use provided spec keys or fetch all
                 var specKeys = allSpecKeys ?? await _dunnageService.GetAllSpecKeysAsync();
                 specKeys.Sort(); // Alphabetically sorted
@@ -221,6 +230,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                 // Write to local path
                 var localPath = GetLocalCsvPath(csvFilename);
                 await WriteCsvFileAsync(localPath, records);
+                await _logger.LogInfoAsync($"Successfully wrote {records.Count} records to local CSV: {localPath}");
 
                 // Write to network path (best-effort)
                 string networkPath = "";
@@ -239,12 +249,17 @@ namespace MTM_Receiving_Application.Services.Receiving
                         }
                         await WriteCsvFileAsync(networkPath, records);
                         networkSuccess = true;
+                        await _logger.LogInfoAsync($"Successfully wrote {records.Count} records to network CSV: {networkPath}");
                     }
                     catch (Exception ex)
                     {
                         networkError = ex.Message;
-                        _logger.LogError("Failed to write to network path", ex, "Service_DunnageCSVWriter.WriteDynamicCsvAsync");
+                        await _logger.LogErrorAsync($"Failed to write to network path '{networkPath}': {ex.Message}");
                     }
+                }
+                else
+                {
+                    await _logger.LogWarningAsync("Network path not available for CSV export");
                 }
 
                 return new Model_CSVWriteResult

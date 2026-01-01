@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.ViewModels.Shared;
@@ -47,6 +48,25 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
     private string _selectedTypeName = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedTypeIconKind))]
+    private string _selectedTypeIcon = "Help";
+
+    /// <summary>
+    /// Gets the MaterialIconKind for the selected type
+    /// </summary>
+    public MaterialIconKind SelectedTypeIconKind
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(SelectedTypeIcon) && Enum.TryParse<MaterialIconKind>(SelectedTypeIcon, true, out var kind))
+            {
+                return kind;
+            }
+            return MaterialIconKind.PackageVariantClosed;
+        }
+    }
+
+    [ObservableProperty]
     private string _selectedPartName = string.Empty;
 
     [ObservableProperty]
@@ -69,6 +89,7 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
         try
         {
             SelectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
+            SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
             SelectedPartName = _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
 
             // Initialize workflow session quantity with default value if not set

@@ -2,6 +2,7 @@
     x:Class="MTM_Receiving_Application.Views.Dunnage.Dunnage_PartSelectionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mi="using:Material.Icons.WinUI3"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
@@ -13,6 +14,7 @@
 
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
+        <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid Padding="24">
@@ -24,10 +26,15 @@
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">
-                <Run Text="Select Part - "/>
-                <Run Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
-            </TextBlock>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Select Part - "/>
+                <mi:MaterialIcon Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}" 
+                                 Width="24" Height="24"
+                                 Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                 VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}" 
+                           Style="{StaticResource TitleTextBlockStyle}"/>
+            </StackPanel>
             <TextBlock Text="Choose a part from the dropdown or add a new one."
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Style="{StaticResource BodyTextBlockStyle}"/>
@@ -98,8 +105,12 @@
                             <TextBlock Grid.Row="1" Grid.Column="0" 
                                        Text="Type:" 
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" 
-                                       Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}" 
+                                                 Width="16" Height="16"
+                                                 Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
+                            </StackPanel>
                         </Grid>
 
                         <!-- Inventory Method (if applicable) -->

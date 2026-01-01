@@ -255,4 +255,9 @@ public class Service_LoggingUtility : IService_LoggingUtility
             System.Diagnostics.Debug.WriteLine($"Original message: {message}");
         }
     }
+
+    public Task LogWarningAsync(string message, string? context = null)
+    {
+        throw new NotImplementedException();
+    }
 }

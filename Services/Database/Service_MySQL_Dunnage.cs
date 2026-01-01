@@ -94,22 +94,27 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
+                await _logger.LogInfoAsync($"Inserting new dunnage type: {type.TypeName} (Icon: {type.Icon}) by user: {CurrentUser}");
                 var result = await _daoDunnageType.InsertAsync(type.TypeName, type.Icon, CurrentUser);
                 if (result.IsSuccess)
                 {
                     type.Id = result.Data;
+                    await _logger.LogInfoAsync($"Successfully inserted dunnage type '{type.TypeName}' with ID: {type.Id}");
                     return Model_Dao_Result_Factory.Success();
                 }
 
                 if (result.ErrorMessage.Contains("Duplicate entry"))
                 {
+                    await _logger.LogWarningAsync($"Failed to insert dunnage type '{type.TypeName}': Duplicate entry");
                     return Model_Dao_Result_Factory.Failure($"The dunnage type name '{type.TypeName}' is already in use.");
                 }
 
+                await _logger.LogErrorAsync($"Failed to insert dunnage type '{type.TypeName}': {result.ErrorMessage}");
                 return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in InsertTypeAsync for type '{type.TypeName}': {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(InsertTypeAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error inserting dunnage type: {ex.Message}");
             }
@@ -119,17 +124,29 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
+                await _logger.LogInfoAsync($"Updating dunnage type ID {type.Id}: {type.TypeName} (Icon: {type.Icon}) by user: {CurrentUser}");
                 var result = await _daoDunnageType.UpdateAsync(type.Id, type.TypeName, type.Icon, CurrentUser);
 
                 if (!result.IsSuccess && result.ErrorMessage.Contains("Duplicate entry"))
                 {
+                    await _logger.LogWarningAsync($"Failed to update dunnage type ID {type.Id}: Duplicate entry for '{type.TypeName}'");
                     return Model_Dao_Result_Factory.Failure($"The dunnage type name '{type.TypeName}' is already in use.");
+                }
+
+                if (result.IsSuccess)
+                {
+                    await _logger.LogInfoAsync($"Successfully updated dunnage type ID {type.Id}: {type.TypeName}");
+                }
+                else
+                {
+                    await _logger.LogErrorAsync($"Failed to update dunnage type ID {type.Id}: {result.ErrorMessage}");
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in UpdateTypeAsync for type ID {type.Id}: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(UpdateTypeAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error updating dunnage type: {ex.Message}");
             }
@@ -139,10 +156,13 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
+                await _logger.LogInfoAsync($"Attempting to delete dunnage type ID {typeId} by user: {CurrentUser}");
+
                 // Check if any parts are using this type
                 var partsResult = await _daoDunnagePart.GetByTypeAsync(typeId);
                 if (partsResult.IsSuccess && partsResult.Data?.Count > 0)
                 {
+                    await _logger.LogWarningAsync($"Cannot delete dunnage type ID {typeId}: Used by {partsResult.Data.Count} parts");
                     return Model_Dao_Result_Factory.Failure($"Cannot delete type. It is used by {partsResult.Data.Count} parts.");
                 }
 
@@ -150,13 +170,24 @@ namespace MTM_Receiving_Application.Services.Database
                 var specsResult = await _daoDunnageSpec.GetByTypeAsync(typeId);
                 if (specsResult.IsSuccess && specsResult.Data?.Count > 0)
                 {
+                    await _logger.LogWarningAsync($"Cannot delete dunnage type ID {typeId}: Has {specsResult.Data.Count} specifications defined");
                     return Model_Dao_Result_Factory.Failure($"Cannot delete type. It has {specsResult.Data.Count} specifications defined. Please delete them first.");
                 }
 
-                return await _daoDunnageType.DeleteAsync(typeId);
+                var result = await _daoDunnageType.DeleteAsync(typeId);
+                if (result.IsSuccess)
+                {
+                    await _logger.LogInfoAsync($"Successfully deleted dunnage type ID {typeId}");
+                }
+                else
+                {
+                    await _logger.LogErrorAsync($"Failed to delete dunnage type ID {typeId}: {result.ErrorMessage}");
+                }
+                return result;
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in DeleteTypeAsync for type ID {typeId}: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(DeleteTypeAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error deleting dunnage type: {ex.Message}");
             }
@@ -199,16 +230,20 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
+                await _logger.LogInfoAsync($"Inserting spec '{spec.SpecKey}' for type ID {spec.TypeId} by user: {CurrentUser}");
                 var result = await _daoDunnageSpec.InsertAsync(spec.TypeId, spec.SpecKey, spec.SpecValue, CurrentUser);
                 if (result.IsSuccess)
                 {
                     spec.Id = result.Data;
+                    await _logger.LogInfoAsync($"Successfully inserted spec '{spec.SpecKey}' with ID: {spec.Id}");
                     return Model_Dao_Result_Factory.Success();
                 }
+                await _logger.LogErrorAsync($"Failed to insert spec '{spec.SpecKey}' for type ID {spec.TypeId}: {result.ErrorMessage}");
                 return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in InsertSpecAsync for spec '{spec.SpecKey}': {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(InsertSpecAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error inserting spec: {ex.Message}");
             }
@@ -218,10 +253,21 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await _daoDunnageSpec.UpdateAsync(spec.Id, spec.SpecValue, CurrentUser);
+                await _logger.LogInfoAsync($"Updating spec ID {spec.Id}: {spec.SpecKey} = {spec.SpecValue} by user: {CurrentUser}");
+                var result = await _daoDunnageSpec.UpdateAsync(spec.Id, spec.SpecValue, CurrentUser);
+                if (result.IsSuccess)
+                {
+                    await _logger.LogInfoAsync($"Successfully updated spec ID {spec.Id}: {spec.SpecKey}");
+                }
+                else
+                {
+                    await _logger.LogErrorAsync($"Failed to update spec ID {spec.Id}: {result.ErrorMessage}");
+                }
+                return result;
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in UpdateSpecAsync for spec ID {spec.Id}: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(UpdateSpecAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error updating spec: {ex.Message}");
             }
@@ -317,16 +363,20 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
+                await _logger.LogInfoAsync($"Inserting new dunnage part: {part.PartId} (Type ID: {part.TypeId}, Home Location: {part.HomeLocation}) by user: {CurrentUser}");
                 var result = await _daoDunnagePart.InsertAsync(part.PartId, part.TypeId, part.SpecValues, part.HomeLocation, CurrentUser);
                 if (result.IsSuccess)
                 {
                     part.Id = result.Data;
+                    await _logger.LogInfoAsync($"Successfully inserted dunnage part '{part.PartId}' with ID: {part.Id}");
                     return Model_Dao_Result_Factory.Success();
                 }
+                await _logger.LogErrorAsync($"Failed to insert dunnage part '{part.PartId}': {result.ErrorMessage}");
                 return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in InsertPartAsync for part '{part.PartId}': {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(InsertPartAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error inserting part: {ex.Message}");
             }
@@ -336,10 +386,21 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await _daoDunnagePart.UpdateAsync(part.Id, part.SpecValues, part.HomeLocation, CurrentUser);
+                await _logger.LogInfoAsync($"Updating dunnage part ID {part.Id} (Part ID: {part.PartId}, Home Location: {part.HomeLocation}) by user: {CurrentUser}");
+                var result = await _daoDunnagePart.UpdateAsync(part.Id, part.SpecValues, part.HomeLocation, CurrentUser);
+                if (result.IsSuccess)
+                {
+                    await _logger.LogInfoAsync($"Successfully updated dunnage part ID {part.Id}");
+                }
+                else
+                {
+                    await _logger.LogErrorAsync($"Failed to update dunnage part ID {part.Id}: {result.ErrorMessage}");
+                }
+                return result;
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in UpdatePartAsync for part ID {part.Id}: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(UpdatePartAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error updating part: {ex.Message}");
             }
@@ -397,13 +458,26 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 if (loads == null || loads.Count == 0)
                 {
+                    await _logger.LogInfoAsync("SaveLoadsAsync called with no loads to save");
                     return Model_Dao_Result_Factory.Success();
                 }
 
-                return await _daoDunnageLoad.InsertBatchAsync(loads, CurrentUser);
+                await _logger.LogInfoAsync($"Saving batch of {loads.Count} dunnage loads by user: {CurrentUser}");
+                var result = await _daoDunnageLoad.InsertBatchAsync(loads, CurrentUser);
+                if (result.IsSuccess)
+                {
+                    var totalQuantity = loads.Sum(l => l.Quantity);
+                    await _logger.LogInfoAsync($"Successfully saved {loads.Count} dunnage loads (Total Quantity: {totalQuantity})");
+                }
+                else
+                {
+                    await _logger.LogErrorAsync($"Failed to save {loads.Count} dunnage loads: {result.ErrorMessage}");
+                }
+                return result;
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in SaveLoadsAsync for {loads?.Count ?? 0} loads: {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(SaveLoadsAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error saving loads: {ex.Message}");
             }
@@ -508,16 +582,20 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
+                await _logger.LogInfoAsync($"Adding part '{item.PartId}' to inventoried list (Method: {item.InventoryMethod}) by user: {CurrentUser}");
                 var result = await _daoInventoriedDunnage.InsertAsync(item.PartId, item.InventoryMethod ?? string.Empty, item.Notes ?? string.Empty, CurrentUser);
                 if (result.IsSuccess)
                 {
                     item.Id = result.Data;
+                    await _logger.LogInfoAsync($"Successfully added part '{item.PartId}' to inventoried list with ID: {item.Id}");
                     return Model_Dao_Result_Factory.Success();
                 }
+                await _logger.LogErrorAsync($"Failed to add part '{item.PartId}' to inventoried list: {result.ErrorMessage}");
                 return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
             }
             catch (Exception ex)
             {
+                await _logger.LogErrorAsync($"Exception in AddToInventoriedListAsync for part '{item.PartId}': {ex.Message}");
                 HandleException(ex, Enum_ErrorSeverity.Error, nameof(AddToInventoriedListAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error adding to inventory list: {ex.Message}");
             }

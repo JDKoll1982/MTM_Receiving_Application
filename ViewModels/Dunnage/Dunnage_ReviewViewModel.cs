@@ -191,15 +191,19 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
             CanSave = false;
             StatusMessage = "Saving loads...";
 
+            await _logger.LogInfoAsync($"Starting SaveAllAsync: {LoadCount} loads to save");
+
             // Save loads to database
             var saveResult = await _dunnageService.SaveLoadsAsync(SessionLoads.ToList());
 
             if (!saveResult.Success)
             {
+                await _logger.LogErrorAsync($"Failed to save {LoadCount} loads: {saveResult.ErrorMessage}");
                 await _errorHandler.HandleDaoErrorAsync(saveResult, "SaveAllAsync", true);
                 return;
             }
 
+            await _logger.LogInfoAsync($"Successfully saved {LoadCount} loads to database");
             StatusMessage = "Exporting to CSV...";
 
             // Export to CSV
@@ -207,6 +211,7 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
 
             if (!csvResult.LocalSuccess)
             {
+                await _logger.LogWarningAsync($"CSV export failed for {LoadCount} loads: {csvResult.ErrorMessage}");
                 await _errorHandler.HandleErrorAsync(
                     csvResult.ErrorMessage ?? "CSV export failed",
                     Enum_ErrorSeverity.Warning,
@@ -214,12 +219,16 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
                     true);
                 // Continue anyway - database save was successful
             }
+            else
+            {
+                await _logger.LogInfoAsync($"Successfully exported {LoadCount} loads to CSV");
+            }
 
             // Show success message
             SuccessMessage = $"✓ Successfully saved {LoadCount} load(s) to database and exported to CSV";
             IsSuccessMessageVisible = true;
 
-            _logger.LogInfo($"Saved {LoadCount} loads successfully", "Review");
+            await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");
 
             // Wait a moment for user to see success message
             await Task.Delay(2000);
@@ -230,6 +239,7 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
         }
         catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Exception in SaveAllAsync: {ex.Message}");
             await _errorHandler.HandleErrorAsync(
                 "Error saving loads",
                 Enum_ErrorSeverity.Error,

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Material.Icons;
 
 namespace MTM_Receiving_Application.Models.Dunnage;
 
@@ -39,6 +40,25 @@ public partial class Model_DunnageLoad : ObservableObject
 
     [ObservableProperty]
     private string _typeName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TypeIconKind))]
+    private string _typeIcon = "Help";
+
+    /// <summary>
+    /// Gets the MaterialIconKind for the dunnage type
+    /// </summary>
+    public MaterialIconKind TypeIconKind
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(TypeIcon) && Enum.TryParse<MaterialIconKind>(TypeIcon, true, out var kind))
+            {
+                return kind;
+            }
+            return MaterialIconKind.PackageVariantClosed;
+        }
+    }
 
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";

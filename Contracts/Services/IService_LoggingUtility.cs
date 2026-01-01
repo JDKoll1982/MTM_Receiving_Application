@@ -51,11 +51,23 @@ public interface IService_LoggingUtility
     /// <summary>
     /// Logs an informational message asynchronously.
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="context"></param>
     public Task LogInfoAsync(string message, string? context = null);
+
+    /// <summary>
+    /// Logs a warning message asynchronously.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="context"></param>
+    public Task LogWarningAsync(string message, string? context = null);
 
     /// <summary>
     /// Logs an error message asynchronously.
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="exception"></param>
+    /// <param name="context"></param>
     public Task LogErrorAsync(string message, Exception? exception = null, string? context = null);
 
     /// <summary>

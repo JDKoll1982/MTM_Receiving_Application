@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
 using MTM_Receiving_Application.Models.Enums;
@@ -72,6 +73,25 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
     private string _selectedTypeName = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedTypeIconKind))]
+    private string _selectedTypeIcon = "Help";
+
+    /// <summary>
+    /// Gets the MaterialIconKind for the selected type
+    /// </summary>
+    public MaterialIconKind SelectedTypeIconKind
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(SelectedTypeIcon) && Enum.TryParse<MaterialIconKind>(SelectedTypeIcon, true, out var kind))
+            {
+                return kind;
+            }
+            return MaterialIconKind.PackageVariantClosed;
+        }
+    }
+
+    [ObservableProperty]
     private int _selectedTypeId;
 
     /// <summary>
@@ -103,8 +123,9 @@ public partial class Dunnage_PartSelectionViewModel : Shared_BaseViewModel
             // Get selected type from workflow
             SelectedTypeId = _workflowService.CurrentSession.SelectedTypeId;
             SelectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
+            SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
 
-            _logger.LogInfo($"PartSelection: SelectedTypeId={SelectedTypeId}, SelectedTypeName={SelectedTypeName}", "PartSelection");
+            _logger.LogInfo($"PartSelection: SelectedTypeId={SelectedTypeId}, SelectedTypeName={SelectedTypeName}, SelectedTypeIcon={SelectedTypeIcon}", "PartSelection");
 
             await LoadPartsAsync();
 

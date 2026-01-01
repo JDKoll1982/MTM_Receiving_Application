@@ -122,6 +122,8 @@ namespace MTM_Receiving_Application.Services.Receiving
                             Quantity = CurrentSession.Quantity,
                             PoNumber = CurrentSession.PONumber,
                             DunnageType = CurrentSession.SelectedTypeName,
+                            TypeName = CurrentSession.SelectedTypeName,
+                            TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help",
                             Specs = CurrentSession.SelectedPart.SpecValuesDict,
                             ReceivedDate = DateTime.Now,
                             CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown"
@@ -189,6 +191,7 @@ namespace MTM_Receiving_Application.Services.Receiving
                         PoNumber = poNumber,
                         Location = location,
                         TypeName = CurrentSession.SelectedTypeName,
+                        TypeIcon = CurrentSession.SelectedType?.Icon ?? "Help",
                         DunnageType = CurrentSession.SelectedTypeName,
                         TypeId = CurrentSession.SelectedTypeId,
                         Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),

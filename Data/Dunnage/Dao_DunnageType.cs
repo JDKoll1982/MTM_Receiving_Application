@@ -188,7 +188,7 @@ public class Dao_DunnageType
         {
             Id = reader.GetInt32(reader.GetOrdinal("id")),
             TypeName = reader.GetString(reader.GetOrdinal("type_name")),
-            Icon = reader.IsDBNull(reader.GetOrdinal("icon")) ? "\uDB81\uDF20" : reader.GetString(reader.GetOrdinal("icon")),
+            Icon = reader.IsDBNull(reader.GetOrdinal("icon")) ? "Help" : reader.GetString(reader.GetOrdinal("icon")),
             CreatedBy = reader.GetString(reader.GetOrdinal("created_by")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
             ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by")) ? null : reader.GetString(reader.GetOrdinal("modified_by")),
