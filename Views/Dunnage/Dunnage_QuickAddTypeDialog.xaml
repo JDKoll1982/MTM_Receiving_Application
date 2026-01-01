@@ -252,5 +252,5 @@
             </ListView>
             </StackPanel>
         </StackPanel>
-    </ScrollViewer>f
+    </ScrollViewer>
 </ContentDialog>

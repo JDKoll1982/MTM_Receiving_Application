@@ -104,17 +104,82 @@ All ViewModels inherit from `Shared_BaseViewModel` which provides:
 
 Constructor must call `base(errorHandler, logger)`.
 
-## Help Service Requirements
+## Help Service (IMPLEMENTED ✅)
 
-For the new Help Service:
-1. **Should be Singleton** - Single instance manages all help content
-2. **Should inject**: `IService_Window` (for XamlRoot), `IService_LoggingUtility` (for logging)
-3. **Must be registered** in App.xaml.cs ConfigureServices before ViewModels
-4. **Interface location**: `Contracts/Services/IService_Help.cs`
-5. **Implementation location**: `Services/Help/Service_Help.cs` (new folder)
-6. **Should provide**: 
-   - Content retrieval methods
-   - Dialog display method (ShowHelpAsync)
-   - Content management (in-memory or from resource files)
-7. **ViewModels should inject** IService_Help in constructor
-8. **Dialog should be registered** as Transient in Views registration section
+**Registration**: Singleton in App.xaml.cs
+**Interface**: `Contracts/Services/IService_Help.cs`
+**Implementation**: `Services/Help/Service_Help.cs`
+**Dialog View**: `Views/Shared/Shared_HelpDialog.xaml` (Transient)
+**Dialog ViewModel**: `ViewModels/Shared/Shared_HelpDialogViewModel.cs` (Transient)
+
+**Dependencies**:
+- `IService_Window` - For XamlRoot when displaying dialogs
+- `IService_LoggingUtility` - For logging help display events
+- `IService_Dispatcher` - For UI thread dispatching
+
+**Key Methods**:
+- `ShowHelpAsync(string helpKey)` - Display help dialog
+- `ShowContextualHelpAsync(Enum_DunnageWorkflowStep step)` - Workflow-specific help
+- `ShowContextualHelpAsync(Enum_ReceivingWorkflowStep step)` - Workflow-specific help
+- `GetHelpContent(string key)` - Retrieve help content object
+- `GetHelpByCategory(string category)` - Get all help in category
+- `SearchHelp(string searchTerm)` - Full-text search
+- `IsDismissedAsync(string helpKey)` - Check if tip dismissed
+- `SetDismissedAsync(string helpKey, bool isDismissed)` - Mark tip as dismissed
+
+**Legacy Methods** (backward compatibility):
+- `GetTooltip(string elementName)` - Returns tooltip text
+- `GetPlaceholder(string fieldName)` - Returns placeholder text
+- `GetTip(string viewName)` - Returns tip text
+- `GetInfoBarMessage(string messageKey)` - Returns InfoBar message text
+- `GetDunnageWorkflowHelp(Enum_DunnageWorkflowStep step)` - Returns workflow help text
+- `GetReceivingWorkflowHelp(Enum_ReceivingWorkflowStep step)` - Returns workflow help text
+
+**Content Organization**:
+- All content loaded at service initialization into in-memory dictionary cache
+- Hierarchical key structure (e.g., "Dunnage.PartSelection", "Tooltip.Button.Save")
+- Categories: "Dunnage Workflow", "Receiving Workflow", "Admin"
+- 100+ help entries covering tooltips, placeholders, tips, and contextual help
+
+**Usage in ViewModels**:
+```csharp
+public partial class MyViewModel : BaseViewModel
+{
+    private readonly IService_Help _helpService;
+    
+    public MyViewModel(
+        IService_Help helpService,
+        IService_ErrorHandler errorHandler,
+        ILoggingService logger) : base(errorHandler, logger)
+    {
+        _helpService = helpService;
+    }
+    
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowContextualHelpAsync(CurrentStep);
+    }
+    
+    public string GetTooltip(string name) => _helpService.GetTooltip(name);
+    public string GetPlaceholder(string name) => _helpService.GetPlaceholder(name);
+}
+```
+
+**Usage in XAML**:
+```xml
+<!-- Direct binding for static content -->
+<TextBox PlaceholderText="{x:Bind ViewModel.HelpService.GetPlaceholder('Field.PONumber'), Mode=OneTime}"/>
+
+<!-- Command for contextual help -->
+<Button Command="{x:Bind ViewModel.ShowHelpCommand}" Content="Help"/>
+```
+
+**Features**:
+- In-memory content cache (O(1) lookups)
+- Related topics navigation
+- Copy content to clipboard
+- Dismissible tips with session tracking
+- Material Design icons
+- Severity-based styling (Info, Warning, Critical)
+- Full-text search capability

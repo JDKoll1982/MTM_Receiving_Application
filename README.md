@@ -61,6 +61,60 @@ _(Coming soon)_
 - Dunnage/packing material labels
 - Internal routing labels
 
+### Help System
+
+The application includes a centralized, context-sensitive help system:
+
+#### Features
+- **Contextual Help Dialogs**: Step-by-step guidance for each workflow step
+- **Tooltips**: Informative button and field tooltips throughout the UI
+- **Placeholders**: Dynamic placeholder text for input fields
+- **Tips**: Workflow-specific tips and best practices
+- **Related Topics**: Navigation to related help content
+- **Search**: Full-text search across all help content
+
+#### Using the Help System
+
+**In Workflow Views**:
+- Click the **Help** button (❓) in any workflow to see context-specific guidance
+- Hover over buttons and fields for tooltips
+- Look for tip icons (💡) for workflow-specific advice
+
+**Help Content Categories**:
+- **Dunnage Workflow**: Complete guidance for dunnage receiving process
+- **Receiving Workflow**: PO-based receiving with Infor Visual integration
+- **Admin**: Dunnage type and part management instructions
+
+**Keyboard Shortcuts** _(coming soon)_:
+- `F1` - Context-sensitive help for current screen
+
+#### For Developers
+
+The help system is implemented as a centralized service:
+
+```csharp
+// Inject help service in ViewModel
+public MyViewModel(IService_Help helpService, ...)
+{
+    _helpService = helpService;
+}
+
+// Show contextual help dialog
+await _helpService.ShowContextualHelpAsync(currentStep);
+
+// Get tooltip/placeholder text
+string tooltip = _helpService.GetTooltip("Button.Save");
+string placeholder = _helpService.GetPlaceholder("Field.PONumber");
+```
+
+**Architecture**:
+- **Service**: `Services/Help/Service_Help.cs` (Singleton)
+- **Dialog**: `Views/Shared/Shared_HelpDialog.xaml` (Transient)
+- **Model**: `Models/Core/Model_HelpContent.cs`
+- **Content**: 100+ help entries loaded at startup
+
+See [Help System Architecture memory](Serena: `help_system_architecture`) for complete documentation.
+
 ## Technology Stack
 
 - **Framework**: WinUI 3 (.NET 8.0)
