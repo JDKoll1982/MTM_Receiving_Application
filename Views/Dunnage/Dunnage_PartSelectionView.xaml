@@ -35,7 +35,7 @@
                 <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}" 
                            Style="{StaticResource TitleTextBlockStyle}"/>
             </StackPanel>
-            <TextBlock Text="Choose a part from the dropdown or add a new one."
+            <TextBlock Text="{x:Bind ViewModel.GetTip('Dunnage.PartSelection'), Mode=OneWay}"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Style="{StaticResource BodyTextBlockStyle}"/>
         </StackPanel>
@@ -58,7 +58,7 @@
                               ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
                               SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
                               DisplayMemberPath="PartId"
-                              PlaceholderText="Choose a part..."
+                              PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartSelection'), Mode=OneWay}"
                               HorizontalAlignment="Stretch"
                               MinWidth="300"/>
                 </StackPanel>
@@ -143,7 +143,7 @@
                     
                     <Button Command="{x:Bind ViewModel.LoadPartsCommand}"
                             HorizontalAlignment="Left"
-                            ToolTipService.ToolTip="Refresh parts list">
+                            ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Refresh'), Mode=OneWay}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE72C;" FontSize="16"/>
                             <TextBlock Text="Refresh Parts"/>

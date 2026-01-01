@@ -28,6 +28,7 @@ public interface IService_DunnageCSVWriter
     /// <summary>
     /// Write dunnage loads to CSV file (backward compatibility)
     /// </summary>
+    /// <param name="loads"></param>
     Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads);
 
     // ============================================

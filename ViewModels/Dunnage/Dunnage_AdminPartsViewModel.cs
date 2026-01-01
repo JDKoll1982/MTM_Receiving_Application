@@ -23,6 +23,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
     private readonly IService_DunnageAdminWorkflow _adminWorkflow;
     private readonly IService_Pagination _paginationService;
     private readonly IService_Window _windowService;
+    private readonly IService_Help _helpService;
 
     private List<Model_DunnagePart> _allParts = new();
     private const int PAGE_SIZE = 20;
@@ -32,6 +33,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
         IService_DunnageAdminWorkflow adminWorkflow,
         IService_Pagination paginationService,
         IService_Window windowService,
+        IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
@@ -39,10 +41,20 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
         _adminWorkflow = adminWorkflow;
         _paginationService = paginationService;
         _windowService = windowService;
+        _helpService = helpService;
 
         // Configure pagination
         _paginationService.PageChanged += OnPageChanged;
     }
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+    #endregion
 
     #region Observable Properties
 

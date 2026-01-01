@@ -19,6 +19,7 @@ namespace MTM_Receiving_Application.ViewModels.Dunnage;
 public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
+    private readonly IService_Help _helpService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Dispatcher _dispatcher;
 
@@ -26,10 +27,12 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Dispatcher dispatcher,
+        IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
+        _helpService = helpService;
         _dunnageService = dunnageService;
         _dispatcher = dispatcher;
 
@@ -373,6 +376,31 @@ public partial class Dunnage_DetailsEntryViewModel : Shared_BaseViewModel
             IsBusy = false;
         }
     }
+
+    /// <summary>\n    /// Shows contextual help for details entry\n    /// </summary>
+    /// <param name="key"></param>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.DetailsEntry\");\n    }
+
+    #endregion
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+    /// <summary>
+    /// Gets a placeholder by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
+    /// <summary>
+    /// Gets a tip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
 }

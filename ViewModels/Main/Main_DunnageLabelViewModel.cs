@@ -66,7 +66,7 @@ public partial class Main_DunnageLabelViewModel : Shared_BaseViewModel
     private bool _isEditModeVisible;
 
     [ObservableProperty]
-    private string _currentStepTitle = "Mode Selection";
+    private string _currentStepTitle = "📦 Dunnage - Mode Selection";
 
     #endregion
 
@@ -102,7 +102,7 @@ public partial class Main_DunnageLabelViewModel : Shared_BaseViewModel
         {
             case Enum_DunnageWorkflowStep.ModeSelection:
                 IsModeSelectionVisible = true;
-                CurrentStepTitle = "Mode Selection";
+                CurrentStepTitle = "📦 Dunnage - Mode Selection";
                 break;
             case Enum_DunnageWorkflowStep.TypeSelection:
                 IsTypeSelectionVisible = true;

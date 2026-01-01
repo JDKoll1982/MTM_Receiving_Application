@@ -26,7 +26,7 @@
         <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,16">
             <TextBlock Text="Enter Details"
                        Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock Text="Provide PO number, location, and specifications for this dunnage."
+            <TextBlock Text="{x:Bind ViewModel.GetTip('Dunnage.DetailsEntry'), Mode=OneWay}"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Style="{StaticResource BodyTextBlockStyle}"/>
         </StackPanel>
@@ -61,7 +61,7 @@
                             <TextBlock Text="PO Number"
                                        Style="{StaticResource SubtitleTextBlockStyle}"/>
                             <TextBox Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"
-                                     PlaceholderText="Enter PO number (optional)..."
+                                     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                      HorizontalAlignment="Stretch"/>
                             <TextBlock Text="Leave blank for non-PO dunnage"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -73,7 +73,7 @@
                             <TextBlock Text="Location"
                                        Style="{StaticResource SubtitleTextBlockStyle}"/>
                             <TextBox Text="{x:Bind ViewModel.Location, Mode=TwoWay}"
-                                     PlaceholderText="Enter location..."
+                                     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.Location'), Mode=OneWay}"
                                      HorizontalAlignment="Stretch"/>
                             <TextBlock Text="Where this dunnage is located"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"

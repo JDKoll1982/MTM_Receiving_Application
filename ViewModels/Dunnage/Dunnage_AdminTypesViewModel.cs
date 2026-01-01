@@ -22,17 +22,20 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_DunnageAdminWorkflow _adminWorkflow;
     private readonly IService_Window _windowService;
+    private readonly IService_Help _helpService;
 
     public Dunnage_AdminTypesViewModel(
         IService_MySQL_Dunnage dunnageService,
         IService_DunnageAdminWorkflow adminWorkflow,
         IService_Window windowService,
+        IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _dunnageService = dunnageService;
         _adminWorkflow = adminWorkflow;
         _windowService = windowService;
+        _helpService = helpService;
     }
 
     #region Observable Properties
@@ -428,6 +431,15 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
         CanEdit = value != null;
         CanDelete = value != null;
     }
+
+    #endregion
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
 
     #endregion
 }

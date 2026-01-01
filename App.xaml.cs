@@ -29,7 +29,7 @@ namespace MTM_Receiving_Application;
 /// </summary>
 public partial class App : Application
 {
-    private IHost _host;
+    private readonly IHost _host;
 
     /// <summary>
     /// Gets the main window for the application
@@ -79,6 +79,7 @@ public partial class App : Application
                     return new Service_Dispatcher(dispatcherQueue);
                 });
                 services.AddSingleton<IService_Window, Service_Window>();
+                services.AddSingleton<IService_Help, Services.Help.Service_Help>();
                 services.AddSingleton<IService_Authentication>(sp =>
                 {
                     var daoUser = sp.GetRequiredService<Dao_User>();
@@ -122,6 +123,7 @@ public partial class App : Application
                 services.AddTransient<Shared_SplashScreenViewModel>();
                 services.AddTransient<Shared_SharedTerminalLoginViewModel>();
                 services.AddTransient<Shared_NewUserSetupViewModel>();
+                services.AddTransient<Shared_HelpDialogViewModel>();
                 services.AddTransient<Main_ReceivingLabelViewModel>();
                 services.AddTransient<Main_DunnageLabelViewModel>();
                 services.AddTransient<Main_CarrierDeliveryLabelViewModel>();
@@ -177,6 +179,7 @@ public partial class App : Application
                 services.AddTransient<Views.Shared.Shared_SplashScreenWindow>();
                 services.AddTransient<Views.Shared.Shared_SharedTerminalLoginDialog>();
                 services.AddTransient<Views.Shared.Shared_NewUserSetupDialog>();
+                services.AddTransient<Views.Shared.Shared_HelpDialog>();
                 services.AddSingleton<MainWindow>();
             })
             .Build();
@@ -217,6 +220,9 @@ public partial class App : Application
     /// <summary>
     /// Gets a service from the dependency injection container
     /// </summary>
+    /// <typeparam name="T">The service type</typeparam>
+    /// <returns>The requested service</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the service is not found</exception>
     public static T GetService<T>() where T : class
     {
         return ((App)Current)._host.Services.GetService<T>()

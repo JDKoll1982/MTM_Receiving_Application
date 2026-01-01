@@ -72,7 +72,7 @@ public class Service_Navigation : IService_Navigation
 
     public void ClearNavigation(Frame frame)
     {
-        if (frame != null && frame.Content != null)
+        if (frame?.Content != null)
         {
             frame.Content = null;
             _logger.LogInfo("Navigation cleared", "Service_Navigation");

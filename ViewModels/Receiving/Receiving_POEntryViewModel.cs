@@ -16,6 +16,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
     {
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_ReceivingWorkflow _workflowService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -56,12 +57,14 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         public Receiving_POEntryViewModel(
             IService_InforVisual inforVisualService,
             IService_ReceivingWorkflow workflowService,
+            IService_Help helpService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
         {
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
+            _helpService = helpService;
         }
 
         [RelayCommand]
@@ -299,5 +302,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                     PackageType = "Skids";
             }
         }
+
+        /// <summary>
+        /// Shows contextual help for PO entry
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.POEntry");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

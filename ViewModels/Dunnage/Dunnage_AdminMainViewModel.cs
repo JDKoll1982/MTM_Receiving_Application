@@ -22,11 +22,11 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _adminWorkflow = adminWorkflow;
-        
+
         // Subscribe to workflow events
         _adminWorkflow.SectionChanged += OnSectionChanged;
         _adminWorkflow.StatusMessageRaised += OnStatusMessageRaised;
-        
+
         // Initialize to Hub view
         UpdateVisibility(Enum_DunnageAdminSection.Hub);
     }
@@ -62,9 +62,9 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Opening Type Management...";
-            
+
             await _adminWorkflow.NavigateToSectionAsync(Enum_DunnageAdminSection.Types);
-            
+
             await _logger.LogInfoAsync("Navigated to Type Management", "AdminMain");
         }
         catch (Exception ex)
@@ -92,9 +92,9 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Opening Spec Management...";
-            
+
             await _adminWorkflow.NavigateToSectionAsync(Enum_DunnageAdminSection.Specs);
-            
+
             await _logger.LogInfoAsync("Navigated to Spec Management", "AdminMain");
         }
         catch (Exception ex)
@@ -122,9 +122,9 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Opening Part Management...";
-            
+
             await _adminWorkflow.NavigateToSectionAsync(Enum_DunnageAdminSection.Parts);
-            
+
             await _logger.LogInfoAsync("Navigated to Part Management", "AdminMain");
         }
         catch (Exception ex)
@@ -152,9 +152,9 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Opening Inventoried List...";
-            
+
             await _adminWorkflow.NavigateToSectionAsync(Enum_DunnageAdminSection.InventoriedList);
-            
+
             await _logger.LogInfoAsync("Navigated to Inventoried List", "AdminMain");
         }
         catch (Exception ex)
@@ -182,9 +182,9 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
         {
             IsBusy = true;
             StatusMessage = "Returning to main menu...";
-            
+
             await _adminWorkflow.NavigateToHubAsync();
-            
+
             await _logger.LogInfoAsync("Returned to main navigation hub", "AdminMain");
         }
         catch (Exception ex)
@@ -223,6 +223,7 @@ public partial class Dunnage_AdminMainViewModel : Shared_BaseViewModel
     /// <summary>
     /// Update visibility flags based on current section
     /// </summary>
+    /// <param name="section"></param>
     private void UpdateVisibility(Enum_DunnageAdminSection section)
     {
         IsMainNavigationVisible = section == Enum_DunnageAdminSection.Hub;

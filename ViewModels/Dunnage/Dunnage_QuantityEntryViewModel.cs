@@ -16,15 +16,18 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Dispatcher _dispatcher;
+    private readonly IService_Help _helpService;
 
     public Dunnage_QuantityEntryViewModel(
         IService_DunnageWorkflow workflowService,
         IService_Dispatcher dispatcher,
+        IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dispatcher = dispatcher;
+        _helpService = helpService;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -133,6 +136,8 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
         }
     }
 
+    /// <summary>\n    /// Shows contextual help for quantity entry\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.QuantityEntry\");\n    }
+
     #endregion
 
     #region Navigation Commands
@@ -179,6 +184,28 @@ public partial class Dunnage_QuantityEntryViewModel : Shared_BaseViewModel
             IsBusy = false;
         }
     }
+
+    #endregion
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+    /// <summary>
+    /// Gets a placeholder by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
+    /// <summary>
+    /// Gets a tip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
 }

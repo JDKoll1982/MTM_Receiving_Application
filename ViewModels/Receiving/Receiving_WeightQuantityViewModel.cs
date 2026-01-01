@@ -17,6 +17,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_InforVisual _inforVisualService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -34,6 +35,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_InforVisual inforVisualService,
+            IService_Help helpService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -41,6 +43,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _validationService = validationService;
             _inforVisualService = inforVisualService;
+            _helpService = helpService;
 
             _workflowService.StepChanged += OnStepChanged;
         }
@@ -142,5 +145,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 }
             }
         }
+
+        /// <summary>
+        /// Shows contextual help for weight/quantity entry
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.WeightQuantity");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

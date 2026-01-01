@@ -9,11 +9,26 @@ namespace MTM_Receiving_Application.Views.Receiving
     public sealed partial class Receiving_WorkflowView : Page
     {
         public Receiving_ReceivingWorkflowViewModel ViewModel { get; }
+        private readonly IService_ReceivingWorkflow? _workflowService;
+        private readonly IService_Help? _helpService;
 
         public Receiving_WorkflowView()
         {
             ViewModel = App.GetService<Receiving_ReceivingWorkflowViewModel>();
             this.InitializeComponent();
+
+            _workflowService = App.GetService<IService_ReceivingWorkflow>();
+            _helpService = App.GetService<IService_Help>();
+        }
+
+        private async void HelpButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (_helpService == null || _workflowService == null)
+            {
+                return;
+            }
+
+            await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

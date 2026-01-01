@@ -25,6 +25,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     private readonly IService_DunnageCSVWriter _csvWriter;
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Window _windowService;
+    private readonly IService_Help _helpService;
 
     private const int PAGE_SIZE = 50;
 
@@ -34,6 +35,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         IService_DunnageCSVWriter csvWriter,
         IService_DunnageWorkflow workflowService,
         IService_Window windowService,
+        IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
@@ -42,6 +44,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         _csvWriter = csvWriter;
         _workflowService = workflowService;
         _windowService = windowService;
+        _helpService = helpService;
 
         // T166: Set page size to 50
         _paginationService.PageSize = PAGE_SIZE;
@@ -340,6 +343,8 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
             IsBusy = false;
         }
     }
+
+    /// <summary>\n    /// Shows contextual help for edit mode\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.EditMode\");\n    }
 
     /// <summary>
     /// T158: Set filter to last 7 days (today - 7 days to today)
@@ -666,6 +671,8 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     /// <summary>
     /// T167: Event handler for pagination service PageChanged event
     /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnPageChanged(object? sender, EventArgs e)
     {
         // Update FilteredLoads with current page items
@@ -688,6 +695,28 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     {
         CanSave = _allLoads.Any(l => !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId));
     }
+
+    #endregion
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+    /// <summary>
+    /// Gets a placeholder by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
+    /// <summary>
+    /// Gets a tip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
 }

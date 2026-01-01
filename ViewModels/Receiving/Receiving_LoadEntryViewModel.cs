@@ -11,6 +11,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
         private int _numberOfLoads = 1;
@@ -21,12 +22,14 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         public Receiving_LoadEntryViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
+            IService_Help helpService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
         {
             _workflowService = workflowService;
             _validationService = validationService;
+            _helpService = helpService;
 
             _workflowService.StepChanged += OnStepChanged;
         }
@@ -62,5 +65,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         {
             SelectedPartInfo = $"{partId} - {description}";
         }
+
+        /// <summary>
+        /// Shows contextual help for load entry
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.LoadEntry");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

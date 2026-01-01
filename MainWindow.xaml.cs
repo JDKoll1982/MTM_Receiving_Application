@@ -12,6 +12,7 @@ namespace MTM_Receiving_Application
     {
         public Shared_MainWindowViewModel ViewModel { get; }
         private readonly IService_UserSessionManager _sessionManager;
+        private bool _hasNavigatedOnStartup = false;
 
         public MainWindow(Shared_MainWindowViewModel viewModel, IService_UserSessionManager sessionManager)
         {
@@ -78,6 +79,15 @@ namespace MTM_Receiving_Application
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
                 _sessionManager.UpdateLastActivity();
+
+                // Navigate to Receiving workflow on first activation
+                if (!_hasNavigatedOnStartup)
+                {
+                    _hasNavigatedOnStartup = true;
+                    PageTitleTextBlock.Text = "📥 Receiving - Mode Selection";
+                    ContentFrame.Navigate(typeof(Views.Receiving.Receiving_WorkflowView));
+                    ContentFrame.Navigated += ContentFrame_Navigated;
+                }
             }
         }
 

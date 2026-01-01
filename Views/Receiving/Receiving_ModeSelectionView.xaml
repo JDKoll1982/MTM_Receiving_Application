@@ -37,7 +37,7 @@
                               Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
                               CommandParameter="{x:Bind ViewModel.IsGuidedModeDefault, Mode=OneWay}"
                               HorizontalAlignment="Center"
-                              ToolTipService.ToolTip="Skip mode selection and go directly to Guided Wizard"/>
+                              ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickGuidedWizard'), Mode=OneWay}"/>
                 </StackPanel>
 
                 <!-- Manual Mode Column -->
@@ -67,7 +67,7 @@
                               Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
                               CommandParameter="{x:Bind ViewModel.IsManualModeDefault, Mode=OneWay}"
                               HorizontalAlignment="Center"
-                              ToolTipService.ToolTip="Skip mode selection and go directly to Manual Entry"/>
+                              ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickManualEntry'), Mode=OneWay}"/>
                 </StackPanel>
 
                 <!-- Edit Mode Column -->
@@ -97,7 +97,7 @@
                               Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
                               CommandParameter="{x:Bind ViewModel.IsEditModeDefault, Mode=OneWay}"
                               HorizontalAlignment="Center"
-                              ToolTipService.ToolTip="Skip mode selection and go directly to Edit Mode"/>
+                              ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

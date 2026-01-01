@@ -35,10 +35,12 @@ public interface IService_Navigation
     /// <summary>
     /// Check if navigation can go back
     /// </summary>
+    /// <param name="frame"></param>
     bool CanGoBack(Frame frame);
 
     /// <summary>
     /// Navigate back
     /// </summary>
+    /// <param name="frame"></param>
     void GoBack(Frame frame);
 }

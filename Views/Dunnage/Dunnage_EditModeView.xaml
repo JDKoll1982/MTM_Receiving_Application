@@ -30,21 +30,21 @@
                 <!-- Load Data Section - T154 -->
                 <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
                 
-                <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}" ToolTipService.ToolTip="Load unsaved loads from current session">
+                <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadSessionMemory'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE81D;"/>
                         <TextBlock Text="Current Memory"/>
                     </StackPanel>
                 </Button>
 
-                <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="Load from most recent CSV export">
+                <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadRecentCSV'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8E5;"/>
                         <TextBlock Text="Current Labels"/>
                     </StackPanel>
                 </Button>
                 
-                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="Load historical loads from database">
+                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadHistoricalData'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74C;"/>
                         <TextBlock Text="History"/>
@@ -61,7 +61,7 @@
                         <TextBlock Text="Select All"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{x:Bind ViewModel.RemoveSelectedRowsCommand}">
+                <Button Command="{x:Bind ViewModel.RemoveSelectedRowsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveSelectedRows'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
                         <TextBlock Text="Remove Selected"/>
@@ -76,11 +76,11 @@
                 <TextBlock Text="Filter Date:" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 
                 <CalendarDatePicker Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}" 
-                                   PlaceholderText="Start Date" 
+                                   PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.StartDate'), Mode=OneWay}"
                                    Width="140"/>
                 <TextBlock Text="to" VerticalAlignment="Center"/>
                 <CalendarDatePicker Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}" 
-                                   PlaceholderText="End Date" 
+                                   PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.EndDate'), Mode=OneWay}"
                                    Width="140"/>
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
@@ -88,22 +88,22 @@
                 <!-- T158, T159, T160, T161, T162, T163, T164: Date filter buttons with dynamic text -->
                 <Button Content="{x:Bind ViewModel.LastWeekButtonText, Mode=OneTime}" 
                         Command="{x:Bind ViewModel.SetFilterLastWeekCommand}"
-                        ToolTipService.ToolTip="Show loads from last 7 days"/>
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterLastWeek'), Mode=OneWay}"/>
                 <Button Content="{x:Bind ViewModel.TodayButtonText, Mode=OneTime}" 
                         Command="{x:Bind ViewModel.SetFilterTodayCommand}"
-                        ToolTipService.ToolTip="Show loads from today only"/>
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}"/>
                 <Button Content="{x:Bind ViewModel.ThisWeekButtonText, Mode=OneTime}" 
                         Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"
-                        ToolTipService.ToolTip="Show loads from this week (Mon-Sun)"/>
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}"/>
                 <Button Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneTime}" 
                         Command="{x:Bind ViewModel.SetFilterThisMonthCommand}"
-                        ToolTipService.ToolTip="Show loads from this month"/>
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisMonth'), Mode=OneWay}"/>
                 <Button Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneTime}" 
                         Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}"
-                        ToolTipService.ToolTip="Show loads from this quarter"/>
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisQuarter'), Mode=OneWay}"/>
                 <Button Content="Show All" 
                         Command="{x:Bind ViewModel.SetFilterShowAllCommand}"
-                        ToolTipService.ToolTip="Show all loads from last year"/>
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterShowAll'), Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 
@@ -152,10 +152,10 @@
 
             <!-- Pagination Controls -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <Button Command="{x:Bind ViewModel.FirstPageCommand}" ToolTipService.ToolTip="First Page">
+                <Button Command="{x:Bind ViewModel.FirstPageCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FirstPage'), Mode=OneWay}">
                     <FontIcon Glyph="&#xE892;"/>
                 </Button>
-                <Button Command="{x:Bind ViewModel.PreviousPageCommand}" ToolTipService.ToolTip="Previous Page">
+                <Button Command="{x:Bind ViewModel.PreviousPageCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.PreviousPage'), Mode=OneWay}">
                     <FontIcon Glyph="&#xE76B;"/>
                 </Button>
                 
@@ -168,17 +168,17 @@
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
-                <Button Command="{x:Bind ViewModel.NextPageCommand}" ToolTipService.ToolTip="Next Page">
+                <Button Command="{x:Bind ViewModel.NextPageCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.NextPage'), Mode=OneWay}">
                     <FontIcon Glyph="&#xE76C;"/>
                 </Button>
-                <Button Command="{x:Bind ViewModel.LastPageCommand}" ToolTipService.ToolTip="Last Page">
+                <Button Command="{x:Bind ViewModel.LastPageCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LastPage'), Mode=OneWay}">
                     <FontIcon Glyph="&#xE893;"/>
                 </Button>
             </StackPanel>
 
             <!-- Save Button -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
-                <Button Content="Save Changes" Command="{x:Bind ViewModel.SaveAllCommand}" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="Save Changes" Command="{x:Bind ViewModel.SaveAllCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveChanges'), Mode=OneWay}"/>
             </StackPanel>
         </Grid>
     </Grid>

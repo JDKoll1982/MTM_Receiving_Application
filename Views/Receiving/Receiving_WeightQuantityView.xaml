@@ -69,7 +69,7 @@
                                        SmallChange="1"
                                        LargeChange="10"
                                        SpinButtonPlacementMode="Inline"
-                                       PlaceholderText="Enter whole number"
+                                      PlaceholderText="Enter whole number"
                                        AutomationProperties.Name="Weight Quantity"/>
                         </Grid>
                     </DataTemplate>

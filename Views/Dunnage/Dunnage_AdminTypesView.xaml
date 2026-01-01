@@ -41,26 +41,26 @@
             <AppBarButton 
                 Icon="Add" 
                 Label="Add New Type"
-                ToolTipService.ToolTip="Create a new dunnage type (coming soon)"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.CreateType'), Mode=OneWay}"/>
             <AppBarSeparator/>
             <AppBarButton 
                 Icon="Edit" 
                 Label="Edit Type"
                 Command="{x:Bind ViewModel.ShowEditTypeCommand}"
                 IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
-                ToolTipService.ToolTip="Edit selected type"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.EditType'), Mode=OneWay}"/>
             <AppBarButton 
                 Icon="Delete" 
                 Label="Delete Type"
                 Command="{x:Bind ViewModel.ShowDeleteConfirmationCommand}"
                 IsEnabled="{x:Bind ViewModel.CanDelete, Mode=OneWay}"
-                ToolTipService.ToolTip="Delete selected type with impact analysis"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.DeleteType'), Mode=OneWay}"/>
             <AppBarSeparator/>
             <AppBarButton 
                 Icon="Back" 
                 Label="Back to Admin Hub"
                 Command="{x:Bind ViewModel.ReturnToAdminHubCommand}"
-                ToolTipService.ToolTip="Return to admin main navigation"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ReturnToAdmin'), Mode=OneWay}"/>
         </CommandBar>
 
         <!-- DataGrid -->

@@ -99,20 +99,14 @@
                     HorizontalAlignment="Center"
                     Style="{StaticResource AccentButtonStyle}"
                     Padding="12,8"
-                    x:Name="HelpButton"
-                    ToolTipService.ToolTip="Click for help about the current step"
-                    Loaded="HelpButton_Loaded">
+                    Click="HelpButton_Click"
+                    ToolTipService.ToolTip="Click for help about the current step">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE946;" 
                               FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                               FontSize="16"/>
                     <TextBlock Text="Help"/>
                 </StackPanel>
-                <Button.Flyout>
-                    <Flyout x:Name="HelpFlyout">
-                        <ContentControl x:Name="HelpContentControl"/>
-                    </Flyout>
-                </Button.Flyout>
             </Button>
             
             <!-- Right-aligned navigation buttons (wizard flow) -->
@@ -120,21 +114,24 @@
                 <!-- Back Button (not visible on first wizard step) -->
                 <Button Content="Back"
                         Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick">
+                        Click="OnBackClick"
+                        ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Left" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
                 </Button>
                 <Button Content="Back"
                         Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick">
+                        Click="OnBackClick"
+                        ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Left" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
                 </Button>
                 <Button Content="Back"
                         Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick">
+                        Click="OnBackClick"
+                        ToolTipService.ToolTip="Go back to previous step (Ctrl+Left)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Left" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
@@ -145,7 +142,8 @@
                 <Button Content="Next"
                         Style="{StaticResource AccentButtonStyle}"
                         Visibility="{x:Bind ViewModel.IsTypeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick">
+                        Click="OnNextClick"
+                        ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Right" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
@@ -153,7 +151,8 @@
                 <Button Content="Next"
                         Style="{StaticResource AccentButtonStyle}"
                         Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick">
+                        Click="OnNextClick"
+                        ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Right" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
@@ -161,7 +160,8 @@
                 <Button Content="Next"
                         Style="{StaticResource AccentButtonStyle}"
                         Visibility="{x:Bind ViewModel.IsQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick">
+                        Click="OnNextClick"
+                        ToolTipService.ToolTip="Proceed to next step (Ctrl+Right)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Right" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
@@ -169,7 +169,8 @@
                 <Button Content="Save &amp; Review"
                         Style="{StaticResource AccentButtonStyle}"
                         Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnSaveAndReviewClick">
+                        Click="OnSaveAndReviewClick"
+                        ToolTipService.ToolTip="Save entry and proceed to review (Ctrl+Right)">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Right" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>

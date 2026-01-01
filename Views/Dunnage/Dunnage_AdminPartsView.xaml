@@ -36,25 +36,25 @@
             <AppBarButton 
                 Icon="Add" 
                 Label="Add New Part"
-                ToolTipService.ToolTip="Create a new dunnage part (coming soon)"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.CreatePart'), Mode=OneWay}"/>
             <AppBarSeparator/>
             <AppBarButton 
                 Icon="Edit" 
                 Label="Edit Part"
                 IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
-                ToolTipService.ToolTip="Edit selected part (coming soon)"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.EditPart'), Mode=OneWay}"/>
             <AppBarButton 
                 Icon="Delete" 
                 Label="Delete Part"
                 Command="{x:Bind ViewModel.ShowDeleteConfirmationCommand}"
                 IsEnabled="{x:Bind ViewModel.CanDelete, Mode=OneWay}"
-                ToolTipService.ToolTip="Delete selected part"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.DeletePart'), Mode=OneWay}"/>
             <AppBarSeparator/>
             <AppBarButton 
                 Icon="Back" 
                 Label="Back to Admin Hub"
                 Command="{x:Bind ViewModel.ReturnToAdminHubCommand}"
-                ToolTipService.ToolTip="Return to admin main navigation"/>
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ReturnToAdmin'), Mode=OneWay}"/>
         </CommandBar>
 
         <!-- Search and Filter Bar -->

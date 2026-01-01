@@ -16,6 +16,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_PackagePreferences _preferencesService;
         private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -39,6 +40,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_PackagePreferences preferencesService,
             IService_ReceivingValidation validationService,
+            IService_Help helpService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -46,6 +48,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _preferencesService = preferencesService;
             _validationService = validationService;
+            _helpService = helpService;
 
             _workflowService.StepChanged += OnStepChanged;
         }
@@ -211,5 +214,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 await _errorHandler.HandleErrorAsync("Failed to delete preference", Enum_ErrorSeverity.Warning, ex);
             }
         }
+
+        /// <summary>
+        /// Shows contextual help for package type selection
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.PackageType");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

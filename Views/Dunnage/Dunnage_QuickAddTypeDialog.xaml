@@ -188,7 +188,7 @@
                                          Grid.Column="2"
                                          Header="Unit" 
                                          PlaceholderText="e.g. inches, lbs"
-                                         ToolTipService.ToolTip="Unit of measurement to display (optional)"/>
+                                         ToolTipService.ToolTip="Unit of measurement (optional)"/>
                             </Grid>
                         </StackPanel>
                         
@@ -200,7 +200,7 @@
                             <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
                                 <CheckBox x:Name="NewSpecRequiredCheck" 
                                           Content="Required Field"
-                                          ToolTipService.ToolTip="Check if this field must be filled when creating parts"/>
+                                          ToolTipService.ToolTip="Check if this field is required"/>
                             </StackPanel>
                             <Button Grid.Column="1" 
                                     Content="Add Field" 
@@ -252,5 +252,5 @@
             </ListView>
             </StackPanel>
         </StackPanel>
-    </ScrollViewer>
+    </ScrollViewer>f
 </ContentDialog>

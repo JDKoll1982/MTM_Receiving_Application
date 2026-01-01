@@ -21,17 +21,20 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
+    private readonly IService_Help _helpService;
 
     public Dunnage_TypeSelectionViewModel(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
+        IService_Help helpService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
         _paginationService = paginationService;
+        _helpService = helpService;
 
         // Subscribe to pagination events
         _paginationService.PageChanged += OnPageChanged;
@@ -534,6 +537,28 @@ public partial class Dunnage_TypeSelectionViewModel : Shared_BaseViewModel
 
         _logger.LogInfo($"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}", "Dunnage_TypeSelectionViewModel");
     }
+
+    #endregion
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+    /// <summary>
+    /// Gets a placeholder by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
+    /// <summary>
+    /// Gets a tip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
 }

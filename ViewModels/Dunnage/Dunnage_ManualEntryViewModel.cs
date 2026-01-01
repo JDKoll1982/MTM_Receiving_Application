@@ -22,6 +22,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_DunnageCSVWriter _csvWriter;
     private readonly IService_Window _windowService;
+    private readonly IService_Help _helpService;
 
     public Dunnage_ManualEntryViewModel(
         IService_DunnageWorkflow workflowService,
@@ -29,12 +30,14 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
         IService_DunnageCSVWriter csvWriter,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Window windowService) : base(errorHandler, logger)
+        IService_Window windowService,
+        IService_Help helpService) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
         _csvWriter = csvWriter;
         _windowService = windowService;
+        _helpService = helpService;
     }
 
     #region Observable Properties
@@ -455,6 +458,8 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
         }
     }
 
+    /// <summary>\n    /// Shows contextual help for manual entry\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.ManualEntry\");\n    }
+
     #endregion
 
     #region Navigation Commands
@@ -523,6 +528,7 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     /// <summary>
     /// Handles PartID change to trigger auto-fill
     /// </summary>
+    /// <param name="load"></param>
     public async Task OnPartIdChangedAsync(Model_DunnageLoad load)
     {
         if (load == null || string.IsNullOrWhiteSpace(load.PartId))
@@ -563,6 +569,28 @@ public partial class Dunnage_ManualEntryViewModel : Shared_BaseViewModel
     {
         CanSave = Loads.Any(l => !string.IsNullOrWhiteSpace(l.TypeName) || !string.IsNullOrWhiteSpace(l.PartId));
     }
+
+    #endregion
+
+    #region Help Content Helpers
+
+    /// <summary>
+    /// Gets a tooltip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+    /// <summary>
+    /// Gets a placeholder by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
+    /// <summary>
+    /// Gets a tip by key from the help service
+    /// </summary>
+    /// <param name="key"></param>
+    public string GetTip(string key) => _helpService.GetTip(key);
 
     #endregion
 }

@@ -23,6 +23,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_MySQL_Receiving _mysqlService;
         private readonly IService_CSVWriter _csvWriter;
         private readonly IService_Pagination _paginationService;
+        private readonly IService_Help _helpService;
 
         private readonly List<Model_ReceivingLoad> _allLoads = new();
         private List<Model_ReceivingLoad> _filteredLoads = new();
@@ -76,6 +77,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         /// <param name="errorHandler"></param>
         /// <param name="logger"></param>
         /// <param name="windowService"></param>
+        /// <param name="helpService"></param>
         public Receiving_EditModeViewModel(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
@@ -83,7 +85,8 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_Pagination paginationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Window windowService)
+            IService_Window windowService,
+            IService_Help helpService)
             : base(errorHandler, logger)
         {
             _windowService = windowService;
@@ -91,6 +94,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _mysqlService = mysqlService;
             _csvWriter = csvWriter;
             _paginationService = paginationService;
+            _helpService = helpService;
 
             _loads = new ObservableCollection<Model_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
@@ -881,5 +885,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
 
             return errors;
         }
+
+        /// <summary>
+        /// Shows contextual help for edit mode
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.EditMode");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

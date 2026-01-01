@@ -27,7 +27,7 @@
         <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,32">
             <TextBlock Text="Select Dunnage Type"
                        Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock Text="Choose a dunnage type from the available options below."
+            <TextBlock Text="{x:Bind ViewModel.GetTip('Dunnage.TypeSelection'), Mode=OneWay}"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Style="{StaticResource BodyTextBlockStyle}"/>
         </StackPanel>
@@ -104,13 +104,13 @@
                     Margin="0,32,0,0">
             <!-- First Page -->
             <Button Command="{x:Bind ViewModel.FirstPageCommand}"
-                    ToolTipService.ToolTip="First Page">
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FirstPage'), Mode=OneWay}">
                 <FontIcon Glyph="&#xE892;" FontSize="16"/>
             </Button>
 
             <!-- Previous Page -->
             <Button Command="{x:Bind ViewModel.PreviousPageCommand}"
-                    ToolTipService.ToolTip="Previous Page">
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.PreviousPage'), Mode=OneWay}">
                 <FontIcon Glyph="&#xE76B;" FontSize="16"/>
             </Button>
 
@@ -126,13 +126,13 @@
 
             <!-- Next Page -->
             <Button Command="{x:Bind ViewModel.NextPageCommand}"
-                    ToolTipService.ToolTip="Next Page">
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.NextPage'), Mode=OneWay}">
                 <FontIcon Glyph="&#xE76C;" FontSize="16"/>
             </Button>
 
             <!-- Last Page -->
             <Button Command="{x:Bind ViewModel.LastPageCommand}"
-                    ToolTipService.ToolTip="Last Page">
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LastPage'), Mode=OneWay}">
                 <FontIcon Glyph="&#xE893;" FontSize="16"/>
             </Button>
 

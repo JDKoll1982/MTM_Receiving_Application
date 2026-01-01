@@ -12,6 +12,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserPreferences _userPreferencesService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
         private bool _isGuidedModeDefault;
@@ -26,6 +27,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ReceivingWorkflow workflowService,
             IService_UserSessionManager sessionManager,
             IService_UserPreferences userPreferencesService,
+            IService_Help helpService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -33,6 +35,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _sessionManager = sessionManager;
             _userPreferencesService = userPreferencesService;
+            _helpService = helpService;
 
             // Load current default mode
             LoadDefaultMode();
@@ -210,5 +213,36 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 IsEditModeDefault = !isChecked;
             }
         }
+
+        /// <summary>
+        /// Shows contextual help for receiving mode selection
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.ModeSelection");
+        }
+
+        #region Help Content Helpers
+
+        /// <summary>
+        /// Gets a tooltip by key from the help service
+        /// </summary>
+        /// <param name="key"></param>
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+
+        /// <summary>
+        /// Gets a placeholder by key from the help service
+        /// </summary>
+        /// <param name="key"></param>
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+
+        /// <summary>
+        /// Gets a tip by key from the help service
+        /// </summary>
+        /// <param name="key"></param>
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

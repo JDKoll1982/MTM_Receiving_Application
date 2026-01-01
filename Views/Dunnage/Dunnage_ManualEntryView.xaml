@@ -27,19 +27,19 @@
         <Grid Grid.Row="0" Margin="0,0,0,12">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <StackPanel Orientation="Horizontal" Spacing="12" Padding="0,0,12,0">
-                <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}">
+                <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddRow'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE710;"/>
                         <TextBlock Text="Add Row"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{x:Bind ViewModel.AddMultipleRowsCommand}" ToolTipService.ToolTip="Add multiple rows at once (up to 100)">
+                <Button Command="{x:Bind ViewModel.AddMultipleRowsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddMultipleRows'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE710;"/>
                         <TextBlock Text="Add Multiple"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{x:Bind ViewModel.RemoveRowCommand}">
+                <Button Command="{x:Bind ViewModel.RemoveRowCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveRow'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
                         <TextBlock Text="Remove Row"/>
@@ -48,19 +48,19 @@
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
-                <Button Command="{x:Bind ViewModel.AutoFillCommand}" ToolTipService.ToolTip="Auto-fill from last entry for this Part ID">
+                <Button Command="{x:Bind ViewModel.AutoFillCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AutoFill'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74E;"/>
                         <TextBlock Text="Auto-Fill"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{x:Bind ViewModel.FillBlankSpacesCommand}" ToolTipService.ToolTip="Copy PO, Location, and specs from last row to empty fields">
+                <Button Command="{x:Bind ViewModel.FillBlankSpacesCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FillBlanks'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8B7;"/>
                         <TextBlock Text="Fill Blank Spaces"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{x:Bind ViewModel.SortForPrintingCommand}" ToolTipService.ToolTip="Sort by Part ID → PO → Type">
+                <Button Command="{x:Bind ViewModel.SortForPrintingCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SortForPrinting'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8CB;"/>
                         <TextBlock Text="Sort"/>
@@ -114,7 +114,7 @@
 
         <!-- Navigation -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="12">
-            <Button Content="Save &amp; Finish" Command="{x:Bind ViewModel.SaveAllCommand}" Style="{StaticResource AccentButtonStyle}"/>
+            <Button Content="Save &amp; Finish" Command="{x:Bind ViewModel.SaveAllCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
         </StackPanel>
     </Grid>
 </UserControl>

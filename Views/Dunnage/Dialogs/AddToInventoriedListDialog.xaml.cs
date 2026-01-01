@@ -16,7 +16,7 @@ public sealed partial class AddToInventoriedListDialog : ContentDialog
     {
         _daoPart = App.GetService<Dao_DunnagePart>();
         _daoInventory = App.GetService<Dao_InventoriedDunnage>();
-        
+
         InitializeComponent();
         _ = LoadPartsAsync();
     }
@@ -26,10 +26,10 @@ public sealed partial class AddToInventoriedListDialog : ContentDialog
         try
         {
             var result = await _daoPart.GetAllAsync();
-            
+
             if (result.IsSuccess && result.Data != null)
             {
-                PartIdComboBox.ItemsSource = result.Data.Select(p => p.PartId).ToList();
+                PartIdComboBox.ItemsSource = result.Data.ConvertAll(p => p.PartId);
             }
         }
         catch

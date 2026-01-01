@@ -76,6 +76,8 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// Write dunnage loads to CSV file (wizard workflow export)
         /// Uses fixed columns based on selected type's specs
         /// </summary>
+        /// <param name="loads"></param>
+        /// <param name="typeName"></param>
         public async Task<Model_CSVWriteResult> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName)
         {
             if (loads == null || loads.Count == 0)
@@ -172,6 +174,9 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// Write dunnage loads to CSV with dynamic columns for all spec keys
         /// Used for Manual Entry and Edit Mode exports (all types in one file)
         /// </summary>
+        /// <param name="loads"></param>
+        /// <param name="allSpecKeys"></param>
+        /// <param name="filename"></param>
         public async Task<Model_CSVWriteResult> WriteDynamicCsvAsync(
             List<Model_DunnageLoad> loads,
             List<string> allSpecKeys,
@@ -287,6 +292,8 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// Export selected loads from DataGrid (Manual Entry or Edit Mode)
         /// Includes dynamic spec columns based on types in selection
         /// </summary>
+        /// <param name="selectedLoads"></param>
+        /// <param name="includeAllSpecColumns"></param>
         public async Task<Model_CSVWriteResult> ExportSelectedLoadsAsync(
             List<Model_DunnageLoad> selectedLoads,
             bool includeAllSpecColumns = false)
@@ -340,6 +347,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// <summary>
         /// Validate network path availability (for dual-path writing)
         /// </summary>
+        /// <param name="timeout"></param>
         public async Task<bool> IsNetworkPathAvailableAsync(int timeout = 3)
         {
             return await Task.Run(() =>
@@ -359,6 +367,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// <summary>
         /// Get local CSV file path for current user
         /// </summary>
+        /// <param name="filename"></param>
         public string GetLocalCsvPath(string filename)
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -373,6 +382,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// <summary>
         /// Get network CSV file path for current user
         /// </summary>
+        /// <param name="filename"></param>
         public string GetNetworkCsvPath(string filename)
         {
             var username = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
@@ -395,6 +405,7 @@ namespace MTM_Receiving_Application.Services.Receiving
         /// <summary>
         /// Format date/time values as yyyy-MM-dd HH:mm:ss (T109)
         /// </summary>
+        /// <param name="value"></param>
         private string FormatDateTime(DateTime value)
         {
             return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);

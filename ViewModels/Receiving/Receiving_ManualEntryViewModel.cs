@@ -17,6 +17,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
         private readonly IService_Window _windowService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
@@ -31,12 +32,14 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_MySQL_Receiving mysqlService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Window windowService)
+            IService_Window windowService,
+            IService_Help helpService)
             : base(errorHandler, logger)
         {
             _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
+            _helpService = helpService;
             _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
         }
 
@@ -321,5 +324,22 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 _logger.LogInfo("User cancelled return to mode selection");
             }
         }
+
+        /// <summary>
+        /// Shows contextual help for manual entry
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.ManualEntry");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

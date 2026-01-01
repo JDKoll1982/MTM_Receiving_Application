@@ -16,6 +16,7 @@ public interface IService_SettingsWorkflow
     /// <summary>
     /// Navigate to a specific step in the settings workflow
     /// </summary>
+    /// <param name="step"></param>
     void GoToStep(Enum_SettingsWorkflowStep step);
 
     /// <summary>

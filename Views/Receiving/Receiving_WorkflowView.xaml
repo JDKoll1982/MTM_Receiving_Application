@@ -102,8 +102,8 @@
                 </StackPanel>
                 
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
-                    <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}"/>
-                    <Button Content="Reset CSV" Command="{x:Bind ViewModel.ResetCSVCommand}"/>
+                    <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"/>
+                    <Button Content="Reset CSV" Command="{x:Bind ViewModel.ResetCSVCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetCSV'), Mode=OneWay}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -119,7 +119,6 @@
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12">
                 <Button Content="Mode Selection" 
                         Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
                         Background="Transparent" 
                         BorderBrush="{ThemeResource SystemAccentColor}"/>
                 <Button Content="Reset CSV" 
@@ -127,7 +126,8 @@
                         Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Background="Transparent" 
                         BorderBrush="Transparent" 
-                        Foreground="Red"/>
+                        Foreground="Red"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetCSV'), Mode=OneWay}"/>
             </StackPanel>
             
             <!-- Center help button -->
@@ -135,18 +135,14 @@
                     Grid.ColumnSpan="2"
                     Canvas.ZIndex="1000"
                     HorizontalAlignment="Center"
+                    Click="HelpButton_Click"
                     Style="{StaticResource AccentButtonStyle}"
                     Padding="12,8"
-                    ToolTipService.ToolTip="Click for help about current step">
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE946;" FontSize="16"/>
                     <TextBlock Text="Help"/>
                 </StackPanel>
-                <Button.Flyout>
-                    <Flyout>
-                        <ContentControl Content="{x:Bind ViewModel.HelpContent, Mode=OneWay}"/>
-                    </Flyout>
-                </Button.Flyout>
             </Button>
             
             <!-- Right-aligned navigation buttons -->

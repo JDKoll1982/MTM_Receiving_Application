@@ -14,9 +14,10 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
     public partial class Receiving_ReceivingWorkflowViewModel : Shared_BaseViewModel
     {
         private readonly IService_ReceivingWorkflow _workflowService;
+        private readonly IService_Help _helpService;
 
         [ObservableProperty]
-        private string _currentStepTitle = "Receiving Workflow";
+        private string _currentStepTitle = "📥 Receiving - Mode Selection";
 
         [ObservableProperty]
         private bool _isModeSelectionVisible;
@@ -84,12 +85,14 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Dispatcher dispatcherService,
-            IService_Window windowService)
+            IService_Window windowService,
+            IService_Help helpService)
             : base(errorHandler, logger)
         {
             _dispatcherService = dispatcherService;
             _windowService = windowService;
             _workflowService = workflowService;
+            _helpService = helpService;
             _workflowService.StepChanged += (s, e) =>
             {
                 _logger.LogInfo("StepChanged event received in ViewModel. Updating visibility.");
@@ -317,7 +320,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             // Update title based on step
             CurrentStepTitle = step switch
             {
-                Enum_ReceivingWorkflowStep.ModeSelection => "Select Mode",
+                Enum_ReceivingWorkflowStep.ModeSelection => "📥 Receiving - Mode Selection",
                 Enum_ReceivingWorkflowStep.ManualEntry => "Manual Entry",
                 Enum_ReceivingWorkflowStep.EditMode => "Edit Mode",
                 Enum_ReceivingWorkflowStep.POEntry => "Enter PO Number",
@@ -329,11 +332,28 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
                 Enum_ReceivingWorkflowStep.Review => "Review & Save",
                 Enum_ReceivingWorkflowStep.Saving => "Saving...",
                 Enum_ReceivingWorkflowStep.Complete => "Complete",
-                _ => "Receiving Workflow"
+                _ => "📥 Receiving - Mode Selection"
             };
 
             // Update help content based on step
             HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(step);
         }
+
+        /// <summary>
+        /// Shows contextual help for current workflow step
+        /// </summary>
+        [RelayCommand]
+        private async Task ShowHelpAsync()
+        {
+            await _helpService.ShowHelpAsync("Receiving.Workflow");
+        }
+
+        #region Help Content Helpers
+
+        public string GetTooltip(string key) => _helpService.GetTooltip(key);
+        public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
+        public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
     }
 }

@@ -78,7 +78,7 @@
                                    Maximum="9999"
                                    SpinButtonPlacementMode="Inline"
                                    HorizontalAlignment="Stretch"
-                                   PlaceholderText="Enter quantity..."/>
+                                   PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.Quantity'), Mode=OneWay}"/>
                         
                         <!-- Validation Message -->
                         <TextBlock Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
@@ -103,7 +103,7 @@
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Tip" FontWeight="SemiBold"/>
                         </StackPanel>
-                        <TextBlock Text="You can adjust the quantity later if needed. The system will generate individual labels for each item."
+                        <TextBlock Text="{x:Bind ViewModel.GetTip('Dunnage.QuantityEntry'), Mode=OneWay}"
                                    TextWrapping="Wrap"
                                    FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>

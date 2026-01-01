@@ -46,7 +46,7 @@
                                 
                                 <TextBox x:Name="FirstTextBox"
                                         Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                        PlaceholderText="Enter PO (e.g., 66868 or PO-066868)"
+                                        PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                         MaxWidth="400"
                                         HorizontalAlignment="Stretch"
                                         TabIndex="0"
@@ -87,7 +87,8 @@
                                        Command="{x:Bind ViewModel.LoadPOCommand}" 
                                        IsEnabled="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay}"
                                        Style="{StaticResource AccentButtonStyle}"
-                                       AutomationProperties.Name="Load Purchase Order">
+                                       AutomationProperties.Name="Load Purchase Order"
+                                       ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadPO'), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon Glyph="&#xE896;" FontSize="16"/>
                                         <TextBlock Text="Load PO"/>
@@ -96,7 +97,8 @@
                                 
                                 <Button Grid.Column="1"
                                        Content="Switch to Non-PO" 
-                                       Command="{x:Bind ViewModel.ToggleNonPOCommand}"/>
+                                       Command="{x:Bind ViewModel.ToggleNonPOCommand}"
+                                       ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToNonPO'), Mode=OneWay}"/>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -124,7 +126,7 @@
                                 
                                 <TextBox x:Name="PartIDTextBox"
                                         Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                        PlaceholderText="Enter Part ID (e.g., MMC-001, MMF-456)"
+                                        PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartID'), Mode=OneWay}"
                                         MaxWidth="400"
                                         HorizontalAlignment="Stretch"
                                         AutomationProperties.Name="Part Identifier"/>
@@ -155,7 +157,8 @@
                                 <Button Grid.Column="0"
                                        Command="{x:Bind ViewModel.LookupPartCommand}" 
                                        Style="{StaticResource AccentButtonStyle}"
-                                       AutomationProperties.Name="Look Up Part">
+                                       AutomationProperties.Name="Look Up Part"
+                                       ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LookupPart'), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon Glyph="&#xE721;" FontSize="16"/>
                                         <TextBlock Text="Look Up Part"/>
@@ -164,7 +167,8 @@
                                 
                                 <Button Grid.Column="1"
                                        Content="Switch to PO Entry" 
-                                       Command="{x:Bind ViewModel.ToggleNonPOCommand}"/>
+                                       Command="{x:Bind ViewModel.ToggleNonPOCommand}"
+                                       ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToPO'), Mode=OneWay}"/>
                             </Grid>
                         </StackPanel>
                     </Border>
