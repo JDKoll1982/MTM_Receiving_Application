@@ -4,152 +4,243 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:views="using:MTM_Receiving_Application.Views.Dunnage"
+    xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
     xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
     x:DataType="views:Dunnage_ReviewView"
     Loaded="OnLoaded">
 
     <UserControl.Resources>
-        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid Padding="24">
+    <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24">
-            <TextBlock Text="Review Loads"
-                       Style="{StaticResource TitleTextBlockStyle}"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Text="Total loads in session:"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Style="{StaticResource BodyTextBlockStyle}"/>
-                <TextBlock Text="{x:Bind ViewModel.LoadCount, Mode=OneWay}"
-                           FontWeight="SemiBold"
-                           Style="{StaticResource BodyTextBlockStyle}"/>
-            </StackPanel>
-        </StackPanel>
-
         <!-- Success Message -->
-        <InfoBar Grid.Row="1"
+        <InfoBar Grid.Row="0"
                  IsOpen="{x:Bind ViewModel.IsSuccessMessageVisible, Mode=OneWay}"
                  Severity="Success"
                  Message="{x:Bind ViewModel.SuccessMessage, Mode=OneWay}"
-                 IsClosable="False"
-                 Margin="0,0,0,16"/>
+                 IsClosable="False"/>
 
-        <!-- Loads DataGrid -->
-        <Border Grid.Row="2"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="16">
-            <StackPanel Spacing="16">
-                <TextBlock Text="Load Review (DataGrid placeholder)"
-                           Style="{StaticResource SubtitleTextBlockStyle}"/>
-                
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.SessionLoads, Mode=OneWay}">
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="4"
-                                    Padding="12"
-                                    Margin="0,0,0,8">
-                                <Grid ColumnSpacing="16">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Type" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                        <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                    
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Part ID" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                        <TextBlock Text="{Binding PartId}" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                    
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="Quantity" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                        <TextBlock Text="{Binding Quantity}" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                    
-                                    <StackPanel Grid.Column="3">
-                                        <TextBlock Text="PO / Location" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                        <TextBlock FontWeight="SemiBold">
-                                            <Run Text="{Binding PONumber}"/>
-                                            <Run Text=" / "/>
-                                            <Run Text="{Binding Location}"/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
+        <!-- Content Section with View Toggle -->
+        <Grid Grid.Row="1">
+            <!-- Single Entry View -->
+            <Grid Visibility="{x:Bind ViewModel.IsSingleView, Mode=OneWay}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Empty State -->
-                <StackPanel HorizontalAlignment="Center" 
-                            Spacing="16"
-                            Visibility="{x:Bind ViewModel.LoadCount, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter='Inverse'}">
-                    <FontIcon Glyph="&#xE7C3;" 
-                              FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
-                              FontSize="48" 
-                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                    <TextBlock Text="No loads in session"
-                               Style="{StaticResource SubtitleTextBlockStyle}"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                </StackPanel>
-            </StackPanel>
-        </Border>
+                <!-- Entry Counter -->
+                <Border Grid.Row="0" 
+                       Background="{ThemeResource AccentFillColorDefaultBrush}"
+                       Padding="12,6"
+                       CornerRadius="8,8,0,0">
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <FontIcon Glyph="&#xE8FD;" 
+                                 FontSize="16" 
+                                 Foreground="White"/>
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}"
+                                   Foreground="White">
+                            <Run Text="Entry"/>
+                            <Run Text="{x:Bind ViewModel.CurrentEntryIndex, Mode=OneWay}"/>
+                            <Run Text="of"/>
+                            <Run Text="{x:Bind ViewModel.LoadCount, Mode=OneWay}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Single Entry Form -->
+                <Grid Grid.Row="1">
+                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                           BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                           BorderThickness="1,0,1,1"
+                           CornerRadius="0,0,8,8"
+                           Padding="20">
+                        <Grid MaxWidth="900">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left Column -->
+                            <StackPanel Grid.Column="0" Spacing="12" Margin="0,0,12,0">
+                                <TextBlock Text="Load Details" 
+                                          Style="{StaticResource SubtitleTextBlockStyle}"
+                                          Margin="0,0,0,8"/>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Type" 
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentLoad.TypeName, Mode=OneWay}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Part ID" 
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentLoad.PartId, Mode=OneWay}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Quantity" 
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentLoad.Quantity, Mode=OneWay}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Right Column -->
+                            <StackPanel Grid.Column="1" Spacing="12" Margin="12,0,0,0">
+                                <TextBlock Text="Additional Information" 
+                                          Style="{StaticResource SubtitleTextBlockStyle}"
+                                          Margin="0,0,0,8"/>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="PO Number" 
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentLoad.PoNumber, Mode=OneWay}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Location" 
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Inventory Method" 
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentLoad.InventoryMethod, Mode=OneWay}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Navigation Bar for Single View -->
+                <CommandBar Grid.Row="2" DefaultLabelPosition="Right" Margin="0,12,0,0">
+                    <AppBarButton Icon="Back" 
+                                 Label="Previous" 
+                                 Command="{x:Bind ViewModel.PreviousEntryCommand}"
+                                 IsEnabled="{x:Bind ViewModel.CanGoBack, Mode=OneWay}"
+                                 AutomationProperties.Name="Previous Entry"/>
+                    
+                    <AppBarButton Icon="Forward" 
+                                 Label="Next" 
+                                 Command="{x:Bind ViewModel.NextEntryCommand}"
+                                 IsEnabled="{x:Bind ViewModel.CanGoNext, Mode=OneWay}"
+                                 AutomationProperties.Name="Next Entry"/>
+                    
+                    <AppBarSeparator/>
+                    
+                    <AppBarButton Icon="ViewAll" 
+                                 Label="Table View" 
+                                 Command="{x:Bind ViewModel.SwitchToTableViewCommand}"
+                                 AutomationProperties.Name="Switch to Table View"/>
+                </CommandBar>
+            </Grid>
+
+            <!-- Table View (DataGrid) -->
+            <Grid Visibility="{x:Bind ViewModel.IsTableView, Mode=OneWay}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                       Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                       BorderThickness="1"
+                       CornerRadius="8"
+                       Padding="16">
+                    <controls:DataGrid x:Name="ReviewDataGrid"
+                                      ItemsSource="{x:Bind ViewModel.SessionLoads, Mode=OneWay}"
+                                      AutoGenerateColumns="False"
+                                      CanUserReorderColumns="False"
+                                      CanUserResizeColumns="True"
+                                      CanUserSortColumns="True"
+                                      GridLinesVisibility="None"
+                                      HeadersVisibility="Column"
+                                      SelectionMode="Single"
+                                      IsReadOnly="True">
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTextColumn Header="Type" 
+                                                        Binding="{Binding TypeName}" 
+                                                        Width="120"/>
+                            <controls:DataGridTextColumn Header="Part ID" 
+                                                        Binding="{Binding PartId}" 
+                                                        Width="150"/>
+                            <controls:DataGridTextColumn Header="Quantity" 
+                                                        Binding="{Binding Quantity}" 
+                                                        Width="100"/>
+                            <controls:DataGridTextColumn Header="PO Number" 
+                                                        Binding="{Binding PoNumber}" 
+                                                        Width="150"/>
+                            <controls:DataGridTextColumn Header="Location" 
+                                                        Binding="{Binding Location}" 
+                                                        Width="150"/>
+                            <controls:DataGridTextColumn Header="Inventory Method" 
+                                                        Binding="{Binding InventoryMethod}" 
+                                                        Width="*"/>
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
+                </Border>
+
+                <!-- Navigation Bar for Table View -->
+                <CommandBar Grid.Row="1" DefaultLabelPosition="Right" Margin="0,16,0,0">
+                    <AppBarButton Label="Single View" 
+                                 Command="{x:Bind ViewModel.SwitchToSingleViewCommand}"
+                                 AutomationProperties.Name="Switch to Single View">
+                        <AppBarButton.Icon>
+                            <FontIcon Glyph="&#xE8FD;"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </CommandBar>
+            </Grid>
+        </Grid>
 
         <!-- Action Buttons -->
-        <Grid Grid.Row="3" Margin="0,24,0,0">
+        <Grid Grid.Row="2" ColumnSpacing="12" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Cancel -->
-            <Button Grid.Column="0"
-                    Command="{x:Bind ViewModel.CancelCommand}"
-                    HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE711;" FontSize="16"/>
-                    <TextBlock Text="Cancel"/>
-                </StackPanel>
-            </Button>
-
-            <!-- Add Another -->
-            <Button Grid.Column="2"
-                    Command="{x:Bind ViewModel.AddAnotherCommand}"
-                    Margin="0,0,16,0">
+            <Button Grid.Column="1" 
+                   Command="{x:Bind ViewModel.AddAnotherCommand}"
+                   AutomationProperties.Name="Add Another Load">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE710;" FontSize="16"/>
                     <TextBlock Text="Add Another"/>
                 </StackPanel>
             </Button>
-
-            <!-- Save All -->
-            <Button Grid.Column="3"
-                    Command="{x:Bind ViewModel.SaveAllCommand}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}">
+            
+            <Button Grid.Column="2" 
+                   Command="{x:Bind ViewModel.SaveAllCommand}"
+                   Style="{StaticResource AccentButtonStyle}"
+                   IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}"
+                   AutomationProperties.Name="Save to Database">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE74E;" FontSize="16"/>
                     <TextBlock Text="Save All"/>
@@ -158,3 +249,4 @@
         </Grid>
     </Grid>
 </UserControl>
+

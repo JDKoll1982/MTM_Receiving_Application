@@ -86,7 +86,7 @@ namespace MTM_Receiving_Application
             if (args.IsSettingsSelected)
             {
                 PageTitleTextBlock.Text = "Settings";
-                // ContentFrame.Navigate(typeof(SettingsPage));
+                ContentFrame.Navigate(typeof(Views.Settings.Settings_WorkflowView));
             }
             else if (args.SelectedItem is NavigationViewItem item)
             {

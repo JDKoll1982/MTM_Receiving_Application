@@ -13,6 +13,7 @@
 
     <UserControl.Resources>
         <converters:Converter_DecimalToString x:Key="DecimalToStringConverter"/>
+        <converters:Converter_LoadNumberToOneBased x:Key="LoadNumberConverter"/>
     </UserControl.Resources>
 
     <Grid>
@@ -86,12 +87,28 @@
                           CurrentCellChanged="ManualEntryDataGrid_CurrentCellChanged"
                           Tapped="ManualEntryDataGrid_Tapped">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Load #" Binding="{Binding LoadNumber}" IsReadOnly="True" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Type" Binding="{Binding TypeName}" Width="*"/>
-                <controls:DataGridTextColumn Header="Part ID" Binding="{Binding PartId}" Width="*"/>
-                <controls:DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto"/>
-                <controls:DataGridTextColumn Header="PO Number" Binding="{Binding PoNumber}" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="Auto"/>
+                <controls:DataGridTextColumn Header="Load #" 
+                                           Binding="{Binding LoadNumber, Converter={StaticResource LoadNumberConverter}}" 
+                                           IsReadOnly="True" 
+                                           Width="Auto"/>
+                <controls:DataGridTextColumn Header="Type" 
+                                           Binding="{Binding TypeName}" 
+                                           Width="*"/>
+                <controls:DataGridTextColumn Header="Part ID" 
+                                           Binding="{Binding PartId}" 
+                                           Width="*"/>
+                <controls:DataGridTextColumn Header="Quantity" 
+                                           Binding="{Binding Quantity}" 
+                                           Width="Auto"/>
+                <controls:DataGridTextColumn Header="PO Number" 
+                                           Binding="{Binding PoNumber}" 
+                                           Width="Auto"/>
+                <controls:DataGridTextColumn Header="Location" 
+                                           Binding="{Binding Location}" 
+                                           Width="Auto"/>
+                <controls:DataGridTextColumn Header="Home Location" 
+                                           Binding="{Binding HomeLocation}" 
+                                           Width="Auto"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

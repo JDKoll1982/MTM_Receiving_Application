@@ -13,6 +13,7 @@ using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
 using MTM_Receiving_Application.ViewModels.Receiving;
 using MTM_Receiving_Application.ViewModels.Dunnage;
+using MTM_Receiving_Application.ViewModels.Settings;
 using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.ViewModels.Main;
 using MTM_Receiving_Application.Views.Main;
@@ -112,6 +113,10 @@ public partial class App : Application
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
                 services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 
+                // Settings Services
+                services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
+                services.AddSingleton<Contracts.Services.Navigation.IService_Navigation, Services.Navigation.Service_Navigation>();
+
                 // ViewModels
                 services.AddTransient<Shared_MainWindowViewModel>();
                 services.AddTransient<Shared_SplashScreenViewModel>();
@@ -148,6 +153,12 @@ public partial class App : Application
                 services.AddTransient<Dunnage_AdminInventoryViewModel>();
                 services.AddTransient<Dunnage_AddTypeDialogViewModel>();
 
+                // Settings Workflow ViewModels
+                services.AddTransient<Settings_WorkflowViewModel>();
+                services.AddTransient<Settings_ModeSelectionViewModel>();
+                services.AddTransient<Settings_DunnageModeViewModel>();
+                services.AddTransient<Settings_PlaceholderViewModel>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
@@ -158,7 +169,7 @@ public partial class App : Application
                 services.AddTransient<Views.Dunnage.Dunnage_AdminTypesView>();
                 services.AddTransient<Views.Dunnage.Dunnage_AdminPartsView>();
                 services.AddTransient<Views.Dunnage.Dunnage_AdminInventoryView>();
-                
+
                 // Dunnage Dialogs
                 services.AddTransient<Views.Dunnage.Dialogs.AddToInventoriedListDialog>();
 

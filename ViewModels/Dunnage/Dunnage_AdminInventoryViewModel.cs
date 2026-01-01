@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.ViewModels.Dunnage;
 /// ViewModel for managing the Inventoried Parts List
 /// Enables adding, editing, and removing parts that require Visual ERP inventory tracking
 /// </summary>
-public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
+public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
 {
     private readonly Dao_InventoriedDunnage _daoInventory;
     private readonly Dao_DunnagePart _daoPart;
@@ -33,7 +33,7 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
         Dao_DunnagePart daoPart,
         IService_DunnageAdminWorkflow adminWorkflow,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
         _daoInventory = daoInventory ?? throw new ArgumentNullException(nameof(daoInventory));
@@ -57,7 +57,8 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task LoadInventoriedPartsAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -77,7 +78,7 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load inventoried parts",
                     "Load Error",
                     nameof(LoadInventoriedPartsAsync));
@@ -108,9 +109,9 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
         try
         {
             var dialog = App.GetService<Views.Dunnage.Dialogs.AddToInventoriedListDialog>();
-            
+
             var result = await dialog.ShowAsync();
-            
+
             if (result == ContentDialogResult.Primary)
             {
                 // Dialog handles the insert, just reload the list
@@ -135,7 +136,7 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
     {
         if (SelectedInventoriedPart == null)
         {
-            _errorHandler.ShowUserError(
+            await _errorHandler.ShowUserErrorAsync(
                 "Please select a part to edit",
                 "No Selection",
                 nameof(ShowEditEntryAsync));
@@ -156,9 +157,9 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
 
             // Part ID (readonly)
             stackPanel.Children.Add(new TextBlock { Text = "Part ID (read-only)", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-            var partIdBox = new TextBox 
-            { 
-                Text = SelectedInventoriedPart.PartId, 
+            var partIdBox = new TextBox
+            {
+                Text = SelectedInventoriedPart.PartId,
                 IsReadOnly = true,
                 Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 12)
             };
@@ -207,7 +208,7 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
                 }
                 else
                 {
-                    _errorHandler.ShowUserError(
+                    await _errorHandler.ShowUserErrorAsync(
                         updateResult.ErrorMessage ?? "Failed to update part",
                         "Update Error",
                         nameof(ShowEditEntryAsync));
@@ -232,7 +233,7 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
     {
         if (SelectedInventoriedPart == null)
         {
-            _errorHandler.ShowUserError(
+            await _errorHandler.ShowUserErrorAsync(
                 "Please select a part to remove",
                 "No Selection",
                 nameof(ShowRemoveConfirmationAsync));
@@ -273,7 +274,8 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
     /// </summary>
     private async Task RemoveFromListAsync()
     {
-        if (SelectedInventoriedPart == null) return;
+        if (SelectedInventoriedPart == null)
+            return;
 
         try
         {
@@ -290,7 +292,7 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to remove part from list",
                     "Remove Error",
                     nameof(RemoveFromListAsync));
@@ -316,8 +318,10 @@ public partial class Dunnage_AdminInventoryViewModel : BaseViewModel
     /// Return to main admin navigation hub
     /// </summary>
     [RelayCommand]
-    private void BackToHub()
+    private async Task BackToHubAsync()
     {
-        _adminWorkflow.NavigateToSection(Models.Enums.Enum_DunnageAdminSection.Hub);
+        _logger.LogInfo("Returning to Settings Mode Selection from Admin Inventory");
+        var settingsWorkflow = App.GetService<IService_SettingsWorkflow>();
+        settingsWorkflow.GoBack();
     }
 }

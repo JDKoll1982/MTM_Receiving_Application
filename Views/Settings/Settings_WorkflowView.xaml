@@ -1,0 +1,50 @@
+<Page
+    x:Class="MTM_Receiving_Application.Views.Settings.Settings_WorkflowView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:enums="using:MTM_Receiving_Application.Models.Enums"
+    xmlns:settings="using:MTM_Receiving_Application.Views.Settings"
+    xmlns:dunnage="using:MTM_Receiving_Application.Views.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:Converter_EnumToVisibility x:Key="EnumToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <!-- Mode Selection -->
+        <settings:Settings_ModeSelectionView 
+            x:Name="ModeSelectionView"
+            Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=ModeSelection}"/>
+
+        <!-- Dunnage Mode View -->
+        <settings:Settings_DunnageModeView 
+            x:Name="DunnageModeView"
+            Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=DunnageSettings}"/>
+
+        <!-- Placeholder Views for other categories -->
+        <settings:Settings_PlaceholderView 
+            x:Name="ReceivingPlaceholderView"
+            Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=ReceivingSettings}"/>
+
+        <settings:Settings_PlaceholderView 
+            x:Name="ShippingPlaceholderView"
+            Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=ShippingSettings}"/>
+
+        <settings:Settings_PlaceholderView 
+            x:Name="VolvoPlaceholderView"
+            Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=VolvoSettings}"/>
+
+        <settings:Settings_PlaceholderView 
+            x:Name="AdministrativePlaceholderView"
+            Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=AdministrativeSettings}"/>
+
+        <!-- Frame for Admin Pages -->
+        <Frame x:Name="AdminFrame"
+               Visibility="{x:Bind ViewModel.IsAdminPageVisible, Mode=OneWay}"/>
+    </Grid>
+</Page>

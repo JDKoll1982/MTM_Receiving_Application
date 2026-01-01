@@ -12,6 +12,8 @@
 
     <Page.Resources>
         <converters:Converter_IconCodeToGlyph x:Key="IconCodeToGlyphConverter"/>
+        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+        <converters:Converter_StringFormat x:Key="DateTimeToStringConverter"/>
     </Page.Resources>
 
     <Grid Padding="24">

@@ -20,5 +20,6 @@ namespace MTM_Receiving_Application.Contracts.Services
         public void GoToStep(Enum_DunnageWorkflowStep step);
         public Task<Model_SaveResult> SaveSessionAsync();
         public void ClearSession();
+        public void AddCurrentLoadToSession();
     }
 }

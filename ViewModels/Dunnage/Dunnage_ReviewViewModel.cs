@@ -49,6 +49,12 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
     private ObservableCollection<Model_DunnageLoad> _sessionLoads = new();
 
     [ObservableProperty]
+    private Model_DunnageLoad? _currentLoad;
+
+    [ObservableProperty]
+    private int _currentEntryIndex = 1;
+
+    [ObservableProperty]
     private int _loadCount;
 
     [ObservableProperty]
@@ -59,6 +65,18 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
 
     [ObservableProperty]
     private string _successMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isSingleView = true;
+
+    [ObservableProperty]
+    private bool _isTableView = false;
+
+    [ObservableProperty]
+    private bool _canGoBack = false;
+
+    [ObservableProperty]
+    private bool _canGoNext = false;
 
     #endregion
 
@@ -82,11 +100,67 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
             LoadCount = SessionLoads.Count;
             CanSave = LoadCount > 0;
 
+            // Set up first entry for single view
+            if (LoadCount > 0)
+            {
+                CurrentEntryIndex = 1;
+                CurrentLoad = SessionLoads[0];
+                UpdateNavigationButtons();
+            }
+
             _logger.LogInfo($"Loaded {LoadCount} loads for review", "Review");
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error loading session loads: {ex.Message}", ex, "Review");
+        }
+    }
+
+    private void UpdateNavigationButtons()
+    {
+        CanGoBack = CurrentEntryIndex > 1;
+        CanGoNext = CurrentEntryIndex < LoadCount;
+    }
+
+    #endregion
+
+    #region View Navigation Commands
+
+    [RelayCommand]
+    private void SwitchToSingleView()
+    {
+        IsSingleView = true;
+        IsTableView = false;
+        _logger.LogInfo("Switched to Single View", "Review");
+    }
+
+    [RelayCommand]
+    private void SwitchToTableView()
+    {
+        IsSingleView = false;
+        IsTableView = true;
+        _logger.LogInfo("Switched to Table View", "Review");
+    }
+
+    [RelayCommand]
+    private void PreviousEntry()
+    {
+        if (CurrentEntryIndex > 1)
+        {
+            CurrentEntryIndex--;
+            CurrentLoad = SessionLoads[CurrentEntryIndex - 1];
+            UpdateNavigationButtons();
+        }
+    }
+
+    [RelayCommand]
+    private void NextEntry()
+    {
+        if (CurrentEntryIndex < LoadCount)
+        {
+            CurrentEntryIndex++;
+            CurrentLoad = SessionLoads[CurrentEntryIndex - 1];
+            UpdateNavigationButtons();
         }
     }
 

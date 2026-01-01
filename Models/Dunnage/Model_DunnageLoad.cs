@@ -35,6 +35,9 @@ public partial class Model_DunnageLoad : ObservableObject
     private string _location = string.Empty;
 
     [ObservableProperty]
+    private string _homeLocation = string.Empty;
+
+    [ObservableProperty]
     private string _typeName = string.Empty;
 
     [ObservableProperty]

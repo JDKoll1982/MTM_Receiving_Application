@@ -83,10 +83,7 @@
                         Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                         ToolTipService.ToolTip="Return to mode selection (clears current work)"
                         Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <Button Content="Mode Selection" 
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        ToolTipService.ToolTip="Return to mode selection (clears current work)"
-                        Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
                 <Button Content="Mode Selection" 
                         Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                         ToolTipService.ToolTip="Return to mode selection (clears current work)"
@@ -142,13 +139,7 @@
                         <KeyboardAccelerator Key="Left" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Back"
-                        Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnBackClick">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Left" Modifiers="Control"/>
-                    </Button.KeyboardAccelerators>
-                </Button>
+
                 
                 <!-- Next Button (wizard flow) -->
                 <Button Content="Next"
@@ -175,10 +166,10 @@
                         <KeyboardAccelerator Key="Right" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>
                 </Button>
-                <Button Content="Next"
+                <Button Content="Save &amp; Review"
                         Style="{StaticResource AccentButtonStyle}"
                         Visibility="{x:Bind ViewModel.IsDetailsEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="OnNextClick">
+                        Click="OnSaveAndReviewClick">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Right" Modifiers="Control"/>
                     </Button.KeyboardAccelerators>

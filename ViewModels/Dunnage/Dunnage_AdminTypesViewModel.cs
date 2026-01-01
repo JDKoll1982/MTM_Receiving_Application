@@ -404,7 +404,9 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
     {
         try
         {
-            await _adminWorkflow.NavigateToHubAsync();
+            _logger.LogInfo("Returning to Settings Mode Selection from Admin Types");
+            var settingsWorkflow = App.GetService<IService_SettingsWorkflow>();
+            settingsWorkflow.GoBack();
         }
         catch (Exception ex)
         {

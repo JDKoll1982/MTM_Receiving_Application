@@ -55,6 +55,14 @@ public class Model_DunnagePart : INotifyPropertyChanged
         set => SetField(ref _specValuesDict, value);
     }
 
+    private string _homeLocation = string.Empty;
+
+    public string HomeLocation
+    {
+        get => _homeLocation;
+        set => SetField(ref _homeLocation, value);
+    }
+
     public string DunnageTypeName
     {
         get => _dunnageTypeName;

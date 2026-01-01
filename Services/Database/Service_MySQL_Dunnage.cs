@@ -317,7 +317,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                var result = await _daoDunnagePart.InsertAsync(part.PartId, part.TypeId, part.SpecValues, CurrentUser);
+                var result = await _daoDunnagePart.InsertAsync(part.PartId, part.TypeId, part.SpecValues, part.HomeLocation, CurrentUser);
                 if (result.IsSuccess)
                 {
                     part.Id = result.Data;
@@ -336,7 +336,7 @@ namespace MTM_Receiving_Application.Services.Database
         {
             try
             {
-                return await _daoDunnagePart.UpdateAsync(part.Id, part.SpecValues, CurrentUser);
+                return await _daoDunnagePart.UpdateAsync(part.Id, part.SpecValues, part.HomeLocation, CurrentUser);
             }
             catch (Exception ex)
             {

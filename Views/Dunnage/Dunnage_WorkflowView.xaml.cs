@@ -188,6 +188,42 @@ public sealed partial class Dunnage_WorkflowView : Page
         }
     }
 
+    private async void OnSaveAndReviewClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        // Show confirmation dialog
+        var confirmDialog = new ContentDialog
+        {
+            Title = "Save and Review",
+            Content = "Are you ready to save this load and proceed to review?\n\nYou will be able to add more loads from the review screen.",
+            PrimaryButtonText = "Save & Review",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = this.XamlRoot
+        };
+
+        var confirmResult = await confirmDialog.ShowAsync();
+
+        if (confirmResult == ContentDialogResult.Primary)
+        {
+            // User confirmed, proceed to next step
+            var workflowService = App.GetService<Contracts.Services.IService_DunnageWorkflow>();
+            var result = await workflowService.AdvanceToNextStepAsync();
+
+            if (!result.IsSuccess)
+            {
+                // Show error message
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Cannot Proceed",
+                    Content = result.ErrorMessage,
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+            }
+        }
+    }
+
     private void OnBackClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         var workflowService = App.GetService<Contracts.Services.IService_DunnageWorkflow>();

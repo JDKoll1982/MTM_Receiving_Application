@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
@@ -79,6 +80,8 @@ namespace MTM_Receiving_Application.Services.Receiving
                         break;
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
+                        // Add current load to session before advancing to Review
+                        AddCurrentLoadToSession();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
 
@@ -160,6 +163,48 @@ namespace MTM_Receiving_Application.Services.Receiving
         {
             CurrentSession = new Model_DunnageSession();
             StatusMessageRaised?.Invoke(this, "Session cleared");
+        }
+
+        public void AddCurrentLoadToSession()
+        {
+            try
+            {
+                if (CurrentSession.SelectedPart != null && CurrentSession.Quantity > 0)
+                {
+                    // Default location to part's home location if not specified
+                    var location = string.IsNullOrWhiteSpace(CurrentSession.Location)
+                        ? CurrentSession.SelectedPart.HomeLocation
+                        : CurrentSession.Location;
+
+                    // Default PO number if not specified
+                    var poNumber = string.IsNullOrWhiteSpace(CurrentSession.PONumber)
+                        ? "Nothing Entered"
+                        : CurrentSession.PONumber;
+
+                    var load = new Model_DunnageLoad
+                    {
+                        LoadUuid = Guid.NewGuid(),
+                        PartId = CurrentSession.SelectedPart.PartId,
+                        Quantity = CurrentSession.Quantity,
+                        PoNumber = poNumber,
+                        Location = location,
+                        TypeName = CurrentSession.SelectedTypeName,
+                        DunnageType = CurrentSession.SelectedTypeName,
+                        TypeId = CurrentSession.SelectedTypeId,
+                        Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
+                        ReceivedDate = DateTime.Now,
+                        CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown"
+                    };
+
+                    CurrentSession.Loads.Add(load);
+                    _logger.LogInfo($"Added load to session: Part {load.PartId}, Qty {load.Quantity}", "DunnageWorkflow");
+                    StatusMessageRaised?.Invoke(this, $"Added load to session");
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandleErrorAsync("Error adding load to session", Enum_ErrorSeverity.Medium, ex, false);
+            }
         }
     }
 }

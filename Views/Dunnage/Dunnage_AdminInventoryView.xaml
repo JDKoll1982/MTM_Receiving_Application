@@ -4,8 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid Padding="16">
         <Grid.RowDefinitions>
@@ -36,38 +42,62 @@
 
         <!-- Data Grid -->
         <Grid Grid.Row="2">
-            <DataGrid
-                x:Name="InventoryDataGrid"
+            <ListView
+                x:Name="InventoryListView"
                 ItemsSource="{x:Bind ViewModel.InventoriedParts, Mode=OneWay}"
                 SelectedItem="{x:Bind ViewModel.SelectedInventoriedPart, Mode=TwoWay}"
-                AutoGenerateColumns="False"
-                IsReadOnly="True"
-                GridLinesVisibility="Horizontal"
-                HeadersVisibility="All"
-                SelectionMode="Single"
-                CanUserSortColumns="True"
-                CanUserReorderColumns="True">
+                SelectionMode="Single">
                 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Part ID" Binding="{Binding PartId}" Width="200"/>
-                    <DataGridTextColumn Header="Inventory Method" Binding="{Binding InventoryMethod}" Width="150"/>
-                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="300"/>
-                    <DataGridTextColumn Header="Date Added" Binding="{Binding CreatedDate}" Width="150"/>
-                    <DataGridTextColumn Header="Added By" Binding="{Binding CreatedBy}" Width="120"/>
-                    <DataGridTextColumn Header="Last Modified" Binding="{Binding ModifiedDate}" Width="150"/>
-                    <DataGridTextColumn Header="Modified By" Binding="{Binding ModifiedBy}" Width="120"/>
-                </DataGrid.Columns>
-            </DataGrid>
+                <ListView.HeaderTemplate>
+                    <DataTemplate>
+                        <Grid Padding="12,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Part ID" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="1" Text="Inventory Method" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="2" Text="Notes" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="3" Text="Date Added" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="4" Text="Added By" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="5" Text="Last Modified" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="6" Text="Modified By" FontWeight="Bold"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.HeaderTemplate>
+                
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_InventoriedDunnage">
+                        <Grid Padding="12,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{x:Bind PartId, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind InventoryMethod, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="2" Text="{x:Bind Notes, Mode=OneWay}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="3" Text="{x:Bind CreatedDate, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="4" Text="{x:Bind CreatedBy, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="5" Text="{x:Bind ModifiedDate, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="6" Text="{x:Bind ModifiedBy, Mode=OneWay}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
             <!-- Empty state -->
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <StackPanel.Visibility>
-                    <Binding Path="InventoriedParts.Count" Mode="OneWay">
-                        <Binding.Converter>
-                            <StaticResource ResourceKey="IntToVisibilityInverseConverter"/>
-                        </Binding.Converter>
-                    </Binding>
-                </StackPanel.Visibility>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Visibility="{x:Bind ViewModel.InventoriedParts.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}">
                 <TextBlock Text="No inventoried parts configured" 
                            Style="{StaticResource SubtitleTextBlockStyle}"
                            HorizontalAlignment="Center"

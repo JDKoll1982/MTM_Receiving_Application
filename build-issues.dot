@@ -2,6 +2,9 @@
   rankdir=LR;
   node [shape=box, style=filled, fontname="Segoe UI"];
   edge [fontname="Segoe UI", fontsize=10];
-  ROOT [label="Build Issues\nTotal: 0", fillcolor="lightblue", shape=doubleoctagon];
-  "Good Job!" [shape=box, style=filled, fillcolor=green];
+  ROOT [label="Build Issues\nTotal: 2", fillcolor="lightblue", shape=doubleoctagon];
+  "Microsoft.NET.RuntimeIdentifierInference.targets" [label="Microsoft.NET.RuntimeIdentifierInference.targets\n(2)", fillcolor="lightpink"];
+  ROOT -> "Microsoft.NET.RuntimeIdentifierInference.targets";
+  "Microsoft.NET.RuntimeIdentifierInference.targets_NETSDK1032" [label="NETSDK1032", fillcolor="red", shape=ellipse];
+  "Microsoft.NET.RuntimeIdentifierInference.targets" -> "Microsoft.NET.RuntimeIdentifierInference.targets_NETSDK1032" [label="2"];
 }

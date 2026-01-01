@@ -87,22 +87,23 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
 
     // T164: Dynamic button text for date filters
     public string LastWeekButtonText => $"Last Week ({DateTime.Now.Date.AddDays(-7):MMM d} - {DateTime.Now.Date:MMM d})";
-    
+
     public string TodayButtonText => $"Today ({DateTime.Now.Date:MMM d})";
-    
+
     public string ThisWeekButtonText
     {
         get
         {
             var today = DateTime.Now.Date;
             var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
-            if (startOfWeek > today) startOfWeek = startOfWeek.AddDays(-7);
+            if (startOfWeek > today)
+                startOfWeek = startOfWeek.AddDays(-7);
             return $"This Week ({startOfWeek:MMM d} - {today:MMM d})";
         }
     }
-    
+
     public string ThisMonthButtonText => $"This Month ({DateTime.Now:MMMM yyyy})";
-    
+
     public string ThisQuarterButtonText
     {
         get
@@ -214,7 +215,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
             // T152: Parse CSV using CsvHelper
             using var reader = new System.IO.StreamReader(localPath);
             using var csv = new CsvHelper.CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
-            
+
             var loadsList = new List<Model_DunnageLoad>();
             int lineNumber = 1; // Start at 1 (header is line 0)
 
@@ -222,7 +223,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
             {
                 csv.Read();
                 csv.ReadHeader();
-                
+
                 while (csv.Read())
                 {
                     lineNumber++;
@@ -233,9 +234,9 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
                             TypeName = csv.GetField<string>("Type") ?? string.Empty,
                             PartId = csv.GetField<string>("PartID") ?? string.Empty,
                             Quantity = csv.GetField<decimal>("Quantity"),
-                            PONumber = csv.GetField<string>("PO") ?? string.Empty,
+                            PoNumber = csv.GetField<string>("PO") ?? string.Empty,
                             Location = csv.GetField<string>("Location") ?? string.Empty,
-                            TransactionDate = DateTime.TryParse(csv.GetField<string>("Date"), out var date) ? date : DateTime.Now
+                            ReceivedDate = DateTime.TryParse(csv.GetField<string>("Date"), out var date) ? date : DateTime.Now
                         };
 
                         loadsList.Add(load);
@@ -669,7 +670,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
     {
         // Update FilteredLoads with current page items
         var pageLoads = _paginationService.GetCurrentPageItems<Model_DunnageLoad>();
-        
+
         FilteredLoads.Clear();
         foreach (var load in pageLoads)
         {
@@ -679,7 +680,7 @@ public partial class Dunnage_EditModeViewModel : Shared_BaseViewModel
         CurrentPage = _paginationService.CurrentPage;
         TotalPages = _paginationService.TotalPages;
         StatusMessage = $"Page {CurrentPage} of {TotalPages}";
-        
+
         _logger.LogInfo($"Page changed to {CurrentPage} of {TotalPages}", "EditMode");
     }
 

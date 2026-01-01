@@ -12,6 +12,7 @@ BEGIN
         p.type_id,
         t.type_name,
         p.spec_values,
+        p.home_location,
         p.created_by,
         p.created_date,
         p.modified_by,
