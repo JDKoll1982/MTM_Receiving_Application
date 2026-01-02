@@ -153,8 +153,12 @@
   <PropertyGroup>
     <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
-    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
-    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+    <!-- Disable trimming for WinUI 3 apps - causes issues with XAML binding, reflection, and JSON serialization -->
+    <PublishTrimmed>False</PublishTrimmed>
+    <!-- Suppress trim warnings from third-party libraries -->
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <!-- Enable single-file publishing optimizations -->
+    <PublishSingleFile Condition="'$(Configuration)' != 'Debug'">false</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>

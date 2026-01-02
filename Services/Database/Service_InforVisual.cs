@@ -97,7 +97,7 @@ namespace MTM_Receiving_Application.Services.Database
                 
                 var result = await _daoPO.GetByPoNumberAsync(cleanPoNumber);
                 
-                if (result.IsSuccess && result.Data != null && result.Data.Count > 0)
+                if (result.IsSuccess && result.Data?.Count > 0)
                 {
                     // Convert List<InforVisual.Model_InforVisualPO> to Receiving.Model_InforVisualPO
                     var firstRecord = result.Data[0];
@@ -106,7 +106,7 @@ namespace MTM_Receiving_Application.Services.Database
                         PONumber = firstRecord.PoNumber,
                         Vendor = firstRecord.VendorName,
                         Status = firstRecord.PoStatus,
-                        Parts = result.Data.Select(line => new Model_InforVisualPart
+                        Parts = result.Data.ConvertAll(line => new Model_InforVisualPart
                         {
                             PartID = line.PartNumber,
                             Description = line.PartDescription,
@@ -115,7 +115,7 @@ namespace MTM_Receiving_Application.Services.Database
                             POLineNumber = line.PoLine.ToString(),
                             PartType = "FG", // Default, could be enhanced
                             UnitOfMeasure = line.UnitOfMeasure
-                        }).ToList()
+                        })
                     };
                     
                     _logger?.LogInfo($"Successfully retrieved PO {poNumber} with {po.Parts.Count} parts");
@@ -245,7 +245,7 @@ namespace MTM_Receiving_Application.Services.Database
                 
                 var result = await _daoPO.GetByPoNumberAsync(poNumber);
                 
-                if (result.IsSuccess && result.Data != null && result.Data.Count > 0)
+                if (result.IsSuccess && result.Data?.Count > 0)
                 {
                     var matchingLine = result.Data.FirstOrDefault(line => line.PartNumber == partID);
                     if (matchingLine != null)
