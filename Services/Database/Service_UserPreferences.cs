@@ -123,4 +123,128 @@ public class Service_UserPreferences : IService_UserPreferences
             return Model_Dao_Result_Factory.Failure("An error occurred while updating preference.", ex);
         }
     }
+
+    public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(string username, string defaultMode)
+    {
+        try
+        {
+            // BUSINESS VALIDATION
+            var normalizedUsername = username?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedUsername))
+            {
+                return Model_Dao_Result_Factory.Failure("Username cannot be empty");
+            }
+
+            // Validate mode values (allow empty string to clear preference)
+            if (!string.IsNullOrEmpty(defaultMode) &&
+                defaultMode != "guided" &&
+                defaultMode != "manual" &&
+                defaultMode != "edit")
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    $"Invalid default receiving mode '{defaultMode}'. Must be 'guided', 'manual', 'edit', or empty.");
+            }
+
+            // Get User ID first
+            var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
+            if (!userResult.IsSuccess || userResult.Data == null)
+            {
+                return Model_Dao_Result_Factory.Failure($"User '{normalizedUsername}' not found.");
+            }
+
+            // DELEGATE TO DAO - use UpdateDefaultReceivingModeAsync when DAO is updated
+            var result = await _userDao.UpdateDefaultReceivingModeAsync(
+                userResult.Data.EmployeeNumber,
+                string.IsNullOrEmpty(defaultMode) ? null : defaultMode);
+
+            // LOGGING
+            if (result.IsSuccess)
+            {
+                _logger.LogInfo(
+                    $"Updated default receiving mode for {normalizedUsername} to '{defaultMode}'",
+                    "UserPreferences");
+            }
+            else
+            {
+                _logger.LogError(
+                    $"Failed to update receiving mode for {normalizedUsername}: {result.ErrorMessage}",
+                    null,
+                    "UserPreferences");
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                $"Error in {nameof(UpdateDefaultReceivingModeAsync)}: {ex.Message}",
+                Enum_ErrorSeverity.Critical,
+                ex);
+
+            return Model_Dao_Result_Factory.Failure(
+                "An error occurred while updating default receiving mode.", ex);
+        }
+    }
+
+    public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(string username, string defaultMode)
+    {
+        try
+        {
+            // BUSINESS VALIDATION
+            var normalizedUsername = username?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedUsername))
+            {
+                return Model_Dao_Result_Factory.Failure("Username cannot be empty");
+            }
+
+            // Validate mode values (allow empty string to clear preference)
+            if (!string.IsNullOrEmpty(defaultMode) &&
+                defaultMode != "guided" &&
+                defaultMode != "manual" &&
+                defaultMode != "edit")
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    $"Invalid default dunnage mode '{defaultMode}'. Must be 'guided', 'manual', 'edit', or empty.");
+            }
+
+            // Get User ID first
+            var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
+            if (!userResult.IsSuccess || userResult.Data == null)
+            {
+                return Model_Dao_Result_Factory.Failure($"User '{normalizedUsername}' not found.");
+            }
+
+            // DELEGATE TO DAO
+            var result = await _userDao.UpdateDefaultDunnageModeAsync(
+                userResult.Data.EmployeeNumber,
+                string.IsNullOrEmpty(defaultMode) ? null : defaultMode);
+
+            // LOGGING
+            if (result.IsSuccess)
+            {
+                _logger.LogInfo(
+                    $"Updated default dunnage mode for {normalizedUsername} to '{defaultMode}'",
+                    "UserPreferences");
+            }
+            else
+            {
+                _logger.LogError(
+                    $"Failed to update dunnage mode for {normalizedUsername}: {result.ErrorMessage}",
+                    null,
+                    "UserPreferences");
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                $"Error in {nameof(UpdateDefaultDunnageModeAsync)}: {ex.Message}",
+                Enum_ErrorSeverity.Critical,
+                ex);
+
+            return Model_Dao_Result_Factory.Failure(
+                "An error occurred while updating default dunnage mode.", ex);
+        }
+    }
 }

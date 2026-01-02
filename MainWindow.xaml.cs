@@ -161,6 +161,25 @@ namespace MTM_Receiving_Application
                     };
                 }
             }
+            // If navigated to SettingsWorkflowView, subscribe to ViewModel changes to update header
+            else if (ContentFrame.Content is Views.Settings.Settings_WorkflowView settingsView)
+            {
+                var viewModel = settingsView.ViewModel;
+                if (viewModel != null)
+                {
+                    // Update header with current step title
+                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+
+                    // Subscribe to property changes to keep header updated
+                    viewModel.PropertyChanged += (s, args) =>
+                    {
+                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
+                        {
+                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                        }
+                    };
+                }
+            }
         }
 
         /// <summary>

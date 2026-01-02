@@ -40,8 +40,40 @@ namespace MTM_Receiving_Application.Services.Receiving
         public Task<bool> StartWorkflowAsync()
         {
             ClearSession();
-            GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-            StatusMessageRaised?.Invoke(this, "Workflow started");
+
+            // Check if user has a default mode set
+            var currentUser = _sessionManager.CurrentSession?.User;
+            if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultDunnageMode))
+            {
+                // Skip mode selection and go directly to the default mode
+                switch (currentUser.DefaultDunnageMode.ToLower())
+                {
+                    case "guided":
+                        GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+                        StatusMessageRaised?.Invoke(this, "Starting Guided Wizard mode");
+                        break;
+                    case "manual":
+                        GoToStep(Enum_DunnageWorkflowStep.ManualEntry);
+                        StatusMessageRaised?.Invoke(this, "Starting Manual Entry mode");
+                        break;
+                    case "edit":
+                        GoToStep(Enum_DunnageWorkflowStep.EditMode);
+                        StatusMessageRaised?.Invoke(this, "Starting Edit mode");
+                        break;
+                    default:
+                        // Invalid default, show mode selection
+                        GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+                        StatusMessageRaised?.Invoke(this, "Workflow started");
+                        break;
+                }
+            }
+            else
+            {
+                // No default mode, show mode selection
+                GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+                StatusMessageRaised?.Invoke(this, "Workflow started");
+            }
+
             return Task.FromResult(true);
         }
 

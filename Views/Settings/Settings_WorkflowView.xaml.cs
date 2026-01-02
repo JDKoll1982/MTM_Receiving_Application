@@ -19,6 +19,7 @@ public sealed partial class Settings_WorkflowView : Page
         _workflowService = App.GetService<IService_SettingsWorkflow>();
         _navigationService = App.GetService<IService_Navigation>();
         InitializeComponent();
+        DataContext = ViewModel;
 
         _workflowService.StepChanged += OnWorkflowStepChanged;
         Loaded += OnLoaded;

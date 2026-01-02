@@ -29,6 +29,7 @@ BEGIN
         visual_username,
         visual_password,
         default_receiving_mode,
+        default_dunnage_mode,
         created_date,
         created_by,
         modified_date

@@ -38,7 +38,7 @@
                     <CheckBox Content="Set as default mode"
                               IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
                               Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
-                              CommandParameter="{x:Bind ViewModel.IsGuidedModeDefault, Mode=OneWay}"
+                              CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
                               HorizontalAlignment="Center"
                               ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickGuidedWizard'), Mode=OneWay}"/>
                 </StackPanel>
@@ -71,7 +71,7 @@
                     <CheckBox Content="Set as default mode"
                               IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
                               Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
-                              CommandParameter="{x:Bind ViewModel.IsManualModeDefault, Mode=OneWay}"
+                              CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
                               HorizontalAlignment="Center"
                               ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickManualEntry'), Mode=OneWay}"/>
                 </StackPanel>
@@ -104,7 +104,7 @@
                     <CheckBox Content="Set as default mode"
                               IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
                               Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
-                              CommandParameter="{x:Bind ViewModel.IsEditModeDefault, Mode=OneWay}"
+                              CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
                               HorizontalAlignment="Center"
                               ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"/>
                 </StackPanel>

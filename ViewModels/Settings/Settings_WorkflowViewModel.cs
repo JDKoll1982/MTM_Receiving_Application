@@ -44,9 +44,9 @@ public partial class Settings_WorkflowViewModel : Shared_BaseViewModel
             Enum_SettingsWorkflowStep.ShippingSettings => "UPS / FedEx Settings",
             Enum_SettingsWorkflowStep.VolvoSettings => "Volvo Settings",
             Enum_SettingsWorkflowStep.AdministrativeSettings => "Administrative Settings",
-            Enum_SettingsWorkflowStep.DunnageTypes => throw new System.NotImplementedException(),
-            Enum_SettingsWorkflowStep.DunnageInventory => throw new System.NotImplementedException(),
-            _ => throw new System.NotImplementedException(),
+            Enum_SettingsWorkflowStep.DunnageTypes => "Dunnage Types",
+            Enum_SettingsWorkflowStep.DunnageInventory => "Dunnage Inventory",
+            _ => "Settings",
         };
 
         _logger.LogInfo($"Settings workflow navigated to: {step}", "SettingsWorkflow");

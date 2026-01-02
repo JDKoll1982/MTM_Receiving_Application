@@ -14,4 +14,14 @@ public interface IService_UserPreferences
     /// <param name="username"></param>
     /// <param name="defaultMode"></param>
     public Task<Model_Dao_Result> UpdateDefaultModeAsync(string username, string defaultMode);
+
+    /// <summary>Update user's default receiving workflow mode (guided, manual, edit)</summary>
+    /// <param name="username"></param>
+    /// <param name="defaultMode"></param>
+    public Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(string username, string defaultMode);
+
+    /// <summary>Update user's default dunnage mode</summary>
+    /// <param name="username"></param>
+    /// <param name="defaultMode"></param>
+    public Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(string username, string defaultMode);
 }

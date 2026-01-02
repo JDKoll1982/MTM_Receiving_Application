@@ -21,6 +21,7 @@ public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
     private readonly Dao_InventoriedDunnage _daoInventory;
     private readonly Dao_DunnagePart _daoPart;
     private readonly IService_DunnageAdminWorkflow _adminWorkflow;
+    private readonly IService_Window _windowService;
 
     [ObservableProperty]
     private ObservableCollection<Model_InventoriedDunnage> _inventoriedParts;
@@ -28,10 +29,16 @@ public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
     [ObservableProperty]
     private Model_InventoriedDunnage? _selectedInventoriedPart;
 
+    /// <summary>
+    /// Gets whether a part is currently selected
+    /// </summary>
+    public bool HasSelection => SelectedInventoriedPart != null;
+
     public Dunnage_AdminInventoryViewModel(
         Dao_InventoriedDunnage daoInventory,
         Dao_DunnagePart daoPart,
         IService_DunnageAdminWorkflow adminWorkflow,
+        IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger)
         : base(errorHandler, logger)
@@ -39,6 +46,7 @@ public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
         _daoInventory = daoInventory ?? throw new ArgumentNullException(nameof(daoInventory));
         _daoPart = daoPart ?? throw new ArgumentNullException(nameof(daoPart));
         _adminWorkflow = adminWorkflow ?? throw new ArgumentNullException(nameof(adminWorkflow));
+        _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
 
         _inventoriedParts = new ObservableCollection<Model_InventoriedDunnage>();
     }
@@ -149,7 +157,8 @@ public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
             {
                 Title = $"Edit Inventoried Part: {SelectedInventoriedPart.PartId}",
                 PrimaryButtonText = "Save Changes",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
+                XamlRoot = _windowService.GetXamlRoot()
             };
 
             // Create the edit form
@@ -249,7 +258,8 @@ public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
                          "This will not delete the part from the system, but it will no longer trigger inventory tracking notifications during data entry.",
                 PrimaryButtonText = "Remove",
                 CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Close
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = _windowService.GetXamlRoot()
             };
 
             var result = await dialog.ShowAsync();
@@ -323,5 +333,13 @@ public partial class Dunnage_AdminInventoryViewModel : Shared_BaseViewModel
         _logger.LogInfo("Returning to Settings Mode Selection from Admin Inventory");
         var settingsWorkflow = App.GetService<IService_SettingsWorkflow>();
         settingsWorkflow.GoBack();
+    }
+
+    /// <summary>
+    /// Notifies dependent properties when selection changes
+    /// </summary>
+    partial void OnSelectedInventoriedPartChanged(Model_InventoriedDunnage? value)
+    {
+        OnPropertyChanged(nameof(HasSelection));
     }
 }

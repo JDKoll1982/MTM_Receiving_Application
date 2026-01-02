@@ -84,7 +84,42 @@ namespace MTM_Receiving_Application.Services.Receiving
             // Start fresh
             CurrentSession = new Model_ReceivingSession();
             NumberOfLoads = 1;
-            CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+
+            // Check if user has a default receiving mode set
+            var userSessionManager = App.GetService<IService_UserSessionManager>();
+            var currentUser = userSessionManager?.CurrentSession?.User;
+
+            if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultReceivingMode))
+            {
+                // Skip mode selection and go directly to the default mode
+                switch (currentUser.DefaultReceivingMode.ToLower())
+                {
+                    case "guided":
+                        CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
+                        _logger.LogInfo("Starting in Guided mode (default)");
+                        break;
+                    case "manual":
+                        CurrentStep = Enum_ReceivingWorkflowStep.ManualEntry;
+                        _logger.LogInfo("Starting in Manual Entry mode (default)");
+                        break;
+                    case "edit":
+                        CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
+                        _logger.LogInfo("Starting in Edit mode (default)");
+                        break;
+                    default:
+                        // Invalid default, show mode selection
+                        CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+                        _logger.LogInfo("Invalid default mode, showing mode selection");
+                        break;
+                }
+            }
+            else
+            {
+                // No default mode, show mode selection
+                CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+                _logger.LogInfo("No default mode set, showing mode selection");
+            }
+
             return false; // New session
         }
 

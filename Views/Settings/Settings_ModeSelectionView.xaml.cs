@@ -10,5 +10,6 @@ public sealed partial class Settings_ModeSelectionView : UserControl
     {
         ViewModel = App.GetService<ViewModels.Settings.Settings_ModeSelectionViewModel>();
         InitializeComponent();
+        DataContext = ViewModel;
     }
 }

@@ -30,8 +30,27 @@ public partial class Main_DunnageLabelViewModel : Shared_BaseViewModel
         DunnageLines = new ObservableCollection<Model_DunnageLine>();
         _currentLine = new Model_DunnageLine();
 
-        // Initialize to Mode Selection
-        IsModeSelectionVisible = true;
+        // Start the workflow - it will check for default mode and navigate accordingly
+        _ = InitializeWorkflowAsync();
+    }
+
+    /// <summary>
+    /// Initialize the workflow - checks for default mode and navigates to appropriate step
+    /// </summary>
+    private async Task InitializeWorkflowAsync()
+    {
+        try
+        {
+            await _workflowService.StartWorkflowAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(InitializeWorkflowAsync),
+                nameof(Main_DunnageLabelViewModel));
+        }
     }
 
     public ObservableCollection<Model_DunnageLine> DunnageLines { get; }

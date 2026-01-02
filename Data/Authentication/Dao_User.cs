@@ -317,6 +317,7 @@ namespace MTM_Receiving_Application.Data.Authentication
                     ? null
                     : reader.GetString(reader.GetOrdinal("visual_password")),
                 DefaultReceivingMode = TryGetDefaultReceivingMode(reader),
+                DefaultDunnageMode = TryGetDefaultDunnageMode(reader),
                 CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
                 CreatedBy = reader.IsDBNull(reader.GetOrdinal("created_by"))
                     ? null
@@ -346,6 +347,46 @@ namespace MTM_Receiving_Application.Data.Authentication
         }
 
         /// <summary>
+        /// Updates the user's default receiving workflow mode preference (guided, manual, edit)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="defaultMode"></param>
+        public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(int userId, string? defaultMode)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "@p_user_id", userId },
+                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_update_user_default_receiving_mode",
+                parameters
+            );
+        }
+
+        /// <summary>
+        /// Updates the user's default dunnage workflow mode preference
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="defaultMode"></param>
+        public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(int userId, string? defaultMode)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "@p_user_id", userId },
+                { "@p_default_mode", (object?)defaultMode ?? DBNull.Value }
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_update_user_default_dunnage_mode",
+                parameters
+            );
+        }
+
+        /// <summary>
         /// Safely attempts to read default_receiving_mode column, returns null if column doesn't exist
         /// </summary>
         /// <param name="reader"></param>
@@ -354,6 +395,24 @@ namespace MTM_Receiving_Application.Data.Authentication
             try
             {
                 var ordinal = reader.GetOrdinal("default_receiving_mode");
+                return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                // Column doesn't exist yet (migration not run) - return null
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Safely attempts to read default_dunnage_mode column, returns null if column doesn't exist
+        /// </summary>
+        /// <param name="reader"></param>
+        private static string? TryGetDefaultDunnageMode(IDataReader reader)
+        {
+            try
+            {
+                var ordinal = reader.GetOrdinal("default_dunnage_mode");
                 return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
             }
             catch (IndexOutOfRangeException)

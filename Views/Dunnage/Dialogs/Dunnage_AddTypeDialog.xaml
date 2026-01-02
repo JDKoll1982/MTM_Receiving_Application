@@ -5,6 +5,7 @@
     xmlns:controls="using:MTM_Receiving_Application.Views.Dunnage.Controls"
     xmlns:models="using:MTM_Receiving_Application.Models.Dunnage"
     xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Dunnage"
+    xmlns:materialIcons="using:Material.Icons.WinUI3"
     x:Name="Root"
     Title="Add New Dunnage Type"
     PrimaryButtonText="Save Type"
@@ -53,11 +54,28 @@
                     Visibility="{x:Bind ViewModel.TypeNameError, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"
                     Margin="0,-8,0,0" />
 
-                <!-- Icon Picker -->
-                <TextBlock Text="Icon" Margin="0,8,0,0" />
-                <controls:IconPickerControl
-                    SelectedIcon="{x:Bind ViewModel.SelectedIcon, Mode=TwoWay}"
-                    RecentlyUsedIcons="{x:Bind ViewModel.RecentlyUsedIcons, Mode=OneWay}" />
+                <!-- Icon Picker Button -->
+                <TextBlock Text="Icon" Margin="0,8,0,0" FontWeight="SemiBold" />
+                <Button x:Name="SelectIconButton"
+                        Click="OnSelectIconClick"
+                        HorizontalAlignment="Stretch"
+                        Padding="16,12"
+                        ToolTipService.ToolTip="Click to browse and select an icon from the icon library">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <materialIcons:MaterialIcon 
+                            Kind="{x:Bind ViewModel.SelectedIcon, Mode=OneWay}" 
+                            Width="32" 
+                            Height="32"
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Click to select icon" FontWeight="SemiBold"/>
+                            <TextBlock 
+                                Text="{x:Bind ViewModel.SelectedIcon, Mode=OneWay}"
+                                FontSize="12"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
             </StackPanel>
 
             <!-- Custom Specifications Section -->

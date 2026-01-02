@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Material.Icons;
 using MTM_Receiving_Application.Helpers.UI;
 using MTM_Receiving_Application.Contracts.Services;
@@ -23,6 +24,8 @@ public sealed partial class Shared_IconSelectorWindow : Window
     public MaterialIconKind? SelectedIconKind { get; private set; }
     public string? SelectedIconName { get; private set; }
     public bool IconWasSelected { get; private set; }
+
+    private TaskCompletionSource<MaterialIconKind?>? _selectionTaskCompletionSource;
 
     public Shared_IconSelectorWindow()
     {
@@ -57,6 +60,40 @@ public sealed partial class Shared_IconSelectorWindow : Window
             var centerY = (displayArea.WorkArea.Height - windowSize.Height) / 2;
             appWindow.Move(new Windows.Graphics.PointInt32 { X = centerX, Y = centerY });
         }
+
+        // Handle window closing to complete the task
+        this.Closed += (s, e) =>
+        {
+            _selectionTaskCompletionSource?.TrySetResult(IconWasSelected ? SelectedIconKind : null);
+        };
+    }
+
+    /// <summary>
+    /// Sets the initial icon selection in the grid
+    /// </summary>
+    public void SetInitialSelection(MaterialIconKind iconKind)
+    {
+        SelectedIconKind = iconKind;
+
+        // Find and select the icon in the grid after it loads
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            var iconInfo = _allIcons.FirstOrDefault(i => i.Kind == iconKind);
+            if (iconInfo != null)
+            {
+                IconGridView.SelectedItem = iconInfo;
+                IconGridView.ScrollIntoView(iconInfo);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Waits for the user to select an icon or close the window
+    /// </summary>
+    public Task<MaterialIconKind?> WaitForSelectionAsync()
+    {
+        _selectionTaskCompletionSource = new TaskCompletionSource<MaterialIconKind?>();
+        return _selectionTaskCompletionSource.Task;
     }
 
     private void LoadIcons()

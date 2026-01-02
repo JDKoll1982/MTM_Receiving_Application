@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Converters"
+    xmlns:materialIcons="using:Material.Icons.WinUI3"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded">
@@ -90,10 +91,10 @@
                         <controls:DataGridTemplateColumn Header="Icon" Width="60">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <FontIcon 
-                                        Glyph="{Binding Icon, Converter={StaticResource IconCodeToGlyphConverter}}" 
-                                        FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
-                                        FontSize="24"
+                                    <materialIcons:MaterialIcon 
+                                        Kind="{Binding IconKind}" 
+                                        Width="24" 
+                                        Height="24"
                                         Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"/>

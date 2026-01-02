@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
@@ -187,16 +189,77 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
                 PlaceholderText = "Enter type name"
             };
 
-            var iconBox = new TextBox
+            // Icon selector button
+            var iconSelectorButton = new Button
             {
-                Header = "Icon (Unicode)",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Padding = new Thickness(16, 12, 16, 12)
+            };
+
+            var iconButtonPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 12
+            };
+
+            var iconDisplay = new Material.Icons.WinUI3.MaterialIcon
+            {
+                Kind = editedType.IconKind,
+                Width = 32,
+                Height = 32,
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)Microsoft.UI.Xaml.Application.Current.Resources["AccentFillColorDefaultBrush"]
+            };
+
+            var iconTextPanel = new StackPanel
+            {
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            var iconLabel = new TextBlock
+            {
+                Text = "Click to select icon",
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
+            };
+
+            var iconName = new TextBlock
+            {
                 Text = editedType.Icon,
-                PlaceholderText = "e.g., 📦",
-                MaxLength = 10
+                FontSize = 12,
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)Microsoft.UI.Xaml.Application.Current.Resources["TextFillColorSecondaryBrush"]
+            };
+
+            iconTextPanel.Children.Add(iconLabel);
+            iconTextPanel.Children.Add(iconName);
+            iconButtonPanel.Children.Add(iconDisplay);
+            iconButtonPanel.Children.Add(iconTextPanel);
+            iconSelectorButton.Content = iconButtonPanel;
+
+            // Handle icon selection
+            iconSelectorButton.Click += async (_, __) =>
+            {
+                var iconSelector = new Views.Shared.Shared_IconSelectorWindow();
+                iconSelector.SetInitialSelection(editedType.IconKind);
+                iconSelector.Activate();
+
+                var selectedIcon = await iconSelector.WaitForSelectionAsync();
+                if (selectedIcon.HasValue)
+                {
+                    editedType.Icon = selectedIcon.Value.ToString();
+                    iconDisplay.Kind = selectedIcon.Value;
+                    iconName.Text = selectedIcon.Value.ToString();
+                }
+            };
+
+            var iconHeader = new TextBlock
+            {
+                Text = "Icon",
+                Margin = new Thickness(0, 8, 0, 0),
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
             };
 
             stackPanel.Children.Add(typeNameBox);
-            stackPanel.Children.Add(iconBox);
+            stackPanel.Children.Add(iconHeader);
+            stackPanel.Children.Add(iconSelectorButton);
             dialog.Content = stackPanel;
 
             var result = await dialog.ShowAsync();
@@ -204,7 +267,7 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
             if (result == ContentDialogResult.Primary)
             {
                 editedType.DunnageType = typeNameBox.Text.Trim();
-                editedType.Icon = iconBox.Text.Trim();
+                // Icon is already set by the button click handler
 
                 if (string.IsNullOrWhiteSpace(editedType.DunnageType))
                 {
@@ -439,6 +502,7 @@ public partial class Dunnage_AdminTypesViewModel : Shared_BaseViewModel
     /// <summary>
     /// Gets a tooltip by key from the help service
     /// </summary>
+    /// <param name="key"></param>
     public string GetTooltip(string key) => _helpService.GetTooltip(key);
 
     #endregion

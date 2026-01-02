@@ -122,6 +122,7 @@ $schemaFiles = @(
     "$ProjectRoot\Database\Schemas\03_create_receiving_tables.sql",
     "$ProjectRoot\Database\Schemas\04_create_package_preferences.sql",
     "$ProjectRoot\Database\Schemas\05_add_default_mode_to_users.sql",
+    "$ProjectRoot\Database\Schemas\06_add_default_dunnage_mode_to_users.sql",
     "$ProjectRoot\Database\Schemas\07_create_dunnage_tables_v2.sql",
     "$ProjectRoot\Database\Schemas\08_add_icon_to_dunnage_types.sql",
     "$ProjectRoot\Database\Schemas\09_fix_bad_icon_data.sql"

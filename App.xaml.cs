@@ -166,6 +166,12 @@ public partial class App : Application
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
 
+                // Settings Views
+                services.AddTransient<Views.Settings.Settings_WorkflowView>();
+                services.AddTransient<Views.Settings.Settings_ModeSelectionView>();
+                services.AddTransient<Views.Settings.Settings_DunnageModeView>();
+                services.AddTransient<Views.Settings.Settings_PlaceholderView>();
+
                 // Dunnage Admin Views
                 services.AddTransient<Views.Dunnage.Dunnage_AdminMainView>();
                 services.AddTransient<Views.Dunnage.Dunnage_AdminTypesView>();

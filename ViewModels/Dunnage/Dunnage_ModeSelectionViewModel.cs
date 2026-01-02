@@ -15,15 +15,24 @@ public partial class Dunnage_ModeSelectionViewModel : Shared_BaseViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Help _helpService;
+    private readonly IService_UserSessionManager _sessionManager;
+    private readonly IService_UserPreferences _userPreferencesService;
 
     public Dunnage_ModeSelectionViewModel(
         IService_DunnageWorkflow workflowService,
         IService_Help helpService,
+        IService_UserSessionManager sessionManager,
+        IService_UserPreferences userPreferencesService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _helpService = helpService;
+        _sessionManager = sessionManager;
+        _userPreferencesService = userPreferencesService;
+
+        // Load current default mode
+        LoadDefaultMode();
     }
 
     #region Observable Properties
@@ -36,6 +45,24 @@ public partial class Dunnage_ModeSelectionViewModel : Shared_BaseViewModel
 
     [ObservableProperty]
     private bool _isEditModeDefault;
+
+    #endregion
+
+    #region Initialization
+
+    /// <summary>
+    /// Load the user's default dunnage mode preference
+    /// </summary>
+    private void LoadDefaultMode()
+    {
+        var currentUser = _sessionManager.CurrentSession?.User;
+        if (currentUser != null)
+        {
+            IsGuidedModeDefault = currentUser.DefaultDunnageMode == "guided";
+            IsManualModeDefault = currentUser.DefaultDunnageMode == "manual";
+            IsEditModeDefault = currentUser.DefaultDunnageMode == "edit";
+        }
+    }
 
     #endregion
 
@@ -67,44 +94,152 @@ public partial class Dunnage_ModeSelectionViewModel : Shared_BaseViewModel
     #region Set Default Mode Commands
 
     [RelayCommand]
-    private void SetGuidedAsDefault(bool isChecked)
+    private async Task SetGuidedAsDefaultAsync(bool isChecked)
     {
-        IsGuidedModeDefault = isChecked;
-        if (isChecked)
+        try
         {
-            IsManualModeDefault = false;
-            IsEditModeDefault = false;
-            // TODO: Persist preference when user preferences service supports dunnage mode
-            _logger.LogInfo("Set Guided Mode as default");
+            var currentUser = _sessionManager.CurrentSession?.User;
+            if (currentUser == null)
+            {
+                return;
+            }
+
+            string? newMode = isChecked ? "guided" : null;
+
+            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, newMode ?? "");
+
+            if (result.IsSuccess)
+            {
+                // Update in-memory user object
+                currentUser.DefaultDunnageMode = newMode;
+
+                // Update UI state
+                IsGuidedModeDefault = isChecked;
+                if (isChecked)
+                {
+                    IsManualModeDefault = false;
+                    IsEditModeDefault = false;
+                }
+
+                _logger.LogInfo($"Dunnage default mode set to: {newMode ?? "none"}");
+                StatusMessage = isChecked ? "Guided mode set as default" : "Default mode cleared";
+            }
+            else
+            {
+                await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                // Revert checkbox
+                IsGuidedModeDefault = !isChecked;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync($"Failed to set default dunnage mode: {ex.Message}",
+                Enum_ErrorSeverity.Error, ex, true);
+            // Revert checkbox
+            IsGuidedModeDefault = !isChecked;
         }
     }
 
     [RelayCommand]
-    private void SetManualAsDefault(bool isChecked)
+    private async Task SetManualAsDefaultAsync(bool isChecked)
     {
-        IsManualModeDefault = isChecked;
-        if (isChecked)
+        try
         {
-            IsGuidedModeDefault = false;
-            IsEditModeDefault = false;
-            // TODO: Persist preference when user preferences service supports dunnage mode
-            _logger.LogInfo("Set Manual Mode as default");
+            var currentUser = _sessionManager.CurrentSession?.User;
+            if (currentUser == null)
+            {
+                return;
+            }
+
+            string? newMode = isChecked ? "manual" : null;
+
+            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, newMode ?? "");
+
+            if (result.IsSuccess)
+            {
+                // Update in-memory user object
+                currentUser.DefaultDunnageMode = newMode;
+
+                // Update UI state
+                IsManualModeDefault = isChecked;
+                if (isChecked)
+                {
+                    IsGuidedModeDefault = false;
+                    IsEditModeDefault = false;
+                }
+
+                _logger.LogInfo($"Dunnage default mode set to: {newMode ?? "none"}");
+                StatusMessage = isChecked ? "Manual mode set as default" : "Default mode cleared";
+            }
+            else
+            {
+                await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                // Revert checkbox
+                IsManualModeDefault = !isChecked;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync($"Failed to set default dunnage mode: {ex.Message}",
+                Enum_ErrorSeverity.Error, ex, true);
+            // Revert checkbox
+            IsManualModeDefault = !isChecked;
         }
     }
 
-    /// <summary>\n    /// Shows contextual help for mode selection\n    /// </summary>
-    /// <param name="isChecked"></param>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.ModeSelection\");\n    }
+    /// <summary>
+    /// Shows contextual help for mode selection
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.ModeSelection");
+    }
 
     [RelayCommand]
-    private void SetEditAsDefault(bool isChecked)
+    private async Task SetEditAsDefaultAsync(bool isChecked)
     {
-        IsEditModeDefault = isChecked;
-        if (isChecked)
+        try
         {
-            IsGuidedModeDefault = false;
-            IsManualModeDefault = false;
-            // TODO: Persist preference when user preferences service supports dunnage mode
-            _logger.LogInfo("Set Edit Mode as default");
+            var currentUser = _sessionManager.CurrentSession?.User;
+            if (currentUser == null)
+            {
+                return;
+            }
+
+            string? newMode = isChecked ? "edit" : null;
+
+            var result = await _userPreferencesService.UpdateDefaultDunnageModeAsync(currentUser.WindowsUsername, newMode ?? "");
+
+            if (result.IsSuccess)
+            {
+                // Update in-memory user object
+                currentUser.DefaultDunnageMode = newMode;
+
+                // Update UI state
+                IsEditModeDefault = isChecked;
+                if (isChecked)
+                {
+                    IsGuidedModeDefault = false;
+                    IsManualModeDefault = false;
+                }
+
+                _logger.LogInfo($"Dunnage default mode set to: {newMode ?? "none"}");
+                StatusMessage = isChecked ? "Edit mode set as default" : "Default mode cleared";
+            }
+            else
+            {
+                await _errorHandler.ShowErrorDialogAsync("Save Error", result.ErrorMessage, Enum_ErrorSeverity.Error);
+                // Revert checkbox
+                IsEditModeDefault = !isChecked;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync($"Failed to set default dunnage mode: {ex.Message}",
+                Enum_ErrorSeverity.Error, ex, true);
+            // Revert checkbox
+            IsEditModeDefault = !isChecked;
         }
     }
 
