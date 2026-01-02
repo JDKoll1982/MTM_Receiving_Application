@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.InforVisual;
+using MTM_Receiving_Application.Helpers.Database;
 
 namespace MTM_Receiving_Application.Data.InforVisual;
 
@@ -51,22 +52,7 @@ public class Dao_InforVisualPart
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var query = @"
-                SELECT 
-                    p.part_id AS PartNumber,
-                    p.description AS Description,
-                    p.part_type AS PartType,
-                    p.unit_cost AS UnitCost,
-                    p.u_m AS PrimaryUom,
-                    COALESCE(inv.on_hand, 0) AS OnHandQty,
-                    COALESCE(inv.allocated, 0) AS AllocatedQty,
-                    (COALESCE(inv.on_hand, 0) - COALESCE(inv.allocated, 0)) AS AvailableQty,
-                    p.site_id AS DefaultSite,
-                    p.stat AS PartStatus,
-                    p.prod_line AS ProductLine
-                FROM part p
-                LEFT JOIN inventory inv ON p.part_id = inv.part_id AND inv.site_id = '002'
-                WHERE p.part_id = @PartNumber";
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("03_GetPartByNumber.sql");
 
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PartNumber", partNumber);
@@ -110,23 +96,7 @@ public class Dao_InforVisualPart
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var query = @"
-                SELECT TOP (@MaxResults)
-                    p.part_id AS PartNumber,
-                    p.description AS Description,
-                    p.part_type AS PartType,
-                    p.unit_cost AS UnitCost,
-                    p.u_m AS PrimaryUom,
-                    COALESCE(inv.on_hand, 0) AS OnHandQty,
-                    COALESCE(inv.allocated, 0) AS AllocatedQty,
-                    (COALESCE(inv.on_hand, 0) - COALESCE(inv.allocated, 0)) AS AvailableQty,
-                    p.site_id AS DefaultSite,
-                    p.stat AS PartStatus,
-                    p.prod_line AS ProductLine
-                FROM part p
-                LEFT JOIN inventory inv ON p.part_id = inv.part_id AND inv.site_id = '002'
-                WHERE p.description LIKE @SearchTerm + '%'
-                ORDER BY p.part_id";
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("04_SearchPartsByDescription.sql");
 
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@SearchTerm", searchTerm);

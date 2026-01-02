@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.InforVisual;
+using MTM_Receiving_Application.Helpers.Database;
 
 namespace MTM_Receiving_Application.Data.InforVisual;
 
@@ -51,28 +52,7 @@ public class Dao_InforVisualPO
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var query = @"
-                SELECT 
-                    po.po_num AS PoNumber,
-                    pol.po_line AS PoLine,
-                    pol.part AS PartNumber,
-                    p.description AS PartDescription,
-                    pol.qty_ordered AS OrderedQty,
-                    pol.qty_received AS ReceivedQty,
-                    (pol.qty_ordered - pol.qty_received) AS RemainingQty,
-                    pol.u_m AS UnitOfMeasure,
-                    pol.due_date AS DueDate,
-                    po.vend_id AS VendorCode,
-                    v.name AS VendorName,
-                    po.stat AS PoStatus,
-                    po.site_id AS SiteId
-                FROM po
-                INNER JOIN po_line pol ON po.po_num = pol.po_num
-                INNER JOIN part p ON pol.part = p.part_id
-                LEFT JOIN vendor v ON po.vend_id = v.vend_id
-                WHERE po.po_num = @PoNumber
-                AND po.site_id = '002'
-                ORDER BY pol.po_line";
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("01_GetPOWithParts.sql");
 
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
@@ -116,7 +96,7 @@ public class Dao_InforVisualPO
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var query = "SELECT COUNT(*) FROM po WHERE po_num = @PoNumber AND site_id = '002'";
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("02_ValidatePONumber.sql");
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
