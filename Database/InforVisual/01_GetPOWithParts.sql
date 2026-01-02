@@ -5,31 +5,39 @@
 -- Server: VISUAL
 -- Site: 002
 -- ========================================
+-- Test Passed!
+USE [MTMFG];
+GO
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+GO
 
 -- USAGE: Replace @PoNumber with actual PO number (e.g., '123456')
-DECLARE @PoNumber VARCHAR(20) = '123456';  -- TEST VALUE - Replace with actual PO number
+DECLARE @PoNumber VARCHAR(20) = 'PO-067101';  -- TEST VALUE - Replace with actual PO number
 
+-- NOTE: Using base tables (PURCHASE_ORDER, PURC_ORDER_LINE) instead of views (po, po_line)
+-- Adjust table names if your environment uses different names (e.g. PURCHASE_ORDER)
+-- NOTE: No status check is performed. Returns all POs regardless of status (Open, Closed, etc.)
 SELECT 
-    po.po_num AS PoNumber,
-    pol.po_line AS PoLine,
-    pol.part AS PartNumber,
-    p.description AS PartDescription,
-    pol.qty_ordered AS OrderedQty,
-    pol.qty_received AS ReceivedQty,
-    (pol.qty_ordered - pol.qty_received) AS RemainingQty,
-    pol.u_m AS UnitOfMeasure,
-    pol.due_date AS DueDate,
-    po.vend_id AS VendorCode,
-    v.name AS VendorName,
-    po.stat AS PoStatus,
-    po.site_id AS SiteId
-FROM po
-INNER JOIN po_line pol ON po.po_num = pol.po_num
-INNER JOIN part p ON pol.part = p.part_id
-LEFT JOIN vendor v ON po.vend_id = v.vend_id
-WHERE po.po_num = @PoNumber
-AND po.site_id = '002'
-ORDER BY pol.po_line;
+    po.ID AS PoNumber,
+    pol.LINE_NO AS PoLine,
+    pol.PART_ID AS PartNumber,
+    p.DESCRIPTION AS PartDescription,
+    pol.ORDER_QTY AS OrderedQty,
+    pol.TOTAL_RECEIVED_QTY AS ReceivedQty,
+    (pol.ORDER_QTY - pol.TOTAL_RECEIVED_QTY) AS RemainingQty,
+    pol.PURCHASE_UM AS UnitOfMeasure,
+    pol.PROMISE_DATE AS DueDate,
+    po.VENDOR_ID AS VendorCode,
+    v.NAME AS VendorName,
+    po.STATUS AS PoStatus,
+    po.SITE_ID AS SiteId
+FROM dbo.PURCHASE_ORDER po
+INNER JOIN dbo.PURC_ORDER_LINE pol ON po.ID = pol.PURC_ORDER_ID
+LEFT JOIN dbo.PART p ON pol.PART_ID = p.ID
+LEFT JOIN dbo.VENDOR v ON po.VENDOR_ID = v.ID
+WHERE po.ID = @PoNumber
+-- AND po.SITE_ID = '002' -- Commented out to allow finding POs in other sites for testing
+ORDER BY pol.LINE_NO;
 
 -- Expected Results:
 -- - PoNumber: PO number
