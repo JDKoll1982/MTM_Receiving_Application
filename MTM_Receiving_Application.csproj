@@ -16,9 +16,8 @@
     <UseRidGraph>true</UseRidGraph>
   </PropertyGroup>
 
-  <!-- WindowsAppSDKSelfContained requires a Platform to be set, so make it conditional -->
-  <!-- This allows the language server to evaluate the project without errors -->
-  <PropertyGroup Condition="'$(Platform)' != '' and '$(Platform)' != 'AnyCPU'">
+  <!-- WindowsAppSDKSelfContained ensures the Windows App SDK runtime is included in the output -->
+  <PropertyGroup>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
