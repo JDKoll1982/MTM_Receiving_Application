@@ -9,7 +9,7 @@
 Before starting Phase 1 infrastructure setup, ensure you have:
 
 - ✅ .NET 8.0 SDK installed
-- ✅ MySQL 5.7.24 running (via MAMP at localhost:3306)
+- ✅ MySQL 5.7.24 running (via MAMP at 172.16.1.104:3306)
 - ✅ Visual Studio 2022 or VS Code with C# extension
 - ✅ WinUI 3 project created (MTM_Receiving_Application.csproj)
 - ✅ MTM_WIP_Application_WinForms accessible at C:\Users\johnk\source\repos\
@@ -66,10 +66,10 @@ Write-Host "✓ Template files copied" -ForegroundColor Green
 
 ```powershell
 # Create database
-& "C:\MAMP\bin\mysql\bin\mysql.exe" -h localhost -P 3306 -u root -proot -e "CREATE DATABASE IF NOT EXISTS mtm_receiving_application CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+& "C:\MAMP\bin\mysql\bin\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot -e "CREATE DATABASE IF NOT EXISTS mtm_receiving_application CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # Verify
-& "C:\MAMP\bin\mysql\bin\mysql.exe" -h localhost -P 3306 -u root -proot -e "SHOW DATABASES LIKE 'mtm_receiving%';"
+& "C:\MAMP\bin\mysql\bin\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot -e "SHOW DATABASES LIKE 'mtm_receiving%';"
 ```
 
 **Expected output**: `mtm_receiving_application`
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS label_table_receiving (
 
 Execute:
 ```powershell
-& "C:\MAMP\bin\mysql\bin\mysql.exe" -h localhost -P 3306 -u root -proot mtm_receiving_application < Database\Schemas\01_create_receiving_tables.sql
+& "C:\MAMP\bin\mysql\bin\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot mtm_receiving_application < Database\Schemas\01_create_receiving_tables.sql
 ```
 
 ### Step 6: Create First Stored Procedure (5 minutes)
@@ -197,7 +197,7 @@ DELIMITER ;
 
 Execute:
 ```powershell
-& "C:\MAMP\bin\mysql\bin\mysql.exe" -h localhost -P 3306 -u root -proot mtm_receiving_application < Database\StoredProcedures\Receiving\receiving_line_Insert.sql
+& "C:\MAMP\bin\mysql\bin\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot mtm_receiving_application < Database\StoredProcedures\Receiving\receiving_line_Insert.sql
 ```
 
 ## Verification Checklist

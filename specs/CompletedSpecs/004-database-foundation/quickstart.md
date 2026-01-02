@@ -31,7 +31,7 @@ If you need to preserve legacy `label_table_dunnage` data before removal:
 
 ```powershell
 # Export legacy table to CSV
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application -e "SELECT * FROM label_table_dunnage" > legacy_dunnage_backup.csv
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application -e "SELECT * FROM label_table_dunnage" > legacy_dunnage_backup.csv
 ```
 
 ### Step 2: Navigate to Schema Directory
@@ -46,10 +46,10 @@ Execute the dunnage table creation script:
 
 ```powershell
 # Option 1: Using PowerShell
-Get-Content .\06_create_dunnage_tables.sql | mysql -h localhost -P 3306 -u root -p mtm_receiving_application
+Get-Content .\06_create_dunnage_tables.sql | mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application
 
 # Option 2: Using mysql client directly
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < .\06_create_dunnage_tables.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < .\06_create_dunnage_tables.sql
 ```
 
 **Expected Output**: Script completes without errors. All 5 tables are created.
@@ -60,10 +60,10 @@ Execute the seed data script:
 
 ```powershell
 # Option 1: Using PowerShell
-Get-Content .\06_seed_dunnage_data.sql | mysql -h localhost -P 3306 -u root -p mtm_receiving_application
+Get-Content .\06_seed_dunnage_data.sql | mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application
 
 # Option 2: Using mysql client directly
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < .\06_seed_dunnage_data.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < .\06_seed_dunnage_data.sql
 ```
 
 **Expected Output**: 11 dunnage types created with default specification schemas.
@@ -352,7 +352,7 @@ DROP TABLE IF EXISTS dunnage_types;
 To restore legacy table, re-run the original schema script:
 
 ```powershell
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < .\01_create_receiving_tables.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < .\01_create_receiving_tables.sql
 ```
 
 ---

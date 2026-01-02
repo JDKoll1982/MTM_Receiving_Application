@@ -72,7 +72,7 @@ DELIMITER ;
 
 **Deploy**:
 ```bash
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database/StoredProcedures/Dunnage/sp_dunnage_types_get_all.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Database/StoredProcedures/Dunnage/sp_dunnage_types_get_all.sql
 ```
 
 ### 3. Test Stored Procedure Directly
@@ -234,7 +234,7 @@ For each table (types, specs, parts, loads, inventoried_dunnage):
 
 2. **Deploy procedures**:
    ```bash
-   mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_filename.sql
+   mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < sp_filename.sql
    ```
 
 3. **Verify deployment**:

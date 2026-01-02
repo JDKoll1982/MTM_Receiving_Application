@@ -30,7 +30,7 @@ This guide walks you through setting up, testing, and verifying the complete Dun
 cd MTM_Receiving_Application/Database
 
 # Execute migration script
-& "C:\MAMP\bin\mysql\bin\mysql.exe" -h localhost -P 3306 -u root -proot mtm_receiving_application < Migrations/010-dunnage-complete-schema.sql
+& "C:\MAMP\bin\mysql\bin\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot mtm_receiving_application < Migrations/010-dunnage-complete-schema.sql
 ```
 
 ### 1.2 Verify New Tables

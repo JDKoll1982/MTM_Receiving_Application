@@ -30,7 +30,7 @@ This document captures research findings and technology decisions for establishi
 
 **Implementation Notes**:
 - NuGet package: MySql.Data version 9.0+
-- Connection string format: `Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;`
+- Connection string format: `Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;`
 - Use MySqlConnection, MySqlCommand for stored procedure execution
 - Implement connection pooling through connection string parameters
 

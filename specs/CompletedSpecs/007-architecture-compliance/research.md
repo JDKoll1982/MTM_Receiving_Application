@@ -388,7 +388,7 @@ private void ConfigureServices(HostBuilderContext context, IServiceCollection se
 public async Task GetAllAsync_ReturnsReceivingLoads()
 {
     // Arrange - inject test connection string
-    var testConnectionString = "Server=localhost;Database=test_db;...";
+    var testConnectionString = "Server=172.16.1.104;Database=test_db;...";
     var dao = new Dao_ReceivingLoad(testConnectionString);
     
     // Act
