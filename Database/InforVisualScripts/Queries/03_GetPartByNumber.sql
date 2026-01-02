@@ -6,14 +6,6 @@
 -- Site: 002
 -- ========================================
 
-USE [MTMFG];
-GO
-SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
-GO
-
--- USAGE: Replace @PartNumber with actual part number (e.g., 'PART-001')
-DECLARE @PartNumber VARCHAR(50) = 'PART-001';  -- TEST VALUE - Replace with actual part number
-
 -- NOTE: Using base tables (PART, PART_SITE) instead of views (part, inventory)
 SELECT 
     p.ID AS PartNumber,

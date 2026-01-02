@@ -5,17 +5,20 @@ using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
+using MTM_Receiving_Application.Contracts.Services;
 
 namespace MTM_Receiving_Application.Data.InforVisual;
 
 public class Dao_InforVisualPart
 {
     private readonly string _connectionString;
+    private readonly IService_LoggingUtility? _logger;
 
-    public Dao_InforVisualPart(string inforVisualConnectionString)
+    public Dao_InforVisualPart(string inforVisualConnectionString, IService_LoggingUtility? logger = null)
     {
         ValidateReadOnlyConnection(inforVisualConnectionString);
         _connectionString = inforVisualConnectionString;
+        _logger = logger;
     }
 
     private static void ValidateReadOnlyConnection(string connectionString)
@@ -49,6 +52,7 @@ public class Dao_InforVisualPart
     {
         try
         {
+            _logger?.LogInfo($"Retrieving part by number: {partNumber}");
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -74,13 +78,16 @@ public class Dao_InforVisualPart
                     PartStatus = reader["PartStatus"].ToString() ?? "ACTIVE",
                     ProductLine = reader["ProductLine"].ToString() ?? string.Empty
                 };
+                _logger?.LogInfo($"Found part: {partNumber}");
                 return Model_Dao_Result_Factory.Success(part);
             }
 
+            _logger?.LogWarning($"Part not found: {partNumber}");
             return Model_Dao_Result_Factory.Failure<Model_InforVisualPart>("Part not found");
         }
         catch (Exception ex)
         {
+            _logger?.LogError($"Error retrieving part {partNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<Model_InforVisualPart>(
                 $"Error retrieving part {partNumber}: {ex.Message}",
                 ex);
@@ -93,6 +100,7 @@ public class Dao_InforVisualPart
     {
         try
         {
+            _logger?.LogInfo($"Searching parts by description: '{searchTerm}' (Max: {maxResults})");
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -122,10 +130,12 @@ public class Dao_InforVisualPart
                 });
             }
 
+            _logger?.LogInfo($"Found {list.Count} parts matching '{searchTerm}'");
             return Model_Dao_Result_Factory.Success(list);
         }
         catch (Exception ex)
         {
+            _logger?.LogError($"Error searching parts: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPart>>(
                 $"Error searching parts: {ex.Message}",
                 ex);

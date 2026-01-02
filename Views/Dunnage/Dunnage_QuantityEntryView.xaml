@@ -98,7 +98,6 @@
                     <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE946;" 
-                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                       FontSize="16" 
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Tip" FontWeight="SemiBold"/>

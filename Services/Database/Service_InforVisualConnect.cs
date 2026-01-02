@@ -73,12 +73,8 @@ public class Service_InforVisualConnect : IService_InforVisual
                 "PO number cannot be null or empty");
         }
 
-        // Strip "PO-" prefix if present
+        // Use the PO number as provided - Infor Visual IDs include the prefix (e.g. "PO-123456")
         string cleanPoNumber = poNumber;
-        if (poNumber.StartsWith("PO-", StringComparison.OrdinalIgnoreCase))
-        {
-            cleanPoNumber = poNumber.Substring(3);
-        }
 
         if (_useMockData)
         {

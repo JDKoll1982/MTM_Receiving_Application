@@ -21,8 +21,7 @@
                             CornerRadius="8"
                             AutomationProperties.Name="Guided Wizard Mode">
                         <StackPanel Spacing="12">
-                            <FontIcon Glyph="&#xE81E;" 
-                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                            <FontIcon Glyph="&#xE771;" 
                                       FontSize="48" 
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
@@ -54,8 +53,7 @@
                             CornerRadius="8"
                             AutomationProperties.Name="Manual Entry Mode">
                         <StackPanel Spacing="12">
-                            <FontIcon Glyph="&#xE8F0;" 
-                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
+                            <FontIcon Glyph="&#xE7F0;" 
                                       FontSize="48" 
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
@@ -88,7 +86,6 @@
                             AutomationProperties.Name="Edit Mode">
                         <StackPanel Spacing="12">
                             <FontIcon Glyph="&#xE70F;" 
-                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                       FontSize="48" 
                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                             <TextBlock Text="Edit Mode" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>

@@ -6,15 +6,6 @@
 -- Site: 002
 -- ========================================
 
-USE [MTMFG];
-GO
-SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
-GO
-
--- USAGE: Replace @SearchTerm with search text and @MaxResults with max records to return
-DECLARE @SearchTerm VARCHAR(100) = 'BOLT';  -- TEST VALUE - Replace with search term
-DECLARE @MaxResults INT = 50;  -- Maximum number of results to return
-
 -- NOTE: Using base tables (PART, PART_SITE) instead of views (part, inventory)
 SELECT TOP (@MaxResults)
     p.ID AS PartNumber,

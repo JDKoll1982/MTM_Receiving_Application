@@ -119,7 +119,6 @@
                                     Spacing="8"
                                     Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <FontIcon Glyph="&#xE946;" 
-                                      FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                                       FontSize="16" 
                                       Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
                             <TextBlock Text="Inventory Method:" 

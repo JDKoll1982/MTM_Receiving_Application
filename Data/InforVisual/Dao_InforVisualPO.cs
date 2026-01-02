@@ -5,17 +5,20 @@ using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
+using MTM_Receiving_Application.Contracts.Services;
 
 namespace MTM_Receiving_Application.Data.InforVisual;
 
 public class Dao_InforVisualPO
 {
     private readonly string _connectionString;
+    private readonly IService_LoggingUtility? _logger;
 
-    public Dao_InforVisualPO(string inforVisualConnectionString)
+    public Dao_InforVisualPO(string inforVisualConnectionString, IService_LoggingUtility? logger = null)
     {
         ValidateReadOnlyConnection(inforVisualConnectionString);
         _connectionString = inforVisualConnectionString;
+        _logger = logger;
     }
 
     private static void ValidateReadOnlyConnection(string connectionString)
@@ -49,6 +52,7 @@ public class Dao_InforVisualPO
     {
         try
         {
+            _logger?.LogInfo($"Retrieving PO by number: {poNumber}");
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -79,10 +83,12 @@ public class Dao_InforVisualPO
                 });
             }
 
+            _logger?.LogInfo($"Retrieved {list.Count} lines for PO {poNumber}");
             return Model_Dao_Result_Factory.Success(list);
         }
         catch (Exception ex)
         {
+            _logger?.LogError($"Error retrieving PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPO>>(
                 $"Error retrieving PO {poNumber}: {ex.Message}",
                 ex);
@@ -93,6 +99,7 @@ public class Dao_InforVisualPO
     {
         try
         {
+            _logger?.LogInfo($"Validating PO number: {poNumber}");
             await using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -101,10 +108,13 @@ public class Dao_InforVisualPO
             command.Parameters.AddWithValue("@PoNumber", poNumber);
 
             var count = Convert.ToInt32(await command.ExecuteScalarAsync());
-            return Model_Dao_Result_Factory.Success(count > 0);
+            bool isValid = count > 0;
+            _logger?.LogInfo($"PO validation result for {poNumber}: {isValid}");
+            return Model_Dao_Result_Factory.Success(isValid);
         }
         catch (Exception ex)
         {
+            _logger?.LogError($"Error validating PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<bool>(
                 $"Error validating PO {poNumber}: {ex.Message}",
                 ex);

@@ -5,15 +5,6 @@
 -- Server: VISUAL
 -- Site: 002
 -- ========================================
--- Test Passed
-
-USE [MTMFG];
-GO
-SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
-GO
-
--- USAGE: Replace @PoNumber with actual PO number (e.g., '123456')
-DECLARE @PoNumber VARCHAR(20) = 'PO-067101';  -- TEST VALUE - Replace with actual PO number
 
 -- NOTE: Using base table PURCHASE_ORDER instead of view po
 SELECT COUNT(*) AS POExists

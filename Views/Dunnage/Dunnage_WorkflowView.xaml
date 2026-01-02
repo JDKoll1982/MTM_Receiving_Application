@@ -103,7 +103,6 @@
                     ToolTipService.ToolTip="Click for help about the current step">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE946;" 
-                              FontFamily="ms-appx:///Assets/Fonts/FluentSystemIcons.ttf#Fluent System Icons"
                               FontSize="16"/>
                     <TextBlock Text="Help"/>
                 </StackPanel>
