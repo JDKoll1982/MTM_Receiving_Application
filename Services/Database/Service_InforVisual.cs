@@ -114,7 +114,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
-                return DaoResultFactory.Failure<Model_InforVisualPO?>($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>($"Unexpected error querying PO {poNumber}: {ex.Message}", ex);
             }
 #endif
         }
@@ -162,7 +162,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error querying Part {partID}: {ex.Message}", ex);
-                return DaoResultFactory.Failure<Model_InforVisualPart?>($"Unexpected error querying Part {partID}: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>($"Unexpected error querying part {partId}: {ex.Message}", ex);
             }
 #endif
         }
@@ -193,7 +193,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error checking same-day receiving: {ex.Message}", ex);
-                return DaoResultFactory.Failure<decimal>($"Unexpected error querying same-day receiving: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<decimal>($"Unexpected error querying same-day receiving: {ex.Message}", ex);
             }
 #endif
         }
@@ -234,7 +234,7 @@ namespace MTM_Receiving_Application.Services.Database
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
-                return DaoResultFactory.Failure<int>($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<int>($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
             }
 #endif
         }
