@@ -151,15 +151,29 @@
 
   <!-- Publish Properties -->
   <PropertyGroup>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
-    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
+    <!-- Disable ReadyToRun for WinUI 3 - causes COM interop issues -->
+    <PublishReadyToRun>False</PublishReadyToRun>
     <!-- Disable trimming for WinUI 3 apps - causes issues with XAML binding, reflection, and JSON serialization -->
     <PublishTrimmed>False</PublishTrimmed>
     <!-- Suppress trim warnings from third-party libraries -->
     <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
-    <!-- Enable single-file publishing optimizations -->
-    <PublishSingleFile Condition="'$(Configuration)' != 'Debug'">false</PublishSingleFile>
+    <!-- Disable single-file publishing -->
+    <PublishSingleFile>false</PublishSingleFile>
+    <!-- Keep debugging symbols for crash analysis -->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  
+  <!-- Release Configuration Tweaks for WinUI 3 Compatibility -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <!--  Use same optimization settings as Debug to avoid COM interop issues -->
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <!-- Embed Infor Visual SQL query files as resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Database\InforVisualScripts\Queries\*.sql" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="MTM_Receiving_Application.Tests\**" />

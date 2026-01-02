@@ -1,0 +1,22 @@
+namespace MTM_Receiving_Application.Models.InforVisual;
+
+/// <summary>
+/// Configuration for Infor Visual database connection
+/// READ-ONLY access to VISUAL server, MTMFG database
+/// </summary>
+public class Model_InforVisualConnection
+{
+    public string Server { get; set; } = "VISUAL";
+    public string Database { get; set; } = "MTMFG";
+    public string UserId { get; set; } = "SHOP2";
+    public string Password { get; set; } = "SHOP";
+    public string SiteId { get; set; } = "002";
+
+    /// <summary>
+    /// Builds READ-ONLY connection string for Infor Visual
+    /// </summary>
+    public string GetConnectionString()
+    {
+        return $"Server={Server};Database={Database};User Id={UserId};Password={Password};TrustServerCertificate=True;ApplicationIntent=ReadOnly;";
+    }
+}

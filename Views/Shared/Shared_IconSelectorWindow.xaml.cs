@@ -71,6 +71,7 @@ public sealed partial class Shared_IconSelectorWindow : Window
     /// <summary>
     /// Sets the initial icon selection in the grid
     /// </summary>
+    /// <param name="iconKind"></param>
     public void SetInitialSelection(MaterialIconKind iconKind)
     {
         SelectedIconKind = iconKind;

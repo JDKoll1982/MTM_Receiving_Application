@@ -97,8 +97,18 @@ public partial class App : Application
                 // Startup Service
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
+                // NEW: Infor Visual Connection Service with mock data support
+                var useMockData = false; // Set to true to use mock data instead of connecting to VISUAL server
+                services.AddSingleton(sp => new Dao_InforVisualConnection(
+                    Helper_Database_Variables.GetInforVisualConnectionString()));
+                services.AddSingleton<IService_InforVisual>(sp =>
+                {
+                    var dao = sp.GetRequiredService<Dao_InforVisualConnection>();
+                    var logger = sp.GetService<IService_LoggingUtility>();
+                    return new Service_InforVisualConnect(dao, useMockData, logger);
+                });
+
                 // Receiving Workflow Services (003-database-foundation)
-                services.AddSingleton<IService_InforVisual, Service_InforVisual>();
                 services.AddSingleton<IService_MySQL_Receiving>(sp => { var logger = sp.GetRequiredService<IService_LoggingUtility>(); return new Service_MySQL_Receiving(Helper_Database_Variables.GetConnectionString(), logger); });
                 services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
                 services.AddSingleton<IService_MySQL_PackagePreferences>(sp => new Service_MySQL_PackagePreferences(Helper_Database_Variables.GetConnectionString()));

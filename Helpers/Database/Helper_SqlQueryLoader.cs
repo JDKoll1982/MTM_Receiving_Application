@@ -20,14 +20,14 @@ namespace MTM_Receiving_Application.Helpers.Database
             {
                 // Get the executing assembly
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = $"MTM_Receiving_Application.Database.InforVisual.{resourcePath}";
+                var resourceName = $"MTM_Receiving_Application.Database.InforVisualScripts.Queries.{resourcePath}";
 
                 using var stream = assembly.GetManifestResourceStream(resourceName);
                 if (stream == null)
                 {
                     // Fallback: Try to load from file system during development
                     var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    var filePath = Path.Combine(baseDir, "Database", "InforVisual", resourcePath);
+                    var filePath = Path.Combine(baseDir, "Database", "InforVisualScripts", "Queries", resourcePath);
 
                     if (File.Exists(filePath))
                     {
@@ -38,7 +38,7 @@ namespace MTM_Receiving_Application.Helpers.Database
                     var solutionRoot = Directory.GetParent(baseDir)?.Parent?.Parent?.Parent?.FullName;
                     if (solutionRoot != null)
                     {
-                        filePath = Path.Combine(solutionRoot, "Database", "InforVisual", resourcePath);
+                        filePath = Path.Combine(solutionRoot, "Database", "InforVisualScripts", "Queries", resourcePath);
                         if (File.Exists(filePath))
                         {
                             return File.ReadAllText(filePath);

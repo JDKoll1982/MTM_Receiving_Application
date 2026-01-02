@@ -5,7 +5,6 @@ using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Services.Database
@@ -97,27 +96,28 @@ namespace MTM_Receiving_Application.Services.Database
                 
                 var result = await _daoPO.GetByPoNumberAsync(cleanPoNumber);
                 
-                if (result.IsSuccess && result.Data?.Count > 0)
+                if (result.IsSuccess && result.Data != null && result.Data.Count > 0)
                 {
-                    // Convert List<InforVisual.Model_InforVisualPO> to Receiving.Model_InforVisualPO
+                    // Convert List<Model_InforVisualPO> to single PO with Parts
                     var firstRecord = result.Data[0];
                     var po = new Model_InforVisualPO
                     {
-                        PONumber = firstRecord.PoNumber,
-                        Vendor = firstRecord.VendorName,
-                        Status = firstRecord.PoStatus,
-                        Parts = result.Data.ConvertAll(line => new Model_InforVisualPart
+                        PoNumber = firstRecord.PoNumber,
+                        VendorCode = firstRecord.VendorCode,
+                        VendorName = firstRecord.VendorName,
+                        PoStatus = firstRecord.PoStatus,
+                        SiteId = firstRecord.SiteId,
+                        Parts = result.Data.Select(r => new Model_InforVisualPart
                         {
-                            PartID = line.PartNumber,
-                            Description = line.PartDescription,
-                            QtyOrdered = (int)line.OrderedQty,
-                            RemainingQuantity = (int)line.RemainingQty,
-                            POLineNumber = line.PoLine.ToString(),
-                            PartType = "FG", // Default, could be enhanced
-                            UnitOfMeasure = line.UnitOfMeasure
-                        })
+                            PartNumber = r.PartNumber,
+                            Description = r.PartDescription,
+                            OrderedQty = r.OrderedQty,
+                            ReceivedQty = r.ReceivedQty,
+                            RemainingQty = r.RemainingQty,
+                            PrimaryUom = r.UnitOfMeasure,
+                            POLineNumber = r.PoLine.ToString()
+                        }).ToList()
                     };
-                    
                     _logger?.LogInfo($"Successfully retrieved PO {poNumber} with {po.Parts.Count} parts");
                     return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(po);
                 }
@@ -163,40 +163,27 @@ namespace MTM_Receiving_Application.Services.Database
             {
                 _logger?.LogInfo($"Querying Infor Visual for Part: {partID}");
                 
-                var result = await _daoPart.GetByPartNumberAsync(partID);
+                var result = await _daoPart.GetPartByIdAsync(partID);
                 
                 if (result.IsSuccess && result.Data != null)
                 {
-                    // Convert InforVisual.Model_InforVisualPart to Receiving.Model_InforVisualPart
-                    var part = new Model_InforVisualPart
-                    {
-                        PartID = result.Data.PartNumber,
-                        Description = result.Data.Description,
-                        PartType = result.Data.PartType,
-                        UnitOfMeasure = result.Data.PrimaryUom,
-                        QtyOrdered = 0, // Not applicable for non-PO parts
-                        RemainingQuantity = (int)result.Data.AvailableQty,
-                        POLineNumber = "N/A"
-                    };
-                    
                     _logger?.LogInfo($"Successfully retrieved Part {partID}");
-                    return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(part);
                 }
                 else if (result.IsSuccess && result.Data == null)
                 {
                     _logger?.LogWarning($"Part {partID} not found in Infor Visual");
-                    return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(null);
                 }
                 else
                 {
                     _logger?.LogError($"Failed to query Infor Visual for Part {partID}: {result.ErrorMessage}");
-                    return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>(result.ErrorMessage);
                 }
+                
+                return result;
             }
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error querying Part {partID}: {ex.Message}", ex);
-                return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>($"Unexpected error querying part {partID}: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>($"Unexpected error querying part {partId}: {ex.Message}", ex);
             }
 #endif
         }
@@ -210,15 +197,15 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo($"Checking same-day receiving for PO: {poNumber}, Part: {partID}, Date: {date:yyyy-MM-dd}");
-                // Note: Same-day receiving check not implemented in Infor Visual DAO
-                // This would require a complex query joining receiving transactions
-                _logger?.LogWarning("Same-day receiving check not implemented for Release mode - returning 0");
+                // Note: This functionality would require a custom query or stored procedure in Infor Visual
+                // For now, returning 0 as the DAO doesn't implement this specific method
+                _logger?.LogWarning("GetSameDayReceivingQuantityAsync not implemented for Infor Visual DAO - returning 0");
                 return Model_Dao_Result_Factory.Success<decimal>(0);
             }
             catch (Exception ex)
             {
-                _logger?.LogError($"Error in same-day receiving check: {ex.Message}", ex);
-                return Model_Dao_Result_Factory.Failure<decimal>($"Unexpected error: {ex.Message}", ex);
+                _logger?.LogError($"Unexpected error checking same-day receiving: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<decimal>($"Unexpected error querying same-day receiving: {ex.Message}", ex);
             }
 #endif
         }
@@ -245,14 +232,14 @@ namespace MTM_Receiving_Application.Services.Database
                 
                 var result = await _daoPO.GetByPoNumberAsync(poNumber);
                 
-                if (result.IsSuccess && result.Data?.Count > 0)
+                if (result.IsSuccess && result.Data != null && result.Data.Count > 0)
                 {
-                    var matchingLine = result.Data.FirstOrDefault(line => line.PartNumber == partID);
+                    var matchingLine = result.Data.FirstOrDefault(p => p.PartNumber == partID);
                     if (matchingLine != null)
                     {
                         int remaining = (int)matchingLine.RemainingQty;
                         _logger?.LogInfo($"Remaining quantity for PO {poNumber}, Part {partID}: {remaining}");
-                        return Model_Dao_Result_Factory.Success<int>(remaining);
+                        return Model_Dao_Result_Factory.Success(remaining);
                     }
                     else
                     {
@@ -262,14 +249,14 @@ namespace MTM_Receiving_Application.Services.Database
                 }
                 else
                 {
-                    _logger?.LogWarning($"Failed to retrieve PO: {result?.ErrorMessage}");
+                    _logger?.LogWarning($"Failed to calculate remaining quantity: {result?.ErrorMessage}");
                     return Model_Dao_Result_Factory.Failure<int>(result?.ErrorMessage ?? "PO not found");
                 }
             }
             catch (Exception ex)
             {
                 _logger?.LogError($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
-                return Model_Dao_Result_Factory.Failure<int>($"Unexpected error: {ex.Message}", ex);
+                return Model_Dao_Result_Factory.Failure<int>($"Unexpected error calculating remaining quantity: {ex.Message}", ex);
             }
 #endif
         }
@@ -283,11 +270,12 @@ namespace MTM_Receiving_Application.Services.Database
             try
             {
                 _logger?.LogInfo("Testing Infor Visual connection...");
-                // Use a simple validation query to test connection
-                var testResult = await _daoPO.ValidatePoNumberAsync("000001");
-                bool isConnected = testResult.IsSuccess;
-                _logger?.LogInfo($"Infor Visual connection test result: {isConnected}");
-                return isConnected;
+                
+                await using var connection = new Microsoft.Data.SqlClient.SqlConnection(_daoPO.GetType().GetField("_connectionString", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(_daoPO) as string);
+                await connection.OpenAsync();
+                bool isOpen = connection.State == System.Data.ConnectionState.Open;
+                _logger?.LogInfo($"Infor Visual connection test result: {isOpen}");
+                return isOpen;
             }
             catch (Exception ex)
             {

@@ -52,6 +52,7 @@ public partial class Dunnage_AdminPartsViewModel : Shared_BaseViewModel
     /// <summary>
     /// Gets a tooltip by key from the help service
     /// </summary>
+    /// <param name="key"></param>
     public string GetTooltip(string key) => _helpService.GetTooltip(key);
 
     #endregion
