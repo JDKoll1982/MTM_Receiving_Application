@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1976D2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0D47A1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="boxGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E3F2FD;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" rx="32" fill="url(#bgGradient)"/>
+  
+  <!-- Main Package/Box Icon -->
+  <!-- Box base -->
+  <path d="M 80 100 L 128 75 L 176 100 L 176 170 L 128 195 L 80 170 Z" 
+        fill="url(#boxGradient)" 
+        stroke="#0D47A1" 
+        stroke-width="4"/>
+  
+  <!-- Box top face -->
+  <path d="M 80 100 L 128 75 L 176 100 L 128 125 Z" 
+        fill="#BBDEFB" 
+        stroke="#0D47A1" 
+        stroke-width="4"/>
+  
+  <!-- Box right face -->
+  <path d="M 128 125 L 176 100 L 176 170 L 128 195 Z" 
+        fill="#90CAF9" 
+        stroke="#0D47A1" 
+        stroke-width="4"/>
+  
+  <!-- Box left face -->
+  <path d="M 80 100 L 128 125 L 128 195 L 80 170 Z" 
+        fill="#64B5F6" 
+        stroke="#0D47A1" 
+        stroke-width="4"/>
+  
+  <!-- Checkmark overlay -->
+  <circle cx="190" cy="80" r="35" fill="#4CAF50" stroke="#2E7D32" stroke-width="3"/>
+  <path d="M 175 80 L 185 90 L 205 65" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="6" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- "MTM" Text at bottom -->
+  <text x="128" y="230" 
+        font-family="Arial, sans-serif" 
+        font-size="28" 
+        font-weight="bold" 
+        fill="#FFFFFF" 
+        text-anchor="middle">MTM</text>
+</svg>

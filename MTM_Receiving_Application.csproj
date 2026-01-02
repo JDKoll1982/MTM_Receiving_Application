@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>MTM_Receiving_Application</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -29,6 +30,12 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  
+  <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon property) -->
+  <ItemGroup>
+    <None Include="Assets\\app-icon.ico" />
+    <None Include="Assets\\app-icon.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -172,6 +179,13 @@
   <!-- Embed Infor Visual SQL query files as resources -->
   <ItemGroup>
     <EmbeddedResource Include="Database\InforVisualScripts\Queries\*.sql" />
+  </ItemGroup>
+
+  <!-- Include Themes folder in published output -->
+  <ItemGroup>
+    <Content Include="Themes\**\*.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -15,6 +15,28 @@
     </Window.SystemBackdrop>
 
     <Grid>
+        <!-- Custom Title Bar Area (when ExtendsContentIntoTitleBar = true) -->
+        <Grid x:Name="AppTitleBar" 
+              Height="48" 
+              VerticalAlignment="Top" 
+              Canvas.ZIndex="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- App Icon and Title -->
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="16,0,0,0">
+                <Image Source="/Assets/app-icon.ico" 
+                       Width="16" 
+                       Height="16" 
+                       VerticalAlignment="Center"/>
+                <TextBlock Text="MTM Receiving Application" 
+                           VerticalAlignment="Center"
+                           Style="{StaticResource CaptionTextBlockStyle}"/>
+            </StackPanel>
+        </Grid>
+
         <NavigationView x:Name="NavView"
                         PaneDisplayMode="Left"
                         IsSettingsVisible="True"

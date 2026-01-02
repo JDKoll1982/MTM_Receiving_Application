@@ -26,28 +26,8 @@ namespace MTM_Receiving_Application
             // Center window on screen
             CenterWindow();
 
-#if DEBUG
-            // Visual indicator for Debug mode - InforVisual Disabled
-            try
-            {
-                if (AppWindow.TitleBar != null)
-                {
-                    var redColor = Windows.UI.Color.FromArgb(255, 220, 53, 69); // Bootstrap Danger Red
-                    var whiteColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-
-                    AppWindow.TitleBar.ForegroundColor = whiteColor;
-                    AppWindow.TitleBar.BackgroundColor = redColor;
-                    AppWindow.TitleBar.ButtonForegroundColor = whiteColor;
-                    AppWindow.TitleBar.ButtonBackgroundColor = redColor;
-                    AppWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(255, 200, 35, 51);
-                    AppWindow.TitleBar.ButtonHoverForegroundColor = whiteColor;
-                    AppWindow.TitleBar.InactiveForegroundColor = Windows.UI.Color.FromArgb(255, 200, 200, 200);
-                    AppWindow.TitleBar.InactiveBackgroundColor = Windows.UI.Color.FromArgb(255, 150, 0, 0);
-                }
-                this.Title = "MTM Receiving Application (DEBUG MODE - InforVisual Disabled)";
-            }
-            catch { /* Ignore styling errors in debug mode */ }
-#endif
+            // Configure title bar to blend with UI
+            ConfigureTitleBar();
 
             // Set user display from current session
             if (_sessionManager.CurrentSession != null)
@@ -208,6 +188,68 @@ namespace MTM_Receiving_Application
             var centerY = (workArea.Height - 900) / 2;
 
             AppWindow.Move(new Windows.Graphics.PointInt32(centerX, centerY));
+        }
+
+        /// <summary>
+        /// Configure title bar to blend with the application UI
+        /// </summary>
+        private void ConfigureTitleBar()
+        {
+            try
+            {
+                if (AppWindow.TitleBar != null)
+                {
+                    // Make title bar transparent to blend with Mica backdrop
+                    AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+
+                    // Set the title bar drag region to the AppTitleBar element
+                    AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Tall;
+
+                    // Set button colors to match theme
+                    var transparentColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+
+                    // Button colors (will use theme colors)
+                    AppWindow.TitleBar.ButtonBackgroundColor = transparentColor;
+                    AppWindow.TitleBar.ButtonInactiveBackgroundColor = transparentColor;
+
+                    // Foreground colors for buttons
+                    var foregroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                    AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
+                    AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
+                    AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
+
+                    // Set custom drag region for the title bar
+                    SetTitleBarDragRegion();
+                }
+            }
+            catch
+            {
+                // Ignore title bar customization errors
+            }
+        }
+
+        /// <summary>
+        /// Set the drag region for the custom title bar
+        /// </summary>
+        private void SetTitleBarDragRegion()
+        {
+            if (AppWindow.TitleBar != null && AppTitleBar != null)
+            {
+                // Get the title bar height
+                var scale = AppTitleBar.XamlRoot.RasterizationScale;
+                var titleBarHeight = (int)(AppTitleBar.ActualHeight * scale);
+
+                // The entire AppTitleBar is draggable
+                var dragRect = new Windows.Graphics.RectInt32
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = (int)(AppTitleBar.ActualWidth * scale),
+                    Height = titleBarHeight
+                };
+
+                AppWindow.TitleBar.SetDragRectangles(new[] { dragRect });
+            }
         }
     }
 }

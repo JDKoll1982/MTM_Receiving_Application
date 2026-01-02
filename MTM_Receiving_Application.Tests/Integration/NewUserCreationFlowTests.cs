@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Tests.Integration
 {
     public class NewUserCreationFlowTests
     {
-        private const string ConnectionString = "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
+        private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
         private readonly Dao_User _daoUser;
         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
         private readonly Service_Authentication _authService;
@@ -58,7 +58,7 @@ namespace MTM_Receiving_Application.Tests.Integration
         {
             // Arrange
             string pin = new Random().Next(1000, 9999).ToString();
-            
+
             // Create first user
             var user1 = new Model_User
             {
