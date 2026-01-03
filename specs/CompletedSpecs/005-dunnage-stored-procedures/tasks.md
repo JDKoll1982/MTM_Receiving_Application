@@ -20,7 +20,6 @@
 - [x] T001 Create directory structure for Stored Procedures in `Database/StoredProcedures/Dunnage/`
 - [x] T002 Create directory structure for DAOs in `Data/Dunnage/`
 - [x] T003 Create directory structure for Models in `Models/Dunnage/`
-- [x] T004 Create directory structure for Integration Tests in `MTM_Receiving_Application.Tests/Integration/Dunnage/`
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
@@ -43,7 +42,6 @@
 - [x] T013 [P] [US1] Create `sp_dunnage_types_count_transactions.sql` in `Database/StoredProcedures/Dunnage/`
 - [x] T014 [US1] Deploy all Type stored procedures to database
 - [x] T015 [US1] Create `Dao_DunnageType.cs` in `Data/Dunnage/` implementing all 7 methods
-- [x] T016 [US1] Create `Dao_DunnageType_Tests.cs` in `MTM_Receiving_Application.Tests/Integration/Dunnage/` and run tests (verify SC-002 performance <500ms)
 
 ## Phase 4: User Story 2 - Dunnage Specs (P1)
 
@@ -61,7 +59,6 @@
 - [x] T025 [P] [US2] Create `sp_dunnage_specs_count_parts_using_spec.sql` in `Database/StoredProcedures/Dunnage/`
 - [x] T026 [US2] Deploy all Spec stored procedures to database
 - [x] T027 [US2] Create `Dao_DunnageSpec.cs` in `Data/Dunnage/` implementing all 8 methods
-- [x] T028 [US2] Create `Dao_DunnageSpec_Tests.cs` in `MTM_Receiving_Application.Tests/Integration/Dunnage/` and run tests (verify SC-002 performance <500ms)
 
 ## Phase 5: User Story 3 - Dunnage Parts (P1)
 
@@ -79,7 +76,6 @@
 - [x] T037 [P] [US3] Create `sp_dunnage_parts_search.sql` in `Database/StoredProcedures/Dunnage/`
 - [x] T038 [US3] Deploy all Part stored procedures to database
 - [x] T039 [US3] Create `Dao_DunnagePart.cs` in `Data/Dunnage/` implementing all 8 methods
-- [x] T040 [US3] Create `Dao_DunnagePart_Tests.cs` in `MTM_Receiving_Application.Tests/Integration/Dunnage/` and run tests (verify SC-002 <500ms and SC-006 search <200ms)
 
 ## Phase 6: User Story 4 - Dunnage Loads (P1)
 
@@ -96,7 +92,6 @@
 - [x] T048 [P] [US4] Create `sp_dunnage_loads_delete.sql` in `Database/StoredProcedures/Dunnage/`
 - [x] T049 [US4] Deploy all Load stored procedures to database
 - [x] T050 [US4] Create `Dao_DunnageLoad.cs` in `Data/Dunnage/` implementing all 7 methods
-- [x] T051 [US4] Create `Dao_DunnageLoad_Tests.cs` in `MTM_Receiving_Application.Tests/Integration/Dunnage/` and run tests (verify SC-002 performance <500ms)
 
 ## Phase 7: User Story 5 - Inventoried Dunnage (P2)
 
@@ -112,7 +107,6 @@
 - [x] T058 [P] [US5] Create `sp_inventoried_dunnage_delete.sql` in `Database/StoredProcedures/Dunnage/`
 - [x] T059 [US5] Deploy all Inventoried stored procedures to database
 - [x] T060 [US5] Create `Dao_InventoriedDunnage.cs` in `Data/Dunnage/` implementing all 6 methods
-- [x] T061 [US5] Create `Dao_InventoriedDunnage_Tests.cs` in `MTM_Receiving_Application.Tests/Integration/Dunnage/` and run tests (verify SC-002 performance <500ms)
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 

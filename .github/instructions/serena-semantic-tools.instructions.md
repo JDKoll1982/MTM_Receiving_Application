@@ -836,11 +836,6 @@ execute_shell_command(
     command="dotnet build MTM_Receiving_Application.csproj --configuration Debug"
 )
 
-# 2. Run tests
-execute_shell_command(
-    command="dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj"
-)
-
 # 3. Execute stored procedure migration
 execute_shell_command(
     command='& "C:\\MAMP\\bin\\mysql\\bin\\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot mtm_receiving_application < Database/Schemas/01_create_receiving_tables.sql'

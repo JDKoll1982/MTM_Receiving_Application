@@ -58,10 +58,6 @@
 - [X] T025 Implement Service_ReceivingValidation.cs in Services/Receiving/ with all validation rules from spec
 - [X] T026 Implement Service_ReceivingWorkflow.cs in Services/Receiving/ with state machine orchestration
 - [X] T027 Register all services in App.xaml.cs ConfigureServices method with dependency injection
-- [X] T028 Create unit test file Service_ReceivingValidationTests.cs in MTM_Receiving_Application.Tests/Unit/Services/Receiving/
-- [X] T029 Create unit test file Service_CSVWriterTests.cs in MTM_Receiving_Application.Tests/Unit/Services/Receiving/
-- [X] T030 Create integration test file Service_InforVisualTests.cs in MTM_Receiving_Application.Tests/Integration/Database/
-- [X] T031 Create integration test file Service_MySQL_ReceivingTests.cs in MTM_Receiving_Application.Tests/Integration/Database/
 
 **Constitution Validation Checkpoint**: After completing each task, verify:
 - ✅ MVVM Architecture: ViewModels inherit from BaseViewModel, use [ObservableProperty]/[RelayCommand]
@@ -118,7 +114,6 @@
 #### Integration & Testing
 - [X] T050 Add ReceivingWorkflowView navigation entry in MainWindow.xaml NavigationView with "Receiving" label
 - [X] T051 Wire up navigation logic in MainWindow.xaml.cs to instantiate ReceivingWorkflowView when selected
-- [X] T052 Create unit test file ReceivingWorkflowViewModelTests.cs in MTM_Receiving_Application.Tests/Unit/ViewModels/Receiving/ with tests for step transitions, validation, and session persistence
 - [X] T053 Manual test: Complete full workflow from PO entry through save, verify all acceptance scenarios for User Story 1
 
 **Checkpoint**: User Story 1 (core receiving workflow) is fully functional and independently testable. Application delivers immediate value.

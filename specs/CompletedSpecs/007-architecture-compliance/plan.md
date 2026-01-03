@@ -221,14 +221,6 @@ MTM_Receiving_Application/
 │   └── dao-pattern.instructions.md (MODIFIED - deprecate static, mandate instance-based)
 │
 ├── App.xaml.cs (MODIFIED - 15+ DI registrations added)
-│
-└── MTM_Receiving_Application.Tests/
-    ├── Unit/
-    │   ├── Dao_ReceivingLoad_Tests.cs (NEW)
-    │   ├── Dao_InforVisualPO_Tests.cs (NEW - validate READ-ONLY enforcement)
-    │   └── Service_UserPreferences_Tests.cs (NEW)
-    └── Integration/
-        └── DaoFactory_Integration_Tests.cs (NEW - if factory pattern used)
 ```
 
 **Structure Decision**: Single WinUI 3 project architecture is preserved. Refactoring focuses on backend architecture (ViewModels/Services/DAOs) without changing project structure or introducing new assemblies. All changes are within existing MTM_Receiving_Application.csproj.

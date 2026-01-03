@@ -376,7 +376,6 @@ string query = "UPDATE po SET status = 'Received'"; // NEVER DO THIS
 7. **Create ViewModel:** Add `NewFeatureViewModel.cs` (partial) in `ViewModels/Receiving/`
 8. **Register ViewModel:** Update `App.xaml.cs` ConfigureServices
 9. **Create View:** Add `NewFeatureView.xaml` in `Views/Receiving/`
-10. **Add Tests:** Create test classes in `MTM_Receiving_Application.Tests/`
 11. **Build & Test:** Run `dotnet build && dotnet test`
 12. **Update Spec:** Mark tasks complete in `specs/003-database-foundation/tasks.md`
 

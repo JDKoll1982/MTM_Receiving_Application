@@ -84,7 +84,6 @@
 ### Registration & Tests
 
 - [x] T043 [US2] Register IService_MySQL_Dunnage as Transient in App.xaml.cs ConfigureServices
-- [x] T044 [US2] Create unit tests in MTM_Receiving_Application.Tests/Unit/Services/Service_MySQL_Dunnage_Tests.cs
 
 ## Phase 4: User Story 3 - CSV Export Service (P1)
 
@@ -102,7 +101,6 @@
 - [x] T050 [US3] Implement WriteCsvFileAsync helper using CsvHelper in Services/Receiving/Service_DunnageCSVWriter.cs
 - [x] T051 [US3] Implement dual-write logic (local MUST succeed, network best-effort) in Services/Receiving/Service_DunnageCSVWriter.cs
 - [x] T052 [US3] Register IService_DunnageCSVWriter as Transient in App.xaml.cs ConfigureServices
-- [x] T053 [US3] Create unit tests in MTM_Receiving_Application.Tests/Unit/Services/Service_DunnageCSVWriter_Tests.cs
 
 ## Phase 5: User Story 1 - Dunnage Workflow Service (P1)
 
@@ -142,7 +140,6 @@
 ### Registration & Tests
 
 - [x] T069 [US1] Register IService_DunnageWorkflow as Singleton in App.xaml.cs ConfigureServices
-- [x] T070 [US1] Create unit tests in MTM_Receiving_Application.Tests/Unit/Services/Service_DunnageWorkflow_Tests.cs
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 

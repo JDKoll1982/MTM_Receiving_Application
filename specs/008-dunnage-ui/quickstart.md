@@ -58,7 +58,6 @@ code specs/008-dunnage-ui/tasks.md
 **Files to Review**:
 - Look at working views for patterns: `Views/Dunnage/Dunnage_QuantityEntryView.xaml`
 - ViewModels complete: `ViewModels/Dunnage/Dunnage_ManualEntryViewModel.cs`
-- Reference tests: `MTM_Receiving_Application.Tests/Unit/ViewModels/Dunnage/Dunnage_ManualEntryViewModel_Tests.cs`
 
 #### Option B: Create Part Selection View
 **Goal**: Add the missing Part Selection UI

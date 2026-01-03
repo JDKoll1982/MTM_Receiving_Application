@@ -279,29 +279,6 @@ mcp_oraios_serena_search_for_pattern(
 )
 ```
 
-### For Testing:
-```
-# Explore test structure
-mcp_oraios_serena_list_dir("MTM_Receiving_Application.Tests/Unit", recursive=true)
-mcp_oraios_serena_get_symbols_overview("MTM_Receiving_Application.Tests/Unit/Dao_Tests.cs", depth=1)
-``
-Before proceeding to your assigned task, confirm you can answer these questions:
-
-1. **Architecture:** What are the three layers of MVVM architecture and what can each layer access?
-2. **Database:** What is the difference between MySQL and Infor Visual database access patterns?
-3. **DAOs:** How should a DAO class be structured? (Instance vs. Static, DI registration, return types)
-4. **ViewModels:** What attributes must a ViewModel use? What base class must it inherit from?
-5. **Error Handling:** How should exceptions be handled in DAOs vs. ViewModels?
-6. **Testing:** What testing framework is used? What are minimum coverage expectations?
-7. **Documentation:** What diagram format is required for all visualizations? (ASCII vs. PlantUML)
-8. **Constitution:** What version is the constitution currently at, and what were the major changes in the latest version?
-9. **Memories:** Which files are covered by Serena memories (no need to re-read)?
-10. **Token Efficiency:** How much token savings does reading memories provide vs traditional file reading?
-
-**If you cannot confidently answer these questions, re-read the relevant documentation.**
-
----
-
 ## Step 7: Identify Task-Specific Documentation Needs
 
 Based on your assigned task, identify which additional documentation you should prioritize:

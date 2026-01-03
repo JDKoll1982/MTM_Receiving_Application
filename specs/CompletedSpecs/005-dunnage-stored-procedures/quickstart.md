@@ -14,7 +14,6 @@ This feature implements 33 stored procedures across 5 database tables to support
 - 33 MySQL stored procedures (Database/StoredProcedures/Dunnage/)
 - 5 DAO static classes (Data/Dunnage/)
 - 5 Model classes (Models/Dunnage/)
-- Integration tests (MTM_Receiving_Application.Tests/Integration/Dunnage/)
 
 ---
 
@@ -186,37 +185,6 @@ public static class Dao_DunnageType
 }
 ```
 
-### 6. Test DAO Integration
-
-**File**: `MTM_Receiving_Application.Tests/Integration/Dunnage/Dao_DunnageType_Tests.cs`
-
-```csharp
-using MTM_Receiving_Application.Data.Dunnage;
-using Xunit;
-
-namespace MTM_Receiving_Application.Tests.Integration.Dunnage;
-
-public class Dao_DunnageType_Tests
-{
-    [Fact]
-    public async Task GetAllAsync_ReturnsAllDunnageTypes()
-    {
-        // Act
-        var result = await Dao_DunnageType.GetAllAsync();
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-        // Should have at least the test Pallet type
-        Assert.NotEmpty(result.Data);
-    }
-}
-```
-
-**Run Test**:
-```bash
-dotnet test --filter "FullyQualifiedName~Dao_DunnageType_Tests.GetAllAsync_ReturnsAllDunnageTypes"
-```
 
 ---
 
@@ -268,19 +236,6 @@ For each table (types, specs, parts, loads, inventoried_dunnage):
    dotnet build
    ```
 
-### Phase 4: Integration Tests
-
-1. **Create test class** in `MTM_Receiving_Application.Tests/Integration/Dunnage/`
-   - One test class per DAO
-   - Test success paths and error conditions
-   - Clean up test data in finally blocks
-
-2. **Run tests**:
-   ```bash
-   dotnet test --filter "FullyQualifiedName~Dunnage"
-   ```
-
----
 
 ## Common Patterns
 

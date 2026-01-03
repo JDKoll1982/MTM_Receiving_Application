@@ -129,28 +129,6 @@ This guide helps you quickly understand and implement the receiving workflow fea
 
 - [ ] Add CSV reset dialog on startup (App.xaml.cs OnLaunched)
 
-### Phase 7: Testing
-
-- [ ] Unit tests for ViewModels
-  ```csharp
-  MTM_Receiving_Application.Tests/Unit/ViewModels/Receiving/
-  └── ReceivingWorkflowViewModelTests.cs
-  ```
-
-- [ ] Unit tests for Services
-  ```csharp
-  MTM_Receiving_Application.Tests/Unit/Services/Receiving/
-  ├── Service_ReceivingValidationTests.cs
-  └── Service_CSVWriterTests.cs
-  ```
-
-- [ ] Integration tests for Database
-  ```csharp
-  MTM_Receiving_Application.Tests/Integration/Database/
-  ├── Service_InforVisualTests.cs
-  └── Service_MySQL_ReceivingTests.cs
-  ```
-
 ---
 
 ## Key Implementation Patterns

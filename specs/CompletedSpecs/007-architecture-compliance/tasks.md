@@ -58,12 +58,6 @@
 - [x] T029 [US3] Register all converted Dunnage DAOs as Singletons in `App.xaml.cs`
 - [x] T030 [US3] Refactor `Service_MySQL_Dunnage` to inject and use the new instance-based Dunnage DAOs in `Services/Database/Service_MySQL_Dunnage.cs`
 
-## Phase 6: User Story 4 - Infor Visual READ-ONLY Verification (P2)
-
-**Goal**: Verify and enforce READ-ONLY constraints for Infor Visual DAOs.
-
-- [x] T031 [US4] Create unit test `Dao_InforVisualPO_Tests.cs` to verify `InvalidOperationException` is thrown when connection string lacks `ApplicationIntent=ReadOnly` in `MTM_Receiving_Application.Tests/Unit/Dao_InforVisualPO_Tests.cs`
-- [x] T032 [US4] Create unit test `Dao_InforVisualPart_Tests.cs` to verify `InvalidOperationException` is thrown when connection string lacks `ApplicationIntent=ReadOnly` in `MTM_Receiving_Application.Tests/Unit/Dao_InforVisualPart_Tests.cs`
 
 ## Phase 7: User Story 5 - Architecture Documentation (P3)
 

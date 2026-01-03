@@ -135,19 +135,6 @@ MTM_Receiving_Application/
 │           ├── sp_GetReceivingByPOPartDate.sql
 │           ├── sp_InsertReceivingLoad.sql
 │           └── sp_GetPackageTypePreference.sql
-└── MTM_Receiving_Application.Tests/
-    ├── Unit/
-    │   ├── ViewModels/
-    │   │   └── Receiving/
-    │   │       └── ReceivingWorkflowViewModelTests.cs
-    │   └── Services/
-    │       └── Receiving/
-    │           ├── Service_ReceivingValidationTests.cs
-    │           └── Service_CSVWriterTests.cs
-    └── Integration/
-        └── Database/
-            ├── Service_InforVisualTests.cs
-            └── Service_MySQL_ReceivingTests.cs
 ```
 
 **Structure Decision**: Single WinUI 3 desktop application following MVVM pattern. The feature integrates into the existing application structure with Models, ViewModels, Views, Services, and Contracts. Views are hosted within MainWindow.xaml's NavigationView. Database operations separated by source (Infor Visual read-only, MySQL read/write). Session management and CSV writing are isolated services for testability.

@@ -47,7 +47,6 @@
 - [x] T004 Verify existing models exist: Model_DunnageType, Model_DunnagePart, Model_DunnageLoad in Models/Dunnage/ folder
 - [x] T005 Create ViewModels/Dunnage/ folder if not exists
 - [x] T006 Create Views/Dunnage/ folder if not exists
-- [x] T007 Create MTM_Receiving_Application.Tests/Unit/ViewModels/Dunnage/ folder for unit tests
 
 **Completion Criteria**:
 - [ ] All folders exist

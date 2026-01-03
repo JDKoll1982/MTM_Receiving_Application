@@ -490,10 +490,6 @@ partial void OnSearchTextChanged(string value)
 - **Services**: `Services/Database/*Dunnage*.cs`
 - **DAOs**: `Data/Dunnage/Dao_*.cs`
 
-### Test Code
-- **Unit Tests**: `MTM_Receiving_Application.Tests/Unit/ViewModels/Dunnage/*_Tests.cs`
-- **Integration Tests**: `MTM_Receiving_Application.Tests/Integration/*` (future)
-
 ### Specifications
 - **Tasks**: `specs/008-dunnage-ui/tasks.md`
 - **Plan**: `specs/008-dunnage-ui/plan.md`

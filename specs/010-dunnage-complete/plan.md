@@ -201,14 +201,6 @@ MTM_Receiving_Application/
 │           ├── sp_inventoried_dunnage_insert.sql # EXISTING
 │           ├── sp_inventoried_dunnage_update.sql # NEW
 │           └── sp_inventoried_dunnage_delete.sql # NEW
-│
-└── Tests/
-    └── MTM_Receiving_Application.Tests/
-        └── Unit/
-            └── Services/
-                ├── Service_MySQL_Dunnage_Tests.cs      # EXTEND
-                ├── Service_DunnageCSVWriter_Tests.cs   # EXTEND
-                └── Service_DunnageAdminWorkflow_Tests.cs # NEW
 ```
 
 **Structure Decision**: 

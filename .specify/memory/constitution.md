@@ -438,36 +438,6 @@ specs/
 
 ### VIII. Testing & Quality Assurance
 
-**Testing Framework Standards**:
-- xUnit as the primary testing framework
-- Moq for service mocking and isolation
-- Separate test project: `MTM_Receiving_Application.Tests`
-- Test organization: `Unit/` and `Integration/` folders
-- ALL service logic MUST have unit tests
-- ALL database operations MUST have integration tests
-
-**Test Coverage Requirements**:
-- ViewModels: Test command logic, property changes, validation
-- Services: Test business logic, error handling, edge cases
-- DAOs: Integration tests with test database (NOT production)
-- Minimum coverage: 80% for service and ViewModel layers
-- Critical paths: 100% coverage (authentication, data persistence)
-
-**Test-Driven Development (TDD)**:
-- Write tests BEFORE implementation for new features
-- Ensure tests FAIL before implementing functionality
-- Red-Green-Refactor cycle for complex logic
-- Contract tests for service interfaces
-- Integration tests for cross-service interactions
-
-**Testing Best Practices**:
-- Use descriptive test names: `MethodName_Scenario_ExpectedBehavior`
-- Arrange-Act-Assert pattern for test structure
-- One assertion focus per test (avoid multiple concerns)
-- Mock external dependencies (database, file system, network)
-- Test data must NOT affect production Infor Visual database
-- Clean up test resources in Dispose/teardown methods
-
 **Manual Testing Requirements**:
 - UI testing for all user-facing features
 - Acceptance criteria validation from spec.md

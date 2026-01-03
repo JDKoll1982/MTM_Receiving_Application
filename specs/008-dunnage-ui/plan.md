@@ -135,18 +135,6 @@ MTM_Receiving_Application/
 │       └── Model_DunnageLoad.cs           # ✅ ALREADY EXISTS
 └── App.xaml.cs                            # MODIFY - DI registration for new ViewModels
 
-MTM_Receiving_Application.Tests/
-└── Unit/
-    └── ViewModels/
-        └── Dunnage/                       # NEW FOLDER - Unit tests for new ViewModels
-            ├── Dunnage_ModeSelectionViewModel_Tests.cs        # NEW
-            ├── Dunnage_TypeSelectionViewModel_Tests.cs        # NEW
-            ├── Dunnage_PartSelectionViewModel_Tests.cs        # NEW
-            ├── Dunnage_QuantityEntryViewModel_Tests.cs        # NEW
-            ├── Dunnage_DetailsEntryViewModel_Tests.cs         # NEW
-            ├── Dunnage_ReviewViewModel_Tests.cs               # NEW
-            ├── Dunnage_ManualEntryViewModel_Tests.cs          # NEW
-            └── Dunnage_EditModeViewModel_Tests.cs             # NEW
 ```
 
 **Structure Decision**: This is an extension of an existing desktop WinUI 3 application following established naming conventions:
@@ -163,7 +151,6 @@ Services, DAOs, and Models already exist from feature `007-architecture-complian
 - **Existing files (no changes)**: 2 (Main_DunnageLabelPage.xaml, Main_DunnageLabelViewModel.cs)
 - **Modified files**: 1 (App.xaml.cs for DI registration of 8 new ViewModels)
 - **Existing files reused**: 9 (3 Services + 3 DAOs + 3 Models)
-- **Test files**: 8 new unit test classes in MTM_Receiving_Application.Tests/Unit/ViewModels/Dunnage/
 
 ## Receiving Workflow Pattern Reference
 

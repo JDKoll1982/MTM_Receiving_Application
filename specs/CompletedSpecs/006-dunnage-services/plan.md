@@ -102,12 +102,6 @@ Models/
     ├── Model_SaveResult.cs
     └── Model_CSVWriteResult.cs
 
-MTM_Receiving_Application.Tests/
-└── Unit/
-    └── Services/
-        ├── Service_DunnageWorkflow_Tests.cs
-        ├── Service_MySQL_Dunnage_Tests.cs
-        └── Service_DunnageCSVWriter_Tests.cs
 ```
 
 **Structure Decision**: Single project desktop application. Services layer only (no UI changes in this feature). Follows existing project conventions with services registered in App.xaml.cs DI container.

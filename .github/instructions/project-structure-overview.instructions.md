@@ -43,8 +43,6 @@ This document maps the project structure to the specific instruction files that 
 | `Helpers/Database/*.cs` | `database-helpers.instructions.md` |
 | `ViewModels/Receiving/Receiving_WorkflowViewModel.cs` | `receiving-ui-workflow.instructions.md` |
 | `**/*Window.xaml.cs` | `window-sizing.instructions.md` |
-| **Testing** | |
-| `MTM_Receiving_Application.Tests/**/*` | `unit-testing-standards.instructions.md` |
 
 ## Key Principles
 

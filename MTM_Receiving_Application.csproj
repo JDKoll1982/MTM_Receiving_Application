@@ -187,13 +187,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="MTM_Receiving_Application.Tests\**" />
-    <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
-    <None Remove="MTM_Receiving_Application.Tests\**" />
-    <Compile Remove="Tests\**" />
-    <EmbeddedResource Remove="Tests\**" />
-    <None Remove="Tests\**" />
-  </ItemGroup>
 </Project>

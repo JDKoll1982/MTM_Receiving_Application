@@ -103,14 +103,6 @@ MTM_Receiving_Application/
 │       ├── Model_DunnagePart.cs
 │       ├── Model_DunnageLoad.cs
 │       └── Model_InventoriedDunnage.cs
-└── MTM_Receiving_Application.Tests/
-    └── Integration/
-        └── Dunnage/                    # NEW - Integration tests
-            ├── Dao_DunnageType_Tests.cs
-            ├── Dao_DunnageSpec_Tests.cs
-            ├── Dao_DunnagePart_Tests.cs
-            ├── Dao_DunnageLoad_Tests.cs
-            └── Dao_InventoriedDunnage_Tests.cs
 ```
 
 **Structure Decision**: Database-first approach with stored procedures as the primary deliverable. DAOs provide thin async wrappers using `Helper_Database_StoredProcedure` utility. Models match database table schemas. No UI components in this feature - pure data access layer.
