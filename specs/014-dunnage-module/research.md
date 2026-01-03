@@ -84,7 +84,7 @@ Four-section admin interface:
 
 ### Module Structure
 ```
-DunnageModule/
+Module_Dunnage/
 ├── Models/
 ├── ViewModels/
 ├── Views/
@@ -95,7 +95,7 @@ DunnageModule/
 
 ### Key Improvements
 1. **Consistent Naming**: All files follow `{Type}_{Module}_{Name}` pattern
-2. **Clear Boundaries**: Dunnage code isolated in DunnageModule/
+2. **Clear Boundaries**: Dunnage code isolated in Module_Dunnage/
 3. **Better Organization**: Logical grouping by concern (Models, Views, etc.)
 4. **Admin Workflow**: Separate admin navigation service for 4-section interface
 

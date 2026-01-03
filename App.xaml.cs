@@ -5,15 +5,15 @@ using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Services.Authentication;
-using MTM_Receiving_Application.ReceivingModule.Services;
-using MTM_Receiving_Application.DunnageModule.Services;
+using MTM_Receiving_Application.Module_Receiving.Services;
+using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Data.Authentication;
-using MTM_Receiving_Application.ReceivingModule.Data;
-using MTM_Receiving_Application.DunnageModule.Data;
+using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.ReceivingModule.ViewModels;
-using MTM_Receiving_Application.DunnageModule.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.ViewModels.Settings;
 using MTM_Receiving_Application.ViewModels.Shared;
 using MTM_Receiving_Application.ViewModels.Main;
@@ -197,13 +197,13 @@ public partial class App : Application
                 services.AddTransient<Views.Settings.Settings_PlaceholderView>();
 
                 // Dunnage Admin Views
-                services.AddTransient<DunnageModule.Views.View_Dunnage_AdminMainView>();
-                services.AddTransient<DunnageModule.Views.View_Dunnage_AdminTypesView>();
-                services.AddTransient<DunnageModule.Views.View_Dunnage_AdminPartsView>();
-                services.AddTransient<DunnageModule.Views.View_Dunnage_AdminInventoryView>();
+                services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminMainView>();
+                services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminTypesView>();
+                services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminPartsView>();
+                services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminInventoryView>();
 
                 // Dunnage Dialogs
-                services.AddTransient<DunnageModule.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
+                services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
 
                 // Windows
                 services.AddTransient<Views.Shared.Shared_SplashScreenWindow>();

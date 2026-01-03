@@ -17,11 +17,11 @@
 ## Path Conventions
 
 Single project structure - paths relative to repository root:
-- Models: `DunnageModule/Models/`
-- ViewModels: `DunnageModule/ViewModels/`
-- Views: `DunnageModule/Views/`
-- Services: `DunnageModule/Services/`
-- Data: `DunnageModule/Data/`
+- Models: `Module_Dunnage/Models/`
+- ViewModels: `Module_Dunnage/ViewModels/`
+- Views: `Module_Dunnage/Views/`
+- Services: `Module_Dunnage/Services/`
+- Data: `Module_Dunnage/Data/`
 - Database: `Database/Schemas/`, `Database/StoredProcedures/Dunnage/`, `Database/TestData/`
 
 ---
@@ -43,15 +43,15 @@ Single project structure - paths relative to repository root:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 [P] Create Model_Dunnage_Type in DunnageModule/Models/Model_Dunnage_Type.cs (properties: TypeId, TypeName, TypeDescription, IconCode, IsActive, CreatedAt)
-- [ ] T006 [P] Create Model_Dunnage_Part in DunnageModule/Models/Model_Dunnage_Part.cs (properties: PartId, TypeId, PartNumber, PartDescription, UnitOfMeasure, IsInventoried, IsActive)
-- [ ] T007 [P] Create Model_Dunnage_Load in DunnageModule/Models/Model_Dunnage_Load.cs (properties: LoadId, TypeId, PartId, Quantity, Details, CreatedBy, CreatedAt)
-- [ ] T008 [P] Create Model_Dunnage_Spec in DunnageModule/Models/Model_Dunnage_Spec.cs (properties: SpecId, PartId, SpecKey, SpecValue, DisplayOrder)
-- [ ] T009 [P] Create Model_Dunnage_Session in DunnageModule/Models/Model_Dunnage_Session.cs (properties: CurrentStep, SelectedType, SelectedPart, EnteredData, ReviewedLoads)
-- [ ] T010 Create Dao_Dunnage_Type in DunnageModule/Data/Dao_Dunnage_Type.cs (methods: GetAllAsync, GetByIdAsync, InsertAsync, UpdateAsync, DeleteAsync)
-- [ ] T011 Create Dao_Dunnage_Part in DunnageModule/Data/Dao_Dunnage_Part.cs (methods: GetByTypeAsync, GetByIdAsync, InsertAsync, UpdateAsync, DeleteAsync)
-- [ ] T012 Create Dao_Dunnage_Load in DunnageModule/Data/Dao_Dunnage_Load.cs (methods: InsertAsync, GetByDateRangeAsync, GetAllAsync)
-- [ ] T013 Create Dao_Dunnage_Spec in DunnageModule/Data/Dao_Dunnage_Spec.cs (methods: GetByPartIdAsync, InsertAsync, DeleteAsync)
+- [ ] T005 [P] Create Model_Dunnage_Type in Module_Dunnage/Models/Model_Dunnage_Type.cs (properties: TypeId, TypeName, TypeDescription, IconCode, IsActive, CreatedAt)
+- [ ] T006 [P] Create Model_Dunnage_Part in Module_Dunnage/Models/Model_Dunnage_Part.cs (properties: PartId, TypeId, PartNumber, PartDescription, UnitOfMeasure, IsInventoried, IsActive)
+- [ ] T007 [P] Create Model_Dunnage_Load in Module_Dunnage/Models/Model_Dunnage_Load.cs (properties: LoadId, TypeId, PartId, Quantity, Details, CreatedBy, CreatedAt)
+- [ ] T008 [P] Create Model_Dunnage_Spec in Module_Dunnage/Models/Model_Dunnage_Spec.cs (properties: SpecId, PartId, SpecKey, SpecValue, DisplayOrder)
+- [ ] T009 [P] Create Model_Dunnage_Session in Module_Dunnage/Models/Model_Dunnage_Session.cs (properties: CurrentStep, SelectedType, SelectedPart, EnteredData, ReviewedLoads)
+- [ ] T010 Create Dao_Dunnage_Type in Module_Dunnage/Data/Dao_Dunnage_Type.cs (methods: GetAllAsync, GetByIdAsync, InsertAsync, UpdateAsync, DeleteAsync)
+- [ ] T011 Create Dao_Dunnage_Part in Module_Dunnage/Data/Dao_Dunnage_Part.cs (methods: GetByTypeAsync, GetByIdAsync, InsertAsync, UpdateAsync, DeleteAsync)
+- [ ] T012 Create Dao_Dunnage_Load in Module_Dunnage/Data/Dao_Dunnage_Load.cs (methods: InsertAsync, GetByDateRangeAsync, GetAllAsync)
+- [ ] T013 Create Dao_Dunnage_Spec in Module_Dunnage/Data/Dao_Dunnage_Spec.cs (methods: GetByPartIdAsync, InsertAsync, DeleteAsync)
 - [ ] T014 Register Dunnage DAOs in App.xaml.cs ConfigureServices (singletons: Dao_Dunnage_Type, Dao_Dunnage_Part, Dao_Dunnage_Load, Dao_Dunnage_Spec)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
@@ -66,47 +66,47 @@ Single project structure - paths relative to repository root:
 
 ### Interfaces & Enums
 
-- [ ] T015 [P] [US1] Create DunnageModule/Interfaces/IService_Dunnage_Workflow.cs from contracts/IService_DunnageWorkflow.cs with new naming
-- [ ] T016 [P] [US1] Create DunnageModule/Interfaces/IService_Dunnage_AdminWorkflow.cs from contracts/IService_DunnageAdminWorkflow.cs with new naming
-- [ ] T017 [P] [US1] Create DunnageModule/Interfaces/IService_Dunnage_CSVWriter.cs from contracts/IService_DunnageCSVWriter.cs with new naming
-- [ ] T018 [P] [US1] Create DunnageModule/Enums/Enum_Dunnage_WorkflowStep.cs (TypeSelection, PartSelection, DetailsEntry, QuantityEntry, Review, Save)
-- [ ] T019 [P] [US1] Create DunnageModule/Enums/Enum_Dunnage_AdminSection.cs (Types, Parts, Specs, InventoriedList)
+- [ ] T015 [P] [US1] Create Module_Dunnage/Interfaces/IService_Dunnage_Workflow.cs from contracts/IService_DunnageWorkflow.cs with new naming
+- [ ] T016 [P] [US1] Create Module_Dunnage/Interfaces/IService_Dunnage_AdminWorkflow.cs from contracts/IService_DunnageAdminWorkflow.cs with new naming
+- [ ] T017 [P] [US1] Create Module_Dunnage/Interfaces/IService_Dunnage_CSVWriter.cs from contracts/IService_DunnageCSVWriter.cs with new naming
+- [ ] T018 [P] [US1] Create Module_Dunnage/Enums/Enum_Dunnage_WorkflowStep.cs (TypeSelection, PartSelection, DetailsEntry, QuantityEntry, Review, Save)
+- [ ] T019 [P] [US1] Create Module_Dunnage/Enums/Enum_Dunnage_AdminSection.cs (Types, Parts, Specs, InventoriedList)
 
 ### Services
 
-- [ ] T020 [US1] Create DunnageModule/Services/Service_Dunnage_Workflow.cs implementing IService_Dunnage_Workflow
-- [ ] T021 [US1] Create DunnageModule/Services/Service_Dunnage_AdminWorkflow.cs implementing IService_Dunnage_AdminWorkflow
-- [ ] T022 [US1] Create DunnageModule/Services/Service_Dunnage_CSVWriter.cs implementing IService_Dunnage_CSVWriter
+- [ ] T020 [US1] Create Module_Dunnage/Services/Service_Dunnage_Workflow.cs implementing IService_Dunnage_Workflow
+- [ ] T021 [US1] Create Module_Dunnage/Services/Service_Dunnage_AdminWorkflow.cs implementing IService_Dunnage_AdminWorkflow
+- [ ] T022 [US1] Create Module_Dunnage/Services/Service_Dunnage_CSVWriter.cs implementing IService_Dunnage_CSVWriter
 - [ ] T023 [US1] Register Dunnage Services in App.xaml.cs ConfigureServices (singletons: Service_Dunnage_Workflow, Service_Dunnage_AdminWorkflow, Service_Dunnage_CSVWriter)
 
 ### ViewModels
 
-- [ ] T024 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_TypeSelection.cs inheriting from BaseViewModel
-- [ ] T025 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_PartSelection.cs inheriting from BaseViewModel
-- [ ] T026 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_DetailsEntry.cs inheriting from BaseViewModel
-- [ ] T027 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_QuantityEntry.cs inheriting from BaseViewModel
-- [ ] T028 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_Review.cs inheriting from BaseViewModel
-- [ ] T029 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_AdminTypes.cs inheriting from BaseViewModel
-- [ ] T030 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_AdminParts.cs inheriting from BaseViewModel
-- [ ] T031 [P] [US1] Create DunnageModule/ViewModels/ViewModel_Dunnage_AdminInventory.cs inheriting from BaseViewModel
+- [ ] T024 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_TypeSelection.cs inheriting from BaseViewModel
+- [ ] T025 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_PartSelection.cs inheriting from BaseViewModel
+- [ ] T026 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntry.cs inheriting from BaseViewModel
+- [ ] T027 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_QuantityEntry.cs inheriting from BaseViewModel
+- [ ] T028 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_Review.cs inheriting from BaseViewModel
+- [ ] T029 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminTypes.cs inheriting from BaseViewModel
+- [ ] T030 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminParts.cs inheriting from BaseViewModel
+- [ ] T031 [P] [US1] Create Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminInventory.cs inheriting from BaseViewModel
 - [ ] T032 [US1] Register Dunnage ViewModels in App.xaml.cs ConfigureServices (transient)
 
 ### Views
 
 📐 **UI Mockups**: See [../011-module-reimplementation/mockups/Dunnage/](../011-module-reimplementation/mockups/Dunnage/) for visual design guidance
 
-- [ ] T033 [P] [US1] Create DunnageModule/Views/View_Dunnage_TypeSelection.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Dunnage/View_Dunnage_TypeSelection.svg)
-- [ ] T034 [P] [US1] Create DunnageModule/Views/View_Dunnage_PartSelection.xaml and .xaml.cs with x:Bind → (Use TypeSelection pattern)
-- [ ] T035 [P] [US1] Create DunnageModule/Views/View_Dunnage_DetailsEntry.xaml and .xaml.cs with x:Bind → (Use WeightQuantity pattern)
-- [ ] T036 [P] [US1] Create DunnageModule/Views/View_Dunnage_QuantityEntry.xaml and .xaml.cs with x:Bind → (Use WeightQuantity pattern)
-- [ ] T037 [P] [US1] Create DunnageModule/Views/View_Dunnage_Review.xaml and .xaml.cs with x:Bind → (Use Receiving_Review pattern)
-- [ ] T038 [P] [US1] Create DunnageModule/Views/View_Dunnage_AdminTypes.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Dunnage/View_Dunnage_AdminTypes.svg)
-- [ ] T039 [P] [US1] Create DunnageModule/Views/View_Dunnage_AdminParts.xaml and .xaml.cs with x:Bind → (Use AdminTypes pattern)
-- [ ] T040 [P] [US1] Create DunnageModule/Views/View_Dunnage_AdminInventory.xaml and .xaml.cs with x:Bind → (Use AdminTypes pattern)
+- [ ] T033 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_TypeSelection.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Dunnage/View_Dunnage_TypeSelection.svg)
+- [ ] T034 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_PartSelection.xaml and .xaml.cs with x:Bind → (Use TypeSelection pattern)
+- [ ] T035 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_DetailsEntry.xaml and .xaml.cs with x:Bind → (Use WeightQuantity pattern)
+- [ ] T036 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_QuantityEntry.xaml and .xaml.cs with x:Bind → (Use WeightQuantity pattern)
+- [ ] T037 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_Review.xaml and .xaml.cs with x:Bind → (Use Receiving_Review pattern)
+- [ ] T038 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_AdminTypes.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Dunnage/View_Dunnage_AdminTypes.svg)
+- [ ] T039 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_AdminParts.xaml and .xaml.cs with x:Bind → (Use AdminTypes pattern)
+- [ ] T040 [P] [US1] Create Module_Dunnage/Views/View_Dunnage_AdminInventory.xaml and .xaml.cs with x:Bind → (Use AdminTypes pattern)
 
 ### DI & Navigation
 
-- [ ] T041 [US1] Update Views/Main/Main_DunnageLabelPage.xaml to navigate to new DunnageModule Views
+- [ ] T041 [US1] Update Views/Main/Main_DunnageLabelPage.xaml to navigate to new Module_Dunnage Views
 - [ ] T042 [US1] Update MainWindow.xaml navigation to use new Dunnage module entry point
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can complete full dunnage workflow and admin workflows

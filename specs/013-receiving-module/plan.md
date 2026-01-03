@@ -75,7 +75,7 @@ specs/013-receiving-module/
 
 ```text
 MTM_Receiving_Application/ (root)
-├── ReceivingModule/           ⬅️ NEW (module directory)
+├── Module_Receiving/           ⬅️ NEW (module directory)
 │   ├── Models/
 │   │   ├── Model_Receiving_Load.cs
 │   │   ├── Model_Receiving_Line.cs
@@ -130,7 +130,7 @@ MTM_Receiving_Application/ (root)
 └── App.xaml.cs (register Receiving services in DI container)
 ```
 
-**Structure Decision**: Root-level `ReceivingModule/` directory with consistent naming (`ViewModel_Receiving_*`, `View_Receiving_*`, `Service_Receiving_*`). Integrates with shared infrastructure (BaseViewModel, ErrorHandler, Logging, Settings, Reporting). Database scripts in `Database/` folder following established conventions.
+**Structure Decision**: Root-level `Module_Receiving/` directory with consistent naming (`ViewModel_Receiving_*`, `View_Receiving_*`, `Service_Receiving_*`). Integrates with shared infrastructure (BaseViewModel, ErrorHandler, Logging, Settings, Reporting). Database scripts in `Database/` folder following established conventions.
 
 ## Complexity Tracking
 

@@ -73,7 +73,7 @@ specs/014-dunnage-module/
 
 ```text
 MTM_Receiving_Application/ (root)
-├── DunnageModule/           ⬅️ NEW (module directory)
+├── Module_Dunnage/           ⬅️ NEW (module directory)
 │   ├── Models/
 │   │   ├── Model_Dunnage_Type.cs
 │   │   ├── Model_Dunnage_Part.cs
@@ -127,7 +127,7 @@ MTM_Receiving_Application/ (root)
 └── App.xaml.cs (register Dunnage services in DI container)
 ```
 
-**Structure Decision**: Root-level `DunnageModule/` directory with consistent naming (`ViewModel_Dunnage_*`, `View_Dunnage_*`, `Service_Dunnage_*`). Integrates with shared infrastructure (BaseViewModel, ErrorHandler, Logging, Settings, Reporting). Database scripts in `Database/` folder following established conventions.
+**Structure Decision**: Root-level `Module_Dunnage/` directory with consistent naming (`ViewModel_Dunnage_*`, `View_Dunnage_*`, `Service_Dunnage_*`). Integrates with shared infrastructure (BaseViewModel, ErrorHandler, Logging, Settings, Reporting). Database scripts in `Database/` folder following established conventions.
 
 ## Complexity Tracking
 

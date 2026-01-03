@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.DunnageModule.Models;
-using MTM_Receiving_Application.DunnageModule.Enums;
-using MTM_Receiving_Application.ReceivingModule.Models; // For Model_WorkflowStepResult if needed
+using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Receiving.Models; // For Model_WorkflowStepResult if needed
 using MTM_Receiving_Application.Models.Enums; // For other enums if needed
 namespace MTM_Receiving_Application.Contracts.Services
 {

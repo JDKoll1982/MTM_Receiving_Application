@@ -1,6 +1,6 @@
 ﻿using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.ReceivingModule.Data;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using System;
 using System.Threading.Tasks;
 

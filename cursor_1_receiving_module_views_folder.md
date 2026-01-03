@@ -14,7 +14,7 @@ move all receiving related views to the proper folder structuer prescribed by @s
 I'll help you reorganize the receiving-related views according to the spec. Let me first examine the specification to understand the proper folder structure.
 
 ```plaintext
-ReceivingModule/
+Module_Receiving/
 ├── Models/
 ├── ViewModels/
 ├── Views/
@@ -27,7 +27,7 @@ ReceivingModule/
 Now let me examine the current structure of receiving-related files to understand what needs to be moved:
 
 ```plaintext
-ReceivingModule/
+Module_Receiving/
 ├── Models/
 ├── ViewModels/
 ├── Views/
@@ -59,13 +59,13 @@ using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Services.Authentication;
-using MTM_Receiving_Application.ReceivingModule.Services;
+using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Data.Authentication;
-using MTM_Receiving_Application.ReceivingModule.Data;
+using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Data.Dunnage;
 using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.ReceivingModule.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.ViewModels.Dunnage;
 using MTM_Receiving_Application.ViewModels.Settings;
 using MTM_Receiving_Application.ViewModels.Shared;
@@ -322,13 +322,13 @@ using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Services.Authentication;
-using MTM_Receiving_Application.ReceivingModule.Services;
+using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Data.Authentication;
-using MTM_Receiving_Application.ReceivingModule.Data;
+using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Data.Dunnage;
 using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.ReceivingModule.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.ViewModels.Dunnage;
 using MTM_Receiving_Application.ViewModels.Settings;
 using MTM_Receiving_Application.ViewModels.Shared;
@@ -645,7 +645,7 @@ namespace MTM_Receiving_Application
                 {
                     _hasNavigatedOnStartup = true;
                     PageTitleTextBlock.Text = "📥 Receiving - Mode Selection";
-                    ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
+                    ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                     ContentFrame.Navigated += ContentFrame_Navigated;
                 }
             }
@@ -904,7 +904,7 @@ namespace MTM_Receiving_Application
                 {
                     _hasNavigatedOnStartup = true;
                     PageTitleTextBlock.Text = "📥 Receiving - Mode Selection";
-                    ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
+                    ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                     ContentFrame.Navigated += ContentFrame_Navigated;
                 }
             }
@@ -924,7 +924,7 @@ namespace MTM_Receiving_Application
                 {
                     case "ReceivingWorkflowView":
                         PageTitleTextBlock.Text = "Receiving Workflow";
-                        ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
+                        ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                         ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "DunnageLabelPage":
@@ -1163,7 +1163,7 @@ namespace MTM_Receiving_Application
                 {
                     _hasNavigatedOnStartup = true;
                     PageTitleTextBlock.Text = "📥 Receiving - Mode Selection";
-                    ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
+                    ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                     ContentFrame.Navigated += ContentFrame_Navigated;
                 }
             }
@@ -1183,7 +1183,7 @@ namespace MTM_Receiving_Application
                 {
                     case "ReceivingWorkflowView":
                         PageTitleTextBlock.Text = "Receiving Workflow";
-                        ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
+                        ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                         ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "DunnageLabelPage":
@@ -1202,7 +1202,7 @@ namespace MTM_Receiving_Application
         private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
         {
             // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
-            if (ContentFrame.Content is ReceivingModule.Views.View_Receiving_Workflow receivingView)
+            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView)
             {
                 var viewModel = receivingView.ViewModel;
                 if (viewModel != null)
@@ -1383,7 +1383,7 @@ Now let me update the Contract interfaces to use the new model namespaces:
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -1490,7 +1490,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.Contracts.Services
@@ -1609,7 +1609,7 @@ namespace MTM_Receiving_Application.Contracts.Services
 using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -1666,7 +1666,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -1738,7 +1738,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -1802,7 +1802,7 @@ namespace MTM_Receiving_Application.Contracts.Services
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services;
 
@@ -1821,7 +1821,7 @@ public interface IService_MySQL_ReceivingLine
 using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -1863,7 +1863,7 @@ namespace MTM_Receiving_Application.Contracts.Services
 using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -1947,7 +1947,7 @@ the old receiving views / files should be removed
 
 **Cursor**
 
-You're absolutely right! Let me delete the old receiving files from the original locations since we've moved them to the new ReceivingModule structure:
+You're absolutely right! Let me delete the old receiving files from the original locations since we've moved them to the new Module_Receiving structure:
 
 Now let me fix the class names in the ViewModels that still have the old naming:
 
@@ -1955,10 +1955,10 @@ Now let me fix the class names in the ViewModels that still have the old naming:
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.ReceivingModule.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Models.Enums;
 
-namespace MTM_Receiving_Application.ReceivingModule.Views
+namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_Workflow : Page
     {
@@ -2036,7 +2036,7 @@ Checking remaining errors to identify what still needs fixing:
 
 
 
-Fixing remaining references to models moved to ReceivingModule:
+Fixing remaining references to models moved to Module_Receiving:
 
 
 
@@ -2052,23 +2052,23 @@ Updating shared infrastructure files that reference Receiving models:
 
 ### Completed tasks
 
-1. Created ReceivingModule directory structure:
-   - `ReceivingModule/Models/`
-   - `ReceivingModule/ViewModels/`
-   - `ReceivingModule/Views/`
-   - `ReceivingModule/Services/`
-   - `ReceivingModule/Data/`
-   - `ReceivingModule/Enums/`
-   - `ReceivingModule/Interfaces/`
+1. Created Module_Receiving directory structure:
+   - `Module_Receiving/Models/`
+   - `Module_Receiving/ViewModels/`
+   - `Module_Receiving/Views/`
+   - `Module_Receiving/Services/`
+   - `Module_Receiving/Data/`
+   - `Module_Receiving/Enums/`
+   - `Module_Receiving/Interfaces/`
 
 2. Moved and renamed files:
    - Views: `Receiving_*View` → `View_Receiving_*`
    - ViewModels: `Receiving_*ViewModel` → `ViewModel_Receiving_*`
-   - Models, Services, and DAOs moved to ReceivingModule
+   - Models, Services, and DAOs moved to Module_Receiving
 
 3. Updated namespaces:
-   - All files in ReceivingModule use `MTM_Receiving_Application.ReceivingModule.*`
-   - Updated Contracts to reference ReceivingModule models
+   - All files in Module_Receiving use `MTM_Receiving_Application.Module_Receiving.*`
+   - Updated Contracts to reference Module_Receiving models
    - Updated App.xaml.cs, MainWindow.xaml.cs, and other references
 
 4. Deleted old files:
@@ -2085,7 +2085,7 @@ Updating shared infrastructure files that reference Receiving models:
 - Dunnage-related errors: will be resolved when the Dunnage module is reorganized into its own module folder (as you mentioned)
 - Some spec/documentation files still reference old namespaces (non-critical)
 
-The Receiving module reorganization is complete and follows the structure prescribed in `specs/013-receiving-module/`. All Receiving-related code is now in the `ReceivingModule/` folder with consistent naming conventions (`ViewModel_Receiving_*`, `View_Receiving_*`, etc.).
+The Receiving module reorganization is complete and follows the structure prescribed in `specs/013-receiving-module/`. All Receiving-related code is now in the `Module_Receiving/` folder with consistent naming conventions (`ViewModel_Receiving_*`, `View_Receiving_*`, etc.).
 
 ---
 
@@ -2102,18 +2102,18 @@ Checking current build errors and fixing them:
 
 
 
-Fixing Dunnage contract and service references to use ReceivingModule models:
+Fixing Dunnage contract and service references to use Module_Receiving models:
 
 
 
-Updating Dunnage contracts to use ReceivingModule models:
+Updating Dunnage contracts to use Module_Receiving models:
 
 
 ```csharp
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Models.Dunnage;
 
 namespace MTM_Receiving_Application.Contracts.Services;
@@ -2207,7 +2207,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Dunnage;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {
@@ -2231,7 +2231,7 @@ namespace MTM_Receiving_Application.Contracts.Services
 ```
 
 
-Updating Dunnage services to use ReceivingModule models:
+Updating Dunnage services to use Module_Receiving models:
 
 
 
@@ -2371,17 +2371,17 @@ User: #file:cursor_1_receiving_module_views_folder.md continue the fix that was 
 
 GitHub Copilot: I'll read the file to understand what fix was being implemented. Let me check the attached file content from the attachments. 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Views)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Views)
 
-Based on the attachment filename and context, it appears you were working on fixing issues in the ReceivingModule Views folder. Let me check for recent errors to understand what needs to be fixed. 
+Based on the attachment filename and context, it appears you were working on fixing issues in the Module_Receiving Views folder. Let me check for recent errors to understand what needs to be fixed. 
 
 Checked , no problems found
 
 Let me check for any recent chat logs or documentation about what was being fixed. 
 
-Searched for regex `View_Receiving.*ViewModel|x:Bind|Binding` (`**/ReceivingModule/Views/**/*.xaml`), 20 results
+Searched for regex `View_Receiving.*ViewModel|x:Bind|Binding` (`**/Module_Receiving/Views/**/*.xaml`), 20 results
 
-I can see the ReceivingModule Views are using a mix of `x:Bind` and `Binding`. Based on the project's strict MVVM standards requiring `x:Bind` instead of `Binding`, let me check the chatlog or AppFixes files to see what was being worked on. 
+I can see the Module_Receiving Views are using a mix of `x:Bind` and `Binding`. Based on the project's strict MVVM standards requiring `x:Bind` instead of `Binding`, let me check the chatlog or AppFixes files to see what was being worked on. 
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/chatlog.md)
 
@@ -2407,7 +2407,7 @@ Task not found: `shell: build-x64`
 
 Ran terminal command: dotnet build /p:Platform=x64 /p:Configuration=Debug
 
-Perfect! Now I can see the actual errors. The issues are that several files still reference `MTM_Receiving_Application.Models.Receiving` when they should reference `MTM_Receiving_Application.ReceivingModule.Models`. Let me fix these: 
+Perfect! Now I can see the actual errors. The issues are that several files still reference `MTM_Receiving_Application.Models.Receiving` when they should reference `MTM_Receiving_Application.Module_Receiving.Models`. Let me fix these: 
 
 Using "Multi-Replace String in Files"
 
@@ -2431,7 +2431,7 @@ Good progress! Let me check the remaining files to see their exact content:
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Data/Dunnage/Dao_DunnageLoad.cs#1-1), lines 1 to 15
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Views/View_Receiving_ManualEntry.xaml.cs#1-1), lines 1 to 20
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs#1-1), lines 1 to 20
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ViewModels/Dunnage/Dunnage_EditModeViewModel.cs#1-1), lines 1 to 20
 
@@ -2489,15 +2489,15 @@ Ran terminal command: dotnet build /p:Platform=x64 /p:Configuration=Debug 2>&1 |
 
 Now we have different errors - old ViewModel class names being referenced. Let me search for where these old names are used: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/ViewModels/ViewModel_Receiving_ModeSelection.cs#185-185), lines 185 to 220
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs#185-185), lines 185 to 220
 
-I see - these are using the old class names. Let me check what the new names are in the ReceivingModule: 
+I see - these are using the old class names. Let me check what the new names are in the Module_Receiving: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/ViewModels)
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/ViewModels)
 
 Good! The file names use `ViewModel_Receiving_*` pattern. Let me check one of these files to see the actual class name: 
 
-Searched for text `public partial class` (`**/ReceivingModule/ViewModels/ViewModel_Receiving_POEntry.cs`), 1 result
+Searched for text `public partial class` (`**/Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`), 1 result
 
 Perfect! The class names are `ViewModel_Receiving_*`. Let me fix the references in the ModeSelection ViewModel: 
 
@@ -2509,11 +2509,11 @@ Using "Multi-Replace String in Files"
 ```
 Good! Now let me check if there are more similar references to fix: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/ViewModels/ViewModel_Receiving_ModeSelection.cs#220-220), lines 220 to 270
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs#220-220), lines 220 to 270
 
 Let me continue reading to see if there are more WeightQuantity or HeatLot references: 
 
-Searched for regex `Receiving_WeightQuantityViewModel|Receiving_HeatLotViewModel` (`**/ReceivingModule/ViewModels/**/*.cs`), no results
+Searched for regex `Receiving_WeightQuantityViewModel|Receiving_HeatLotViewModel` (`**/Module_Receiving/ViewModels/**/*.cs`), no results
 
 Good! Now let me rebuild: 
 
@@ -2526,7 +2526,7 @@ Progress! Now we have different errors. Let me fix these:
 
 Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/App.xaml.cs#130-130), lines 130 to 145
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Data/Dao_ReceivingLine.cs#50-50), lines 50 to 80
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Data/Dao_ReceivingLine.cs#50-50), lines 50 to 80
 
 I can see the issues:
 
@@ -2537,7 +2537,7 @@ Let me fix these:
 
 Searched for files matching `**/Service_DunnageAdminWorkflow.cs`, 1 match
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Data/Dao_ReceivingLine.cs#1-1), lines 1 to 10
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Data/Dao_ReceivingLine.cs#1-1), lines 1 to 10
 
 Good, `Service_DunnageAdminWorkflow` exists. Now let me check the App.xaml.cs for the using statement and fix the Enum reference issue: 
 
@@ -2569,13 +2569,13 @@ Two more issues:
 
 Let me fix these: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Data/Dao_CarrierDeliveryLabel.cs#1-1), lines 1 to 15
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Data/Dao_CarrierDeliveryLabel.cs#1-1), lines 1 to 15
 
-Searched for text `x:Class` (`**/ReceivingModule/Views/View_Receiving_Review.xaml`), 1 result
+Searched for text `x:Class` (`**/Module_Receiving/Views/View_Receiving_Review.xaml`), 1 result
 
 I see the problem! The XAML says `View_Receiving_ReviewGridView` but the class name in the code-behind is probably different. Let me check both files: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Views/View_Receiving_Review.xaml.cs#1-1), lines 1 to 20
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Views/View_Receiving_Review.xaml.cs#1-1), lines 1 to 20
 
 The mismatch is clear: XAML says `View_Receiving_ReviewGridView` but the code-behind says `View_Receiving_Review`. Let me fix the XAML file and also fix the Enums issue in Dao_CarrierDeliveryLabel: 
 
@@ -2591,7 +2591,7 @@ Using "Multi-Replace String in Files"
 ```
 Now I need to fix the Enum references in that file too: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Data/Dao_CarrierDeliveryLabel.cs#55-55), lines 55 to 85
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Data/Dao_CarrierDeliveryLabel.cs#55-55), lines 55 to 85
 
 Using "Multi-Replace String in Files"
 
@@ -2609,11 +2609,11 @@ This is a XAML compiler error. Let me use the detailed XAML error script from th
 
 Ran terminal command: $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath; & "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Rebuild "Debug|x64" 2>&1 | Select-String "error|warning" | Select-Object -Last 30
 
-Perfect! Now I can see the real problem. The XAML in `View_Receiving_Workflow.xaml` is still using the old namespace `using:MTM_Receiving_Application.Views.Receiving` and old class names like `Receiving_ModeSelectionView`. These should be updated to the new namespace `MTM_Receiving_Application.ReceivingModule.Views` and new class names like `View_Receiving_ModeSelection`.
+Perfect! Now I can see the real problem. The XAML in `View_Receiving_Workflow.xaml` is still using the old namespace `using:MTM_Receiving_Application.Views.Receiving` and old class names like `Receiving_ModeSelectionView`. These should be updated to the new namespace `MTM_Receiving_Application.Module_Receiving.Views` and new class names like `View_Receiving_ModeSelection`.
 
 Let me check and fix this file: 
 
-Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/ReceivingModule/Views/View_Receiving_Workflow.xaml#1-1), lines 1 to 60
+Read [](file:///c%3A/Users/johnk/source/repos/MTM_Receiving_Application/Module_Receiving/Views/View_Receiving_Workflow.xaml#1-1), lines 1 to 60
 
 I can see the problem. Let me fix the namespace and all the view references: 
 
@@ -2641,7 +2641,7 @@ Excellent! The build succeeded! The reorganization of the Receiving module is no
 
 Successfully completed the Receiving module reorganization that was in progress in the chat session:
 
-✅ **Fixed namespace references** - Updated all files to use `MTM_Receiving_Application.ReceivingModule.Models` instead of `MTM_Receiving_Application.Models.Receiving`
+✅ **Fixed namespace references** - Updated all files to use `MTM_Receiving_Application.Module_Receiving.Models` instead of `MTM_Receiving_Application.Models.Receiving`
 
 ✅ **Fixed DAO files** - Added missing `Models.Enums` namespace and corrected enum references in:
 - Dao_DunnageLoad.cs
@@ -2657,7 +2657,7 @@ Successfully completed the Receiving module reorganization that was in progress 
 ✅ **Fixed Dunnage ViewModels** - Updated namespace references in Dunnage-related ViewModels
 
 ✅ **Fixed XAML files** - Updated View_Receiving_Workflow.xaml:
-- Changed namespace from `using:MTM_Receiving_Application.Views.Receiving` to `using:MTM_Receiving_Application.ReceivingModule.Views`
+- Changed namespace from `using:MTM_Receiving_Application.Views.Receiving` to `using:MTM_Receiving_Application.Module_Receiving.Views`
 - Updated all view control names to new naming convention (`View_Receiving_*` instead of `Receiving_*View`)
 
 ✅ **Fixed XAML class mismatch** - Corrected View_Receiving_Review.xaml x:Class attribute to match code-behind class name

@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_LoadEntry"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="32"
+                MinWidth="500">
+            <StackPanel Spacing="24" HorizontalAlignment="Center">
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                    <FontIcon Glyph="&#xE7B8;" 
+                             FontSize="48"
+                             Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                             HorizontalAlignment="Center"/>
+                    <TextBlock Text="{x:Bind ViewModel.SelectedPartInfo, Mode=OneWay}" 
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"/>
+                </StackPanel>
+
+                <NumberBox Header="Number of Loads (1-99)"
+                           Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           Minimum="1"
+                           Maximum="99"
+                           SmallChange="1"
+                           LargeChange="10"
+                           SpinButtonPlacementMode="Inline"
+                           Width="250"
+                           HorizontalAlignment="Center"
+                           AutomationProperties.Name="Number of Loads"/>
+                       
+                <TextBlock Text="Enter the total number of skids/loads for this part." 
+                           Style="{StaticResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

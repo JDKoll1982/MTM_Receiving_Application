@@ -17,11 +17,11 @@
 ## Path Conventions
 
 Single project structure - paths relative to repository root:
-- Models: `ReceivingModule/Models/`
-- ViewModels: `ReceivingModule/ViewModels/`
-- Views: `ReceivingModule/Views/`
-- Services: `ReceivingModule/Services/`
-- Data: `ReceivingModule/Data/`
+- Models: `Module_Receiving/Models/`
+- ViewModels: `Module_Receiving/ViewModels/`
+- Views: `Module_Receiving/Views/`
+- Services: `Module_Receiving/Services/`
+- Data: `Module_Receiving/Data/`
 - Database: `Database/Schemas/`, `Database/StoredProcedures/Receiving/`, `Database/TestData/`
 
 ---
@@ -43,13 +43,13 @@ Single project structure - paths relative to repository root:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 [P] Create Model_Receiving_Load in ReceivingModule/Models/Model_Receiving_Load.cs (properties: LoadId, PONumber, PartId, PartDescription, QuantityReceived, Weight, HeatNumber, LotNumber, PackageType, CreatedBy, CreatedAt)
-- [ ] T006 [P] Create Model_Receiving_Line in ReceivingModule/Models/Model_Receiving_Line.cs (properties: LineId, LoadId, LineNumber, Quantity, Notes)
-- [ ] T007 [P] Create Model_Receiving_Session in ReceivingModule/Models/Model_Receiving_Session.cs (properties: CurrentStep, CurrentPONumber, CurrentPart, IsNonPOItem, NumberOfLoads, ReviewedLoads)
-- [ ] T008 [P] Create Model_Receiving_ValidationResult in ReceivingModule/Models/Model_Receiving_ValidationResult.cs (properties: IsValid, ErrorMessage)
-- [ ] T009 Create Dao_Receiving_Load in ReceivingModule/Data/Dao_Receiving_Load.cs (methods: InsertAsync, GetByDateRangeAsync, UpdateAsync, GetByIdAsync)
-- [ ] T010 Create Dao_Receiving_Line in ReceivingModule/Data/Dao_Receiving_Line.cs (methods: InsertAsync, GetByLoadIdAsync, DeleteAsync)
-- [ ] T011 Create Dao_Receiving_PackageTypePreference in ReceivingModule/Data/Dao_Receiving_PackageTypePreference.cs (methods: GetByUserIdAsync, UpsertAsync)
+- [ ] T005 [P] Create Model_Receiving_Load in Module_Receiving/Models/Model_Receiving_Load.cs (properties: LoadId, PONumber, PartId, PartDescription, QuantityReceived, Weight, HeatNumber, LotNumber, PackageType, CreatedBy, CreatedAt)
+- [ ] T006 [P] Create Model_Receiving_Line in Module_Receiving/Models/Model_Receiving_Line.cs (properties: LineId, LoadId, LineNumber, Quantity, Notes)
+- [ ] T007 [P] Create Model_Receiving_Session in Module_Receiving/Models/Model_Receiving_Session.cs (properties: CurrentStep, CurrentPONumber, CurrentPart, IsNonPOItem, NumberOfLoads, ReviewedLoads)
+- [ ] T008 [P] Create Model_Receiving_ValidationResult in Module_Receiving/Models/Model_Receiving_ValidationResult.cs (properties: IsValid, ErrorMessage)
+- [ ] T009 Create Dao_Receiving_Load in Module_Receiving/Data/Dao_Receiving_Load.cs (methods: InsertAsync, GetByDateRangeAsync, UpdateAsync, GetByIdAsync)
+- [ ] T010 Create Dao_Receiving_Line in Module_Receiving/Data/Dao_Receiving_Line.cs (methods: InsertAsync, GetByLoadIdAsync, DeleteAsync)
+- [ ] T011 Create Dao_Receiving_PackageTypePreference in Module_Receiving/Data/Dao_Receiving_PackageTypePreference.cs (methods: GetByUserIdAsync, UpsertAsync)
 - [ ] T012 Register Receiving DAOs in App.xaml.cs ConfigureServices (singletons: Dao_Receiving_Load, Dao_Receiving_Line, Dao_Receiving_PackageTypePreference)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
@@ -64,53 +64,53 @@ Single project structure - paths relative to repository root:
 
 ### Interfaces & Enums
 
-- [ ] T013 [P] [US1] Create ReceivingModule/Interfaces/IService_Receiving_Workflow.cs from contracts/IService_ReceivingWorkflow.cs with new naming
-- [ ] T014 [P] [US1] Create ReceivingModule/Interfaces/IService_Receiving_Validation.cs from contracts/IService_ReceivingValidation.cs with new naming
-- [ ] T015 [P] [US1] Create ReceivingModule/Interfaces/IService_Receiving_SessionManager.cs (session persistence)
-- [ ] T016 [P] [US1] Create ReceivingModule/Interfaces/IService_Receiving_CSVWriter.cs (CSV export)
-- [ ] T017 [P] [US1] Create ReceivingModule/Enums/Enum_Receiving_WorkflowStep.cs (ModeSelection, POEntry, PackageType, LoadEntry, WeightQuantity, HeatLot, Review, Save)
+- [ ] T013 [P] [US1] Create Module_Receiving/Interfaces/IService_Receiving_Workflow.cs from contracts/IService_ReceivingWorkflow.cs with new naming
+- [ ] T014 [P] [US1] Create Module_Receiving/Interfaces/IService_Receiving_Validation.cs from contracts/IService_ReceivingValidation.cs with new naming
+- [ ] T015 [P] [US1] Create Module_Receiving/Interfaces/IService_Receiving_SessionManager.cs (session persistence)
+- [ ] T016 [P] [US1] Create Module_Receiving/Interfaces/IService_Receiving_CSVWriter.cs (CSV export)
+- [ ] T017 [P] [US1] Create Module_Receiving/Enums/Enum_Receiving_WorkflowStep.cs (ModeSelection, POEntry, PackageType, LoadEntry, WeightQuantity, HeatLot, Review, Save)
 
 ### Services
 
-- [ ] T018 [US1] Create ReceivingModule/Services/Service_Receiving_Workflow.cs implementing IService_Receiving_Workflow
+- [ ] T018 [US1] Create Module_Receiving/Services/Service_Receiving_Workflow.cs implementing IService_Receiving_Workflow
 - [ ] T019 [US1] Implement "Add Another Part" bug fix in Service_Receiving_Workflow.cs - clear session BEFORE navigation
-- [ ] T020 [US1] Create ReceivingModule/Services/Service_Receiving_Validation.cs implementing IService_Receiving_Validation
-- [ ] T021 [US1] Create ReceivingModule/Services/Service_Receiving_SessionManager.cs (JSON persistence)
-- [ ] T022 [US1] Create ReceivingModule/Services/Service_Receiving_CSVWriter.cs (LabelView CSV export)
+- [ ] T020 [US1] Create Module_Receiving/Services/Service_Receiving_Validation.cs implementing IService_Receiving_Validation
+- [ ] T021 [US1] Create Module_Receiving/Services/Service_Receiving_SessionManager.cs (JSON persistence)
+- [ ] T022 [US1] Create Module_Receiving/Services/Service_Receiving_CSVWriter.cs (LabelView CSV export)
 - [ ] T023 [US1] Register Receiving Services in App.xaml.cs ConfigureServices (singletons: Service_Receiving_Workflow, Service_Receiving_Validation, Service_Receiving_SessionManager, Service_Receiving_CSVWriter)
 
 ### ViewModels
 
-- [ ] T024 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_ModeSelection.cs inheriting from BaseViewModel
-- [ ] T025 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_POEntry.cs inheriting from BaseViewModel
-- [ ] T026 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_PackageType.cs inheriting from BaseViewModel
-- [ ] T027 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_LoadEntry.cs inheriting from BaseViewModel
-- [ ] T028 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_WeightQuantity.cs inheriting from BaseViewModel
-- [ ] T029 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_HeatLot.cs inheriting from BaseViewModel
-- [ ] T030 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_Review.cs inheriting from BaseViewModel
-- [ ] T031 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_Workflow.cs inheriting from BaseViewModel
-- [ ] T032 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_EditMode.cs inheriting from BaseViewModel
-- [ ] T033 [P] [US1] Create ReceivingModule/ViewModels/ViewModel_Receiving_ManualEntry.cs inheriting from BaseViewModel
+- [ ] T024 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs inheriting from BaseViewModel
+- [ ] T025 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs inheriting from BaseViewModel
+- [ ] T026 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs inheriting from BaseViewModel
+- [ ] T027 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs inheriting from BaseViewModel
+- [ ] T028 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs inheriting from BaseViewModel
+- [ ] T029 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs inheriting from BaseViewModel
+- [ ] T030 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs inheriting from BaseViewModel
+- [ ] T031 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs inheriting from BaseViewModel
+- [ ] T032 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs inheriting from BaseViewModel
+- [ ] T033 [P] [US1] Create Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs inheriting from BaseViewModel
 - [ ] T034 [US1] Register Receiving ViewModels in App.xaml.cs ConfigureServices (transient)
 
 ### Views
 
 📐 **UI Mockups**: See [../011-module-reimplementation/mockups/Receiving/](../011-module-reimplementation/mockups/Receiving/) for visual design guidance
 
-- [ ] T035 [P] [US1] Create ReceivingModule/Views/View_Receiving_ModeSelection.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_ModeSelection.svg)
-- [ ] T036 [P] [US1] Create ReceivingModule/Views/View_Receiving_POEntry.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_POEntry.svg)
-- [ ] T037 [P] [US1] Create ReceivingModule/Views/View_Receiving_PackageType.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_PackageType.svg)
-- [ ] T038 [P] [US1] Create ReceivingModule/Views/View_Receiving_LoadEntry.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_LoadEntry.svg)
-- [ ] T039 [P] [US1] Create ReceivingModule/Views/View_Receiving_WeightQuantity.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_WeightQuantity.svg)
-- [ ] T040 [P] [US1] Create ReceivingModule/Views/View_Receiving_HeatLot.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_HeatLot.svg)
-- [ ] T041 [P] [US1] Create ReceivingModule/Views/View_Receiving_Review.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_Review.svg)
-- [ ] T042 [P] [US1] Create ReceivingModule/Views/View_Receiving_Workflow.xaml and .xaml.cs with x:Bind → (Container only)
-- [ ] T043 [P] [US1] Create ReceivingModule/Views/View_Receiving_EditMode.xaml and .xaml.cs with x:Bind → (Similar to ManualEntry)
-- [ ] T044 [P] [US1] Create ReceivingModule/Views/View_Receiving_ManualEntry.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_ManualEntry.svg)
+- [ ] T035 [P] [US1] Create Module_Receiving/Views/View_Receiving_ModeSelection.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_ModeSelection.svg)
+- [ ] T036 [P] [US1] Create Module_Receiving/Views/View_Receiving_POEntry.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_POEntry.svg)
+- [ ] T037 [P] [US1] Create Module_Receiving/Views/View_Receiving_PackageType.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_PackageType.svg)
+- [ ] T038 [P] [US1] Create Module_Receiving/Views/View_Receiving_LoadEntry.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_LoadEntry.svg)
+- [ ] T039 [P] [US1] Create Module_Receiving/Views/View_Receiving_WeightQuantity.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_WeightQuantity.svg)
+- [ ] T040 [P] [US1] Create Module_Receiving/Views/View_Receiving_HeatLot.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_HeatLot.svg)
+- [ ] T041 [P] [US1] Create Module_Receiving/Views/View_Receiving_Review.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_Review.svg)
+- [ ] T042 [P] [US1] Create Module_Receiving/Views/View_Receiving_Workflow.xaml and .xaml.cs with x:Bind → (Container only)
+- [ ] T043 [P] [US1] Create Module_Receiving/Views/View_Receiving_EditMode.xaml and .xaml.cs with x:Bind → (Similar to ManualEntry)
+- [ ] T044 [P] [US1] Create Module_Receiving/Views/View_Receiving_ManualEntry.xaml and .xaml.cs with x:Bind → [Mockup](../011-module-reimplementation/mockups/Receiving/View_Receiving_ManualEntry.svg)
 
 ### DI & Navigation
 
-- [ ] T045 [US1] Update Views/Main/Main_ReceivingLabelPage.xaml to navigate to new ReceivingModule Views
+- [ ] T045 [US1] Update Views/Main/Main_ReceivingLabelPage.xaml to navigate to new Module_Receiving Views
 - [ ] T046 [US1] Update MainWindow.xaml navigation to use new Receiving module entry point
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can complete full receiving workflow with bug fixes

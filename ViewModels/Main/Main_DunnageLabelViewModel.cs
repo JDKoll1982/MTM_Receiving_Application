@@ -5,10 +5,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.DunnageModule.Models;
-using MTM_Receiving_Application.DunnageModule.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.ReceivingModule.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.ViewModels.Shared;
 
 namespace MTM_Receiving_Application.ViewModels.Main;

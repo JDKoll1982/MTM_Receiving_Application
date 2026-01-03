@@ -112,7 +112,7 @@ The existing Receiving module was implemented with inconsistent naming conventio
 
 ### Module Structure
 ```
-ReceivingModule/
+Module_Receiving/
 ├── Models/
 ├── ViewModels/
 ├── Views/
@@ -123,7 +123,7 @@ ReceivingModule/
 
 ### Key Improvements
 1. **Consistent Naming**: All files follow `{Type}_{Module}_{Name}` pattern
-2. **Clear Boundaries**: Receiving code isolated in ReceivingModule/
+2. **Clear Boundaries**: Receiving code isolated in Module_Receiving/
 3. **Bug Fix**: "Add Another Part" clears form before navigation
 4. **Better Organization**: Logical grouping by concern (Models, Views, etc.)
 

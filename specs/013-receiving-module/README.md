@@ -28,7 +28,7 @@ The Receiving Module enables receiving clerks to process incoming materials from
 
 ### Module Structure
 ```
-ReceivingModule/
+Module_Receiving/
 ├── Models/          # Data models (Session, Load, Package, etc.)
 ├── ViewModels/      # MVVM ViewModels (ModeSelection, POEntry, Review, etc.)
 ├── Views/           # XAML Views (10 views total)

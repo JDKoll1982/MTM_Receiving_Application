@@ -32,7 +32,7 @@ The Dunnage Module enables warehouse managers and receiving clerks to manage dun
 
 ### Module Structure
 ```
-DunnageModule/
+Module_Dunnage/
 ├── Models/          # Data models (Type, Part, Spec, Load, Inventory)
 ├── ViewModels/      # MVVM ViewModels (TypeSelection, PartSelection, Admin, etc.)
 ├── Views/           # XAML Views (14 views total)

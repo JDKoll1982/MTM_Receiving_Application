@@ -1,0 +1,63 @@
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Add Part to Inventoried List"
+    PrimaryButtonText="Add to List"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OnPrimaryButtonClick">
+
+    <ScrollViewer MaxHeight="500">
+        <StackPanel Spacing="12" Padding="24">
+            
+            <!-- Part ID Selection -->
+            <TextBlock Text="Part ID" FontWeight="SemiBold"/>
+            <ComboBox x:Name="PartIdComboBox"
+                      PlaceholderText="Select a part..."
+                      HorizontalAlignment="Stretch"
+                      IsEditable="True"
+                      TextSubmitted="PartIdComboBox_TextSubmitted"/>
+            <TextBlock x:Name="PartIdError"
+                       Text="Part ID is required"
+                       Foreground="{ThemeResource SystemErrorTextColor}"
+                       Visibility="Collapsed"
+                       Margin="0,-8,0,0"/>
+
+            <!-- Inventory Method -->
+            <TextBlock Text="Inventory Method" FontWeight="SemiBold" Margin="0,12,0,0"/>
+            <ComboBox x:Name="InventoryMethodComboBox"
+                      HorizontalAlignment="Stretch"
+                      SelectedIndex="2">
+                <ComboBoxItem Content="Adjust In"/>
+                <ComboBoxItem Content="Receive In"/>
+                <ComboBoxItem Content="Both"/>
+            </ComboBox>
+            <TextBlock Text="Adjust In: Only triggers during inventory adjustments"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"
+                       TextWrapping="Wrap"
+                       Margin="0,-8,0,0"/>
+            <TextBlock Text="Receive In: Only triggers during receiving transactions"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"
+                       TextWrapping="Wrap"/>
+            <TextBlock Text="Both: Triggers for both adjust and receive operations"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"
+                       TextWrapping="Wrap"/>
+
+            <!-- Notes -->
+            <TextBlock Text="Notes (optional)" FontWeight="SemiBold" Margin="0,12,0,0"/>
+            <TextBox x:Name="NotesTextBox"
+                     PlaceholderText="Add any notes or special instructions..."
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="80"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>
