@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.ReceivingModule.Models

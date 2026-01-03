@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Models.Enums;
 using System;
 
@@ -122,7 +122,7 @@ namespace MTM_Receiving_Application.ReceivingModule.Models
         }
 
         /// <summary>
-        /// Calculates weight per package: WeightQuantity ÷ PackagesPerLoad.
+        /// Calculates weight per package: WeightQuantity � PackagesPerLoad.
         /// </summary>
         private void CalculateWeightPerPackage()
         {

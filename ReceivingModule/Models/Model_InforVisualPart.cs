@@ -1,4 +1,4 @@
-﻿namespace MTM_Receiving_Application.ReceivingModule.Models
+namespace MTM_Receiving_Application.ReceivingModule.Models
 {
     /// <summary>
     /// Represents a part/line item on a purchase order from Infor Visual.

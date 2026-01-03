@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.ReceivingModule.ViewModels;

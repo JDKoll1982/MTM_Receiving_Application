@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.ReceivingModule.Data;

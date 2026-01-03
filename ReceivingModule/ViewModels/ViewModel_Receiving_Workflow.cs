@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
@@ -17,7 +17,7 @@ namespace MTM_Receiving_Application.ReceivingModule.ViewModels
         private readonly IService_Help _helpService;
 
         [ObservableProperty]
-        private string _currentStepTitle = "📥 Receiving - Mode Selection";
+        private string _currentStepTitle = "?? Receiving - Mode Selection";
 
         [ObservableProperty]
         private bool _isModeSelectionVisible;
@@ -320,7 +320,7 @@ namespace MTM_Receiving_Application.ReceivingModule.ViewModels
             // Update title based on step
             CurrentStepTitle = step switch
             {
-                Enum_ReceivingWorkflowStep.ModeSelection => "📥 Receiving - Mode Selection",
+                Enum_ReceivingWorkflowStep.ModeSelection => "?? Receiving - Mode Selection",
                 Enum_ReceivingWorkflowStep.ManualEntry => "Manual Entry",
                 Enum_ReceivingWorkflowStep.EditMode => "Edit Mode",
                 Enum_ReceivingWorkflowStep.POEntry => "Enter PO Number",
@@ -332,7 +332,7 @@ namespace MTM_Receiving_Application.ReceivingModule.ViewModels
                 Enum_ReceivingWorkflowStep.Review => "Review & Save",
                 Enum_ReceivingWorkflowStep.Saving => "Saving...",
                 Enum_ReceivingWorkflowStep.Complete => "Complete",
-                _ => "📥 Receiving - Mode Selection"
+                _ => "?? Receiving - Mode Selection"
             };
 
             // Update help content based on step

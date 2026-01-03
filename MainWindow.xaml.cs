@@ -90,7 +90,7 @@ namespace MTM_Receiving_Application
                         break;
                     case "DunnageLabelPage":
                         PageTitleTextBlock.Text = "Dunnage Labels";
-                        ContentFrame.Navigate(typeof(Views.Dunnage.Dunnage_WorkflowView));
+                        ContentFrame.Navigate(typeof(DunnageModule.Views.View_Dunnage_WorkflowView));
                         ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "CarrierDeliveryLabelPage":
@@ -123,7 +123,7 @@ namespace MTM_Receiving_Application
                 }
             }
             // If navigated to DunnageWorkflowView, subscribe to ViewModel changes to update header
-            else if (ContentFrame.Content is Views.Dunnage.Dunnage_WorkflowView dunnageView)
+            else if (ContentFrame.Content is DunnageModule.Views.View_Dunnage_WorkflowView dunnageView)
             {
                 var viewModel = dunnageView.ViewModel;
                 if (viewModel != null)

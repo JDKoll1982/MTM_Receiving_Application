@@ -1,4 +1,4 @@
-﻿using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.ReceivingModule.Models;
 using System;

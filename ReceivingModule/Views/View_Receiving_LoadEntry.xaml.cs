@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.ReceivingModule.ViewModels;
 
 namespace MTM_Receiving_Application.ReceivingModule.Views

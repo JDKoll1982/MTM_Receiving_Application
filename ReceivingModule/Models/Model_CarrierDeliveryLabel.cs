@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MTM_Receiving_Application.ReceivingModule.Models;
 

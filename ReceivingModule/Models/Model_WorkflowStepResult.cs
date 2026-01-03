@@ -1,4 +1,5 @@
-﻿using MTM_Receiving_Application.Models.Enums;
+
+using MTM_Receiving_Application.DunnageModule.Enums;
 
 namespace MTM_Receiving_Application.ReceivingModule.Models
 {

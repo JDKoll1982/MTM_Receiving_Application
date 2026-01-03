@@ -1,4 +1,4 @@
-﻿namespace MTM_Receiving_Application.ReceivingModule.Models
+namespace MTM_Receiving_Application.ReceivingModule.Models
 {
     /// <summary>
     /// Result of CSV write operation.

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace MTM_Receiving_Application.ReceivingModule.Models
 {

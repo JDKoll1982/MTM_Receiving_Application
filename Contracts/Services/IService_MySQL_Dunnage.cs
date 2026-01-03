@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Dunnage;
+using MTM_Receiving_Application.DunnageModule.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {

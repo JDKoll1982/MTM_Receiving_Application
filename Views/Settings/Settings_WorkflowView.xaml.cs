@@ -46,10 +46,10 @@ public sealed partial class Settings_WorkflowView : Page
         switch (step)
         {
             case Enum_SettingsWorkflowStep.DunnageTypes:
-                _navigationService.NavigateTo(AdminFrame, typeof(Dunnage.Dunnage_AdminTypesView));
+                _navigationService.NavigateTo(AdminFrame, typeof(DunnageModule.Views.View_Dunnage_AdminTypesView));
                 break;
             case Enum_SettingsWorkflowStep.DunnageInventory:
-                _navigationService.NavigateTo(AdminFrame, typeof(Dunnage.Dunnage_AdminInventoryView));
+                _navigationService.NavigateTo(AdminFrame, typeof(DunnageModule.Views.View_Dunnage_AdminInventoryView));
                 break;
             case Enum_SettingsWorkflowStep.ModeSelection:
             case Enum_SettingsWorkflowStep.ReceivingSettings:
