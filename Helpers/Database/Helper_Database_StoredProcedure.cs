@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.ReceivingModule.Models;
 using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.Helpers.Database;

@@ -5,13 +5,13 @@ using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Services.Database;
 using MTM_Receiving_Application.Services.Authentication;
-using MTM_Receiving_Application.Services.Receiving;
+using MTM_Receiving_Application.ReceivingModule.Services;
 using MTM_Receiving_Application.Data.Authentication;
-using MTM_Receiving_Application.Data.Receiving;
+using MTM_Receiving_Application.ReceivingModule.Data;
 using MTM_Receiving_Application.Data.Dunnage;
 using MTM_Receiving_Application.Data.InforVisual;
 using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.ViewModels.Receiving;
+using MTM_Receiving_Application.ReceivingModule.ViewModels;
 using MTM_Receiving_Application.ViewModels.Dunnage;
 using MTM_Receiving_Application.ViewModels.Settings;
 using MTM_Receiving_Application.ViewModels.Shared;
@@ -20,6 +20,7 @@ using MTM_Receiving_Application.Views.Main;
 using MTM_Receiving_Application.Models.Systems;
 
 using MTM_Receiving_Application.Services;
+using MTM_Receiving_Application.Services.Receiving;
 using MTM_Receiving_Application.Services.Startup;
 
 namespace MTM_Receiving_Application;
@@ -151,16 +152,16 @@ public partial class App : Application
                 services.AddTransient<Main_CarrierDeliveryLabelViewModel>();
 
                 // Receiving Workflow ViewModels
-                services.AddTransient<Receiving_ReceivingWorkflowViewModel>();
-                services.AddTransient<Receiving_ReceivingModeSelectionViewModel>();
-                services.AddTransient<Receiving_ManualEntryViewModel>();
-                services.AddTransient<Receiving_EditModeViewModel>();
-                services.AddTransient<Receiving_POEntryViewModel>();
-                services.AddTransient<Receiving_LoadEntryViewModel>();
-                services.AddTransient<Receiving_WeightQuantityViewModel>();
-                services.AddTransient<Receiving_HeatLotViewModel>();
-                services.AddTransient<Receiving_PackageTypeViewModel>();
-                services.AddTransient<Receiving_ReviewGridViewModel>();
+                services.AddTransient<ViewModel_Receiving_Workflow>();
+                services.AddTransient<ViewModel_Receiving_ModeSelection>();
+                services.AddTransient<ViewModel_Receiving_ManualEntry>();
+                services.AddTransient<ViewModel_Receiving_EditMode>();
+                services.AddTransient<ViewModel_Receiving_POEntry>();
+                services.AddTransient<ViewModel_Receiving_LoadEntry>();
+                services.AddTransient<ViewModel_Receiving_WeightQuantity>();
+                services.AddTransient<ViewModel_Receiving_HeatLot>();
+                services.AddTransient<ViewModel_Receiving_PackageType>();
+                services.AddTransient<ViewModel_Receiving_Review>();
 
                 // Dunnage Workflow ViewModels
                 services.AddTransient<Dunnage_ModeSelectionViewModel>();

@@ -65,7 +65,7 @@ namespace MTM_Receiving_Application
                 {
                     _hasNavigatedOnStartup = true;
                     PageTitleTextBlock.Text = "📥 Receiving - Mode Selection";
-                    ContentFrame.Navigate(typeof(Views.Receiving.Receiving_WorkflowView));
+                    ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
                     ContentFrame.Navigated += ContentFrame_Navigated;
                 }
             }
@@ -85,7 +85,7 @@ namespace MTM_Receiving_Application
                 {
                     case "ReceivingWorkflowView":
                         PageTitleTextBlock.Text = "Receiving Workflow";
-                        ContentFrame.Navigate(typeof(Views.Receiving.Receiving_WorkflowView));
+                        ContentFrame.Navigate(typeof(ReceivingModule.Views.View_Receiving_Workflow));
                         ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "DunnageLabelPage":
@@ -104,7 +104,7 @@ namespace MTM_Receiving_Application
         private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
         {
             // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
-            if (ContentFrame.Content is Views.Receiving.Receiving_WorkflowView receivingView)
+            if (ContentFrame.Content is ReceivingModule.Views.View_Receiving_Workflow receivingView)
             {
                 var viewModel = receivingView.ViewModel;
                 if (viewModel != null)

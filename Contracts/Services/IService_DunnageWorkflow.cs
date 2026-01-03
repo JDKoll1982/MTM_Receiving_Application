@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Dunnage;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.ReceivingModule.Models;
 
 namespace MTM_Receiving_Application.Contracts.Services
 {

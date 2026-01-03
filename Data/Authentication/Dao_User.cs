@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Models.Systems;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.ReceivingModule.Models;
 using MTM_Receiving_Application.Helpers.Database;
 
 namespace MTM_Receiving_Application.Data.Authentication

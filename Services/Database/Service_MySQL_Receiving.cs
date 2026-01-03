@@ -1,7 +1,7 @@
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Data.Receiving;
+﻿using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.ReceivingModule.Data;
 using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Receiving;
+using MTM_Receiving_Application.ReceivingModule.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
