@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Tests.Unit
 {
     public class SessionManagerTests
     {
-        private const string ConnectionString = "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
+        private const string ConnectionString = "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;";
         private readonly Dao_User _daoUser;
         private readonly Mock<IService_Dispatcher> _mockDispatcherService;
         private readonly Mock<IService_DispatcherTimer> _mockTimer;

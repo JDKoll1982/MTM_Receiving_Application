@@ -124,7 +124,8 @@ public class Dao_PackageTypePreference
             {
                 { "@p_PartID", preference.PartID },
                 { "@p_PackageTypeName", preference.PackageTypeName },
-                { "@p_CustomTypeName", preference.CustomTypeName ?? (object)DBNull.Value }
+                { "@p_CustomTypeName", preference.CustomTypeName ?? (object)DBNull.Value },
+                { "@p_LastModified", DateTime.Now }
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(

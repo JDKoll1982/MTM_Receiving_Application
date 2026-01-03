@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Dunnage;
 using MTM_Receiving_Application.Models.Enums;
@@ -18,12 +19,14 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService; private readonly IService_Help _helpService; private readonly IService_DunnageCSVWriter _csvWriter;
+    private readonly IService_Window _windowService;
 
     public Dunnage_ReviewViewModel(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_DunnageCSVWriter csvWriter,
         IService_Help helpService,
+        IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
@@ -31,6 +34,7 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
         _dunnageService = dunnageService;
         _csvWriter = csvWriter;
         _helpService = helpService;
+        _windowService = windowService;
 
         // Subscribe to workflow step changes to re-initialize when this step is reached
         _workflowService.StepChanged += OnWorkflowStepChanged;
@@ -170,12 +174,150 @@ public partial class Dunnage_ReviewViewModel : Shared_BaseViewModel
     #region Commands
 
     [RelayCommand]
-    private void AddAnother()
+    private async Task AddAnotherAsync()
     {
-        _logger.LogInfo("Adding another load, preserving session", "Review");
+        _logger.LogInfo("User requested to add another load", "Review");
 
-        // Navigate back to Type Selection without clearing session
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+        try
+        {
+            // Show confirmation dialog to prevent accidental data loss
+            if (!await ConfirmAddAnotherAsync())
+            {
+                _logger.LogInfo("User cancelled add another load", "Review");
+                return;
+            }
+
+            // Clear transient workflow data to prepare for new entry
+            ClearTransientWorkflowData();
+
+            // Navigate back to Type Selection without clearing session loads
+            _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+
+            _logger.LogInfo("Navigated to Type Selection for new load, workflow data cleared", "Review");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in AddAnotherAsync: {ex.Message}", ex, "Review");
+            await _errorHandler.HandleErrorAsync(
+                "Failed to prepare for new load entry",
+                Enum_ErrorSeverity.Medium,
+                ex,
+                true);
+        }
+    }
+
+    /// <summary>
+    /// Shows confirmation dialog before clearing data for new entry
+    /// </summary>
+    private async Task<bool> ConfirmAddAnotherAsync()
+    {
+        try
+        {
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
+            {
+                _logger.LogWarning("XamlRoot is null, proceeding without confirmation", "Review");
+                return true;
+            }
+
+            var dialog = new ContentDialog
+            {
+                Title = "Add Another Load",
+                Content = "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
+                PrimaryButtonText = "Continue",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = xamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            return result == ContentDialogResult.Primary;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error showing confirmation dialog: {ex.Message}", ex, "Review");
+            return true; // Proceed if dialog fails
+        }
+    }
+
+    /// <summary>
+    /// Clears transient workflow data from intermediate steps (not the session loads)
+    /// This prevents data duplication when adding another load
+    /// </summary>
+    private void ClearTransientWorkflowData()
+    {
+        try
+        {
+            // Clear the current session properties that hold form data
+            // but preserve the Loads collection (already reviewed loads)
+            var session = _workflowService.CurrentSession;
+            if (session != null)
+            {
+                // Clear selection properties to start fresh
+                session.SelectedTypeId = 0;
+                session.SelectedTypeName = string.Empty;
+                session.SelectedPart = null;
+                session.Quantity = 0;
+                session.PONumber = string.Empty;
+                session.Location = string.Empty;
+                // Preserve Loads collection - these are already reviewed
+            }
+
+            // Clear UI inputs in connected ViewModels
+            ClearUIInputsForNewEntry();
+
+            _logger.LogInfo("Transient workflow data and UI inputs cleared for new entry", "Review");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error clearing transient workflow data: {ex.Message}", ex, "Review");
+        }
+    }
+
+    /// <summary>
+    /// Clears UI input properties in ViewModels to prepare for new entry
+    /// while preserving reviewed loads
+    /// </summary>
+    private void ClearUIInputsForNewEntry()
+    {
+        try
+        {
+            // Clear TypeSelection ViewModel
+            var typeSelectionVM = App.GetService<Dunnage_TypeSelectionViewModel>();
+            if (typeSelectionVM != null)
+            {
+                typeSelectionVM.SelectedType = null;
+            }
+
+            // Clear PartSelection ViewModel
+            var partSelectionVM = App.GetService<Dunnage_PartSelectionViewModel>();
+            if (partSelectionVM != null)
+            {
+                partSelectionVM.SelectedPart = null;
+            }
+
+            // Clear DetailsEntry ViewModel
+            var detailsEntryVM = App.GetService<Dunnage_DetailsEntryViewModel>();
+            if (detailsEntryVM != null)
+            {
+                detailsEntryVM.PoNumber = string.Empty;
+                detailsEntryVM.Location = string.Empty;
+                detailsEntryVM.SpecInputs?.Clear();
+            }
+
+            // Clear QuantityEntry ViewModel
+            var quantityEntryVM = App.GetService<Dunnage_QuantityEntryViewModel>();
+            if (quantityEntryVM != null)
+            {
+                quantityEntryVM.Quantity = 1;
+            }
+
+            _logger.LogInfo("UI inputs cleared for new entry (loads preserved)", "Review");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex, "Review");
+        }
     }
 
     [RelayCommand]

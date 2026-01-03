@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
@@ -7,6 +8,7 @@ using MTM_Receiving_Application.ViewModels.Shared;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Enums;
+using System;
 
 namespace MTM_Receiving_Application.ViewModels.Receiving
 {
@@ -15,6 +17,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
+        private readonly IService_Window _windowService;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -52,6 +55,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,
+            IService_Window windowService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -59,6 +63,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _workflowService = workflowService;
             _validationService = validationService;
             _helpService = helpService;
+            _windowService = windowService;
 
             _workflowService.StepChanged += OnStepChanged;
         }
@@ -138,17 +143,128 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         [RelayCommand]
         private async Task AddAnotherPartAsync()
         {
-            // This will be implemented fully in User Story 3
-            // For now, it should probably just reset to PO Entry or Part Selection
-            // But we need to make sure current loads are saved/accumulated in session.
+            _logger.LogInfo("User requested to add another part/PO");
 
-            // The workflow service should handle "AddCurrentPartToSessionAsync"
-            await _workflowService.AddCurrentPartToSessionAsync();
+            try
+            {
+                // Show confirmation dialog to prevent accidental data loss
+                if (!await ConfirmAddAnotherAsync())
+                {
+                    _logger.LogInfo("User cancelled add another part/PO");
+                    return;
+                }
 
-            // Navigate to PO Entry (or Part Selection if same PO?)
-            // For MVP US1, we might not fully support this yet, but the button is requested.
-            // Let's assume we go back to PO Entry.
-            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+                // Clear transient workflow data FIRST (before navigation)
+                ClearTransientWorkflowData();
+
+                // Preserve current session loads
+                await _workflowService.AddCurrentPartToSessionAsync();
+
+                // Navigate to PO Entry to start new part/PO entry
+                // Note: AddCurrentPartToSessionAsync already sets CurrentStep to POEntry
+                // so this is redundant, but explicit for clarity
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+
+                _logger.LogInfo("Navigated to PO Entry for new part, workflow data cleared");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in AddAnotherPartAsync: {ex.Message}", ex);
+                await _errorHandler.HandleErrorAsync(
+                    "Failed to prepare for new part entry",
+                    Enum_ErrorSeverity.Medium,
+                    ex,
+                    true);
+            }
+        }
+
+        /// <summary>
+        /// Shows confirmation dialog before clearing data for new entry
+        /// </summary>
+        private async Task<bool> ConfirmAddAnotherAsync()
+        {
+            try
+            {
+                var xamlRoot = _windowService.GetXamlRoot();
+                if (xamlRoot == null)
+                {
+                    _logger.LogWarning("XamlRoot is null, proceeding without confirmation");
+                    return true;
+                }
+
+                var dialog = new ContentDialog
+                {
+                    Title = "Add Another Part/PO",
+                    Content = "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
+                    PrimaryButtonText = "Continue",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = xamlRoot
+                };
+
+                var result = await dialog.ShowAsync();
+                return result == ContentDialogResult.Primary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error showing confirmation dialog: {ex.Message}", ex);
+                return true; // Proceed if dialog fails
+            }
+        }
+
+        /// <summary>
+        /// Clears transient workflow data from intermediate steps (not the session loads)
+        /// This prevents data duplication when adding another part
+        /// </summary>
+        private void ClearTransientWorkflowData()
+        {
+            try
+            {
+                // Clear the current session properties that hold form data
+                // but preserve the Loads collection (already saved loads)
+                var session = _workflowService.CurrentSession;
+                if (session != null)
+                {
+                    // Clear PO-related properties if they exist in session
+                    session.PoNumber = null;
+                    session.IsNonPO = false;
+                }
+
+                // Clear UI inputs in connected ViewModels
+                ClearUIInputsForNewEntry();
+
+                _logger.LogInfo("Transient workflow data and UI inputs cleared for new entry");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error clearing transient workflow data: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Clears UI input properties in ViewModels to prepare for new entry
+        /// while preserving reviewed loads
+        /// </summary>
+        private void ClearUIInputsForNewEntry()
+        {
+            try
+            {
+                // The key is to clear the session data that ViewModels read from
+                // ViewModels bind to CurrentSession properties, not their own properties
+
+                // This is already done in ClearTransientWorkflowData which clears:
+                // - session.PoNumber
+                // - session.IsNonPO
+
+                // When navigation occurs to POEntry, the ViewModel will read fresh (empty) session data
+                // No need to access individual ViewModel instances
+
+                _logger.LogInfo("UI inputs will be cleared via session data reset");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex);
+            }
         }
 
         [RelayCommand]

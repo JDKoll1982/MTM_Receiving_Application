@@ -71,12 +71,12 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_DunnageUserPreference(mySqlConnectionString));
 
                 // Register NEW Infor Visual DAOs (READ-ONLY)
-                services.AddSingleton(sp => 
+                services.AddSingleton(sp =>
                 {
                     var logger = sp.GetService<IService_LoggingUtility>();
                     return new Dao_InforVisualPO(inforVisualConnectionString, logger);
                 });
-                services.AddSingleton(sp => 
+                services.AddSingleton(sp =>
                 {
                     var logger = sp.GetService<IService_LoggingUtility>();
                     return new Dao_InforVisualPart(inforVisualConnectionString, logger);
@@ -106,8 +106,8 @@ public partial class App : Application
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
                 // NEW: Infor Visual Connection Service with mock data support
-                var useMockData = false; // Set to true to use mock data instead of connecting to VISUAL server
-                services.AddSingleton(sp => 
+                var useMockData = true; // Set to true to use mock data instead of connecting to VISUAL server
+                services.AddSingleton(sp =>
                 {
                     var logger = sp.GetService<IService_LoggingUtility>();
                     return new Dao_InforVisualConnection(

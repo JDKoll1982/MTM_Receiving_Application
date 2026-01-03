@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Models.Enums;
 using MTM_Receiving_Application.ViewModels.Shared;
@@ -13,6 +14,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserPreferences _userPreferencesService;
         private readonly IService_Help _helpService;
+        private readonly IService_Window _windowService;
 
         [ObservableProperty]
         private bool _isGuidedModeDefault;
@@ -28,6 +30,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             IService_UserSessionManager sessionManager,
             IService_UserPreferences userPreferencesService,
             IService_Help helpService,
+            IService_Window windowService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -36,6 +39,7 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
             _sessionManager = sessionManager;
             _userPreferencesService = userPreferencesService;
             _helpService = helpService;
+            _windowService = windowService;
 
             // Load current default mode
             LoadDefaultMode();
@@ -53,24 +57,174 @@ namespace MTM_Receiving_Application.ViewModels.Receiving
         }
 
         [RelayCommand]
-        private void SelectGuidedMode()
+        private async Task SelectGuidedModeAsync()
         {
             _logger.LogInfo("User selected Guided Mode.");
-            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+
+            if (await ConfirmModeChangeAsync())
+            {
+                ClearWorkflowData();
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+            }
         }
 
         [RelayCommand]
-        private void SelectManualMode()
+        private async Task SelectManualModeAsync()
         {
             _logger.LogInfo("User selected Manual Mode.");
-            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
+
+            if (await ConfirmModeChangeAsync())
+            {
+                ClearWorkflowData();
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
+            }
         }
 
         [RelayCommand]
-        private void SelectEditMode()
+        private async Task SelectEditModeAsync()
         {
             _logger.LogInfo("User selected Edit Mode.");
-            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
+
+            if (await ConfirmModeChangeAsync())
+            {
+                ClearWorkflowData();
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
+            }
+        }
+
+        /// <summary>
+        /// Shows confirmation dialog before mode change
+        /// </summary>
+        /// <returns>True if user confirmed, false if cancelled</returns>
+        /// <summary>
+        /// Checks if there is any unsaved data in the current workflow
+        /// </summary>
+        private bool HasUnsavedData()
+        {
+            if (_workflowService.CurrentSession == null)
+            {
+                return false;
+            }
+
+            // Check if there are any loads in the session
+            if (_workflowService.CurrentSession.Loads != null &&
+                _workflowService.CurrentSession.Loads.Count > 0)
+            {
+                return true;
+            }
+
+            // Check if there's any PO/Part selection
+            if (!string.IsNullOrEmpty(_workflowService.CurrentSession.PoNumber) ||
+                _workflowService.CurrentPart != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task<bool> ConfirmModeChangeAsync()
+        {
+            // Skip confirmation if there's no unsaved data
+            if (!HasUnsavedData())
+            {
+                _logger.LogInfo("No unsaved data detected, skipping confirmation dialog");
+                return true;
+            }
+
+            try
+            {
+                var xamlRoot = _windowService.GetXamlRoot();
+                if (xamlRoot == null)
+                {
+                    _logger.LogWarning("XamlRoot is null, proceeding without confirmation");
+                    return true;
+                }
+
+                var dialog = new ContentDialog
+                {
+                    Title = "Confirm Mode Selection",
+                    Content = "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
+                    PrimaryButtonText = "Continue",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = xamlRoot
+                };
+
+                var result = await dialog.ShowAsync();
+                return result == ContentDialogResult.Primary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error showing confirmation dialog: {ex.Message}", ex);
+                return true; // Proceed if dialog fails
+            }
+        }
+
+        /// <summary>
+        /// Clears all transient workflow data without affecting persisted data
+        /// </summary>
+        private void ClearWorkflowData()
+        {
+            try
+            {
+                // Clear current session data (in-memory only, not database or CSV)
+                if (_workflowService.CurrentSession != null)
+                {
+                    _workflowService.CurrentSession.Loads?.Clear();
+                }
+
+                // Clear UI inputs in all connected ViewModels
+                ClearAllUIInputs();
+
+                _logger.LogInfo("Workflow data and UI inputs cleared for mode change");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error clearing workflow data: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Clears UI input properties across all Receiving workflow ViewModels
+        /// </summary>
+        private void ClearAllUIInputs()
+        {
+            try
+            {
+                // Clear POEntry ViewModel
+                var poEntryVM = App.GetService<Receiving_POEntryViewModel>();
+                if (poEntryVM != null)
+                {
+                    poEntryVM.PoNumber = string.Empty;
+                    poEntryVM.PartID = string.Empty;
+                    poEntryVM.SelectedPart = null;
+                    poEntryVM.IsNonPOItem = false;
+                    poEntryVM.Parts?.Clear();
+                }
+
+                // Clear PackageType ViewModel
+                var packageTypeVM = App.GetService<Receiving_PackageTypeViewModel>();
+                if (packageTypeVM != null)
+                {
+                    packageTypeVM.SelectedPackageType = string.Empty;
+                    packageTypeVM.CustomPackageTypeName = string.Empty;
+                    packageTypeVM.IsCustomTypeVisible = false;
+                }
+
+                // Clear LoadEntry ViewModel
+                var loadEntryVM = App.GetService<Receiving_LoadEntryViewModel>();
+                if (loadEntryVM != null)
+                {
+                    loadEntryVM.NumberOfLoads = 1;
+                }
+
+                _logger.LogInfo("UI inputs cleared across all Receiving ViewModels");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex);
+            }
         }
 
         [RelayCommand]
