@@ -1,0 +1,328 @@
+@startuml
+
+title Volvo Dunnage Requisition Module - User Interaction Workflow
+
+start
+
+:User clicks "Volvo Dunnage" from Main Menu;
+
+note right
+  **View_Volvo_ShipmentEntry.xaml**
+  Main entry screen for Volvo dunnage receiving
+end note
+
+if (Pending PO shipment exists?) then (yes)
+  :Show pending shipment modal;
+  
+  note right
+    **Modal Display:**
+    ⚠️ Pending Shipment Exists
+    
+    04/01/2025 Shipment #1
+    12 parts entered, labels generated
+    Awaiting PO from purchasing
+    
+    [View/Edit] [Complete with PO]
+  end note
+  
+  if (User action?) then (View/Edit)
+    :Load pending shipment data;
+    
+  elseif (Complete with PO) then
+    :Show completion dialog;
+    
+    note right
+      **Dialog:**
+      PO Number: [_______]
+      Receiver Number: [_______]
+      
+      ⚠️ This will clear the CSV file
+      for LabelView. Continue?
+      
+      [Save & Archive] [Cancel]
+    end note
+    
+    if (User confirms?) then (yes)
+      :Save PO and Receiver;
+      :Clear CSV file content;
+      :Set status = 'completed';
+      :Archive to history;
+      :Show success message;
+      stop
+    else (no)
+      :Close dialog;
+      stop
+    endif
+  endif
+else (no)
+  :Create new shipment;
+endif
+
+:**Shipment Header Entry**
+View displays header fields;
+
+note right
+  **Auto-generated:**
+  - Date: 01/03/2026 (settable in config)
+    * If auto-date enabled: Read-only, set to today
+    * If disabled: User can edit
+  - Shipment #: Auto-calculated (resets daily)
+    * "04/01/2025 Shipment #1"
+  - Employee: 6524 (from authentication)
+  - Time: 1:54 PM (current time)
+  
+  **User editable:**
+  - Notes: TextBox (optional, e.g., "Volvo CSD")
+  
+  **Not captured:**
+  - PO Number (entered later after purchasing)
+  - Receiver (entered after Infor Visual receiving)
+end note
+
+:User optionally enters Notes;
+
+:**Parts & Skid Counts Entry**
+DataGrid displays for part selection;
+
+note right
+  **DataGrid Columns:**
+  - Part Number (ComboBox - from volvo_parts_master)
+  - Discrepancy (Checkbox)
+  - Packlist (NumericUpDown - shows if discrepancy checked)
+  - Received (NumericUpDown - user enters actual count)
+  - Difference (Read-only - calculated if discrepancy)
+  - Note (TextBox - optional discrepancy note)
+  - Remove (Button)
+  
+  **Master Data Lookup:**
+  ComboBox populated from volvo_parts_master table
+  Shows: V-EMB-1, V-EMB-2, V-EMB-6, V-EMB-9, etc.
+end note
+
+repeat
+  :User selects Part Number from dropdown;
+  :User enters Received skid count;
+  
+  if (User checks Discrepancy?) then (yes)
+    :Packlist, Difference, Note columns appear;
+    :User enters Packlist quantity;
+    :System calculates Difference;
+    note right
+      Example with discrepancy:
+      Part: V-EMB-21
+      ☑ Discrepancy
+      Packlist: 10
+      Received: 8
+      Difference: -2 (highlighted red)
+      Note: "2 skids damaged"
+    end note
+  else (no)
+    note right
+      Example without discrepancy:
+      Part: V-EMB-2
+      ☐ Discrepancy
+      Received: 10
+    end note
+  endif
+  
+  :User optionally enters Note;
+  :User clicks "Add Row" button;
+repeat while (More parts to add?) is (yes)
+->no;
+
+:User clicks "Generate Labels" button;
+
+if (Validation passes?) then (yes)
+  :**Label Generation & Component Explosion**
+  System queries volvo_parts_master for each part;
+  
+  note right
+    **For each entered part:**
+    1. Get quantity per skid
+    2. Get included components
+    3. Calculate pieces for all
+    
+    Example: V-EMB-500 (3 skids)
+    - V-EMB-500: 88 pcs/skid
+    - Includes: V-EMB-2 (1), V-EMB-92 (1)
+    
+    **Calculated:**
+    - V-EMB-500: 3 × 88 = 264 pieces
+    - V-EMB-2: 3 × 1 = 3 pieces
+    - V-EMB-92: 3 × 1 = 3 pieces
+  end note
+  
+  :System aggregates components across all parts;
+  
+  note right
+    **Aggregation Logic:**
+    If user entered:
+    - V-EMB-500: 3 skids (includes 3× V-EMB-2)
+    - V-EMB-600: 2 skids (includes 2× V-EMB-2)
+    
+    Result:
+    - V-EMB-500: 264 pcs
+    - V-EMB-600: 88 pcs
+    - V-EMB-2: 5 pcs (aggregated 3+2)
+  end note
+  
+  :System creates label records in database;
+  :System creates CSV file for LabelView;
+  
+  note right
+    **CSV File:**
+    volvo_labels_YYYYMMDD_N.csv
+    
+    Columns: Quantity, Material ID, Employee, 
+             Time, Date, Receiver (blank), Notes
+    
+    **Label Fields:**
+    - Material ID: V-EMB-2
+    - Quantity: 20 (pieces per skid)
+    - Date: 04/01/2025
+    - Employee: 6524
+    - Time: 1:54 PM
+    - Receiver: (blank - not assigned yet)
+    - Notes: Volvo CSD
+    
+    **LabelView Logic:**
+    If part starts with "V-EMB-", hide PO field
+  end note
+  
+  :Navigate to Review screen;
+  
+  note right
+    **View_Volvo_Review.xaml**
+  end note
+  
+else (no)
+  :Show validation errors in InfoBar;
+  
+  note right
+    **Validation Rules:**
+    - At least one part required
+    - All received counts > 0
+    - If discrepancy checked, packlist qty required
+  end note
+  
+  stop
+endif
+
+:**Review & Email Generation**
+DataGrid shows aggregated requested parts;
+
+note right
+  **Requested Lines Table:**
+  Part Number | Quantity (pieces)
+  V-EMB-500   | 264
+  V-EMB-600   | 88
+  V-EMB-2     | 5 (aggregated from components)
+  V-EMB-92    | 5 (aggregated from components)
+  
+  **Discrepancies Table (if any):**
+  Part Number | Packlist | Received | Diff | Note
+  V-EMB-21    | 10       | 8        | -2   | Damaged
+  
+  **Buttons:**
+  - Copy Email to Clipboard
+  - Preview/Edit Email
+  - Back (edit parts)
+  - Save as Pending PO
+end note
+
+if (User action?) then (Copy Email)
+  :User clicks "Copy Email to Clipboard";
+  :System generates email text;
+  
+  note right
+    **Email Format:**
+    
+    [Greeting from user settings]
+    
+    Need a PO cut for the following:
+    
+    [If discrepancies exist:]
+    NOTE: Discrepancies found between Volvo 
+    packlist and actual received quantity.
+    
+    Discrepancies:
+    Part Number | Packlist | Received | Diff | Note
+    V-EMB-21    | 10       | 8        | -2   | Damaged
+    
+    Requested Lines:
+    Part Number | Quantity
+    V-EMB-500   | 264
+    V-EMB-2     | 5
+    ...
+  end note
+  
+  :Copy to clipboard;
+  :Show success message;
+  stop
+  
+elseif (Preview/Edit Email) then
+  :Open modal with editable email;
+  
+  note right
+    **Modal Window:**
+    ┌─────────────────────────────┐
+    │ Email Preview           [X] │
+    ├─────────────────────────────┤
+    │ [Editable TextBox]          │
+    │ ┌─────────────────────────┐ │
+    │ │ [Greeting - editable]   │ │
+    │ │                         │ │
+    │ │ Need a PO cut...        │ │
+    │ │                         │ │
+    │ │ [Discrepancy msg - edit]│ │
+    │ │                         │ │
+    │ │ [Tables - read-only]    │ │
+    │ └─────────────────────────┘ │
+    ├─────────────────────────────┤
+    │ [Copy to Clipboard] [Close] │
+    └─────────────────────────────┘
+    
+    **User can edit:**
+    - Greeting line
+    - Discrepancy message
+    - Add custom notes
+    
+    **Cannot edit:**
+    - Tables (data-driven)
+  end note
+  
+  :User edits text (if desired);
+  :User clicks "Copy to Clipboard";
+  :Copy edited version;
+  :Close modal;
+  stop
+  
+elseif (Back) then
+  :Return to entry screen;
+  note right
+    Data preserved, can edit parts
+    CSV file still exists
+  end note
+  stop
+  
+else (Save as Pending PO)
+  :User clicks "Save as Pending PO";
+  :Set shipment status = 'pending_po';
+  :Save to database;
+  :Show success message;
+  
+  note right
+    **Success Message:**
+    "Shipment saved as Pending PO.
+    CSV file ready for LabelView.
+    
+    Email copied to clipboard - send to purchasing.
+    
+    Return here to add PO/Receiver after purchasing responds."
+  end note
+  
+  :Navigate to main menu;
+  stop
+endif
+
+@enduml

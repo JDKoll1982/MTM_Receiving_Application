@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#FAFAFA"/>
+  <rect y="0" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow)"/>
+  <text x="40" y="50" font-family="Segoe UI, sans-serif" font-size="28" font-weight="600" fill="#1A1A1A">Receiving Labels - Weight & Quantity</text>
+  <g transform="translate(40, 120)">
+    <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#666666">Step 5 of 10</text>
+    <rect x="0" y="12" width="1320" height="6" rx="3" fill="#E0E0E0"/>
+    <rect x="0" y="12" width="660" height="6" rx="3" fill="#0078D4"/>
+  </g>
+  <g transform="translate(250, 200)">
+    <rect width="900" height="500" rx="8" fill="#FFFFFF" filter="url(#shadow)"/>
+    <text x="60" y="60" font-family="Segoe UI, sans-serif" font-size="24" font-weight="600" fill="#1A1A1A">Enter Measurements</text>
+    <text x="60" y="95" font-family="Segoe UI, sans-serif" font-size="16" fill="#666666">Specify weight and quantity for Load #1</text>
+    <g transform="translate(60, 150)">
+      <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">QUANTITY</text>
+      <rect x="0" y="12" width="360" height="56" rx="4" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+      <text x="20" y="48" font-family="Segoe UI, sans-serif" font-size="20" fill="#1A1A1A">100</text>
+      <text x="330" y="48" font-family="Segoe UI, sans-serif" font-size="16" fill="#666666">pcs</text>
+    </g>
+    <g transform="translate(460, 150)">
+      <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">WEIGHT</text>
+      <rect x="0" y="12" width="360" height="56" rx="4" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+      <text x="20" y="48" font-family="Segoe UI, sans-serif" font-size="20" fill="#1A1A1A">2500</text>
+      <text x="310" y="48" font-family="Segoe UI, sans-serif" font-size="16" fill="#666666">lbs</text>
+    </g>
+    <g transform="translate(60, 260)">
+      <rect width="780" height="90" rx="6" fill="#F3F9FF"/>
+      <circle cx="30" cy="45" r="16" fill="#0078D4" fill-opacity="0.2"/>
+      <text x="54" y="37" font-family="Segoe UI, sans-serif" font-size="13" fill="#0078D4">i</text>
+      <text x="64" y="38" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">Calculated Metrics</text>
+      <text x="64" y="62" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">Weight per piece: 25.0 lbs</text>
+    </g>
+    <g transform="translate(60, 380)">
+      <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">Units</text>
+      <text x="0" y="28" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">• Quantity: Pieces, boxes, or units</text>
+      <text x="0" y="52" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">• Weight: Pounds (lbs) or kilograms (kg)</text>
+    </g>
+  </g>
+  <rect y="820" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow-top)"/>
+  <g transform="translate(40, 845)">
+    <rect width="140" height="46" rx="4" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="2"/>
+    <text x="70" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#666666" text-anchor="middle">← Back</text>
+  </g>
+  <g transform="translate(1210, 845)">
+    <rect width="140" height="46" rx="4" fill="#0078D4"/>
+    <text x="70" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Next →</text>
+  </g>
+  <defs>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/></filter>
+    <filter id="shadow-top"><feDropShadow dx="0" dy="-2" stdDeviation="4" flood-opacity="0.1"/></filter>
+  </defs>
+</svg>

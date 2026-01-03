@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900">
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#FAFAFA"/>
+  
+  <!-- Title Bar -->
+  <rect y="0" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow)"/>
+  <text x="40" y="50" font-family="Segoe UI, sans-serif" font-size="28" font-weight="600" fill="#1A1A1A">
+    Receiving Labels - PO Entry
+  </text>
+  
+  <!-- Progress Indicator -->
+  <g transform="translate(40, 120)">
+    <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#666666">
+      Step 2 of 10
+    </text>
+    <rect x="0" y="12" width="1320" height="6" rx="3" fill="#E0E0E0"/>
+    <rect x="0" y="12" width="264" height="6" rx="3" fill="#0078D4"/>
+  </g>
+  
+  <!-- Main Content Card -->
+  <g transform="translate(300, 200)">
+    <rect width="800" height="480" rx="8" fill="#FFFFFF" filter="url(#shadow)"/>
+    
+    <!-- Card Header -->
+    <text x="60" y="60" font-family="Segoe UI, sans-serif" font-size="24" font-weight="600" fill="#1A1A1A">
+      Enter Purchase Order Number
+    </text>
+    <text x="60" y="95" font-family="Segoe UI, sans-serif" font-size="16" fill="#666666">
+      Enter the PO number from Infor Visual ERP
+    </text>
+    
+    <!-- PO Input Field -->
+    <g transform="translate(60, 140)">
+      <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">
+        Purchase Order Number
+      </text>
+      <rect x="0" y="12" width="680" height="56" rx="4" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+      <text x="20" y="48" font-family="Segoe UI Mono, monospace" font-size="20" fill="#1A1A1A">
+        PO-063150
+      </text>
+      
+      <!-- Validation Checkmark -->
+      <circle cx="640" cy="40" r="16" fill="#107C10" fill-opacity="0.1"/>
+      <path d="M 635 40 L 638 43 L 645 36" stroke="#107C10" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
+    
+    <!-- Validation Status -->
+    <g transform="translate(60, 240)">
+      <rect width="680" height="80" rx="4" fill="#F3F9F3"/>
+      <circle cx="30" cy="40" r="12" fill="#107C10"/>
+      <path d="M 26 40 L 29 43 L 34 38" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/>
+      
+      <text x="60" y="30" font-family="Segoe UI, sans-serif" font-size="15" font-weight="600" fill="#107C10">
+        PO Validated
+      </text>
+      <text x="60" y="52" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        Found in Infor Visual (MTMFG/VISUAL) - Site 002
+      </text>
+    </g>
+    
+    <!-- Help Text -->
+    <g transform="translate(60, 350)">
+      <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">
+        Format Guidelines
+      </text>
+      <text x="0" y="28" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • Enter 5 or 6 digit PO number
+      </text>
+      <text x="0" y="52" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • System will auto-format to PO-XXXXXX
+      </text>
+      <text x="0" y="76" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • Must exist in Infor Visual warehouse 002
+      </text>
+    </g>
+  </g>
+  
+  <!-- Footer Action Bar -->
+  <rect y="820" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow-top)"/>
+  <g transform="translate(40, 845)">
+    <rect width="140" height="46" rx="4" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="2"/>
+    <text x="70" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#666666" text-anchor="middle">
+      ← Back
+    </text>
+  </g>
+  <g transform="translate(1210, 845)">
+    <rect width="140" height="46" rx="4" fill="#0078D4"/>
+    <text x="70" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">
+      Next →
+    </text>
+  </g>
+  
+  <!-- Shadow Filters -->
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+    <filter id="shadow-top">
+      <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+</svg>

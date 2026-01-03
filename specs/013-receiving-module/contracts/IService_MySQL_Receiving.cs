@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Models.Receiving;
+
+namespace MTM_Receiving_Application.Contracts.Services;
+
+/// <summary>
+/// Service for saving receiving load data to MySQL database.
+/// All operations use stored procedures and return Model_Dao_Result.
+/// </summary>
+public interface IService_MySQL_Receiving
+{
+    /// <summary>
+    /// Saves a batch of receiving loads to the database within a transaction.
+    /// All loads succeed or all fail (atomic operation).
+    /// </summary>
+    /// <param name="loads">List of receiving loads to save</param>
+    /// <returns>DAO result with number of loads successfully inserted</returns>
+    Task<Model_Dao_Result<int>> SaveReceivingLoadsAsync(List<Model_ReceivingLoad> loads);
+
+    /// <summary>
+    /// Retrieves receiving history for a specific part (for reference/audit).
+    /// </summary>
+    /// <param name="partID">Part identifier</param>
+    /// <param name="startDate">Start date for history</param>
+    /// <param name="endDate">End date for history</param>
+    /// <returns>DAO result containing list of historical receiving loads</returns>
+    Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetReceivingHistoryAsync(string partID, DateTime startDate, DateTime endDate);
+
+    /// <summary>
+    /// Retrieves all receiving loads within a date range.
+    /// </summary>
+    /// <param name="startDate">Start date for retrieval</param>
+    /// <param name="endDate">End date for retrieval</param>
+    /// <returns>DAO result containing list of receiving loads</returns>
+    Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate);
+
+    /// <summary>
+    /// Updates a batch of receiving loads in the database.
+    /// </summary>
+    /// <param name="loads">List of receiving loads to update</param>
+    /// <returns>DAO result with number of loads successfully updated</returns>
+    Task<Model_Dao_Result<int>> UpdateReceivingLoadsAsync(List<Model_ReceivingLoad> loads);
+}
+

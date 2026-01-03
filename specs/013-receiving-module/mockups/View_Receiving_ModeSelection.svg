@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900">
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#FAFAFA"/>
+  
+  <!-- Title Bar -->
+  <rect y="0" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow)"/>
+  <text x="40" y="50" font-family="Segoe UI, sans-serif" font-size="28" font-weight="600" fill="#1A1A1A">
+    Receiving Labels - Select Mode
+  </text>
+  
+  <!-- Progress Indicator -->
+  <g transform="translate(40, 120)">
+    <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#666666">
+      Step 1 of 10
+    </text>
+    <rect x="0" y="12" width="1320" height="6" rx="3" fill="#E0E0E0"/>
+    <rect x="0" y="12" width="132" height="6" rx="3" fill="#0078D4"/>
+  </g>
+  
+  <!-- Main Content Card -->
+  <g transform="translate(140, 200)">
+    <rect width="1120" height="520" rx="8" fill="#FFFFFF" filter="url(#shadow)"/>
+    
+    <!-- Card Header -->
+    <text x="60" y="60" font-family="Segoe UI, sans-serif" font-size="24" font-weight="600" fill="#1A1A1A">
+      Choose Workflow Mode
+    </text>
+    <text x="60" y="95" font-family="Segoe UI, sans-serif" font-size="16" fill="#666666">
+      Select how you'd like to create receiving labels
+    </text>
+    
+    <!-- Guided Mode Button -->
+    <g transform="translate(60, 140)">
+      <rect width="480" height="280" rx="8" fill="#F5F5F5" stroke="#0078D4" stroke-width="3"/>
+      <circle cx="240" cy="80" r="40" fill="#0078D4" fill-opacity="0.1"/>
+      <path d="M 220 60 L 240 80 L 260 60 M 240 80 L 240 100" stroke="#0078D4" stroke-width="3" stroke-linecap="round" fill="none"/>
+      
+      <text x="240" y="160" font-family="Segoe UI, sans-serif" font-size="22" font-weight="600" fill="#1A1A1A" text-anchor="middle">
+        Guided Mode
+      </text>
+      <text x="240" y="195" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666" text-anchor="middle">
+        Step-by-step wizard
+      </text>
+      <text x="240" y="220" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666" text-anchor="middle">
+        Recommended for new users
+      </text>
+      <text x="240" y="245" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666" text-anchor="middle">
+        Full validation and help
+      </text>
+    </g>
+    
+    <!-- Manual Mode Button -->
+    <g transform="translate(580, 140)">
+      <rect width="480" height="280" rx="8" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="2"/>
+      <circle cx="240" cy="80" r="40" fill="#666666" fill-opacity="0.1"/>
+      <rect x="210" y="55" width="60" height="50" rx="4" fill="none" stroke="#666666" stroke-width="3"/>
+      <line x1="225" y1="75" x2="245" y2="75" stroke="#666666" stroke-width="2"/>
+      <line x1="225" y1="85" x2="255" y2="85" stroke="#666666" stroke-width="2"/>
+      
+      <text x="240" y="160" font-family="Segoe UI, sans-serif" font-size="22" font-weight="600" fill="#1A1A1A" text-anchor="middle">
+        Manual Mode
+      </text>
+      <text x="240" y="195" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666" text-anchor="middle">
+        Single-screen entry
+      </text>
+      <text x="240" y="220" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666" text-anchor="middle">
+        For experienced users
+      </text>
+      <text x="240" y="245" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666" text-anchor="middle">
+        Faster data entry
+      </text>
+    </g>
+  </g>
+  
+  <!-- Footer Action Bar -->
+  <rect y="820" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow-top)"/>
+  <g transform="translate(1150, 845)">
+    <rect width="200" height="46" rx="4" fill="#0078D4"/>
+    <text x="100" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">
+      Continue
+    </text>
+  </g>
+  
+  <!-- Shadow Filters -->
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+    <filter id="shadow-top">
+      <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+</svg>

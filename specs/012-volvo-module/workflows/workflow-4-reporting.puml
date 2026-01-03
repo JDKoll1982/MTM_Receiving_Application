@@ -1,0 +1,180 @@
+@startuml
+
+title Volvo Dunnage Requisition Module - End-of-Day Reporting Integration
+
+start
+
+:User navigates to "Reports" from Main Menu;
+
+note right
+  **Shared Reporting Module**
+  (View_Reporting_Main.xaml)
+end note
+
+:**Report Selection**
+Reporting screen loads with date range first;
+
+note right
+  **Initial View:**
+  - Start Date: CalendarDatePicker
+  - End Date: CalendarDatePicker
+  - [Check Availability] button
+end note
+
+:User selects date range;
+
+note right
+  Example: 01/02/2026 to 01/03/2026
+end note
+
+:User clicks "Check Availability" button;
+
+:System queries all modules for data in date range;
+
+note right
+  **Quick count queries:**
+  - Receiving: COUNT(*) WHERE date BETWEEN...
+  - Dunnage: COUNT(*) WHERE date BETWEEN...
+  - Routing: COUNT(*) WHERE date BETWEEN...
+  - Volvo: COUNT(*) WHERE date BETWEEN...
+end note
+
+:Module selection checkboxes appear;
+
+note right
+  **Module CheckBoxes/ListBox:**
+  ☑ Receiving (45 records)
+  ☑ Dunnage (23 records)
+  ☐ Routing (12 records)
+  ☑ Volvo (8 records) ← User checks this
+  ☐ Custom Module (0 records) - DISABLED
+  
+  **Checkbox States:**
+  - Enabled if count > 0
+  - Disabled (grayed) if count = 0
+  - User can select multiple modules
+  
+  [Generate Report] button
+end note
+
+:User checks desired module(s);
+
+:User clicks "Generate Report" button;
+
+:**Data Loading**
+ProgressRing displays "Loading...";
+
+:System queries selected module(s);
+
+note right
+  **If Volvo is selected:**
+  SELECT shipment_date, shipment_number,
+         part_number, quantity_pieces,
+         po_number, receiver_number, status
+  FROM vw_volvo_shipments
+  WHERE shipment_date BETWEEN @start AND @end
+  ORDER BY shipment_date DESC, part_number ASC
+  
+  **If multiple modules selected:**
+  Each module loads into separate tab/expander
+end note
+
+:**Report Display**
+Module-specific DataGrids display;
+
+note right
+  **If only Volvo selected:**
+  Shows Volvo-specific layout
+  
+  **If multiple modules selected:**
+  Tabbed interface or Expanders:
+  - [Receiving] tab
+  - [Dunnage] tab  
+  - [Volvo] tab ← Active
+end note
+
+:Volvo section shows two DataGrids: Pending PO and Completed;
+
+note right
+  **Pending PO Section:**
+  (Hidden if no pending shipments)
+  
+  Date         | Shipment | Parts | Status     | Actions
+  04/01/2025 #1| 12       | Pending PO         | [Complete]
+  
+  **Completed Section:**
+  (Hidden if no completed shipments)
+  
+  Date         | Shipment | PO Number  | Receiver | Parts
+  04/01/2025 #1| PO-062450 | 134393   | 12
+  03/26/2025 #1| PO-062342 | 134220   | 10
+  
+  **Summary Cards:**
+  - Total Shipments: 15
+  - Pending PO: 1
+  - Completed: 14
+  - Total Parts Requested: 450 unique items
+  - Date Range: 01/02-01/03/2026
+end note
+
+:**Export Options**;
+
+if (User action?) then (Export CSV)
+  :User clicks "Export CSV" button;
+  :SaveFileDialog appears;
+  :User selects location;
+  :System generates CSV file;
+  
+  note right
+    **CSV Structure:**
+    Date,Shipment#,PartNumber,Quantity,PONumber,Receiver,Status
+    04/01/2025,1,V-EMB-750,560,PO-062450,134393,Completed
+    04/01/2025,1,V-EMB-21,500,PO-062450,134393,Completed
+  end note
+  
+  :Success message displays;
+  stop
+  
+elseif (Copy for Email) then
+  :User clicks "Copy for Email" button;
+  :System formats as HTML table;
+  
+  note right
+    **HTML Email Format:**
+    - Two tables (Pending PO, Completed)
+    - Header row with module name
+    - Compact formatting for email
+  end note
+  
+  :HTML copied to clipboard;
+  :Success message: "Copied to clipboard";
+  :User pastes into email client;
+  stop
+  
+elseif (Print) then
+  :User clicks "Print" button;
+  :Windows print dialog appears;
+  :User selects printer and options;
+  :Report prints;
+  stop
+  
+elseif (Complete Pending) then
+  :User clicks "[Complete]" on pending row;
+  :Open PO/Receiver entry dialog;
+  
+  note right
+    Same as "Complete with PO" from workflow-1
+  end note
+  
+  :User enters PO and Receiver;
+  :Save and update status;
+  :Report refreshes;
+  stop
+  
+else (Return)
+  :User clicks "Back" button;
+  :Return to module selection;
+  stop
+endif
+
+@enduml

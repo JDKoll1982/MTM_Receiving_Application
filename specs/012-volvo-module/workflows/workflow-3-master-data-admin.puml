@@ -1,0 +1,294 @@
+@startuml
+
+title Volvo Dunnage Requisition Module - Settings & Master Data Administration Workflow
+
+start
+
+:User clicks "Settings" from Main Menu;
+
+note right
+  **Settings_WorkflowView.xaml**
+  Main settings hub
+end note
+
+:Card-based mode selection screen displays;
+
+note right
+  **Settings Mode Selection:**
+  
+  [Receiving]  [Dunnage]    [Shipping]   [Volvo]
+  (Card)       (Card)       (Card)       (Card) ← User clicks
+  
+  [Administrative Settings]
+  (Card - admin only)
+  
+  **Card Layout:**
+  - Icon (Material Design)
+  - Title: "Volvo"
+  - Description: "Dunnage parts and components"
+  - Click to navigate
+end note
+
+:User clicks "Volvo" settings card;
+
+:Navigate to Volvo settings view;
+
+note right
+  **Settings_VolvoView.xaml**
+  (Replaces Settings_PlaceholderView)
+end note
+
+:**Volvo Settings Screen**
+Tabbed interface displays;
+
+note right
+  **Tabs:**
+  1. Master Data (Parts & Components)
+  2. Import/Export
+  3. Preferences
+  
+  Default tab: Master Data
+end note
+
+:User selects "Master Data" tab (default);
+
+:DataGrid shows all Volvo parts;
+
+note right
+  **DataGrid Columns:**
+  - Part Number (e.g., V-EMB-2)
+  - Description (if available)
+  - Quantity per Skid (e.g., 20)
+  - Has Components (☑/☐ checkbox display)
+  - Active Status (Badge: Active/Inactive)
+  - Actions (IconButton: Edit | Deactivate/Activate | View)
+  
+  **Toolbar:**
+  [+ Add New Part] [Import from CSV] [Export to CSV] [🔄 Refresh]
+  
+  **Filter/Search:**
+  Search box: "Filter by part number..."
+  Show Inactive: ☐ (checkbox)
+end note
+
+if (User action?) then (Add New Part)
+  :**Add New Part Dialog**
+  User clicks "Add New Part" button;
+  
+  :ContentDialog opens with form;
+  
+  note right
+    **Add Volvo Part Form:**
+    
+    Part Number: ___________  (TextBox, required)
+    Quantity per Skid: ___   (NumericUpDown, required)
+    
+    **Included Components (Optional):**
+    ☐ Has Skid
+      └─ Part: [Dropdown] Qty: ___
+    ☐ Has Lid  
+      └─ Part: [Dropdown] Qty: ___
+    ☐ Has Frame
+      └─ Part: [Dropdown] Qty: ___
+    
+    [Save] [Cancel]
+  end note
+  
+  :User fills form fields;
+  :User optionally checks component checkboxes;
+  :User optionally selects component parts & quantities;
+  :User clicks "Save";
+  
+  if (Validation passes?) then (yes)
+    :System inserts into volvo_parts_master;
+    :System inserts component records;
+    :DataGrid refreshes;
+    :Success message displays;
+    
+    note right
+      "Part V-EMB-2 added successfully"
+    end note
+    
+    stop
+  else (no)
+    :InfoBar shows validation errors;
+    
+    note right
+      **Possible Errors:**
+      - "Part number already exists"
+      - "Part number required"
+      - "Quantity must be greater than 0"
+      - "Component part not selected"
+    end note
+    
+    :User corrects errors or cancels;
+    stop
+  endif
+
+elseif (Edit Part) then
+  :**Edit Part Dialog**
+  User clicks "Edit" button on grid row;
+  
+  :ContentDialog opens with pre-filled form;
+  
+  note right
+    Same form as Add, but:
+    - Part Number field DISABLED (can't change PK)
+    - Existing values pre-populated
+    - Existing components pre-checked/selected
+  end note
+  
+  :User modifies quantity or components;
+  :User clicks "Save";
+  
+  if (Validation passes?) then (yes)
+    :System updates volvo_parts_master;
+    :System updates component records;
+    :DataGrid refreshes;
+    :Success message displays;
+    stop
+  else (no)
+    :InfoBar shows validation errors;
+    :User corrects or cancels;
+    stop
+  endif
+
+elseif (Deactivate Part) then
+  :**Deactivate Part**
+  User clicks "Deactivate" button on grid row;
+  
+  :ContentDialog with confirmation appears;
+  
+  note right
+    **Confirmation Message:**
+    "Deactivate part V-EMB-2?
+    
+    This part will no longer appear in 
+    dropdown lists, but historical data 
+    will be preserved.
+    
+    You can reactivate later if needed."
+    
+    [Deactivate] [Cancel]
+  end note
+  
+  if (User clicks?) then (Deactivate)
+    :System sets is_active = 0;
+    :DataGrid refreshes (row grayed out or hidden);
+    :Success message displays;
+    stop
+  else (Cancel)
+    :Dialog closes;
+    stop
+  endif
+
+elseif (View Components) then
+  :**View Components Detail**
+  User clicks "View" button on grid row;
+  
+  :Flyout panel opens on right side;
+  
+  note right
+    **Component Detail Flyout:**
+    
+    Part: V-EMB-116
+    Qty per Skid: 150 pieces
+    
+    **Included Components:**
+    ├─ Skid: V-EMB-1 (qty: 1)
+    ├─ Lid: V-EMB-71 (qty: 1)
+    └─ Frame: V-EMB-26 (qty: 3)
+    
+    **Total per Skid: 155 items**
+    (150 parts + 1 skid + 1 lid + 3 frames)
+    
+    [Close]
+  end note
+  
+  :User reviews component breakdown;
+  :User clicks "Close";
+  stop
+
+elseif (Import from CSV) then
+  :**Import CSV**
+  User clicks "Import from CSV" button;
+  
+  :OpenFileDialog appears;
+  
+  note right
+    **File Filter:**
+    CSV Files (*.csv) | All Files (*.*)
+  end note
+  
+  :User selects DataSheet.csv file;
+  
+  :System validates CSV structure;
+  
+  if (CSV valid?) then (yes)
+    :Preview dialog shows changes;
+    
+    note right
+      **Import Preview:**
+      
+      New Parts: 5
+      - V-EMB-NEW1 (qty: 30)
+      - V-EMB-NEW2 (qty: 45)
+      
+      Updated Parts: 2
+      - V-EMB-2: 20 → 25 pieces
+      - V-EMB-116: Components updated
+      
+      Unchanged: 23
+      
+      [Import] [Cancel]
+    end note
+    
+    if (User clicks?) then (Import)
+      :ProgressBar shows import progress;
+      :System imports data in transaction;
+      :DataGrid refreshes;
+      :Success message with summary;
+      stop
+    else (Cancel)
+      :Dialog closes;
+      stop
+    endif
+  else (no)
+    :Error dialog displays validation issues;
+    
+    note right
+      **Validation Errors:**
+      - Row 5: Missing part number
+      - Row 12: Invalid quantity (not numeric)
+      - Row 18: Duplicate part number
+    end note
+    
+    stop
+  endif
+
+else (Export to CSV)
+  :**Export CSV**
+  User clicks "Export to CSV" button;
+  
+  :SaveFileDialog appears;
+  
+  note right
+    **Default Filename:**
+    VolvoMasterData_2026-01-03.csv
+  end note
+  
+  :User selects save location;
+  :System generates CSV from database;
+  
+  :File saved to selected location;
+  :Success message displays;
+  
+  note right
+    "Master data exported to 
+    C:\Exports\VolvoMasterData_2026-01-03.csv"
+  end note
+  
+  stop
+endif
+
+@enduml

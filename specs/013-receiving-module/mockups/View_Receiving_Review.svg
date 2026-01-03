@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900">
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#FAFAFA"/>
+  
+  <!-- Title Bar -->
+  <rect y="0" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow)"/>
+  <text x="40" y="50" font-family="Segoe UI, sans-serif" font-size="28" font-weight="600" fill="#1A1A1A">
+    Receiving Labels - Review
+  </text>
+  
+  <!-- Progress Indicator -->
+  <g transform="translate(40, 120)">
+    <text x="0" y="0" font-family="Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#666666">
+      Step 9 of 10
+    </text>
+    <rect x="0" y="12" width="1320" height="6" rx="3" fill="#E0E0E0"/>
+    <rect x="0" y="12" width="1188" height="6" rx="3" fill="#0078D4"/>
+  </g>
+  
+  <!-- Main Content -->
+  <g transform="translate(40, 180)">
+    <!-- Summary Card -->
+    <rect width="1320" height="620" rx="8" fill="#FFFFFF" filter="url(#shadow)"/>
+    
+    <!-- Card Header -->
+    <text x="40" y="50" font-family="Segoe UI, sans-serif" font-size="24" font-weight="600" fill="#1A1A1A">
+      Review Receiving Data
+    </text>
+    <text x="40" y="80" font-family="Segoe UI, sans-serif" font-size="16" fill="#666666">
+      Verify all information before saving to database
+    </text>
+    
+    <!-- Data Grid Header -->
+    <rect x="40" y="110" width="1240" height="50" fill="#F5F5F5"/>
+    <text x="60" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">LOAD #</text>
+    <text x="160" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">PART NUMBER</text>
+    <text x="400" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">DESCRIPTION</text>
+    <text x="680" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">QTY</text>
+    <text x="780" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">WEIGHT</text>
+    <text x="920" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">HEAT/LOT</text>
+    <text x="1120" y="142" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#666666">ACTIONS</text>
+    
+    <!-- Data Rows (Alternating colors) -->
+    <rect x="40" y="160" width="1240" height="60" fill="#FFFFFF"/>
+    <text x="60" y="195" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">1</text>
+    <text x="160" y="195" font-family="Segoe UI Mono, monospace" font-size="15" fill="#1A1A1A">ABC-12345</text>
+    <text x="400" y="195" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666">Steel Widget Assembly</text>
+    <text x="680" y="195" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">100</text>
+    <text x="780" y="195" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">2500 lbs</text>
+    <text x="920" y="195" font-family="Segoe UI Mono, monospace" font-size="15" fill="#1A1A1A">HT-2026-001</text>
+    <g transform="translate(1120, 175)">
+      <rect width="36" height="36" rx="4" fill="#F5F5F5"/>
+      <path d="M 18 12 L 18 24 M 12 18 L 24 18" stroke="#666666" stroke-width="2"/>
+    </g>
+    <g transform="translate(1170, 175)">
+      <rect width="36" height="36" rx="4" fill="#FFF4F4"/>
+      <path d="M 14 14 L 22 22 M 22 14 L 14 22" stroke="#D13438" stroke-width="2"/>
+    </g>
+    
+    <rect x="40" y="220" width="1240" height="60" fill="#FAFAFA"/>
+    <text x="60" y="255" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">2</text>
+    <text x="160" y="255" font-family="Segoe UI Mono, monospace" font-size="15" fill="#1A1A1A">XYZ-67890</text>
+    <text x="400" y="255" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666">Aluminum Bracket Set</text>
+    <text x="680" y="255" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">250</text>
+    <text x="780" y="255" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">450 lbs</text>
+    <text x="920" y="255" font-family="Segoe UI Mono, monospace" font-size="15" fill="#1A1A1A">LOT-2026-B12</text>
+    <g transform="translate(1120, 235)">
+      <rect width="36" height="36" rx="4" fill="#F5F5F5"/>
+      <path d="M 18 12 L 18 24 M 12 18 L 24 18" stroke="#666666" stroke-width="2"/>
+    </g>
+    <g transform="translate(1170, 235)">
+      <rect width="36" height="36" rx="4" fill="#FFF4F4"/>
+      <path d="M 14 14 L 22 22 M 22 14 L 14 22" stroke="#D13438" stroke-width="2"/>
+    </g>
+    
+    <rect x="40" y="280" width="1240" height="60" fill="#FFFFFF"/>
+    <text x="60" y="315" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">3</text>
+    <text x="160" y="315" font-family="Segoe UI Mono, monospace" font-size="15" fill="#1A1A1A">DEF-24680</text>
+    <text x="400" y="315" font-family="Segoe UI, sans-serif" font-size="15" fill="#666666">Copper Fittings</text>
+    <text x="680" y="315" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">500</text>
+    <text x="780" y="315" font-family="Segoe UI, sans-serif" font-size="16" fill="#1A1A1A">75 lbs</text>
+    <text x="920" y="315" font-family="Segoe UI Mono, monospace" font-size="15" fill="#1A1A1A">-</text>
+    <g transform="translate(1120, 295)">
+      <rect width="36" height="36" rx="4" fill="#F5F5F5"/>
+      <path d="M 18 12 L 18 24 M 12 18 L 24 18" stroke="#666666" stroke-width="2"/>
+    </g>
+    <g transform="translate(1170, 295)">
+      <rect width="36" height="36" rx="4" fill="#FFF4F4"/>
+      <path d="M 14 14 L 22 22 M 22 14 L 14 22" stroke="#D13438" stroke-width="2"/>
+    </g>
+    
+    <!-- Summary Info -->
+    <g transform="translate(40, 380)">
+      <rect width="600" height="200" rx="6" fill="#F9F9F9"/>
+      <text x="24" y="32" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">
+        PO Information
+      </text>
+      <text x="24" y="62" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        PO Number:
+      </text>
+      <text x="160" y="62" font-family="Segoe UI Mono, monospace" font-size="14" font-weight="600" fill="#1A1A1A">
+        PO-063150
+      </text>
+      <text x="24" y="90" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        Package Type:
+      </text>
+      <text x="160" y="90" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">
+        Box
+      </text>
+      <text x="24" y="118" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        Total Loads:
+      </text>
+      <text x="160" y="118" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">
+        3
+      </text>
+      <text x="24" y="146" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        Total Weight:
+      </text>
+      <text x="160" y="146" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">
+        3025 lbs
+      </text>
+      <text x="24" y="174" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        Date:
+      </text>
+      <text x="160" y="174" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">
+        2026-01-03 14:30
+      </text>
+    </g>
+    
+    <!-- Actions Info Box -->
+    <g transform="translate(680, 380)">
+      <rect width="600" height="200" rx="6" fill="#FFF9F3"/>
+      <circle cx="30" cy="32" r="16" fill="#FF8C00" fill-opacity="0.2"/>
+      <text x="54" y="24" font-family="Segoe UI, sans-serif" font-size="13" fill="#FF8C00">!</text>
+      
+      <text x="24" y="72" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600" fill="#333333">
+        Before You Continue
+      </text>
+      <text x="24" y="100" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • Verify all quantities and weights
+      </text>
+      <text x="24" y="126" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • Check heat/lot numbers for accuracy
+      </text>
+      <text x="24" y="152" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • Click "Add Another Part" to add more items
+      </text>
+      <text x="24" y="178" font-family="Segoe UI, sans-serif" font-size="14" fill="#666666">
+        • Click "Save to Database" when ready
+      </text>
+    </g>
+  </g>
+  
+  <!-- Footer Action Bar -->
+  <rect y="820" width="1400" height="80" fill="#FFFFFF" filter="url(#shadow-top)"/>
+  <g transform="translate(40, 845)">
+    <rect width="200" height="46" rx="4" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="2"/>
+    <text x="100" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#666666" text-anchor="middle">
+      ← Back
+    </text>
+  </g>
+  <g transform="translate(900, 845)">
+    <rect width="220" height="46" rx="4" fill="#F5F5F5" stroke="#0078D4" stroke-width="2"/>
+    <text x="110" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#0078D4" text-anchor="middle">
+      + Add Another Part
+    </text>
+  </g>
+  <g transform="translate(1140, 845)">
+    <rect width="220" height="46" rx="4" fill="#107C10"/>
+    <text x="110" y="30" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">
+      Save to Database
+    </text>
+  </g>
+  
+  <!-- Shadow Filters -->
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+    <filter id="shadow-top">
+      <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+</svg>
