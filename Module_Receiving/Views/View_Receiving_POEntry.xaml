@@ -39,7 +39,7 @@
                                           Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </StackPanel>
                             
-                            <TextBox x:Name="FirstTextBox"
+                            <TextBox x:Name="PoNumberTextBox"
                                     Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                     MaxWidth="400"

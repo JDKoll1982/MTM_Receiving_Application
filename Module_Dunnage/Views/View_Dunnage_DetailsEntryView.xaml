@@ -60,7 +60,8 @@
                         <StackPanel Grid.Column="0" Spacing="6">
                             <TextBlock Text="PO Number"
                                        Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBox Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"
+                            <TextBox x:Name="PoNumberTextBox"
+                                     Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"
                                      PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                      HorizontalAlignment="Stretch"/>
                             <TextBlock Text="Leave blank for non-PO dunnage"

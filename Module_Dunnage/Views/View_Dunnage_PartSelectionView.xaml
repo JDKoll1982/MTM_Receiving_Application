@@ -54,7 +54,7 @@
                 <!-- Part Dropdown -->
                 <StackPanel Spacing="12">
                     <TextBlock Text="Select Part" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                    <ComboBox x:Name="PartComboBox"
+                    <ComboBox x:Name="PartNumberComboBox"
                               ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
                               SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
                               DisplayMemberPath="PartId"

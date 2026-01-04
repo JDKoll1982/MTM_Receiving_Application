@@ -16,7 +16,7 @@ public sealed partial class View_Dunnage_QuantityEntryView : UserControl
         _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
 
-        _focusService.AttachFocusOnVisibility(this);
+        _focusService.AttachFocusOnVisibility(this, QuantityNumberBox);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

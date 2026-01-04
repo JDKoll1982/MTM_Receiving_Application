@@ -73,7 +73,8 @@
                     <StackPanel Spacing="6">
                         <TextBlock Text="Quantity"
                                    Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <NumberBox Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}"
+                        <NumberBox x:Name="QuantityNumberBox"
+                                   Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}"
                                    Minimum="1"
                                    Maximum="9999"
                                    SpinButtonPlacementMode="Inline"

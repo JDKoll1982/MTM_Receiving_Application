@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _focusService = App.GetService<IService_Focus>();
             this.InitializeComponent();
 
-            _focusService.AttachFocusOnVisibility(this, LoadCountBox);
+            _focusService.AttachFocusOnVisibility(this, NumberOfLoadsNumberBox);
         }
     }
 }
