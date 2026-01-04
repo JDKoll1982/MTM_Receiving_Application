@@ -77,17 +77,17 @@ Single project structure - paths relative to repository root:
 - [X] T015 [P] [US1] Create IService_Volvo interface in Module_Core/Contracts/Services/IService_Volvo.cs (methods: CalculateComponentExplosionAsync, GenerateLabelCsvAsync, FormatEmailTextAsync, SaveShipmentAsync, GetPendingShipmentAsync)
 - [X] T016 [US1] Implement Service_Volvo in Module_Volvo/Services/Service_Volvo.cs (business logic for component explosion, label generation, email formatting, shipment save)
 - [X] T017 [US1] Register IService_Volvo/Service_Volvo in App.xaml.cs ConfigureServices (singleton)
-- [ ] T018 [US1] Create VolvoShipmentEntryViewModel in Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs (properties: ShipmentDate, ShipmentNumber, Parts (ObservableCollection), AvailableParts, Commands: AddPartCommand, RemovePartCommand, GenerateLabelsCommand, PreviewEmailCommand, SaveAsPendingCommand)
-- [ ] T019 [US1] Create VolvoShipmentEntryView.xaml in Module_Volvo/Views/VolvoShipmentEntryView.xaml (UI: Date/Shipment# header, Part entry DataGrid with columns: Part dropdown, Skids TextBox, Discrepancy checkbox, Packlist/Difference fields, Toolbar: Add Part, Remove Part, Generate Labels, Preview Email, Save as Pending)
-- [ ] T020 [US1] Create VolvoShipmentEntryView.xaml.cs code-behind (ViewModel injection, page loaded event handler)
-- [ ] T021 [US1] Implement AddPartCommand in VolvoShipmentEntryViewModel (adds new empty row to Parts collection)
-- [ ] T022 [US1] Implement RemovePartCommand in VolvoShipmentEntryViewModel (removes selected row from Parts collection)
-- [ ] T023 [US1] Implement GenerateLabelsCommand in VolvoShipmentEntryViewModel (calls VolvoService.GenerateLabelCsvAsync, shows success InfoBar with file path)
-- [ ] T024 [US1] Implement PreviewEmailCommand in VolvoShipmentEntryViewModel (opens ContentDialog with editable greeting/notes, read-only tables, Copy to Clipboard button)
-- [ ] T025 [US1] Create VolvoEmailPreviewDialog.xaml in Module_Volvo/Views/VolvoEmailPreviewDialog.xaml (ContentDialog with TextBox for greeting, TextBlock for discrepancies table, TextBlock for requested lines table, Buttons: Copy to Clipboard, Close)
-- [ ] T026 [US1] Implement SaveAsPendingCommand in VolvoShipmentEntryViewModel (validates input, calls VolvoService.SaveShipmentAsync with status='pending_po', shows success InfoBar, navigates to main menu or shows pending modal)
-- [ ] T027 [US1] Add Volvo navigation menu item in MainWindow.xaml (NavigationViewItem with Material Icon, navigates to VolvoShipmentEntryView)
-- [ ] T028 [US1] Register VolvoShipmentEntryViewModel in App.xaml.cs ConfigureServices (transient)
+- [X] T018 [US1] Create VolvoShipmentEntryViewModel in Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs (properties: ShipmentDate, ShipmentNumber, Parts (ObservableCollection), AvailableParts, Commands: AddPartCommand, RemovePartCommand, GenerateLabelsCommand, PreviewEmailCommand, SaveAsPendingCommand)
+- [X] T019 [US1] Create VolvoShipmentEntryView.xaml in Module_Volvo/Views/VolvoShipmentEntryView.xaml (UI: Date/Shipment# header, Part entry DataGrid with columns: Part dropdown, Skids TextBox, Discrepancy checkbox, Packlist/Difference fields, Toolbar: Add Part, Remove Part, Generate Labels, Preview Email, Save as Pending)
+- [X] T020 [US1] Create VolvoShipmentEntryView.xaml.cs code-behind (ViewModel injection, page loaded event handler)
+- [X] T021 [US1] Implement AddPartCommand in VolvoShipmentEntryViewModel (adds new empty row to Parts collection)
+- [X] T022 [US1] Implement RemovePartCommand in VolvoShipmentEntryViewModel (removes selected row from Parts collection)
+- [X] T023 [US1] Implement GenerateLabelsCommand in VolvoShipmentEntryViewModel (calls VolvoService.GenerateLabelCsvAsync, shows success InfoBar with file path)
+- [X] T024 [US1] Implement PreviewEmailCommand in VolvoShipmentEntryViewModel (opens ContentDialog with editable greeting/notes, read-only tables, Copy to Clipboard button)
+- [X] T025 [US1] Create VolvoEmailPreviewDialog.xaml in Module_Volvo/Views/VolvoEmailPreviewDialog.xaml (ContentDialog with TextBox for greeting, TextBlock for discrepancies table, TextBlock for requested lines table, Buttons: Copy to Clipboard, Close)
+- [X] T026 [US1] Implement SaveAsPendingCommand in VolvoShipmentEntryViewModel (validates input, calls VolvoService.SaveShipmentAsync with status='pending_po', shows success InfoBar, navigates to main menu or shows pending modal)
+- [X] T027 [US1] Add Volvo navigation menu item in MainWindow.xaml (NavigationViewItem with Material Icon, navigates to VolvoShipmentEntryView)
+- [X] T028 [US1] Register VolvoShipmentEntryViewModel in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can enter shipment, generate labels, create email, save as pending
 
@@ -101,12 +101,12 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 2
 
-- [ ] T029 [P] [US2] Create VolvoReviewViewModel in Module_Volvo/ViewModels/VolvoReviewViewModel.cs (properties: PendingShipment, Parts (ObservableCollection), Commands: CompletePOCommand, ViewEditCommand)
-- [ ] T030 [US2] Create VolvoReviewView.xaml in Module_Volvo/Views/VolvoReviewView.xaml (ContentDialog modal: displays pending shipment summary, parts list, Buttons: Complete with PO, View/Edit, Cancel)
-- [ ] T031 [US2] Create VolvoCompletePODialog.xaml in Module_Volvo/Views/VolvoCompletePODialog.xaml (ContentDialog with TextBoxes for PO Number and Receiver Number, warning message about CSV clearing, Buttons: Save, Cancel)
-- [ ] T032 [US2] Implement CompletePOCommand in VolvoReviewViewModel (validates PO/Receiver input, calls VolvoService.CompleteShipmentAsync, clears CSV file content, updates status to 'completed', navigates away)
-- [ ] T033 [US2] Modify VolvoShipmentEntryView.xaml.cs OnPageLoaded to check for pending shipment (calls VolvoService.GetPendingShipmentAsync, if exists, shows VolvoReviewView modal)
-- [ ] T034 [US2] Register VolvoReviewViewModel in App.xaml.cs ConfigureServices (transient)
+- [X] T029 [P] [US2] Create VolvoReviewViewModel in Module_Volvo/ViewModels/VolvoReviewViewModel.cs (properties: PendingShipment, Parts (ObservableCollection), Commands: CompletePOCommand, ViewEditCommand)
+- [X] T030 [US2] Create VolvoReviewView.xaml in Module_Volvo/Views/VolvoReviewView.xaml (ContentDialog modal: displays pending shipment summary, parts list, Buttons: Complete with PO, View/Edit, Cancel)
+- [X] T031 [US2] Create VolvoCompletePODialog.xaml in Module_Volvo/Views/VolvoCompletePODialog.xaml (ContentDialog with TextBoxes for PO Number and Receiver Number, warning message about CSV clearing, Buttons: Save, Cancel)
+- [X] T032 [US2] Implement CompletePOCommand in VolvoReviewViewModel (validates PO/Receiver input, calls VolvoService.CompleteShipmentAsync, clears CSV file content, updates status to 'completed', navigates away)
+- [X] T033 [US2] Modify VolvoShipmentEntryView.xaml.cs OnPageLoaded to check for pending shipment (calls VolvoService.GetPendingShipmentAsync, if exists, shows VolvoReviewView modal)
+- [X] T034 [US2] Register VolvoReviewViewModel in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - shipments can be entered, saved as pending, and completed with PO
 

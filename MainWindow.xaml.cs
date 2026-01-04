@@ -98,6 +98,10 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "Carrier Delivery";
                         ContentFrame.Navigate(typeof(Module_Core.Views.Main.Main_CarrierDeliveryLabelPage));
                         break;
+                    case "VolvoShipmentEntry":
+                        PageTitleTextBlock.Text = "Volvo Dunnage Requisition";
+                        ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry));
+                        break;
                 }
             }
         }

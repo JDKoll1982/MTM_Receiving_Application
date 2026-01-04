@@ -206,6 +206,9 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Dunnage_AdminInventory>();
                 services.AddTransient<ViewModel_Dunnage_AddTypeDialog>();
 
+                // Volvo Workflow ViewModels
+                services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
+
                 // Settings Workflow ViewModels
                 services.AddTransient<ViewModel_Settings_Workflow>();
                 services.AddTransient<ViewModel_Settings_ModeSelection>();
@@ -231,6 +234,9 @@ public partial class App : Application
 
                 // Dunnage Dialogs
                 services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
+
+                // Volvo Views
+                services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
 
                 // Windows
                 services.AddTransient<View_Shared_SplashScreenWindow>();

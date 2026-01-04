@@ -1,0 +1,24 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Volvo.ViewModels;
+
+namespace MTM_Receiving_Application.Module_Volvo.Views;
+
+/// <summary>
+/// View for Volvo shipment entry
+/// </summary>
+public sealed partial class View_Volvo_ShipmentEntry : UserControl
+{
+    public ViewModel_Volvo_ShipmentEntry ViewModel { get; }
+
+    public View_Volvo_ShipmentEntry()
+    {
+        ViewModel = App.GetService<ViewModel_Volvo_ShipmentEntry>();
+        InitializeComponent();
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.InitializeAsync();
+    }
+}

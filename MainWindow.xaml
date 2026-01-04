@@ -102,6 +102,11 @@
                         <FontIcon Glyph="&#xE707;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="Volvo Dunnage" Tag="VolvoShipmentEntry" Margin="0,0,0,4">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7B8;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" />
