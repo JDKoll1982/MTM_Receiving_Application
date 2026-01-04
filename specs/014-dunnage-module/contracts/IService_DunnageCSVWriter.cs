@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Dunnage;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for writing dunnage data to CSV files for LabelView 2022 import.
@@ -26,4 +26,5 @@ public interface IService_DunnageCSVWriter
     /// <returns>Default file path</returns>
     string GetDefaultFilePath();
 }
+
 

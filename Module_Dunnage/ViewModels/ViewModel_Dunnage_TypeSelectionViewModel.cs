@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,18 +6,18 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
 /// ViewModel for Dunnage Type Selection with 3x3 paginated grid
 /// </summary>
-public partial class ViewModel_Dunnage_TypeSelection : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -563,3 +563,4 @@ public partial class ViewModel_Dunnage_TypeSelection : Shared_BaseViewModel
 
     #endregion
 }
+

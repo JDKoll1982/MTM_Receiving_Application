@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
@@ -79,3 +79,4 @@ public class Dao_ReceivingLine
         }
     }
 }
+

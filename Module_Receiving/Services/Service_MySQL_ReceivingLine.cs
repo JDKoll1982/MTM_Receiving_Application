@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.Models.Core;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services;
@@ -57,3 +57,4 @@ public class Service_MySQL_ReceivingLine : IService_MySQL_ReceivingLine
         }
     }
 }
+

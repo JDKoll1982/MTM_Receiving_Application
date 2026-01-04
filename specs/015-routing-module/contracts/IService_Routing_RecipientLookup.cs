@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Routing;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for routing recipient lookup and department auto-fill.
@@ -46,4 +46,5 @@ public interface IService_Routing_RecipientLookup
     /// <returns>DAO result</returns>
     Task<Model_Dao_Result> DeleteRecipientAsync(int recipientId);
 }
+
 

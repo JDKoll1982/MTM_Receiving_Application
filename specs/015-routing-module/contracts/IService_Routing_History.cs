@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Routing;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for routing label history archival and retrieval.
@@ -47,4 +47,5 @@ public interface IService_Routing_History
         List<Model_RoutingLabel> labels,
         string filePath);
 }
+
 

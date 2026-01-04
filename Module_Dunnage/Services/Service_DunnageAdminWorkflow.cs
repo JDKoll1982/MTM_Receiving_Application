@@ -1,13 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Data;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 namespace MTM_Receiving_Application.Module_Dunnage.Services;
 
 /// <summary>
@@ -123,4 +123,5 @@ public class Service_DunnageAdminWorkflow : IService_DunnageAdminWorkflow
     /// </summary>
     public bool IsDirty => _isDirty;
 }
+
 

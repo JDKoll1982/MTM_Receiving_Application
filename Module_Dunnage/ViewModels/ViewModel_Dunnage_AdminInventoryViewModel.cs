@@ -1,16 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Interfaces;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -18,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// ViewModel for managing the Inventoried Parts List
 /// Enables adding, editing, and removing parts that require Visual ERP inventory tracking
 /// </summary>
-public partial class ViewModel_Dunnage_AdminInventory : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
 {
     private readonly Dao_InventoriedDunnage _daoInventory;
     private readonly Dao_DunnagePart _daoPart;
@@ -345,3 +346,4 @@ public partial class ViewModel_Dunnage_AdminInventory : Shared_BaseViewModel
         OnPropertyChanged(nameof(HasSelection));
     }
 }
+

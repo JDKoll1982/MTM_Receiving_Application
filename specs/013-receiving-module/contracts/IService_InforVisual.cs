@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for querying Infor Visual database (SQL Server) for PO and Part information.
@@ -44,4 +44,5 @@ public interface IService_InforVisual
     /// <returns>Result containing Remaining quantity to receive</returns>
     Task<Model_Dao_Result<decimal>> GetRemainingQuantityAsync(string poNumber, string partID);
 }
+
 

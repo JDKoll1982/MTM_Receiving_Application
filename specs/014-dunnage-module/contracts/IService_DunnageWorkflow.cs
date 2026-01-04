@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Models.Dunnage;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for orchestrating the dunnage workflow state machine.
@@ -67,4 +67,5 @@ public interface IService_DunnageWorkflow
     /// </summary>
     void AddCurrentLoadToSession();
 }
+
 

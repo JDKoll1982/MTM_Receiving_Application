@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// ViewModel for Dunnage Admin Main Navigation Hub
 /// Provides 4-section navigation: Types, Parts, Specs, Inventoried List
 /// </summary>
-public partial class ViewModel_Dunnage_AdminMain : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_AdminMain : ViewModel_Shared_Base
 {
     private readonly IService_DunnageAdminWorkflow _adminWorkflow;
 
@@ -236,3 +236,4 @@ public partial class ViewModel_Dunnage_AdminMain : Shared_BaseViewModel
 
     #endregion
 }
+

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,11 +8,12 @@ using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Interfaces;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -20,7 +21,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// ViewModel for Dunnage Type Management
 /// Handles CRUD operations for dunnage_types table with impact analysis
 /// </summary>
-public partial class ViewModel_Dunnage_AdminTypes : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_DunnageAdminWorkflow _adminWorkflow;
@@ -238,7 +239,7 @@ public partial class ViewModel_Dunnage_AdminTypes : Shared_BaseViewModel
             // Handle icon selection
             iconSelectorButton.Click += async (_, __) =>
             {
-                var iconSelector = new MTM_Receiving_Application.Views.Shared.Shared_IconSelectorWindow();
+                var iconSelector = new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
                 iconSelector.SetInitialSelection(editedType.IconKind);
                 iconSelector.Activate();
 
@@ -355,7 +356,7 @@ public partial class ViewModel_Dunnage_AdminTypes : Shared_BaseViewModel
 
             if (partCount > 0 || transactionCount > 0)
             {
-                impactMessage += "⚠️ WARNING: This type is in use and cannot be deleted.";
+                impactMessage += "âš ï¸ WARNING: This type is in use and cannot be deleted.";
 
                 var warningDialog = new ContentDialog
                 {
@@ -508,3 +509,4 @@ public partial class ViewModel_Dunnage_AdminTypes : Shared_BaseViewModel
 
     #endregion
 }
+

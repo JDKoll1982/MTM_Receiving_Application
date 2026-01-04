@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ContentDialog
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,7 +6,7 @@
     xmlns:materialIcons="using:Material.Icons.WinUI3"
     xmlns:local="using:MTM_Receiving_Application.Module_Dunnage.Views"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
-    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     Title="Add New Dunnage Type"
     PrimaryButtonText="Add Type"
     CloseButtonText="Cancel"
@@ -254,3 +254,4 @@
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>
+

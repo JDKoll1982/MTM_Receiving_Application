@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
     xmlns:views="using:MTM_Receiving_Application.Module_Receiving.Views"
-    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -153,3 +153,4 @@
         </Grid>
     </Grid>
 </Page>
+

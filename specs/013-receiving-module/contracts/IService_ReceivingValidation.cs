@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for validating receiving data and enforcing business rules.
@@ -60,4 +60,5 @@ public interface IService_ReceivingValidation
     /// <returns>Formatted PO number</returns>
     string FormatPONumber(string poNumber);
 }
+
 

@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MTM_Receiving_Application.Models.Systems;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 
 namespace MTM_Receiving_Application.Module_Receiving.Models
 {
@@ -47,3 +47,4 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public bool HasLoads => Loads?.Count > 0;
     }
 }
+

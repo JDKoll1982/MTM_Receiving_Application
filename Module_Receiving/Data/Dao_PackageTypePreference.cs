@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MySql.Data.MySqlClient;
 
@@ -177,3 +177,4 @@ public class Dao_PackageTypePreference
         }
     }
 }
+

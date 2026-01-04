@@ -1,18 +1,18 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_ManualEntry : Shared_BaseViewModel
+    public partial class ViewModel_Receiving_ManualEntry : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
@@ -343,3 +343,4 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #endregion
     }
 }
+

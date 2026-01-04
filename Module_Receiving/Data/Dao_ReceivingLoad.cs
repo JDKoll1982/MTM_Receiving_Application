@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using MTM_Receiving_Application.Helpers.Database;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
@@ -280,3 +280,4 @@ public class Dao_ReceivingLoad
         };
     }
 }
+

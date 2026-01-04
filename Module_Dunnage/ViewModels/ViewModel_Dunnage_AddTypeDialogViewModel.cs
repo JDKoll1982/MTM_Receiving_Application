@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,18 +6,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.UI.Dispatching;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
 /// ViewModel for Add New Type Dialog with real-time validation and custom field preview
 /// </summary>
-public partial class ViewModel_Dunnage_AddTypeDialog : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
 {
     #region Dependencies
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -334,3 +334,4 @@ public partial class ViewModel_Dunnage_AddTypeDialog : Shared_BaseViewModel
     }
     #endregion
 }
+

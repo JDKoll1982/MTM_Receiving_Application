@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// ViewModel for Dunnage Part Management
 /// Handles CRUD operations with pagination, filtering, and search
 /// </summary>
-public partial class ViewModel_Dunnage_AdminParts : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_DunnageAdminWorkflow _adminWorkflow;
@@ -382,7 +382,7 @@ public partial class ViewModel_Dunnage_AdminParts : Shared_BaseViewModel
 
             if (transactionCount > 0)
             {
-                message += "⚠️ WARNING: This part has transaction history and cannot be deleted.";
+                message += "âš ï¸ WARNING: This part has transaction history and cannot be deleted.";
 
                 var warningDialog = new ContentDialog
                 {
@@ -506,3 +506,4 @@ public partial class ViewModel_Dunnage_AdminParts : Shared_BaseViewModel
 
     #endregion
 }
+

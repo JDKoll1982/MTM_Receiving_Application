@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
-using MTM_Receiving_Application.Views.Shared;
+using MTM_Receiving_Application.Module_Shared.Views;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -18,7 +18,7 @@ public sealed partial class View_Dunnage_Dialog_Dunnage_AddTypeDialog : ContentD
 
     private async void OnSelectIconClick(object sender, RoutedEventArgs e)
     {
-        var iconSelector = new Shared_IconSelectorWindow();
+        var iconSelector = new View_Shared_IconSelectorWindow();
 
         // Set initial selection to current icon
         iconSelector.SetInitialSelection(ViewModel.SelectedIcon);

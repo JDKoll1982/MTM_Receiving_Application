@@ -1,18 +1,18 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using System;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_Review : Shared_BaseViewModel
+    public partial class ViewModel_Receiving_Review : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -342,3 +342,4 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #endregion
     }
 }
+

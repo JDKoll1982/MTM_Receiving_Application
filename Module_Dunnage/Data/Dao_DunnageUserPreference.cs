@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using MTM_Receiving_Application.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Data;
 
@@ -53,3 +53,4 @@ public class Dao_DunnageUserPreference
         );
     }
 }
+

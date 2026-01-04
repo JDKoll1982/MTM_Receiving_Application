@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CsvHelper;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Models.Enums;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
 /// ViewModel for Dunnage Edit Mode (historical data editing)
 /// </summary>
-public partial class ViewModel_Dunnage_EditMode : Shared_BaseViewModel
+public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
@@ -721,3 +721,4 @@ public partial class ViewModel_Dunnage_EditMode : Shared_BaseViewModel
 
     #endregion
 }
+

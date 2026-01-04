@@ -1,6 +1,6 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -21,3 +21,4 @@ public sealed partial class View_Dunnage_AdminTypesView : Page
         await ViewModel.LoadTypesCommand.ExecuteAsync(null);
     }
 }
+

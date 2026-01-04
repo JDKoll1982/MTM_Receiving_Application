@@ -1,7 +1,7 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.ViewModels.Shared;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application
 {
@@ -10,11 +10,11 @@ namespace MTM_Receiving_Application
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public Shared_MainWindowViewModel ViewModel { get; }
+        public ViewModel_Shared_MainWindow ViewModel { get; }
         private readonly IService_UserSessionManager _sessionManager;
         private bool _hasNavigatedOnStartup = false;
 
-        public MainWindow(Shared_MainWindowViewModel viewModel, IService_UserSessionManager sessionManager)
+        public MainWindow(ViewModel_Shared_MainWindow viewModel, IService_UserSessionManager sessionManager)
         {
             InitializeComponent();
             ViewModel = viewModel;
@@ -64,7 +64,7 @@ namespace MTM_Receiving_Application
                 if (!_hasNavigatedOnStartup)
                 {
                     _hasNavigatedOnStartup = true;
-                    PageTitleTextBlock.Text = "📥 Receiving - Mode Selection";
+                    PageTitleTextBlock.Text = "ðŸ“¥ Receiving - Mode Selection";
                     ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                     ContentFrame.Navigated += ContentFrame_Navigated;
                 }
@@ -76,7 +76,7 @@ namespace MTM_Receiving_Application
             if (args.IsSettingsSelected)
             {
                 PageTitleTextBlock.Text = "Settings";
-                ContentFrame.Navigate(typeof(Views.Settings.Settings_WorkflowView));
+                ContentFrame.Navigate(typeof(Module_Settings.Views.View_Settings_Workflow));
             }
             else if (args.SelectedItem is NavigationViewItem item)
             {
@@ -95,7 +95,7 @@ namespace MTM_Receiving_Application
                         break;
                     case "CarrierDeliveryLabelPage":
                         PageTitleTextBlock.Text = "Carrier Delivery";
-                        ContentFrame.Navigate(typeof(Views.Main.Main_CarrierDeliveryLabelPage));
+                        ContentFrame.Navigate(typeof(Module_Core.Views.Main.Main_CarrierDeliveryLabelPage));
                         break;
                 }
             }
@@ -142,7 +142,7 @@ namespace MTM_Receiving_Application
                 }
             }
             // If navigated to SettingsWorkflowView, subscribe to ViewModel changes to update header
-            else if (ContentFrame.Content is Views.Settings.Settings_WorkflowView settingsView)
+            else if (ContentFrame.Content is Module_Settings.Views.View_Settings_Workflow settingsView)
             {
                 var viewModel = settingsView.ViewModel;
                 if (viewModel != null)
@@ -253,3 +253,4 @@ namespace MTM_Receiving_Application
         }
     }
 }
+

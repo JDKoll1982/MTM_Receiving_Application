@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="MTM_Receiving_Application.Module_Core.Views.Main.Main_ReceivingLabelPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:MTM_Receiving_Application.Module_Core.ViewModels.Main"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="24">
+        <StackPanel>
+            <TextBlock Text="Receiving Label Entry" Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock Text="This page will be fully implemented with /speckit.specify" 
+                       Style="{StaticResource BodyTextBlockStyle}" 
+                       Margin="0,12,0,0"/>
+        </StackPanel>
+    </Grid>
+</Page>
+

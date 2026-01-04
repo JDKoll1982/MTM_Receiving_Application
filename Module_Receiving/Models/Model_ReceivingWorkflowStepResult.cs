@@ -1,5 +1,5 @@
-using System.Collections.Generic;
-using MTM_Receiving_Application.Models.Enums;
+﻿using System.Collections.Generic;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Receiving.Models
 {
@@ -27,3 +27,4 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         };
     }
 }
+

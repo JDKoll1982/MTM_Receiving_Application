@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service interface for Dunnage Admin UI navigation workflow
@@ -58,4 +58,5 @@ public interface IService_DunnageAdminWorkflow
     /// </summary>
     bool IsDirty { get; }
 }
+
 

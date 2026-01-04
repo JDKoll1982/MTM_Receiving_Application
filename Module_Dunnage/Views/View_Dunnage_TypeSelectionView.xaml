@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_TypeSelectionView"
     x:Name="RootUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,7 +8,7 @@
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Dunnage.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
     xmlns:materialIcons="using:Material.Icons.WinUI3"
-    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d"
     Loaded="OnLoaded">
 
@@ -148,3 +148,4 @@
         </StackPanel>
     </Grid>
 </UserControl>
+

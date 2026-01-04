@@ -1,0 +1,117 @@
+﻿<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_Shared.Views.View_Shared_HelpDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mi="using:Material.Icons.WinUI3"
+    xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="{x:Bind ViewModel.HelpContent.Title, Mode=OneWay}"
+    PrimaryButtonText="Close"
+    DefaultButton="Primary"
+    Width="700"
+    Height="600">
+
+    <ContentDialog.Resources>
+        <Style x:Key="HelpHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="12,0,0,0"/>
+        </Style>
+        
+        <Style x:Key="HelpContentStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="22"/>
+        </Style>
+
+        <Style x:Key="RelatedTopicStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="8,4"/>
+        </Style>
+    </ContentDialog.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+            <mi:MaterialIcon 
+                Kind="{x:Bind ViewModel.HelpContent.IconKind, Mode=OneWay}"
+                Width="32" 
+                Height="32"
+                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+            <TextBlock 
+                Text="{x:Bind ViewModel.HelpContent.Title, Mode=OneWay}"
+                Style="{StaticResource HelpHeaderStyle}"
+                VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Content Section -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <TextBlock 
+                Text="{x:Bind ViewModel.HelpContent.Content, Mode=OneWay}"
+                Style="{StaticResource HelpContentStyle}"/>
+        </ScrollViewer>
+
+        <!-- Related Topics Section -->
+        <Expander 
+            Grid.Row="2"
+            Header="Related Topics"
+            Margin="0,16,0,0"
+            HorizontalAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsRelatedHelpAvailable, Mode=OneWay}">
+            <ListView 
+                ItemsSource="{x:Bind ViewModel.RelatedTopics, Mode=OneWay}"
+                SelectionMode="None"
+                IsItemClickEnabled="True"
+                ItemClick="RelatedTopics_ItemClick">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_HelpContent">
+                        <StackPanel Orientation="Horizontal">
+                            <mi:MaterialIcon 
+                                Kind="{x:Bind IconKind}"
+                                Width="20" 
+                                Height="20"
+                                Margin="0,0,8,0"/>
+                            <TextBlock 
+                                Text="{x:Bind Title}"
+                                Style="{StaticResource RelatedTopicStyle}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+        </Expander>
+
+        <!-- Footer Section -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,12,0,0">
+            <CheckBox 
+                Content="Don't show this again"
+                IsChecked="{x:Bind ViewModel.IsDismissed, Mode=TwoWay}"
+                Visibility="{x:Bind ViewModel.CanDismiss, Mode=OneWay}"
+                HorizontalAlignment="Left"/>
+            
+            <Button 
+                Content="Copy"
+                Command="{x:Bind ViewModel.CopyContentCommand}"
+                HorizontalAlignment="Right"
+                Margin="12,0,0,0">
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="C" Modifiers="Control"/>
+                </Button.KeyboardAccelerators>
+            </Button>
+        </StackPanel>
+    </Grid>
+</ContentDialog>
+

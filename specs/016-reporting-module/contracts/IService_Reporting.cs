@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Reporting;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service interface for End-of-Day reporting across all modules
@@ -59,7 +59,7 @@ public interface IService_Reporting
 
     /// <summary>
     /// Checks availability of data for each module in the specified date range
-    /// Returns dictionary of module name → record count
+    /// Returns dictionary of module name â†’ record count
     /// Used to enable/disable module checkboxes in UI
     /// </summary>
     /// <param name="startDate">Start date for filter</param>
@@ -94,14 +94,15 @@ public interface IService_Reporting
     /// Normalizes PO number to standard format (PO-063150 or PO-063150B)
     /// Matches EndOfDayEmail.js normalizePO() algorithm
     /// Examples:
-    /// - "63150" → "PO-063150"
-    /// - "063150B" → "PO-063150B"
-    /// - "Customer Supplied" → "Customer Supplied" (pass through)
-    /// - "" → "No PO"
-    /// - "1234" → "Validate PO" (too short)
+    /// - "63150" â†’ "PO-063150"
+    /// - "063150B" â†’ "PO-063150B"
+    /// - "Customer Supplied" â†’ "Customer Supplied" (pass through)
+    /// - "" â†’ "No PO"
+    /// - "1234" â†’ "Validate PO" (too short)
     /// </summary>
     /// <param name="poNumber">Raw PO number to normalize</param>
     /// <returns>Normalized PO number</returns>
     string NormalizePONumber(string? poNumber);
 }
+
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,7 +6,7 @@ using Material.Icons;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Helpers.UI;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -93,3 +93,4 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
         }
     }
 }
+

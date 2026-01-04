@@ -24,4 +24,16 @@ public partial class Model_UserPreference : ObservableObject
     /// <summary>Workstation identifier (for shared terminals)</summary>
     [ObservableProperty]
     private string _workstation = string.Empty;
+
+    /// <summary>Default general mode</summary>
+    [ObservableProperty]
+    private string? _defaultMode;
+
+    /// <summary>Default receiving workflow mode</summary>
+    [ObservableProperty]
+    private string? _defaultReceivingMode;
+
+    /// <summary>Default dunnage workflow mode</summary>
+    [ObservableProperty]
+    private string? _defaultDunnageMode;
 }

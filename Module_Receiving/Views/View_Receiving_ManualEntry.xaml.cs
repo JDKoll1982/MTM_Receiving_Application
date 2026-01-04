@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Input;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Collections;
 using System;
 using System.Diagnostics;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using System.Threading.Tasks;
 
@@ -162,3 +162,4 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         }
     }
 }
+

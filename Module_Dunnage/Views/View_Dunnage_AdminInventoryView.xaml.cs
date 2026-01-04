@@ -1,6 +1,6 @@
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -22,3 +22,4 @@ public sealed partial class View_Dunnage_AdminInventoryView : Page
         await ViewModel.InitializeAsync();
     }
 }
+

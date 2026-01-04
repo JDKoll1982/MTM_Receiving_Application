@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Receiving;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service for saving receiving load data to MySQL database.
@@ -44,4 +44,5 @@ public interface IService_MySQL_Receiving
     /// <returns>DAO result with number of loads successfully updated</returns>
     Task<Model_Dao_Result<int>> UpdateReceivingLoadsAsync(List<Model_ReceivingLoad> loads);
 }
+
 

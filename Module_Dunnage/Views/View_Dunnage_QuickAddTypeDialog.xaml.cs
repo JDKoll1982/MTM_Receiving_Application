@@ -153,7 +153,7 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog, INo
 
     private async void OnSelectIconClick(object sender, RoutedEventArgs e)
     {
-        var iconWindow = new MTM_Receiving_Application.Views.Shared.Shared_IconSelectorWindow();
+        var iconWindow = new MTM_Receiving_Application.Module_Shared.Views.View_Shared_IconSelectorWindow();
 
         // Show window and wait for it to close
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(iconWindow);

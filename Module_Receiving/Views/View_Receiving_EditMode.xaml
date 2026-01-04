@@ -6,8 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
-    xmlns:enums="using:MTM_Receiving_Application.Models.Enums"
-    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    xmlns:enums="using:MTM_Receiving_Application.Module_Core.Models.Enums"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d"
     x:Name="Root">
 
@@ -170,3 +170,4 @@
         </Grid>
     </Grid>
 </UserControl>
+

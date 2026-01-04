@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Models.Volvo;
 
-namespace MTM_Receiving_Application.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 /// <summary>
 /// Service interface for Volvo dunnage requisition workflow
@@ -15,7 +15,7 @@ public interface IService_Volvo
     /// <summary>
     /// Calculates component explosion for a list of parts with skid counts
     /// Aggregates duplicate components across all parts in the shipment
-    /// Returns dictionary of part number → total piece count
+    /// Returns dictionary of part number â†’ total piece count
     /// </summary>
     /// <param name="shipmentLines">List of parts with received skid counts</param>
     /// <returns>Dictionary with part number as key and calculated piece count as value</returns>
@@ -28,7 +28,7 @@ public interface IService_Volvo
     /// File is created in export folder and remains until shipment is archived
     /// </summary>
     /// <param name="shipment">Shipment header with date, employee, notes</param>
-    /// <param name="requestedLines">Aggregated requested lines (part number → piece count)</param>
+    /// <param name="requestedLines">Aggregated requested lines (part number â†’ piece count)</param>
     /// <returns>File path of generated CSV file</returns>
     Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(
         Model_VolvoShipment shipment,
@@ -130,4 +130,5 @@ public interface IService_Volvo
     /// <returns>Success result</returns>
     Task<Model_Dao_Result> ClearCsvFileAsync(string csvFilePath);
 }
+
 
