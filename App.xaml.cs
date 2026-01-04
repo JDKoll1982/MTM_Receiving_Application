@@ -16,6 +16,7 @@ using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
+using MTM_Receiving_Application.Module_Routing.ViewModels;
 using MTM_Receiving_Application.Module_Settings.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Services;
 using MTM_Receiving_Application.Module_Settings.Interfaces;
@@ -221,10 +222,21 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Settings_DunnageMode>();
                 services.AddTransient<ViewModel_Settings_Placeholder>();
 
+                // Routing Workflow ViewModels (001-routing-module)
+                services.AddTransient<ViewModel_Routing_Workflow>();
+                services.AddTransient<ViewModel_Routing_LabelEntry>();
+                services.AddTransient<ViewModel_Routing_History>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
+                services.AddTransient<Main_RoutingLabelPage>();
+
+                // Routing Views (001-routing-module)
+                services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
+                services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
+                services.AddTransient<Module_Routing.Views.View_Routing_History>();
 
                 // Settings Views
                 services.AddTransient<View_Settings_Workflow>();

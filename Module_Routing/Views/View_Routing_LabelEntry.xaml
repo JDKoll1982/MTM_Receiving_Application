@@ -1,0 +1,65 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Routing.Views.View_Routing_LabelEntry"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Routing.ViewModels"
+    mc:Ignorable="d">
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16">
+            <TextBlock Text="Internal Routing Labels" Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock Text="{x:Bind ViewModel.NextLabelNumber, Mode=OneWay, FallbackValue='Next: 1'}" 
+                       Style="{StaticResource SubtitleTextBlockStyle}"
+                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Action Buttons -->
+        <CommandBar Grid.Row="1" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Add" Label="Add Label" Command="{x:Bind ViewModel.AddNewLabelCommand}"/>
+            <AppBarButton Icon="Copy" Label="Duplicate" Command="{x:Bind ViewModel.DuplicateSelectedLabelCommand}"/>
+            <AppBarButton Icon="Delete" Label="Delete" Command="{x:Bind ViewModel.DeleteSelectedLabelCommand}"/>
+            <AppBarSeparator/>
+            <AppBarButton Icon="Refresh" Label="Refresh" Command="{x:Bind ViewModel.LoadTodayLabelsCommand}"/>
+        </CommandBar>
+
+        <!-- Data Grid -->
+        <ScrollViewer Grid.Row="2">
+            <DataGrid x:Name="LabelsDataGrid"
+                      ItemsSource="{x:Bind ViewModel.Labels, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedLabel, Mode=TwoWay}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      AlternatingRowBackground="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Label #" Binding="{Binding LabelNumber}" Width="80" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Deliver To" Binding="{Binding DeliverTo, Mode=TwoWay}" Width="200"/>
+                    <DataGridTextColumn Header="Department" Binding="{Binding Department, Mode=TwoWay}" Width="200"/>
+                    <DataGridTextColumn Header="Description" Binding="{Binding PackageDescription, Mode=TwoWay}" Width="250"/>
+                    <DataGridTextColumn Header="PO Number" Binding="{Binding PoNumber, Mode=TwoWay}" Width="120"/>
+                    <DataGridTextColumn Header="Work Order" Binding="{Binding WorkOrder, Mode=TwoWay}" Width="120"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+
+        <!-- Status Bar -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8">
+            <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="20" Height="20"/>
+            <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay, FallbackValue='Ready'}"/>
+            <TextBlock Text="|" Margin="8,0"/>
+            <TextBlock Text="{x:Bind ViewModel.Labels.Count, Mode=OneWay, FallbackValue='0'}" FontWeight="SemiBold"/>
+            <TextBlock Text="labels today"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
