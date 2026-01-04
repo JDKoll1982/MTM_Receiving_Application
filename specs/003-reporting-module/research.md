@@ -125,16 +125,16 @@ function normalizePO(poNumber) {
 
 ## References
 
-- **Source Files**: `Documentation/FuturePlans/RoutingLabels/`
+- **Source Files**: Documentation/FuturePlans/RoutingLabels/ (if exists in repository)
   - EndOfDayEmail.js (PO normalization, email formatting)
   - AppScript.js (history archival, department lookup)
   - MiniUPSLabel.csv (CSV structure reference)
 - **Specification**: [spec.md](spec.md) - Complete feature specification
-- **Implementation Plan**: [plan.md](../011-module-reimplementation/plan.md)
-- **Database Schema**: [data-model.md](../011-module-reimplementation/data-model.md)
+- **Implementation Plan**: [plan.md](plan.md)
+- **Database Schema**: [data-model.md](data-model.md)
 
 ---
 
-**Last Updated**: 2026-01-03  
+**Last Updated**: 2026-01-04  
 **Analyst**: AI Development Assistant
 

@@ -17,12 +17,13 @@
 ## Path Conventions
 
 Single project structure - paths relative to repository root:
-- Models: `Module_Reporting/Models/`
+- Models: `Module_Core/Models/Reporting/` or `Module_Reporting/Models/`
 - ViewModels: `Module_Reporting/ViewModels/`
 - Views: `Module_Reporting/Views/`
 - Services: `Module_Reporting/Services/`
 - Data: `Module_Reporting/Data/`
-- Database: `Database/Schemas/`, `Database/TestData/`
+- Contracts: `Module_Core/Contracts/Services/` (IService_Reporting already exists)
+- Database: `Database/Schemas/`
 
 ---
 
@@ -42,7 +43,7 @@ Single project structure - paths relative to repository root:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create Model_ReportRow in Module_Reporting/Models/Model_ReportRow.cs (properties: Id, PONumber, PartNumber, PartDescription, Quantity, WeightLbs, HeatLotNumber, CreatedDate, SourceModule, plus module-specific fields)
+- [ ] T004 [P] Create Model_ReportRow in Module_Core/Models/Reporting/Model_ReportRow.cs (properties: Id, PONumber, PartNumber, PartDescription, Quantity, WeightLbs, HeatLotNumber, CreatedDate, SourceModule, plus module-specific fields)
 - [ ] T005 Create Dao_Reporting in Module_Reporting/Data/Dao_Reporting.cs (methods: GetReceivingHistoryAsync, GetDunnageHistoryAsync, GetRoutingHistoryAsync, GetVolvoHistoryAsync)
 - [ ] T006 Register Reporting DAO in App.xaml.cs ConfigureServices (singleton: Dao_Reporting)
 
@@ -58,7 +59,7 @@ Single project structure - paths relative to repository root:
 
 ### Interfaces & Services
 
-- [ ] T007 [P] [US1] Create Module_Reporting/Module_Core/Contracts/Services/IService_Reporting.cs from contracts/IService_Reporting.cs with new naming
+- [ ] T007 [P] [US1] Use existing Module_Core/Contracts/Services/IService_Reporting.cs (already implemented)
 - [ ] T008 [US1] Create Module_Reporting/Services/Service_Reporting.cs implementing IService_Reporting (date filtering, PO normalization, CSV export, email formatting)
 - [ ] T009 [US1] Implement PO normalization algorithm in Service_Reporting.cs (matches EndOfDayEmail.js logic)
 - [ ] T010 [US1] Implement CSV export in Service_Reporting.cs (matches MiniUPSLabel.csv structure)
@@ -78,8 +79,8 @@ Single project structure - paths relative to repository root:
 
 ### DI & Navigation
 
-- [ ] T018 [US1] Update Views/Main/Main_ReportingPage.xaml to navigate to new ReportingModule Views
-- [ ] T019 [US1] Update MainWindow.xaml navigation to use new Reporting module entry point
+- [ ] T018 [US1] Update navigation in MainWindow.xaml or main menu to include Reporting module entry point
+- [ ] T019 [US1] Register Reporting Views in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can generate reports, export CSV, and copy email format
 
@@ -98,5 +99,5 @@ Single project structure - paths relative to repository root:
 
 ---
 
-**Reference**: See [../011-module-reimplementation/tasks.md](../011-module-reimplementation/tasks.md) - Phase 7 for complete task breakdown context
+**Note**: All file paths assume the module will follow the established `Module_[Name]/` pattern used by existing modules in the codebase.
 

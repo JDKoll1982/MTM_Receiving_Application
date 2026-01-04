@@ -71,30 +71,27 @@ specs/003-reporting-module/
 
 ```text
 MTM_Receiving_Application/ (root)
-├── Module_Reporting/           ⬅️ NEW (module directory)
+├── Module_Reporting/                       ⬅️ NEW (module directory)
 │   ├── Models/
 │   │   └── Model_ReportRow.cs
 │   ├── ViewModels/
 │   │   ├── ViewModel_Reporting_Main.cs
-│   │   └── ViewModel_Reporting_ReportGenerator.cs
+│   │   └── ViewModel_Reporting_ReportViewer.cs
 │   ├── Views/
 │   │   ├── View_Reporting_Main.xaml (+ .cs)
-│   │   └── View_Reporting_ReportGenerator.xaml (+ .cs)
+│   │   └── View_Reporting_ReportViewer.xaml (+ .cs)
 │   ├── Services/
 │   │   └── Service_Reporting.cs
-│   ├── Data/
-│   │   └── Dao_Reporting.cs
-│   └── Module_Core/Contracts/Services/
-│       └── IService_Reporting.cs
-├── Database/
-│   ├── Schemas/
-│   │   └── schema_reporting_views.sql (views: vw_receiving_history, vw_dunnage_history, vw_routing_history)
-│   └── TestData/
-│       └── reporting_sample_data.sql
-└── App.xaml.cs (register Reporting services in DI container)
+│   └── Data/
+│       └── Dao_Reporting.cs
+├── Module_Core/Contracts/Services/
+│   └── IService_Reporting.cs               ⬅️ Already exists
+├── Database/Schemas/
+│   └── schema_reporting_views.sql          # Views: vw_receiving_history, etc.
+└── App.xaml.cs                             # Register Reporting services in DI
 ```
 
-**Structure Decision**: Root-level `Module_Reporting/` directory with consistent naming (`ViewModel_Reporting_*`, `View_Reporting_*`, `Service_Reporting_*`). Integrates with shared infrastructure (BaseViewModel, ErrorHandler, Logging, Settings). Uses views from other modules for data aggregation. Database views in `Database/Schemas/` folder following established conventions.
+**Structure Decision**: Root-level `Module_Reporting/` directory following established pattern (`Module_Core/`, `Module_Receiving/`, `Module_Dunnage/`, `Module_Settings/`, `Module_Shared/`). Uses consistent naming (`ViewModel_Reporting_*`, `View_Reporting_*`, `Service_Reporting`). Service interface already exists in `Module_Core/Contracts/Services/`. Database views in `Database/Schemas/` folder.
 
 ## Complexity Tracking
 
@@ -106,5 +103,5 @@ MTM_Receiving_Application/ (root)
 
 ---
 
-**Reference**: See [../011-module-reimplementation/plan.md](../011-module-reimplementation/plan.md) for complete implementation plan context
+**Note**: This plan assumes the Reporting module has not been implemented yet. The service interface `IService_Reporting.cs` already exists in `Module_Core/Contracts/Services/` and can be used as the contract reference.
 
