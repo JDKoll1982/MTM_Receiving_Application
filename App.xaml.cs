@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Dunnage.Data;
+using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
@@ -78,6 +79,12 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_InventoriedDunnage(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageCustomField(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageUserPreference(mySqlConnectionString));
+
+                // Register Volvo DAOs (Singleton)
+                services.AddSingleton(sp => new Dao_VolvoShipment(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_VolvoShipmentLine(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_VolvoPart(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_VolvoPartComponent(mySqlConnectionString));
 
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp =>
