@@ -29,23 +29,23 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Model_Dao_Result<List<Model_Routing_Recipient>>> GetAllRecipientsAsync(bool forceRefresh = false)
+    public async Task<Model_Dao_Result<List<Model_Routing_Recipient>>> GetAllRecipientsAsync(bool forceRefresh)
     {
         try
         {
             // Check cache validity
             var cacheExpired = DateTime.Now - _cacheTimestamp > _cacheExpiration;
-            
+
             if (!forceRefresh && !cacheExpired && _cachedRecipients != null)
             {
                 _logger.LogInfo($"Returning cached recipients ({_cachedRecipients.Count} items)");
-                return Model_Dao_Result_Factory.Success(_cachedRecipients, $"Retrieved {_cachedRecipients.Count} recipients from cache");
+                return Model_Dao_Result_Factory.Success(_cachedRecipients);
             }
 
             // Fetch from database
             _logger.LogInfo("Fetching recipients from database");
             var result = await _daoRecipient.GetAllAsync();
-            
+
             if (result.IsSuccess)
             {
                 _cachedRecipients = result.Data;
@@ -76,13 +76,13 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
             // Try to get from cache first
             if (_cachedRecipients != null)
             {
-                var cachedRecipient = _cachedRecipients.FirstOrDefault(r => 
+                var cachedRecipient = _cachedRecipients.FirstOrDefault(r =>
                     r.Name.Equals(recipientName, StringComparison.OrdinalIgnoreCase));
-                
+
                 if (cachedRecipient != null)
                 {
                     _logger.LogInfo($"Found in cache: {cachedRecipient.DefaultDepartment ?? "(no default)"}");
-                    return Model_Dao_Result_Factory.Success(cachedRecipient.DefaultDepartment, "Department retrieved from cache");
+                    return Model_Dao_Result_Factory.Success(cachedRecipient.DefaultDepartment);
                 }
             }
 
@@ -92,12 +92,12 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
             {
                 // Recipient not found - not an error, just no default department
                 _logger.LogInfo($"Recipient '{recipientName}' not found in database");
-                return Model_Dao_Result_Factory.Success<string?>(null, "Recipient not found - no default department");
+                return Model_Dao_Result_Factory.Success<string?>(null);
             }
 
             var defaultDept = result.Data.DefaultDepartment;
             _logger.LogInfo($"Default department for '{recipientName}': {defaultDept ?? "(none)"}");
-            return Model_Dao_Result_Factory.Success(defaultDept, $"Default department: {defaultDept ?? "(none)"}");
+            return Model_Dao_Result_Factory.Success(defaultDept);
         }
         catch (Exception ex)
         {
@@ -117,7 +117,7 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
 
             _logger.LogInfo($"Adding new recipient: {recipient.Name}");
             var result = await _daoRecipient.InsertAsync(recipient);
-            
+
             if (result.IsSuccess)
             {
                 // Invalidate cache
@@ -145,7 +145,7 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
 
             _logger.LogInfo($"Updating recipient ID: {recipient.Id}");
             var result = await _daoRecipient.UpdateAsync(recipient);
-            
+
             if (result.IsSuccess)
             {
                 // Invalidate cache
@@ -159,6 +159,32 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
         {
             _logger.LogError($"Error updating recipient: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure($"Error updating recipient: {ex.Message}", ex);
+        }
+    }
+
+    public Task<Model_Dao_Result<List<Model_Routing_Recipient>>> GetAllRecipientsAsync()
+    {
+        return GetAllRecipientsAsync(false);
+    }
+
+    public async Task<Model_Dao_Result> DeleteRecipientAsync(int recipientId)
+    {
+        try
+        {
+            _logger.LogInfo($"Deleting recipient ID: {recipientId}");
+            var result = await _daoRecipient.DeleteAsync(recipientId);
+
+            if (result.IsSuccess)
+            {
+                _cachedRecipients = null; // Invalidate cache
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error deleting recipient: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure($"Error deleting recipient: {ex.Message}", ex);
         }
     }
 }

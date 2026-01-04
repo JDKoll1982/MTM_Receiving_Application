@@ -23,10 +23,11 @@ CREATE PROCEDURE sp_routing_label_insert(
     OUT p_new_label_id INT,
     OUT p_error_message VARCHAR(500)
 )
-BEGIN
+proc: BEGIN
+    -- Handler must be declared first
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        -- Get error details
+        -- Get error details (Compatible with MySQL 5.6+)
         GET DIAGNOSTICS CONDITION 1
             p_error_message = MESSAGE_TEXT;
         ROLLBACK;
@@ -43,31 +44,31 @@ BEGIN
     IF p_label_number IS NULL OR p_label_number <= 0 THEN
         SET p_error_message = 'Label number is required and must be positive';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     IF p_deliver_to IS NULL OR TRIM(p_deliver_to) = '' THEN
         SET p_error_message = 'Deliver To recipient is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     IF p_department IS NULL OR TRIM(p_department) = '' THEN
         SET p_error_message = 'Department is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     IF p_employee_number IS NULL OR TRIM(p_employee_number) = '' THEN
         SET p_error_message = 'Employee number is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     IF p_created_date IS NULL THEN
         SET p_error_message = 'Created date is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Insert routing label
@@ -98,6 +99,6 @@ BEGIN
     
     -- Commit transaction
     COMMIT;
-END$$
+END proc$$
 
 DELIMITER ;

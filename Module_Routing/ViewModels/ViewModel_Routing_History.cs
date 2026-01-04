@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -25,10 +26,10 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
     private ObservableCollection<DateGroupViewModel> _dateGroups = new();
 
     [ObservableProperty]
-    private DateTime _startDate = DateTime.Today.AddDays(-30);
+    private DateTimeOffset _startDate = DateTime.Today.AddDays(-30);
 
     [ObservableProperty]
-    private DateTime _endDate = DateTime.Today;
+    private DateTimeOffset _endDate = DateTime.Today;
 
     [ObservableProperty]
     private int _totalLabelCount;
@@ -53,7 +54,8 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
     [RelayCommand]
     private async Task LoadHistoryAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -61,15 +63,19 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
             StatusMessage = "Loading history...";
             _logger.LogInfo($"Loading history from {StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd}");
 
-            var result = await _historyService.GetHistoryGroupedByDateAsync(StartDate, EndDate);
+            var result = await _historyService.GetHistoryAsync(StartDate.DateTime, EndDate.DateTime);
             if (result.IsSuccess)
             {
-                GroupedHistory = result.Data;
-                TotalLabelCount = result.Data.Values.Sum(list => list.Count);
+                var groupedData = result.Data
+                    .GroupBy(l => l.CreatedDate.Date)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+
+                GroupedHistory = groupedData;
+                TotalLabelCount = result.Data.Count;
 
                 // Create view models for each date group
                 DateGroups.Clear();
-                foreach (var kvp in result.Data.OrderByDescending(x => x.Key))
+                foreach (var kvp in groupedData.OrderByDescending(x => x.Key))
                 {
                     var dateGroup = new DateGroupViewModel
                     {
@@ -85,13 +91,13 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.HandleErrorAsync(result.Message, Core.Models.Enums.Enum_ErrorSeverity.Error, null, true);
+                await _errorHandler.HandleErrorAsync(result.ErrorMessage, Enum_ErrorSeverity.Error, null, true);
                 StatusMessage = "Error loading history";
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error loading history", Core.Models.Enums.Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync("Error loading history", Enum_ErrorSeverity.Error, ex, true);
             StatusMessage = "Error loading history";
         }
         finally
@@ -105,21 +111,21 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
     {
         await LoadHistoryAsync();
     }
+}
 
-    /// <summary>
-    /// Helper class for date-grouped labels in the UI.
-    /// </summary>
-    public partial class DateGroupViewModel : ObservableObject
-    {
-        [ObservableProperty]
-        private DateTime _date;
+/// <summary>
+/// Helper class for date-grouped labels in the UI.
+/// </summary>
+public partial class DateGroupViewModel : ObservableObject
+{
+    [ObservableProperty]
+    private DateTime _date;
 
-        [ObservableProperty]
-        private ObservableCollection<Model_Routing_Label> _labels = new();
+    [ObservableProperty]
+    private ObservableCollection<Model_Routing_Label> _labels = new();
 
-        [ObservableProperty]
-        private bool _isExpanded = false;
+    [ObservableProperty]
+    private bool _isExpanded = false;
 
-        public string DateHeader => $"{Date:dddd, MMMM dd, yyyy} ({Labels.Count} labels)";
-    }
+    public string DateHeader => $"{Date:dddd, MMMM dd, yyyy} ({Labels.Count} labels)";
 }
