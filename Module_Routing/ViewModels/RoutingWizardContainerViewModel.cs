@@ -224,6 +224,37 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     }
     #endregion
 
+    #region Cancel Command
+    /// <summary>
+    /// Cancel wizard with confirmation
+    /// </summary>
+    [RelayCommand]
+    private async Task CancelAsync()
+    {
+        // Show confirmation dialog
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Cancel Wizard",
+            Content = "Are you sure you want to cancel? All progress will be lost.",
+            PrimaryButtonText = "Yes, cancel",
+            CloseButtonText = "No, continue",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close
+        };
+
+        // Set XamlRoot for dialog
+        dialog.XamlRoot = App.MainWindow?.Content?.XamlRoot;
+
+        var result = await dialog.ShowAsync();
+
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            // User confirmed cancel
+            ResetWizard();
+            // TODO: Navigate back to Mode Selection
+        }
+    }
+    #endregion
+
     #region Helper Methods
     /// <summary>
     /// Reset wizard to initial state

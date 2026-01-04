@@ -279,6 +279,12 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Routing_History>();
                 services.AddTransient<ViewModel_Routing_ModeSelection>();
 
+                // NEW Routing Wizard ViewModels (Phase 3 implementation)
+                services.AddTransient<RoutingWizardContainerViewModel>();
+                services.AddTransient<RoutingWizardStep1ViewModel>();
+                services.AddTransient<RoutingWizardStep2ViewModel>();
+                services.AddTransient<RoutingWizardStep3ViewModel>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
@@ -290,6 +296,12 @@ public partial class App : Application
                 services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
                 services.AddTransient<Module_Routing.Views.View_Routing_History>();
                 services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
+
+                // NEW Routing Wizard Views (Phase 3 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingWizardContainerView>();
+                services.AddTransient<Module_Routing.Views.RoutingWizardStep1View>();
+                services.AddTransient<Module_Routing.Views.RoutingWizardStep2View>();
+                services.AddTransient<Module_Routing.Views.RoutingWizardStep3View>();
 
                 // Settings Views
                 services.AddTransient<View_Settings_Workflow>();
