@@ -156,7 +156,7 @@ public class Dao_VolvoShipment
     /// Gets the pending shipment if one exists
     /// </summary>
     /// <returns>Model_Dao_Result with pending shipment or null if none exists</returns>
-    public async Task<Model_Dao_Result<Model_VolvoShipment?>> GetPendingAsync()
+    public async Task<Model_Dao_Result<Model_VolvoShipment>> GetPendingAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
@@ -231,8 +231,8 @@ public class Dao_VolvoShipment
     /// <param name="status">Status filter ('pending_po', 'completed', or 'all')</param>
     /// <returns>Model_Dao_Result with list of shipments</returns>
     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
-        DateTime startDate, 
-        DateTime endDate, 
+        DateTime startDate,
+        DateTime endDate,
         string status = "all")
     {
         var parameters = new Dictionary<string, object>
@@ -260,15 +260,15 @@ public class Dao_VolvoShipment
             Id = reader.GetInt32(reader.GetOrdinal("id")),
             ShipmentDate = reader.GetDateTime(reader.GetOrdinal("shipment_date")),
             ShipmentNumber = reader.GetInt32(reader.GetOrdinal("shipment_number")),
-            PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) 
-                ? null 
+            PONumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+                ? null
                 : reader.GetString(reader.GetOrdinal("po_number")),
-            ReceiverNumber = reader.IsDBNull(reader.GetOrdinal("receiver_number")) 
-                ? null 
+            ReceiverNumber = reader.IsDBNull(reader.GetOrdinal("receiver_number"))
+                ? null
                 : reader.GetString(reader.GetOrdinal("receiver_number")),
             EmployeeNumber = reader.GetString(reader.GetOrdinal("employee_number")),
-            Notes = reader.IsDBNull(reader.GetOrdinal("notes")) 
-                ? null 
+            Notes = reader.IsDBNull(reader.GetOrdinal("notes"))
+                ? null
                 : reader.GetString(reader.GetOrdinal("notes")),
             Status = reader.GetString(reader.GetOrdinal("status")),
             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),

@@ -6,7 +6,7 @@
     xmlns:local="using:MTM_Receiving_Application"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:MTM_Receiving_Application.Converters"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d"
     x:Name="MainWindowRoot"
     Title="MTM_Receiving_Application">

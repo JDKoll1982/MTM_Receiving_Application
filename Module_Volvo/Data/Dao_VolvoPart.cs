@@ -43,7 +43,7 @@ public class Dao_VolvoPart
     /// <summary>
     /// Gets a part by part number
     /// </summary>
-    public async Task<Model_Dao_Result<Model_VolvoPart?>> GetByIdAsync(string partNumber)
+    public async Task<Model_Dao_Result<Model_VolvoPart>> GetByIdAsync(string partNumber)
     {
         var parameters = new Dictionary<string, object>
         {
