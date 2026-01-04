@@ -38,10 +38,10 @@ Single project structure - paths relative to repository root:
 
 **Purpose**: Database and DI registration
 
-- [ ] T001 Create database schema in Database/Schemas/schema_volvo.sql (tables: volvo_shipments, volvo_shipment_lines, volvo_parts_master, volvo_part_components)
-- [ ] T002 [P] Create stored procedures in Database/StoredProcedures/ (sp_volvo_shipment_insert, sp_volvo_shipment_complete, sp_volvo_part_master_get_all, etc.)
-- [ ] T003 [P] Create view vw_volvo_shipments_history in Database/Schemas/schema_volvo.sql
-- [ ] T004 Load sample data in Database/TestData/volvo_sample_data.sql (DataSheet.csv import for parts_master and part_components)
+- [X] T001 Create database schema in Database/Schemas/schema_volvo.sql (tables: volvo_shipments, volvo_shipment_lines, volvo_parts_master, volvo_part_components)
+- [X] T002 [P] Create stored procedures in Database/StoredProcedures/ (sp_volvo_shipment_insert, sp_volvo_shipment_complete, sp_volvo_part_master_get_all, etc.)
+- [X] T003 [P] Create view vw_volvo_shipments_history in Database/Schemas/schema_volvo.sql
+- [X] T004 Load sample data in Database/TestData/volvo_sample_data.sql (DataSheet.csv import for parts_master and part_components)
 - [ ] T005 Deploy database schema to MySQL server (execute schema_volvo.sql, stored procedures, view, test data)
 
 ---
