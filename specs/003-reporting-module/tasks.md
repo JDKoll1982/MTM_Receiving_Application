@@ -22,7 +22,7 @@ Single project structure - paths relative to repository root:
 - Views: `Module_Reporting/Views/`
 - Services: `Module_Reporting/Services/`
 - Data: `Module_Reporting/Data/`
-- Contracts: `Module_Core/Contracts/Services/` (IService_Reporting already exists)
+- Contracts: `Module_Core/Contracts/Services/` (IService_Reporting to be created)
 - Database: `Database/Schemas/`
 
 ---
@@ -59,7 +59,7 @@ Single project structure - paths relative to repository root:
 
 ### Interfaces & Services
 
-- [ ] T007 [P] [US1] Use existing Module_Core/Contracts/Services/IService_Reporting.cs (already implemented)
+- [ ] T007 [P] [US1] Create Module_Core/Contracts/Services/IService_Reporting.cs from specs/003-reporting-module/contracts/IService_Reporting.cs
 - [ ] T008 [US1] Create Module_Reporting/Services/Service_Reporting.cs implementing IService_Reporting (date filtering, PO normalization, CSV export, email formatting)
 - [ ] T009 [US1] Implement PO normalization algorithm in Service_Reporting.cs (matches EndOfDayEmail.js logic)
 - [ ] T010 [US1] Implement CSV export in Service_Reporting.cs (matches MiniUPSLabel.csv structure)

@@ -85,7 +85,7 @@ MTM_Receiving_Application/ (root)
 │   └── Data/
 │       └── Dao_Reporting.cs
 ├── Module_Core/Contracts/Services/
-│   └── IService_Reporting.cs               ⬅️ Already exists
+│   └── IService_Reporting.cs               ⬅️ To be created
 ├── Database/Schemas/
 │   └── schema_reporting_views.sql          # Views: vw_receiving_history, etc.
 └── App.xaml.cs                             # Register Reporting services in DI
@@ -103,5 +103,5 @@ MTM_Receiving_Application/ (root)
 
 ---
 
-**Note**: This plan assumes the Reporting module has not been implemented yet. The service interface `IService_Reporting.cs` already exists in `Module_Core/Contracts/Services/` and can be used as the contract reference.
+**Note**: This plan assumes the Reporting module has not been implemented yet. The service interface `IService_Reporting.cs` will need to be created in `Module_Core/Contracts/Services/` using the specification from `specs/003-reporting-module/contracts/IService_Reporting.cs`.
 

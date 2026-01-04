@@ -58,10 +58,10 @@ As a user, I want enhanced routing features including auto-lookup, history track
 
 ### Key Entities *(include if feature involves data)*
 
-- **ReportDateRange**: Represents date range selection with start/end dates and selected module
-- **ReportRow**: Generic model for export data with fields dictionary, date, and group key
-- **Routing_Recipient**: Represents recipients with name, default department, and active status
-- **Routing_Label**: Represents labels with auto-incrementing numbers, deliver to, department, etc.
+- **Model_ReportRow**: Generic model for export data with fields for all module types, date, and group key
+- **DateTime range**: Start and end dates for filtering (standard .NET DateTime)
+- **Module selection**: Boolean flags for which modules to include in report
+- **Dictionary<string, int>**: Module availability data (module name → record count)
 
 ## Success Criteria *(mandatory)*
 

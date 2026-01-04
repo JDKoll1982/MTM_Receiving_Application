@@ -15,7 +15,7 @@ Before starting implementation, ensure:
 - [ ] Error handling service is registered (IService_ErrorHandler)
 - [ ] Logging service is registered (IService_LoggingUtility)
 - [ ] Authentication context provides employee number (Module_Core)
-- [ ] IService_Reporting interface exists in Module_Core/Contracts/Services/
+- [ ] IService_Reporting interface will be created in Module_Core/Contracts/Services/
 
 ## Phase 1: Database Setup (10 min)
 
@@ -107,7 +107,7 @@ public class Model_ReportRow
 
 ### Step 2: Implement IService_Reporting
 
-**Note**: The interface already exists in `Module_Core/Contracts/Services/IService_Reporting.cs`
+**Note**: First copy the interface specification from `specs/003-reporting-module/contracts/IService_Reporting.cs` to `Module_Core/Contracts/Services/IService_Reporting.cs`
 
 ```csharp
 // Module_Reporting/Services/Service_Reporting.cs
@@ -328,8 +328,8 @@ public partial class ViewModel_Reporting_Main : BaseViewModel
 - **[spec.md](spec.md)** - Complete feature specification
 - **[data-model.md](data-model.md)** - Database schema reference
 - **[tasks.md](tasks.md)** - Detailed task breakdown
-- **[Module_Core/Contracts/Services/IService_Reporting.cs](../../Module_Core/Contracts/Services/IService_Reporting.cs)** - Service interface (already exists)
-- **[contracts/IService_Reporting.cs](contracts/IService_Reporting.cs)** - Specification copy of service interface
+- **[Module_Core/Contracts/Services/IService_Reporting.cs]** - Service interface (to be created from contracts/ spec)
+- **[contracts/IService_Reporting.cs](contracts/IService_Reporting.cs)** - Service interface specification
 
 ---
 

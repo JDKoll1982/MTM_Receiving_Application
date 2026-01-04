@@ -43,8 +43,8 @@ Module_Reporting/                           ⬅️ To be created
 └── Data/                                   # DAO classes
     └── Dao_Reporting.cs
 
-Module_Core/Contracts/Services/             ⬅️ Shared contracts
-└── IService_Reporting.cs                   # Already exists
+Module_Core/Contracts/Services/             ⬅️ Shared contracts location
+└── IService_Reporting.cs                   # To be created here
 
 Database/Schemas/                           ⬅️ Database views
 └── schema_reporting_views.sql
@@ -52,7 +52,8 @@ Database/Schemas/                           ⬅️ Database views
 
 ### Key Components
 - **IService_Reporting**: Main reporting service (data retrieval, PO normalization, CSV/email formatting)
-  - Located in: `Module_Core/Contracts/Services/IService_Reporting.cs`
+  - To be created in: `Module_Core/Contracts/Services/IService_Reporting.cs`
+  - Specification reference: `specs/003-reporting-module/contracts/IService_Reporting.cs`
 - **Service_Reporting**: Implementation of reporting service
   - To be created in: `Module_Reporting/Services/Service_Reporting.cs`
 
@@ -92,9 +93,9 @@ From `EndOfDayEmail.js`:
 
 ## Contracts
 
-Service interface location:
-- **Primary**: `Module_Core/Contracts/Services/IService_Reporting.cs` (already exists)
-- **Local copy**: `specs/003-reporting-module/contracts/IService_Reporting.cs` (specification reference)
+Service interface to be created:
+- **Target location**: `Module_Core/Contracts/Services/IService_Reporting.cs` (will be created during implementation)
+- **Specification reference**: `specs/003-reporting-module/contracts/IService_Reporting.cs` (design document)
 
 ## UI Design
 
