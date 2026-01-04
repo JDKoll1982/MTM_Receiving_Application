@@ -76,10 +76,12 @@ SELECT COUNT(*) FROM volvo_part_components;  -- Should be ~15+ relationships
 
 ### Step 1: Create Models
 
-Create model classes in `Models/Volvo/`:
+Create model classes in `Module_Volvo/Models/`:
 
 ```csharp
 // Module_Volvo/Models/Model_VolvoShipment.cs
+namespace MTM_Receiving_Application.Module_Volvo.Models;
+
 public class Model_VolvoShipment
 {
     public int Id { get; set; }
@@ -131,10 +133,12 @@ public class Model_VolvoPartComponent
 
 ### Step 2: Create DAOs
 
-Create DAO classes in `Data/Volvo/`:
+Create DAO classes in `Module_Volvo/Data/`:
 
 ```csharp
 // Module_Volvo/Data/Dao_VolvoShipment.cs
+namespace MTM_Receiving_Application.Module_Volvo.Data;
+
 public class Dao_VolvoShipment
 {
     private readonly string _connectionString;
@@ -185,8 +189,10 @@ services.AddSingleton(sp => new Dao_VolvoPartComponent(
 ### Step 1: Implement IService_Volvo
 
 ```csharp
-// Module_Volvo/Services/VolvoService.cs
-public class VolvoService : IService_Volvo
+// Module_Volvo/Services/Service_Volvo.cs
+namespace MTM_Receiving_Application.Module_Volvo.Services;
+
+public class Service_Volvo : IService_Volvo
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoPart _partDao;

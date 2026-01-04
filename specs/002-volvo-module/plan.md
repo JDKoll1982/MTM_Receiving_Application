@@ -72,36 +72,38 @@ specs/002-volvo-module/
 
 ```text
 MTM_Receiving_Application/ (root)
-├── Models/
-│   └── Volvo/
-│       ├── Model_VolvoShipment.cs
-│       ├── Model_VolvoShipmentLine.cs
-│       ├── Model_VolvoPart.cs
-│       └── Model_VolvoPartComponent.cs
-├── ViewModels/
-│   └── Volvo/
-│       ├── VolvoShipmentEntryViewModel.cs
-│       ├── VolvoReviewViewModel.cs
-│       ├── VolvoHistoryViewModel.cs
-│       └── VolvoSettingsViewModel.cs
-├── Views/
-│   └── Volvo/
-│       ├── VolvoShipmentEntryView.xaml (+ .cs)
-│       ├── VolvoReviewView.xaml (+ .cs)
-│       ├── VolvoHistoryView.xaml (+ .cs)
-│       └── VolvoSettingsView.xaml (+ .cs - replaces Settings_PlaceholderView)
-├── Services/
-│   └── Volvo/
-│       ├── IVolvoService.cs (interface)
-│       ├── VolvoService.cs (implementation)
-│       ├── IVolvoMasterDataService.cs
-│       └── VolvoMasterDataService.cs
-├── Data/
-│   └── Volvo/
+├── Module_Volvo/
+│   ├── Models/
+│   │   ├── Model_VolvoShipment.cs
+│   │   ├── Model_VolvoShipmentLine.cs
+│   │   ├── Model_VolvoPart.cs
+│   │   └── Model_VolvoPartComponent.cs
+│   ├── ViewModels/
+│   │   ├── VolvoShipmentEntryViewModel.cs
+│   │   ├── VolvoReviewViewModel.cs
+│   │   ├── VolvoHistoryViewModel.cs
+│   │   └── VolvoSettingsViewModel.cs
+│   ├── Views/
+│   │   ├── VolvoShipmentEntryView.xaml (+ .cs)
+│   │   ├── VolvoReviewView.xaml (+ .cs)
+│   │   ├── VolvoHistoryView.xaml (+ .cs)
+│   │   └── VolvoSettingsView.xaml (+ .cs - replaces Settings_PlaceholderView)
+│   ├── Services/
+│   │   ├── IVolvoService.cs (interface)
+│   │   ├── VolvoService.cs (implementation)
+│   │   ├── IVolvoMasterDataService.cs
+│   │   └── VolvoMasterDataService.cs
+│   └── Data/
 │       ├── Dao_VolvoShipment.cs
 │       ├── Dao_VolvoShipmentLine.cs
 │       ├── Dao_VolvoPart.cs
 │       └── Dao_VolvoPartComponent.cs
+├── Module_Core/
+│   └── Contracts/
+│       └── Services/
+│           ├── IService_Volvo.cs (interface definition)
+│           ├── IService_VolvoMasterData.cs
+│           └── IService_VolvoReporting.cs
 ├── Database/
 │   ├── Schemas/
 │   │   └── schema_volvo.sql (table definitions)
@@ -120,7 +122,7 @@ MTM_Receiving_Application/ (root)
 └── App.xaml.cs (register Volvo services in DI container)
 ```
 
-**Structure Decision**: Single project architecture maintained. Volvo module follows existing pattern:  Module_Volvo/Models/, ViewModule_Volvo/Models/, Module_Volvo/Views/, Module_Volvo/Services/, Module_Volvo/Data/. Integrates with shared infrastructure (Settings, Reporting, BaseViewModel, ErrorHandler, Logging). Database scripts in Database/ folder following established conventions.
+**Structure Decision**: Single project architecture maintained. Volvo module follows existing pattern with `Module_Volvo/` prefix containing Models/, ViewModels/, Views/, Services/, and Data/ subdirectories. Service interfaces are defined in `Module_Core/Contracts/Services/` for cross-module access. Integrates with shared infrastructure (Module_Settings, Module_Shared, BaseViewModel, ErrorHandler, Logging). Database scripts in Database/ folder following established conventions.
 
 ## Complexity Tracking
 

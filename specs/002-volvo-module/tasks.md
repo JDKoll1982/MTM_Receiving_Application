@@ -20,8 +20,17 @@ Single project structure - paths relative to repository root:
 - ViewModels: `Module_Volvo/ViewModels/`
 - Views: `Module_Volvo/Views/`
 - Services: `Module_Volvo/Services/`
+- Service Interfaces: `Module_Core/Contracts/Services/`
 - Data: `Module_Volvo/Data/`
 - Database: `Database/Schemas/`, `Database/StoredProcedures/`, `Database/TestData/`
+
+**Namespace Pattern**:
+- Models: `MTM_Receiving_Application.Module_Volvo.Models`
+- ViewModels: `MTM_Receiving_Application.Module_Volvo.ViewModels`
+- Views: `MTM_Receiving_Application.Module_Volvo.Views`
+- Services: `MTM_Receiving_Application.Module_Volvo.Services`
+- Service Interfaces: `MTM_Receiving_Application.Module_Core.Contracts.Services`
+- Data: `MTM_Receiving_Application.Module_Volvo.Data`
 
 ---
 
@@ -65,9 +74,9 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Create IVolvoService interface in Module_Volvo/Services/IVolvoService.cs (methods: CalculateComponentExplosionAsync, GenerateLabelCsvAsync, FormatEmailTextAsync, SaveShipmentAsync, GetPendingShipmentAsync)
-- [ ] T016 [US1] Implement VolvoService in Module_Volvo/Services/VolvoService.cs (business logic for component explosion, label generation, email formatting, shipment save)
-- [ ] T017 [US1] Register IVolvoService/VolvoService in App.xaml.cs ConfigureServices (singleton)
+- [ ] T015 [P] [US1] Create IService_Volvo interface in Module_Core/Contracts/Services/IService_Volvo.cs (methods: CalculateComponentExplosionAsync, GenerateLabelCsvAsync, FormatEmailTextAsync, SaveShipmentAsync, GetPendingShipmentAsync)
+- [ ] T016 [US1] Implement VolvoService in Module_Volvo/Services/Service_Volvo.cs (business logic for component explosion, label generation, email formatting, shipment save)
+- [ ] T017 [US1] Register IService_Volvo/Service_Volvo in App.xaml.cs ConfigureServices (singleton)
 - [ ] T018 [US1] Create VolvoShipmentEntryViewModel in Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs (properties: ShipmentDate, ShipmentNumber, Parts (ObservableCollection), AvailableParts, Commands: AddPartCommand, RemovePartCommand, GenerateLabelsCommand, PreviewEmailCommand, SaveAsPendingCommand)
 - [ ] T019 [US1] Create VolvoShipmentEntryView.xaml in Module_Volvo/Views/VolvoShipmentEntryView.xaml (UI: Date/Shipment# header, Part entry DataGrid with columns: Part dropdown, Skids TextBox, Discrepancy checkbox, Packlist/Difference fields, Toolbar: Add Part, Remove Part, Generate Labels, Preview Email, Save as Pending)
 - [ ] T020 [US1] Create VolvoShipmentEntryView.xaml.cs code-behind (ViewModel injection, page loaded event handler)
@@ -111,10 +120,10 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 3
 
-- [ ] T035 [P] [US3] Create IVolvoMasterDataService interface in Module_Volvo/Services/IVolvoMasterDataService.cs (methods: GetAllPartsAsync, AddPartAsync, UpdatePartAsync, DeactivatePartAsync, ImportCsvAsync, ExportCsvAsync)
-- [ ] T036 [US3] Implement VolvoMasterDataService in Module_Volvo/Services/VolvoMasterDataService.cs (CRUD operations, CSV import/export logic with validation)
-- [ ] T037 [US3] Register IVolvoMasterDataService/VolvoMasterDataService in App.xaml.cs ConfigureServices (singleton)
-- [ ] T038 [US3] Create VolvoSettingsViewModel in ViewModule_Volvo/Models/VolvoSettingsViewModel.cs (properties: Parts (ObservableCollection), SelectedPart, ShowInactive, Commands: AddPartCommand, EditPartCommand, DeactivatePartCommand, ViewComponentsCommand, ImportCsvCommand, ExportCsvCommand, RefreshCommand)
+- [ ] T035 [P] [US3] Create IService_VolvoMasterData interface in Module_Core/Contracts/Services/IService_VolvoMasterData.cs (methods: GetAllPartsAsync, AddPartAsync, UpdatePartAsync, DeactivatePartAsync, ImportCsvAsync, ExportCsvAsync)
+- [ ] T036 [US3] Implement VolvoMasterDataService in Module_Volvo/Services/Service_VolvoMasterData.cs (CRUD operations, CSV import/export logic with validation)
+- [ ] T037 [US3] Register IService_VolvoMasterData/Service_VolvoMasterData in App.xaml.cs ConfigureServices (singleton)
+- [ ] T038 [US3] Create VolvoSettingsViewModel in Module_Volvo/ViewModels/VolvoSettingsViewModel.cs (properties: Parts (ObservableCollection), SelectedPart, ShowInactive, Commands: AddPartCommand, EditPartCommand, DeactivatePartCommand, ViewComponentsCommand, ImportCsvCommand, ExportCsvCommand, RefreshCommand)
 - [ ] T039 [US3] Create VolvoSettingsView.xaml in Module_Volvo/Views/VolvoSettingsView.xaml (replaces Settings_PlaceholderView for Volvo, Tabs: Master Data, Import/Export, Preferences, DataGrid with columns: Part Number, Description, Qty/Skid, Has Components, Active Status, Actions buttons)
 - [ ] T040 [US3] Create VolvoSettingsView.xaml.cs code-behind (ViewModel injection, page loaded event handler calls RefreshCommand)
 - [ ] T041 [US3] Create VolvoPartAddEditDialog.xaml in Module_Volvo/Views/VolvoPartAddEditDialog.xaml (ContentDialog with fields: Part Number TextBox, Qty/Skid NumericUpDown, Has Components CheckBox → Expander with component checkboxes/dropdowns, Buttons: Save, Cancel)
@@ -140,7 +149,7 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 4
 
-- [ ] T051 [P] [US4] Create VolvoHistoryViewModel in ViewModule_Volvo/Models/VolvoHistoryViewModel.cs (properties: History (ObservableCollection), StartDate, EndDate, StatusFilter, SelectedShipment, Commands: FilterCommand, ViewDetailCommand, EditCommand, ExportCommand)
+- [ ] T051 [P] [US4] Create VolvoHistoryViewModel in Module_Volvo/ViewModels/VolvoHistoryViewModel.cs (properties: History (ObservableCollection), StartDate, EndDate, StatusFilter, SelectedShipment, Commands: FilterCommand, ViewDetailCommand, EditCommand, ExportCommand)
 - [ ] T052 [US4] Create VolvoHistoryView.xaml in Module_Volvo/Views/VolvoHistoryView.xaml (UI: Date range pickers, Status filter dropdown, DataGrid with columns: Date, Shipment#, Part Count, PO/Receiver, Status, Actions buttons, Toolbar: Filter, Export)
 - [ ] T053 [US4] Create VolvoHistoryView.xaml.cs code-behind (ViewModel injection, page loaded event handler defaults to last 30 days and calls FilterCommand)
 - [ ] T054 [US4] Implement FilterCommand in VolvoHistoryViewModel (calls VolvoService.GetHistoryAsync with date range and status filter, populates History collection)
@@ -163,15 +172,15 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 5
 
-- [ ] T061 [P] [US5] Create IVolvoReportingService interface in Module_Volvo/Services/IVolvoReportingService.cs (methods: GetRecordCountAsync, GetReportDataAsync)
-- [ ] T062 [US5] Implement VolvoReportingService in Module_Volvo/Services/VolvoReportingService.cs (queries for record counts and report data by date range)
-- [ ] T063 [US5] Register IVolvoReportingService/VolvoReportingService in App.xaml.cs ConfigureServices (singleton)
-- [ ] T064 [US5] Update shared ReportingService to call VolvoReportingService.GetRecordCountAsync in CheckAvailabilityAsync method (add Volvo to module count dictionary)
+- [ ] T061 [P] [US5] Create IService_VolvoReporting interface in Module_Core/Contracts/Services/IService_VolvoReporting.cs (methods: GetRecordCountAsync, GetReportDataAsync)
+- [ ] T062 [US5] Implement Service_VolvoReporting in Module_Volvo/Services/Service_VolvoReporting.cs (queries for record counts and report data by date range)
+- [ ] T063 [US5] Register IService_VolvoReporting/Service_VolvoReporting in App.xaml.cs ConfigureServices (singleton)
+- [ ] T064 [US5] Update shared ReportingService to call Service_VolvoReporting.GetRecordCountAsync in CheckAvailabilityAsync method (add Volvo to module count dictionary)
 - [ ] T065 [US5] Update shared ReportingViewModel to include Volvo checkbox in module selection (bind to IsVolvoChecked property)
 - [ ] T066 [US5] Update shared ReportingView.xaml to add Volvo checkbox to module selection panel (CheckBox with label "Volvo Dunnage Requisition")
 - [ ] T067 [US5] Create VolvoReportSectionView.xaml in Module_Volvo/Views/VolvoReportSectionView.xaml (UserControl with two DataGrids: Pending PO section and Completed section, Complete button for pending items)
 - [ ] T068 [US5] Update shared ReportingView.xaml to include VolvoReportSectionView in tabbed interface or expander (conditional visibility based on IsVolvoChecked)
-- [ ] T069 [US5] Implement GenerateReportAsync in ReportingViewModel to call VolvoReportingService.GetReportDataAsync when Volvo is selected (populate Volvo tab/expander with data)
+- [ ] T069 [US5] Implement GenerateReportAsync in ReportingViewModel to call Service_VolvoReporting.GetReportDataAsync when Volvo is selected (populate Volvo tab/expander with data)
 - [ ] T070 [US5] Implement Complete action in VolvoReportSectionView (opens VolvoCompletePODialog from US2, completes shipment, refreshes report)
 
 **Checkpoint**: Volvo module is now integrated into shared reporting infrastructure
