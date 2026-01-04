@@ -120,22 +120,22 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 3
 
-- [ ] T035 [P] [US3] Create IService_VolvoMasterData interface in Module_Core/Contracts/Services/IService_VolvoMasterData.cs (methods: GetAllPartsAsync, AddPartAsync, UpdatePartAsync, DeactivatePartAsync, ImportCsvAsync, ExportCsvAsync)
-- [ ] T036 [US3] Implement Service_VolvoMasterData in Module_Volvo/Services/Service_VolvoMasterData.cs (CRUD operations, CSV import/export logic with validation)
-- [ ] T037 [US3] Register IService_VolvoMasterData/Service_VolvoMasterData in App.xaml.cs ConfigureServices (singleton)
-- [ ] T038 [US3] Create VolvoSettingsViewModel in Module_Volvo/ViewModels/VolvoSettingsViewModel.cs (properties: Parts (ObservableCollection), SelectedPart, ShowInactive, Commands: AddPartCommand, EditPartCommand, DeactivatePartCommand, ViewComponentsCommand, ImportCsvCommand, ExportCsvCommand, RefreshCommand)
-- [ ] T039 [US3] Create VolvoSettingsView.xaml in Module_Volvo/Views/VolvoSettingsView.xaml (replaces Settings_PlaceholderView for Volvo, Tabs: Master Data, Import/Export, Preferences, DataGrid with columns: Part Number, Description, Qty/Skid, Has Components, Active Status, Actions buttons)
-- [ ] T040 [US3] Create VolvoSettingsView.xaml.cs code-behind (ViewModel injection, page loaded event handler calls RefreshCommand)
+- [X] T035 [P] [US3] Create IService_VolvoMasterData interface in Module_Core/Contracts/Services/IService_VolvoMasterData.cs (methods: GetAllPartsAsync, AddPartAsync, UpdatePartAsync, DeactivatePartAsync, ImportCsvAsync, ExportCsvAsync)
+- [X] T036 [US3] Implement Service_VolvoMasterData in Module_Volvo/Services/Service_VolvoMasterData.cs (CRUD operations, CSV import/export logic with validation)
+- [X] T037 [US3] Register IService_VolvoMasterData/Service_VolvoMasterData in App.xaml.cs ConfigureServices (singleton)
+- [X] T038 [US3] Create VolvoSettingsViewModel in Module_Volvo/ViewModels/VolvoSettingsViewModel.cs (properties: Parts (ObservableCollection), SelectedPart, ShowInactive, Commands: AddPartCommand, EditPartCommand, DeactivatePartCommand, ViewComponentsCommand, ImportCsvCommand, ExportCsvCommand, RefreshCommand)
+- [X] T039 [US3] Create VolvoSettingsView.xaml in Module_Volvo/Views/VolvoSettingsView.xaml (replaces Settings_PlaceholderView for Volvo, Tabs: Master Data, Import/Export, Preferences, DataGrid with columns: Part Number, Description, Qty/Skid, Has Components, Active Status, Actions buttons)
+- [X] T040 [US3] Create VolvoSettingsView.xaml.cs code-behind (ViewModel injection, page loaded event handler calls RefreshCommand)
 - [ ] T041 [US3] Create VolvoPartAddEditDialog.xaml in Module_Volvo/Views/VolvoPartAddEditDialog.xaml (ContentDialog with fields: Part Number TextBox, Qty/Skid NumericUpDown, Has Components CheckBox → Expander with component checkboxes/dropdowns, Buttons: Save, Cancel)
 - [ ] T042 [US3] Implement AddPartCommand in VolvoSettingsViewModel (opens VolvoPartAddEditDialog in Add mode, calls VolvoMasterDataService.AddPartAsync, refreshes DataGrid)
 - [ ] T043 [US3] Implement EditPartCommand in VolvoSettingsViewModel (opens VolvoPartAddEditDialog in Edit mode with pre-filled data, Part Number read-only, shows historical integrity warning, calls VolvoMasterDataService.UpdatePartAsync, refreshes DataGrid)
-- [ ] T044 [US3] Implement DeactivatePartCommand in VolvoSettingsViewModel (shows confirmation ContentDialog, calls VolvoMasterDataService.DeactivatePartAsync, grays out row in DataGrid)
-- [ ] T045 [US3] Implement ViewComponentsCommand in VolvoSettingsViewModel (opens TeachingTip or Flyout showing component breakdown for selected part)
-- [ ] T046 [US3] Implement ImportCsvCommand in VolvoSettingsViewModel (opens OpenFileDialog for CSV selection, calls VolvoMasterDataService.ImportCsvAsync with preview dialog showing new/updated/unchanged parts, refreshes DataGrid after import)
-- [ ] T047 [US3] Implement ExportCsvCommand in VolvoSettingsViewModel (opens SaveFileDialog, calls VolvoMasterDataService.ExportCsvAsync, shows success InfoBar with file path)
+- [X] T044 [US3] Implement DeactivatePartCommand in VolvoSettingsViewModel (shows confirmation ContentDialog, calls VolvoMasterDataService.DeactivatePartAsync, grays out row in DataGrid)
+- [X] T045 [US3] Implement ViewComponentsCommand in VolvoSettingsViewModel (opens TeachingTip or Flyout showing component breakdown for selected part)
+- [X] T046 [US3] Implement ImportCsvCommand in VolvoSettingsViewModel (opens OpenFileDialog for CSV selection, calls VolvoMasterDataService.ImportCsvAsync with preview dialog showing new/updated/unchanged parts, refreshes DataGrid after import)
+- [X] T047 [US3] Implement ExportCsvCommand in VolvoSettingsViewModel (opens SaveFileDialog, calls VolvoMasterDataService.ExportCsvAsync, shows success InfoBar with file path)
 - [ ] T048 [US3] Update Settings_ModeSelectionView.xaml to include Volvo card (Material Icon, Title: "Volvo", Description: "Dunnage parts and components", navigates to VolvoSettingsView)
 - [ ] T049 [US3] Update Settings_WorkflowView.xaml to replace VolvoPlaceholderView with VolvoSettingsView
-- [ ] T050 [US3] Register VolvoSettingsViewModel in App.xaml.cs ConfigureServices (transient)
+- [X] T050 [US3] Register VolvoSettingsViewModel in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work - shipments can be entered/completed, and admin can manage master data
 

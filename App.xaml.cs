@@ -163,6 +163,14 @@ public partial class App : Application
                     var logger = sp.GetRequiredService<IService_LoggingUtility>();
                     return new Service_Volvo(shipmentDao, lineDao, partDao, componentDao, logger);
                 });
+                services.AddSingleton<IService_VolvoMasterData>(sp =>
+                {
+                    var partDao = sp.GetRequiredService<Dao_VolvoPart>();
+                    var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
+                    return new Service_VolvoMasterData(partDao, componentDao, logger, errorHandler);
+                });
 
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
@@ -208,6 +216,7 @@ public partial class App : Application
 
                 // Volvo Workflow ViewModels
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
+                services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
 
                 // Settings Workflow ViewModels
                 services.AddTransient<ViewModel_Settings_Workflow>();
@@ -237,6 +246,7 @@ public partial class App : Application
 
                 // Volvo Views
                 services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
+                services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
 
                 // Windows
                 services.AddTransient<View_Shared_SplashScreenWindow>();
