@@ -531,11 +531,133 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Gets shipment history with filtering
     /// </summary>
-    public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetShipmentHistoryAsync(
+    public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
         DateTime startDate,
         DateTime endDate,
         string status = "all")
     {
         return await _shipmentDao.GetHistoryAsync(startDate, endDate, status);
+    }
+
+    /// <summary>
+    /// Gets all shipment lines for a specific shipment
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId)
+    {
+        return await _lineDao.GetByShipmentIdAsync(shipmentId);
+    }
+
+    /// <summary>
+    /// Updates an existing shipment and its lines
+    /// Regenerates CSV if applicable
+    /// </summary>
+    public async Task<Model_Dao_Result> UpdateShipmentAsync(
+        Model_VolvoShipment shipment,
+        List<Model_VolvoShipmentLine> lines)
+    {
+        try
+        {
+            // Update shipment header
+            var shipmentResult = await _shipmentDao.UpdateAsync(shipment);
+            if (!shipmentResult.IsSuccess)
+            {
+                return shipmentResult;
+            }
+
+            // Delete existing lines
+            var existingLines = await _lineDao.GetByShipmentIdAsync(shipment.Id);
+            if (existingLines.IsSuccess && existingLines.Data != null)
+            {
+                foreach (var line in existingLines.Data)
+                {
+                    await _lineDao.DeleteAsync(line.Id);
+                }
+            }
+
+            // Insert updated lines
+            foreach (var line in lines)
+            {
+                line.ShipmentId = shipment.Id;
+                var lineResult = await _lineDao.InsertAsync(line);
+                if (!lineResult.IsSuccess)
+                {
+                    await _logger.LogErrorAsync(
+                        $"Failed to insert line: {lineResult.ErrorMessage}",
+                        nameof(UpdateShipmentAsync));
+                }
+            }
+
+            // Regenerate CSV if completed
+            if (shipment.Status == "completed" && !string.IsNullOrEmpty(shipment.PONumber))
+            {
+                await GenerateLabelCsvAsync(shipment.Id);
+            }
+
+            return Model_Dao_Result.Success("Shipment updated successfully");
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync(
+                $"Error updating shipment: {ex.Message}",
+                nameof(UpdateShipmentAsync));
+            return Model_Dao_Result.Failure($"Error updating shipment: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Exports shipment history to CSV format
+    /// </summary>
+    public async Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
+        DateTime startDate,
+        DateTime endDate,
+        string status = "all")
+    {
+        try
+        {
+            var historyResult = await GetHistoryAsync(startDate, endDate, status);
+            if (!historyResult.IsSuccess || historyResult.Data == null)
+            {
+                return Model_Dao_Result<string>.Failure("Failed to retrieve history data");
+            }
+
+            var csv = new StringBuilder();
+            csv.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
+
+            foreach (var shipment in historyResult.Data)
+            {
+                csv.AppendLine($"{shipment.ShipmentNumber}," +
+                              $"{shipment.ShipmentDate:yyyy-MM-dd}," +
+                              $"{EscapeCsv(shipment.PONumber)}," +
+                              $"{EscapeCsv(shipment.ReceiverNumber)}," +
+                              $"{shipment.Status}," +
+                              $"{shipment.EmployeeNumber}," +
+                              $"{EscapeCsv(shipment.Notes)}");
+            }
+
+            return Model_Dao_Result<string>.Success(csv.ToString(), "CSV generated successfully");
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync(
+                $"Error exporting history: {ex.Message}",
+                nameof(ExportHistoryToCsvAsync));
+            return Model_Dao_Result<string>.Failure($"Error exporting history: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Escapes CSV values (wraps in quotes if contains comma, quote, or newline)
+    /// </summary>
+    private string EscapeCsv(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return string.Empty;
+
+        if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
+        {
+            return $"\"{value.Replace("\"", "\"\"")}\"";
+        }
+
+        return value;
     }
 }

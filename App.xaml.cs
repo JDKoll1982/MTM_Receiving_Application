@@ -217,6 +217,7 @@ public partial class App : Application
                 // Volvo Workflow ViewModels
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
+                services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
 
                 // Settings Workflow ViewModels
                 services.AddTransient<ViewModel_Settings_Workflow>();

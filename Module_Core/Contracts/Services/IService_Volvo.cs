@@ -90,7 +90,37 @@ public interface IService_Volvo
     /// <param name="endDate">End date for filter</param>
     /// <param name="status">Status filter ('pending_po', 'completed', or 'all')</param>
     /// <returns>List of shipments matching filters</returns>
-    Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetShipmentHistoryAsync(
+    Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
+        DateTime startDate,
+        DateTime endDate,
+        string status = "all");
+
+    /// <summary>
+    /// Gets all shipment lines for a specific shipment
+    /// </summary>
+    /// <param name="shipmentId">Shipment ID</param>
+    /// <returns>List of shipment lines</returns>
+    Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId);
+
+    /// <summary>
+    /// Updates an existing shipment and its lines
+    /// Regenerates CSV if applicable
+    /// </summary>
+    /// <param name="shipment">Updated shipment data</param>
+    /// <param name="lines">Updated shipment lines</param>
+    /// <returns>Success/failure result</returns>
+    Task<Model_Dao_Result> UpdateShipmentAsync(
+        Model_VolvoShipment shipment,
+        List<Model_VolvoShipmentLine> lines);
+
+    /// <summary>
+    /// Exports shipment history to CSV format
+    /// </summary>
+    /// <param name="startDate">Start date for filter</param>
+    /// <param name="endDate">End date for filter</param>
+    /// <param name="status">Status filter</param>
+    /// <returns>CSV content as string</returns>
+    Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
         DateTime startDate,
         DateTime endDate,
         string status = "all");

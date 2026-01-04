@@ -102,6 +102,10 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "Volvo Dunnage Requisition";
                         ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry));
                         break;
+                    case "VolvoHistory":
+                        PageTitleTextBlock.Text = "Volvo Shipment History";
+                        ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_History));
+                        break;
                 }
             }
         }

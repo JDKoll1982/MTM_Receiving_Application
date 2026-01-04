@@ -149,16 +149,16 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 4
 
-- [ ] T051 [P] [US4] Create VolvoHistoryViewModel in Module_Volvo/ViewModels/VolvoHistoryViewModel.cs (properties: History (ObservableCollection), StartDate, EndDate, StatusFilter, SelectedShipment, Commands: FilterCommand, ViewDetailCommand, EditCommand, ExportCommand)
-- [ ] T052 [US4] Create VolvoHistoryView.xaml in Module_Volvo/Views/VolvoHistoryView.xaml (UI: Date range pickers, Status filter dropdown, DataGrid with columns: Date, Shipment#, Part Count, PO/Receiver, Status, Actions buttons, Toolbar: Filter, Export)
-- [ ] T053 [US4] Create VolvoHistoryView.xaml.cs code-behind (ViewModel injection, page loaded event handler defaults to last 30 days and calls FilterCommand)
-- [ ] T054 [US4] Implement FilterCommand in VolvoHistoryViewModel (calls VolvoService.GetHistoryAsync with date range and status filter, populates History collection)
-- [ ] T055 [US4] Implement ViewDetailCommand in VolvoHistoryViewModel (opens Flyout panel showing parts entered, discrepancies table, calculated requested lines)
+- [X] T051 [P] [US4] Create VolvoHistoryViewModel in Module_Volvo/ViewModels/VolvoHistoryViewModel.cs (properties: History (ObservableCollection), StartDate, EndDate, StatusFilter, SelectedShipment, Commands: FilterCommand, ViewDetailCommand, EditCommand, ExportCommand)
+- [X] T052 [US4] Create VolvoHistoryView.xaml in Module_Volvo/Views/VolvoHistoryView.xaml (UI: Date range pickers, Status filter dropdown, DataGrid with columns: Date, Shipment#, Part Count, PO/Receiver, Status, Actions buttons, Toolbar: Filter, Export)
+- [X] T053 [US4] Create VolvoHistoryView.xaml.cs code-behind (ViewModel injection, page loaded event handler defaults to last 30 days and calls FilterCommand)
+- [X] T054 [US4] Implement FilterCommand in VolvoHistoryViewModel (calls VolvoService.GetHistoryAsync with date range and status filter, populates History collection)
+- [X] T055 [US4] Implement ViewDetailCommand in VolvoHistoryViewModel (opens Flyout panel showing parts entered, discrepancies table, calculated requested lines)
 - [ ] T056 [US4] Create VolvoShipmentEditDialog.xaml in Module_Volvo/Views/VolvoShipmentEditDialog.xaml (ContentDialog with same layout as entry form but pre-filled, shows CSV regeneration warning, Buttons: Save Changes, Cancel)
 - [ ] T057 [US4] Implement EditCommand in VolvoHistoryViewModel (opens VolvoShipmentEditDialog, calls VolvoService.UpdateShipmentAsync, regenerates CSV if applicable, refreshes history DataGrid)
-- [ ] T058 [US4] Implement ExportCommand in VolvoHistoryViewModel (opens SaveFileDialog, calls VolvoService.ExportHistoryToCsvAsync, shows success InfoBar)
-- [ ] T059 [US4] Add Volvo History navigation menu item in MainWindow.xaml (NavigationViewItem under Volvo parent, navigates to VolvoHistoryView)
-- [ ] T060 [US4] Register VolvoHistoryViewModel in App.xaml.cs ConfigureServices (transient)
+- [X] T058 [US4] Implement ExportCommand in VolvoHistoryViewModel (opens SaveFileDialog, calls VolvoService.ExportHistoryToCsvAsync, shows success InfoBar)
+- [X] T059 [US4] Add Volvo History navigation menu item in MainWindow.xaml (NavigationViewItem under Volvo parent, navigates to VolvoHistoryView)
+- [X] T060 [US4] Register VolvoHistoryViewModel in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: All core user stories (US1-US4) are now functional - full CRUD cycle for shipments and master data
 
