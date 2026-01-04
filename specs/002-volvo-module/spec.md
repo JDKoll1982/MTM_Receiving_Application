@@ -233,7 +233,7 @@ Users view aggregated packlist summaries similar to Google Sheets "PO Numbers" t
 
 - [x] **MVVM Architecture**: Views (XAML), ViewModels (business logic), Models (data), Services (operations) clearly separated
 - [x] **Database Layer**: All operations via stored procedures, return Model_Dao_Result, no raw SQL
-- [x] **Dependency Injection**: Services registered in App.xaml.cs (IVolvoService, IVolvoMasterDataService, Dao_VolvoShipment, Dao_VolvoParts)
+- [x] **Dependency Injection**: Services registered in App.xaml.cs (IService_Volvo, IService_VolvoMasterData, Dao_VolvoShipment, Dao_VolvoParts)
 - [x] **Error Handling**: All exceptions handled via IService_ErrorHandler, user-facing errors shown in InfoBars/ContentDialogs
 - [x] **Security & Authentication**: Employee number from authentication context (no additional auth required)
 - [x] **WinUI 3 Practices**: x:Bind (compile-time), ObservableCollection, async/await, CommunityToolkit.Mvvm attributes ([ObservableProperty], [RelayCommand])

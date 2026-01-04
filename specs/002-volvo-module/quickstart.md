@@ -76,10 +76,12 @@ SELECT COUNT(*) FROM volvo_part_components;  -- Should be ~15+ relationships
 
 ### Step 1: Create Models
 
-Create model classes in `Models/Volvo/`:
+Create model classes in `Module_Volvo/Models/`:
 
 ```csharp
 // Module_Volvo/Models/Model_VolvoShipment.cs
+namespace MTM_Receiving_Application.Module_Volvo.Models;
+
 public class Model_VolvoShipment
 {
     public int Id { get; set; }
@@ -131,10 +133,12 @@ public class Model_VolvoPartComponent
 
 ### Step 2: Create DAOs
 
-Create DAO classes in `Data/Volvo/`:
+Create DAO classes in `Module_Volvo/Data/`:
 
 ```csharp
 // Module_Volvo/Data/Dao_VolvoShipment.cs
+namespace MTM_Receiving_Application.Module_Volvo.Data;
+
 public class Dao_VolvoShipment
 {
     private readonly string _connectionString;
@@ -185,8 +189,10 @@ services.AddSingleton(sp => new Dao_VolvoPartComponent(
 ### Step 1: Implement IService_Volvo
 
 ```csharp
-// Module_Volvo/Services/VolvoService.cs
-public class VolvoService : IService_Volvo
+// Module_Volvo/Services/Service_Volvo.cs
+namespace MTM_Receiving_Application.Module_Volvo.Services;
+
+public class Service_Volvo : IService_Volvo
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoPart _partDao;
@@ -220,9 +226,9 @@ public class VolvoService : IService_Volvo
 
 ```csharp
 // App.xaml.cs ConfigureServices
-services.AddSingleton<IService_Volvo, VolvoService>();
-services.AddSingleton<IService_VolvoMasterData, VolvoMasterDataService>();
-services.AddSingleton<IService_VolvoReporting, VolvoReportingService>();
+services.AddSingleton<IService_Volvo, Service_Volvo>();
+services.AddSingleton<IService_VolvoMasterData, Service_VolvoMasterData>();
+services.AddSingleton<IService_VolvoReporting, Service_VolvoReporting>();
 ```
 
 ## Phase 4: ViewModel Implementation (2-3 hours)
@@ -230,7 +236,9 @@ services.AddSingleton<IService_VolvoReporting, VolvoReportingService>();
 ### Step 1: Create ViewModels
 
 ```csharp
-// ViewModels/Volvo/VolvoShipmentEntryViewModel.cs
+// Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs
+namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
+
 public partial class VolvoShipmentEntryViewModel : BaseViewModel
 {
     private readonly IService_Volvo _volvoService;
@@ -284,11 +292,11 @@ services.AddTransient<VolvoSettingsViewModel>();
 ### Step 1: Create XAML Views
 
 ```xml
-<!-- Views/Volvo/VolvoShipmentEntryView.xaml -->
-<Page x:Class="MTM_Receiving_Application.Views.Volvo.VolvoShipmentEntryView"
+<!-- Module_Volvo/Views/VolvoShipmentEntryView.xaml -->
+<Page x:Class="MTM_Receiving_Application.Module_Volvo.Views.VolvoShipmentEntryView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Volvo">
+      xmlns:viewmodels="using:MTM_Receiving_Application.Module_Volvo.ViewModels">
     
     <Page.DataContext>
         <viewmodels:VolvoShipmentEntryViewModel />

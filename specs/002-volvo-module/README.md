@@ -45,21 +45,35 @@ The Volvo Dunnage Requisition Module enables users to validate Volvo dunnage shi
 
 ### Module Structure
 ```
-VolvoModule/
+Module_Volvo/
 ├── Models/          # Data models (Shipment, Line, Part, Component)
 ├── ViewModels/      # MVVM ViewModels (Entry, Review, History, Settings)
 ├── Views/           # XAML Views (Entry, Review, History, Settings)
 ├── Services/        # Business logic services
-├── Data/            # DAO classes (database access)
-└── Database/        # SQL schemas and stored procedures
+└── Data/            # DAO classes (database access)
+
+Database/
+├── Schemas/         # Table definitions (schema_volvo.sql)
+├── StoredProcedures/# Volvo stored procedures
+└── TestData/        # Sample data for development
 ```
 
 ### Key Components
 - **IService_Volvo**: Main workflow service (component explosion, label generation, email formatting)
+  - Namespace: `MTM_Receiving_Application.Module_Core.Contracts.Services`
+  - Location: `Module_Volvo/Services/`
 - **IService_VolvoMasterData**: Parts catalog management (CRUD, CSV import/export)
+  - Namespace: `MTM_Receiving_Application.Module_Core.Contracts.Services`
+  - Location: `Module_Volvo/Services/`
 - **IService_VolvoReporting**: Reporting integration for End-of-Day reports
+  - Namespace: `MTM_Receiving_Application.Module_Core.Contracts.Services`
+  - Location: `Module_Volvo/Services/`
 - **Dao_VolvoShipment**: Database access for shipments
+  - Namespace: `MTM_Receiving_Application.Module_Volvo.Data`
+  - Location: `Module_Volvo/Data/`
 - **Dao_VolvoPart**: Database access for parts master data
+  - Namespace: `MTM_Receiving_Application.Module_Volvo.Data`
+  - Location: `Module_Volvo/Data/`
 
 ## Database Schema
 
