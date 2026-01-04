@@ -28,6 +28,10 @@ using MTM_Receiving_Application.Module_Core.Services;
 
 using MTM_Receiving_Application.Module_Core.Services.Startup;
 using MTM_Receiving_Application.Module_Core.Services.UI;
+using MTM_Receiving_Application.Module_Reporting.Data;
+using MTM_Receiving_Application.Module_Reporting.Services;
+using MTM_Receiving_Application.Module_Reporting.ViewModels;
+using MTM_Receiving_Application.Module_Reporting.Views;
 
 namespace MTM_Receiving_Application;
 
@@ -145,6 +149,15 @@ public partial class App : Application
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
                 services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 
+                // Reporting Services (003-reporting-module)
+                services.AddSingleton(sp => new Dao_Reporting(mySqlConnectionString));
+                services.AddSingleton<IService_Reporting>(sp =>
+                {
+                    var dao = sp.GetRequiredService<Dao_Reporting>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Reporting(dao, logger);
+                });
+
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
                 services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, Module_Core.Services.Navigation.Service_Navigation>();
@@ -193,6 +206,9 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Settings_DunnageMode>();
                 services.AddTransient<ViewModel_Settings_Placeholder>();
 
+                // Reporting ViewModels (003-reporting-module)
+                services.AddTransient<ViewModel_Reporting_Main>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
@@ -203,6 +219,9 @@ public partial class App : Application
                 services.AddTransient<View_Settings_ModeSelection>();
                 services.AddTransient<View_Settings_DunnageMode>();
                 services.AddTransient<View_Settings_Placeholder>();
+
+                // Reporting Views (003-reporting-module)
+                services.AddTransient<View_Reporting_Main>();
 
                 // Dunnage Admin Views
                 services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminMainView>();

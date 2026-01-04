@@ -31,7 +31,7 @@ Single project structure - paths relative to repository root:
 
 **Purpose**: Database views for data aggregation
 
-- [ ] T001 Create database views in Database/Schemas/schema_reporting_views.sql (vw_receiving_history, vw_dunnage_history, vw_routing_history, vw_volvo_history)
+- [X] T001 Create database views in Database/Schemas/schema_reporting_views.sql (vw_receiving_history, vw_dunnage_history, vw_routing_history, vw_volvo_history)
 - [ ] T002 Deploy database views to MySQL server (execute schema_reporting_views.sql)
 - [ ] T003 Test views: Verify each view returns correct data from respective module tables
 
@@ -43,9 +43,9 @@ Single project structure - paths relative to repository root:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create Model_ReportRow in Module_Core/Models/Reporting/Model_ReportRow.cs (properties: Id, PONumber, PartNumber, PartDescription, Quantity, WeightLbs, HeatLotNumber, CreatedDate, SourceModule, plus module-specific fields)
-- [ ] T005 Create Dao_Reporting in Module_Reporting/Data/Dao_Reporting.cs (methods: GetReceivingHistoryAsync, GetDunnageHistoryAsync, GetRoutingHistoryAsync, GetVolvoHistoryAsync)
-- [ ] T006 Register Reporting DAO in App.xaml.cs ConfigureServices (singleton: Dao_Reporting)
+- [X] T004 [P] Create Model_ReportRow in Module_Core/Models/Reporting/Model_ReportRow.cs (properties: Id, PONumber, PartNumber, PartDescription, Quantity, WeightLbs, HeatLotNumber, CreatedDate, SourceModule, plus module-specific fields)
+- [X] T005 Create Dao_Reporting in Module_Reporting/Data/Dao_Reporting.cs (methods: GetReceivingHistoryAsync, GetDunnageHistoryAsync, GetRoutingHistoryAsync, GetVolvoHistoryAsync)
+- [X] T006 Register Reporting DAO in App.xaml.cs ConfigureServices (singleton: Dao_Reporting)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -59,28 +59,28 @@ Single project structure - paths relative to repository root:
 
 ### Interfaces & Services
 
-- [ ] T007 [P] [US1] Create Module_Core/Contracts/Services/IService_Reporting.cs from specs/003-reporting-module/contracts/IService_Reporting.cs
-- [ ] T008 [US1] Create Module_Reporting/Services/Service_Reporting.cs implementing IService_Reporting (date filtering, PO normalization, CSV export, email formatting)
-- [ ] T009 [US1] Implement PO normalization algorithm in Service_Reporting.cs (matches EndOfDayEmail.js logic)
-- [ ] T010 [US1] Implement CSV export in Service_Reporting.cs (matches MiniUPSLabel.csv structure)
-- [ ] T011 [US1] Implement email formatting in Service_Reporting.cs (HTML table with alternating row colors grouped by date)
-- [ ] T012 [US1] Register Reporting Service in App.xaml.cs ConfigureServices (singleton: Service_Reporting)
+- [X] T007 [P] [US1] Create Module_Core/Contracts/Services/IService_Reporting.cs from specs/003-reporting-module/contracts/IService_Reporting.cs
+- [X] T008 [US1] Create Module_Reporting/Services/Service_Reporting.cs implementing IService_Reporting (date filtering, PO normalization, CSV export, email formatting)
+- [X] T009 [US1] Implement PO normalization algorithm in Service_Reporting.cs (matches EndOfDayEmail.js logic)
+- [X] T010 [US1] Implement CSV export in Service_Reporting.cs (matches MiniUPSLabel.csv structure)
+- [X] T011 [US1] Implement email formatting in Service_Reporting.cs (HTML table with alternating row colors grouped by date)
+- [X] T012 [US1] Register Reporting Service in App.xaml.cs ConfigureServices (singleton: Service_Reporting)
 
 ### ViewModels
 
-- [ ] T013 [P] [US1] Create Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs inheriting from BaseViewModel (date range selection, module checkboxes, report generation)
+- [X] T013 [P] [US1] Create Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs inheriting from BaseViewModel (date range selection, module checkboxes, report generation)
 - [ ] T014 [P] [US1] Create Module_Reporting/ViewModels/ViewModel_Reporting_ReportGenerator.cs inheriting from BaseViewModel (report display, CSV export, email copy)
-- [ ] T015 [US1] Register Reporting ViewModels in App.xaml.cs ConfigureServices (transient)
+- [X] T015 [US1] Register Reporting ViewModels in App.xaml.cs ConfigureServices (transient)
 
 ### Views
 
-- [ ] T016 [P] [US1] Create Module_Reporting/Views/View_Reporting_Main.xaml and .xaml.cs with x:Bind → (DatePicker, CheckBoxes for modules, Generate button)
+- [X] T016 [P] [US1] Create Module_Reporting/Views/View_Reporting_Main.xaml and .xaml.cs with x:Bind → (DatePicker, CheckBoxes for modules, Generate button)
 - [ ] T017 [P] [US1] Create Module_Reporting/Views/View_Reporting_ReportGenerator.xaml and .xaml.cs with x:Bind → (DataGrid for report data, Export CSV button, Copy Email button)
 
 ### DI & Navigation
 
 - [ ] T018 [US1] Update navigation in MainWindow.xaml or main menu to include Reporting module entry point
-- [ ] T019 [US1] Register Reporting Views in App.xaml.cs ConfigureServices (transient)
+- [X] T019 [US1] Register Reporting Views in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can generate reports, export CSV, and copy email format
 
