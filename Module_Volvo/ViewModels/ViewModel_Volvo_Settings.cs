@@ -103,20 +103,54 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
         {
             StatusMessage = "Opening add part dialog...";
 
-            // Create dialog (will be implemented in View layer)
-            // For now, placeholder that shows we need the dialog implementation
-            _errorHandler.ShowUserError(
-                "Add Part dialog not yet implemented. This will open a dialog to add a new part with components.",
-                "Not Implemented",
-                nameof(AddPartAsync));
+            var dialog = new Views.VolvoPartAddEditDialog();
+            dialog.InitializeForAdd();
+
+            var windowService = App.GetService<IWindowService>();
+            if (windowService != null)
+            {
+                dialog.XamlRoot = windowService.GetXamlRoot();
+            }
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary && dialog.Part != null)
+            {
+                IsBusy = true;
+                StatusMessage = $"Adding part {dialog.Part.PartNumber}...";
+
+                // No components for now (simplified version)
+                var saveResult = await _masterDataService.SavePartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+
+                if (saveResult.IsSuccess)
+                {
+                    StatusMessage = $"Part {dialog.Part.PartNumber} added successfully";
+                    await RefreshAsync();
+                }
+                else
+                {
+                    _errorHandler.ShowUserError(
+                        saveResult.ErrorMessage ?? "Failed to add part",
+                        "Add Error",
+                        nameof(AddPartAsync));
+                    StatusMessage = "Failed to add part";
+                }
+
+                IsBusy = false;
+            }
+            else
+            {
+                StatusMessage = "Add part cancelled";
+            }
         }
         catch (Exception ex)
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Low,
+                Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(AddPartAsync),
                 nameof(ViewModel_Volvo_Settings));
+            StatusMessage = "Error adding part";
         }
     }
 
@@ -127,21 +161,56 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
 
         try
         {
-            StatusMessage = "Opening edit part dialog...";
+            StatusMessage = $"Opening edit dialog for {SelectedPart.PartNumber}...";
 
-            // Create dialog (will be implemented in View layer)
-            _errorHandler.ShowUserError(
-                $"Edit Part dialog not yet implemented. This will edit part {SelectedPart.PartNumber}.",
-                "Not Implemented",
-                nameof(EditPartAsync));
+            var dialog = new Views.VolvoPartAddEditDialog();
+            dialog.InitializeForEdit(SelectedPart);
+
+            var windowService = App.GetService<IWindowService>();
+            if (windowService != null)
+            {
+                dialog.XamlRoot = windowService.GetXamlRoot();
+            }
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary && dialog.Part != null)
+            {
+                IsBusy = true;
+                StatusMessage = $"Updating part {dialog.Part.PartNumber}...";
+
+                // No components for now (simplified version)
+                var saveResult = await _masterDataService.SavePartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+
+                if (saveResult.IsSuccess)
+                {
+                    StatusMessage = $"Part {dialog.Part.PartNumber} updated successfully";
+                    await RefreshAsync();
+                }
+                else
+                {
+                    _errorHandler.ShowUserError(
+                        saveResult.ErrorMessage ?? "Failed to update part",
+                        "Update Error",
+                        nameof(EditPartAsync));
+                    StatusMessage = "Failed to update part";
+                }
+
+                IsBusy = false;
+            }
+            else
+            {
+                StatusMessage = "Edit cancelled";
+            }
         }
         catch (Exception ex)
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Low,
+                Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(EditPartAsync),
                 nameof(ViewModel_Volvo_Settings));
+            StatusMessage = "Error editing part";
         }
     }
 
