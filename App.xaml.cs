@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Dunnage.Data;
@@ -149,6 +150,28 @@ public partial class App : Application
                 services.AddTransient<IService_DunnageCSVWriter, Service_DunnageCSVWriter>();
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
                 services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
+
+                // Routing Services (001-routing-module)
+                services.AddSingleton<IService_Routing>(sp =>
+                {
+                    var daoLabel = sp.GetRequiredService<Dao_Routing_Label>();
+                    var daoRecipient = sp.GetRequiredService<Dao_Routing_Recipient>();
+                    var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Routing(daoLabel, daoRecipient, sessionManager, logger);
+                });
+                services.AddSingleton<IService_Routing_History>(sp =>
+                {
+                    var daoLabel = sp.GetRequiredService<Dao_Routing_Label>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Routing_History(daoLabel, logger);
+                });
+                services.AddSingleton<IService_Routing_RecipientLookup>(sp =>
+                {
+                    var daoRecipient = sp.GetRequiredService<Dao_Routing_Recipient>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Routing_RecipientLookup(daoRecipient, logger);
+                });
 
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
