@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Volvo.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Dunnage.Data;
@@ -151,6 +152,17 @@ public partial class App : Application
                 services.AddTransient<IService_DunnageCSVWriter, Service_DunnageCSVWriter>();
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
                 services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
+
+                // Volvo Services (002-volvo-module)
+                services.AddSingleton<IService_Volvo>(sp =>
+                {
+                    var shipmentDao = sp.GetRequiredService<Dao_VolvoShipment>();
+                    var lineDao = sp.GetRequiredService<Dao_VolvoShipmentLine>();
+                    var partDao = sp.GetRequiredService<Dao_VolvoPart>();
+                    var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Volvo(shipmentDao, lineDao, partDao, componentDao, logger);
+                });
 
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();

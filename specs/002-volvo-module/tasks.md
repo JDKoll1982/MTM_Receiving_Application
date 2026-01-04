@@ -74,9 +74,9 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Create IService_Volvo interface in Module_Core/Contracts/Services/IService_Volvo.cs (methods: CalculateComponentExplosionAsync, GenerateLabelCsvAsync, FormatEmailTextAsync, SaveShipmentAsync, GetPendingShipmentAsync)
-- [ ] T016 [US1] Implement Service_Volvo in Module_Volvo/Services/Service_Volvo.cs (business logic for component explosion, label generation, email formatting, shipment save)
-- [ ] T017 [US1] Register IService_Volvo/Service_Volvo in App.xaml.cs ConfigureServices (singleton)
+- [X] T015 [P] [US1] Create IService_Volvo interface in Module_Core/Contracts/Services/IService_Volvo.cs (methods: CalculateComponentExplosionAsync, GenerateLabelCsvAsync, FormatEmailTextAsync, SaveShipmentAsync, GetPendingShipmentAsync)
+- [X] T016 [US1] Implement Service_Volvo in Module_Volvo/Services/Service_Volvo.cs (business logic for component explosion, label generation, email formatting, shipment save)
+- [X] T017 [US1] Register IService_Volvo/Service_Volvo in App.xaml.cs ConfigureServices (singleton)
 - [ ] T018 [US1] Create VolvoShipmentEntryViewModel in Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs (properties: ShipmentDate, ShipmentNumber, Parts (ObservableCollection), AvailableParts, Commands: AddPartCommand, RemovePartCommand, GenerateLabelsCommand, PreviewEmailCommand, SaveAsPendingCommand)
 - [ ] T019 [US1] Create VolvoShipmentEntryView.xaml in Module_Volvo/Views/VolvoShipmentEntryView.xaml (UI: Date/Shipment# header, Part entry DataGrid with columns: Part dropdown, Skids TextBox, Discrepancy checkbox, Packlist/Difference fields, Toolbar: Add Part, Remove Part, Generate Labels, Preview Email, Save as Pending)
 - [ ] T020 [US1] Create VolvoShipmentEntryView.xaml.cs code-behind (ViewModel injection, page loaded event handler)
