@@ -151,20 +151,19 @@
                 <StackPanel Spacing="12">
                     <TextBlock 
                         Text="{x:Bind ViewModel.CurrentModuleName, Mode=OneWay}" 
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Visibility="{x:Bind ViewModel.CurrentModuleName, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"/>
+                        Style="{StaticResource SubtitleTextBlockStyle}"/>
                     
                     <ListView 
                         ItemsSource="{x:Bind ViewModel.ReportData, Mode=OneWay}"
                         SelectionMode="None">
                         <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="local:Model_ReportRow">
+                            <DataTemplate>
                                 <Grid Padding="8">
-                                    <TextBlock>
-                                        <Run Text="{x:Bind CreatedDate}"/>
-                                        <Run Text=" - "/>
-                                        <Run Text="{x:Bind PartNumber}"/>
-                                    </TextBlock>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding CreatedDate, Mode=OneWay}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding PartNumber, Mode=OneWay}"/>
+                                        <TextBlock Text="{Binding PONumber, Mode=OneWay}" Foreground="Gray"/>
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

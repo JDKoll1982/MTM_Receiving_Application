@@ -98,6 +98,10 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "Carrier Delivery";
                         ContentFrame.Navigate(typeof(Module_Core.Views.Main.Main_CarrierDeliveryLabelPage));
                         break;
+                    case "ReportingMainPage":
+                        PageTitleTextBlock.Text = "End of Day Reports";
+                        ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
+                        break;
                 }
             }
         }

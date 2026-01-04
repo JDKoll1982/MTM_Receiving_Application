@@ -79,7 +79,7 @@ Single project structure - paths relative to repository root:
 
 ### DI & Navigation
 
-- [ ] T018 [US1] Update navigation in MainWindow.xaml or main menu to include Reporting module entry point
+- [X] T018 [US1] Update navigation in MainWindow.xaml or main menu to include Reporting module entry point
 - [X] T019 [US1] Register Reporting Views in App.xaml.cs ConfigureServices (transient)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - user can generate reports, export CSV, and copy email format
