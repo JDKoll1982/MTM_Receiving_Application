@@ -91,7 +91,7 @@ MTM_Receiving_Application/ (root)
 └── App.xaml.cs                             # Register Reporting services in DI
 ```
 
-**Structure Decision**: Root-level `Module_Reporting/` directory following established pattern (`Module_Core/`, `Module_Receiving/`, `Module_Dunnage/`, `Module_Settings/`, `Module_Shared/`). Uses consistent naming (`ViewModel_Reporting_*`, `View_Reporting_*`, `Service_Reporting`). Service interface already exists in `Module_Core/Contracts/Services/`. Database views in `Database/Schemas/` folder.
+**Structure Decision**: Root-level `Module_Reporting/` directory following established pattern (`Module_Core/`, `Module_Receiving/`, `Module_Dunnage/`, `Module_Settings/`, `Module_Shared/`). Uses consistent naming (`ViewModel_Reporting_*`, `View_Reporting_*`, `Service_Reporting`). Service interface will be created in `Module_Core/Contracts/Services/` from specification. Database views in `Database/Schemas/` folder.
 
 ## Complexity Tracking
 
