@@ -11,6 +11,7 @@ using MTM_Receiving_Application.Module_Volvo.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Dunnage.Data;
+using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
@@ -80,6 +81,10 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_InventoriedDunnage(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageCustomField(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageUserPreference(mySqlConnectionString));
+
+                // Register Routing DAOs (Singleton - 001-routing-module)
+                services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
 
                 // Register Volvo DAOs (Singleton)
                 services.AddSingleton(sp => new Dao_VolvoShipment(mySqlConnectionString));
