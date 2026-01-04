@@ -226,9 +226,9 @@ public class Service_Volvo : IService_Volvo
 
 ```csharp
 // App.xaml.cs ConfigureServices
-services.AddSingleton<IService_Volvo, VolvoService>();
-services.AddSingleton<IService_VolvoMasterData, VolvoMasterDataService>();
-services.AddSingleton<IService_VolvoReporting, VolvoReportingService>();
+services.AddSingleton<IService_Volvo, Service_Volvo>();
+services.AddSingleton<IService_VolvoMasterData, Service_VolvoMasterData>();
+services.AddSingleton<IService_VolvoReporting, Service_VolvoReporting>();
 ```
 
 ## Phase 4: ViewModel Implementation (2-3 hours)
@@ -236,7 +236,9 @@ services.AddSingleton<IService_VolvoReporting, VolvoReportingService>();
 ### Step 1: Create ViewModels
 
 ```csharp
-// ViewModels/Volvo/VolvoShipmentEntryViewModel.cs
+// Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs
+namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
+
 public partial class VolvoShipmentEntryViewModel : BaseViewModel
 {
     private readonly IService_Volvo _volvoService;
@@ -290,11 +292,11 @@ services.AddTransient<VolvoSettingsViewModel>();
 ### Step 1: Create XAML Views
 
 ```xml
-<!-- Views/Volvo/VolvoShipmentEntryView.xaml -->
-<Page x:Class="MTM_Receiving_Application.Views.Volvo.VolvoShipmentEntryView"
+<!-- Module_Volvo/Views/VolvoShipmentEntryView.xaml -->
+<Page x:Class="MTM_Receiving_Application.Module_Volvo.Views.VolvoShipmentEntryView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:viewmodels="using:MTM_Receiving_Application.ViewModels.Volvo">
+      xmlns:viewmodels="using:MTM_Receiving_Application.Module_Volvo.ViewModels">
     
     <Page.DataContext>
         <viewmodels:VolvoShipmentEntryViewModel />

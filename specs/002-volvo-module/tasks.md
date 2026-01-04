@@ -75,7 +75,7 @@ Single project structure - paths relative to repository root:
 ### Implementation for User Story 1
 
 - [ ] T015 [P] [US1] Create IService_Volvo interface in Module_Core/Contracts/Services/IService_Volvo.cs (methods: CalculateComponentExplosionAsync, GenerateLabelCsvAsync, FormatEmailTextAsync, SaveShipmentAsync, GetPendingShipmentAsync)
-- [ ] T016 [US1] Implement VolvoService in Module_Volvo/Services/Service_Volvo.cs (business logic for component explosion, label generation, email formatting, shipment save)
+- [ ] T016 [US1] Implement Service_Volvo in Module_Volvo/Services/Service_Volvo.cs (business logic for component explosion, label generation, email formatting, shipment save)
 - [ ] T017 [US1] Register IService_Volvo/Service_Volvo in App.xaml.cs ConfigureServices (singleton)
 - [ ] T018 [US1] Create VolvoShipmentEntryViewModel in Module_Volvo/ViewModels/VolvoShipmentEntryViewModel.cs (properties: ShipmentDate, ShipmentNumber, Parts (ObservableCollection), AvailableParts, Commands: AddPartCommand, RemovePartCommand, GenerateLabelsCommand, PreviewEmailCommand, SaveAsPendingCommand)
 - [ ] T019 [US1] Create VolvoShipmentEntryView.xaml in Module_Volvo/Views/VolvoShipmentEntryView.xaml (UI: Date/Shipment# header, Part entry DataGrid with columns: Part dropdown, Skids TextBox, Discrepancy checkbox, Packlist/Difference fields, Toolbar: Add Part, Remove Part, Generate Labels, Preview Email, Save as Pending)
@@ -121,7 +121,7 @@ Single project structure - paths relative to repository root:
 ### Implementation for User Story 3
 
 - [ ] T035 [P] [US3] Create IService_VolvoMasterData interface in Module_Core/Contracts/Services/IService_VolvoMasterData.cs (methods: GetAllPartsAsync, AddPartAsync, UpdatePartAsync, DeactivatePartAsync, ImportCsvAsync, ExportCsvAsync)
-- [ ] T036 [US3] Implement VolvoMasterDataService in Module_Volvo/Services/Service_VolvoMasterData.cs (CRUD operations, CSV import/export logic with validation)
+- [ ] T036 [US3] Implement Service_VolvoMasterData in Module_Volvo/Services/Service_VolvoMasterData.cs (CRUD operations, CSV import/export logic with validation)
 - [ ] T037 [US3] Register IService_VolvoMasterData/Service_VolvoMasterData in App.xaml.cs ConfigureServices (singleton)
 - [ ] T038 [US3] Create VolvoSettingsViewModel in Module_Volvo/ViewModels/VolvoSettingsViewModel.cs (properties: Parts (ObservableCollection), SelectedPart, ShowInactive, Commands: AddPartCommand, EditPartCommand, DeactivatePartCommand, ViewComponentsCommand, ImportCsvCommand, ExportCsvCommand, RefreshCommand)
 - [ ] T039 [US3] Create VolvoSettingsView.xaml in Module_Volvo/Views/VolvoSettingsView.xaml (replaces Settings_PlaceholderView for Volvo, Tabs: Master Data, Import/Export, Preferences, DataGrid with columns: Part Number, Description, Qty/Skid, Has Components, Active Status, Actions buttons)
@@ -195,7 +195,7 @@ Single project structure - paths relative to repository root:
 
 ### Implementation for User Story 6 (FUTURE)
 
-- [ ] T071 [FUTURE] [US6] Create VolvoPacklistSummaryViewModel in ViewModule_Volvo/Models/VolvoPacklistSummaryViewModel.cs
+- [ ] T071 [FUTURE] [US6] Create VolvoPacklistSummaryViewModel in Module_Volvo/ViewModels/VolvoPacklistSummaryViewModel.cs
 - [ ] T072 [FUTURE] [US6] Create VolvoPacklistSummaryView.xaml in Module_Volvo/Views/VolvoPacklistSummaryView.xaml
 - [ ] T073 [FUTURE] [US6] Implement aggregation query in VolvoService.GetPacklistSummariesAsync
 - [ ] T074 [FUTURE] [US6] Implement drill-down flyout for PO detail

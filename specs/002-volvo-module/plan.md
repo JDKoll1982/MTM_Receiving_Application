@@ -27,7 +27,7 @@ Verify alignment with [MTM Receiving Application Constitution](.specify/memory/c
 
 ### Core Principles Alignment
 
-- [x] **I. MVVM Architecture**: Plan includes ViewModels (VolvoShipmentViewModel, VolvoHistoryViewModel, VolvoSettingsViewModel), Views (XAML pages), Models (shipment, lines, master parts), Services (IVolvoService, IVolvoMasterDataService)
+- [x] **I. MVVM Architecture**: Plan includes ViewModels (VolvoShipmentViewModel, VolvoHistoryViewModel, VolvoSettingsViewModel), Views (XAML pages), Models (shipment, lines, master parts), Services (IService_Volvo, IService_VolvoMasterData)
 - [x] **II. Database Layer**: All DB operations via stored procedures (sp_volvo_*), DAOs return Model_Dao_Result, async operations only
 - [x] **III. Dependency Injection**: Services/DAOs registered in App.xaml.cs with interfaces
 - [x] **IV. Error Handling & Logging**: IService_ErrorHandler for exceptions, ILoggingService for audit trail
@@ -89,10 +89,10 @@ MTM_Receiving_Application/ (root)
 │   │   ├── VolvoHistoryView.xaml (+ .cs)
 │   │   └── VolvoSettingsView.xaml (+ .cs - replaces Settings_PlaceholderView)
 │   ├── Services/
-│   │   ├── IVolvoService.cs (interface)
-│   │   ├── VolvoService.cs (implementation)
-│   │   ├── IVolvoMasterDataService.cs
-│   │   └── VolvoMasterDataService.cs
+│   │   ├── IService_Volvo.cs (interface)
+│   │   ├── Service_Volvo.cs (implementation)
+│   │   ├── IService_VolvoMasterData.cs
+│   │   └── Service_VolvoMasterData.cs
 │   └── Data/
 │       ├── Dao_VolvoShipment.cs
 │       ├── Dao_VolvoShipmentLine.cs
