@@ -58,7 +58,7 @@ public class Dao_DunnageCustomField
     {
         var parameters = new Dictionary<string, object>
         {
-            { "type_id", typeId }
+            { "@p_type_id", typeId }
         };
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_CustomFieldDefinition>(
@@ -73,7 +73,7 @@ public class Dao_DunnageCustomField
     {
         var parameters = new Dictionary<string, object>
         {
-            { "field_id", fieldId }
+            { "@p_field_id", fieldId }
         };
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(

@@ -157,7 +157,7 @@ description: "Task list for implementing application fixes and improvements"
   - [x] T002b: Document which properties/collections in each ViewModel need to be cleared
   - [x] T002c: Determine if reset should cascade through all child ViewModels or just top-level
   - **IMPLEMENTED**: `ClearWorkflowData()` method clears `CurrentSession.Loads` collection in both workflows
-  - [ ] T002x: Clear User Inputs:
+  - [x] T002x: Clear User Inputs:
   - **UPDATE NEEDED**: Also clear UI inputs in intermediate ViewModels:
     - **Receiving**: POEntryViewModel (`PoNumber`, `PartID`, `SelectedPart`, `IsNonPOItem`), PackageTypeViewModel (`SelectedPackageType`, `CustomPackageTypeName`), LoadEntryViewModel (`NumberOfLoads`), WeightQuantityViewModel (loads collection `WeightQuantity` values), HeatLotViewModel (loads collection `HeatLotNumber` values)
     - **Dunnage**: TypeSelectionViewModel (`SelectedType`), PartSelectionViewModel (`SelectedPart`), DetailsEntryViewModel (`PONumber`, `Location`, `SpecInputs`), QuantityEntryViewModel (`Quantity`)
@@ -170,51 +170,28 @@ description: "Task list for implementing application fixes and improvements"
 
 ---
 
-## Phase 2: Dunnage Notification Area Implementation
+## Phase 2: Global Notification Area Implementation
 
-**Purpose**: Add timed notification area to Dunnage views matching Receiving workflow
+**Purpose**: Add a centralized notification area in MainWindow that serves all modules
 
-**⚠️ CRITICAL**: Reference existing notification implementation in Receiving workflow
+**✅ IMPLEMENTATION COMPLETE (2026-01-03)**
+- Created `IService_Notification` and `Service_Notification` for global status management
+- Updated `MainWindow.xaml` to include `InfoBar` bound to `ViewModel.NotificationService`
+- Updated `ViewModel_Shared_Base` to use `IService_Notification` in `ShowStatus`
+- Removed local `InfoBar` and `ShowStatus` from Receiving and Dunnage workflows to avoid duplication
+- All ViewModels inheriting from `ViewModel_Shared_Base` now automatically use the global notification area
 
-**✅ VALIDATION PASSED:**
-- Receiving workflow uses `ShowStatus()` method with auto-dismiss after 5 seconds
-- StatusMessage property exists and is bound to InfoBar in views
-- Timer uses Task.Delay(5000) with dispatcher callback (not DispatcherTimer)
-
-- [x] T005 [DunnageViews] Analyze notification area logic in `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs` (lines 116-132: ShowStatus method with StatusMessage property, InfoBarSeverity, and 5-second auto-dismiss using Task.Delay)
-  - **PATTERN CONFIRMED**: `ShowStatus()` method implementation found
-  - **BASE CLASS**: All ViewModels inherit from `ViewModel_Shared_Base` which provides `StatusMessage` property (line 18)
-  - **AUTO-DISMISS**: Uses `Task.Delay(5000)` pattern, NOT DispatcherTimer
-- [ ] T006 [P] [DunnageViews] Update Dunnage ViewModels to include StatusMessage, StatusSeverity, IsStatusOpen properties and ShowStatus method
-  - **STATUS**: MOSTLY COMPLETE - All Dunnage ViewModels already use `StatusMessage` property via `ViewModel_Shared_Base` inheritance
-  - **FOUND**: 80+ existing usages of `StatusMessage` across 12 Dunnage ViewModels
-  - **MISSING**: May need to add `StatusSeverity` and `IsStatusOpen` properties if not present
-  - **MISSING**: `ShowStatus()` method with auto-dismiss logic may need to be added
-  - [ ] T006a: Add to `ViewModel_Dunnage_ModeSelectionViewModel.cs`
-  - [ ] T006b: Add to `ViewModel_Dunnage_TypeSelectionViewModel.cs`
-  - [ ] T006c: Add to `ViewModel_Dunnage_PartSelectionViewModel.cs`
-  - [ ] T006d: Add to `View_ViewModel_Dunnage_DetailsEntryViewModel.cs`
-  - [ ] T006e: Add to `View_ViewModel_Dunnage_QuantityEntryViewModel.cs`
-  - [ ] T006f: Add to `ViewModel_Dunnage_ReviewViewModel.cs`
-  - [ ] T006g: Add to `ViewModel_Dunnage_ManualEntryViewModel.cs`
-  - [ ] T006h: Add to `ViewModel_Dunnage_EditModeViewModel.cs`
-  - [ ] T006i: Add to `ViewModel_Dunnage_AdminMainViewModel.cs`, `ViewModel_Dunnage_AdminTypesViewModel.cs`, `ViewModel_Dunnage_AdminPartsViewModel.cs`, `ViewModel_Dunnage_AdminInventoryViewModel.cs` (if notifications are needed in admin views)
-- [ ] T007 [P] [DunnageViews] Update Dunnage Views to include InfoBar notification area UI matching Receiving workflow
-  - [ ] T007a: Add InfoBar to `View_Dunnage_ModeSelectionView.xaml`
-  - [ ] T007b: Add InfoBar to `View_Dunnage_TypeSelectionView.xaml`
-  - [ ] T007c: Add InfoBar to `View_Dunnage_PartSelectionView.xaml`
-  - [ ] T007d: Add InfoBar to `View_Dunnage_DetailsEntryView.xaml`
-  - [ ] T007e: Add InfoBar to `View_Dunnage_QuantityEntryView.xaml`
-  - [ ] T007f: Add InfoBar to `View_Dunnage_ReviewView.xaml`
-  - [ ] T007g: Add InfoBar to `View_Dunnage_ManualEntryView.xaml`
-  - [ ] T007h: Add InfoBar to `View_Dunnage_EditModeView.xaml`
-- [ ] T008 [DunnageViews] Implement auto-dismiss logic using Task.Delay(5000) pattern (not DispatcherTimer) in all Dunnage ViewModels with IService_Dispatcher dependency injection
-  - [ ] T008a: Verify all Dunnage ViewModels have IService_Dispatcher injected (required for thread-safe UI updates)
-  - [ ] T008b: Copy exact ShowStatus implementation from ViewModel_Receiving_Workflow.cs
-- [ ] T009 [DunnageViews] Define when to show notifications in each Dunnage ViewModel
-  - [ ] T009a: Document save operations that should trigger success notifications
-  - [ ] T009b: Document validation errors that should trigger warning notifications
-  - [ ] T009c: Document status updates (e.g., "Item added", "Part selected") that should trigger info notifications
+- [x] T005 [GlobalNotification] Analyze notification area logic
+  - **DECISION**: Replaced local notification logic with global `IService_Notification`
+- [x] T006 [GlobalNotification] Update ViewModels to use global notification service
+  - **IMPLEMENTED**: `ViewModel_Shared_Base` updated to call `IService_Notification.ShowStatus`
+- [x] T007 [GlobalNotification] Update Views to remove local InfoBars and use MainWindow InfoBar
+  - **IMPLEMENTED**: Removed InfoBar from `View_Receiving_Workflow.xaml` and `View_Dunnage_WorkflowView.xaml`
+  - **IMPLEMENTED**: Added InfoBar to `MainWindow.xaml`
+- [x] T008 [GlobalNotification] Implement auto-dismiss logic
+  - **IMPLEMENTED**: `Service_Notification` handles auto-dismiss using `Task.Delay` and `IService_Dispatcher`
+- [x] T009 [GlobalNotification] Define when to show notifications
+  - **STATUS**: Existing calls to `ShowStatus` in ViewModels now route to global service automatically
 
 ---
 
@@ -226,12 +203,12 @@ description: "Task list for implementing application fixes and improvements"
 - File `Module_Settings/Views/MainNavigationView.xaml` does not exist - actual settings files use different naming pattern (e.g., `View_Settings_ModeSelection.xaml`)
 - Need to identify the correct navigation view or main settings container
 
-- [ ] T010 [SettingsViews] Standardize NavigationViewItem button padding in `MainWindow.xaml` (lines 78-96) to use consistent Padding="16"
+- [x] T010 [SettingsViews] Standardize NavigationViewItem button padding in `MainWindow.xaml` (lines 78-96) to use consistent Padding="16"
   - [x] T010a: **FOUND** - Main navigation is in MainWindow.xaml NavigationView.MenuItems, NOT a separate file
-  - [ ] T010b: **LIST** - Navigation items needing padding check: "Receiving Labels" (line 78), "Dunnage Labels" (line 83), "Carrier Delivery" (line 88)
-- [ ] T011 [SettingsViews] Review header duplication between NavigationView.Header (line 49) and NavigationView.PaneHeader (line 45)
+  - [x] T010b: **LIST** - Navigation items needing padding check: "Receiving Labels" (line 78), "Dunnage Labels" (line 83), "Carrier Delivery" (line 88)
+- [x] T011 [SettingsViews] Review header duplication between NavigationView.Header (line 49) and NavigationView.PaneHeader (line 45)
   - [x] T011a: **FOUND** - NavigationView.PaneHeader shows "MTM Receiving", NavigationView.Header shows dynamic page title ("Dashboard") - these serve different purposes
-  - [ ] T011b: Determine if PaneHeader should be removed or if the issue is in Settings views themselves having redundant headers
+  - [x] T011b: Determine if PaneHeader should be removed or if the issue is in Settings views themselves having redundant headers
     - **PANE HEADER** (lines 43-47): `<TextBlock Text="MTM Receiving" Style="{StaticResource TitleTextBlockStyle}"/>`
     - **MAIN HEADER** (lines 50-77): Contains `PageTitleTextBlock` with dynamic title + user profile display
     - **INVESTIGATE**: Check if individual Settings views have their own headers causing visual duplication

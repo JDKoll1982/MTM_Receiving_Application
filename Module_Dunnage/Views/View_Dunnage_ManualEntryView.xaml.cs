@@ -11,21 +11,26 @@ using System;
 using System.Diagnostics;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views
 {
     public sealed partial class View_Dunnage_ManualEntryView : UserControl
     {
         public ViewModel_Dunnage_ManualEntry ViewModel { get; }
+        private readonly IService_Focus _focusService;
 
         public View_Dunnage_ManualEntryView()
         {
             ViewModel = App.GetService<ViewModel_Dunnage_ManualEntry>();
+            _focusService = App.GetService<IService_Focus>();
             this.DataContext = ViewModel;
             this.InitializeComponent();
 
             // Listen for collection changes to handle "Add Row" focus
             ViewModel.Loads.CollectionChanged += Loads_CollectionChanged;
+
+            _focusService.AttachFocusOnVisibility(this);
         }
 
         private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

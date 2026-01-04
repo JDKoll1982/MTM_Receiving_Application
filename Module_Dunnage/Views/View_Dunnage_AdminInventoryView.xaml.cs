@@ -8,11 +8,15 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 public sealed partial class View_Dunnage_AdminInventoryView : Page
 {
     public ViewModel_Dunnage_AdminInventory ViewModel { get; }
+    private readonly IService_Focus _focusService;
 
     public View_Dunnage_AdminInventoryView()
     {
         ViewModel = App.GetService<ViewModel_Dunnage_AdminInventory>();
+        _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
+
+        _focusService.AttachFocusOnVisibility(this);
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)

@@ -21,6 +21,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_MySQL_Receiving _mysqlReceiving;
         private readonly IService_ReceivingValidation _validation;
         private readonly IService_LoggingUtility _logger;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
 
         public event EventHandler? StepChanged;
@@ -57,13 +58,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_CSVWriter csvWriter,
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
-            IService_LoggingUtility logger)
+            IService_LoggingUtility logger,
+            IService_ViewModelRegistry viewModelRegistry)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _csvWriter = csvWriter ?? throw new ArgumentNullException(nameof(csvWriter));
             _mysqlReceiving = mysqlReceiving ?? throw new ArgumentNullException(nameof(mysqlReceiving));
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _viewModelRegistry = viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
         }
 
         public async Task<bool> StartWorkflowAsync()
@@ -327,6 +330,86 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
         }
 
+        public void ClearUIInputs()
+        {
+            _viewModelRegistry.ClearAllInputs();
+        }
+
+        public async Task<Model_SaveResult> SaveToCSVOnlyAsync()
+        {
+            var result = new Model_SaveResult();
+
+            // Validate session
+            var validation = _validation.ValidateSession(CurrentSession.Loads);
+            if (!validation.IsValid)
+            {
+                result.Success = false;
+                result.Errors = validation.Errors;
+                return result;
+            }
+
+            try
+            {
+                var csvResult = await _csvWriter.WriteToCSVAsync(CurrentSession.Loads);
+
+                result.LocalCSVSuccess = csvResult.LocalSuccess;
+                result.NetworkCSVSuccess = csvResult.NetworkSuccess;
+                result.LocalCSVPath = _csvWriter.GetLocalCSVPath();
+                result.NetworkCSVPath = _csvWriter.GetNetworkCSVPath();
+
+                if (!csvResult.LocalSuccess)
+                {
+                    result.Errors.Add($"Local CSV write failed: {csvResult.LocalError}");
+                }
+
+                if (!csvResult.NetworkSuccess)
+                {
+                    result.Warnings.Add($"Network CSV write failed: {csvResult.NetworkError}");
+                }
+
+                result.Success = result.LocalCSVSuccess; // Network failure is just a warning
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Errors.Add($"CSV save failed: {ex.Message}");
+                _logger.LogError("CSV save failed", ex);
+            }
+
+            return result;
+        }
+
+        public async Task<Model_SaveResult> SaveToDatabaseOnlyAsync()
+        {
+            var result = new Model_SaveResult();
+
+            // Validate session
+            var validation = _validation.ValidateSession(CurrentSession.Loads);
+            if (!validation.IsValid)
+            {
+                result.Success = false;
+                result.Errors = validation.Errors;
+                return result;
+            }
+
+            try
+            {
+                int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(CurrentSession.Loads);
+                result.DatabaseSuccess = true;
+                result.LoadsSaved = savedCount;
+                result.Success = true;
+            }
+            catch (Exception ex)
+            {
+                result.DatabaseSuccess = false;
+                result.Success = false;
+                result.Errors.Add($"Database save failed: {ex.Message}");
+                _logger.LogError("Database save failed", ex);
+            }
+
+            return result;
+        }
+
         public async Task<Model_SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null)
         {
             _logger.LogInfo("Starting session save.");
@@ -353,65 +436,50 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 percentProgress?.Report(30);
 
                 // Save to CSV
-                _logger.LogInfo("Calling _csvWriter.WriteToCSVAsync...");
-                var csvResult = await _csvWriter.WriteToCSVAsync(CurrentSession.Loads);
-                _logger.LogInfo($"CSV Write completed. Local: {csvResult.LocalSuccess}, Network: {csvResult.NetworkSuccess}");
+                var csvResult = await SaveToCSVOnlyAsync();
 
-                result.LocalCSVSuccess = csvResult.LocalSuccess;
-                result.NetworkCSVSuccess = csvResult.NetworkSuccess;
-                result.LocalCSVPath = _csvWriter.GetLocalCSVPath();
-                result.NetworkCSVPath = _csvWriter.GetNetworkCSVPath();
-
-                if (!csvResult.LocalSuccess)
-                {
-                    var msg = $"Local CSV write failed: {csvResult.LocalError}";
-                    result.Errors.Add(msg);
-                    _logger.LogError(msg);
-                }
-
-                if (!csvResult.NetworkSuccess)
-                {
-                    var msg = $"Network CSV write failed: {csvResult.NetworkError}";
-                    result.Warnings.Add(msg);
-                    _logger.LogWarning(msg);
-                }
+                result.LocalCSVSuccess = csvResult.LocalCSVSuccess;
+                result.NetworkCSVSuccess = csvResult.NetworkCSVSuccess;
+                result.LocalCSVPath = csvResult.LocalCSVPath;
+                result.NetworkCSVPath = csvResult.NetworkCSVPath;
+                result.Errors.AddRange(csvResult.Errors);
+                result.Warnings.AddRange(csvResult.Warnings);
 
                 _logger.LogInfo("Reporting progress: Saving to database...");
                 messageProgress?.Report("Saving to database...");
                 percentProgress?.Report(60);
 
                 // Save to database
-                try
+                var dbResult = await SaveToDatabaseOnlyAsync();
+
+                result.DatabaseSuccess = dbResult.DatabaseSuccess;
+                result.LoadsSaved = dbResult.LoadsSaved;
+                if (!dbResult.Success)
                 {
-                    _logger.LogInfo("Calling _mysqlReceiving.SaveReceivingLoadsAsync...");
-                    int savedCount = await _mysqlReceiving.SaveReceivingLoadsAsync(CurrentSession.Loads);
-                    result.DatabaseSuccess = true;
-                    result.LoadsSaved = savedCount;
-                    _logger.LogInfo($"Successfully saved {savedCount} loads to database.");
-                }
-                catch (Exception ex)
-                {
-                    result.DatabaseSuccess = false;
-                    result.Errors.Add($"Database save failed: {ex.Message}");
-                    _logger.LogError("Database save failed", ex);
+                    result.Errors.AddRange(dbResult.Errors);
                 }
 
                 _logger.LogInfo("Reporting progress: Finalizing...");
                 messageProgress?.Report("Finalizing...");
                 percentProgress?.Report(90);
 
-                // Determine overall success
+                // Final success check
+                // Success if Local CSV worked AND Database worked
                 result.Success = result.LocalCSVSuccess && result.DatabaseSuccess;
 
-                // Clean up session file if successful
                 if (result.Success)
                 {
+                    _logger.LogInfo("Save completed successfully. Clearing session.");
+                    // Clear session
                     await _sessionManager.ClearSessionAsync();
-                    _logger.LogInfo("Session saved and cleared successfully.");
+                    CurrentSession.Loads.Clear();
+
+                    // Also clear CSV files since we saved successfully
+                    await _csvWriter.ClearCSVFilesAsync();
                 }
                 else
                 {
-                    _logger.LogWarning("Session save completed with errors.");
+                    _logger.LogWarning($"Save completed with errors. Success: {result.Success}");
                 }
 
                 percentProgress?.Report(100);
@@ -419,9 +487,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError("Unexpected error during save session", ex);
                 result.Success = false;
-                result.Errors.Add($"SavModeSelectiontion failed: {ex.Message}");
-                _logger.LogError("Save operation failed", ex);
+                result.Errors.Add($"Unexpected error: {ex.Message}");
                 return result;
             }
         }
@@ -436,6 +504,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IsNonPOItem = false;
             _currentBatchLoads.Clear();
 
+            _viewModelRegistry.ClearAllInputs();
+
             await _sessionManager.ClearSessionAsync();
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -443,7 +513,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public async Task<Model_CSVDeleteResult> ResetCSVFilesAsync()
         {
             _logger.LogInfo("Resetting CSV files requested.");
-            return await _csvWriter.DeleteCSVFilesAsync();
+            return await _csvWriter.ClearCSVFilesAsync();
         }
 
         public async Task PersistSessionAsync()

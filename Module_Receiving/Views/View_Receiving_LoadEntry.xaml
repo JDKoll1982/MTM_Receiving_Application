@@ -27,7 +27,8 @@
                                TextAlignment="Center"/>
                 </StackPanel>
 
-                <NumberBox Header="Number of Loads (1-99)"
+                <NumberBox x:Name="LoadCountBox"
+                           Header="Number of Loads (1-99)"
                            Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            Minimum="1"
                            Maximum="99"

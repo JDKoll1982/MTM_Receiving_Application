@@ -261,7 +261,7 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
             Loads.Add(load);
         }
 
-        StatusMessage = "Sorted for printing (Part ID â†’ PO â†’ Type)";
+        StatusMessage = "Sorted (Part ID → PO → Type)";
         _logger.LogInfo("Sort for printing executed", "ManualEntry");
     }
 

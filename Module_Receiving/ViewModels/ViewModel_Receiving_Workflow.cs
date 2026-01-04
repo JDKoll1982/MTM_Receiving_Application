@@ -9,6 +9,8 @@ using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using System;
 using System.Threading.Tasks;
 
+using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
+
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
@@ -17,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Help _helpService;
 
         [ObservableProperty]
-        private string _currentStepTitle = "?? Receiving - Mode Selection";
+        private string _currentStepTitle = "Receiving - Mode Selection";
 
         [ObservableProperty]
         private bool _isModeSelectionVisible;
@@ -65,15 +67,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private double _saveProgressValue = 0;
 
         [ObservableProperty]
-        private string _statusMessage = string.Empty;
-
-        [ObservableProperty]
-        private bool _isStatusOpen;
-
-        [ObservableProperty]
-        private InfoBarSeverity _statusSeverity = InfoBarSeverity.Informational;
-
-        [ObservableProperty]
         private Microsoft.UI.Xaml.UIElement? _helpContent;
 
         private bool _isSaving = false;
@@ -93,43 +86,101 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _windowService = windowService;
             _workflowService = workflowService;
             _helpService = helpService;
-            _workflowService.StepChanged += (s, e) =>
-            {
-                _logger.LogInfo("StepChanged event received in ViewModel. Updating visibility.");
-
-                if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving)
-                {
-                    _logger.LogInfo("Step is Saving. Enqueuing PerformSaveAsync via Dispatcher.");
-                    _dispatcherService.TryEnqueue(async () =>
-                    {
-                        await PerformSaveAsync();
-                    });
-                }
-                UpdateStepVisibility();
-                _logger.LogInfo("Visibility updated.");
-            };
+            _workflowService.StepChanged += OnWorkflowStepChanged;
             _workflowService.StatusMessageRaised += (_, message) => ShowStatus(message);
 
             // Initialize visibility based on current step
-            UpdateStepVisibility();
+            OnWorkflowStepChanged(this, EventArgs.Empty);
         }
-        public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverity.Informational)
-        {
-            StatusMessage = message;
-            StatusSeverity = severity;
-            IsStatusOpen = true;
 
-            // Auto-dismiss after 5 seconds if informational or success
-            if (severity == InfoBarSeverity.Informational || severity == InfoBarSeverity.Success)
+        private void OnWorkflowStepChanged(object? sender, EventArgs e)
+        {
+            _logger.LogInfo("StepChanged event received in ViewModel. Updating visibility.");
+
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Saving)
             {
-                Task.Delay(5000).ContinueWith(_ =>
+                _logger.LogInfo("Step is Saving. Enqueuing PerformSaveAsync via Dispatcher.");
+                _dispatcherService.TryEnqueue(async () =>
                 {
-                    _dispatcherService.TryEnqueue(() =>
-                    {
-                        IsStatusOpen = false;
-                    });
+                    await PerformSaveAsync();
                 });
             }
+
+            // Hide all steps
+            IsModeSelectionVisible = false;
+            IsManualEntryVisible = false;
+            IsEditModeVisible = false;
+            IsPOEntryVisible = false;
+            IsPartSelectionVisible = false;
+            IsLoadEntryVisible = false;
+            IsWeightQuantityEntryVisible = false;
+            IsHeatLotEntryVisible = false;
+            IsPackageTypeEntryVisible = false;
+            IsReviewVisible = false;
+            IsSavingVisible = false;
+            IsCompleteVisible = false;
+
+            // Show current step and set title
+            switch (_workflowService.CurrentStep)
+            {
+                case Enum_ReceivingWorkflowStep.ModeSelection:
+                    IsModeSelectionVisible = true;
+                    CurrentStepTitle = "Receiving - Mode Selection";
+                    break;
+                case Enum_ReceivingWorkflowStep.ManualEntry:
+                    IsManualEntryVisible = true;
+                    CurrentStepTitle = "Receiving - Manual Entry";
+                    break;
+                case Enum_ReceivingWorkflowStep.EditMode:
+                    IsEditModeVisible = true;
+                    CurrentStepTitle = "Receiving - Edit Mode";
+                    break;
+                case Enum_ReceivingWorkflowStep.POEntry:
+                    IsPOEntryVisible = true;
+                    CurrentStepTitle = "Receiving - Enter PO Number";
+                    break;
+                case Enum_ReceivingWorkflowStep.PartSelection:
+                    IsPartSelectionVisible = true;
+                    CurrentStepTitle = "Receiving - Select Part";
+                    break;
+                case Enum_ReceivingWorkflowStep.LoadEntry:
+                    IsLoadEntryVisible = true;
+                    CurrentStepTitle = "Receiving - Enter Number of Loads";
+                    break;
+                case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
+                    IsWeightQuantityEntryVisible = true;
+                    CurrentStepTitle = "Receiving - Enter Weight/Quantity";
+                    break;
+                case Enum_ReceivingWorkflowStep.HeatLotEntry:
+                    IsHeatLotEntryVisible = true;
+                    CurrentStepTitle = "Receiving - Enter Heat/Lot Numbers";
+                    break;
+                case Enum_ReceivingWorkflowStep.PackageTypeEntry:
+                    IsPackageTypeEntryVisible = true;
+                    CurrentStepTitle = "Receiving - Select Package Type";
+                    break;
+                case Enum_ReceivingWorkflowStep.Review:
+                    IsReviewVisible = true;
+                    CurrentStepTitle = "Receiving - Review & Save";
+                    break;
+                case Enum_ReceivingWorkflowStep.Saving:
+                    IsSavingVisible = true;
+                    CurrentStepTitle = "Receiving - Saving...";
+                    break;
+                case Enum_ReceivingWorkflowStep.Complete:
+                    IsCompleteVisible = true;
+                    CurrentStepTitle = "Receiving - Complete";
+                    break;
+                default:
+                    IsModeSelectionVisible = true;
+                    CurrentStepTitle = "Receiving - Mode Selection";
+                    break;
+            }
+
+            // Update help content based on step
+            HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(_workflowService.CurrentStep);
+
+            _logger.LogInfo($"Visibility updated. Current Step: {_workflowService.CurrentStep}, Title: {CurrentStepTitle}");
         }
 
         [RelayCommand]
@@ -145,12 +196,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var result = await _workflowService.AdvanceToNextStepAsync();
                 _logger.LogInfo($"AdvanceToNextStepAsync returned. Success: {result.Success}, Step: {_workflowService.CurrentStep}");
 
-                if (result.Success)
-                {
-                    UpdateStepVisibility();
-                    // PerformSaveAsync is now triggered by the StepChanged event handler
-                }
-                else
+                if (!result.Success)
                 {
                     if (result.ValidationErrors.Count > 0)
                     {
@@ -202,7 +248,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 // Advance to Complete step
                 await _workflowService.AdvanceToNextStepAsync();
-                UpdateStepVisibility();
             }
             catch (Exception ex)
             {
@@ -219,7 +264,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private async Task StartNewEntryAsync()
         {
             await _workflowService.ResetWorkflowAsync();
-            UpdateStepVisibility();
         }
 
         [RelayCommand]
@@ -246,6 +290,27 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
+                // Try to save to DB first
+                var saveResult = await _workflowService.SaveToDatabaseOnlyAsync();
+                if (!saveResult.Success)
+                {
+                     var warnDialog = new ContentDialog
+                    {
+                        Title = "Database Save Failed",
+                        Content = $"Failed to save to database: {string.Join(", ", saveResult.Errors)}\n\nDo you want to proceed with deleting CSV files anyway?",
+                        PrimaryButtonText = "Delete Anyway",
+                        CloseButtonText = "Cancel",
+                        DefaultButton = ContentDialogButton.Close,
+                        XamlRoot = xamlRoot
+                    };
+                    
+                    var warnResult = await warnDialog.ShowAsync();
+                    if (warnResult != ContentDialogResult.Primary)
+                    {
+                        return;
+                    }
+                }
+
                 var deleteResult = await _workflowService.ResetCSVFilesAsync();
                 if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
                 {
@@ -262,10 +327,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void PreviousStep()
         {
             var result = _workflowService.GoToPreviousStep();
-            if (result.Success)
-            {
-                UpdateStepVisibility();
-            }
         }
 
         [RelayCommand]
@@ -295,48 +356,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 // Reset workflow and return to mode selection
                 await _workflowService.ResetWorkflowAsync();
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
-                UpdateStepVisibility();
                 ShowStatus("Workflow cleared. Please select a mode.", InfoBarSeverity.Informational);
             }
-        }
-
-        private void UpdateStepVisibility()
-        {
-            var step = _workflowService.CurrentStep;
-
-            IsModeSelectionVisible = step == Enum_ReceivingWorkflowStep.ModeSelection;
-            IsManualEntryVisible = step == Enum_ReceivingWorkflowStep.ManualEntry;
-            IsEditModeVisible = step == Enum_ReceivingWorkflowStep.EditMode;
-            IsPOEntryVisible = step == Enum_ReceivingWorkflowStep.POEntry;
-            IsPartSelectionVisible = step == Enum_ReceivingWorkflowStep.PartSelection;
-            IsLoadEntryVisible = step == Enum_ReceivingWorkflowStep.LoadEntry;
-            IsWeightQuantityEntryVisible = step == Enum_ReceivingWorkflowStep.WeightQuantityEntry;
-            IsHeatLotEntryVisible = step == Enum_ReceivingWorkflowStep.HeatLotEntry;
-            IsPackageTypeEntryVisible = step == Enum_ReceivingWorkflowStep.PackageTypeEntry;
-            IsReviewVisible = step == Enum_ReceivingWorkflowStep.Review;
-            IsSavingVisible = step == Enum_ReceivingWorkflowStep.Saving;
-            IsCompleteVisible = step == Enum_ReceivingWorkflowStep.Complete;
-
-            // Update title based on step
-            CurrentStepTitle = step switch
-            {
-                Enum_ReceivingWorkflowStep.ModeSelection => "?? Receiving - Mode Selection",
-                Enum_ReceivingWorkflowStep.ManualEntry => "Manual Entry",
-                Enum_ReceivingWorkflowStep.EditMode => "Edit Mode",
-                Enum_ReceivingWorkflowStep.POEntry => "Enter PO Number",
-                Enum_ReceivingWorkflowStep.PartSelection => "Select Part",
-                Enum_ReceivingWorkflowStep.LoadEntry => "Enter Number of Loads",
-                Enum_ReceivingWorkflowStep.WeightQuantityEntry => "Enter Weight/Quantity",
-                Enum_ReceivingWorkflowStep.HeatLotEntry => "Enter Heat/Lot Numbers",
-                Enum_ReceivingWorkflowStep.PackageTypeEntry => "Select Package Type",
-                Enum_ReceivingWorkflowStep.Review => "Review & Save",
-                Enum_ReceivingWorkflowStep.Saving => "Saving...",
-                Enum_ReceivingWorkflowStep.Complete => "Complete",
-                _ => "?? Receiving - Mode Selection"
-            };
-
-            // Update help content based on step
-            HelpContent = Helper_WorkflowHelpContentGenerator.GenerateHelpContent(step);
         }
 
         /// <summary>

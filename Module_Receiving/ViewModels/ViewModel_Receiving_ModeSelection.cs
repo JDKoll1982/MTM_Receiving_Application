@@ -108,8 +108,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             // Check if there are any loads in the session
-            if (_workflowService.CurrentSession.Loads != null &&
-                _workflowService.CurrentSession.Loads.Count > 0)
+            if (_workflowService.CurrentSession.Loads?.Count > 0)
             {
                 return true;
             }
@@ -218,6 +217,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (loadEntryVM != null)
                 {
                     loadEntryVM.NumberOfLoads = 1;
+                }
+
+                // Clear WeightQuantity ViewModel
+                var weightQuantityVM = App.GetService<ViewModel_Receiving_WeightQuantity>();
+                if (weightQuantityVM != null)
+                {
+                    weightQuantityVM.Loads?.Clear();
+                }
+
+                // Clear HeatLot ViewModel
+                var heatLotVM = App.GetService<ViewModel_Receiving_HeatLot>();
+                if (heatLotVM != null)
+                {
+                    heatLotVM.Loads?.Clear();
                 }
 
                 _logger.LogInfo("UI inputs cleared across all Receiving ViewModels");

@@ -22,13 +22,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Status Bar -->
-        <InfoBar Grid.Row="0" 
-                 IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
-                 Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay}"
-                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                 Margin="16,16,16,0"/>
-
         <!-- Content Area -->
         <Grid Grid.Row="1" Margin="16,12,16,16">
             <!-- Mode Selection View -->
@@ -123,7 +116,7 @@
                         BorderBrush="{ThemeResource SystemAccentColor}"/>
                 <Button Content="Reset CSV" 
                         Command="{x:Bind ViewModel.ResetCSVCommand}" 
-                        Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
                         Background="Transparent" 
                         BorderBrush="Transparent" 
                         Foreground="Red"

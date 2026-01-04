@@ -154,6 +154,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
+                // Save current session to CSV before clearing
+                IsBusy = true;
+                StatusMessage = "Saving to CSV...";
+                var saveResult = await _workflowService.SaveToCSVOnlyAsync();
+
+                if (!saveResult.Success)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        $"Failed to save CSV backup: {string.Join(", ", saveResult.Errors)}",
+                        Enum_ErrorSeverity.Warning,
+                        null,
+                        true);
+                    IsBusy = false;
+                    return;
+                }
+                IsBusy = false;
+
                 // Clear transient workflow data FIRST (before navigation)
                 ClearTransientWorkflowData();
 
@@ -169,6 +186,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             catch (Exception ex)
             {
+                IsBusy = false;
                 _logger.LogError($"Error in AddAnotherPartAsync: {ex.Message}", ex);
                 await _errorHandler.HandleErrorAsync(
                     "Failed to prepare for new part entry",
@@ -231,7 +249,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
 
                 // Clear UI inputs in connected ViewModels
-                ClearUIInputsForNewEntry();
+                _workflowService.ClearUIInputs();
 
                 _logger.LogInfo("Transient workflow data and UI inputs cleared for new entry");
             }
@@ -241,31 +259,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        /// <summary>
-        /// Clears UI input properties in ViewModels to prepare for new entry
-        /// while preserving reviewed loads
-        /// </summary>
-        private void ClearUIInputsForNewEntry()
-        {
-            try
-            {
-                // The key is to clear the session data that ViewModels read from
-                // ViewModels bind to CurrentSession properties, not their own properties
 
-                // This is already done in ClearTransientWorkflowData which clears:
-                // - session.PoNumber
-                // - session.IsNonPO
-
-                // When navigation occurs to POEntry, the ViewModel will read fresh (empty) session data
-                // No need to access individual ViewModel instances
-
-                _logger.LogInfo("UI inputs will be cleared via session data reset");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex);
-            }
-        }
 
         [RelayCommand]
         private async Task SaveAsync()

@@ -13,16 +13,20 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     public Main_DunnageLabelViewModel ViewModel { get; }
     private IService_DunnageWorkflow? _workflowService;
     private IService_Help? _helpService;
+    private readonly IService_Focus _focusService;
 
     public View_Dunnage_WorkflowView()
     {
         ViewModel = App.GetService<Main_DunnageLabelViewModel>();
+        _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
 
         // Subscribe to workflow step changes
         _workflowService = App.GetService<IService_DunnageWorkflow>();
         _helpService = App.GetService<IService_Help>();
         _workflowService.StepChanged += OnWorkflowStepChanged;
+
+        _focusService.AttachFocusOnVisibility(this);
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)

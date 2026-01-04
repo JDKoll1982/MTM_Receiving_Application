@@ -188,6 +188,23 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
                 return;
             }
 
+            // Save current session to CSV before clearing
+            IsBusy = true;
+            StatusMessage = "Saving to CSV...";
+            var saveResult = await _workflowService.SaveToCSVOnlyAsync();
+            
+            if (!saveResult.IsSuccess)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    $"Failed to save CSV backup: {saveResult.ErrorMessage}",
+                    Enum_ErrorSeverity.Warning,
+                    null,
+                    true);
+                IsBusy = false;
+                return;
+            }
+            IsBusy = false;
+
             // Clear transient workflow data to prepare for new entry
             ClearTransientWorkflowData();
 
@@ -198,7 +215,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in AddAnotherAsync: {ex.Message}", ex, "Review");
+            IsBusy = false;
+            _logger.LogError($"Error in AddAnotherAsync: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 "Failed to prepare for new load entry",
                 Enum_ErrorSeverity.Medium,
@@ -324,10 +342,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SaveAllAsync()
     {
-        if (!CanSave || IsBusy)
-        {
-            return;
-        }
+        if (IsBusy) return;
 
         try
         {
@@ -369,17 +384,12 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             }
 
             // Show success message
-            SuccessMessage = $"âœ“ Successfully saved {LoadCount} load(s) to database and exported to CSV";
+            SuccessMessage = $"Successfully saved {LoadCount} load(s) to database and exported to CSV";
             IsSuccessMessageVisible = true;
 
             await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");
-
-            // Wait a moment for user to see success message
-            await Task.Delay(2000);
-
-            // Clear session and return to Mode Selection
-            _workflowService.ClearSession();
-            _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+            
+            // Auto-navigation removed to allow user to see success message and choose next action
         }
         catch (Exception ex)
         {
@@ -398,7 +408,22 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>\n    /// Shows contextual help for review\n    /// </summary>\n    [RelayCommand]\n    private async Task ShowHelpAsync()\n    {\n        await _helpService.ShowHelpAsync(\"Dunnage.Review\");\n    }
+    [RelayCommand]
+    private void StartNewEntry()
+    {
+        // Clear session and return to Mode Selection
+        _workflowService.ClearSession();
+        _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+    }
+
+    /// <summary>
+    /// Shows contextual help for review
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowHelpAsync()
+    {
+        await _helpService.ShowHelpAsync("Dunnage.Review");
+    }
 
     [RelayCommand]
     private void Cancel()

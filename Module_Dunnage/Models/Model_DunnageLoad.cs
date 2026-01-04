@@ -33,10 +33,10 @@ public partial class Model_DunnageLoad : ObservableObject
     private Dictionary<string, object> _specs = new();
 
     [ObservableProperty]
-    private string _location = string.Empty;
+    private string? _location = string.Empty;
 
     [ObservableProperty]
-    private string _homeLocation = string.Empty;
+    private string? _homeLocation = string.Empty;
 
     [ObservableProperty]
     private string _typeName = string.Empty;

@@ -27,6 +27,7 @@ using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Services;
 
 using MTM_Receiving_Application.Module_Core.Services.Startup;
+using MTM_Receiving_Application.Module_Core.Services.UI;
 
 namespace MTM_Receiving_Application;
 
@@ -55,6 +56,8 @@ public partial class App : Application
                 // Core Services
                 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
                 services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
+                services.AddSingleton<IService_Notification, Service_Notification>();
+                services.AddSingleton<IService_Focus, Service_Focus>();
 
                 // Authentication Services
                 var mySqlConnectionString = Helper_Database_Variables.GetConnectionString();
@@ -145,6 +148,7 @@ public partial class App : Application
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
                 services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, Module_Core.Services.Navigation.Service_Navigation>();
+                services.AddSingleton<IService_ViewModelRegistry, Service_ViewModelRegistry>();
 
                 // ViewModels
                 services.AddTransient<ViewModel_Shared_MainWindow>();

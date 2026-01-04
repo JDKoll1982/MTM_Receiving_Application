@@ -6,6 +6,7 @@
     xmlns:local="using:MTM_Receiving_Application"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:MTM_Receiving_Application.Converters"
     mc:Ignorable="d"
     x:Name="MainWindowRoot"
     Title="MTM_Receiving_Application">
@@ -48,46 +49,55 @@
             </NavigationView.PaneHeader>
             
             <NavigationView.Header>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <TextBlock x:Name="PageTitleTextBlock"
-                               Text="Dashboard" 
-                               Style="{StaticResource TitleTextBlockStyle}"
-                               VerticalAlignment="Center"
-                               Margin="16,0"/>
-                               
-                    <StackPanel Grid.Column="1" 
-                                Orientation="Horizontal" 
-                                Spacing="12" 
-                                Margin="0,0,24,0"
-                                VerticalAlignment="Center">
-                        <PersonPicture x:Name="UserPicture"
-                                       Height="32"
-                                       Width="32"/>
-                        <TextBlock x:Name="UserDisplayTextBlock"
-                                   Text="Not Logged In"
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock x:Name="PageTitleTextBlock"
+                                   Text="Dashboard" 
+                                   Style="{StaticResource TitleTextBlockStyle}"
                                    VerticalAlignment="Center"
-                                   Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                    </StackPanel>
-                </Grid>
+                                   Margin="16,0"/>
+                                   
+                        <StackPanel Grid.Column="1" 
+                                    Orientation="Horizontal" 
+                                    Spacing="12" 
+                                    Margin="0,0,24,0"
+                                    VerticalAlignment="Center">
+                            <PersonPicture x:Name="UserPicture"
+                                           Height="32"
+                                           Width="32"/>
+                            <TextBlock x:Name="UserDisplayTextBlock"
+                                       Text="Not Logged In"
+                                       VerticalAlignment="Center"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                        </StackPanel>
+                    </Grid>
+                    <InfoBar IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
+                             Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}"
+                             Message="{x:Bind ViewModel.NotificationService.StatusMessage, Mode=OneWay}"
+                             IsClosable="True"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Margin="0,20,0,20"/>
+                </StackPanel>
             </NavigationView.Header>
 
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Receiving Labels" Tag="ReceivingWorkflowView">
+                <NavigationViewItem Content="Receiving Labels" Tag="ReceivingWorkflowView" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Dunnage Labels" Tag="DunnageLabelPage">
+                <NavigationViewItem Content="Dunnage Labels" Tag="DunnageLabelPage" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7B8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage">
+                <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE707;" />
                     </NavigationViewItem.Icon>

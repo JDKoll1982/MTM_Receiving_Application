@@ -5,6 +5,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,11 +13,12 @@ using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base, IResettableViewModel
     {
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -54,17 +56,40 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private bool _isPOClosed = false;
 
+        [ObservableProperty]
+        private bool _isPartsListVisible;
+
         public ViewModel_Receiving_POEntry(
             IService_InforVisual inforVisualService,
             IService_ReceivingWorkflow workflowService,
-            IService_Help helpService,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
+            IService_LoggingUtility logger,
+            IService_Help helpService,
+            IService_ViewModelRegistry viewModelRegistry)
             : base(errorHandler, logger)
         {
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
             _helpService = helpService;
+            _viewModelRegistry = viewModelRegistry;
+
+            _viewModelRegistry.Register(this);
+
+            // Update visibility when parts collection changes
+            Parts.CollectionChanged += (s, e) => IsPartsListVisible = Parts.Count > 0;
+        }
+
+        public void ResetToDefaults()
+        {
+            PoNumber = string.Empty;
+            PartID = string.Empty;
+            IsNonPOItem = false;
+            IsLoadPOEnabled = false;
+            PoValidationMessage = string.Empty;
+            Parts.Clear();
+            SelectedPart = null;
+            PackageType = "Skids";
+            PoStatus = string.Empty;
         }
 
         [RelayCommand]

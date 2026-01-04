@@ -123,7 +123,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         }
 
         /// <summary>
-        /// Calculates weight per package: WeightQuantity ï¿½ PackagesPerLoad.
+        /// Calculates weight per package: WeightQuantity ÷ PackagesPerLoad.
         /// </summary>
         private void CalculateWeightPerPackage()
         {

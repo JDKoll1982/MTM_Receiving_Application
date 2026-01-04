@@ -20,7 +20,11 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync();
         public void GoToStep(Enum_DunnageWorkflowStep step);
         public Task<Model_SaveResult> SaveSessionAsync();
+        public Task<Model_SaveResult> SaveToCSVOnlyAsync();
+        public Task<Model_SaveResult> SaveToDatabaseOnlyAsync();
         public void ClearSession();
+
+        public Task<Model_CSVDeleteResult> ResetCSVFilesAsync();
         public void AddCurrentLoadToSession();
     }
 }

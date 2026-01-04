@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
@@ -7,17 +8,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     public sealed partial class View_Receiving_POEntry : UserControl
     {
         public ViewModel_Receiving_POEntry ViewModel { get; }
+        private readonly IService_Focus _focusService;
 
         public View_Receiving_POEntry()
         {
             ViewModel = App.GetService<ViewModel_Receiving_POEntry>();
+            _focusService = App.GetService<IService_Focus>();
             this.InitializeComponent();
-        }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // Auto-focus on first textbox when view loads
-            FirstTextBox?.Focus(FocusState.Programmatic);
+            _focusService.AttachFocusOnVisibility(this);
         }
 
         private void POTextBox_LostFocus(object sender, RoutedEventArgs e)

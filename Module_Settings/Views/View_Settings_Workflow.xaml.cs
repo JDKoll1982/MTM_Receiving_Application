@@ -13,17 +13,21 @@ public sealed partial class View_Settings_Workflow : Page
     public ViewModel_Settings_Workflow ViewModel { get; }
     private readonly IService_SettingsWorkflow _workflowService;
     private readonly IService_Navigation _navigationService;
+    private readonly IService_Focus _focusService;
 
     public View_Settings_Workflow()
     {
         ViewModel = App.GetService<ViewModel_Settings_Workflow>();
         _workflowService = App.GetService<IService_SettingsWorkflow>();
         _navigationService = App.GetService<IService_Navigation>();
+        _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
         DataContext = ViewModel;
 
         _workflowService.StepChanged += OnWorkflowStepChanged;
         Loaded += OnLoaded;
+
+        _focusService.AttachFocusOnVisibility(this);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

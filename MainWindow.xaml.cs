@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Converters;
 
 namespace MTM_Receiving_Application
 {
@@ -46,6 +47,9 @@ namespace MTM_Receiving_Application
 
             this.Activated += MainWindow_Activated;
             this.Closed += MainWindow_Closed;
+
+            // Subscribe to navigation events once
+            ContentFrame.Navigated += ContentFrame_Navigated;
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args)
@@ -64,9 +68,8 @@ namespace MTM_Receiving_Application
                 if (!_hasNavigatedOnStartup)
                 {
                     _hasNavigatedOnStartup = true;
-                    PageTitleTextBlock.Text = "ðŸ“¥ Receiving - Mode Selection";
+                    // Title will be set by ContentFrame_Navigated
                     ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
-                    ContentFrame.Navigated += ContentFrame_Navigated;
                 }
             }
         }
@@ -84,14 +87,12 @@ namespace MTM_Receiving_Application
                 switch (tag)
                 {
                     case "ReceivingWorkflowView":
-                        PageTitleTextBlock.Text = "Receiving Workflow";
+                        // Title will be set by ContentFrame_Navigated
                         ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
-                        ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "DunnageLabelPage":
-                        PageTitleTextBlock.Text = "Dunnage Labels";
+                        // Title will be set by ContentFrame_Navigated
                         ContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView));
-                        ContentFrame.Navigated += ContentFrame_Navigated;
                         break;
                     case "CarrierDeliveryLabelPage":
                         PageTitleTextBlock.Text = "Carrier Delivery";
@@ -109,15 +110,22 @@ namespace MTM_Receiving_Application
                 var viewModel = receivingView.ViewModel;
                 if (viewModel != null)
                 {
-                    // Update header with current step title
-                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    // Update header with current step title (ensure UI thread)
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    });
 
                     // Subscribe to property changes to keep header updated
                     viewModel.PropertyChanged += (s, args) =>
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
-                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            // Ensure UI update happens on UI thread
+                            DispatcherQueue.TryEnqueue(() =>
+                            {
+                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            });
                         }
                     };
                 }
@@ -128,15 +136,22 @@ namespace MTM_Receiving_Application
                 var viewModel = dunnageView.ViewModel;
                 if (viewModel != null)
                 {
-                    // Update header with current step title
-                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    // Update header with current step title (ensure UI thread)
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    });
 
                     // Subscribe to property changes to keep header updated
                     viewModel.PropertyChanged += (s, args) =>
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
-                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            // Ensure UI update happens on UI thread
+                            DispatcherQueue.TryEnqueue(() =>
+                            {
+                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            });
                         }
                     };
                 }
@@ -147,15 +162,22 @@ namespace MTM_Receiving_Application
                 var viewModel = settingsView.ViewModel;
                 if (viewModel != null)
                 {
-                    // Update header with current step title
-                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    // Update header with current step title (ensure UI thread)
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                    });
 
                     // Subscribe to property changes to keep header updated
                     viewModel.PropertyChanged += (s, args) =>
                     {
                         if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
                         {
-                            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            // Ensure UI update happens on UI thread
+                            DispatcherQueue.TryEnqueue(() =>
+                            {
+                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+                            });
                         }
                     };
                 }

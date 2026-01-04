@@ -16,13 +16,19 @@
     <Grid Padding="16">
         <!-- Content Section -->
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Grid.Column="0" Spacing="16" Margin="0,0,24,0">
-                <TextBlock Text="Load Entries" Style="{StaticResource SubtitleTextBlockStyle}"/>
+            <StackPanel Spacing="16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Load Entries" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" 
+                            Content="Auto-Fill" 
+                            Command="{x:Bind ViewModel.AutoFillCommand}"
+                            Style="{StaticResource AccentButtonStyle}"
+                            ToolTipService.ToolTip="Fill blank heat numbers from rows above"/>
+                </Grid>
             
                 <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="500">
                     <ItemsControl ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}">
@@ -62,43 +68,6 @@
                     </ItemsControl>
                 </ScrollViewer>
             </StackPanel>
-
-            <!-- Quick Select Sidebar -->
-            <Border Grid.Column="1" 
-                   Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                   BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                   BorderThickness="1"
-                   CornerRadius="8"
-                   Padding="16">
-                <StackPanel Spacing="12">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE73A;" 
-                                 FontSize="16"
-                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                        <TextBlock Text="Quick Select" 
-                                  Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                    </StackPanel>
-                    
-                    <TextBlock Text="Check to apply to empty loads" 
-                              Style="{ThemeResource CaptionTextBlockStyle}" 
-                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                    
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.UniqueHeatNumbers, Mode=OneWay}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox Content="{Binding DisplayText}" 
-                                         IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                         Margin="0,4,0,4"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    
-                    <TextBlock Text="No heat numbers entered yet." 
-                              Visibility="{x:Bind ViewModel.UniqueHeatNumbers.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"
-                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                              FontStyle="Italic"/>
-                </StackPanel>
-            </Border>
         </Grid>
     </Grid>
 </UserControl>

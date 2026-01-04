@@ -30,7 +30,7 @@
             </Grid.ColumnDefinitions>
             
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                <Button Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddRow'), Mode=OneWay}">
+                <Button x:Name="AddRowButton" Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddRow'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE710;"/>
                         <TextBlock Text="Add Row"/>
@@ -55,13 +55,6 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
-            
-            <Button Grid.Column="1" 
-                    Content="Mode Selection" 
-                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ReturnToModeSelection'), Mode=OneWay}"
-                    Background="Transparent" 
-                    BorderBrush="{ThemeResource SystemAccentColor}"/>
         </Grid>
 
         <!-- Data Grid -->

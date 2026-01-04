@@ -21,9 +21,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
 
-        [ObservableProperty]
-        private ObservableCollection<Model_HeatCheckboxItem> _uniqueHeatNumbers = new();
-
         public ViewModel_Receiving_HeatLot(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
@@ -50,87 +47,32 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public Task OnNavigatedToAsync()
         {
             Loads.Clear();
-            UniqueHeatNumbers.Clear();
 
             if (_workflowService.CurrentSession?.Loads != null)
             {
                 foreach (var load in _workflowService.CurrentSession.Loads)
                 {
                     Loads.Add(load);
-                    load.PropertyChanged -= Load_PropertyChanged; // Unsubscribe first to be safe
-                    load.PropertyChanged += Load_PropertyChanged;
                 }
             }
 
-            UpdateUniqueHeatNumbers();
             return Task.CompletedTask;
         }
 
-        private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        [RelayCommand]
+        private void AutoFill()
         {
-            if (e.PropertyName == nameof(Model_ReceivingLoad.HeatLotNumber))
+            // Fill down logic:
+            // Iterate through loads. If a load has a blank HeatLotNumber,
+            // copy it from the previous load (if available).
+            for (int i = 1; i < Loads.Count; i++)
             {
-                UpdateUniqueHeatNumbers();
-            }
-        }
+                var currentLoad = Loads[i];
+                var prevLoad = Loads[i - 1];
 
-        private void UpdateUniqueHeatNumbers()
-        {
-            var currentHeats = Loads
-                .Where(l => !string.IsNullOrWhiteSpace(l.HeatLotNumber))
-                .GroupBy(l => l.HeatLotNumber)
-                .Select(g => new { Heat = g.Key, FirstLoad = g.Min(l => l.LoadNumber) })
-                .ToList();
-
-            // Remove items no longer present
-            for (int i = UniqueHeatNumbers.Count - 1; i >= 0; i--)
-            {
-                var item = UniqueHeatNumbers[i];
-                if (!currentHeats.Any(h => h.Heat == item.HeatLotNumber))
+                if (string.IsNullOrWhiteSpace(currentLoad.HeatLotNumber) && !string.IsNullOrWhiteSpace(prevLoad.HeatLotNumber))
                 {
-                    item.PropertyChanged -= HeatCheckboxItem_PropertyChanged;
-                    UniqueHeatNumbers.RemoveAt(i);
-                }
-            }
-
-            // Add new items
-            foreach (var heat in currentHeats)
-            {
-                if (!UniqueHeatNumbers.Any(i => i.HeatLotNumber == heat.Heat))
-                {
-                    var newItem = new Model_HeatCheckboxItem
-                    {
-                        HeatLotNumber = heat.Heat,
-                        FirstLoadNumber = heat.FirstLoad,
-                        IsChecked = false
-                    };
-                    newItem.PropertyChanged += HeatCheckboxItem_PropertyChanged;
-                    UniqueHeatNumbers.Add(newItem);
-                }
-            }
-        }
-
-        private void HeatCheckboxItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Model_HeatCheckboxItem.IsChecked))
-            {
-                if (sender is Model_HeatCheckboxItem item && item.IsChecked)
-                {
-                    ApplyHeatToEmptyLoads(item.HeatLotNumber);
-                    // Optional: Uncheck after applying? 
-                    // Or keep checked to indicate "this is the active heat"?
-                    // Let's keep it checked for now.
-                }
-            }
-        }
-
-        private void ApplyHeatToEmptyLoads(string heatNumber)
-        {
-            foreach (var load in Loads)
-            {
-                if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
-                {
-                    load.HeatLotNumber = heatNumber;
+                    currentLoad.HeatLotNumber = prevLoad.HeatLotNumber;
                 }
             }
         }
@@ -146,7 +88,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Ensures all heat/lot fields have a value. Sets "Not Entered" for blank fields.
+        /// Ensures all heat/lot fields have a value. Sets "Nothing Entered" for blank fields.
         /// </summary>
         private void PrepareHeatLotFields()
         {
@@ -154,7 +96,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
                 {
-                    load.HeatLotNumber = "Not Entered";
+                    load.HeatLotNumber = "Nothing Entered";
                 }
             }
         }

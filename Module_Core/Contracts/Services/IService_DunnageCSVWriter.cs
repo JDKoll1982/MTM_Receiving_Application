@@ -23,13 +23,13 @@ public interface IService_DunnageCSVWriter
     /// <param name="loads">List of loads to export</param>
     /// <param name="typeName">Dunnage type name for filename</param>
     /// <returns>File paths (local and network) and success status</returns>
-    Task<Model_CSVWriteResult> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName);
+    public Task<Model_CSVWriteResult> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName);
 
     /// <summary>
     /// Write dunnage loads to CSV file (backward compatibility)
     /// </summary>
     /// <param name="loads"></param>
-    Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads);
+    public Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads);
 
     // ============================================
     // NEW METHODS (spec 010-dunnage-complete)
@@ -49,7 +49,7 @@ public interface IService_DunnageCSVWriter
     /// RFC 4180 compliant (CsvHelper escaping)
     /// Dual-path write: local (%APPDATA%) always succeeds, network (\\MTMDC\) best-effort
     /// </remarks>
-    Task<Model_CSVWriteResult> WriteDynamicCsvAsync(
+    public Task<Model_CSVWriteResult> WriteDynamicCsvAsync(
         List<Model_DunnageLoad> loads,
         List<string> allSpecKeys,
         string? filename = null);
@@ -61,7 +61,7 @@ public interface IService_DunnageCSVWriter
     /// <param name="selectedLoads">Loads selected in DataGrid</param>
     /// <param name="includeAllSpecColumns">If true, includes all spec keys across all types. If false, only keys used by selected loads' types.</param>
     /// <returns>CSV write result</returns>
-    Task<Model_CSVWriteResult> ExportSelectedLoadsAsync(
+    public Task<Model_CSVWriteResult> ExportSelectedLoadsAsync(
         List<Model_DunnageLoad> selectedLoads,
         bool includeAllSpecColumns = false);
 
@@ -70,20 +70,27 @@ public interface IService_DunnageCSVWriter
     /// </summary>
     /// <param name="timeout">Timeout in seconds for reachability check</param>
     /// <returns>True if network path reachable, false otherwise</returns>
-    Task<bool> IsNetworkPathAvailableAsync(int timeout = 3);
+    public Task<bool> IsNetworkPathAvailableAsync(int timeout = 3);
 
     /// <summary>
     /// Get local CSV file path for current user
     /// </summary>
     /// <param name="filename">Filename (without path)</param>
     /// <returns>Full local path (%APPDATA%\MTM_Receiving_Application\{filename})</returns>
-    string GetLocalCsvPath(string filename);
+    public string GetLocalCsvPath(string filename);
 
     /// <summary>
     /// Get network CSV file path for current user
     /// </summary>
     /// <param name="filename">Filename (without path)</param>
     /// <returns>Full network path (\\MTMDC\DunnageData\{username}\{filename})</returns>
-    string GetNetworkCsvPath(string filename);
+    public string GetNetworkCsvPath(string filename);
+
+    /// <summary>
+    /// Clears the contents of all CSV files created by the application from local and network paths
+    /// </summary>
+    /// <param name="filenamePattern">Optional filename pattern to match (e.g., "DunnageData_*.csv"). If null, clears all CSV files.</param>
+    /// <returns>CSV clear result with counts of cleared files and any errors</returns>
+    public Task<Model_CSVDeleteResult> ClearCSVFilesAsync(string? filenamePattern = null);
 }
 

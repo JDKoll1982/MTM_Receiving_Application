@@ -1,6 +1,7 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Shared.Views
@@ -14,6 +15,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         public ViewModel_Shared_SharedTerminalLogin ViewModel { get; }
         private int _attemptCount = 0;
         private const int MaxAttempts = 3;
+        private readonly IService_Focus _focusService;
 
         /// <summary>
         /// Constructor with ViewModel injection
@@ -23,11 +25,12 @@ namespace MTM_Receiving_Application.Module_Shared.Views
         {
             InitializeComponent();
             ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            _focusService = App.GetService<IService_Focus>();
 
             // Wire up event handlers
             PrimaryButtonClick += OnPrimaryButtonClick;
             CloseButtonClick += OnCloseButtonClick;
-            Loaded += (s, e) => UsernameTextBox.Focus(FocusState.Programmatic);
+            _focusService.AttachFocusOnVisibility(this, UsernameTextBox);
         }
 
         /// <summary>

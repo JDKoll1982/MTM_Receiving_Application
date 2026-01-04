@@ -125,8 +125,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         }
 
         // Check if there are any loads in the session
-        if (_workflowService.CurrentSession.Loads != null &&
-            _workflowService.CurrentSession.Loads.Count > 0)
+        if (_workflowService.CurrentSession.Loads?.Count > 0)
         {
             return true;
         }

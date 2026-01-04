@@ -15,7 +15,7 @@ public interface IService_Navigation
     /// <param name="pageType">The type of page to navigate to</param>
     /// <param name="parameter">Optional navigation parameter</param>
     /// <returns>True if navigation succeeded</returns>
-    bool NavigateTo(Frame frame, Type pageType, object? parameter = null);
+    public bool NavigateTo(Frame frame, Type pageType, object? parameter = null);
 
     /// <summary>
     /// Navigate to a page type by name
@@ -24,24 +24,24 @@ public interface IService_Navigation
     /// <param name="pageTypeName">Full name of the page type</param>
     /// <param name="parameter">Optional navigation parameter</param>
     /// <returns>True if navigation succeeded</returns>
-    bool NavigateTo(Frame frame, string pageTypeName, object? parameter = null);
+    public bool NavigateTo(Frame frame, string pageTypeName, object? parameter = null);
 
     /// <summary>
     /// Clear the navigation frame
     /// </summary>
     /// <param name="frame">The frame to clear</param>
-    void ClearNavigation(Frame frame);
+    public void ClearNavigation(Frame frame);
 
     /// <summary>
     /// Check if navigation can go back
     /// </summary>
     /// <param name="frame"></param>
-    bool CanGoBack(Frame frame);
+    public bool CanGoBack(Frame frame);
 
     /// <summary>
     /// Navigate back
     /// </summary>
     /// <param name="frame"></param>
-    void GoBack(Frame frame);
+    public void GoBack(Frame frame);
 }
 

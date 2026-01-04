@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -11,13 +12,16 @@ public sealed partial class View_Dunnage_Dialog_AddToInventoriedListDialog : Con
 {
     private readonly Dao_DunnagePart _daoPart;
     private readonly Dao_InventoriedDunnage _daoInventory;
+    private readonly IService_Focus _focusService;
 
     public View_Dunnage_Dialog_AddToInventoriedListDialog()
     {
         _daoPart = App.GetService<Dao_DunnagePart>();
         _daoInventory = App.GetService<Dao_InventoriedDunnage>();
+        _focusService = App.GetService<IService_Focus>();
 
         InitializeComponent();
+        _focusService.AttachFocusOnVisibility(this);
         _ = LoadPartsAsync();
     }
 

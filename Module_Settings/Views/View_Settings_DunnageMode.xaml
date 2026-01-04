@@ -13,15 +13,17 @@
                     Style="{StaticResource AccentButtonStyle}"
                     Margin="0,0,0,16">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE72B;" FontSize="16"/>
+                    <icons:MaterialIcon Kind="ArrowLeft" Width="16" Height="16"/>
                     <TextBlock Text="Back to Settings"/>
                 </StackPanel>
             </Button>
 
-            <TextBlock Text="Dunnage Settings" 
-                       Style="{StaticResource TitleTextBlockStyle}" 
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,16"/>
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,0,0,16">
+                <icons:MaterialIcon Kind="PackageVariantClosed" Width="32" Height="32" VerticalAlignment="Center"/>
+                <TextBlock Text="Dunnage Settings" 
+                           Style="{StaticResource TitleTextBlockStyle}" 
+                           VerticalAlignment="Center"/>
+            </StackPanel>
 
             <ItemsControl HorizontalAlignment="Center">
                 <ItemsControl.ItemsPanel>

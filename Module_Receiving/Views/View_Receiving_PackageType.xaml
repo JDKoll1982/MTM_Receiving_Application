@@ -36,7 +36,8 @@
                 </StackPanel>
                 
                 <StackPanel Orientation="Horizontal" Spacing="16">
-                    <ComboBox Header="Type"
+                    <ComboBox x:Name="PackageTypeComboBox"
+                              Header="Type"
                               ItemsSource="{x:Bind ViewModel.PackageTypes, Mode=OneWay}"
                               SelectedItem="{x:Bind ViewModel.SelectedPackageType, Mode=TwoWay}"
                               Width="200"

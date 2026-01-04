@@ -99,6 +99,21 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<Model_SaveResult> SaveSessionAsync(IProgress<string>? messageProgress = null, IProgress<int>? percentProgress = null);
 
         /// <summary>
+        /// Clears all UI inputs in registered ViewModels.
+        /// </summary>
+        public void ClearUIInputs();
+
+        /// <summary>
+        /// Saves all loads in session to CSV only.
+        /// </summary>
+        public Task<Model_SaveResult> SaveToCSVOnlyAsync();
+
+        /// <summary>
+        /// Saves all loads in session to database only.
+        /// </summary>
+        public Task<Model_SaveResult> SaveToDatabaseOnlyAsync();
+
+        /// <summary>
         /// Resets the workflow to initial state.
         /// </summary>
         public Task ResetWorkflowAsync();

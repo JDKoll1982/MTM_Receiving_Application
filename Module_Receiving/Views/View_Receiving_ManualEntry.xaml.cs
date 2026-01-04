@@ -12,21 +12,27 @@ using System.Diagnostics;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_ManualEntry : UserControl
     {
         public ViewModel_Receiving_ManualEntry ViewModel { get; }
+        private readonly IService_Focus _focusService;
 
         public View_Receiving_ManualEntry()
         {
             ViewModel = App.GetService<ViewModel_Receiving_ManualEntry>();
+            _focusService = App.GetService<IService_Focus>();
             this.DataContext = ViewModel;
             this.InitializeComponent();
 
             // Listen for collection changes to handle "Add Row" focus
             ViewModel.Loads.CollectionChanged += Loads_CollectionChanged;
+
+            _focusService.AttachFocusOnVisibility(this, AddRowButton);
         }
 
         private void Loads_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

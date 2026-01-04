@@ -2,16 +2,18 @@
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_LoadEntry : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_LoadEntry : ViewModel_Shared_Base, IResettableViewModel
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         [ObservableProperty]
         private int _numberOfLoads = 1;
@@ -24,14 +26,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingValidation validationService,
             IService_Help helpService,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
+            IService_LoggingUtility logger,
+            IService_ViewModelRegistry viewModelRegistry)
             : base(errorHandler, logger)
         {
             _workflowService = workflowService;
             _validationService = validationService;
             _helpService = helpService;
+            _viewModelRegistry = viewModelRegistry;
 
             _workflowService.StepChanged += OnStepChanged;
+            _viewModelRegistry.Register(this);
+        }
+
+        public void ResetToDefaults()
+        {
+            NumberOfLoads = 1;
+            SelectedPartInfo = string.Empty;
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)

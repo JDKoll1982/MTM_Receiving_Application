@@ -42,10 +42,10 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<List<Model_ReceivingLoad>> ReadFromCSVAsync(string filePath);
 
         /// <summary>
-        /// Deletes CSV files (used for reset on startup).
+        /// Clears CSV files (used for reset on startup).
         /// </summary>
-        /// <returns>Result indicating which files were deleted</returns>
-        public Task<Model_CSVDeleteResult> DeleteCSVFilesAsync();
+        /// <returns>Result indicating which files were cleared</returns>
+        public Task<Model_CSVDeleteResult> ClearCSVFilesAsync();
 
         /// <summary>
         /// Checks if CSV files exist.

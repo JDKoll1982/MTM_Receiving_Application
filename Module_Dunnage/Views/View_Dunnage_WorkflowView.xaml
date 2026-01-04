@@ -20,12 +20,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Status Bar -->
-        <InfoBar Grid.Row="0" 
-                 IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
-                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                 Margin="16,16,16,0"/>
-
         <!-- Content Area -->
         <Grid Grid.Row="1" Margin="16,12,16,16">
             <!-- Mode Selection View -->

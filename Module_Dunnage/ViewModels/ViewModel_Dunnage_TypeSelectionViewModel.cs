@@ -11,18 +11,20 @@ using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
 /// ViewModel for Dunnage Type Selection with 3x3 paginated grid
 /// </summary>
-public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IResettableViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_Pagination _paginationService;
     private readonly IService_Help _helpService;
+    private readonly IService_ViewModelRegistry _viewModelRegistry;
 
     public ViewModel_Dunnage_TypeSelection(
         IService_DunnageWorkflow workflowService,
@@ -30,15 +32,25 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base
         IService_Pagination paginationService,
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_ViewModelRegistry viewModelRegistry) : base(errorHandler, logger)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
         _paginationService = paginationService;
         _helpService = helpService;
+        _viewModelRegistry = viewModelRegistry;
 
         // Subscribe to pagination events
         _paginationService.PageChanged += OnPageChanged;
+
+        _viewModelRegistry.Register(this);
+    }
+
+    public void ResetToDefaults()
+    {
+        SelectedType = null;
+        _paginationService?.FirstPage();
     }
 
     #region Observable Properties

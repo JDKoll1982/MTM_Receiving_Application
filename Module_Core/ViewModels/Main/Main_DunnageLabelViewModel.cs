@@ -19,14 +19,17 @@ namespace MTM_Receiving_Application.Module_Core.ViewModels.Main;
 public partial class Main_DunnageLabelViewModel : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
+    private readonly IService_Window _windowService;
 
     public Main_DunnageLabelViewModel(
         IService_DunnageWorkflow workflowService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger,
+        IService_Window windowService)
         : base(errorHandler, logger)
     {
         _workflowService = workflowService;
+        _windowService = windowService;
         _workflowService.StepChanged += OnWorkflowStepChanged;
 
         DunnageLines = new ObservableCollection<Model_DunnageLine>();
@@ -87,20 +90,7 @@ public partial class Main_DunnageLabelViewModel : ViewModel_Shared_Base
     private bool _isEditModeVisible;
 
     [ObservableProperty]
-    private string _currentStepTitle = "ðŸ“¦ Dunnage - Mode Selection";
-
-    #endregion
-
-    #region Status Properties
-
-    [ObservableProperty]
-    private bool _isStatusOpen;
-
-    [ObservableProperty]
-    private string _statusMessage = string.Empty;
-
-    [ObservableProperty]
-    private Enum_ErrorSeverity _statusSeverity = Enum_ErrorSeverity.Info;
+    private string _currentStepTitle = "Dunnage - Mode Selection";
 
     #endregion
 
@@ -123,36 +113,93 @@ public partial class Main_DunnageLabelViewModel : ViewModel_Shared_Base
         {
             case Enum_DunnageWorkflowStep.ModeSelection:
                 IsModeSelectionVisible = true;
-                CurrentStepTitle = "ðŸ“¦ Dunnage - Mode Selection";
+                CurrentStepTitle = "Dunnage - Mode Selection";
                 break;
             case Enum_DunnageWorkflowStep.TypeSelection:
                 IsTypeSelectionVisible = true;
-                CurrentStepTitle = "Select Type";
+                CurrentStepTitle = "Dunnage - Select Type";
                 break;
             case Enum_DunnageWorkflowStep.PartSelection:
                 IsPartSelectionVisible = true;
-                CurrentStepTitle = "Select Part";
+                CurrentStepTitle = "Dunnage - Select Part";
                 break;
             case Enum_DunnageWorkflowStep.QuantityEntry:
                 IsQuantityEntryVisible = true;
-                CurrentStepTitle = "Enter Quantity";
+                CurrentStepTitle = "Dunnage - Enter Quantity";
                 break;
             case Enum_DunnageWorkflowStep.DetailsEntry:
                 IsDetailsEntryVisible = true;
-                CurrentStepTitle = "Enter Details";
+                CurrentStepTitle = "Dunnage - Enter Details";
                 break;
             case Enum_DunnageWorkflowStep.Review:
                 IsReviewVisible = true;
-                CurrentStepTitle = "Review & Save";
+                CurrentStepTitle = "Dunnage - Review & Save";
                 break;
             case Enum_DunnageWorkflowStep.ManualEntry:
                 IsManualEntryVisible = true;
-                CurrentStepTitle = "Manual Entry";
+                CurrentStepTitle = "Dunnage - Manual Entry";
                 break;
             case Enum_DunnageWorkflowStep.EditMode:
                 IsEditModeVisible = true;
-                CurrentStepTitle = "Edit Mode";
+                CurrentStepTitle = "Dunnage - Edit Mode";
                 break;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ResetCSVAsync()
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            _logger.LogError("Cannot show dialog: XamlRoot is null");
+            await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+            return;
+        }
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Reset CSV Files",
+            Content = "Are you sure you want to delete the local and network CSV files? This action cannot be undone.",
+            PrimaryButtonText = "Delete",
+            CloseButtonText = "Cancel",
+            DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+            XamlRoot = xamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            // Try to save to DB first
+            var saveResult = await _workflowService.SaveToDatabaseOnlyAsync();
+            if (!saveResult.IsSuccess)
+            {
+                var warnDialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+                {
+                    Title = "Database Save Failed",
+                    Content = $"Failed to save to database: {saveResult.ErrorMessage}\n\nDo you want to proceed with deleting CSV files anyway?",
+                    PrimaryButtonText = "Delete Anyway",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                    XamlRoot = xamlRoot
+                };
+
+                var warnResult = await warnDialog.ShowAsync();
+                if (warnResult != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+                {
+                    return;
+                }
+            }
+
+            var deleteResult = await _workflowService.ResetCSVFilesAsync();
+            if (deleteResult.LocalDeleted || deleteResult.NetworkDeleted)
+            {
+                StatusMessage = "CSV files deleted successfully.";
+            }
+            else
+            {
+                StatusMessage = "Failed to delete CSV files or files not found.";
+            }
         }
     }
 

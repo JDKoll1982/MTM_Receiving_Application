@@ -30,7 +30,11 @@
                  IsOpen="{x:Bind ViewModel.IsSuccessMessageVisible, Mode=OneWay}"
                  Severity="Success"
                  Message="{x:Bind ViewModel.SuccessMessage, Mode=OneWay}"
-                 IsClosable="False"/>
+                 IsClosable="False">
+            <InfoBar.ActionButton>
+                <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}"/>
+            </InfoBar.ActionButton>
+        </InfoBar>
 
         <!-- Content Section with View Toggle -->
         <Grid Grid.Row="1">

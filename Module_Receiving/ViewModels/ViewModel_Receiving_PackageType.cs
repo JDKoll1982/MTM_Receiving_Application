@@ -8,6 +8,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -35,6 +36,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private bool _isSaveAsDefault;
+        private static readonly System.Text.RegularExpressions.Regex _regex = new System.Text.RegularExpressions.Regex(@"^[\w\s\-\.\(\)]+$");
 
         public ViewModel_Receiving_PackageType(
             IService_ReceivingWorkflow workflowService,
@@ -173,16 +175,38 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
+            if (partId.Length > 50)
+            {
+                _workflowService.RaiseStatusMessage("Part ID too long (max 50 chars).");
+                return;
+            }
+
             var typeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : SelectedPackageType;
             if (string.IsNullOrWhiteSpace(typeName))
             {
+                _workflowService.RaiseStatusMessage("Please enter a package type name.");
+                return;
+            }
+
+            if (typeName.Length > 50)
+            {
+                _workflowService.RaiseStatusMessage("Package type name too long (max 50 chars).");
+                return;
+            }
+
+            // T020b: Ensure PackageTypeName has valid characters
+            // Allow alphanumeric, spaces, hyphens, dots, parentheses
+            if (!_regex.IsMatch(typeName))
+            {
+                _workflowService.RaiseStatusMessage("Invalid characters in package type name.");
                 return;
             }
 
             var preference = new Model_PackageTypePreference
             {
                 PartID = partId,
-                PackageTypeName = typeName
+                PackageTypeName = typeName,
+                CustomTypeName = SelectedPackageType == "Custom" ? CustomPackageTypeName : null
             };
 
             try
@@ -192,7 +216,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             catch (System.Exception ex)
             {
-                await _errorHandler.HandleErrorAsync("Failed to save preference", Enum_ErrorSeverity.Warning, ex);
+                // T020d: Add more detailed error logging
+                var msg = $"Failed to save preference. PartID: '{partId}', Type: '{typeName}', Custom: '{preference.CustomTypeName}'. Error: {ex.Message}";
+                await _errorHandler.HandleErrorAsync(msg, Enum_ErrorSeverity.Warning, ex);
             }
         }
 

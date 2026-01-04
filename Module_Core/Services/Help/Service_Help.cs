@@ -212,9 +212,14 @@ public class Service_Help : IService_Help
         var key = step switch
         {
             Enum_ReceivingWorkflowStep.ModeSelection => "Receiving.ModeSelection",
+            Enum_ReceivingWorkflowStep.ManualEntry => "Receiving.ManualEntry",
+            Enum_ReceivingWorkflowStep.EditMode => "Receiving.EditMode",
             Enum_ReceivingWorkflowStep.POEntry => "Receiving.POEntry",
+            Enum_ReceivingWorkflowStep.PartSelection => "Receiving.PartSelection",
+            Enum_ReceivingWorkflowStep.LoadEntry => "Receiving.LoadEntry",
             Enum_ReceivingWorkflowStep.WeightQuantityEntry => "Receiving.WeightQuantity",
             Enum_ReceivingWorkflowStep.HeatLotEntry => "Receiving.HeatLot",
+            Enum_ReceivingWorkflowStep.PackageTypeEntry => "Receiving.PackageType",
             Enum_ReceivingWorkflowStep.Review => "Receiving.Review",
             _ => ""
         };
@@ -441,6 +446,46 @@ public class Service_Help : IService_Help
     {
         AddHelpContent(new Model_HelpContent
         {
+            Key = "Receiving.ManualEntry",
+            Title = "Manual Entry Mode",
+            Content = "Bulk entry mode for processing multiple receiving items:\n\n" +
+                      "**Features:**\n" +
+                      "• Add multiple rows at once\n" +
+                      "• Auto-fill from last entry\n" +
+                      "• Sort entries for optimal label printing\n\n" +
+                      "**Tips:**\n" +
+                      "• Use Tab key to move between cells\n" +
+                      "• Copy/paste values between cells\n" +
+                      "• Sort by Part ID before saving",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Tutorial,
+            Icon = "Table",
+            Severity = Enum_HelpSeverity.Info,
+            RelatedKeys = new List<string> { "Receiving.ModeSelection" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
+            Key = "Receiving.EditMode",
+            Title = "Edit Historical Data",
+            Content = "Review and edit past receiving entries:\n\n" +
+                      "**Data Sources:**\n" +
+                      "• Session Memory - Unsaved work\n" +
+                      "• Recent Labels - From most recent CSV export\n" +
+                      "• Historical Loads - From database by date range\n\n" +
+                      "**Editing:**\n" +
+                      "• Select entries to modify\n" +
+                      "• Make changes directly in the grid\n" +
+                      "• Save updates back to database",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Tutorial,
+            Icon = "PencilBox",
+            Severity = Enum_HelpSeverity.Warning,
+            RelatedKeys = new List<string> { "Receiving.ModeSelection" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
             Key = "Receiving.ModeSelection",
             Title = "Select Entry Mode",
             Content = "Choose how you want to enter material receiving data:\n\n" +
@@ -546,6 +591,86 @@ public class Service_Help : IService_Help
             HelpType = Enum_HelpType.Tutorial,
             Icon = "CheckCircle",
             Severity = Enum_HelpSeverity.Info,
+            RelatedKeys = new List<string> { "Receiving.ModeSelection" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
+            Key = "Receiving.PartSelection",
+            Title = "Select Part",
+            Content = "Select the part number from the list of items on the Purchase Order:\n\n" +
+                      "• List shows all open lines on the PO\n" +
+                      "• Verify part description matches material\n" +
+                      "• Check ordered quantity vs. received quantity\n\n" +
+                      "If the part is not listed, verify the PO number or check with purchasing.",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Info,
+            Icon = "ShapeOutline",
+            Severity = Enum_HelpSeverity.Info,
+            RelatedKeys = new List<string> { "Receiving.LoadEntry" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
+            Key = "Receiving.LoadEntry",
+            Title = "Enter Load Details",
+            Content = "Enter the number of loads (pallets/containers) being received:\n\n" +
+                      "• Enter total number of identical loads\n" +
+                      "• System will generate one label per load\n" +
+                      "• If loads have different quantities/weights, enter them separately\n\n" +
+                      "Example: Receiving 3 pallets of 1000 lbs each -> Enter 3 loads.",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Info,
+            Icon = "Pallet",
+            Severity = Enum_HelpSeverity.Info,
+            RelatedKeys = new List<string> { "Receiving.WeightQuantity" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
+            Key = "Receiving.PackageType",
+            Title = "Select Package Type",
+            Content = "Choose the type of packaging for this load:\n\n" +
+                      "• Standard types: Box, Pallet, Crate, Bundle, etc.\n" +
+                      "• Custom types: Select 'Custom' to enter a new type\n" +
+                      "• Preferences: System remembers your last choice for this part\n\n" +
+                      "Correct package type helps with inventory identification and storage.",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Info,
+            Icon = "PackageVariant",
+            Severity = Enum_HelpSeverity.Info,
+            RelatedKeys = new List<string> { "Receiving.Review" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
+            Key = "Receiving.ManualEntry",
+            Title = "Manual Entry Mode",
+            Content = "Bulk entry mode for processing multiple receiving items:\n\n" +
+                      "• Add multiple rows for different parts/POs\n" +
+                      "• Copy/paste functionality supported\n" +
+                      "• Ideal for mixed loads or high-volume receiving\n\n" +
+                      "Ensure all required fields (PO, Part, Qty) are filled before saving.",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Tutorial,
+            Icon = "Table",
+            Severity = Enum_HelpSeverity.Info,
+            RelatedKeys = new List<string> { "Receiving.ModeSelection" }
+        });
+
+        AddHelpContent(new Model_HelpContent
+        {
+            Key = "Receiving.EditMode",
+            Title = "Edit Historical Data",
+            Content = "Review and edit past receiving entries:\n\n" +
+                      "• Filter by date range or search by PO/Part\n" +
+                      "• Modify quantities, weights, or heat/lot numbers\n" +
+                      "• Reprint labels for past receipts\n\n" +
+                      "Changes are logged and updated in the database.",
+            Category = "Receiving Workflow",
+            HelpType = Enum_HelpType.Tutorial,
+            Icon = "PencilBox",
+            Severity = Enum_HelpSeverity.Warning,
             RelatedKeys = new List<string> { "Receiving.ModeSelection" }
         });
     }

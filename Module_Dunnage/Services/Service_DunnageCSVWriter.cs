@@ -411,6 +411,109 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Clear CSV files from both local and network paths
+        /// If filenamePattern is provided, only clear files matching the pattern
+        /// If null, clear all CSV files in the user directories
+        /// </summary>
+        /// <param name="filenamePattern">Optional pattern to match (e.g., "DunnageData*.csv")</param>
+        /// <returns>Result indicating success/failure for local and network operations</returns>
+        public async Task<Model_CSVDeleteResult> ClearCSVFilesAsync(string? filenamePattern = null)
+        {
+            var result = new Model_CSVDeleteResult();
+            var errors = new List<string>();
+
+            try
+            {
+                await _logger.LogInfoAsync($"Starting CSV file clearing with pattern: {filenamePattern ?? "all"}");
+
+                // Clear local files
+                try
+                {
+                    var localFolder = Path.GetDirectoryName(GetLocalCsvPath("dummy.csv"));
+                    if (Directory.Exists(localFolder))
+                    {
+                        var filesToClear = Directory.GetFiles(localFolder, filenamePattern ?? "*.csv");
+                        foreach (var file in filesToClear)
+                        {
+                            // Overwrite with header only
+                            await using var writer = new StreamWriter(file, false, new UTF8Encoding(true));
+                            await using var csv = new CsvWriter(writer, GetRfc4180Configuration());
+                            csv.WriteHeader<Model_DunnageLoad>();
+                            csv.NextRecord();
+
+                            await _logger.LogInfoAsync($"Cleared local CSV file: {file}");
+                        }
+                        result.LocalDeleted = true;
+                    }
+                    else
+                    {
+                        result.LocalDeleted = true; // No directory means no files to clear
+                        await _logger.LogInfoAsync("Local CSV directory does not exist - no files to clear");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.LocalDeleted = false;
+                    result.LocalError = $"Local clearing failed: {ex.Message}";
+                    errors.Add(result.LocalError);
+                    await _logger.LogErrorAsync($"Failed to clear local CSV files: {ex.Message}");
+                }
+
+                // Clear network files (best-effort)
+                try
+                {
+                    if (await IsNetworkPathAvailableAsync())
+                    {
+                        var networkFolder = Path.GetDirectoryName(GetNetworkCsvPath("dummy.csv"));
+                        if (Directory.Exists(networkFolder))
+                        {
+                            var filesToClear = Directory.GetFiles(networkFolder, filenamePattern ?? "*.csv");
+                            foreach (var file in filesToClear)
+                            {
+                                await using var writer = new StreamWriter(file, false, new UTF8Encoding(true));
+                                await using var csv = new CsvWriter(writer, GetRfc4180Configuration());
+                                csv.WriteHeader<Model_DunnageLoad>();
+                                csv.NextRecord();
+
+                                await _logger.LogInfoAsync($"Cleared network CSV file: {file}");
+                            }
+                            result.NetworkDeleted = true;
+                        }
+                        else
+                        {
+                            result.NetworkDeleted = true; // No directory means no files to clear
+                            await _logger.LogInfoAsync("Network CSV directory does not exist - no files to clear");
+                        }
+                    }
+                    else
+                    {
+                        result.NetworkDeleted = false;
+                        result.NetworkError = "Network path not available";
+                        errors.Add("Network path not available");
+                        await _logger.LogWarningAsync("Network path not available for CSV clearing");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.NetworkDeleted = false;
+                    result.NetworkError = $"Network clearing failed: {ex.Message}";
+                    errors.Add(result.NetworkError);
+                    await _logger.LogErrorAsync($"Failed to clear network CSV files: {ex.Message}");
+                }
+
+                await _logger.LogInfoAsync($"CSV clearing completed. Local: {result.LocalDeleted}, Network: {result.NetworkDeleted}");
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Unexpected error during CSV clearing: {ex.Message}";
+                result.LocalError = result.LocalError ?? msg;
+                await _errorHandler.HandleErrorAsync($"CSV clearing failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
+            }
+
+            return result;
+        }
     }
 }
 

@@ -202,16 +202,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             });
         }
 
-        public async Task<Model_CSVDeleteResult> DeleteCSVFilesAsync()
+        public async Task<Model_CSVDeleteResult> ClearCSVFilesAsync()
         {
             var result = new Model_CSVDeleteResult();
 
-            // Delete local CSV
+            // Clear local CSV
             if (File.Exists(_localCSVPath))
             {
                 try
                 {
-                    await Task.Run(() => File.Delete(_localCSVPath));
+                    await Task.Run(() =>
+                    {
+                        using var writer = new StreamWriter(_localCSVPath);
+                        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                        csv.WriteHeader<Model_ReceivingLoad>();
+                        csv.NextRecord();
+                    });
                     result.LocalDeleted = true;
                 }
                 catch (Exception ex)
@@ -221,7 +227,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 }
             }
 
-            // Delete network CSV
+            // Clear network CSV
             await Task.Run(() =>
             {
                 try
@@ -229,7 +235,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     var networkPath = GetNetworkCSVPathInternal();
                     if (File.Exists(networkPath))
                     {
-                        File.Delete(networkPath);
+                        using var writer = new StreamWriter(networkPath);
+                        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                        csv.WriteHeader<Model_ReceivingLoad>();
+                        csv.NextRecord();
                         result.NetworkDeleted = true;
                     }
                 }
