@@ -170,11 +170,11 @@
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                            <Run Text="â€¢ PO Number: Use if receiving against a purchase order"/>
+                            <Run Text="• PO Number: Use if receiving against a purchase order"/>
                             <LineBreak/>
-                            <Run Text="â€¢ Location: Physical location of the dunnage"/>
+                            <Run Text="• Location: Physical location of the dunnage"/>
                             <LineBreak/>
-                            <Run Text="â€¢ Specifications: Pre-filled from the selected part"/>
+                            <Run Text="• Specifications: Pre-filled from the selected part"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>

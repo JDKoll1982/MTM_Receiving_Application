@@ -294,7 +294,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base
     {
         if (IsInventoryNotificationVisible)
         {
-            InventoryNotificationMessage = $"âš ï¸ This part requires inventory adjustment in Visual. Method: {InventoryMethod}";
+            InventoryNotificationMessage = $"This part requires inventory adjustment in Visual. Method: {InventoryMethod}";
         }
     }
 

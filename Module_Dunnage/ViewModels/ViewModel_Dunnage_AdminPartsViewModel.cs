@@ -382,7 +382,7 @@ public partial class ViewModel_Dunnage_AdminParts : ViewModel_Shared_Base
 
             if (transactionCount > 0)
             {
-                message += "âš ï¸ WARNING: This part has transaction history and cannot be deleted.";
+                message += "WARNING: This part has transaction history and cannot be deleted.";
 
                 var warningDialog = new ContentDialog
                 {

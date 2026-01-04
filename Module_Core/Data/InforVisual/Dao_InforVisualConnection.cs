@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.InforVisual;
 
 /// <summary>
 /// Data Access Object for Infor Visual database connections and queries
-/// âš ï¸ READ-ONLY ACCESS ONLY - NO WRITES PERMITTED âš ï¸
+/// WARNING: READ-ONLY ACCESS ONLY - NO WRITES PERMITTED
 /// </summary>
 public class Dao_InforVisualConnection
 {

@@ -282,9 +282,9 @@ public class Service_Help : IService_Help
             Key = "Dunnage.ModeSelection",
             Title = "Select Entry Mode",
             Content = "Choose how you want to enter dunnage receiving data:\n\n" +
-                      "â€¢ Guided Wizard - Step-by-step process for single transactions. Best for occasional entries or when you need guidance.\n\n" +
-                      "â€¢ Manual Entry - Bulk grid entry for multiple transactions. Ideal for processing many items at once.\n\n" +
-                      "â€¢ Edit Mode - Review and edit historical data. Use to correct past entries or view receiving history.",
+                      "• Guided Wizard - Step-by-step process for single transactions. Best for occasional entries or when you need guidance.\n\n" +
+                      "• Manual Entry - Bulk grid entry for multiple transactions. Ideal for processing many items at once.\n\n" +
+                      "• Edit Mode - Review and edit historical data. Use to correct past entries or view receiving history.",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Info,
             Icon = "ViewDashboard",
@@ -297,9 +297,9 @@ public class Service_Help : IService_Help
             Key = "Dunnage.TypeSelection",
             Title = "Select Dunnage Type",
             Content = "Choose the type of dunnage material you are receiving:\n\n" +
-                      "â€¢ Each type has specific specifications and requirements\n" +
-                      "â€¢ Use the search function to quickly find types\n" +
-                      "â€¢ Navigate with pagination controls or quick access buttons\n\n" +
+                      "• Each type has specific specifications and requirements\n" +
+                      "• Use the search function to quickly find types\n" +
+                      "• Navigate with pagination controls or quick access buttons\n\n" +
                       "If you don't see the type you need, contact your administrator to add new types through the Admin section.",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Info,
@@ -313,12 +313,12 @@ public class Service_Help : IService_Help
             Key = "Dunnage.PartSelection",
             Title = "Select Part/Specification",
             Content = "Select the specific part or specification for the dunnage type:\n\n" +
-                      "â€¢ Parts are organized by dunnage type\n" +
-                      "â€¢ Use filters to find specific parts quickly\n" +
-                      "â€¢ Parts marked with inventory status are tracked in the inventory system\n\n" +
+                      "• Parts are organized by dunnage type\n" +
+                      "• Use filters to find specific parts quickly\n" +
+                      "• Parts marked with inventory status are tracked in the inventory system\n\n" +
                       "**Inventory Status:**\n" +
-                      "â€¢ Green badge - Part is in inventory management system\n" +
-                      "â€¢ No badge - Part is not tracked in inventory\n\n" +
+                      "• Green badge - Part is in inventory management system\n" +
+                      "• No badge - Part is not tracked in inventory\n\n" +
                       "If you don't see the part you need, use the Quick Add button to create it.",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Info,
@@ -332,9 +332,9 @@ public class Service_Help : IService_Help
             Key = "Dunnage.QuantityEntry",
             Title = "Enter Quantity",
             Content = "Specify the quantity of dunnage items received:\n\n" +
-                      "â€¢ Enter whole numbers only\n" +
-                      "â€¢ The system will generate individual labels for each item\n" +
-                      "â€¢ You can adjust the quantity later if needed\n\n" +
+                      "• Enter whole numbers only\n" +
+                      "• The system will generate individual labels for each item\n" +
+                      "• You can adjust the quantity later if needed\n\n" +
                       "**Label Generation:**\n" +
                       "Each item will receive a unique label with sequential numbering (e.g., 1 of 10, 2 of 10, etc.)",
             Category = "Dunnage Workflow",
@@ -350,16 +350,16 @@ public class Service_Help : IService_Help
             Title = "Enter Additional Details",
             Content = "Provide additional information for the dunnage receiving:\n\n" +
                       "**PO Number (Optional):**\n" +
-                      "â€¢ Enter the purchase order number if applicable\n" +
-                      "â€¢ Format: Any alphanumeric format accepted\n\n" +
+                      "• Enter the purchase order number if applicable\n" +
+                      "• Format: Any alphanumeric format accepted\n\n" +
                       "**Location (Required):**\n" +
-                      "â€¢ Specify where the dunnage is stored\n" +
-                      "â€¢ Use standard warehouse location codes\n" +
-                      "â€¢ Example: A-12-B, DOCK-2, etc.\n\n" +
+                      "• Specify where the dunnage is stored\n" +
+                      "• Use standard warehouse location codes\n" +
+                      "• Example: A-12-B, DOCK-2, etc.\n\n" +
                       "**Specifications:**\n" +
-                      "â€¢ Additional spec fields may appear based on the dunnage type\n" +
-                      "â€¢ Required fields are marked with an asterisk (*)\n" +
-                      "â€¢ Values must be within specified min/max ranges",
+                      "• Additional spec fields may appear based on the dunnage type\n" +
+                      "• Required fields are marked with an asterisk (*)\n" +
+                      "• Values must be within specified min/max ranges",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Info,
             Icon = "TextBox",
@@ -373,15 +373,15 @@ public class Service_Help : IService_Help
             Title = "Review & Save",
             Content = "Review your entries before saving:\n\n" +
                       "**Single View:**\n" +
-                      "â€¢ Review details in card format\n" +
-                      "â€¢ Navigate through entries individually\n\n" +
+                      "• Review details in card format\n" +
+                      "• Navigate through entries individually\n\n" +
                       "**Table View:**\n" +
-                      "â€¢ See all entries in a grid\n" +
-                      "â€¢ Quickly spot any errors or inconsistencies\n\n" +
+                      "• See all entries in a grid\n" +
+                      "• Quickly spot any errors or inconsistencies\n\n" +
                       "**Actions:**\n" +
-                      "â€¢ Remove - Delete an entry from the session\n" +
-                      "â€¢ Edit - Return to previous steps to modify\n" +
-                      "â€¢ Save - Commit all entries to database and generate labels\n\n" +
+                      "• Remove - Delete an entry from the session\n" +
+                      "• Edit - Return to previous steps to modify\n" +
+                      "• Save - Commit all entries to database and generate labels\n\n" +
                       "After saving, labels will be generated automatically and ready for printing.",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Tutorial,
@@ -396,15 +396,15 @@ public class Service_Help : IService_Help
             Title = "Manual Entry Mode",
             Content = "Bulk entry mode for processing multiple dunnage items:\n\n" +
                       "**Features:**\n" +
-                      "â€¢ Add multiple rows at once (up to 100)\n" +
-                      "â€¢ Auto-fill from last entry for the same part\n" +
-                      "â€¢ Fill blank spaces with data from previous row\n" +
-                      "â€¢ Sort entries for optimal label printing\n\n" +
+                      "• Add multiple rows at once (up to 100)\n" +
+                      "• Auto-fill from last entry for the same part\n" +
+                      "• Fill blank spaces with data from previous row\n" +
+                      "• Sort entries for optimal label printing\n\n" +
                       "**Tips:**\n" +
-                      "â€¢ Use Tab key to move between cells quickly\n" +
-                      "â€¢ Copy/paste values between cells\n" +
-                      "â€¢ Use bulk operations to speed up data entry\n" +
-                      "â€¢ Sort by Part ID before saving for sequential label numbers",
+                      "• Use Tab key to move between cells quickly\n" +
+                      "• Copy/paste values between cells\n" +
+                      "• Use bulk operations to speed up data entry\n" +
+                      "• Sort by Part ID before saving for sequential label numbers",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Tutorial,
             Icon = "Table",
@@ -418,17 +418,17 @@ public class Service_Help : IService_Help
             Title = "Edit Historical Data",
             Content = "Review and edit past dunnage receiving entries:\n\n" +
                       "**Data Sources:**\n" +
-                      "â€¢ Session Memory - Unsaved work from current session\n" +
-                      "â€¢ Recent Labels - From most recent CSV export\n" +
-                      "â€¢ Historical Loads - From database by date range\n\n" +
+                      "• Session Memory - Unsaved work from current session\n" +
+                      "• Recent Labels - From most recent CSV export\n" +
+                      "• Historical Loads - From database by date range\n\n" +
                       "**Date Filtering:**\n" +
-                      "â€¢ Quick filters: Today, Last 7 days, This week/month/quarter/year\n" +
-                      "â€¢ Custom date range with start and end dates\n\n" +
+                      "• Quick filters: Today, Last 7 days, This week/month/quarter/year\n" +
+                      "• Custom date range with start and end dates\n\n" +
                       "**Editing:**\n" +
-                      "â€¢ Select entries to modify\n" +
-                      "â€¢ Make changes directly in the grid\n" +
-                      "â€¢ Save updates back to database\n\n" +
-                      "âš ï¸ Changes to historical data may affect inventory counts and reports.",
+                      "• Select entries to modify\n" +
+                      "• Make changes directly in the grid\n" +
+                      "• Save updates back to database\n\n" +
+                      " Changes to historical data may affect inventory counts and reports.",
             Category = "Dunnage Workflow",
             HelpType = Enum_HelpType.Tutorial,
             Icon = "PencilBox",
@@ -444,9 +444,9 @@ public class Service_Help : IService_Help
             Key = "Receiving.ModeSelection",
             Title = "Select Entry Mode",
             Content = "Choose how you want to enter material receiving data:\n\n" +
-                      "â€¢ Guided Wizard - Step-by-step process with PO integration\n" +
-                      "â€¢ Manual Entry - Bulk grid entry for multiple line items\n" +
-                      "â€¢ Edit Mode - Review and modify historical receiving data",
+                      "• Guided Wizard - Step-by-step process with PO integration\n" +
+                      "• Manual Entry - Bulk grid entry for multiple line items\n" +
+                      "• Edit Mode - Review and modify historical receiving data",
             Category = "Receiving Workflow",
             HelpType = Enum_HelpType.Info,
             Icon = "ViewDashboard",
@@ -460,15 +460,15 @@ public class Service_Help : IService_Help
             Title = "Enter Purchase Order",
             Content = "Enter the PO number to receive material:\n\n" +
                       "**PO Number Format:**\n" +
-                      "â€¢ With prefix: PO-066868\n" +
-                      "â€¢ Without prefix: 66868\n" +
-                      "â€¢ System accepts both formats\n\n" +
+                      "• With prefix: PO-066868\n" +
+                      "• Without prefix: 66868\n" +
+                      "• System accepts both formats\n\n" +
                       "**Infor Visual Integration:**\n" +
                       "The system connects to the Infor Visual ERP system (VISUAL database) to:\n" +
-                      "â€¢ Validate PO exists and is open\n" +
-                      "â€¢ Retrieve available line items\n" +
-                      "â€¢ Populate part IDs and descriptions\n" +
-                      "â€¢ Check ordered quantities\n\n" +
+                      "• Validate PO exists and is open\n" +
+                      "• Retrieve available line items\n" +
+                      "• Populate part IDs and descriptions\n" +
+                      "• Check ordered quantities\n\n" +
                       "**Part ID Search:**\n" +
                       "Alternatively, search by Part ID (e.g., MMC-001, MMF-456) to find associated POs.",
             Category = "Receiving Workflow",
@@ -484,13 +484,13 @@ public class Service_Help : IService_Help
             Title = "Weight vs. Quantity",
             Content = "Choose whether to enter by weight or piece count:\n\n" +
                       "**Use Weight When:**\n" +
-                      "â€¢ Material is sold/received by weight\n" +
-                      "â€¢ Dealing with raw materials, bars, sheets\n" +
-                      "â€¢ Unit of measure is LBS, KG, etc.\n\n" +
+                      "• Material is sold/received by weight\n" +
+                      "• Dealing with raw materials, bars, sheets\n" +
+                      "• Unit of measure is LBS, KG, etc.\n\n" +
                       "**Use Quantity When:**\n" +
-                      "â€¢ Material is counted by pieces\n" +
-                      "â€¢ Dealing with discrete items\n" +
-                      "â€¢ Unit of measure is EA (each), PCS (pieces)\n\n" +
+                      "• Material is counted by pieces\n" +
+                      "• Dealing with discrete items\n" +
+                      "• Unit of measure is EA (each), PCS (pieces)\n\n" +
                       "**Important:**\n" +
                       "The selection should match the PO line item's unit of measure from Infor Visual.",
             Category = "Receiving Workflow",
@@ -506,16 +506,16 @@ public class Service_Help : IService_Help
             Title = "Heat/Lot Numbers",
             Content = "Enter heat or lot number for material traceability:\n\n" +
                       "**What is a Heat/Lot Number?**\n" +
-                      "â€¢ Unique identifier from the manufacturer\n" +
-                      "â€¢ Tracks material batch or production run\n" +
-                      "â€¢ Required for quality control and traceability\n\n" +
+                      "• Unique identifier from the manufacturer\n" +
+                      "• Tracks material batch or production run\n" +
+                      "• Required for quality control and traceability\n\n" +
                       "**Format:**\n" +
-                      "â€¢ Alphanumeric, varies by supplier\n" +
-                      "â€¢ Example: H123456, LOT-2024-001\n\n" +
+                      "• Alphanumeric, varies by supplier\n" +
+                      "• Example: H123456, LOT-2024-001\n\n" +
                       "**When Required:**\n" +
-                      "â€¢ Metals and alloys\n" +
-                      "â€¢ Materials with certification requirements\n" +
-                      "â€¢ Quality-critical components\n\n" +
+                      "• Metals and alloys\n" +
+                      "• Materials with certification requirements\n" +
+                      "• Quality-critical components\n\n" +
                       "Leave blank if not applicable to the material.",
             Category = "Receiving Workflow",
             HelpType = Enum_HelpType.Info,
@@ -530,17 +530,17 @@ public class Service_Help : IService_Help
             Title = "Review & Generate Labels",
             Content = "Final review before saving and printing labels:\n\n" +
                       "**Review Process:**\n" +
-                      "â€¢ Verify all details are correct\n" +
-                      "â€¢ Check quantities and weights\n" +
-                      "â€¢ Confirm heat/lot numbers\n\n" +
+                      "• Verify all details are correct\n" +
+                      "• Check quantities and weights\n" +
+                      "• Confirm heat/lot numbers\n\n" +
                       "**Saving:**\n" +
-                      "â€¢ Data is saved to MySQL database\n" +
-                      "â€¢ CSV file is exported for records\n" +
-                      "â€¢ Labels are generated automatically\n\n" +
+                      "• Data is saved to MySQL database\n" +
+                      "• CSV file is exported for records\n" +
+                      "• Labels are generated automatically\n\n" +
                       "**Label Printing:**\n" +
-                      "â€¢ Labels display all receiving information\n" +
-                      "â€¢ Include barcodes for scanning\n" +
-                      "â€¢ Print directly from the review screen\n\n" +
+                      "• Labels display all receiving information\n" +
+                      "• Include barcodes for scanning\n" +
+                      "• Print directly from the review screen\n\n" +
                       "After saving, you can reprint labels from the Edit Mode if needed.",
             Category = "Receiving Workflow",
             HelpType = Enum_HelpType.Tutorial,
@@ -558,19 +558,19 @@ public class Service_Help : IService_Help
             Title = "Manage Dunnage Types",
             Content = "Create, edit, and delete dunnage types:\n\n" +
                       "**Creating Types:**\n" +
-                      "â€¢ Choose a descriptive, unique name\n" +
-                      "â€¢ Select an appropriate icon for visual identification\n" +
-                      "â€¢ Define specification fields (dimensions, materials, etc.)\n\n" +
+                      "• Choose a descriptive, unique name\n" +
+                      "• Select an appropriate icon for visual identification\n" +
+                      "• Define specification fields (dimensions, materials, etc.)\n\n" +
                       "**Specification Fields:**\n" +
-                      "â€¢ Text fields - For descriptions, notes\n" +
-                      "â€¢ Number fields - For measurements, quantities\n" +
-                      "â€¢ Set min/max ranges for validation\n" +
-                      "â€¢ Mark fields as required or optional\n\n" +
+                      "• Text fields - For descriptions, notes\n" +
+                      "• Number fields - For measurements, quantities\n" +
+                      "• Set min/max ranges for validation\n" +
+                      "• Mark fields as required or optional\n\n" +
                       "**Deleting Types:**\n" +
-                      "âš ï¸ Warning: Deleting a type will affect:\n" +
-                      "â€¢ All associated parts\n" +
-                      "â€¢ Historical receiving records\n" +
-                      "â€¢ Inventory counts\n\n" +
+                      " Warning: Deleting a type will affect:\n" +
+                      "• All associated parts\n" +
+                      "• Historical receiving records\n" +
+                      "• Inventory counts\n\n" +
                       "System will show impact analysis before allowing deletion.",
             Category = "Admin",
             HelpType = Enum_HelpType.Tutorial,
@@ -585,17 +585,17 @@ public class Service_Help : IService_Help
             Title = "Manage Dunnage Parts",
             Content = "Create and manage dunnage part specifications:\n\n" +
                       "**Part Information:**\n" +
-                      "â€¢ Part must be associated with a dunnage type\n" +
-                      "â€¢ Enter dimensions and specifications as required\n" +
-                      "â€¢ Add descriptive notes for identification\n\n" +
+                      "• Part must be associated with a dunnage type\n" +
+                      "• Enter dimensions and specifications as required\n" +
+                      "• Add descriptive notes for identification\n\n" +
                       "**Inventory Management:**\n" +
-                      "â€¢ Mark parts for inventory tracking\n" +
-                      "â€¢ Set reorder points and quantities\n" +
-                      "â€¢ Track current stock levels\n\n" +
+                      "• Mark parts for inventory tracking\n" +
+                      "• Set reorder points and quantities\n" +
+                      "• Track current stock levels\n\n" +
                       "**Search & Filtering:**\n" +
-                      "â€¢ Search by part name or description\n" +
-                      "â€¢ Filter by dunnage type\n" +
-                      "â€¢ Sort by any column\n\n" +
+                      "• Search by part name or description\n" +
+                      "• Filter by dunnage type\n" +
+                      "• Sort by any column\n\n" +
                       "Parts can be created during receiving using Quick Add feature.",
             Category = "Admin",
             HelpType = Enum_HelpType.Info,

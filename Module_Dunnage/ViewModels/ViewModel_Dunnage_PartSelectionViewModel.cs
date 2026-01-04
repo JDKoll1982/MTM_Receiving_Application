@@ -264,7 +264,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
 
     private void UpdateInventoryMessage()
     {
-        InventoryNotificationMessage = $"âš ï¸ This part requires inventory in Visual. Method: {InventoryMethod}";
+        InventoryNotificationMessage = $"This part requires inventory in Visual. Method: {InventoryMethod}";
     }
 
     #endregion

@@ -76,10 +76,10 @@
                             CornerRadius="4">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Planned Features:" FontWeight="SemiBold"/>
-                            <TextBlock Text="â€¢ Carrier selection and routing" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <TextBlock Text="â€¢ Tracking number generation" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <TextBlock Text="â€¢ Delivery instructions" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <TextBlock Text="â€¢ Label printing with barcodes" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Carrier selection and routing" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Tracking number generation" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Delivery instructions" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="• Label printing with barcodes" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

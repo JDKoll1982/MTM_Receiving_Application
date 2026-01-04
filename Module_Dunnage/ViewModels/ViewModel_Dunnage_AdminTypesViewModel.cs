@@ -356,7 +356,7 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
             if (partCount > 0 || transactionCount > 0)
             {
-                impactMessage += "âš ï¸ WARNING: This type is in use and cannot be deleted.";
+                impactMessage += "WARNING: This type is in use and cannot be deleted.";
 
                 var warningDialog = new ContentDialog
                 {

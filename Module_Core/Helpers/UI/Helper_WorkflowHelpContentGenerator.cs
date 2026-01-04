@@ -42,8 +42,8 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI
                 "Bulk data entry grid for experienced users. Enter multiple loads quickly.",
                 new (string header, string content)[]
                 {
-                    ("Grid Columns", "PO Number (6 digits) â€¢ Part ID (material part number) â€¢ Weight/Qty (pounds or piece count) â€¢ Heat/Lot (traceability) â€¢ Package Type (Coils, Sheets, Skids)"),
-                    ("Quick Actions", "Add Row (insert new blank row) â€¢ Remove Row (delete selected row) â€¢ Click cells to edit directly"),
+                    ("Grid Columns", "PO Number (6 digits) • Part ID (material part number) • Weight/Qty (pounds or piece count) • Heat/Lot (traceability) • Package Type (Coils, Sheets, Skids)"),
+                    ("Quick Actions", "Add Row (insert new blank row) • Remove Row (delete selected row) • Click cells to edit directly"),
                     ("Important", "Data is validated when you click Save. Errors will be highlighted. Best for users familiar with receiving workflow.")
                 });
         }
@@ -68,7 +68,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI
                 "How many skids/loads are you receiving for this part?",
                 new (string header, string content)[]
                 {
-                    ("Examples", "â€¢ Coils: Each coil = 1 load\nâ€¢ Sheets: Each skid of sheets = 1 load\nâ€¢ Bars: Each bundle = 1 load"),
+                    ("Examples", "• Coils: Each coil = 1 load\n• Sheets: Each skid of sheets = 1 load\n• Bars: Each bundle = 1 load"),
                     ("Valid Range", "Enter between 1 and 99 loads."),
                     ("Note", "Each load will be labeled separately for tracking.")
                 });
@@ -107,7 +107,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI
                 "Define how material is packaged for accurate tracking and inventory.",
                 new (string header, string content)[]
                 {
-                    ("Package Types", "â€¢ Coils: Single coils on eye-to-sky skids\nâ€¢ Sheets: Stacked flat sheets on skids\nâ€¢ Skids: Mixed or bundled material\nâ€¢ Custom: Enter your own description"),
+                    ("Package Types", "• Coils: Single coils on eye-to-sky skids\n• Sheets: Stacked flat sheets on skids\n• Skids: Mixed or bundled material\n• Custom: Enter your own description"),
                     ("Packages per Load", "How many packages on each load? Examples: 1 coil per skid = 1, or 5 bundles per skid = 5"),
                     ("Weight per Package", "Automatically calculated by dividing total load weight by package count.")
                 });
@@ -122,7 +122,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI
                 {
                     ("Single Entry View", "Review one load at a time. Use Previous/Next to navigate. All fields displayed clearly."),
                     ("Table View", "See all loads at once. Quick overview of all data. Switch views with Table View button."),
-                    ("What Gets Saved", "â€¢ Database record (permanent)\nâ€¢ Local CSV backup\nâ€¢ Network CSV (if accessible)\nâ€¢ Printable receiving labels")
+                    ("What Gets Saved", "• Database record (permanent)\n• Local CSV backup\n• Network CSV (if accessible)\n• Printable receiving labels")
                 });
         }
 
