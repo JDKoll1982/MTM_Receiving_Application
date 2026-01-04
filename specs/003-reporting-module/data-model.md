@@ -99,9 +99,13 @@ ORDER BY vs.shipment_date DESC;
 
 ### Model_ReportRow
 
-**Purpose**: Unified data structure for report rows across all modules
+**Purpose**: Unified data structure for report rows across all modules  
+**Location**: To be created in `Module_Core/Models/Reporting/Model_ReportRow.cs` (or `Module_Reporting/Models/`)  
+**Namespace**: `MTM_Receiving_Application.Module_Core.Models.Reporting` (or `MTM_Receiving_Application.Module_Reporting.Models`)
 
 ```csharp
+namespace MTM_Receiving_Application.Module_Core.Models.Reporting;
+
 public class Model_ReportRow
 {
     public int Id { get; set; }
@@ -133,32 +137,45 @@ public class Model_ReportRow
 }
 ```
 
+**Note**: Uses nullable reference types (`string?`, `decimal?`, `int?`) following C# 12 conventions.
+
 ## PO Number Normalization Algorithm
 
-**Purpose**: Normalize PO numbers to standard format (matches EndOfDayEmail.js logic)
+**Purpose**: Normalize PO numbers to standard format (matches EndOfDayEmail.js logic)  
+**Location**: To be implemented in `Module_Reporting/Services/Service_Reporting.cs`  
+**Method**: `IService_Reporting.NormalizePONumber(string? poNumber)`
 
 ```csharp
-public string NormalizePONumber(string? poNumber)
+namespace MTM_Receiving_Application.Module_Reporting.Services;
+
+public class Service_Reporting : IService_Reporting
 {
-    if (string.IsNullOrWhiteSpace(poNumber))
-        return "No PO";
-    
-    poNumber = poNumber.Trim();
-    
-    // Pass through non-numeric values (e.g., "Customer Supplied")
-    if (!poNumber.All(char.IsDigit))
-        return poNumber;
-    
-    // Validate length (must be 5-6 digits)
-    if (poNumber.Length < 5)
-        return "Validate PO";
-    
-    // Pad to 6 digits if needed
-    if (poNumber.Length == 5)
-        poNumber = "0" + poNumber;
-    
-    // Format as PO-XXXXXX
-    return "PO-" + poNumber;
+    public string NormalizePONumber(string? poNumber)
+    {
+        if (string.IsNullOrWhiteSpace(poNumber))
+            return "No PO";
+        
+        poNumber = poNumber.Trim();
+        
+        // Pass through specific non-numeric values
+        if (poNumber.Equals("Customer Supplied", StringComparison.OrdinalIgnoreCase))
+            return "Customer Supplied";
+        
+        // Check if contains only digits (possibly with suffix)
+        string numericPart = new string(poNumber.TakeWhile(char.IsDigit).ToArray());
+        string suffix = poNumber.Substring(numericPart.Length);
+        
+        // Validate length (must be at least 5 digits)
+        if (numericPart.Length < 5)
+            return "Validate PO";
+        
+        // Pad to 6 digits if needed
+        if (numericPart.Length == 5)
+            numericPart = "0" + numericPart;
+        
+        // Format as PO-XXXXXX + optional suffix
+        return "PO-" + numericPart + suffix;
+    }
 }
 ```
 
@@ -222,5 +239,5 @@ PO-063151,67890,Aluminum Bar,50.00,1250.00,HT789/LT012,2026-01-03
 
 ---
 
-**Reference**: See [../011-module-reimplementation/data-model.md](../011-module-reimplementation/data-model.md) for complete data model context
+**Note**: View definitions should be created in `Database/Schemas/schema_reporting_views.sql` following the project's database organization pattern.
 

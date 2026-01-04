@@ -29,21 +29,33 @@ The Reporting Module provides cross-module End-of-Day reporting capabilities for
 
 ### Module Structure
 ```
-ReportingModule/
-├── Models/          # Data models (ReportRow, ReportData, etc.)
-├── ViewModels/      # MVVM ViewModels (Reporting, ReportViewer)
-├── Views/           # XAML Views (Reporting view, module sections)
-├── Services/        # Business logic services
-├── Data/            # DAO classes (database access)
-└── Database/        # SQL views for cross-module queries
+Module_Reporting/                           ⬅️ To be created
+├── Models/                                 # Reporting-specific models
+│   └── Model_ReportRow.cs
+├── ViewModels/                             # MVVM ViewModels
+│   ├── ViewModel_Reporting_Main.cs
+│   └── ViewModel_Reporting_ReportViewer.cs
+├── Views/                                  # XAML Views
+│   ├── View_Reporting_Main.xaml (.cs)
+│   └── View_Reporting_ReportViewer.xaml (.cs)
+├── Services/                               # Business logic services
+│   └── Service_Reporting.cs
+└── Data/                                   # DAO classes
+    └── Dao_Reporting.cs
+
+Module_Core/Contracts/Services/             ⬅️ Shared contracts location
+└── IService_Reporting.cs                   # To be created here
+
+Database/Schemas/                           ⬅️ Database views
+└── schema_reporting_views.sql
 ```
 
 ### Key Components
 - **IService_Reporting**: Main reporting service (data retrieval, PO normalization, CSV/email formatting)
-- **IService_ReceivingReporting**: Receiving module reporting integration
-- **IService_DunnageReporting**: Dunnage module reporting integration
-- **IService_RoutingReporting**: Routing module reporting integration
-- **IService_VolvoReporting**: Volvo module reporting integration
+  - To be created in: `Module_Core/Contracts/Services/IService_Reporting.cs`
+  - Specification reference: `specs/003-reporting-module/contracts/IService_Reporting.cs`
+- **Service_Reporting**: Implementation of reporting service
+  - To be created in: `Module_Reporting/Services/Service_Reporting.cs`
 
 ## Database Schema
 
@@ -73,22 +85,25 @@ From `EndOfDayEmail.js`:
 ## Documentation
 
 - **[spec.md](spec.md)** - Complete feature specification
-- **[plan.md](../011-module-reimplementation/plan.md)** - Implementation plan
-- **[data-model.md](../011-module-reimplementation/data-model.md)** - Database schema
-- **[tasks.md](../011-module-reimplementation/tasks.md)** - Detailed task breakdown
+- **[plan.md](plan.md)** - Implementation plan
+- **[data-model.md](data-model.md)** - Database schema
+- **[tasks.md](tasks.md)** - Detailed task breakdown
 - **[quickstart.md](quickstart.md)** - Developer quick start guide
 - **[research.md](research.md)** - Google Sheets system analysis
 
 ## Contracts
 
-Service interfaces defined in [contracts/](contracts/):
-- `IService_Reporting.cs` - Main reporting service
-- (Module-specific interfaces in respective module folders)
+Service interface to be created:
+- **Target location**: `Module_Core/Contracts/Services/IService_Reporting.cs` (will be created during implementation)
+- **Specification reference**: `specs/003-reporting-module/contracts/IService_Reporting.cs` (design document)
 
-## Mockups
+## UI Design
 
-UI mockups available in [../011-module-reimplementation/mockups/](../011-module-reimplementation/mockups/):
-- Reporting view mockups referenced in mockups/README.md
+UI design follows standard WinUI 3 patterns:
+- Date pickers for range selection
+- Checkboxes for module selection
+- DataGrid for report display
+- Export and email formatting buttons
 
 ## Dependencies
 
@@ -128,10 +143,10 @@ UI mockups available in [../011-module-reimplementation/mockups/](../011-module-
 
 ## Related Modules
 
-- **[012-volvo-module](../012-volvo-module/)** - Volvo dunnage requisition workflow
-- **[013-receiving-module](../013-receiving-module/)** - Standard PO receiving workflow
-- **[014-dunnage-module](../014-dunnage-module/)** - Dunnage inventory management
-- **[015-routing-module](../015-routing-module/)** - Internal routing labels
+- **Receiving Module** - Standard PO receiving workflow (`Module_Receiving/`)
+- **Dunnage Module** - Dunnage inventory management (`Module_Dunnage/`)
+- **Routing Module** - Internal routing labels (spec: [001-routing-module](../001-routing-module/))
+- **Volvo Module** - Volvo dunnage requisition workflow (spec: [002-volvo-module](../002-volvo-module/))
 
 ---
 
