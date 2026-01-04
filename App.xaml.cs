@@ -7,13 +7,16 @@ using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Dunnage.Data;
+using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
+using MTM_Receiving_Application.Module_Routing.ViewModels;
 using MTM_Receiving_Application.Module_Settings.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Services;
 using MTM_Receiving_Application.Module_Settings.Interfaces;
@@ -78,6 +81,16 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_InventoriedDunnage(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageCustomField(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageUserPreference(mySqlConnectionString));
+
+                // Register Routing DAOs (Singleton - 001-routing-module)
+                services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
+
+                // Register Routing Services
+                services.AddSingleton<IService_RoutingWorkflow, Service_RoutingWorkflow>();
+                services.AddSingleton<IService_Routing, Service_Routing>();
+                services.AddSingleton<IService_Routing_History, Service_Routing_History>();
+                services.AddSingleton<IService_Routing_RecipientLookup, Service_Routing_RecipientLookup>();
 
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp =>
@@ -145,6 +158,28 @@ public partial class App : Application
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
                 services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 
+                // Routing Services (001-routing-module)
+                services.AddSingleton<IService_Routing>(sp =>
+                {
+                    var daoLabel = sp.GetRequiredService<Dao_Routing_Label>();
+                    var daoRecipient = sp.GetRequiredService<Dao_Routing_Recipient>();
+                    var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Routing(daoLabel, daoRecipient, sessionManager, logger);
+                });
+                services.AddSingleton<IService_Routing_History>(sp =>
+                {
+                    var daoLabel = sp.GetRequiredService<Dao_Routing_Label>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Routing_History(daoLabel, logger);
+                });
+                services.AddSingleton<IService_Routing_RecipientLookup>(sp =>
+                {
+                    var daoRecipient = sp.GetRequiredService<Dao_Routing_Recipient>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Routing_RecipientLookup(daoRecipient, logger);
+                });
+
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
                 services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, Module_Core.Services.Navigation.Service_Navigation>();
@@ -193,10 +228,23 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Settings_DunnageMode>();
                 services.AddTransient<ViewModel_Settings_Placeholder>();
 
+                // Routing Workflow ViewModels (001-routing-module)
+                services.AddTransient<ViewModel_Routing_Workflow>();
+                services.AddTransient<ViewModel_Routing_LabelEntry>();
+                services.AddTransient<ViewModel_Routing_History>();
+                services.AddTransient<ViewModel_Routing_ModeSelection>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
+                services.AddTransient<Main_RoutingLabelPage>();
+
+                // Routing Views (001-routing-module)
+                services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
+                services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
+                services.AddTransient<Module_Routing.Views.View_Routing_History>();
+                services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
 
                 // Settings Views
                 services.AddTransient<View_Settings_Workflow>();

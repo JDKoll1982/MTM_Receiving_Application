@@ -27,7 +27,7 @@ public interface IService_Routing_History
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <returns>DAO result with list of archived labels</returns>
-    Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetHistoryAsync(
+    Task<Model_Dao_Result<List<Model_Routing_Label>>> GetHistoryAsync(
         DateTime startDate,
         DateTime endDate);
 
@@ -35,7 +35,7 @@ public interface IService_Routing_History
     /// Gets all archived labels (no date filter).
     /// </summary>
     /// <returns>DAO result with list of all archived labels</returns>
-    Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetAllHistoryAsync();
+    Task<Model_Dao_Result<List<Model_Routing_Label>>> GetAllHistoryAsync();
 
     /// <summary>
     /// Exports history to CSV file.
@@ -44,7 +44,7 @@ public interface IService_Routing_History
     /// <param name="filePath">Target file path</param>
     /// <returns>DAO result</returns>
     Task<Model_Dao_Result> ExportHistoryToCSVAsync(
-        List<Model_RoutingLabel> labels,
+        List<Model_Routing_Label> labels,
         string filePath);
 }
 

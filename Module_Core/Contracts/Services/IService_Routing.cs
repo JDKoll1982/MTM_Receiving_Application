@@ -17,13 +17,13 @@ public interface IService_Routing
     /// </summary>
     /// <param name="label">Routing label to add</param>
     /// <returns>DAO result with created label ID</returns>
-    Task<Model_Dao_Result<int>> AddLabelAsync(Model_RoutingLabel label);
+    Task<Model_Dao_Result<int>> AddLabelAsync(Model_Routing_Label label);
 
     /// <summary>
     /// Gets all current/today labels (not archived).
     /// </summary>
     /// <returns>DAO result with list of current labels</returns>
-    Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetTodayLabelsAsync();
+    Task<Model_Dao_Result<List<Model_Routing_Label>>> GetTodayLabelsAsync();
 
     /// <summary>
     /// Duplicates a label (copies all fields, increments label number).
@@ -46,7 +46,7 @@ public interface IService_Routing
     /// <param name="filePath">Target file path (optional, uses default if not provided)</param>
     /// <returns>DAO result with file path of generated CSV</returns>
     Task<Model_Dao_Result<string>> ExportToCSVAsync(
-        List<Model_RoutingLabel> labels,
+        List<Model_Routing_Label> labels,
         string? filePath = null);
 
     /// <summary>
@@ -54,7 +54,7 @@ public interface IService_Routing
     /// </summary>
     /// <param name="label">Updated label</param>
     /// <returns>DAO result</returns>
-    Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label);
+    Task<Model_Dao_Result> UpdateLabelAsync(Model_Routing_Label label);
 
     /// <summary>
     /// Deletes a routing label from the queue.
