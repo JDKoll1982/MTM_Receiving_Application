@@ -198,7 +198,6 @@ public partial class ViewModel_Routing_LabelEntry : BaseViewModel
 ### Step 1: Create XAML Views
 
 ```xml
-<!-- Views/Routing/View_Routing_LabelEntry.xaml -->
 <Page x:Class="MTM_Receiving_Application.Views.Routing.View_Routing_LabelEntry"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
