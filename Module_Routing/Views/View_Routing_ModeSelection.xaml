@@ -1,0 +1,95 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Routing.Views.View_Routing_ModeSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Routing.ViewModels"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Select Routing Mode" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
+            
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <!-- Wizard Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectWizardModeCommand}"
+                            Width="280" Height="180"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Guided Wizard Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Step-by-step process for creating routing labels." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Wizard Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsWizardModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetWizardAsDefaultCommand}"
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Manual Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectManualModeCommand}"
+                            Width="280" Height="180"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="Manual Entry Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Grid view for bulk label entry and management." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <!-- Manual Mode Checkbox -->
+                    <CheckBox Content="Set as default mode"
+                              IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
+                              Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- History Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button Command="{x:Bind ViewModel.SelectHistoryModeCommand}"
+                            Width="280" Height="180"
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            AutomationProperties.Name="History Mode">
+                        <StackPanel Spacing="12">
+                            <FontIcon Glyph="&#xE81C;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="History" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="View and manage archived routing labels." 
+                                       Style="{StaticResource BodyTextBlockStyle}" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

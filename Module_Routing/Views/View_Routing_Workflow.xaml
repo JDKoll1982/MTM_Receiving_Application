@@ -16,21 +16,33 @@
 
         <!-- Navigation Tabs -->
         <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Home" Label="Mode Select" Command="{x:Bind ViewModel.NavigateToModeSelectionCommand}"/>
             <AppBarButton Icon="Edit" Label="Label Entry" Command="{x:Bind ViewModel.NavigateToLabelEntryCommand}"/>
             <AppBarButton Icon="Calendar" Label="History" Command="{x:Bind ViewModel.NavigateToHistoryCommand}"/>
             <AppBarSeparator/>
-            <AppBarButton Icon="Print" Label="Print Labels" Command="{x:Bind ViewModel.PrintLabelsCommand}"/>
+            <AppBarButton Icon="Print" Label="Print Labels" Command="{x:Bind ViewModel.PrintLabelsCommand}" IsEnabled="{x:Bind ViewModel.CanPrint, Mode=OneWay}"/>
         </CommandBar>
 
         <!-- Content Area -->
         <Grid Grid.Row="1">
+            <!-- Mode Selection View -->
+            <views:View_Routing_ModeSelection x:Name="ModeSelectionView"
+                                              Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay}"/>
+
             <!-- Label Entry View -->
             <views:View_Routing_LabelEntry x:Name="LabelEntryView"
-                                            Visibility="{x:Bind IsLabelEntryStep(ViewModel.CurrentStep), Mode=OneWay}"/>
+                                            Visibility="{x:Bind ViewModel.IsLabelEntryVisible, Mode=OneWay}"/>
 
             <!-- History View -->
             <views:View_Routing_History x:Name="HistoryView"
-                                         Visibility="{x:Bind IsHistoryStep(ViewModel.CurrentStep), Mode=OneWay}"/>
+                                         Visibility="{x:Bind ViewModel.IsHistoryVisible, Mode=OneWay}"/>
+                                         
+            <!-- Wizard View (Placeholder for now, reuses Label Entry or can be new view) -->
+            <TextBlock Text="Wizard Mode Coming Soon" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center" 
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       Visibility="{x:Bind ViewModel.IsWizardVisible, Mode=OneWay}"/>
         </Grid>
     </Grid>
 </Page>

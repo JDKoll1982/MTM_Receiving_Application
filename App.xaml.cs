@@ -86,6 +86,12 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
 
+                // Register Routing Services
+                services.AddSingleton<IService_RoutingWorkflow, Service_RoutingWorkflow>();
+                services.AddSingleton<IService_Routing, Service_Routing>();
+                services.AddSingleton<IService_Routing_History, Service_Routing_History>();
+                services.AddSingleton<IService_Routing_RecipientLookup, Service_Routing_RecipientLookup>();
+
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp =>
                 {
@@ -226,6 +232,7 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Routing_Workflow>();
                 services.AddTransient<ViewModel_Routing_LabelEntry>();
                 services.AddTransient<ViewModel_Routing_History>();
+                services.AddTransient<ViewModel_Routing_ModeSelection>();
 
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
@@ -237,6 +244,7 @@ public partial class App : Application
                 services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
                 services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
                 services.AddTransient<Module_Routing.Views.View_Routing_History>();
+                services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
 
                 // Settings Views
                 services.AddTransient<View_Settings_Workflow>();

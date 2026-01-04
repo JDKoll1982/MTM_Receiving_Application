@@ -15,7 +15,7 @@ CREATE PROCEDURE sp_routing_label_delete(
     IN p_id INT,
     OUT p_error_message VARCHAR(500)
 )
-BEGIN
+proc: BEGIN
     DECLARE v_exists INT DEFAULT 0;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -39,7 +39,7 @@ BEGIN
     IF v_exists = 0 THEN
         SET p_error_message = 'Label ID not found';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Delete label
@@ -48,6 +48,6 @@ BEGIN
     
     -- Commit transaction
     COMMIT;
-END$$
+END proc$$
 
 DELIMITER ;

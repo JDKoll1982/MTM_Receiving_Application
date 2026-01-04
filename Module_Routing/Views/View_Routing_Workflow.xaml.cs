@@ -23,15 +23,4 @@ public sealed partial class View_Routing_Workflow : Page
         ViewModel.HistoryViewModel = HistoryView.ViewModel;
         await ViewModel.InitializeAsync();
     }
-
-    // Visibility converters for workflow steps
-    private Visibility IsLabelEntryStep(Enum_Routing_WorkflowStep step)
-    {
-        return step == Enum_Routing_WorkflowStep.LabelEntry ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    private Visibility IsHistoryStep(Enum_Routing_WorkflowStep step)
-    {
-        return step == Enum_Routing_WorkflowStep.History ? Visibility.Visible : Visibility.Collapsed;
-    }
 }

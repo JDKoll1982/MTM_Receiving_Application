@@ -18,7 +18,7 @@ CREATE PROCEDURE sp_routing_recipient_update(
     IN p_is_active TINYINT(1),
     OUT p_error_message VARCHAR(500)
 )
-BEGIN
+proc: BEGIN
     DECLARE v_exists INT DEFAULT 0;
     DECLARE v_name_duplicate INT DEFAULT 0;
     
@@ -43,14 +43,14 @@ BEGIN
     IF v_exists = 0 THEN
         SET p_error_message = 'Recipient ID not found';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Validate name is provided
     IF p_name IS NULL OR TRIM(p_name) = '' THEN
         SET p_error_message = 'Recipient name is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Check if name already exists for a different recipient
@@ -62,7 +62,7 @@ BEGIN
     IF v_name_duplicate > 0 THEN
         SET p_error_message = 'Recipient name already exists';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Update recipient
@@ -75,6 +75,6 @@ BEGIN
     
     -- Commit transaction
     COMMIT;
-END$$
+END proc$$
 
 DELIMITER ;

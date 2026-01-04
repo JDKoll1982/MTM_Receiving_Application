@@ -80,7 +80,7 @@ public class Dao_Routing_Label
             }
 
             var newId = newIdParam.Value != DBNull.Value ? Convert.ToInt32(newIdParam.Value) : 0;
-            return Model_Dao_Result_Factory.Success(newId, $"Routing label inserted successfully (ID: {newId})");
+            return Model_Dao_Result_Factory.Success<int>(newId);
         }
         catch (Exception ex)
         {
@@ -104,10 +104,10 @@ public class Dao_Routing_Label
             { "@p_today_date", todayDate.Date }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Routing_Label>(
             _connectionString,
             "sp_routing_label_get_today",
-            MapReaderToLabel,
+            reader => MapReaderToLabel((MySqlDataReader)reader),
             parameters
         );
     }
@@ -126,10 +126,10 @@ public class Dao_Routing_Label
             { "@p_end_date", endDate.Date }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Routing_Label>(
             _connectionString,
             "sp_routing_label_get_history",
-            MapReaderToLabel,
+            reader => MapReaderToLabel((MySqlDataReader)reader),
             parameters
         );
     }
@@ -283,15 +283,56 @@ public class Dao_Routing_Label
                 return Model_Dao_Result_Factory.Failure<int>(errorMessage);
             }
 
-            var archivedCount = archivedCountParam.Value != DBNull.Value 
-                ? Convert.ToInt32(archivedCountParam.Value) 
+            var archivedCount = archivedCountParam.Value != DBNull.Value
+                ? Convert.ToInt32(archivedCountParam.Value)
                 : 0;
 
-            return Model_Dao_Result_Factory.Success(archivedCount, $"{archivedCount} labels archived successfully");
+            return Model_Dao_Result_Factory.Success<int>(archivedCount);
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<int>($"Error archiving routing labels: {ex.Message}", ex);
+        }
+    }
+
+    // ====================================================================
+    // History Operations
+    // ====================================================================
+
+    /// <summary>
+    /// Retrieves archived routing labels filtered by date range.
+    /// </summary>
+    /// <param name="startDate">Start date for filter</param>
+    /// <param name="endDate">End date for filter</param>
+    /// <returns>Result containing list of archived labels or error</returns>
+    public async Task<Model_Dao_Result<List<Model_Routing_Label>>> GetHistoryAsync(DateTime startDate, DateTime endDate)
+    {
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand("sp_routing_label_get_history", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            command.Parameters.AddWithValue("@p_start_date", startDate);
+            command.Parameters.AddWithValue("@p_end_date", endDate);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            var labels = new List<Model_Routing_Label>();
+
+            while (await reader.ReadAsync())
+            {
+                labels.Add(MapReaderToLabel((MySqlDataReader)reader));
+            }
+
+            return Model_Dao_Result_Factory.Success(labels);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_Routing_Label>>($"Error retrieving routing label history: {ex.Message}", ex);
         }
     }
 
@@ -310,14 +351,14 @@ public class Dao_Routing_Label
             LabelNumber = reader.GetInt32("label_number"),
             DeliverTo = reader.GetString("deliver_to"),
             Department = reader.GetString("department"),
-            PackageDescription = reader.IsDBNull(reader.GetOrdinal("package_description")) 
-                ? null 
+            PackageDescription = reader.IsDBNull(reader.GetOrdinal("package_description"))
+                ? null
                 : reader.GetString("package_description"),
-            PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number")) 
-                ? null 
+            PoNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+                ? null
                 : reader.GetString("po_number"),
-            WorkOrder = reader.IsDBNull(reader.GetOrdinal("work_order")) 
-                ? null 
+            WorkOrder = reader.IsDBNull(reader.GetOrdinal("work_order"))
+                ? null
                 : reader.GetString("work_order"),
             EmployeeNumber = reader.GetString("employee_number"),
             CreatedDate = reader.GetDateTime("created_date"),

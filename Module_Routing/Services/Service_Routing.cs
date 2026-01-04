@@ -74,7 +74,7 @@ public class Service_Routing : IService_Routing
                 var nextNumberResult = await GetNextLabelNumberAsync();
                 if (!nextNumberResult.IsSuccess)
                 {
-                    return Model_Dao_Result_Factory.Failure<int>(nextNumberResult.Message);
+                    return Model_Dao_Result_Factory.Failure<int>(nextNumberResult.ErrorMessage);
                 }
                 label.LabelNumber = nextNumberResult.Data;
             }
@@ -83,6 +83,14 @@ public class Service_Routing : IService_Routing
             if (label.CreatedDate == default)
             {
                 label.CreatedDate = DateTime.Today;
+            }
+
+            // Example logic to add
+            if (!string.IsNullOrWhiteSpace(label.PoNumber) &&
+                int.TryParse(label.PoNumber, out _) &&
+                label.PoNumber.Length == 5)
+            {
+                label.PoNumber = $"PO-{label.PoNumber}";
             }
 
             // Insert label
@@ -119,7 +127,7 @@ public class Service_Routing : IService_Routing
             var todayLabelsResult = await GetTodayLabelsAsync();
             if (!todayLabelsResult.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.Message);
+                return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.ErrorMessage);
             }
 
             var originalLabel = todayLabelsResult.Data.FirstOrDefault(l => l.Id == labelId);
@@ -132,7 +140,7 @@ public class Service_Routing : IService_Routing
             var nextNumberResult = await GetNextLabelNumberAsync();
             if (!nextNumberResult.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<int>(nextNumberResult.Message);
+                return Model_Dao_Result_Factory.Failure<int>(nextNumberResult.ErrorMessage);
             }
 
             // Create duplicate with new label number
@@ -165,7 +173,7 @@ public class Service_Routing : IService_Routing
             var todayLabelsResult = await _daoLabel.GetTodayLabelsAsync(DateTime.Today);
             if (!todayLabelsResult.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.Message);
+                return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.ErrorMessage);
             }
 
             var maxLabelNumber = 0;
@@ -176,7 +184,7 @@ public class Service_Routing : IService_Routing
 
             var nextNumber = maxLabelNumber + 1;
             _logger.LogInfo($"Next label number: {nextNumber}");
-            return Model_Dao_Result_Factory.Success(nextNumber, $"Next label number: {nextNumber}");
+            return Model_Dao_Result_Factory.Success<int>(nextNumber);
         }
         catch (Exception ex)
         {
@@ -237,7 +245,7 @@ public class Service_Routing : IService_Routing
             }
 
             _logger.LogInfo($"CSV export completed: {targetPath}");
-            return Model_Dao_Result_Factory.Success(targetPath, $"Exported {labels.Count} labels to {targetPath}");
+            return Model_Dao_Result_Factory.Success(targetPath);
         }
         catch (Exception ex)
         {

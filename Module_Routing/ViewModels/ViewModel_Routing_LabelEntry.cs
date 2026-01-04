@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -57,7 +58,8 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     [RelayCommand]
     private async Task LoadTodayLabelsAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -78,13 +80,13 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.HandleErrorAsync(result.Message, Core.Models.Enums.Enum_ErrorSeverity.Error, null, true);
+                await _errorHandler.HandleErrorAsync(result.ErrorMessage, Enum_ErrorSeverity.Error, null, true);
                 StatusMessage = "Error loading labels";
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error loading labels", Core.Models.Enums.Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync("Error loading labels", Enum_ErrorSeverity.Error, ex, true);
             StatusMessage = "Error loading labels";
         }
         finally
@@ -119,7 +121,8 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     [RelayCommand]
     private async Task AddNewLabelAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -127,7 +130,7 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
             StatusMessage = "Adding new label...";
 
             var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber.ToString() ?? "0";
-            
+
             var newLabel = new Model_Routing_Label
             {
                 LabelNumber = NextLabelNumber,
@@ -149,13 +152,13 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.HandleErrorAsync(result.Message, Core.Models.Enums.Enum_ErrorSeverity.Error, null, true);
+                await _errorHandler.HandleErrorAsync(result.ErrorMessage, Enum_ErrorSeverity.Error, null, true);
                 StatusMessage = "Error adding label";
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error adding label", Core.Models.Enums.Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync("Error adding label", Enum_ErrorSeverity.Error, ex, true);
             StatusMessage = "Error adding label";
         }
         finally
@@ -167,7 +170,8 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     [RelayCommand]
     private async Task DuplicateSelectedLabelAsync()
     {
-        if (SelectedLabel == null || IsBusy) return;
+        if (SelectedLabel == null || IsBusy)
+            return;
 
         try
         {
@@ -183,13 +187,13 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.HandleErrorAsync(result.Message, Core.Models.Enums.Enum_ErrorSeverity.Error, null, true);
+                await _errorHandler.HandleErrorAsync(result.ErrorMessage, Enum_ErrorSeverity.Error, null, true);
                 StatusMessage = "Error duplicating label";
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error duplicating label", Core.Models.Enums.Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync("Error duplicating label", Enum_ErrorSeverity.Error, ex, true);
             StatusMessage = "Error duplicating label";
         }
         finally
@@ -201,7 +205,8 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     [RelayCommand]
     private async Task DeleteSelectedLabelAsync()
     {
-        if (SelectedLabel == null || IsBusy) return;
+        if (SelectedLabel == null || IsBusy)
+            return;
 
         try
         {
@@ -218,13 +223,13 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
             }
             else
             {
-                await _errorHandler.HandleErrorAsync(result.Message, Core.Models.Enums.Enum_ErrorSeverity.Error, null, true);
+                await _errorHandler.HandleErrorAsync(result.ErrorMessage, Enum_ErrorSeverity.Error, null, true);
                 StatusMessage = "Error deleting label";
             }
         }
         catch (Exception ex)
         {
-            await _errorHandler.HandleErrorAsync("Error deleting label", Core.Models.Enums.Enum_ErrorSeverity.Error, ex, true);
+            await _errorHandler.HandleErrorAsync("Error deleting label", Enum_ErrorSeverity.Error, ex, true);
             StatusMessage = "Error deleting label";
         }
         finally
@@ -238,7 +243,8 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     /// </summary>
     public async Task OnRecipientSelectedAsync(string recipientName)
     {
-        if (string.IsNullOrWhiteSpace(recipientName)) return;
+        if (string.IsNullOrWhiteSpace(recipientName))
+            return;
 
         try
         {

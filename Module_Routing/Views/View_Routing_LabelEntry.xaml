@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Routing.ViewModels"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
     <Grid Padding="24" RowSpacing="16">
@@ -35,22 +36,20 @@
 
         <!-- Data Grid -->
         <ScrollViewer Grid.Row="2">
-            <DataGrid x:Name="LabelsDataGrid"
+            <controls:DataGrid x:Name="LabelsDataGrid"
                       ItemsSource="{x:Bind ViewModel.Labels, Mode=OneWay}"
                       SelectedItem="{x:Bind ViewModel.SelectedLabel, Mode=TwoWay}"
                       AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
                       AlternatingRowBackground="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Label #" Binding="{Binding LabelNumber}" Width="80" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Deliver To" Binding="{Binding DeliverTo, Mode=TwoWay}" Width="200"/>
-                    <DataGridTextColumn Header="Department" Binding="{Binding Department, Mode=TwoWay}" Width="200"/>
-                    <DataGridTextColumn Header="Description" Binding="{Binding PackageDescription, Mode=TwoWay}" Width="250"/>
-                    <DataGridTextColumn Header="PO Number" Binding="{Binding PoNumber, Mode=TwoWay}" Width="120"/>
-                    <DataGridTextColumn Header="Work Order" Binding="{Binding WorkOrder, Mode=TwoWay}" Width="120"/>
-                </DataGrid.Columns>
-            </DataGrid>
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Header="Label #" Binding="{Binding LabelNumber}" Width="80" IsReadOnly="True"/>
+                    <controls:DataGridTextColumn Header="Deliver To" Binding="{Binding DeliverTo, Mode=TwoWay}" Width="200"/>
+                    <controls:DataGridTextColumn Header="Department" Binding="{Binding Department, Mode=TwoWay}" Width="200"/>
+                    <controls:DataGridTextColumn Header="Description" Binding="{Binding PackageDescription, Mode=TwoWay}" Width="250"/>
+                    <controls:DataGridTextColumn Header="PO Number" Binding="{Binding PoNumber, Mode=TwoWay}" Width="120"/>
+                    <controls:DataGridTextColumn Header="Work Order" Binding="{Binding WorkOrder, Mode=TwoWay}" Width="120"/>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
         </ScrollViewer>
 
         <!-- Status Bar -->

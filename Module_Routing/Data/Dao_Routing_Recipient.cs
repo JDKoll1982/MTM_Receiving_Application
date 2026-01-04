@@ -38,10 +38,10 @@ public class Dao_Routing_Recipient
     {
         var parameters = new Dictionary<string, object>();
 
-        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Routing_Recipient>(
             _connectionString,
             "sp_routing_recipient_get_all",
-            MapReaderToRecipient,
+            reader => MapReaderToRecipient((MySqlDataReader)reader),
             parameters
         );
     }
@@ -58,10 +58,10 @@ public class Dao_Routing_Recipient
             { "@p_name", name }
         };
 
-        return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+        return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_Routing_Recipient>(
             _connectionString,
             "sp_routing_recipient_get_by_name",
-            MapReaderToRecipient,
+            reader => MapReaderToRecipient((MySqlDataReader)reader),
             parameters
         );
     }
@@ -114,7 +114,7 @@ public class Dao_Routing_Recipient
             }
 
             var newId = newIdParam.Value != DBNull.Value ? Convert.ToInt32(newIdParam.Value) : 0;
-            return Model_Dao_Result_Factory.Success(newId, $"Routing recipient inserted successfully (ID: {newId})");
+            return Model_Dao_Result_Factory.Success<int>(newId);
         }
         catch (Exception ex)
         {
@@ -173,6 +173,47 @@ public class Dao_Routing_Recipient
         }
     }
 
+    /// <summary>
+    /// Deletes a routing recipient by ID.
+    /// </summary>
+    /// <param name="recipientId">ID of recipient to delete</param>
+    /// <returns>Result indicating success or error</returns>
+    public async Task<Model_Dao_Result> DeleteAsync(int recipientId)
+    {
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand("sp_routing_recipient_delete", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            command.Parameters.AddWithValue("@p_id", recipientId);
+
+            var errorParam = new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500)
+            {
+                Direction = ParameterDirection.Output
+            };
+            command.Parameters.Add(errorParam);
+
+            await command.ExecuteNonQueryAsync();
+
+            var errorMessage = errorParam.Value?.ToString();
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return Model_Dao_Result_Factory.Failure(errorMessage);
+            }
+
+            return Model_Dao_Result_Factory.Success("Routing recipient deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure($"Error deleting routing recipient: {ex.Message}", ex);
+        }
+    }
+
     // ====================================================================
     // Mapping Methods
     // ====================================================================
@@ -186,8 +227,8 @@ public class Dao_Routing_Recipient
         {
             Id = reader.GetInt32("id"),
             Name = reader.GetString("name"),
-            DefaultDepartment = reader.IsDBNull(reader.GetOrdinal("default_department")) 
-                ? null 
+            DefaultDepartment = reader.IsDBNull(reader.GetOrdinal("default_department"))
+                ? null
                 : reader.GetString("default_department"),
             IsActive = reader.GetBoolean("is_active"),
             CreatedDate = reader.GetDateTime("created_date")

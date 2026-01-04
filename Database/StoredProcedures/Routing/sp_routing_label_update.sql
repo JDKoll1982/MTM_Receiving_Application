@@ -21,7 +21,7 @@ CREATE PROCEDURE sp_routing_label_update(
     IN p_work_order VARCHAR(50),
     OUT p_error_message VARCHAR(500)
 )
-BEGIN
+proc: BEGIN
     DECLARE v_exists INT DEFAULT 0;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -45,20 +45,20 @@ BEGIN
     IF v_exists = 0 THEN
         SET p_error_message = 'Label ID not found';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Validate required fields
     IF p_deliver_to IS NULL OR TRIM(p_deliver_to) = '' THEN
         SET p_error_message = 'Deliver To recipient is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     IF p_department IS NULL OR TRIM(p_department) = '' THEN
         SET p_error_message = 'Department is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Update label
@@ -74,6 +74,6 @@ BEGIN
     
     -- Commit transaction
     COMMIT;
-END$$
+END proc$$
 
 DELIMITER ;

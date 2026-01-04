@@ -75,7 +75,7 @@ public class Service_Routing_History : IService_Routing_History
             var historyResult = await GetHistoryByDateRangeAsync(startDate, endDate);
             if (!historyResult.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<Dictionary<DateTime, List<Model_Routing_Label>>>(historyResult.Message);
+                return Model_Dao_Result_Factory.Failure<Dictionary<DateTime, List<Model_Routing_Label>>>(historyResult.ErrorMessage);
             }
 
             // Group by date
@@ -85,7 +85,7 @@ public class Service_Routing_History : IService_Routing_History
                 .ToDictionary(g => g.Key, g => g.OrderBy(l => l.LabelNumber).ToList());
 
             _logger.LogInfo($"Retrieved {groupedData.Count} days of history with {historyResult.Data.Count} total labels");
-            return Model_Dao_Result_Factory.Success(groupedData, $"Retrieved {groupedData.Count} days of history");
+            return Model_Dao_Result_Factory.Success(groupedData);
         }
         catch (Exception ex)
         {
@@ -106,6 +106,54 @@ public class Service_Routing_History : IService_Routing_History
         {
             _logger.LogError($"Error retrieving today's history: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_Routing_Label>>($"Error retrieving today's history: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<Model_Dao_Result<int>> ArchiveTodayToHistoryAsync()
+    {
+        try
+        {
+            var todayLabelsResult = await GetTodayHistoryAsync();
+            if (!todayLabelsResult.IsSuccess)
+            {
+                return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.ErrorMessage);
+            }
+
+            var labelIds = todayLabelsResult.Data.Select(l => l.Id).ToList();
+            return await ArchiveLabelsAsync(labelIds);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error archiving today's labels: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>($"Error archiving today's labels: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<Model_Dao_Result<List<Model_Routing_Label>>> GetHistoryAsync(DateTime startDate, DateTime endDate)
+    {
+        return await GetHistoryByDateRangeAsync(startDate, endDate);
+    }
+
+    public async Task<Model_Dao_Result<List<Model_Routing_Label>>> GetAllHistoryAsync()
+    {
+        return await GetHistoryByDateRangeAsync(DateTime.MinValue, DateTime.MaxValue);
+    }
+
+    public async Task<Model_Dao_Result> ExportHistoryToCSVAsync(List<Model_Routing_Label> labels, string filePath)
+    {
+        try
+        {
+            using (var writer = new System.IO.StreamWriter(filePath))
+            using (var csv = new CsvHelper.CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+            {
+                await csv.WriteRecordsAsync(labels);
+            }
+            return Model_Dao_Result_Factory.Success();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error exporting history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure($"Error exporting history: {ex.Message}", ex);
         }
     }
 }

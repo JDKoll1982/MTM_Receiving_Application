@@ -17,7 +17,7 @@ CREATE PROCEDURE sp_routing_recipient_insert(
     OUT p_new_recipient_id INT,
     OUT p_error_message VARCHAR(500)
 )
-BEGIN
+proc:BEGIN
     DECLARE v_name_exists INT DEFAULT 0;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -39,7 +39,7 @@ BEGIN
     IF p_name IS NULL OR TRIM(p_name) = '' THEN
         SET p_error_message = 'Recipient name is required';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Check if name already exists
@@ -50,7 +50,7 @@ BEGIN
     IF v_name_exists > 0 THEN
         SET p_error_message = 'Recipient name already exists';
         ROLLBACK;
-        LEAVE;
+        LEAVE proc;
     END IF;
     
     -- Insert recipient
@@ -69,6 +69,6 @@ BEGIN
     
     -- Commit transaction
     COMMIT;
-END$$
+END proc$$
 
 DELIMITER ;

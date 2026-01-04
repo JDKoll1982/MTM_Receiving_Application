@@ -101,12 +101,7 @@
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE724;" />
                     </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage" Margin="0,0,0,4">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE707;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                </NavigationViewItem>                
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" />
