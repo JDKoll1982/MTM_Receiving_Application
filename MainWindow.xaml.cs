@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Converters;
+using MTM_Receiving_Application.Module_Core.Converters;
 
 namespace MTM_Receiving_Application
 {

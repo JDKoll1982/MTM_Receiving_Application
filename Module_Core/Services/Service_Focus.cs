@@ -37,10 +37,7 @@ namespace MTM_Receiving_Application.Module_Core.Services
                 fe.DispatcherQueue.TryEnqueue(() =>
                 {
                     var control = FindFirstFocusableChild(container);
-                    if (control != null)
-                    {
-                        control.Focus(FocusState.Programmatic);
-                    }
+                    control?.Focus(FocusState.Programmatic);
                 });
             }
         }
@@ -64,7 +61,7 @@ namespace MTM_Receiving_Application.Module_Core.Services
             }
 
             // Hook into Loaded to handle initial focus
-            view.Loaded += (s, e) =>
+            view.Loaded += (_, _) =>
             {
                 if (view.Visibility == Visibility.Visible)
                 {
@@ -80,7 +77,7 @@ namespace MTM_Receiving_Application.Module_Core.Services
             };
 
             // Hook into Visibility changes
-            view.RegisterPropertyChangedCallback(UIElement.VisibilityProperty, (s, dp) =>
+            view.RegisterPropertyChangedCallback(UIElement.VisibilityProperty, (_, _) =>
             {
                 if (view.Visibility == Visibility.Visible)
                 {

@@ -24,8 +24,10 @@ public class Dao_Reporting
     /// <summary>
     /// Retrieves receiving history from vw_receiving_history view
     /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
         try
@@ -46,39 +48,39 @@ public class Dao_Reporting
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC, id DESC";
 
-            using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new MySqlCommand(query, connection);
+            await using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@StartDate", startDate.Date);
             command.Parameters.AddWithValue("@EndDate", endDate.Date);
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             var rows = new List<Model_ReportRow>();
 
             while (await reader.ReadAsync())
             {
                 rows.Add(new Model_ReportRow
                 {
-                    Id = reader.GetInt32("id"),
-                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetInt32("po_number").ToString(),
+                    Id = reader.GetGuid("id").ToString(),
+                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
                     PartNumber = reader.IsDBNull(reader.GetOrdinal("part_number")) ? null : reader.GetString("part_number"),
                     PartDescription = reader.IsDBNull(reader.GetOrdinal("part_description")) ? null : reader.GetString("part_description"),
                     Quantity = reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetDecimal("quantity"),
                     WeightLbs = reader.IsDBNull(reader.GetOrdinal("weight_lbs")) ? null : reader.GetDecimal("weight_lbs"),
                     HeatLotNumber = reader.IsDBNull(reader.GetOrdinal("heat_lot_number")) ? null : reader.GetString("heat_lot_number"),
                     CreatedDate = reader.GetDateTime("created_date"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetInt32("employee_number").ToString(),
+                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
                     SourceModule = reader.GetString("source_module")
                 });
             }
 
-            return Model_Dao_Result_Factory.Success(rows, $"Retrieved {rows.Count} receiving records");
+            return Model_Dao_Result_Factory.Success(rows);
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_ReportRow>>(
-                $"Error retrieving receiving history: {ex.Message}", 
+                $"Error retrieving receiving history: {ex.Message}",
                 ex);
         }
     }
@@ -86,8 +88,10 @@ public class Dao_Reporting
     /// <summary>
     /// Retrieves dunnage history from vw_dunnage_history view
     /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetDunnageHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
         try
@@ -106,37 +110,37 @@ public class Dao_Reporting
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC";
 
-            using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new MySqlCommand(query, connection);
+            await using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@StartDate", startDate.Date);
             command.Parameters.AddWithValue("@EndDate", endDate.Date);
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             var rows = new List<Model_ReportRow>();
 
             while (await reader.ReadAsync())
             {
                 rows.Add(new Model_ReportRow
                 {
-                    Id = reader.GetInt32("id"),
+                    Id = reader.GetGuid("id").ToString(),
                     DunnageType = reader.IsDBNull(reader.GetOrdinal("dunnage_type")) ? null : reader.GetString("dunnage_type"),
                     PartNumber = reader.IsDBNull(reader.GetOrdinal("part_number")) ? null : reader.GetString("part_number"),
                     SpecsCombined = reader.IsDBNull(reader.GetOrdinal("specs_combined")) ? null : reader.GetString("specs_combined"),
                     Quantity = reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetDecimal("quantity"),
                     CreatedDate = reader.GetDateTime("created_date"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetInt32("employee_number").ToString(),
+                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
                     SourceModule = reader.GetString("source_module")
                 });
             }
 
-            return Model_Dao_Result_Factory.Success(rows, $"Retrieved {rows.Count} dunnage records");
+            return Model_Dao_Result_Factory.Success(rows);
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_ReportRow>>(
-                $"Error retrieving dunnage history: {ex.Message}", 
+                $"Error retrieving dunnage history: {ex.Message}",
                 ex);
         }
     }
@@ -144,8 +148,10 @@ public class Dao_Reporting
     /// <summary>
     /// Retrieves routing history from vw_routing_history view
     /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
         try
@@ -165,38 +171,38 @@ public class Dao_Reporting
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC, id ASC";
 
-            using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new MySqlCommand(query, connection);
+            await using var command = new MySqlCommand(query, connection);
             command.Parameters.AddWithValue("@StartDate", startDate.Date);
             command.Parameters.AddWithValue("@EndDate", endDate.Date);
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             var rows = new List<Model_ReportRow>();
 
             while (await reader.ReadAsync())
             {
                 rows.Add(new Model_ReportRow
                 {
-                    Id = reader.GetInt32("id"),
+                    Id = reader.GetInt32("id").ToString(),
                     DeliverTo = reader.IsDBNull(reader.GetOrdinal("deliver_to")) ? null : reader.GetString("deliver_to"),
                     Department = reader.IsDBNull(reader.GetOrdinal("department")) ? null : reader.GetString("department"),
                     PackageDescription = reader.IsDBNull(reader.GetOrdinal("package_description")) ? null : reader.GetString("package_description"),
-                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetInt32("po_number").ToString(),
+                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
                     WorkOrderNumber = reader.IsDBNull(reader.GetOrdinal("work_order_number")) ? null : reader.GetString("work_order_number"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetInt32("employee_number").ToString(),
+                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
                     CreatedDate = reader.GetDateTime("created_date"),
                     SourceModule = reader.GetString("source_module")
                 });
             }
 
-            return Model_Dao_Result_Factory.Success(rows, $"Retrieved {rows.Count} routing records");
+            return Model_Dao_Result_Factory.Success(rows);
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<List<Model_ReportRow>>(
-                $"Error retrieving routing history: {ex.Message}", 
+                $"Error retrieving routing history: {ex.Message}",
                 ex);
         }
     }
@@ -204,30 +210,33 @@ public class Dao_Reporting
     /// <summary>
     /// Retrieves Volvo history from vw_volvo_history view (placeholder)
     /// </summary>
+    /// <param name="_"></param>
+    /// <param name="__"></param>
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
-        DateTime startDate, 
-        DateTime endDate)
+        DateTime _ = default,
+        DateTime __ = default)
     {
         // Placeholder - returns empty list until Volvo module is implemented
         return await Task.FromResult(
             Model_Dao_Result_Factory.Success(
-                new List<Model_ReportRow>(), 
-                "Volvo module not yet implemented"));
+                new List<Model_ReportRow>()));
     }
 
     /// <summary>
     /// Checks data availability for each module in date range
     /// Returns dictionary of module name → record count
     /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
     public async Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
         try
         {
             var availability = new Dictionary<string, int>();
 
-            using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
             // Check Receiving
@@ -245,12 +254,12 @@ public class Dao_Reporting
             // Check Volvo (placeholder)
             availability["Volvo"] = 0;
 
-            return Model_Dao_Result_Factory.Success(availability, "Availability check complete");
+            return Model_Dao_Result_Factory.Success(availability);
         }
         catch (Exception ex)
         {
             return Model_Dao_Result_Factory.Failure<Dictionary<string, int>>(
-                $"Error checking availability: {ex.Message}", 
+                $"Error checking availability: {ex.Message}",
                 ex);
         }
     }
@@ -258,10 +267,14 @@ public class Dao_Reporting
     /// <summary>
     /// Helper method to get count from a view
     /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="viewName"></param>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
     private async Task<int> GetCountAsync(
-        MySqlConnection connection, 
-        string viewName, 
-        DateTime startDate, 
+        MySqlConnection connection,
+        string viewName,
+        DateTime startDate,
         DateTime endDate)
     {
         var query = $@"
@@ -269,7 +282,7 @@ public class Dao_Reporting
             FROM {viewName}
             WHERE created_date BETWEEN @StartDate AND @EndDate";
 
-        using var command = new MySqlCommand(query, connection);
+        await using var command = new MySqlCommand(query, connection);
         command.Parameters.AddWithValue("@StartDate", startDate.Date);
         command.Parameters.AddWithValue("@EndDate", endDate.Date);
 

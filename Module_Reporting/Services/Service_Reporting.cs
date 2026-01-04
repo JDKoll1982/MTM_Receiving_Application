@@ -29,12 +29,12 @@ public class Service_Reporting : IService_Reporting
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
-        await _logger.LogInformationAsync($"Retrieving Receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo($"Retrieving Receiving history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
         var result = await _dao.GetReceivingHistoryAsync(startDate, endDate);
-        
+
         // Normalize PO numbers
         if (result.IsSuccess && result.Data != null)
         {
@@ -43,25 +43,25 @@ public class Service_Reporting : IService_Reporting
                 row.PONumber = NormalizePONumber(row.PONumber);
             }
         }
-        
+
         return result;
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetDunnageHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
-        await _logger.LogInformationAsync($"Retrieving Dunnage history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo($"Retrieving Dunnage history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
         return await _dao.GetDunnageHistoryAsync(startDate, endDate);
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
-        await _logger.LogInformationAsync($"Retrieving Routing history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo($"Retrieving Routing history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
         var result = await _dao.GetRoutingHistoryAsync(startDate, endDate);
-        
+
         // Normalize PO numbers
         if (result.IsSuccess && result.Data != null)
         {
@@ -70,23 +70,23 @@ public class Service_Reporting : IService_Reporting
                 row.PONumber = NormalizePONumber(row.PONumber);
             }
         }
-        
+
         return result;
     }
 
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
-        await _logger.LogInformationAsync($"Retrieving Volvo history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo($"Retrieving Volvo history from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
         return await _dao.GetVolvoHistoryAsync(startDate, endDate);
     }
 
     public async Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
-        DateTime startDate, 
+        DateTime startDate,
         DateTime endDate)
     {
-        await _logger.LogInformationAsync($"Checking module availability from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+        _logger.LogInfo($"Checking module availability from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
         return await _dao.CheckAvailabilityAsync(startDate, endDate);
     }
 
@@ -94,30 +94,31 @@ public class Service_Reporting : IService_Reporting
     /// Normalizes PO number to standard format
     /// Matches EndOfDayEmail.js normalizePO() algorithm
     /// </summary>
+    /// <param name="poNumber"></param>
     public string NormalizePONumber(string? poNumber)
     {
         // Handle null or empty
         if (string.IsNullOrWhiteSpace(poNumber))
             return "No PO";
-        
+
         poNumber = poNumber.Trim();
-        
+
         // Pass through specific non-numeric values
         if (poNumber.Equals("Customer Supplied", StringComparison.OrdinalIgnoreCase))
             return "Customer Supplied";
-        
+
         // Extract numeric part and suffix
         string numericPart = new string(poNumber.TakeWhile(char.IsDigit).ToArray());
         string suffix = poNumber.Substring(numericPart.Length);
-        
+
         // Validate length (must be at least 5 digits)
         if (numericPart.Length < 5)
             return "Validate PO";
-        
+
         // Pad to 6 digits if exactly 5
         if (numericPart.Length == 5)
             numericPart = "0" + numericPart;
-        
+
         // Format as PO-XXXXXX + optional suffix
         return "PO-" + numericPart + suffix;
     }
@@ -125,17 +126,19 @@ public class Service_Reporting : IService_Reporting
     /// <summary>
     /// Exports data to CSV file matching MiniUPSLabel.csv structure
     /// </summary>
+    /// <param name="data"></param>
+    /// <param name="moduleName"></param>
     public async Task<Model_Dao_Result<string>> ExportToCSVAsync(
-        List<Model_ReportRow> data, 
+        List<Model_ReportRow> data,
         string moduleName)
     {
         try
         {
-            await _logger.LogInformationAsync($"Exporting {data.Count} records to CSV for {moduleName} module");
+            _logger.LogInfo($"Exporting {data.Count} records to CSV for {moduleName} module");
 
             // Create CSV content based on module
             var csv = new StringBuilder();
-            
+
             switch (moduleName.ToLower())
             {
                 case "receiving":
@@ -183,13 +186,13 @@ public class Service_Reporting : IService_Reporting
             var filePath = Path.Combine(mtmFolder, fileName);
 
             await File.WriteAllTextAsync(filePath, csv.ToString());
-            await _logger.LogInformationAsync($"CSV exported successfully to {filePath}");
+            _logger.LogInfo($"CSV exported successfully to {filePath}");
 
-            return Model_Dao_Result_Factory.Success(filePath, $"CSV exported to {filePath}");
+            return Model_Dao_Result_Factory.Success(filePath);
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error exporting CSV: {ex.Message}", ex);
+            _logger.LogError($"Error exporting CSV: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<string>($"CSV export failed: {ex.Message}", ex);
         }
     }
@@ -198,27 +201,29 @@ public class Service_Reporting : IService_Reporting
     /// Formats data as HTML table with alternating row colors grouped by date
     /// Matches Google Sheets colorHistory() function behavior
     /// </summary>
+    /// <param name="data"></param>
+    /// <param name="applyDateGrouping"></param>
     public async Task<Model_Dao_Result<string>> FormatForEmailAsync(
-        List<Model_ReportRow> data, 
+        List<Model_ReportRow> data,
         bool applyDateGrouping = true)
     {
         try
         {
-            await _logger.LogInformationAsync($"Formatting {data.Count} records for email");
+            _logger.LogInfo($"Formatting {data.Count} records for email");
 
             if (data.Count == 0)
-                return Model_Dao_Result_Factory.Success("<p>No data to display</p>", "No data");
+                return Model_Dao_Result_Factory.Success("<p>No data to display</p>");
 
             var html = new StringBuilder();
             html.AppendLine("<table style='border-collapse: collapse; width: 100%;'>");
-            
+
             // Determine module type from first row
             var moduleName = data[0].SourceModule;
-            
+
             // Add header based on module type
             html.AppendLine("<thead>");
             html.AppendLine("<tr style='background-color: #f0f0f0; font-weight: bold;'>");
-            
+
             switch (moduleName.ToLower())
             {
                 case "receiving":
@@ -251,7 +256,7 @@ public class Service_Reporting : IService_Reporting
                     html.AppendLine("<th style='border: 1px solid #ddd; padding: 8px;'>Data</th>");
                     break;
             }
-            
+
             html.AppendLine("</tr>");
             html.AppendLine("</thead>");
             html.AppendLine("<tbody>");
@@ -259,7 +264,7 @@ public class Service_Reporting : IService_Reporting
             // Add rows with alternating colors (by date if grouping enabled)
             var currentDate = DateTime.MinValue;
             bool isLightRow = true;
-            
+
             foreach (var row in data)
             {
                 // Toggle color when date changes (if grouping enabled)
@@ -268,10 +273,10 @@ public class Service_Reporting : IService_Reporting
                     currentDate = row.CreatedDate.Date;
                     isLightRow = !isLightRow;
                 }
-                
+
                 var bgColor = isLightRow ? "#ffffff" : "#f9f9f9";
                 html.AppendLine($"<tr style='background-color: {bgColor};'>");
-                
+
                 switch (moduleName.ToLower())
                 {
                     case "receiving":
@@ -300,9 +305,9 @@ public class Service_Reporting : IService_Reporting
                         html.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px;'>{row.CreatedDate:yyyy-MM-dd}</td>");
                         break;
                 }
-                
+
                 html.AppendLine("</tr>");
-                
+
                 // Toggle for next row if not grouping by date
                 if (!applyDateGrouping)
                 {
@@ -313,11 +318,11 @@ public class Service_Reporting : IService_Reporting
             html.AppendLine("</tbody>");
             html.AppendLine("</table>");
 
-            return Model_Dao_Result_Factory.Success(html.ToString(), "Email formatted successfully");
+            return Model_Dao_Result_Factory.Success(html.ToString());
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error formatting email: {ex.Message}", ex);
+            _logger.LogError($"Error formatting email: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<string>($"Email formatting failed: {ex.Message}", ex);
         }
     }

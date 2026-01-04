@@ -9,9 +9,9 @@ namespace MTM_Receiving_Application.Module_Core.Models.Reporting;
 public class Model_ReportRow
 {
     /// <summary>
-    /// Primary identifier from source table
+    /// Primary identifier from source table (GUID for receiving/dunnage, integer for routing)
     /// </summary>
-    public int Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     /// Purchase order number (normalized format: PO-XXXXXX)

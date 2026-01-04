@@ -88,7 +88,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand]
     private async Task CheckAvailabilityAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -96,7 +97,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             ShowStatus("Checking data availability...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.CheckAvailabilityAsync(
-                StartDate.DateTime, 
+                StartDate.DateTime,
                 EndDate.DateTime);
 
             if (result.IsSuccess && result.Data != null)
@@ -123,7 +124,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error checking availability: {ex.Message}", ex);
+            _logger.LogError($"Error checking availability: {ex.Message}", ex);
             ShowStatus("Error checking data availability", InfoBarSeverity.Error);
         }
         finally
@@ -138,7 +139,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanGenerateReceiving))]
     private async Task GenerateReceivingReportAsync()
     {
-        await GenerateReportForModuleAsync("Receiving", 
+        await GenerateReportForModuleAsync("Receiving",
             () => _reportingService.GetReceivingHistoryAsync(StartDate.DateTime, EndDate.DateTime));
     }
 
@@ -150,7 +151,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanGenerateDunnage))]
     private async Task GenerateDunnageReportAsync()
     {
-        await GenerateReportForModuleAsync("Dunnage", 
+        await GenerateReportForModuleAsync("Dunnage",
             () => _reportingService.GetDunnageHistoryAsync(StartDate.DateTime, EndDate.DateTime));
     }
 
@@ -162,7 +163,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanGenerateRouting))]
     private async Task GenerateRoutingReportAsync()
     {
-        await GenerateReportForModuleAsync("Routing", 
+        await GenerateReportForModuleAsync("Routing",
             () => _reportingService.GetRoutingHistoryAsync(StartDate.DateTime, EndDate.DateTime));
     }
 
@@ -174,7 +175,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanGenerateVolvo))]
     private async Task GenerateVolvoReportAsync()
     {
-        await GenerateReportForModuleAsync("Volvo", 
+        await GenerateReportForModuleAsync("Volvo",
             () => _reportingService.GetVolvoHistoryAsync(StartDate.DateTime, EndDate.DateTime));
     }
 
@@ -186,7 +187,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanExport))]
     private async Task ExportToCSVAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -194,13 +196,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             ShowStatus("Exporting to CSV...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.ExportToCSVAsync(
-                ReportData.ToList(), 
+                ReportData.ToList(),
                 CurrentModuleName);
 
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {
                 ShowStatus($"CSV exported to: {result.Data}", InfoBarSeverity.Success);
-                await _logger.LogInformationAsync($"CSV exported: {result.Data}");
+                _logger.LogInfo($"CSV exported: {result.Data}");
             }
             else
             {
@@ -209,7 +211,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error exporting CSV: {ex.Message}", ex);
+            _logger.LogError($"Error exporting CSV: {ex.Message}", ex);
             ShowStatus("Error exporting CSV", InfoBarSeverity.Error);
         }
         finally
@@ -226,7 +228,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanCopyEmail))]
     private async Task CopyEmailFormatAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -234,7 +237,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             ShowStatus("Formatting for email...", InfoBarSeverity.Informational);
 
             var result = await _reportingService.FormatForEmailAsync(
-                ReportData.ToList(), 
+                ReportData.ToList(),
                 applyDateGrouping: true);
 
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
@@ -246,7 +249,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
                 Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
 
                 ShowStatus("Email format copied to clipboard", InfoBarSeverity.Success);
-                await _logger.LogInformationAsync("Email format copied to clipboard");
+                _logger.LogInfo("Email format copied to clipboard");
             }
             else
             {
@@ -255,7 +258,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error copying email format: {ex.Message}", ex);
+            _logger.LogError($"Error copying email format: {ex.Message}", ex);
             ShowStatus("Error formatting for email", InfoBarSeverity.Error);
         }
         finally
@@ -269,11 +272,14 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     /// <summary>
     /// Helper method to generate report for a specific module
     /// </summary>
+    /// <param name="moduleName"></param>
+    /// <param name="fetchDataFunc"></param>
     private async Task GenerateReportForModuleAsync(
-        string moduleName, 
+        string moduleName,
         Func<Task<Module_Core.Models.Core.Model_Dao_Result<List<Model_ReportRow>>>> fetchDataFunc)
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -292,7 +298,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
                 CurrentModuleName = moduleName;
                 ShowStatus($"Loaded {ReportData.Count} {moduleName} records", InfoBarSeverity.Success);
-                await _logger.LogInformationAsync($"Generated {moduleName} report: {ReportData.Count} records");
+                _logger.LogInfo($"Generated {moduleName} report: {ReportData.Count} records");
 
                 // Update command availability
                 ExportToCSVCommand.NotifyCanExecuteChanged();
@@ -305,7 +311,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error generating {moduleName} report: {ex.Message}", ex);
+            _logger.LogError($"Error generating {moduleName} report: {ex.Message}", ex);
             ShowStatus($"Error generating {moduleName} report", InfoBarSeverity.Error);
         }
         finally
