@@ -49,37 +49,49 @@ ORDER BY dl.received_date DESC;
 -- View 3: Routing History
 -- Purpose: Flattened view of routing labels for reporting
 -- Source Table: routing_labels
--- Note: Filters for archived (completed) routing labels only
+-- Schema: id, po_number, line_number, description, recipient_id, quantity, created_by, created_date, other_reason_id, is_active, csv_exported, csv_export_date
+-- Note: Joins with routing_recipients to get recipient name and location
 CREATE OR REPLACE VIEW vw_routing_history AS
 SELECT 
-    id,
-    label_number,
-    deliver_to,
-    department,
-    package_description,
-    po_number,
-    work_order AS work_order_number,
-    employee_number,
-    created_date,
-    created_at,
+    rl.id,
+    rl.po_number,
+    rl.line_number,
+    rl.description AS package_description,
+    rr.name AS deliver_to,
+    rr.department,
+    rr.location,
+    rl.quantity,
+    rl.created_by AS employee_number,
+    rl.created_date,
+    CASE 
+        WHEN rl.other_reason_id IS NOT NULL THEN ror.description 
+        ELSE NULL 
+    END AS other_reason,
     'Routing' AS source_module
-FROM routing_labels
-WHERE is_archived = 1
-ORDER BY created_date DESC, label_number ASC;
+FROM routing_labels rl
+INNER JOIN routing_recipients rr ON rl.recipient_id = rr.id
+LEFT JOIN routing_other_reasons ror ON rl.other_reason_id = ror.id
+WHERE rl.is_active = 1
+ORDER BY rl.created_date DESC, rl.id DESC;
 
--- View 4: Volvo History (placeholder - table does not exist yet)
+-- View 4: Volvo History
 -- Purpose: Flattened view of Volvo shipments for reporting
--- Note: Empty placeholder view until Volvo module is implemented
+-- Source Tables: volvo_shipments, volvo_shipment_lines
+-- Schema: id, shipment_date, shipment_number, po_number, receiver_number, employee_number, notes, status, created_date, modified_date, is_archived
 CREATE OR REPLACE VIEW vw_volvo_history AS
 SELECT 
-    NULL AS id,
-    NULL AS shipment_number,
-    NULL AS po_number,
-    NULL AS receiver_number,
-    NULL AS status,
-    NULL AS created_date,
-    NULL AS part_count,
-    NULL AS employee_number,
+    vs.id,
+    vs.shipment_number,
+    vs.shipment_date,
+    vs.po_number,
+    vs.receiver_number,
+    vs.status,
+    vs.employee_number,
+    vs.notes,
+    COUNT(vsl.id) AS part_count,
+    vs.created_date,
     'Volvo' AS source_module
-FROM dual
-WHERE 1=0;  -- Empty view - placeholder until Volvo module is implemented
+FROM volvo_shipments vs
+LEFT JOIN volvo_shipment_lines vsl ON vs.id = vsl.shipment_id
+GROUP BY vs.id, vs.shipment_number, vs.shipment_date, vs.po_number, vs.receiver_number, vs.status, vs.employee_number, vs.notes, vs.created_date
+ORDER BY vs.created_date DESC;

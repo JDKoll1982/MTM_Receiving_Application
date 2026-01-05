@@ -1,0 +1,116 @@
+﻿using System;
+
+namespace MTM_Receiving_Application.Module_Core.Models.Reporting;
+
+/// <summary>
+/// Unified data structure for report rows across all modules
+/// Used for end-of-day reporting with support for Receiving, Dunnage, Routing, and Volvo data
+/// </summary>
+public class Model_ReportRow
+{
+    /// <summary>
+    /// Primary identifier from source table (GUID for receiving/dunnage, integer for routing)
+    /// </summary>
+    public string Id { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Purchase order number (normalized format: PO-XXXXXX)
+    /// </summary>
+    public string? PONumber { get; set; }
+
+    /// <summary>
+    /// Part number/identifier
+    /// </summary>
+    public string? PartNumber { get; set; }
+
+    /// <summary>
+    /// Part description
+    /// </summary>
+    public string? PartDescription { get; set; }
+
+    /// <summary>
+    /// Quantity of items
+    /// </summary>
+    public decimal? Quantity { get; set; }
+
+    /// <summary>
+    /// Weight in pounds
+    /// </summary>
+    public decimal? WeightLbs { get; set; }
+
+    /// <summary>
+    /// Heat/Lot number (concatenated format: HeatNumber/LotNumber)
+    /// </summary>
+    public string? HeatLotNumber { get; set; }
+
+    /// <summary>
+    /// Date when record was created (transaction date)
+    /// </summary>
+    public DateTime CreatedDate { get; set; }
+
+    /// <summary>
+    /// Source module name (Receiving, Dunnage, Routing, Volvo)
+    /// </summary>
+    public string SourceModule { get; set; } = string.Empty;
+
+    // Routing-specific fields
+
+    /// <summary>
+    /// Routing: Delivery recipient name
+    /// </summary>
+    public string? DeliverTo { get; set; }
+
+    /// <summary>
+    /// Routing: Department name
+    /// </summary>
+    public string? Department { get; set; }
+
+    /// <summary>
+    /// Routing: Package description
+    /// </summary>
+    public string? PackageDescription { get; set; }
+
+    /// <summary>
+    /// Routing: Work order number
+    /// </summary>
+    public string? WorkOrderNumber { get; set; }
+
+    /// <summary>
+    /// Employee number who created the record
+    /// </summary>
+    public string? EmployeeNumber { get; set; }
+
+    // Dunnage-specific fields
+
+    /// <summary>
+    /// Dunnage: Type name (Pallet, Box, etc.)
+    /// </summary>
+    public string? DunnageType { get; set; }
+
+    /// <summary>
+    /// Dunnage: Concatenated specifications (key:value pairs)
+    /// </summary>
+    public string? SpecsCombined { get; set; }
+
+    // Volvo-specific fields
+
+    /// <summary>
+    /// Volvo: Shipment number
+    /// </summary>
+    public int? ShipmentNumber { get; set; }
+
+    /// <summary>
+    /// Volvo: Receiver number
+    /// </summary>
+    public string? ReceiverNumber { get; set; }
+
+    /// <summary>
+    /// Volvo: Shipment status
+    /// </summary>
+    public string? Status { get; set; }
+
+    /// <summary>
+    /// Volvo: Count of parts in shipment
+    /// </summary>
+    public int? PartCount { get; set; }
+}

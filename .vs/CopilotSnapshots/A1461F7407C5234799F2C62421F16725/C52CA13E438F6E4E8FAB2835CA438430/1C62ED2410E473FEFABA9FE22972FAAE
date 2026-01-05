@@ -1,0 +1,42 @@
+﻿$ErrorActionPreference = "Stop"
+
+Write-Host "Fix LEAVE Statements in Stored Procedures" -ForegroundColor Cyan
+Write-Host ""
+
+$sqlFiles = Get-ChildItem -Path "Database\StoredProcedures" -Recurse -Filter "*.sql"
+$fixedCount = 0
+$checkedCount = 0
+
+foreach ($file in $sqlFiles)
+{
+    $checkedCount++
+    $content = Get-Content $file.FullName -Raw
+    
+    if ($content -match 'LEAVE\s+(\w+)')
+    {
+        $procName = $Matches[1]
+        Write-Host "Checking: $($file.Name)" -ForegroundColor Yellow
+        
+        $labelPattern = $procName + ':\s*BEGIN'
+        if ($content -notmatch $labelPattern)
+        {
+            $searchFor = '\)\s*BEGIN'
+            $replaceWith = ")`n$procName" + ": BEGIN"
+            
+            if ($content -match $searchFor)
+            {
+                $newContent = $content -replace $searchFor, $replaceWith, 1
+                Set-Content -Path $file.FullName -Value $newContent -NoNewline
+                Write-Host "  Fixed: Added label $procName" -ForegroundColor Green
+                $fixedCount++
+            }
+        }
+        else
+        {
+            Write-Host "  Already fixed" -ForegroundColor Gray
+        }
+    }
+}
+
+Write-Host ""
+Write-Host "Summary: Checked $checkedCount files, Fixed $fixedCount files" -ForegroundColor Cyan

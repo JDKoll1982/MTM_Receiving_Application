@@ -1,0 +1,191 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>MTM_Receiving_Application</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>enable</Nullable>
+    <WindowsPackageType>None</WindowsPackageType>
+    <UseRidGraph>true</UseRidGraph>
+    <NoWarn>RCS1060</NoWarn>
+  </PropertyGroup>
+
+  <!-- WindowsAppSDKSelfContained ensures the Windows App SDK runtime is included in the output -->
+  <PropertyGroup>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+  </PropertyGroup>
+
+   <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  
+  <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon property) -->
+  <ItemGroup>
+    <None Include="Assets\\app-icon.ico" />
+    <None Include="Assets\\app-icon.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!-- Exclude scripts and specs folder from compilation -->
+  <ItemGroup>
+    <Compile Remove="scripts\**" />
+    <EmbeddedResource Remove="scripts\**" />
+    <None Remove="scripts\**" />
+    <Compile Remove="specs\**" />
+    <EmbeddedResource Remove="specs\**" />
+    <None Remove="specs\**" />
+  </ItemGroup>
+
+  <!-- Documentation Files -->
+  <ItemGroup>
+    <None Include="SETUP_INSTRUCTIONS.md" />
+    <None Include="SETUP_PHASE_1_INFRASTRUCTURE.md" />
+    <None Include="SETUP_PHASE_2_MVVM_FEATURES.md" />
+    <None Include="Documentation\DUNNAGELABELLOGIC-GOOGLEAPPSCRIPTS.md" />
+    <None Include="Documentation\NEW_APP_DATA_MODEL.md" />
+    <None Include="Documentation\NEW_APP_LABEL_TYPES.md" />
+    <None Include="Documentation\NEW_APP_MOCKUP.html" />
+    <None Include="Documentation\NEW_APP_OVERVIEW.md" />
+    <None Include="Documentation\NEW_APP_USER_WORKFLOW.md" />
+    <None Include="Documentation\RECEIVINGLABELLOGIC-GOOGLEAPPSCRIPTS.MD" />
+    <None Include="Documentation\REUSABLE_SERVICES.md" />
+    <None Include="Documentation\REUSABLE_SERVICES_SETUP.md" />
+    <None Include="Documentation\UPSFEDEXLABELLOGIC-GOOGLEAPPSCRIPTS.md" />
+  </ItemGroup>
+
+  <!-- GitHub Workflow Files -->
+  <ItemGroup>
+    <None Include=".github\agents\speckit.analyze.agent.md" />
+    <None Include=".github\agents\speckit.checklist.agent.md" />
+    <None Include=".github\agents\speckit.clarify.agent.md" />
+    <None Include=".github\agents\speckit.constitution.agent.md" />
+    <None Include=".github\agents\speckit.implement.agent.md" />
+    <None Include=".github\agents\speckit.plan.agent.md" />
+    <None Include=".github\agents\speckit.specify.agent.md" />
+    <None Include=".github\agents\speckit.tasks.agent.md" />
+    <None Include=".github\agents\speckit.taskstoissues.agent.md" />
+    <None Include=".github\instructions\database-layer.instructions.md" />
+    <None Include=".github\instructions\mvvm-pattern.instructions.md" />
+    <None Include=".github\prompts\speckit.analyze.prompt.md" />
+    <None Include=".github\prompts\speckit.checklist.prompt.md" />
+    <None Include=".github\prompts\speckit.clarify.prompt.md" />
+    <None Include=".github\prompts\speckit.constitution.prompt.md" />
+    <None Include=".github\prompts\speckit.implement.prompt.md" />
+    <None Include=".github\prompts\speckit.plan.prompt.md" />
+    <None Include=".github\prompts\speckit.specify.prompt.md" />
+    <None Include=".github\prompts\speckit.tasks.prompt.md" />
+    <None Include=".github\prompts\speckit.taskstoissues.prompt.md" />
+  </ItemGroup>
+
+  <!-- Specify Configuration Files -->
+  <ItemGroup>
+    <None Include=".specify\memory\constitution.md" />
+    <None Include=".specify\scripts\powershell\check-prerequisites.ps1" />
+    <None Include=".specify\scripts\powershell\common.ps1" />
+    <None Include=".specify\scripts\powershell\create-new-feature.ps1" />
+    <None Include=".specify\scripts\powershell\setup-plan.ps1" />
+    <None Include=".specify\scripts\powershell\update-agent-context.ps1" />
+    <None Include=".specify\templates\agent-file-template.md" />
+    <None Include=".specify\templates\checklist-template.md" />
+    <None Include=".specify\templates\plan-template.md" />
+    <None Include=".specify\templates\spec-template.md" />
+    <None Include=".specify\templates\tasks-template.md" />
+  </ItemGroup>
+
+  <!-- VS Code Settings -->
+  <ItemGroup>
+    <None Include=".vscode\settings.json" />
+  </ItemGroup>
+
+  <!-- Properties Files -->
+  <ItemGroup>
+    <None Include="Properties\launchSettings.json" />
+  </ItemGroup>
+
+  <!--
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="Material.Icons.WinUI3" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+    <PackageReference Include="MySql.Data" Version="9.4.0" />
+    <PackageReference Include="OpenTelemetry" Version="1.14.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
+  <!-- Publish Properties -->
+  <PropertyGroup>
+    <!-- Disable ReadyToRun for WinUI 3 - causes COM interop issues -->
+    <PublishReadyToRun>False</PublishReadyToRun>
+    <!-- Disable trimming for WinUI 3 apps - causes issues with XAML binding, reflection, and JSON serialization -->
+    <PublishTrimmed>False</PublishTrimmed>
+    <!-- Suppress trim warnings from third-party libraries -->
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <!-- Disable single-file publishing -->
+    <PublishSingleFile>false</PublishSingleFile>
+    <!-- Keep debugging symbols for crash analysis -->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  
+  <!-- Release Configuration Tweaks for WinUI 3 Compatibility -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <!--  Use same optimization settings as Debug to avoid COM interop issues -->
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <!-- Embed Infor Visual SQL query files as resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Database\InforVisualScripts\Queries\*.sql" />
+  </ItemGroup>
+
+  <!-- Include Themes folder in published output -->
+  <ItemGroup>
+    <Content Include="Themes\**\*.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

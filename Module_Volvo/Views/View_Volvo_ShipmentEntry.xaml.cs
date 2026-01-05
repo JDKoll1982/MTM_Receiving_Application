@@ -5,9 +5,9 @@ using MTM_Receiving_Application.Module_Volvo.ViewModels;
 namespace MTM_Receiving_Application.Module_Volvo.Views;
 
 /// <summary>
-/// View for Volvo shipment entry
+/// Page for Volvo shipment entry
 /// </summary>
-public sealed partial class View_Volvo_ShipmentEntry : UserControl
+public sealed partial class View_Volvo_ShipmentEntry : Page
 {
     public ViewModel_Volvo_ShipmentEntry ViewModel { get; }
 

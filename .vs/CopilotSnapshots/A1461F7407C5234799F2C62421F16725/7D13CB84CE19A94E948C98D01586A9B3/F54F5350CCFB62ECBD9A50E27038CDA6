@@ -1,0 +1,55 @@
+﻿# Fix LEAVE statement issues in all stored procedures
+# Adds procedure name as label to BEGIN statements when LEAVE is used
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "================================================================================" -ForegroundColor Cyan
+Write-Host "  Fix LEAVE Statements in Stored Procedures" -ForegroundColor White
+Write-Host "================================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Get all SQL files in StoredProcedures directory
+$sqlFiles = Get-ChildItem -Path "Database\StoredProcedures" -Recurse -Filter "*.sql"
+
+$fixedCount = 0
+$checkedCount = 0
+
+foreach ($file in $sqlFiles) {
+    $checkedCount++
+    $content = Get-Content $file.FullName -Raw
+    
+    # Check if file contains LEAVE statement
+    if ($content -match "LEAVE\s+(\w+)") {
+        $procedureName = $matches[1]
+        Write-Host "Processing: $($file.FullName)" -ForegroundColor Yellow
+        
+        # Check if BEGIN already has the label
+        $labelPattern = "${procedureName}:\s*BEGIN"
+        if ($content -notmatch $labelPattern) {
+            # Find the procedure declaration and add label to BEGIN
+            $declPattern = "(CREATE PROCEDURE\s+``${procedureName}``[^)]+\))\s*BEGIN"
+            
+            if ($content -match $declPattern) {
+                # Replace with labeled BEGIN
+                $newContent = $content -replace $declPattern, "`$1`n${procedureName}: BEGIN"
+                
+                Set-Content -Path $file.FullName -Value $newContent -NoNewline
+                Write-Host "  ✓ Fixed: Added label '${procedureName}:' to BEGIN" -ForegroundColor Green
+                $fixedCount++
+            }
+            else {
+                Write-Host "  ⚠ Pattern not matched in $($file.Name)" -ForegroundColor Yellow
+            }
+        }
+        else {
+            Write-Host "  ✓ Already fixed: Label present" -ForegroundColor Green
+        }
+    }
+}
+
+Write-Host ""
+Write-Host "================================================================================" -ForegroundColor Cyan
+Write-Host "Summary:" -ForegroundColor White
+Write-Host "  Files checked: $checkedCount" -ForegroundColor White
+Write-Host "  Files fixed: $fixedCount" -ForegroundColor Green
+Write-Host "================================================================================" -ForegroundColor Cyan

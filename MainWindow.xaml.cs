@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -27,7 +27,7 @@ namespace MTM_Receiving_Application
             // Center window on screen
             CenterWindow();
 
-            // Configure title bar to blend with UI
+            // Configure title bar to blend with UI (drag region will be set on first activation)
             ConfigureTitleBar();
 
             // Set user display from current session
@@ -63,6 +63,9 @@ namespace MTM_Receiving_Application
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
                 _sessionManager.UpdateLastActivity();
+
+                // Set title bar drag region on first activation (XamlRoot will be available)
+                SetTitleBarDragRegion();
 
                 // Navigate to Receiving workflow on first activation
                 if (!_hasNavigatedOnStartup)
@@ -264,8 +267,7 @@ namespace MTM_Receiving_Application
                     AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
                     AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
 
-                    // Set custom drag region for the title bar
-                    SetTitleBarDragRegion();
+                    // Drag region will be set after window loads (in MainWindow_Loaded)
                 }
             }
             catch
@@ -276,25 +278,33 @@ namespace MTM_Receiving_Application
 
         /// <summary>
         /// Set the drag region for the custom title bar
+        /// MUST be called after window is fully loaded (XamlRoot will be available)
         /// </summary>
         private void SetTitleBarDragRegion()
         {
-            if (AppWindow.TitleBar != null && AppTitleBar != null)
+            try
             {
-                // Get the title bar height
-                var scale = AppTitleBar.XamlRoot.RasterizationScale;
-                var titleBarHeight = (int)(AppTitleBar.ActualHeight * scale);
-
-                // The entire AppTitleBar is draggable
-                var dragRect = new Windows.Graphics.RectInt32
+                if (AppWindow.TitleBar != null && AppTitleBar != null && AppTitleBar.XamlRoot != null)
                 {
-                    X = 0,
-                    Y = 0,
-                    Width = (int)(AppTitleBar.ActualWidth * scale),
-                    Height = titleBarHeight
-                };
+                    // Get the title bar height
+                    var scale = AppTitleBar.XamlRoot.RasterizationScale;
+                    var titleBarHeight = (int)(AppTitleBar.ActualHeight * scale);
 
-                AppWindow.TitleBar.SetDragRectangles(new[] { dragRect });
+                    // The entire AppTitleBar is draggable
+                    var dragRect = new Windows.Graphics.RectInt32
+                    {
+                        X = 0,
+                        Y = 0,
+                        Width = (int)(AppTitleBar.ActualWidth * scale),
+                        Height = titleBarHeight
+                    };
+
+                    AppWindow.TitleBar.SetDragRectangles(new[] { dragRect });
+                }
+            }
+            catch
+            {
+                // Ignore drag region setup errors
             }
         }
     }

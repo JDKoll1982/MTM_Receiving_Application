@@ -7,7 +7,7 @@ CREATE PROCEDURE `sp_routing_label_history_get_by_label`(
     OUT p_status INT,
     OUT p_error_msg VARCHAR(500)
 )
-BEGIN
+sp_routing_label_history_get_by_label: BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;

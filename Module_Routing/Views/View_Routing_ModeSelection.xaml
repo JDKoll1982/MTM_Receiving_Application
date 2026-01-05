@@ -9,7 +9,6 @@
 
     <Grid>
         <StackPanel Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Select Routing Mode" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
             
             <StackPanel Orientation="Horizontal" Spacing="24">
                 <!-- Wizard Mode Column -->

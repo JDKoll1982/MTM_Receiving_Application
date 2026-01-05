@@ -1,0 +1,317 @@
+﻿# Database Deployment Script for MTM Receiving Application
+# This script deploys all schemas, stored procedures, and initial data
+
+param(
+    [string]$Server = "localhost",
+    [string]$Port = "3306",
+    [string]$Database = "mtm_receiving_application",
+    [string]$User = "root",
+    [string]$Password = "root"
+)
+
+$ErrorActionPreference = "Stop"
+
+# Connection string
+$ConnectionString = "Server=$Server;Port=$Port;Database=$Database;Uid=$User;Pwd=$Password;"
+
+Write-Host "================================================================================" -ForegroundColor Cyan
+Write-Host "  MTM Receiving Application - Database Deployment Script" -ForegroundColor White
+Write-Host "================================================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Connection Details:" -ForegroundColor Yellow
+Write-Host "  Server   : $Server`:$Port" -ForegroundColor White
+Write-Host "  Database : $Database" -ForegroundColor White
+Write-Host "  User     : $User" -ForegroundColor White
+Write-Host ""
+
+# Counters for summary
+$script:SchemaCount = 0
+$script:MigrationCount = 0
+$script:StoredProcCount = 0
+$script:TestDataCount = 0
+
+# Function to execute SQL file using MAMP MySQL
+function Execute-SqlFile {
+    param(
+        [string]$FilePath,
+        [string]$Description,
+        [switch]$DisableForeignKeyChecks
+    )
+    
+    Write-Host "Executing: $Description" -ForegroundColor Cyan
+    Write-Host "File: $FilePath"
+    
+    if (-not (Test-Path $FilePath)) {
+        Write-Host "  ERROR: File not found!" -ForegroundColor Red
+        return $false
+    }
+    
+    try {
+        # Try common MAMP MySQL paths
+        $mampPaths = @(
+            "C:\MAMP\bin\mysql\bin\mysql.exe",
+            "C:\MAMP\bin\mysql\mysql8\bin\mysql.exe",
+            "mysql"  # Fallback to PATH
+        )
+        
+        $mysqlCmd = $null
+        foreach ($path in $mampPaths) {
+            if (Test-Path $path -ErrorAction SilentlyContinue) {
+                $mysqlCmd = $path
+                break
+            }
+            if ($path -eq "mysql") {
+                try {
+                    $null = Get-Command mysql -ErrorAction Stop
+                    $mysqlCmd = "mysql"
+                    break
+                }
+                catch { }
+            }
+        }
+        
+        if (-not $mysqlCmd) {
+            Write-Host "  ERROR: MySQL command not found. Please check MAMP installation." -ForegroundColor Red
+            Write-Host "  Tried paths: $($mampPaths -join ', ')" -ForegroundColor Yellow
+            return $false
+        }
+        
+        # Convert Windows path to Unix-style path for MySQL source command
+        # MySQL's source command expects forward slashes, even on Windows
+        $mysqlPath = $FilePath -replace '\\', '/'
+        
+        # Build SQL command with optional foreign key check disabling
+        $sqlCommand = ""
+        if ($DisableForeignKeyChecks) {
+            $sqlCommand = "SET FOREIGN_KEY_CHECKS = 0; source $mysqlPath; SET FOREIGN_KEY_CHECKS = 1;"
+        }
+        else {
+            $sqlCommand = "source $mysqlPath"
+        }
+        
+        $arguments = "-h$Server -P$Port -u$User -p$Password $Database -e `"$sqlCommand`""
+        
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $mysqlCmd
+        $psi.Arguments = $arguments
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $psi
+        $process.Start() | Out-Null
+        
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        
+        if ($process.ExitCode -eq 0) {
+            Write-Host "  SUCCESS" -ForegroundColor Green
+            if ($stdout) { Write-Host "  Output: $stdout" -ForegroundColor Gray }
+            Write-Host ""
+            return $true
+        }
+        else {
+            Write-Host "  ERROR: MySQL returned exit code $($process.ExitCode)" -ForegroundColor Red
+            if ($stderr) { Write-Host "  Error: $stderr" -ForegroundColor Red }
+            Write-Host ""
+            return $false
+        }
+    }
+    catch {
+        Write-Host "  ERROR: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host ""
+        return $false
+    }
+}
+
+# Get project root (Database folder is at project root)
+$ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$DatabaseRoot = Join-Path $ProjectRoot "Database"
+
+# Directories to exclude from deployment
+$ExcludedDirectories = @(
+    "InforVisualScripts",
+    "InforVisualTest",
+    "Deploy"
+)
+
+# File patterns to exclude from deployment
+$ExcludedFilePatterns = @(
+    "test_*.sql",
+    "*_test.sql",
+    "*.test.sql"
+)
+
+Write-Host "Scanning for SQL files in: $DatabaseRoot" -ForegroundColor Yellow
+Write-Host "Excluding directories: $($ExcludedDirectories -join ', ')" -ForegroundColor Yellow
+Write-Host "Excluding file patterns: $($ExcludedFilePatterns -join ', ')" -ForegroundColor Yellow
+Write-Host ""
+
+# Step 1: Deploy Schema Files (ordered by filename)
+Write-Host "STEP 1: Deploying Database Schemas" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$schemasPath = Join-Path $DatabaseRoot "Schemas"
+if (Test-Path $schemasPath) {
+    $schemaFiles = Get-ChildItem -Path $schemasPath -Filter "*.sql" | 
+        Where-Object { 
+            $filename = $_.Name
+            # Exclude test files
+            -not ($ExcludedFilePatterns | Where-Object { $filename -like $_ })
+        } | 
+        Sort-Object Name
+    
+    foreach ($file in $schemaFiles) {
+        $description = "Schema: $($file.Name)"
+        # Disable foreign key checks for schema files to allow idempotent deployments
+        if (-not (Execute-SqlFile -FilePath $file.FullName -Description $description -DisableForeignKeyChecks)) {
+            Write-Host "Schema deployment failed. Stopping." -ForegroundColor Red
+            exit 1
+        }
+        $script:SchemaCount++
+    }
+    
+    Write-Host "Deployed $($schemaFiles.Count) schema file(s)" -ForegroundColor Green
+    Write-Host ""
+}
+else {
+    Write-Host "No Schemas directory found. Skipping." -ForegroundColor Yellow
+    Write-Host ""
+}
+
+# Step 2: Deploy Migration Files (ordered by filename)
+Write-Host "STEP 2: Deploying Database Migrations" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$migrationsPath = Join-Path $DatabaseRoot "Migrations"
+if (Test-Path $migrationsPath) {
+    $migrationFiles = Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
+        Where-Object { 
+            $filename = $_.Name
+            # Exclude test files
+            -not ($ExcludedFilePatterns | Where-Object { $filename -like $_ })
+        } | 
+        Sort-Object Name
+    
+    $successCount = 0
+    foreach ($file in $migrationFiles) {
+        $description = "Migration: $($file.Name)"
+        # Also disable foreign key checks for migrations
+        if (Execute-SqlFile -FilePath $file.FullName -Description $description -DisableForeignKeyChecks) {
+            $successCount++
+        }
+        else {
+            Write-Host "Migration failed. Continuing with next migration..." -ForegroundColor Yellow
+        }
+    }
+    
+    Write-Host "Deployed $successCount of $($migrationFiles.Count) migration file(s)" -ForegroundColor Green
+    Write-Host ""
+}
+else {
+    Write-Host "No Migrations directory found. Skipping." -ForegroundColor Yellow
+    Write-Host ""
+}
+
+# Step 3: Deploy Stored Procedures from all subdirectories
+Write-Host "STEP 3: Deploying Stored Procedures" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$storedProcsPath = Join-Path $DatabaseRoot "StoredProcedures"
+if (Test-Path $storedProcsPath) {
+    # Get all subdirectories in StoredProcedures
+    $spDirs = Get-ChildItem -Path $storedProcsPath -Directory | Sort-Object Name
+    
+    $totalSpCount = 0
+    foreach ($dir in $spDirs) {
+        Write-Host "  Processing: $($dir.Name)" -ForegroundColor Cyan
+        
+        $spFiles = Get-ChildItem -Path $dir.FullName -Filter "*.sql" | 
+            Where-Object { 
+                $filename = $_.Name
+                # Exclude test files
+                -not ($ExcludedFilePatterns | Where-Object { $filename -like $_ })
+            } | 
+            Sort-Object Name
+        
+        foreach ($file in $spFiles) {
+            $description = "SP [$($dir.Name)]: $($file.Name)"
+            if (-not (Execute-SqlFile -FilePath $file.FullName -Description $description)) {
+                Write-Host "Stored procedure deployment failed. Stopping." -ForegroundColor Red
+                exit 1
+            }
+            $totalSpCount++
+        }
+    }
+    
+    Write-Host "Deployed $totalSpCount stored procedure(s) from $($spDirs.Count) module(s)" -ForegroundColor Green
+    Write-Host ""
+}
+else {
+    Write-Host "No StoredProcedures directory found. Skipping." -ForegroundColor Yellow
+    Write-Host ""
+}
+
+# Step 4: Deploy Test Data
+Write-Host "STEP 4: Deploying Test Data" -ForegroundColor Yellow
+Write-Host "-" * 80
+
+$testDataPath = Join-Path $DatabaseRoot "TestData"
+if (Test-Path $testDataPath) {
+    $testDataFiles = Get-ChildItem -Path $testDataPath -Filter "*.sql" | 
+        Where-Object { 
+            $filename = $_.Name
+            # Exclude test files (though these are already test data, exclude test validation scripts)
+            -not ($ExcludedFilePatterns | Where-Object { $filename -like $_ })
+        } | 
+        Sort-Object Name
+    
+    $successCount = 0
+    foreach ($file in $testDataFiles) {
+        $description = "TestData: $($file.Name)"
+        if (Execute-SqlFile -FilePath $file.FullName -Description $description) {
+            $successCount++
+        }
+        else {
+            Write-Host "Test data deployment failed. Continuing..." -ForegroundColor Yellow
+        }
+    }
+    
+    Write-Host "Deployed $successCount of $($testDataFiles.Count) test data file(s)" -ForegroundColor Green
+    Write-Host ""
+}
+else {
+    Write-Host "No TestData directory found. Skipping." -ForegroundColor Yellow
+    Write-Host ""
+}
+
+Write-Host ""
+Write-Host "================================================================================" -ForegroundColor Green
+Write-Host "  ✓ DATABASE DEPLOYMENT SUCCESSFUL" -ForegroundColor White
+Write-Host "================================================================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "Deployment Summary:" -ForegroundColor Cyan
+Write-Host "  ✓ Schemas Deployed         : $script:SchemaCount file(s)" -ForegroundColor White
+Write-Host "  ✓ Migrations Applied       : $script:MigrationCount file(s)" -ForegroundColor White
+Write-Host "  ✓ Stored Procedures Created: $script:StoredProcCount procedure(s)" -ForegroundColor White
+Write-Host "  ✓ Test Data Loaded         : $script:TestDataCount file(s)" -ForegroundColor White
+Write-Host ""
+Write-Host "Deployment Configuration:" -ForegroundColor Cyan
+Write-Host "  • Foreign Key Checks : Disabled during schema/migration deployment" -ForegroundColor Gray
+Write-Host "  • Excluded Folders   : $($ExcludedDirectories -join ', ')" -ForegroundColor Gray
+Write-Host "  • Excluded Files     : $($ExcludedFilePatterns -join ', ')" -ForegroundColor Gray
+Write-Host ""
+Write-Host "Next Steps:" -ForegroundColor Yellow
+Write-Host "  1. Verify database tables:" -ForegroundColor White
+Write-Host "     mysql -h $Server -P $Port -u $User -p$Password -e 'SHOW TABLES;' $Database" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  2. Check stored procedures:" -ForegroundColor White
+Write-Host "     mysql -h $Server -P $Port -u $User -p$Password -e 'SHOW PROCEDURE STATUS WHERE Db=\"$Database\";' $Database" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  3. Launch the application:" -ForegroundColor White
+Write-Host "     dotnet run --project MTM_Receiving_Application.csproj" -ForegroundColor Gray
+Write-Host ""
+Write-Host "================================================================================" -ForegroundColor Cyan

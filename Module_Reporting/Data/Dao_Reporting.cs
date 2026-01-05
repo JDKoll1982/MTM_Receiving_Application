@@ -159,17 +159,20 @@ public class Dao_Reporting
             var query = @"
                 SELECT 
                     id,
+                    po_number,
+                    line_number,
+                    package_description,
                     deliver_to,
                     department,
-                    package_description,
-                    po_number,
-                    work_order_number,
+                    location,
+                    quantity,
                     employee_number,
                     created_date,
+                    other_reason,
                     source_module
                 FROM vw_routing_history
                 WHERE created_date BETWEEN @StartDate AND @EndDate
-                ORDER BY created_date DESC, id ASC";
+                ORDER BY created_date DESC, id DESC";
 
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -186,13 +189,16 @@ public class Dao_Reporting
                 rows.Add(new Model_ReportRow
                 {
                     Id = reader.GetInt32("id").ToString(),
+                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
+                    LineNumber = reader.IsDBNull(reader.GetOrdinal("line_number")) ? null : reader.GetString("line_number"),
+                    PackageDescription = reader.IsDBNull(reader.GetOrdinal("package_description")) ? null : reader.GetString("package_description"),
                     DeliverTo = reader.IsDBNull(reader.GetOrdinal("deliver_to")) ? null : reader.GetString("deliver_to"),
                     Department = reader.IsDBNull(reader.GetOrdinal("department")) ? null : reader.GetString("department"),
-                    PackageDescription = reader.IsDBNull(reader.GetOrdinal("package_description")) ? null : reader.GetString("package_description"),
-                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
-                    WorkOrderNumber = reader.IsDBNull(reader.GetOrdinal("work_order_number")) ? null : reader.GetString("work_order_number"),
-                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
+                    Location = reader.IsDBNull(reader.GetOrdinal("location")) ? null : reader.GetString("location"),
+                    Quantity = reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetDecimal("quantity"),
+                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetInt32("employee_number").ToString(),
                     CreatedDate = reader.GetDateTime("created_date"),
+                    OtherReason = reader.IsDBNull(reader.GetOrdinal("other_reason")) ? null : reader.GetString("other_reason"),
                     SourceModule = reader.GetString("source_module")
                 });
             }
@@ -208,18 +214,67 @@ public class Dao_Reporting
     }
 
     /// <summary>
-    /// Retrieves Volvo history from vw_volvo_history view (placeholder)
+    /// Retrieves Volvo history from vw_volvo_history view
     /// </summary>
-    /// <param name="_"></param>
-    /// <param name="__"></param>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
     public async Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
-        DateTime _ = default,
-        DateTime __ = default)
+        DateTime startDate,
+        DateTime endDate)
     {
-        // Placeholder - returns empty list until Volvo module is implemented
-        return await Task.FromResult(
-            Model_Dao_Result_Factory.Success(
-                new List<Model_ReportRow>()));
+        try
+        {
+            var query = @"
+                SELECT 
+                    id,
+                    shipment_number,
+                    shipment_date,
+                    po_number,
+                    receiver_number,
+                    status,
+                    employee_number,
+                    notes,
+                    part_count,
+                    created_date,
+                    source_module
+                FROM vw_volvo_history
+                WHERE created_date BETWEEN @StartDate AND @EndDate
+                ORDER BY created_date DESC";
+
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@StartDate", startDate.Date);
+            command.Parameters.AddWithValue("@EndDate", endDate.Date);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            var rows = new List<Model_ReportRow>();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(new Model_ReportRow
+                {
+                    Id = reader.GetInt32("id").ToString(),
+                    ShipmentNumber = reader.IsDBNull(reader.GetOrdinal("shipment_number")) ? null : reader.GetInt32("shipment_number"),
+                    PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? null : reader.GetString("po_number"),
+                    ReceiverNumber = reader.IsDBNull(reader.GetOrdinal("receiver_number")) ? null : reader.GetString("receiver_number"),
+                    Status = reader.IsDBNull(reader.GetOrdinal("status")) ? null : reader.GetString("status"),
+                    EmployeeNumber = reader.IsDBNull(reader.GetOrdinal("employee_number")) ? null : reader.GetString("employee_number"),
+                    PartCount = reader.IsDBNull(reader.GetOrdinal("part_count")) ? null : reader.GetInt32("part_count"),
+                    CreatedDate = reader.GetDateTime("created_date"),
+                    SourceModule = reader.GetString("source_module")
+                });
+            }
+
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_ReportRow>>(
+                $"Error retrieving Volvo history: {ex.Message}",
+                ex);
+        }
     }
 
     /// <summary>

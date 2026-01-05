@@ -97,14 +97,14 @@
                         <FontIcon Glyph="&#xE7B8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Internal Routing" Tag="RoutingLabelPage" Margin="0,0,0,4">
+                <NavigationViewItem Content="UPS / FedEx Labels" Tag="RoutingLabelPage" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE724;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage" Margin="0,0,0,4">
+                <NavigationViewItem Content="Volvo Dunnage Requisition" Tag="VolvoShipmentEntry" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE707;" />
+                        <FontIcon Glyph="&#xE7C1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="End of Day Reports" Tag="ReportingMainPage" Margin="0,0,0,4">

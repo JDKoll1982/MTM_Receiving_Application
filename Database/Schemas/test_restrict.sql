@@ -1,7 +1,0 @@
--- T028: Test RESTRICT delete
--- Try to delete a dunnage_type that has a part referencing it (should fail)
-INSERT INTO dunnage_part_numbers (PartID, DunnageTypeID, DunnageSpecValues, EntryDate, EntryUser)
-VALUES ('TEST-PART-001', 1, '{"Width": 48}', NOW(), 'TEST');
-
--- This should fail with foreign key constraint
-DELETE FROM dunnage_types WHERE ID = 1;

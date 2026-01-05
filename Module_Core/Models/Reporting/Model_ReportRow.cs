@@ -56,6 +56,11 @@ public class Model_ReportRow
     // Routing-specific fields
 
     /// <summary>
+    /// Routing: Line number from PO
+    /// </summary>
+    public string? LineNumber { get; set; }
+
+    /// <summary>
     /// Routing: Delivery recipient name
     /// </summary>
     public string? DeliverTo { get; set; }
@@ -66,6 +71,11 @@ public class Model_ReportRow
     public string? Department { get; set; }
 
     /// <summary>
+    /// Routing: Physical location
+    /// </summary>
+    public string? Location { get; set; }
+
+    /// <summary>
     /// Routing: Package description
     /// </summary>
     public string? PackageDescription { get; set; }
@@ -74,6 +84,11 @@ public class Model_ReportRow
     /// Routing: Work order number
     /// </summary>
     public string? WorkOrderNumber { get; set; }
+
+    /// <summary>
+    /// Routing: Other reason (for non-PO packages)
+    /// </summary>
+    public string? OtherReason { get; set; }
 
     /// <summary>
     /// Employee number who created the record

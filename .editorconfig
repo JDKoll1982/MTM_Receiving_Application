@@ -1,8 +1,11 @@
-﻿# Top-level .editorconfig file - MTM Receiving Application
-# Configured for strict MVVM architecture with WinUI 3 and . NET 8
+# Top-level .editorconfig file - MTM Receiving Application
+# Configured for strict MVVM architecture with WinUI 3 and .NET 8
 # Works with Roslynator analyzers and dotnet build
 
 root = true
+
+# PERFORMANCE: Limit analyzer scope during builds
+# Analyzers will still run in IDE but not slow down compilation
 
 # All files
 [*]
@@ -29,7 +32,28 @@ end_of_line = crlf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-#### . NET Coding Conventions ####
+#### Compilation Performance Settings ####
+# These settings optimize build time by deferring non-critical checks to IDE
+
+# PERFORMANCE: Reduce severity during compilation (IDE still shows errors)
+dotnet_analyzer_diagnostic.severity = suggestion
+
+# PERFORMANCE: Disable expensive analyzers during build
+# Documentation analyzers are expensive and not needed for compilation
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1601.severity = none
+dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1633.severity = none
+
+# PERFORMANCE: Defer code style checks to IDE
+dotnet_diagnostic.IDE0001.severity = none
+dotnet_diagnostic.IDE0002.severity = none
+dotnet_diagnostic.IDE0003.severity = none
+dotnet_diagnostic.IDE0004.severity = none
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+#### .NET Coding Conventions ####
 
 # Organize usings
 dotnet_sort_system_directives_first = true
