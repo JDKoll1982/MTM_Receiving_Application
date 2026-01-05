@@ -42,7 +42,18 @@ public interface IService_Volvo
     public Task<string> FormatEmailTextAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        Dictionary<string, int> requestedLines);
+        Dictionary<string, int>? requestedLines = null);
+
+    /// <summary>
+    /// Validates shipment data before save
+    /// Centralized validation logic to ensure data integrity
+    /// </summary>
+    /// <param name=\"shipment\">Shipment header to validate</param>
+    /// <param name=\"lines\">Shipment lines to validate</param>
+    /// <returns>Validation result with error message if failed</returns>
+    public Task<Model_Dao_Result> ValidateShipmentAsync(
+        Model_VolvoShipment shipment,
+        List<Model_VolvoShipmentLine> lines);
 
     /// <summary>
     /// Saves shipment and lines with status='pending_po'

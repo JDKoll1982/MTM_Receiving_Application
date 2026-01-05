@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Data;
 
@@ -73,6 +75,17 @@ public class Service_Volvo : IService_Volvo
 
                 var parentPart = partResult.Data;
 
+                // Validate quantity per skid
+                if (parentPart.QuantityPerSkid <= 0)
+                {
+                    return new Model_Dao_Result<Dictionary<string, int>>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Part {line.PartNumber} has invalid QuantityPerSkid: {parentPart.QuantityPerSkid} (must be > 0)",
+                        Severity = Enum_ErrorSeverity.Error
+                    };
+                }
+
                 // Add parent part pieces
                 int parentPieces = line.ReceivedSkidCount * parentPart.QuantityPerSkid;
                 if (aggregatedPieces.ContainsKey(line.PartNumber))
@@ -90,6 +103,15 @@ public class Service_Volvo : IService_Volvo
                 {
                     foreach (var component in componentsResult.Data)
                     {
+                        // Validate component quantities
+                        if (component.Quantity <= 0 || component.ComponentQuantityPerSkid <= 0)
+                        {
+                            await _logger.LogWarningAsync(
+                                $"Skipping component {component.ComponentPartNumber} with invalid quantity: " +
+                                $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}");
+                            continue;
+                        }
+
                         // Component pieces = skidCount × componentQty × componentQtyPerSkid
                         int componentPieces = line.ReceivedSkidCount * component.Quantity * component.ComponentQuantityPerSkid;
 
@@ -135,6 +157,17 @@ public class Service_Volvo : IService_Volvo
     {
         try
         {
+            // Validate shipmentId (prevent file path injection)
+            if (shipmentId <= 0)
+            {
+                return new Model_Dao_Result<string>
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid shipment ID",
+                    Severity = Enum_ErrorSeverity.Error
+                };
+            }
+
             await _logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
 
             // Get shipment details
@@ -179,6 +212,18 @@ public class Service_Volvo : IService_Volvo
 
             var aggregatedPieces = explosionResult.Data;
 
+            // Sanity check: prevent extremely large CSV files
+            const int MaxCsvLines = 10000;
+            if (aggregatedPieces.Count > MaxCsvLines)
+            {
+                return new Model_Dao_Result<string>
+                {
+                    Success = false,
+                    ErrorMessage = $"CSV generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxCsvLines})",
+                    Severity = Enum_ErrorSeverity.Error
+                };
+            }
+
             // Create CSV directory
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
@@ -187,6 +232,16 @@ public class Service_Volvo : IService_Volvo
             // Generate CSV file path
             string dateStr = shipment.ShipmentDate.ToString("yyyyMMdd");
             string fileName = $"Shipment_{shipmentId}_{dateStr}.csv";
+            // Validate filename contains no invalid path characters
+            if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                return new Model_Dao_Result<string>
+                {
+                    Success = false,
+                    ErrorMessage = "Generated filename contains invalid characters",
+                    Severity = Enum_ErrorSeverity.Error
+                };
+            }
             string filePath = Path.Combine(csvDirectory, fileName);
 
             // Build CSV content
@@ -236,8 +291,11 @@ public class Service_Volvo : IService_Volvo
     public async Task<string> FormatEmailTextAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
-        Dictionary<string, int> requestedLines)
+        Dictionary<string, int>? requestedLines = null)
     {
+        // Null guard for requestedLines
+        requestedLines ??= new Dictionary<string, int>();
+
         var emailText = new StringBuilder();
 
         // Subject line (for user reference)
@@ -297,6 +355,51 @@ public class Service_Volvo : IService_Volvo
         await _logger.LogInfoAsync("Email text formatted");
 
         return emailText.ToString();
+    }
+
+    /// <summary>
+    /// Validates shipment data before save
+    /// Centralized validation logic for data integrity
+    /// </summary>
+    public async Task<Model_Dao_Result> ValidateShipmentAsync(
+        Model_VolvoShipment shipment,
+        List<Model_VolvoShipmentLine> lines)
+    {
+        // Validate: At least one line required
+        if (lines == null || lines.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Failure("At least one part line is required");
+        }
+
+        // Validate: All lines have valid data
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line.PartNumber))
+            {
+                return Model_Dao_Result_Factory.Failure("All parts must have a part number");
+            }
+
+            if (line.ReceivedSkidCount < 1 || line.ReceivedSkidCount > 99)
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    $"Part {line.PartNumber}: skid count must be between 1 and 99");
+            }
+
+            if (line.HasDiscrepancy && !line.ExpectedSkidCount.HasValue)
+            {
+                return Model_Dao_Result_Factory.Failure(
+                    $"Part {line.PartNumber} has discrepancy but no expected skid count");
+            }
+        }
+
+        // Validate: Shipment date not in future
+        if (shipment.ShipmentDate > DateTime.Now.AddDays(1))
+        {
+            return Model_Dao_Result_Factory.Failure("Shipment date cannot be in the future");
+        }
+
+        await _logger.LogInfoAsync("Shipment validation passed");
+        return Model_Dao_Result_Factory.Success();
     }
 
     /// <summary>
@@ -370,32 +473,65 @@ public class Service_Volvo : IService_Volvo
             int shipmentId = insertResult.Data.ShipmentId;
             int shipmentNumber = insertResult.Data.ShipmentNumber;
 
-            // Insert lines
-            foreach (var line in lines)
+            // Insert lines within transaction for data integrity
+            await using var connection = new MySqlConnection(Helper_Database_Variables.GetConnectionString());
+            await connection.OpenAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
             {
-                line.ShipmentId = shipmentId;
-                var lineResult = await _lineDao.InsertAsync(line);
-                if (!lineResult.Success)
+                foreach (var line in lines)
                 {
-                    await _logger.LogErrorAsync($"Failed to insert shipment line: {lineResult.ErrorMessage}");
-                    // Note: In production, consider transaction rollback here
-                    return new Model_Dao_Result<(int, int)>
+                    line.ShipmentId = shipmentId;
+                    var lineResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                        connection,
+                        (MySqlTransaction)transaction,
+                        "sp_volvo_shipment_line_insert",
+                        new Dictionary<string, object>
+                        {
+                            { "shipment_id", line.ShipmentId },
+                            { "part_number", line.PartNumber },
+                            { "quantity_per_skid", line.QuantityPerSkid },
+                            { "received_skid_count", line.ReceivedSkidCount },
+                            { "calculated_piece_count", line.CalculatedPieceCount },
+                            { "has_discrepancy", line.HasDiscrepancy },
+                            { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
+                            { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+                        });
+
+                    if (!lineResult.Success)
                     {
-                        Success = false,
-                        ErrorMessage = $"Failed to save shipment lines: {lineResult.ErrorMessage}",
-                        Severity = Enum_ErrorSeverity.Error
-                    };
+                        await transaction.RollbackAsync();
+                        await _logger.LogErrorAsync($"Failed to insert line for part {line.PartNumber}, rolling back");
+                        return new Model_Dao_Result<(int, int)>
+                        {
+                            Success = false,
+                            ErrorMessage = $"Failed to insert line for part {line.PartNumber}: {lineResult.ErrorMessage}",
+                            Severity = Enum_ErrorSeverity.Error
+                        };
+                    }
                 }
+
+                await transaction.CommitAsync();
+                await _logger.LogInfoAsync($"Shipment {shipmentId} saved with {lines.Count} lines");
+
+                return new Model_Dao_Result<(int, int)>
+                {
+                    Success = true,
+                    Data = (shipmentId, shipmentNumber)
+                };
             }
-
-            await _logger.LogInfoAsync($"Shipment saved successfully: ID={shipmentId}, Number={shipmentNumber}");
-
-            return new Model_Dao_Result<(int, int)>
+            catch (Exception ex)
             {
-                Success = true,
-                Data = (shipmentId, shipmentNumber),
-                AffectedRows = 1 + lines.Count
-            };
+                await transaction.RollbackAsync();
+                await _logger.LogErrorAsync($"Transaction failed, rolled back: {ex.Message}", ex);
+                return new Model_Dao_Result<(int, int)>
+                {
+                    Success = false,
+                    ErrorMessage = $"Transaction failed: {ex.Message}",
+                    Severity = Enum_ErrorSeverity.Error
+                };
+            }
         }
         catch (Exception ex)
         {

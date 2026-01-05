@@ -126,6 +126,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Error initializing Volvo shipment entry: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 "Error initializing Volvo shipment entry",
                 Enum_ErrorSeverity.Medium,
@@ -347,6 +348,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Error generating labels: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 "Error generating labels",
                 Enum_ErrorSeverity.Medium,
@@ -384,6 +386,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Error previewing email: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 "Error previewing email",
                 Enum_ErrorSeverity.Medium,
@@ -477,6 +480,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Error saving shipment: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 "Error saving shipment",
                 Enum_ErrorSeverity.Medium,
@@ -536,6 +540,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
         catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Error completing shipment: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 "Error completing shipment",
                 Enum_ErrorSeverity.Medium,

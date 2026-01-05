@@ -7,91 +7,36 @@
 
 ## 📋 IMPLEMENTATION PLAN SUMMARY
 
-### Files to be Modified
-
-| File | Changes | Methods Removed | Methods Added | Lines Modified |
-|------|---------|----------------|---------------|----------------|
-| **Services/Service_Volvo.cs** | Transaction mgmt, validation, batch queries | - | `ValidateShipment()`<br>`GetPartsByIdsAsync()`<br>`GetComponentsByParentPartsAsync()` | ~50 |
-| **Data/Dao_VolvoShipment.cs** | Convert to stored procedures | `UpdateAsync()` (raw SQL version) | `UpdateAsync()` (stored proc version) | ~30 |
-| **Data/Dao_VolvoPart.cs** | Cascade delete check, batch queries | - | `GetByPartNumbersAsync()`<br>`HasActiveReferencesAsync()` | ~40 |
-| **Data/Dao_VolvoPartComponent.cs** | Batch queries | - | `GetByParentPartsAsync()` | ~25 |
-| **ViewModels/ViewModel_Volvo_ShipmentEntry.cs** | Refactor validation, remove dead code, duplicate prevention | `FilterParts()` (unused)<br>`ValidateShipment()` (move to service) | `ClearShipmentForm()`<br>`IsDuplicatePart()` | ~60 |
-| **Models/VolvoShipmentStatus.cs** | New file - constants | N/A | N/A | ~15 |
-| **Services/IService_Volvo.cs** | Interface updates | - | `ValidateShipment()` signature | ~5 |
-| **Database/StoredProcedures/sp_volvo_shipment_update.sql** | New stored procedure | N/A | N/A | ~20 |
-| **Database/StoredProcedures/sp_volvo_part_batch_get.sql** | New stored procedure | N/A | N/A | ~15 |
-| **Database/StoredProcedures/sp_volvo_component_batch_get.sql** | New stored procedure | N/A | N/A | ~20 |
-| **Module_Core/Services/IService_Authentication.cs** | Get current user (if not exists) | - | `GetCurrentEmployeeNumber()` | ~5 |
-
-### Methods to Remove
-
-| File | Method | Reason |
-|------|--------|--------|
-| `ViewModel_Volvo_ShipmentEntry.cs` | `FilterParts(string searchText)` | Dead code - replaced by AutoSuggestBox logic |
-| `ViewModel_Volvo_ShipmentEntry.cs` | `ValidateShipment()` | Move to service layer for reusability |
-| `Dao_VolvoShipment.cs` | `UpdateAsync()` (current implementation) | Replace with stored procedure version |
-
-### Methods to Add
-
-| File | Method | Purpose |
-|------|--------|---------|
-| **Service_Volvo.cs** | `ValidateShipment(Model_VolvoShipment, List<Model_VolvoShipmentLine>)` | Centralized business validation |
-| **Service_Volvo.cs** | `SaveShipmentWithTransactionAsync()` | Wrap save in MySQL transaction |
-| **Service_Volvo.cs** | `ValidateFilePath(string path)` | Sanitize CSV file paths |
-| **Service_Volvo.cs** | `ValidateSkidCount(int count)` | Range validation (1-99) |
-| **Dao_VolvoPart.cs** | `GetByPartNumbersAsync(List<string>)` | Batch query to fix N+1 problem |
-| **Dao_VolvoPart.cs** | `HasActiveReferencesAsync(string partNumber)` | Check before deactivation |
-| **Dao_VolvoPartComponent.cs** | `GetByParentPartsAsync(List<string>)` | Batch query for component explosion |
-| **Dao_VolvoShipment.cs** | `UpdateAsync()` (new version) | Use stored procedure instead of raw SQL |
-| **ViewModel_Volvo_ShipmentEntry.cs** | `ClearShipmentForm()` | Extract duplicate clearing logic |
-| **ViewModel_Volvo_ShipmentEntry.cs** | `IsDuplicatePart(string partNumber)` | Check before adding part |
-
-### New Files to Create
-
-| File | Purpose | Type |
-|------|---------|------|
-| `Models/VolvoShipmentStatus.cs` | Constants for status values | C# Class |
-| `Database/StoredProcedures/sp_volvo_shipment_update.sql` | Replace raw SQL UPDATE | SQL Stored Proc |
-| `Database/StoredProcedures/sp_volvo_part_batch_get.sql` | Batch get parts by numbers | SQL Stored Proc |
-| `Database/StoredProcedures/sp_volvo_component_batch_get.sql` | Batch get components | SQL Stored Proc |
-| `Database/StoredProcedures/sp_volvo_part_check_references.sql` | Check active references | SQL Stored Proc |
-
-### Database Schema Changes
-
-| Change Type | Description | Impact |
-|-------------|-------------|--------|
-| **Constraint** | Add unique constraint on `volvo_shipments(status, is_archived)` WHERE status='pending_po' | Prevents race condition |
-| **Index** | Add index on `volvo_shipment_lines(part_number)` | Performance for duplicate check |
-| **Validation** | Add CHECK constraint on `received_skid_count BETWEEN 1 AND 99` | Data integrity |
-
 ### Issue Location Reference
 
-| # | Issue | Severity | File | Method/Location | Lines | Recommended Fix |
-|---|-------|----------|------|-----------------|-------|-----------------|
-| 1 | Transaction Management Missing | 🔴 CRITICAL | `Services/Service_Volvo.cs` | `SaveShipmentAsync()` | 305-404 | Wrap shipment and line inserts in MySqlTransaction with rollback on failure |
-| 2 | No SQL Injection Protection | 🔴 CRITICAL | `Data/Dao_VolvoShipment.cs` | `UpdateAsync()` | 86-122 | Create `sp_volvo_shipment_update` stored proc, use Helper_Database_StoredProcedure |
-| 3 | File Path Injection | 🔴 CRITICAL | `Services/Service_Volvo.cs` | `GenerateLabelCsvAsync()` | 185-190 | Validate shipmentId is positive int, use Path.GetInvalidFileNameChars() |
-| 4 | Missing Input Validation | 🟡 SECURITY | `Services/Service_Volvo.cs` | `CalculateComponentExplosionAsync()` | 51-129 | Add check: `if (line.ReceivedSkidCount < 1 \|\| > 99) return error` |
-| 5 | Hardcoded Employee Number | 🟡 SECURITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `SaveShipmentInternalAsync()` | 439 | Inject IService_Authentication, call GetCurrentEmployeeNumber() |
-| 6 | No Authorization Checks | 🟡 SECURITY | All Service methods | Multiple | N/A | Implement role-based checks in service layer before operations |
-| 7 | Cascade Delete Protection | 🟠 DATA | `Data/Dao_VolvoPart.cs` | `DeactivateAsync()` | 105-117 | Create sp_volvo_part_check_references, verify no active shipments use part |
-| 8 | Race Condition (Pending) | 🟠 DATA | `Services/Service_Volvo.cs` | `SaveShipmentAsync()` | 317-327 | Add unique constraint on DB: `(status='pending_po', is_archived=0)` |
-| 9 | Duplicate Part Numbers | 🟠 DATA | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `AddPart()` | 206-235 | Check `Parts.Any(p => p.PartNumber == selected)` before adding |
-| 10 | Inconsistent Error Handling | 🔵 QUALITY | Multiple DAOs | `GetAllAsync()`, `InsertAsync()` | Various | Standardize all DAOs to use Helper_Database_StoredProcedure |
-| 11 | Magic Strings (Status) | 🔵 QUALITY | Multiple files | Multiple | Various | Create `VolvoShipmentStatus` constants class |
-| 12 | Unused FilterParts Method | 🔵 QUALITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `FilterParts()` | 675-680 | Delete the entire FilterParts() method |
-| 13 | Code Duplication (Clearing) | 🔵 QUALITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `StartNewEntry()`, `CompleteShipmentAsync()` | 571, 540 | Extract to `ClearShipmentForm()` method, call from both places |
-| 14 | Missing Null Checks | 🔵 QUALITY | `Services/Service_Volvo.cs` | `FormatEmailTextAsync()` | 284 | Add null guard or make parameter non-nullable with default value |
-| 15 | Zero Quantity Components | 🟢 EDGE CASE | `Services/Service_Volvo.cs` | `CalculateComponentExplosionAsync()` | 51-129 | Validate `QuantityPerSkid > 0` and `component.Quantity > 0` |
-| 16 | Missing QuantityPerSkid | 🟢 EDGE CASE | `Models/Model_VolvoShipmentLine.cs` | Property definition | 28-36 | No action needed - CalculatedPieceCount is stored (correct design) |
-| 17 | Large File Creation | 🟢 EDGE CASE | `Services/Service_Volvo.cs` | `GenerateLabelCsvAsync()` | 135-232 | Add sanity check: max 10,000 lines before CSV generation |
-| 18 | N+1 Query Problem | 🟣 PERFORMANCE | `Services/Service_Volvo.cs` | `CalculateComponentExplosionAsync()` | 63-98 | Create batch methods: GetPartsByNumbersAsync(), GetComponentsByParentPartsAsync() |
-| 19 | Inefficient Collection | 🟣 PERFORMANCE | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `UpdatePartSuggestions()` | 175-185 | Use bulk operations or temporarily disable collection change notifications |
-| 20 | Complex Validation Logic | 🔧 MAINTAIN | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `ValidateShipment()` | 586-625 | Move to Service_Volvo.ValidateShipment() for reusability |
-| 21 | Missing XML Documentation | 🔧 MAINTAIN | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `UpdatePartSuggestions()`, `OnPartSuggestionChosen()` | 165-200 | Add XML doc comments with /// summary tags |
-| 22 | Inconsistent Naming | 🔧 MAINTAIN | Multiple files | Model_Dao_Result usage | Various | Standardize on either Success or IsSuccess property |
-| 23 | No User Action Logging | 🟤 LOGGING | ViewModels | `AddPart()`, `RemovePart()` | Various | Add `_logger.LogInfoAsync()` calls for user actions |
-| 24 | Exception Details Missing | 🟤 LOGGING | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | Multiple catch blocks | Various | Add explicit logger calls before HandleErrorAsync() |
+| ✓ | # | Issue | Severity | File | Method/Location | Lines | Recommended Fix |
+|---|---|-------|----------|------|-----------------|-------|-----------------|
+| ✅ | 1 | Transaction Management Missing | 🔴 CRITICAL | `Services/Service_Volvo.cs` | `SaveShipmentAsync()` | 305-404 | Wrap shipment and line inserts in MySqlTransaction with rollback on failure |
+| ✅ | 2 | No SQL Injection Protection | 🔴 CRITICAL | `Data/Dao_VolvoShipment.cs` | `UpdateAsync()` | 86-122 | Create `sp_volvo_shipment_update` stored proc, use Helper_Database_StoredProcedure |
+| ✅ | 3 | File Path Injection | 🔴 CRITICAL | `Services/Service_Volvo.cs` | `GenerateLabelCsvAsync()` | 185-190 | Validate shipmentId is positive int, use Path.GetInvalidFileNameChars() |
+| ✅ | 4 | Missing Input Validation | 🟡 SECURITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `AddPart()` | 206-235 | Add check: `if (line.ReceivedSkidCount < 1 \|\| > 99) return error` |
+| ✅ | 5 | Hardcoded Employee Number | 🟡 SECURITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `SaveShipmentInternalAsync()` | 439 | Inject IService_UserSessionManager, use CurrentSession.User.EmployeeNumber |
+| ⬜ | 6 | No Authorization Checks | 🟡 SECURITY | All Service methods | Multiple | N/A | Implement role-based checks in service layer before operations |
+| ⬜ | 7 | Cascade Delete Protection | 🟠 DATA | `Data/Dao_VolvoPart.cs` | `DeactivateAsync()` | 105-117 | Create sp_volvo_part_check_references, verify no active shipments use part |
+| ⬜ | 8 | Race Condition (Pending) | 🟠 DATA | `Services/Service_Volvo.cs` | `SaveShipmentAsync()` | 317-327 | Add unique constraint on DB: `(status='pending_po', is_archived=0)` |
+| ✅ | 9 | Duplicate Part Numbers | 🟠 DATA | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `AddPart()` | 206-235 | Check `Parts.Any(p => p.PartNumber == selected)` before adding |
+| ⬜ | 10 | Inconsistent Error Handling | 🔵 QUALITY | Multiple DAOs | `GetAllAsync()`, `InsertAsync()` | Various | Standardize all DAOs to use Helper_Database_StoredProcedure |
+| ✅ | 11 | Magic Strings (Status) | 🔵 QUALITY | Multiple files | Multiple | Various | Create `VolvoShipmentStatus` constants class |
+| ✅ | 12 | Unused FilterParts Method | 🔵 QUALITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `FilterParts()` | 675-680 | Delete the entire FilterParts() method |
+| ✅ | 13 | Code Duplication (Clearing) | 🔵 QUALITY | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `StartNewEntry()`, `CompleteShipmentAsync()` | 571, 540 | Extract to `ClearShipmentForm()` method, call from both places |
+| ✅ | 14 | Missing Null Checks | 🔵 QUALITY | `Services/Service_Volvo.cs` | `FormatEmailTextAsync()` | 284 | Add null guard or make parameter non-nullable with default value |
+| ✅ | 15 | Zero Quantity Components | 🟢 EDGE CASE | `Services/Service_Volvo.cs` | `CalculateComponentExplosionAsync()` | 51-129 | Validate `QuantityPerSkid > 0` and `component.Quantity > 0` |
+| ✅ | 16 | Missing QuantityPerSkid | 🟢 EDGE CASE | `Models/Model_VolvoShipmentLine.cs` | Property definition | 28-36 | No action needed - CalculatedPieceCount is stored (correct design) |
+| ✅ | 17 | Large File Creation | 🟢 EDGE CASE | `Services/Service_Volvo.cs` | `GenerateLabelCsvAsync()` | 135-232 | Add sanity check: max 10,000 lines before CSV generation |
+| ⬜ | 18 | N+1 Query Problem | 🟣 PERFORMANCE | `Services/Service_Volvo.cs` | `CalculateComponentExplosionAsync()` | 63-98 | Create batch methods: GetPartsByNumbersAsync(), GetComponentsByParentPartsAsync() |
+| ⬜ | 19 | Inefficient Collection | 🟣 PERFORMANCE | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `UpdatePartSuggestions()` | 175-185 | Use bulk operations or temporarily disable collection change notifications |
+| ✅ | 20 | Complex Validation Logic | 🔧 MAINTAIN | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `ValidateShipment()` | 586-625 | Move to Service_Volvo.ValidateShipmentAsync() for reusability |
+| ✅ | 21 | Missing XML Documentation | 🔧 MAINTAIN | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | `UpdatePartSuggestions()`, `OnPartSuggestionChosen()` | 165-200 | Add XML doc comments with /// summary tags |
+| ⬜ | 22 | Inconsistent Naming | 🔧 MAINTAIN | Multiple files | Model_Dao_Result usage | Various | Standardize on either Success or IsSuccess property |
+| ✅ | 23 | No User Action Logging | 🟤 LOGGING | ViewModels | `AddPart()`, `RemovePart()` | Various | Add `_logger.LogInfoAsync()` calls for user actions |
+| ✅ | 24 | Exception Details Missing | 🟤 LOGGING | `ViewModels/ViewModel_Volvo_ShipmentEntry.cs` | Multiple catch blocks | Various | Add explicit logger calls before HandleErrorAsync() |
+| ✅ | 25 | Create Settings Document | 🟤 Documentation | `Documentation/FutureEnhancements/Module_Settings/VolvoSettings.md` | N/A | N/A | Create document with all settable variables that should be implemented into a settings page |
+| ✅ | 26 | Create Service Instruction Files | 🟤 Documentation | `.github\instructions\service-{ServiceName}.instructions.md | N/A | N/A | Create copilot instruction files for all Volvo Related Services |
 
 ---
 

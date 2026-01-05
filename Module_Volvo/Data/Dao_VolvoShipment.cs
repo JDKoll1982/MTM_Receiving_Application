@@ -91,31 +91,18 @@ public class Dao_VolvoShipment
     {
         try
         {
-            await using var connection = new MySqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            await using var command = new MySqlCommand
+            var parameters = new Dictionary<string, object>
             {
-                Connection = connection,
-                CommandText = @"
-                    UPDATE volvo_shipments 
-                    SET notes = @p_notes,
-                        modified_date = CURRENT_TIMESTAMP
-                    WHERE id = @p_id",
-                CommandType = CommandType.Text
+                { "id", shipment.Id },
+                { "notes", shipment.Notes ?? (object)DBNull.Value }
             };
 
-            command.Parameters.AddWithValue("@p_id", shipment.Id);
-            command.Parameters.AddWithValue("@p_notes", shipment.Notes ?? (object)DBNull.Value);
+            var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_volvo_shipment_update",
+                parameters);
 
-            var affectedRows = await command.ExecuteNonQueryAsync();
-
-            return new Model_Dao_Result
-            {
-                Success = affectedRows > 0,
-                AffectedRows = affectedRows,
-                ErrorMessage = affectedRows == 0 ? "Shipment not found" : string.Empty
-            };
+            return result;
         }
         catch (Exception ex)
         {
