@@ -68,10 +68,59 @@ public partial class Model_VolvoShipmentLine : ObservableObject
     private string? _discrepancyNote;
 
     /// <summary>
+    /// Expected piece count (calculated from ExpectedSkidCount × QuantityPerSkid)
+    /// Returns null if no expected count is set
+    /// </summary>
+    public int? ExpectedPieceCount => ExpectedSkidCount.HasValue && QuantityPerSkid > 0
+        ? (int)(ExpectedSkidCount.Value * QuantityPerSkid)
+        : null;
+
+    /// <summary>
+    /// Calculated difference between received and expected pieces
+    /// Positive = more received than expected, Negative = fewer received
+    /// Returns null if no expected count is set
+    /// </summary>
+    public int? PieceDifference => ExpectedPieceCount.HasValue
+        ? CalculatedPieceCount - ExpectedPieceCount.Value
+        : null;
+
+    /// <summary>
     /// Recalculate pieces when received skid count changes
     /// </summary>
     partial void OnReceivedSkidCountChanged(int value)
     {
         CalculatedPieceCount = QuantityPerSkid * value;
+        OnPropertyChanged(nameof(PieceDifference));
+        OnPropertyChanged(nameof(ExpectedPieceCount));
+    }
+
+    /// <summary>
+    /// Update calculated values when quantity per skid changes
+    /// </summary>
+    partial void OnQuantityPerSkidChanged(int value)
+    {
+        OnPropertyChanged(nameof(ExpectedPieceCount));
+        OnPropertyChanged(nameof(PieceDifference));
+    }
+
+    /// <summary>
+    /// Update calculated difference when expected skid count changes
+    /// </summary>
+    partial void OnExpectedSkidCountChanged(double? value)
+    {
+        OnPropertyChanged(nameof(ExpectedPieceCount));
+        OnPropertyChanged(nameof(PieceDifference));
+    }
+
+    /// <summary>
+    /// Clear discrepancy fields when HasDiscrepancy is unchecked
+    /// </summary>
+    partial void OnHasDiscrepancyChanged(bool value)
+    {
+        if (!value)
+        {
+            ExpectedSkidCount = null;
+            DiscrepancyNote = null;
+        }
     }
 }

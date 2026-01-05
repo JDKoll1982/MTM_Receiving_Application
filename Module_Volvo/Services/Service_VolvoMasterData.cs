@@ -272,9 +272,9 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
 
             // Validate header
             var header = lines[0];
-            if (!header.Contains("PartNumber") || !header.Contains("Description") || !header.Contains("QuantityPerSkid"))
+            if (!header.Contains("PartNumber") || !header.Contains("QuantityPerSkid"))
             {
-                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV must contain columns: PartNumber, Description, QuantityPerSkid, Components");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV must contain columns: PartNumber, QuantityPerSkid, Components");
             }
 
             int newCount = 0;
@@ -296,9 +296,8 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     }
 
                     var partNumber = fields[0].Trim();
-                    var description = fields[1].Trim();
-                    var quantityStr = fields[2].Trim();
-                    var componentsStr = fields.Length > 3 ? fields[3].Trim() : "";
+                    var quantityStr = fields[1].Trim();
+                    var componentsStr = fields.Length > 2 ? fields[2].Trim() : "";
 
                     if (!int.TryParse(quantityStr, out int quantity))
                     {
@@ -310,7 +309,6 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     var part = new Model_VolvoPart
                     {
                         PartNumber = partNumber,
-                        Description = description,
                         QuantityPerSkid = quantity,
                         IsActive = true
                     };
@@ -405,7 +403,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
             }
 
             var csv = new StringBuilder();
-            csv.AppendLine("PartNumber,Description,QuantityPerSkid,Components");
+            csv.AppendLine("PartNumber,QuantityPerSkid,Components");
 
             foreach (var part in partsResult.Data ?? new List<Model_VolvoPart>())
             {
@@ -417,7 +415,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
                 }
 
-                csv.AppendLine($"{EscapeCsvField(part.PartNumber ?? string.Empty)},{EscapeCsvField(part.Description ?? string.Empty)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
+                csv.AppendLine($"{EscapeCsvField(part.PartNumber ?? string.Empty)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
             }
 
             await _logger.LogInfoAsync($"Export complete: {partsResult.Data?.Count ?? 0} parts");

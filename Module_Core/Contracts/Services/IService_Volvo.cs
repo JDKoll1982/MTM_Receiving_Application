@@ -45,6 +45,25 @@ public interface IService_Volvo
         Dictionary<string, int>? requestedLines = null);
 
     /// <summary>
+    /// Formats email data for PO requisition (structured for preview and HTML export)
+    /// </summary>
+    /// <param name="shipment">Shipment header</param>
+    /// <param name="lines">Shipment lines with discrepancy data</param>
+    /// <param name="requestedLines">Aggregated component explosion results</param>
+    /// <returns>Structured email data</returns>
+    public Task<Model_VolvoEmailData> FormatEmailDataAsync(
+        Model_VolvoShipment shipment,
+        List<Model_VolvoShipmentLine> lines,
+        Dictionary<string, int>? requestedLines = null);
+
+    /// <summary>
+    /// Converts structured email data to HTML format with tables for Outlook paste
+    /// </summary>
+    /// <param name="emailData">Structured email data</param>
+    /// <returns>HTML formatted email</returns>
+    public string FormatEmailAsHtml(Model_VolvoEmailData emailData);
+
+    /// <summary>
     /// Validates shipment data before save
     /// Centralized validation logic to ensure data integrity
     /// </summary>

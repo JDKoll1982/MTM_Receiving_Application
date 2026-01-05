@@ -28,7 +28,6 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
 
         // Clear fields
         PartNumberTextBox.Text = string.Empty;
-        DescriptionTextBox.Text = string.Empty;
         QuantityPerSkidNumberBox.Value = 0;
     }
 
@@ -45,7 +44,6 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
 
         // Pre-fill fields
         PartNumberTextBox.Text = part.PartNumber;
-        DescriptionTextBox.Text = part.Description;
         QuantityPerSkidNumberBox.Value = part.QuantityPerSkid;
     }
 
@@ -59,17 +57,10 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(DescriptionTextBox.Text))
-        {
-            args.Cancel = true;
-            return;
-        }
-
         // Create part object
         Part = new Model_VolvoPart
         {
             PartNumber = PartNumberTextBox.Text.Trim().ToUpperInvariant(),
-            Description = DescriptionTextBox.Text.Trim(),
             QuantityPerSkid = (int)QuantityPerSkidNumberBox.Value,
             IsActive = true
         };

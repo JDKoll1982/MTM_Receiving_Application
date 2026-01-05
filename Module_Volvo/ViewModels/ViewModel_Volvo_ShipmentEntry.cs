@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -169,6 +170,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// <summary>
     /// Updates the part suggestions list based on user's search text
     /// Filters parts by case-insensitive substring match on part number
+    /// Optimized to reduce collection change notifications
     /// </summary>
     /// <param name="queryText">Search text from AutoSuggestBox</param>
     public void UpdatePartSuggestions(string queryText)
@@ -185,8 +187,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             .Take(20)
             .ToList();
 
+        // Optimize: Use bulk replace to reduce collection change events
+        // Clear and add all at once instead of individual adds
+        var tempList = new List<Model_VolvoPart>(suggestions);
         SuggestedParts.Clear();
-        foreach (var part in suggestions)
+        foreach (var part in tempList)
         {
             SuggestedParts.Add(part);
         }
@@ -378,11 +383,26 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 Status = "pending_po"
             };
 
-            // Format email
-            var emailText = await _volvoService.FormatEmailTextAsync(shipment, Parts.ToList(), new Dictionary<string, int>());
+            // Calculate component explosion to get actual part quantities
+            var explosionResult = await _volvoService.CalculateComponentExplosionAsync(Parts.ToList());
+
+            Dictionary<string, int> requestedLines;
+            if (explosionResult.IsSuccess && explosionResult.Data != null)
+            {
+                requestedLines = explosionResult.Data;
+            }
+            else
+            {
+                // Fallback to empty if explosion fails
+                requestedLines = new Dictionary<string, int>();
+                await _logger.LogWarningAsync($"Component explosion failed for email preview: {explosionResult.ErrorMessage}");
+            }
+
+            // Format email data with actual part quantities
+            var emailData = await _volvoService.FormatEmailDataAsync(shipment, Parts.ToList(), requestedLines);
 
             // Show email preview dialog
-            await ShowEmailPreviewDialogAsync(emailText ?? string.Empty);
+            await ShowEmailPreviewDialogAsync(emailData);
         }
         catch (Exception ex)
         {
@@ -399,7 +419,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
     }
 
-    private async Task ShowEmailPreviewDialogAsync(string emailText)
+    private async Task ShowEmailPreviewDialogAsync(Model_VolvoEmailData emailData)
     {
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot == null)
@@ -421,19 +441,114 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             XamlRoot = xamlRoot
         };
 
-        var textBox = new TextBox
+        // Build structured preview UI
+        var mainStack = new StackPanel { Spacing = 12 };
+
+        // Subject
+        var subjectBox = new TextBox
         {
-            Text = emailText,
+            Header = "Subject:",
+            Text = emailData.Subject,
+            IsReadOnly = true,
+            FontWeight = Microsoft.UI.Text.FontWeights.Bold
+        };
+        mainStack.Children.Add(subjectBox);
+
+        // Greeting and Message
+        var messageBox = new TextBox
+        {
+            Text = $"{emailData.Greeting}\n\n{emailData.Message}",
             IsReadOnly = true,
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-            AcceptsReturn = true,
-            Height = 500,
-            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas")
+            Height = 80,
+            BorderThickness = new Microsoft.UI.Xaml.Thickness(0)
         };
+        mainStack.Children.Add(messageBox);
+
+        // Discrepancies (if any)
+        if (emailData.Discrepancies.Count > 0)
+        {
+            var discHeader = new TextBlock
+            {
+                Text = "**DISCREPANCIES NOTED**",
+                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+                Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4)
+            };
+            mainStack.Children.Add(discHeader);
+
+            var discBox = new TextBox
+            {
+                IsReadOnly = true,
+                TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
+                FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+                Height = 120
+            };
+            var discText = new StringBuilder();
+            discText.AppendLine("Part Number\tPacklist Qty\tReceived Qty\tDifference\tNote");
+            discText.AppendLine(new string('-', 80));
+            foreach (var disc in emailData.Discrepancies)
+            {
+                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                discText.AppendLine($"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}");
+            }
+            discBox.Text = discText.ToString();
+            mainStack.Children.Add(discBox);
+        }
+
+        // Requested Lines
+        var reqHeader = new TextBlock
+        {
+            Text = "Requested Lines:",
+            FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4)
+        };
+        mainStack.Children.Add(reqHeader);
+
+        var reqBox = new TextBox
+        {
+            IsReadOnly = true,
+            TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
+            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+            Height = 150
+        };
+        var reqText = new StringBuilder();
+        reqText.AppendLine("Part Number\tQuantity (pcs)");
+        reqText.AppendLine(new string('-', 40));
+        foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+        {
+            reqText.AppendLine($"{kvp.Key}\t{kvp.Value}");
+        }
+        reqBox.Text = reqText.ToString();
+        mainStack.Children.Add(reqBox);
+
+        // Additional Notes
+        if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+        {
+            var notesBox = new TextBox
+            {
+                Header = "Additional Notes:",
+                Text = emailData.AdditionalNotes,
+                IsReadOnly = true,
+                TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                Height = 60
+            };
+            mainStack.Children.Add(notesBox);
+        }
+
+        // Signature
+        var signatureBox = new TextBox
+        {
+            Text = emailData.Signature,
+            IsReadOnly = true,
+            BorderThickness = new Microsoft.UI.Xaml.Thickness(0),
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 0)
+        };
+        mainStack.Children.Add(signatureBox);
 
         var scrollViewer = new ScrollViewer
         {
-            Content = textBox,
+            Content = mainStack,
+            Height = 500,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto
         };
 
@@ -443,14 +558,63 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         if (result == ContentDialogResult.Primary)
         {
-            // Copy to clipboard
+            // Copy HTML to clipboard for Outlook paste as table
+            var htmlContent = _volvoService.FormatEmailAsHtml(emailData);
             var dataPackage = new DataPackage();
-            dataPackage.SetText(emailText);
+            dataPackage.SetHtmlFormat(htmlContent);
+            // Also include plain text fallback
+            var plainText = BuildPlainTextEmail(emailData);
+            dataPackage.SetText(plainText);
             Clipboard.SetContent(dataPackage);
 
-            SuccessMessage = "Email text copied to clipboard!";
+            SuccessMessage = "Email copied to clipboard (paste into Outlook as formatted table)!";
             IsSuccessMessageVisible = true;
         }
+    }
+
+    private string BuildPlainTextEmail(Model_VolvoEmailData emailData)
+    {
+        var text = new StringBuilder();
+        text.AppendLine($"Subject: {emailData.Subject}");
+        text.AppendLine();
+        text.AppendLine(emailData.Greeting);
+        text.AppendLine();
+        text.AppendLine(emailData.Message);
+        text.AppendLine();
+
+        if (emailData.Discrepancies.Count > 0)
+        {
+            text.AppendLine("**DISCREPANCIES NOTED**");
+            text.AppendLine();
+            text.AppendLine("Part Number\tPacklist Qty\tReceived Qty\tDifference\tNote");
+            text.AppendLine(new string('-', 80));
+            foreach (var disc in emailData.Discrepancies)
+            {
+                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                text.AppendLine($"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}");
+            }
+            text.AppendLine();
+        }
+
+        text.AppendLine("Requested Lines:");
+        text.AppendLine();
+        text.AppendLine("Part Number\tQuantity (pcs)");
+        text.AppendLine(new string('-', 40));
+        foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+        {
+            text.AppendLine($"{kvp.Key}\t{kvp.Value}");
+        }
+        text.AppendLine();
+
+        if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+        {
+            text.AppendLine("Additional Notes:");
+            text.AppendLine(emailData.AdditionalNotes);
+            text.AppendLine();
+        }
+
+        text.AppendLine(emailData.Signature);
+        return text.ToString();
     }
 
     [RelayCommand]

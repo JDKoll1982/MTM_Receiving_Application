@@ -145,6 +145,18 @@
                             </controls:DataGridTemplateColumn.CellTemplate>
                         </controls:DataGridTemplateColumn>
                         
+                        <!-- Expected Pieces Column -->
+                        <controls:DataGridTextColumn Header="Expected Pieces"
+                                                      Width="120"
+                                                      Binding="{Binding ExpectedPieceCount, Mode=OneWay}"
+                                                      IsReadOnly="True"/>
+                        
+                        <!-- Difference Column -->
+                        <controls:DataGridTextColumn Header="Difference"
+                                                      Width="100"
+                                                      Binding="{Binding PieceDifference, Mode=OneWay}"
+                                                      IsReadOnly="True"/>
+                        
                         <!-- Discrepancy Note -->
                         <controls:DataGridTemplateColumn Header="Discrepancy Note" Width="*" MinWidth="200">
                             <controls:DataGridTemplateColumn.CellTemplate>

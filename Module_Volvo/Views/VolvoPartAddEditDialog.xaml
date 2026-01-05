@@ -19,12 +19,6 @@
                  PlaceholderText="e.g., V-EMB-500"
                  MaxLength="50"/>
 
-        <!-- Description -->
-        <TextBox x:Name="DescriptionTextBox"
-                 Header="Description"
-                 PlaceholderText="e.g., Steel Skid 44x48"
-                 MaxLength="200"/>
-
         <!-- Quantity Per Skid -->
         <NumberBox x:Name="QuantityPerSkidNumberBox"
                    Header="Quantity Per Skid"

@@ -74,18 +74,23 @@ Common dependencies:
 ## Review State Machine
 
 ```
-[No Review] --[I/A]--> [Analysis Complete] --[User Amends]--> [Ready to Fix]
+[No Review] --[I/A]--> [Analysis Complete] --[User Review]--> [Ready to Fix]
      ↓                        ↓                                     ↓
-[Generate Report]     [Review Generated]                    [Apply Fixes]
+[Generate Report]     [All Issues ⬜]                        [Apply Fixes]
      ↓                        ↓                                     ↓
-[CODE_REVIEW.md]      [User Edits File]         [Build→Fix→Update Checkboxes]
+[CODE_REVIEW.md]      [User: ⬜→❌ skip]            [Build→Fix→⬜→✅]
                               ↓                                     ↓
-                        [F command]                          [All ✅ Done]
+                        [F command]                      [All ⬜ become ✅]
                                                                    ↓
                                                             [V to Archive]
                                                                    ↓
                                                          [Start New Version]
 ```
+
+**Checkbox States:**
+- ⬜ = NOT DONE / PENDING (initial state, ready to be fixed)
+- ✅ = COMPLETED (fix has been applied and build passed)
+- ❌ or ➖ = SKIP (user explicitly chose not to fix this issue)
 
 ---
 
@@ -182,12 +187,33 @@ Workflow paths:
 
 ## Quality Standards
 
-Before marking any fix as ✅:
+Before marking any fix as ✅ (changing ⬜ to ✅):
 - Build succeeds without errors
 - Fix addresses root cause (not symptom)
 - No new issues introduced
 - Code follows MVVM architecture
 - Matches project coding standards
+
+## Checkbox Workflow Details
+
+**Initial Analysis:**
+- Generate CODE_REVIEW.md with all issues marked ⬜ (not done/pending)
+
+**User Review Phase:**
+- User reviews issues
+- Can mark ⬜ as ❌ or ➖ to explicitly skip
+- Items left as ⬜ are candidates for fixing
+
+**Fix Application Phase ([F] command):**
+- Read CODE_REVIEW.md and find all ⬜ items (not done)
+- Apply fixes in dependency-aware order
+- Change ⬜ to ✅ after successful fix and build
+- Leave ❌/➖ items untouched (explicitly skipped)
+
+**Interpretation:**
+- ✅ in review = Fix completed successfully
+- ⬜ in review = Not yet fixed (pending)
+- ❌/➖ in review = User chose to skip
 
 ---
 

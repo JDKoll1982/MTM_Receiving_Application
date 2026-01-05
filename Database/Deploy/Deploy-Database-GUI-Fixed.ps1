@@ -100,31 +100,33 @@ $xaml = @"
                     <ProgressBar Name="SchemaProgress" Height="8" Margin="0,5" Maximum="100"/>
                 </StackPanel>
 
-                <!-- Step 2: Migrations -->
-                <StackPanel Name="MigrationSection" Margin="0,5">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Name="MigrationText" Text="[2/4] Database Migrations" Foreground="#666"/>
-                        <TextBlock Grid.Column="1" Name="MigrationCount" Text="0/0" Foreground="#2196F3"/>
-                    </Grid>
-                    <ProgressBar Name="MigrationProgress" Height="8" Margin="0,5" Maximum="100"/>
-                </StackPanel>
-
-                <!-- Step 3: Stored Procedures -->
+                <!-- Step 2: Stored Procedures -->
                 <StackPanel Name="StoredProcSection" Margin="0,5">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Name="StoredProcText" Text="[3/4] Stored Procedures" Foreground="#666"/>
+                        <TextBlock Grid.Column="0" Name="StoredProcText" Text="[2/4] Stored Procedures" Foreground="#666"/>
                         <TextBlock Grid.Column="1" Name="StoredProcCount" Text="0/0" Foreground="#2196F3"/>
                     </Grid>
                     <ProgressBar Name="StoredProcProgress" Height="8" Margin="0,5" Maximum="100"/>
                 </StackPanel>
+
+                <!-- Step 3: Migrations -->
+                <StackPanel Name="MigrationSection" Margin="0,5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Name="MigrationText" Text="[3/4] Database Migrations" Foreground="#666"/>
+                        <TextBlock Grid.Column="1" Name="MigrationCount" Text="0/0" Foreground="#2196F3"/>
+                    </Grid>
+                    <ProgressBar Name="MigrationProgress" Height="8" Margin="0,5" Maximum="100"/>
+                </StackPanel>
+
+
 
                 <!-- Step 4: Test Data -->
                 <StackPanel Name="TestDataSection" Margin="0,5">
@@ -442,7 +444,53 @@ $deployButton.Add_Click({
                             }
                         }
                         elseif ($script:deploymentStep -eq 2) {
-                            # Step 2: Migrations
+                            # Step 2: Stored Procedures
+                            $storedProcsPath = Join-Path $script:DatabaseRoot "StoredProcedures"
+                            Write-Host "DEBUG: Checking stored procedures path: $storedProcsPath" -ForegroundColor Yellow
+                    
+                            if (Test-Path $storedProcsPath) {
+                                $script:currentFiles = Get-ChildItem -Path $storedProcsPath -Recurse -Filter "*.sql" | 
+                                Where-Object { 
+                                    $filename = $_.Name
+                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
+                                } | Sort-Object FullName
+                        
+                                Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
+                        
+                                if ($script:currentFiles.Count -eq 0) {
+                                    $script:deploymentStep = 4
+                                }
+                                else {
+                                    $script:currentIndex = 0
+                                    $script:deploymentStep = 3
+                                }
+                            }
+                            else {
+                                Write-Host "DEBUG: Stored procedures path not found, skipping to step 4" -ForegroundColor Yellow
+                                $script:deploymentStep = 4
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 3) {
+                            if ($script:currentIndex -lt $script:currentFiles.Count) {
+                                $file = $script:currentFiles[$script:currentIndex]
+                                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                        
+                                $storedProcProgress.Value = $percent
+                                $storedProcCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                                $currentFileText.Text = "Deploying: $($file.Name)"
+                        
+                                Execute-SqlFile -FilePath $file.FullName
+                                $script:StoredProcCountTotal++
+                                $script:currentIndex++
+                            }
+                            else {
+                                $script:deploymentStep = 4
+                                $script:currentFiles = @()
+                                $script:currentIndex = 0
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 4) {
+                            # Step 3: Migrations
                             $migrationsPath = Join-Path $script:DatabaseRoot "Migrations"
                             Write-Host "DEBUG: Checking migrations path: $migrationsPath" -ForegroundColor Yellow
                     
@@ -456,19 +504,19 @@ $deployButton.Add_Click({
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
                         
                                 if ($script:currentFiles.Count -eq 0) {
-                                    $script:deploymentStep = 4
+                                    $script:deploymentStep = 6
                                 }
                                 else {
                                     $script:currentIndex = 0
-                                    $script:deploymentStep = 3
+                                    $script:deploymentStep = 5
                                 }
                             }
                             else {
-                                Write-Host "DEBUG: Migrations path not found, skipping to step 4" -ForegroundColor Yellow
-                                $script:deploymentStep = 4
+                                Write-Host "DEBUG: Migrations path not found, skipping to step 6" -ForegroundColor Yellow
+                                $script:deploymentStep = 6
                             }
                         }
-                        elseif ($script:deploymentStep -eq 3) {
+                        elseif ($script:deploymentStep -eq 5) {
                             if ($script:currentIndex -lt $script:currentFiles.Count) {
                                 $file = $script:currentFiles[$script:currentIndex]
                                 $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
@@ -485,52 +533,6 @@ $deployButton.Add_Click({
                                     Write-Host "DEBUG: Migration error: $($_.Exception.Message)" -ForegroundColor Red
                                     # Continue on migration errors
                                 }
-                                $script:currentIndex++
-                            }
-                            else {
-                                $script:deploymentStep = 4
-                                $script:currentFiles = @()
-                                $script:currentIndex = 0
-                            }
-                        }
-                        elseif ($script:deploymentStep -eq 4) {
-                            # Step 3: Stored Procedures
-                            $storedProcsPath = Join-Path $script:DatabaseRoot "StoredProcedures"
-                            Write-Host "DEBUG: Checking stored procedures path: $storedProcsPath" -ForegroundColor Yellow
-                    
-                            if (Test-Path $storedProcsPath) {
-                                $script:currentFiles = Get-ChildItem -Path $storedProcsPath -Recurse -Filter "*.sql" | 
-                                Where-Object { 
-                                    $filename = $_.Name
-                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                                } | Sort-Object FullName
-                        
-                                Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
-                        
-                                if ($script:currentFiles.Count -eq 0) {
-                                    $script:deploymentStep = 6
-                                }
-                                else {
-                                    $script:currentIndex = 0
-                                    $script:deploymentStep = 5
-                                }
-                            }
-                            else {
-                                Write-Host "DEBUG: Stored procedures path not found, skipping to step 6" -ForegroundColor Yellow
-                                $script:deploymentStep = 6
-                            }
-                        }
-                        elseif ($script:deploymentStep -eq 5) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                        
-                                $storedProcProgress.Value = $percent
-                                $storedProcCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                        
-                                Execute-SqlFile -FilePath $file.FullName
-                                $script:StoredProcCountTotal++
                                 $script:currentIndex++
                             }
                             else {

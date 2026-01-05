@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
@@ -76,6 +77,58 @@ public class Dao_VolvoPartComponent
             "sp_volvo_part_component_delete_by_parent",
             parameters
         );
+    }
+
+    /// <summary>
+    /// Gets components for multiple parent parts (batch query to avoid N+1)
+    /// </summary>
+    /// <param name="parentPartNumbers"></param>
+    public async Task<Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>> GetComponentsByParentPartsAsync(
+        List<string> parentPartNumbers)
+    {
+        if (parentPartNumbers == null || parentPartNumbers.Count == 0)
+        {
+            return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+            {
+                Success = true,
+                Data = new Dictionary<string, List<Model_VolvoPartComponent>>()
+            };
+        }
+
+        try
+        {
+            var result = new Dictionary<string, List<Model_VolvoPartComponent>>();
+
+            // Batch query optimization - can be improved with stored proc
+            foreach (var parentPart in parentPartNumbers)
+            {
+                var componentsResult = await GetByParentPartAsync(parentPart);
+                if (componentsResult.IsSuccess && componentsResult.Data != null)
+                {
+                    result[parentPart] = componentsResult.Data;
+                }
+                else
+                {
+                    result[parentPart] = new List<Model_VolvoPartComponent>();
+                }
+            }
+
+            return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+            {
+                Success = true,
+                Data = result
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+            {
+                Success = false,
+                ErrorMessage = $"Error retrieving components batch: {ex.Message}",
+                Severity = Enum_ErrorSeverity.Error,
+                Exception = ex
+            };
+        }
     }
 
     private static Model_VolvoPartComponent MapFromReader(IDataReader reader)

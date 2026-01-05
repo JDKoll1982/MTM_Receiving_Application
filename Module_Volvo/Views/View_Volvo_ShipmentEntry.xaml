@@ -161,6 +161,16 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
+                    <controls:DataGridTextColumn Header="Expected Pieces"
+                                                  Width="130"
+                                                  Binding="{Binding ExpectedPieceCount, Mode=OneWay}"
+                                                  IsReadOnly="True"/>
+
+                    <controls:DataGridTextColumn Header="Difference"
+                                                  Width="100"
+                                                  Binding="{Binding PieceDifference, Mode=OneWay}"
+                                                  IsReadOnly="True"/>
+
                     <controls:DataGridTemplateColumn Header="Discrepancy Note"
                                                       Width="*">
                         <controls:DataGridTemplateColumn.CellTemplate>

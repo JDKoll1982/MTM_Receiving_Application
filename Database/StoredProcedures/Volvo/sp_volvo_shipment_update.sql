@@ -1,3 +1,9 @@
+-- Stored Procedure: sp_volvo_shipment_update
+-- Purpose: Update Volvo shipment notes
+-- Created for Issue #2 (Code Review - SQL Injection Protection)
+
+DROP PROCEDURE IF EXISTS sp_volvo_shipment_update;
+
 DELIMITER $$
 
 CREATE PROCEDURE sp_volvo_shipment_update(

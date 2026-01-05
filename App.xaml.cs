@@ -237,6 +237,11 @@ public partial class App : Application
                 });
 
                 // Volvo Services (002-volvo-module)
+                services.AddSingleton<IService_VolvoAuthorization>(sp =>
+                {
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_VolvoAuthorization(logger);
+                });
                 services.AddSingleton<IService_Volvo>(sp =>
                 {
                     var shipmentDao = sp.GetRequiredService<Dao_VolvoShipment>();
@@ -244,7 +249,8 @@ public partial class App : Application
                     var partDao = sp.GetRequiredService<Dao_VolvoPart>();
                     var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
                     var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    return new Service_Volvo(shipmentDao, lineDao, partDao, componentDao, logger);
+                    var authService = sp.GetRequiredService<IService_VolvoAuthorization>();
+                    return new Service_Volvo(shipmentDao, lineDao, partDao, componentDao, logger, authService);
                 });
                 services.AddSingleton<IService_VolvoMasterData>(sp =>
                 {
