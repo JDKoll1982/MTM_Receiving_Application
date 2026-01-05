@@ -266,10 +266,23 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Routing_History>();
                 services.AddTransient<ViewModel_Routing_ModeSelection>();
 
+                // Routing Workflow ViewModels (001-routing-module)
+                services.AddTransient<ViewModel_Routing_Workflow>();
+                services.AddTransient<ViewModel_Routing_LabelEntry>();
+                services.AddTransient<ViewModel_Routing_History>();
+                services.AddTransient<ViewModel_Routing_ModeSelection>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
+                services.AddTransient<Main_RoutingLabelPage>();
+
+                // Routing Views (001-routing-module)
+                services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
+                services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
+                services.AddTransient<Module_Routing.Views.View_Routing_History>();
+                services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
                 services.AddTransient<Main_RoutingLabelPage>();
 
                 // Routing Views (001-routing-module)
