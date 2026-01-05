@@ -141,25 +141,14 @@
             <AppBarButton Icon="Add" Label="Add Part" Command="{x:Bind ViewModel.AddPartCommand}"/>
             <AppBarButton Icon="Delete" Label="Remove Part" Command="{x:Bind ViewModel.RemovePartCommand}"/>
             <AppBarSeparator/>
-            <AppBarButton Label="Generate Labels" Command="{x:Bind ViewModel.GenerateLabelsCommand}">
-                <AppBarButton.Icon>
-                    <mi:MaterialIcon Kind="Barcode"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton Label="Preview Email" Command="{x:Bind ViewModel.PreviewEmailCommand}">
-                <AppBarButton.Icon>
-                    <mi:MaterialIcon Kind="Email"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
+            <AppBarButton Icon="QRCode" Label="Generate Labels" Command="{x:Bind ViewModel.GenerateLabelsCommand}"/>
+            <AppBarButton Icon="Mail" Label="Preview Email" Command="{x:Bind ViewModel.PreviewEmailCommand}"/>
             <AppBarSeparator/>
             <AppBarButton Icon="Save" Label="Save as Pending" Command="{x:Bind ViewModel.SaveAsPendingCommand}"/>
-            <AppBarButton Label="Complete Shipment" 
+            <AppBarButton Icon="Accept" 
+                          Label="Complete Shipment" 
                           Command="{x:Bind ViewModel.CompleteShipmentCommand}"
-                          Visibility="{x:Bind ViewModel.HasPendingShipment, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <AppBarButton.Icon>
-                    <mi:MaterialIcon Kind="CheckCircle"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
+                          Visibility="{x:Bind ViewModel.HasPendingShipment, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </CommandBar>
 
         <!-- Status Bar -->

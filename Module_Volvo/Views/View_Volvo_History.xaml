@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Loaded="OnPageLoaded">
 
@@ -53,7 +54,7 @@
         </StackPanel>
 
         <!-- DataGrid -->
-        <DataGrid
+        <controls:DataGrid
             Grid.Row="2"
             ItemsSource="{x:Bind ViewModel.History, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.SelectedShipment, Mode=TwoWay}"
@@ -62,38 +63,38 @@
             CanUserReorderColumns="False"
             GridLinesVisibility="Horizontal">
             
-            <DataGrid.Columns>
-                <DataGridTextColumn 
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn 
                     Header="Shipment #" 
                     Binding="{Binding ShipmentNumber}"
                     Width="100"/>
                 
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Date" 
                     Binding="{Binding ShipmentDate, Converter={StaticResource DateFormatConverter}}"
                     Width="120"/>
                 
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="PO Number" 
                     Binding="{Binding PONumber}"
                     Width="120"/>
                 
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Receiver" 
                     Binding="{Binding ReceiverNumber}"
                     Width="120"/>
                 
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Status" 
                     Binding="{Binding Status}"
                     Width="120"/>
                 
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Notes" 
                     Binding="{Binding Notes}"
                     Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
 
         <!-- Status Bar -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">

@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.UI.Xaml.Controls;
@@ -445,7 +446,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private async Task ShowCompletionDialogAsync(Model_VolvoShipment shipment)
     {
         var xamlRoot = _windowService.GetXamlRoot();
-        if (xamlRoot == null) return;
+        if (xamlRoot == null)
+            return;
 
         var dialog = new ContentDialog
         {

@@ -6,10 +6,10 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 /// <summary>
 /// ViewModel for Volvo master data settings (parts catalog management)
 /// </summary>
-public partial class ViewModel_Volvo_Settings : BaseViewModel
+public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 {
     private readonly IService_VolvoMasterData _masterDataService;
 
@@ -40,7 +40,7 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     public ViewModel_Volvo_Settings(
         IService_VolvoMasterData masterDataService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
         _masterDataService = masterDataService ?? throw new ArgumentNullException(nameof(masterDataService));
@@ -49,7 +49,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -97,7 +98,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand]
     private async Task AddPartAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -157,7 +159,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanEditPart))]
     private async Task EditPartAsync()
     {
-        if (IsBusy || SelectedPart == null) return;
+        if (IsBusy || SelectedPart == null)
+            return;
 
         try
         {
@@ -219,7 +222,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanDeactivatePart))]
     private async Task DeactivatePartAsync()
     {
-        if (IsBusy || SelectedPart == null) return;
+        if (IsBusy || SelectedPart == null)
+            return;
 
         try
         {
@@ -283,7 +287,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanViewComponents))]
     private async Task ViewComponentsAsync()
     {
-        if (IsBusy || SelectedPart == null) return;
+        if (IsBusy || SelectedPart == null)
+            return;
 
         try
         {
@@ -337,7 +342,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand]
     private async Task ImportCsvAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -351,7 +357,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
             var file = await picker.PickSingleFileAsync();
-            if (file == null) return;
+            if (file == null)
+                return;
 
             IsBusy = true;
             StatusMessage = "Importing CSV...";
@@ -407,7 +414,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
     [RelayCommand]
     private async Task ExportCsvAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -422,7 +430,8 @@ public partial class ViewModel_Volvo_Settings : BaseViewModel
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
             var file = await picker.PickSaveFileAsync();
-            if (file == null) return;
+            if (file == null)
+                return;
 
             IsBusy = true;
             StatusMessage = "Exporting to CSV...";

@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Loaded="OnPageLoaded">
 
@@ -64,7 +65,7 @@
 
         <!-- Data Grid -->
         <Grid Grid.Row="2">
-            <DataGrid
+            <controls:DataGrid
                 ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
                 SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
                 AutoGenerateColumns="False"
@@ -73,21 +74,21 @@
                 HeadersVisibility="Column"
                 AlternatingRowBackground="{ThemeResource SystemListLowColor}"
                 SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" Width="150"/>
-                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
-                    <DataGridTextColumn Header="Qty/Skid" Binding="{Binding QuantityPerSkid}" Width="100"/>
-                    <DataGridTemplateColumn Header="Active" Width="80">
-                        <DataGridTemplateColumn.CellTemplate>
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" Width="150"/>
+                    <controls:DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                    <controls:DataGridTextColumn Header="Qty/Skid" Binding="{Binding QuantityPerSkid}" Width="100"/>
+                    <controls:DataGridTemplateColumn Header="Active" Width="80">
+                        <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoPart">
                                 <TextBlock 
                                     Text="{x:Bind IsActive}" 
                                     Foreground="{x:Bind IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Gray'}"/>
                             </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
         </Grid>
 
         <!-- Status Bar -->

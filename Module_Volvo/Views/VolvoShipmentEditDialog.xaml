@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     Title="Edit Shipment"
     PrimaryButtonText="Save Changes"
     CloseButtonText="Cancel"
@@ -88,7 +89,7 @@
                     <Button x:Name="RemovePartButton" Content="Remove Part" Height="32"/>
                 </StackPanel>
                 
-                <DataGrid
+                <controls:DataGrid
                     x:Name="PartsDataGrid"
                     Height="300"
                     AutoGenerateColumns="False"
@@ -98,15 +99,15 @@
                     GridLinesVisibility="All"
                     HorizontalScrollBarVisibility="Auto">
                     
-                    <DataGrid.Columns>
+                    <controls:DataGrid.Columns>
                         <!-- Part Number -->
-                        <DataGridComboBoxColumn
+                        <controls:DataGridComboBoxColumn
                             Header="Part Number"
                             Width="150"/>
                         
                         <!-- Received Skids -->
-                        <DataGridTemplateColumn Header="Received Skids" Width="120">
-                            <DataGridTemplateColumn.CellTemplate>
+                        <controls:DataGridTemplateColumn Header="Received Skids" Width="120">
+                            <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                     <NumberBox
                                         Value="{x:Bind ReceivedSkidCount, Mode=TwoWay}"
@@ -114,25 +115,25 @@
                                         SpinButtonPlacementMode="Compact"
                                         HorizontalAlignment="Stretch" />
                                 </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
                         
                         <!-- Calculated Pieces (Read-only) -->
-                        <DataGridTextColumn
+                        <controls:DataGridTextColumn
                             Header="Calculated Pieces"
                             Binding="{Binding CalculatedPieceCount}"
                             IsReadOnly="True"
                             Width="120"/>
                         
                         <!-- Has Discrepancy -->
-                        <DataGridCheckBoxColumn
+                        <controls:DataGridCheckBoxColumn
                             Header="Discrepancy?"
                             Binding="{Binding HasDiscrepancy, Mode=TwoWay}"
                             Width="100"/>
                         
                         <!-- Expected Skids -->
-                        <DataGridTemplateColumn Header="Expected Skids" Width="120">
-                            <DataGridTemplateColumn.CellTemplate>
+                        <controls:DataGridTemplateColumn Header="Expected Skids" Width="120">
+                            <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                     <NumberBox
                                         Value="{x:Bind ExpectedSkidCount, Mode=TwoWay}"
@@ -141,12 +142,12 @@
                                         IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
                                         HorizontalAlignment="Stretch" />
                                 </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
                         
                         <!-- Discrepancy Note -->
-                        <DataGridTemplateColumn Header="Discrepancy Note" Width="*" MinWidth="200">
-                            <DataGridTemplateColumn.CellTemplate>
+                        <controls:DataGridTemplateColumn Header="Discrepancy Note" Width="*" MinWidth="200">
+                            <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                     <TextBox
                                         Text="{x:Bind DiscrepancyNote, Mode=TwoWay}"
@@ -154,10 +155,10 @@
                                         PlaceholderText="Enter note"
                                         HorizontalAlignment="Stretch" />
                                 </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
             </StackPanel>
             
         </StackPanel>

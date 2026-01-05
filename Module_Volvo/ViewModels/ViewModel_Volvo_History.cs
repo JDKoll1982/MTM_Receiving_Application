@@ -2,7 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 /// <summary>
 /// ViewModel for viewing and managing Volvo shipment history
 /// </summary>
-public partial class ViewModel_Volvo_History : BaseViewModel
+public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 {
     private readonly IService_Volvo _volvoService;
 
@@ -43,7 +44,7 @@ public partial class ViewModel_Volvo_History : BaseViewModel
     public ViewModel_Volvo_History(
         IService_Volvo volvoService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
         _volvoService = volvoService ?? throw new ArgumentNullException(nameof(volvoService));
@@ -59,7 +60,8 @@ public partial class ViewModel_Volvo_History : BaseViewModel
     [RelayCommand]
     private async Task FilterAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
@@ -107,7 +109,8 @@ public partial class ViewModel_Volvo_History : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanViewDetail))]
     private async Task ViewDetailAsync()
     {
-        if (SelectedShipment == null) return;
+        if (SelectedShipment == null)
+            return;
 
         try
         {
@@ -148,7 +151,8 @@ public partial class ViewModel_Volvo_History : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanEdit))]
     private async Task EditAsync()
     {
-        if (SelectedShipment == null) return;
+        if (SelectedShipment == null)
+            return;
 
         try
         {
@@ -174,7 +178,7 @@ public partial class ViewModel_Volvo_History : BaseViewModel
             // Create and show edit dialog
             var dialog = new Views.VolvoShipmentEditDialog();
             dialog.XamlRoot = App.MainWindow?.Content?.XamlRoot;
-            
+
             // Convert List to ObservableCollection for binding
             var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(linesResult.Data);
             dialog.LoadShipment(SelectedShipment, linesCollection, availableParts);
@@ -191,13 +195,13 @@ public partial class ViewModel_Volvo_History : BaseViewModel
 
                 // Call service to update shipment
                 var updateResult = await _volvoService.UpdateShipmentAsync(
-                    updatedShipment, 
+                    updatedShipment,
                     new System.Collections.Generic.List<Model_VolvoShipmentLine>(updatedLines));
 
                 if (updateResult.IsSuccess)
                 {
                     StatusMessage = $"Shipment #{SelectedShipment.ShipmentNumber} updated successfully";
-                    
+
                     // Refresh history
                     await FilterAsync();
                 }
@@ -238,7 +242,8 @@ public partial class ViewModel_Volvo_History : BaseViewModel
     [RelayCommand]
     private async Task ExportAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+            return;
 
         try
         {
