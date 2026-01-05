@@ -22,15 +22,18 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
     private readonly IService_Volvo _volvoService;
     private readonly IService_Window _windowService;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_Volvo_ShipmentEntry(
         IService_Volvo volvoService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Window windowService) : base(errorHandler, logger)
+        IService_Window windowService,
+        IService_UserSessionManager sessionManager) : base(errorHandler, logger)
     {
         _volvoService = volvoService;
         _windowService = windowService;
+        _sessionManager = sessionManager;
     }
 
     #region Observable Properties
@@ -39,7 +42,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private DateTimeOffset? _shipmentDate = DateTimeOffset.Now;
 
     [ObservableProperty]
-    private int _shipmentNumber;
+    private int _shipmentNumber = 1;
 
     [ObservableProperty]
     private string _notes = string.Empty;
@@ -50,8 +53,22 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private ObservableCollection<Model_VolvoPart> _availableParts = new();
 
+    private List<Model_VolvoPart> _allParts = new();
+
+    [ObservableProperty]
+    private ObservableCollection<Model_VolvoPart> _suggestedParts = new();
+
     [ObservableProperty]
     private Model_VolvoShipmentLine? _selectedPart;
+
+    [ObservableProperty]
+    private Model_VolvoPart? _selectedPartToAdd;
+
+    [ObservableProperty]
+    private string _partSearchText = string.Empty;
+
+    [ObservableProperty]
+    private int _receivedSkidsToAdd = 0;
 
     [ObservableProperty]
     private bool _canSave = false;
@@ -80,8 +97,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var partsResult = await _volvoService.GetActivePartsAsync();
             if (partsResult.IsSuccess && partsResult.Data != null)
             {
+                _allParts = partsResult.Data;
                 AvailableParts.Clear();
-                foreach (var part in partsResult.Data)
+                foreach (var part in _allParts)
                 {
                     AvailableParts.Add(part);
                 }
@@ -102,11 +120,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 HasPendingShipment = true;
                 // Load pending shipment details if exists
                 await LoadPendingShipmentAsync();
-            }
-            else
-            {
-                // Add initial empty row for new shipment
-                AddPartCommand.Execute(null);
             }
 
             StatusMessage = "Ready";
@@ -150,29 +163,131 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     #endregion
 
+    #region AutoSuggestBox Support
+
+    /// <summary>
+    /// Updates the part suggestions list based on user's search text
+    /// Filters parts by case-insensitive substring match on part number
+    /// </summary>
+    /// <param name="queryText">Search text from AutoSuggestBox</param>
+    public void UpdatePartSuggestions(string queryText)
+    {
+        if (string.IsNullOrWhiteSpace(queryText))
+        {
+            SuggestedParts.Clear();
+            SelectedPartToAdd = null;
+            return;
+        }
+
+        var suggestions = _allParts
+            .Where(p => p.PartNumber.Contains(queryText, StringComparison.OrdinalIgnoreCase))
+            .Take(20)
+            .ToList();
+
+        SuggestedParts.Clear();
+        foreach (var part in suggestions)
+        {
+            SuggestedParts.Add(part);
+        }
+
+        // Check if text matches a part exactly
+        var exactMatch = _allParts.FirstOrDefault(p =>
+            p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase));
+        SelectedPartToAdd = exactMatch;
+    }
+
+    /// <summary>
+    /// Handles when user selects a part from the AutoSuggestBox dropdown
+    /// Sets the search text and selected part for adding to shipment
+    /// </summary>
+    /// <param name="chosenPart">The part selected from suggestions</param>
+    public void OnPartSuggestionChosen(Model_VolvoPart? chosenPart)
+    {
+        if (chosenPart != null)
+        {
+            PartSearchText = chosenPart.PartNumber;
+            SelectedPartToAdd = chosenPart;
+        }
+    }
+
+    partial void OnPartSearchTextChanged(string value)
+    {
+        UpdatePartSuggestions(value);
+    }
+
+    #endregion
+
     #region Commands
 
-    [RelayCommand]
-    private void AddPart()
+    [RelayCommand(CanExecute = nameof(CanAddPart))]
+    private async void AddPart()
     {
+        if (SelectedPartToAdd == null || ReceivedSkidsToAdd <= 0)
+        {
+            return;
+        }
+
+        // Input validation (1-99 range)
+        if (ReceivedSkidsToAdd < 1 || ReceivedSkidsToAdd > 99)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Received skid count must be between 1 and 99",
+                Enum_ErrorSeverity.Low,
+                null,
+                true);
+            return;
+        }
+
+        // Check for duplicate part number
+        if (Parts.Any(p => p.PartNumber.Equals(SelectedPartToAdd.PartNumber, StringComparison.OrdinalIgnoreCase)))
+        {
+            await _errorHandler.HandleErrorAsync(
+                $"Part {SelectedPartToAdd.PartNumber} is already in this shipment. Remove it first if you want to update the quantity.",
+                Enum_ErrorSeverity.Low,
+                null,
+                true);
+            return;
+        }
+
+        // Calculate pieces based on quantity per skid
+        var calculatedPieces = SelectedPartToAdd.QuantityPerSkid * ReceivedSkidsToAdd;
+
         var newLine = new Model_VolvoShipmentLine
         {
-            PartNumber = string.Empty,
-            ReceivedSkidCount = 0,
-            CalculatedPieceCount = 0,
+            PartNumber = SelectedPartToAdd.PartNumber,
+            QuantityPerSkid = SelectedPartToAdd.QuantityPerSkid,
+            ReceivedSkidCount = ReceivedSkidsToAdd,
+            CalculatedPieceCount = calculatedPieces,
             HasDiscrepancy = false,
             ExpectedSkidCount = null,
             DiscrepancyNote = string.Empty
         };
+
         Parts.Add(newLine);
+
+        // Log user action
+        await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {ReceivedSkidsToAdd} skids ({calculatedPieces} pcs)");
+
+        // Reset input fields
+        SelectedPartToAdd = null;
+        ReceivedSkidsToAdd = 0;
+        PartSearchText = string.Empty;
+        SuggestedParts.Clear();
+
         ValidateSaveEligibility();
     }
 
+    private bool CanAddPart()
+    {
+        return SelectedPartToAdd != null && ReceivedSkidsToAdd >= 1 && ReceivedSkidsToAdd <= 99;
+    }
+
     [RelayCommand]
-    private void RemovePart()
+    private async void RemovePart()
     {
         if (SelectedPart != null)
         {
+            await _logger.LogInfoAsync($"User removed part {SelectedPart.PartNumber} from shipment");
             Parts.Remove(SelectedPart);
             ValidateSaveEligibility();
         }
@@ -388,8 +503,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             ShipmentDate = ShipmentDate?.DateTime ?? DateTime.Today,
             ShipmentNumber = ShipmentNumber,
             Notes = Notes,
-            Status = "pending_po",
-            EmployeeNumber = string.Empty // TODO: Get from session
+            Status = VolvoShipmentStatus.PendingPo,
+            EmployeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber.ToString() ?? "0"
         };
 
         // Save
@@ -494,10 +609,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 HasPendingShipment = false;
 
                 // Clear the form
-                Parts.Clear();
-                Notes = string.Empty;
-                ShipmentNumber = 0;
-                AddPartCommand.Execute(null);
+                ClearShipmentForm();
             }
             else
             {
@@ -515,11 +627,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         IsSuccessMessageVisible = false;
         SuccessMessage = string.Empty;
-        Parts.Clear();
-        Notes = string.Empty;
-        ShipmentNumber = 0;
         HasPendingShipment = false;
-        AddPartCommand.Execute(null);
+        ClearShipmentForm();
     }
 
     #endregion
@@ -586,6 +695,35 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     partial void OnPartsChanged(ObservableCollection<Model_VolvoShipmentLine> value)
     {
         ValidateSaveEligibility();
+    }
+
+    partial void OnSelectedPartToAddChanged(Model_VolvoPart? value)
+    {
+        AddPartCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnReceivedSkidsToAddChanged(int value)
+    {
+        AddPartCommand.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    /// <summary>
+    /// Clears all shipment form fields and resets to default state
+    /// Extracted to avoid code duplication
+    /// </summary>
+    private void ClearShipmentForm()
+    {
+        Parts.Clear();
+        Notes = string.Empty;
+        ShipmentNumber = 1;
+        SelectedPartToAdd = null;
+        ReceivedSkidsToAdd = 0;
+        PartSearchText = string.Empty;
+        SuggestedParts.Clear();
     }
 
     #endregion

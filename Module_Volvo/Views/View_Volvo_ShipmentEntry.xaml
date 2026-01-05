@@ -38,29 +38,68 @@
         </InfoBar>
 
         <!-- Header Section -->
-        <Grid Grid.Row="1" ColumnSpacing="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="2*"/>
-            </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="1" Spacing="16">
+            <!-- Shipment Info Row -->
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
 
-            <CalendarDatePicker Grid.Column="0"
-                                Header="Shipment Date"
-                                Date="{x:Bind ViewModel.ShipmentDate, Mode=TwoWay}"
+                <CalendarDatePicker Grid.Column="0"
+                                    Header="Shipment Date"
+                                    Date="{x:Bind ViewModel.ShipmentDate, Mode=TwoWay}"
+                                    HorizontalAlignment="Stretch"/>
+
+                <NumberBox Grid.Column="1"
+                           Header="Shipment Number"
+                           Value="{x:Bind ViewModel.ShipmentNumber, Mode=TwoWay}"
+                           Minimum="1"
+                           SpinButtonPlacementMode="Inline"
+                           HorizontalAlignment="Stretch"/>
+
+                <TextBox Grid.Column="2"
+                         Header="Notes (optional)"
+                         Text="{x:Bind ViewModel.Notes, Mode=TwoWay}"
+                         PlaceholderText="Enter any additional notes"/>
+            </Grid>
+
+            <!-- Part Entry Row -->
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <AutoSuggestBox Grid.Column="0"
+                                Header="Part Number"
+                                ItemsSource="{x:Bind ViewModel.SuggestedParts, Mode=OneWay}"
+                                Text="{x:Bind ViewModel.PartSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayMemberPath="PartNumber"
+                                TextMemberPath="PartNumber"
+                                PlaceholderText="Type to search for a part number"
+                                TextChanged="OnPartSearchTextChanged"
+                                SuggestionChosen="OnPartSuggestionChosen"
                                 HorizontalAlignment="Stretch"/>
 
-            <TextBox Grid.Column="1"
-                     Header="Shipment Number"
-                     Text="{x:Bind ViewModel.ShipmentNumber, Mode=TwoWay}"
-                     IsReadOnly="True"
-                     PlaceholderText="Auto-generated"/>
+                <NumberBox Grid.Column="1"
+                           Header="Received Skids"
+                           Value="{x:Bind ViewModel.ReceivedSkidsToAdd, Mode=TwoWay}"
+                           Minimum="1"
+                           Maximum="99"
+                           SpinButtonPlacementMode="Inline"
+                           HorizontalAlignment="Stretch"/>
 
-            <TextBox Grid.Column="2"
-                     Header="Notes (optional)"
-                     Text="{x:Bind ViewModel.Notes, Mode=TwoWay}"
-                     PlaceholderText="Enter any additional notes"/>
-        </Grid>
+                <Button Grid.Column="2"
+                        Content="Add Part"
+                        Command="{x:Bind ViewModel.AddPartCommand}"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Margin="0,0,0,4"/>
+            </Grid>
+        </StackPanel>
 
         <!-- Parts Entry DataGrid -->
         <Grid Grid.Row="2">
@@ -82,18 +121,18 @@
                                CanUserReorderColumns="False"
                                GridLinesVisibility="All">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridComboBoxColumn Header="Part Number"
-                                                      Width="200"
-                                                      Binding="{Binding PartNumber, Mode=TwoWay}">
-                        <!-- TODO: Bind ItemsSource to AvailableParts -->
-                    </controls:DataGridComboBoxColumn>
+                    <controls:DataGridTextColumn Header="Part Number"
+                                                  Width="200"
+                                                  Binding="{Binding PartNumber, Mode=OneWay}"
+                                                  IsReadOnly="True"/>
 
                     <controls:DataGridTemplateColumn Header="Received Skids"
                                                       Width="150">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                 <NumberBox Value="{x:Bind ReceivedSkidCount, Mode=TwoWay}"
-                                           Minimum="0"
+                                           Minimum="1"
+                                           Maximum="99"
                                            SpinButtonPlacementMode="Inline"
                                            HorizontalAlignment="Stretch"/>
                             </DataTemplate>
@@ -138,7 +177,6 @@
 
         <!-- Action Buttons -->
         <CommandBar Grid.Row="3" DefaultLabelPosition="Right">
-            <AppBarButton Icon="Add" Label="Add Part" Command="{x:Bind ViewModel.AddPartCommand}"/>
             <AppBarButton Icon="Delete" Label="Remove Part" Command="{x:Bind ViewModel.RemovePartCommand}"/>
             <AppBarSeparator/>
             <AppBarButton Label="Generate Labels" Command="{x:Bind ViewModel.GenerateLabelsCommand}">
