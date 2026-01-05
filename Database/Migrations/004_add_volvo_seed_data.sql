@@ -1,46 +1,46 @@
 -- =====================================================
--- Volvo Module - Seed Test Data
+-- Volvo Module - Sample Test Data
 -- =====================================================
 -- Purpose: Initial master data from DataSheet.csv
 -- Database: mtm_receiving_application
 -- =====================================================
 
--- Seed data for volvo_parts_master (from DataSheet.csv)
+-- Sample data for volvo_parts_master (from DataSheet.csv)
 -- All 30 parts from the Volvo Dunnage data sheet
-INSERT INTO volvo_parts_master (part_number, description, quantity_per_skid) VALUES
-('V-EMB-1', 'Base Skid Component', 10),
-('V-EMB-2', 'Base Skid Component', 20),
-('V-EMB-6', 'Base Skid Component', 10),
-('V-EMB-9', 'Base Skid Component', 10),
-('V-EMB-21', 'Dunnage with Skid', 50),
-('V-EMB-22', 'Dunnage with Skid', 50),
-('V-EMB-26', 'Frame Component', 32),
-('V-EMB-29', 'Frame Component', 32),
-('V-EMB-61', 'Dunnage with Skid/Lid/Frame', 120),
-('V-EMB-62', 'Dunnage with Skid/Lid/Frame', 120),
-('V-EMB-66', 'Dunnage with Skid/Lid/Frame', 100),
-('V-EMB-69', 'Dunnage with Skid/Lid/Frame', 100),
-('V-EMB-71', 'Lid Component', 25),
-('V-EMB-72', 'Lid Component', 25),
-('V-EMB-76', 'Lid Component', 25),
-('V-EMB-79', 'Lid Component', 25),
-('V-EMB-91', 'Lid Component', 25),
-('V-EMB-92', 'Lid Component', 25),
-('V-EMB-116', 'Dunnage with Skid/Lid/Frame', 150),
-('V-EMB-500', 'Dunnage with Skid/Lid', 88),
-('V-EMB-600', 'Dunnage with Skid/Lid', 44),
-('V-EMB-701', 'Base Component', 10),
-('V-EMB-702', 'Dunnage with Base', 20),
-('V-EMB-706', 'Dunnage with Base', 25),
-('V-EMB-750', 'Dunnage with Skid/Lid', 80),
-('V-EMB-757', 'Dunnage with Skid/Lid', 80),
-('V-EMB-780', 'Dunnage with Skid/Lid', 40),
-('V-EMB-787', 'Dunnage with Skid/Lid', 40),
-('V-EMB-800', 'Dunnage with Skid/Lid', 40),
-('V-EMB-840', 'Dunnage with Skid/Lid', 20)
+INSERT INTO volvo_parts_master (part_number, quantity_per_skid) VALUES
+('V-EMB-1', 10),
+('V-EMB-2', 20),
+('V-EMB-6', 10),
+('V-EMB-9', 10),
+('V-EMB-21', 50),
+('V-EMB-22', 50),
+('V-EMB-26', 32),
+('V-EMB-29', 32),
+('V-EMB-61', 120),
+('V-EMB-62', 120),
+('V-EMB-66', 100),
+('V-EMB-69', 100),
+('V-EMB-71', 25),
+('V-EMB-72', 25),
+('V-EMB-76', 25),
+('V-EMB-79', 25),
+('V-EMB-91', 25),
+('V-EMB-92', 25),
+('V-EMB-116', 150),
+('V-EMB-500', 88),
+('V-EMB-600', 44),
+('V-EMB-701', 10),
+('V-EMB-702', 20),
+('V-EMB-706', 25),
+('V-EMB-750', 80),
+('V-EMB-757', 80),
+('V-EMB-780', 40),
+('V-EMB-787', 40),
+('V-EMB-800', 40),
+('V-EMB-840', 20)
 ON DUPLICATE KEY UPDATE quantity_per_skid = VALUES(quantity_per_skid);
 
--- Seed data for volvo_part_components (component explosion relationships)
+-- Sample data for volvo_part_components (component explosion relationships)
 -- All component relationships from the Volvo Dunnage data sheet
 INSERT INTO volvo_part_components (parent_part_number, component_part_number, quantity) VALUES
 -- V-EMB-116: Skid + Lid + Frame (3x)
@@ -81,7 +81,7 @@ INSERT INTO volvo_part_components (parent_part_number, component_part_number, qu
 ('V-EMB-71', 'V-EMB-1', 1),
 -- V-EMB-72: Skid
 ('V-EMB-72', 'V-EMB-2', 1),
--- V-EMB-750: Skid + Lid
+-- V-EMB-750: Skid + Lid (CORRECTED FROM CSV)
 ('V-EMB-750', 'V-EMB-1', 1),
 ('V-EMB-750', 'V-EMB-91', 1),
 -- V-EMB-76: Skid

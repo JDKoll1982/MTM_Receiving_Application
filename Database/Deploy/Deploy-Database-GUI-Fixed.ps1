@@ -307,10 +307,10 @@ function Execute-SqlCommand {
         }
         
         if ($NoDatabase) {
-            $arguments = "-h$Server -P$Port -u$User -p$Password -e `"$SqlCommand`""
+            $arguments = "-h$Server -P$Port -u$User -p$Password --default-character-set=utf8mb4 -e `"$SqlCommand`""
         }
         else {
-            $arguments = "-h$Server -P$Port -u$User -p$Password $Database -e `"$SqlCommand`""
+            $arguments = "-h$Server -P$Port -u$User -p$Password --default-character-set=utf8mb4 $Database -e `"$SqlCommand`""
         }
         
         $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -387,7 +387,7 @@ function Execute-SqlFile {
             "source $mysqlPath"
         }
         
-        $arguments = "-h$Server -P$Port -u$User -p$Password $Database -e `"$sqlCommand`""
+        $arguments = "-h$Server -P$Port -u$User -p$Password --default-character-set=utf8mb4 --init-command=`"SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci`" $Database -e `"$sqlCommand`""
         
         $psi = New-Object System.Diagnostics.ProcessStartInfo
         $psi.FileName = $mysqlCmd
@@ -476,235 +476,235 @@ $deployButton.Add_Click({
                             
                             Write-Host "DEBUG: Database recreated successfully" -ForegroundColor Green
                             $script:deploymentStep = 1
-                        }3
+                        }
+                        elseif ($script:deploymentStep -eq 1) {
+                            # Step 1: Schemas
+                            $schemasPath = Join-Path $script:DatabaseRoot "Schemas"
+                            Write-Host "DEBUG: Checking schemas path: $schemasPath" -ForegroundColor Yellow
+                    
+                            if (Test-Path $schemasPath) {
+                                $script:currentFiles = Get-ChildItem -Path $schemasPath -Filter "*.sql" | 
+                                Where-Object { 
+                                    $filename = $_.Name
+                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
+                                } | Sort-Object Name
+                        
+                                Write-Host "DEBUG: Found $($script:currentFiles.Count) schema files" -ForegroundColor Yellow
+                        
+                                if ($script:currentFiles.Count -eq 0) {
+                                    $script:deploymentStep = 3
+                                }
+                                else {
+                                    $script:currentIndex = 0
+                                    $script:deploymentStep = 2
+                                }
+                            }
+                            else {
+                                Write-Host "DEBUG: Schemas path not found, skipping to step 3" -ForegroundColor Yellow
+                                $script:deploymentStep = 3
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 2) {
+                            if ($script:currentIndex -lt $script:currentFiles.Count) {
+                                $file = $script:currentFiles[$script:currentIndex]
+                                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                        
+                                Write-Host "DEBUG: Deploying schema: $($file.Name)" -ForegroundColor Yellow
+                        
+                                $schemaProgress.Value = $percent
+                                $schemaCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                                $currentFileText.Text = "Deploying: $($file.Name)"
+                        
+                                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
+                                $script:SchemaCountTotal++
+                                $script:currentIndex++
+                            }
+                            else {
+                                # Move to next step
+                                Write-Host "DEBUG: Schema deployment complete, moving to step 3" -ForegroundColor Yellow
+                                $script:deploymentStep = 3
+                                $script:currentFiles = @()
+                                $script:currentIndex = 0
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 3) {
+                            # Step 2: Stored Procedures
+                            $storedProcsPath = Join-Path $script:DatabaseRoot "StoredProcedures"
+                            Write-Host "DEBUG: Checking stored procedures path: $storedProcsPath" -ForegroundColor Yellow
+                    
+                            if (Test-Path $storedProcsPath) {
+                                $script:currentFiles = Get-ChildItem -Path $storedProcsPath -Recurse -Filter "*.sql" | 
+                                Where-Object { 
+                                    $filename = $_.Name
+                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
+                                } | Sort-Object FullName
+                        
+                                Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
+                        
+                                if ($script:currentFiles.Count -eq 0) {
+                                    $script:deploymentStep = 5
+                                }
+                                else {
+                                    $script:currentIndex = 0
+                                    $script:deploymentStep = 4
+                                }
+                            }
+                            else {
+                                Write-Host "DEBUG: Stored procedures path not found, skipping to step 5" -ForegroundColor Yellow
+                                $script:deploymentStep = 5
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 4) {
+                            if ($script:currentIndex -lt $script:currentFiles.Count) {
+                                $file = $script:currentFiles[$script:currentIndex]
+                                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                        
+                                $storedProcProgress.Value = $percent
+                                $storedProcCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                                $currentFileText.Text = "Deploying: $($file.Name)"
+                        
+                                Execute-SqlFile -FilePath $file.FullName
+                                $script:StoredProcCountTotal++
+                                $script:currentIndex++
+                            }
+                            else {
+                                $script:deploymentStep = 5
+                                $script:currentFiles = @()
+                                $script:currentIndex = 0
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 5) {
+                            # Step 3: Migrations
+                            $migrationsPath = Join-Path $script:DatabaseRoot "Migrations"
+                            Write-Host "DEBUG: Checking migrations path: $migrationsPath" -ForegroundColor Yellow
+                    
+                            if (Test-Path $migrationsPath) {
+                                $script:currentFiles = Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
+                                Where-Object { 
+                                    $filename = $_.Name
+                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
+                                } | Sort-Object Name
+                        
+                                Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
+                        
+                                if ($script:currentFiles.Count -eq 0) {
+                                    $script:deploymentStep = 7
+                                }
+                                else {
+                                    $script:currentIndex = 0
+                                    $script:deploymentStep = 6
+                                }
+                            }
+                            else {
+                                Write-Host "DEBUG: Migrations path not found, skipping to step 7" -ForegroundColor Yellow
+                                $script:deploymentStep = 7
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 6) {
+                            if ($script:currentIndex -lt $script:currentFiles.Count) {
+                                $file = $script:currentFiles[$script:currentIndex]
+                                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                        
+                                $migrationProgress.Value = $percent
+                                $migrationCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                                $currentFileText.Text = "Deploying: $($file.Name)"
+                        
+                                try {
+                                    Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
+                                    $script:MigrationCountTotal++
+                                }
+                                catch {
+                                    Write-Host "DEBUG: Migration error: $($_.Exception.Message)" -ForegroundColor Red
+                                    # Continue on migration errors
+                                }
+                                $script:currentIndex++
+                            }
+                            else {
+                                $script:deploymentStep = 7
+                                $script:currentFiles = @()
+                                $script:currentIndex = 0
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 7) {
+                            # Step 4: Test Data
+                            $testDataPath = Join-Path $script:DatabaseRoot "TestData"
+                            Write-Host "DEBUG: Checking test data path: $testDataPath" -ForegroundColor Yellow
+                    
+                            if (Test-Path $testDataPath) {
+                                $script:currentFiles = Get-ChildItem -Path $testDataPath -Filter "*.sql" | 
+                                Where-Object { 
+                                    $filename = $_.Name
+                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
+                                } | Sort-Object Name
+                        
+                                Write-Host "DEBUG: Found $($script:currentFiles.Count) test data files" -ForegroundColor Yellow
+                        
+                                if ($script:currentFiles.Count -eq 0) {
+                                    $script:deploymentStep = 9
+                                }
+                                else {
+                                    $script:currentIndex = 0
+                                    $script:deploymentStep = 8
+                                }
+                            }
+                            else {
+                                Write-Host "DEBUG: Test data path not found, skipping to step 9" -ForegroundColor Yellow
+                                $script:deploymentStep = 9
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 8) {
+                            if ($script:currentIndex -lt $script:currentFiles.Count) {
+                                $file = $script:currentFiles[$script:currentIndex]
+                                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                        
+                                $testDataProgress.Value = $percent
+                                $testDataCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                                $currentFileText.Text = "Deploying: $($file.Name)"
+                        
+                                try {
+                                    Execute-SqlFile -FilePath $file.FullName
+                                    $script:TestDataCountTotal++
+                                }
+                                catch {
+                                    Write-Host "DEBUG: Test data error: $($_.Exception.Message)" -ForegroundColor Red
+                                    # Continue on test data errors
+                                }
+                                $script:currentIndex++
+                            }
+                            else {
+                                $script:deploymentStep = 9
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 9) {
+                            # Done!
+                            Write-Host "DEBUG: Deployment complete!" -ForegroundColor Green
+                    
+                            if ($script:timer) {
+                                $script:timer.Stop()
+                            }
+                    
+                            $overallStatusText.Text = "Deployment completed successfully!"
+                            $currentFileText.Text = ""
+                            $summaryBorder.Visibility = "Visible"
+                            $summarySchemas.Text = "$script:SchemaCountTotal file(s)"
+                            $summaryMigrations.Text = "$script:MigrationCountTotal file(s)"
+                            $summaryStoredProcs.Text = "$script:StoredProcCountTotal procedure(s)"
+                            $summaryTestData.Text = "$script:TestDataCountTotal file(s)"
+                            $deployButton.Content = "Deploy Again"
+                            $deployButton.IsEnabled = $true
+                        }
                     }
-                    else {
-                        $script:currentIndex = 0
-                        $script:deploymentStep = 2
-                    }
-                }
-                else {
-                    Write-Host "DEBUG: Schemas path not found, skipping to step 3" -ForegroundColor Yellow
-                    $script:deploymentStep = 3
-                }
-            }
-            elseif ($script:deploymentStep -eq 2
-                Write-Host "DEBUG: Found $($script:currentFiles.Count) schema files" -ForegroundColor Yellow
-                        
-                if ($script:currentFiles.Count -eq 0) {
-                    $script:deploymentStep = 2
-                }
-                else {
-                    $script:currentIndex = 0
-                    $script:deploymentStep = 1
-                }
-            }
-            else {
-                Write-Host "DEBUG: Schemas path not found, skipping to step 2" -ForegroundColor Yellow
-                $script:deploymentStep = 2
-            }
-        }
-        elseif ($script:deploymentStep -eq 1) {
-            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                $file = $script:currentFiles[$script:currentIndex]
-                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                        
-                Write-Host "DEBUG: Deploying schema: $($file.Name)" -ForegroundColor Yellow
-                        
-                $schemaProgress.Value = $percent
-                $schemaCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                $currentFileText.Text = "Deploying: $($file.Name)"
-                        
-                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
-                $script:SchemaCountTotal++
-                $script:currentIndex++
-            }
-            else {
-                # Move to next step
-                Write-Host "DEBUG: Schema deployment complete, moving to step 3" -ForegroundColor Yellow
-                $script:deploymentStep = 3
-                $script:currentFiles = @()
-                $script:currentIndex = 0
-            }
-        }
-        elseif ($script:deploymentStep -eq 3) {
-            # Step 2: Stored Procedures
-            $storedProcsPath = Join-Path $script:DatabaseRoot "StoredProcedures"
-            Write-Host "DEBUG: Checking stored procedures path: $storedProcsPath" -ForegroundColor Yellow
-                    
-            if (Test-Path $storedProcsPath) {
-                $script:currentFiles = Get-ChildItem -Path $storedProcsPath -Recurse -Filter "*.sql" | 
-                Where-Object { 
-                    $filename = $_.Name
-                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                } | Sort-Object FullName
-                        
-                Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
-                        
-                if ($script:currentFiles.Count -eq 0) {
-                    $script:deploymentStep = 5
-                }
-                else {
-                    $script:currentIndex = 0
-                    $script:deploymentStep = 4
-                }
-            }
-            else {
-                Write-Host "DEBUG: Stored procedures path not found, skipping to step 5" -ForegroundColor Yellow
-                $script:deploymentStep = 5
-            }
-        }
-        elseif ($script:deploymentStep -eq 4) {
-            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                $file = $script:currentFiles[$script:currentIndex]
-                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                        
-                $storedProcProgress.Value = $percent
-                $storedProcCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                $currentFileText.Text = "Deploying: $($file.Name)"
-                        
-                Execute-SqlFile -FilePath $file.FullName
-                $script:StoredProcCountTotal++
-                $script:currentIndex++
-            }
-            else {
-                $script:deploymentStep = 5
-                $script:currentFiles = @()
-                $script:currentIndex = 0
-            }
-        }
-        elseif ($script:deploymentStep -eq 5) {
-            # Step 3: Migrations
-            $migrationsPath = Join-Path $script:DatabaseRoot "Migrations"
-            Write-Host "DEBUG: Checking migrations path: $migrationsPath" -ForegroundColor Yellow
-                    
-            if (Test-Path $migrationsPath) {
-                $script:currentFiles = Get-ChildItem -Path $migrationsPath -Filter "*.sql" | 
-                Where-Object { 
-                    $filename = $_.Name
-                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                } | Sort-Object Name
-                        
-                Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
-                        
-                if ($script:currentFiles.Count -eq 0) {
-                    $script:deploymentStep = 7
-                }
-                else {
-                    $script:currentIndex = 0
-                    $script:deploymentStep = 6
-                }
-            }
-            else {
-                Write-Host "DEBUG: Migrations path not found, skipping to step 7" -ForegroundColor Yellow
-                $script:deploymentStep = 7
-            }
-        }
-        elseif ($script:deploymentStep -eq 6) {
-            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                $file = $script:currentFiles[$script:currentIndex]
-                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                        
-                $migrationProgress.Value = $percent
-                $migrationCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                $currentFileText.Text = "Deploying: $($file.Name)"
-                        
-                try {
-                    Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
-                    $script:MigrationCountTotal++
-                }
-                catch {
-                    Write-Host "DEBUG: Migration error: $($_.Exception.Message)" -ForegroundColor Red
-                    # Continue on migration errors
-                }
-                $script:currentIndex++
-            }
-            else {
-                $script:deploymentStep = 7
-                $script:currentFiles = @()
-                $script:currentIndex = 0
-            }
-        }
-        elseif ($script:deploymentStep -eq 7) {
-            # Step 4: Test Data
-            $testDataPath = Join-Path $script:DatabaseRoot "TestData"
-            Write-Host "DEBUG: Checking test data path: $testDataPath" -ForegroundColor Yellow
-                    
-            if (Test-Path $testDataPath) {
-                $script:currentFiles = Get-ChildItem -Path $testDataPath -Filter "*.sql" | 
-                Where-Object { 
-                    $filename = $_.Name
-                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                } | Sort-Object Name
-                        
-                Write-Host "DEBUG: Found $($script:currentFiles.Count) test data files" -ForegroundColor Yellow
-                        
-                if ($script:currentFiles.Count -eq 0) {
-                    $script:deploymentStep = 9
-                }
-                else {
-                    $script:currentIndex = 0
-                    $script:deploymentStep = 8
-                }
-            }
-            else {
-                Write-Host "DEBUG: Test data path not found, skipping to step 9" -ForegroundColor Yellow
-                $script:deploymentStep = 9
-            }
-        }
-        elseif ($script:deploymentStep -eq 8) {
-            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                $file = $script:currentFiles[$script:currentIndex]
-                $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                        
-                $testDataProgress.Value = $percent
-                $testDataCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                $currentFileText.Text = "Deploying: $($file.Name)"
-                        
-                try {
-                    Execute-SqlFile -FilePath $file.FullName
-                    $script:TestDataCountTotal++
-                }
-                catch {
-                    Write-Host "DEBUG: Test data error: $($_.Exception.Message)" -ForegroundColor Red
-                    # Continue on test data errors
-                }
-                $script:currentIndex++
-            }
-            else {
-                $script:deploymentStep = 9
-            }
-        }
-        elseif ($script:deploymentStep -eq 9) {
-            # Done!
-            Write-Host "DEBUG: Deployment complete!" -ForegroundColor Green
-                    
-            if ($script:timer) {
-                $script:timer.Stop()
-            }
-                    
-            $overallStatusText.Text = "Deployment completed successfully!"
-            $currentFileText.Text = ""
-            $summaryBorder.Visibility = "Visible"
-            $summarySchemas.Text = "$script:SchemaCountTotal file(s)"
-            $summaryMigrations.Text = "$script:MigrationCountTotal file(s)"
-            $summaryStoredProcs.Text = "$script:StoredProcCountTotal procedure(s)"
-            $summaryTestData.Text = "$script:TestDataCountTotal file(s)"
-            $deployButton.Content = "Deploy Again"
-            $deployButton.IsEnabled = $true
-        }
-    }
-    catch {
-        Write-Host "DEBUG: Timer tick error!" -ForegroundColor Red
-        Write-Host "DEBUG: Error message: $($_.Exception.Message)" -ForegroundColor Red
-        Write-Host "DEBUG: Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
+                    catch {
+                        Write-Host "DEBUG: Timer tick error!" -ForegroundColor Red
+                        Write-Host "DEBUG: Error message: $($_.Exception.Message)" -ForegroundColor Red
+                        Write-Host "DEBUG: Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
                 
-        if ($script:timer) {
-            $script:timer.Stop()
-        }
+                        if ($script:timer) {
+                            $script:timer.Stop()
+                        }
                 
-        # Build detailed error message
-        $errorDetails = @"
+                        # Build detailed error message
+                        $errorDetails = @"
 Error in deployment step $script:deploymentStep
 
 Message: $($_.Exception.Message)
@@ -715,29 +715,29 @@ Stack Trace:
 $($_.ScriptStackTrace)
 "@
                 
-        $overallStatusText.Text = "Deployment failed!"
-        $errorBorder.Visibility = "Visible"
-        $errorText.Text = $errorDetails
-        $deployButton.Content = "Retry"
-        $deployButton.IsEnabled = $true
-    }
-})
+                        $overallStatusText.Text = "Deployment failed!"
+                        $errorBorder.Visibility = "Visible"
+                        $errorText.Text = $errorDetails
+                        $deployButton.Content = "Retry"
+                        $deployButton.IsEnabled = $true
+                    }
+                })
         
-Write-Host "DEBUG: Starting timer..." -ForegroundColor Cyan
-$script:timer.Start()
-Write-Host "DEBUG: Timer started successfully" -ForegroundColor Cyan
-}
-catch {
-    Write-Host "CRITICAL ERROR in click handler:" -ForegroundColor Red
-    Write-Host "Message: $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "Stack: $($_.ScriptStackTrace)" -ForegroundColor Red
+            Write-Host "DEBUG: Starting timer..." -ForegroundColor Cyan
+            $script:timer.Start()
+            Write-Host "DEBUG: Timer started successfully" -ForegroundColor Cyan
+        }
+        catch {
+            Write-Host "CRITICAL ERROR in click handler:" -ForegroundColor Red
+            Write-Host "Message: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "Stack: $($_.ScriptStackTrace)" -ForegroundColor Red
         
-    $overallStatusText.Text = "Deployment failed!"
-    $errorBorder.Visibility = "Visible"
-    $errorText.Text = "Setup error: $($_.Exception.Message)`n`n$($_.ScriptStackTrace)"
-    $deployButton.IsEnabled = $true
-}
-})
+            $overallStatusText.Text = "Deployment failed!"
+            $errorBorder.Visibility = "Visible"
+            $errorText.Text = "Setup error: $($_.Exception.Message)`n`n$($_.ScriptStackTrace)"
+            $deployButton.IsEnabled = $true
+        }
+    })
 
 $closeButton.Add_Click({
         $window.Close()
