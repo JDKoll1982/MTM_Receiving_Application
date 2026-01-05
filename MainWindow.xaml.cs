@@ -110,6 +110,10 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "Volvo Shipment History";
                         ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_History));
                         break;
+                    case "ReportingMainPage":
+                        PageTitleTextBlock.Text = "End of Day Reports";
+                        ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
+                        break;
                 }
             }
         }
