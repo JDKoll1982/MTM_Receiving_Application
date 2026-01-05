@@ -53,7 +53,6 @@ CREATE TABLE IF NOT EXISTS volvo_shipment_lines (
 -- Purpose: Catalog of Volvo dunnage parts with quantities per skid
 CREATE TABLE IF NOT EXISTS volvo_parts_master (
   part_number VARCHAR(20) NOT NULL,
-  description VARCHAR(200) NULL,
   quantity_per_skid INT NOT NULL COMMENT 'Pieces per skid for this part',
   is_active TINYINT(1) NOT NULL DEFAULT 1 COMMENT '0=deactivated, hidden from dropdowns',
   created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

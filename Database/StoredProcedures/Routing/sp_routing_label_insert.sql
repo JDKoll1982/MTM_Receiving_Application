@@ -1,104 +1,95 @@
--- ============================================================================
--- Stored Procedure: sp_routing_label_insert
--- Description: Insert new routing label record
--- Feature: Routing Module (001-routing-module)
--- Created: January 4, 2026
--- ============================================================================
-
-USE mtm_receiving_application;
-
-DROP PROCEDURE IF EXISTS sp_routing_label_insert;
-
 DELIMITER $$
 
-CREATE PROCEDURE sp_routing_label_insert(
-    IN p_label_number INT,
-    IN p_deliver_to VARCHAR(100),
-    IN p_department VARCHAR(100),
-    IN p_package_description TEXT,
+DROP PROCEDURE IF EXISTS `sp_routing_label_insert` $$
+
+CREATE PROCEDURE `sp_routing_label_insert`(
     IN p_po_number VARCHAR(20),
-    IN p_work_order VARCHAR(50),
-    IN p_employee_number VARCHAR(20),
-    IN p_created_date DATE,
+    IN p_line_number VARCHAR(10),
+    IN p_description VARCHAR(200),
+    IN p_recipient_id INT,
+    IN p_quantity INT,
+    IN p_created_by INT,
+    IN p_other_reason_id INT,
     OUT p_new_label_id INT,
-    OUT p_error_message VARCHAR(500)
+    OUT p_status INT,
+    OUT p_error_msg VARCHAR(500)
 )
-proc: BEGIN
-    -- Handler must be declared first
+sp_routing_label_insert: BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        -- Get error details (Compatible with MySQL 5.6+)
-        GET DIAGNOSTICS CONDITION 1
-            p_error_message = MESSAGE_TEXT;
+        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
+        SET p_status = -1;
         ROLLBACK;
     END;
-    
-    -- Initialize output parameters
-    SET p_new_label_id = NULL;
-    SET p_error_message = NULL;
-    
-    -- Start transaction
+
     START TRANSACTION;
-    
-    -- Validate required fields
-    IF p_label_number IS NULL OR p_label_number <= 0 THEN
-        SET p_error_message = 'Label number is required and must be positive';
+
+    -- Validation
+    IF p_po_number IS NULL OR p_po_number = '' THEN
+        SET p_status = -1;
+        SET p_error_msg = 'PO number is required';
         ROLLBACK;
-        LEAVE proc;
+        LEAVE sp_routing_label_insert;
     END IF;
-    
-    IF p_deliver_to IS NULL OR TRIM(p_deliver_to) = '' THEN
-        SET p_error_message = 'Deliver To recipient is required';
+
+    IF p_quantity <= 0 THEN
+        SET p_status = -1;
+        SET p_error_msg = 'Quantity must be greater than zero';
         ROLLBACK;
-        LEAVE proc;
+        LEAVE sp_routing_label_insert;
     END IF;
-    
-    IF p_department IS NULL OR TRIM(p_department) = '' THEN
-        SET p_error_message = 'Department is required';
+
+    IF p_recipient_id IS NULL THEN
+        SET p_status = -1;
+        SET p_error_msg = 'Recipient is required';
         ROLLBACK;
-        LEAVE proc;
+        LEAVE sp_routing_label_insert;
     END IF;
-    
-    IF p_employee_number IS NULL OR TRIM(p_employee_number) = '' THEN
-        SET p_error_message = 'Employee number is required';
+
+    -- Check recipient exists and is active
+    IF NOT EXISTS (SELECT 1 FROM routing_recipients WHERE id = p_recipient_id AND is_active = 1) THEN
+        SET p_status = -1;
+        SET p_error_msg = 'Recipient not found or inactive';
         ROLLBACK;
-        LEAVE proc;
+        LEAVE sp_routing_label_insert;
     END IF;
-    
-    IF p_created_date IS NULL THEN
-        SET p_error_message = 'Created date is required';
+
+    -- If OTHER PO, require other_reason_id
+    IF p_po_number = 'OTHER' AND p_other_reason_id IS NULL THEN
+        SET p_status = -1;
+        SET p_error_msg = 'Other reason is required for OTHER PO number';
         ROLLBACK;
-        LEAVE proc;
+        LEAVE sp_routing_label_insert;
     END IF;
-    
-    -- Insert routing label
+
+    -- Insert label
     INSERT INTO routing_labels (
-        label_number,
-        deliver_to,
-        department,
-        package_description,
         po_number,
-        work_order,
-        employee_number,
-        created_date,
-        is_archived
+        line_number,
+        description,
+        recipient_id,
+        quantity,
+        created_by,
+        other_reason_id,
+        is_active,
+        csv_exported
     ) VALUES (
-        p_label_number,
-        p_deliver_to,
-        p_department,
-        p_package_description,
         p_po_number,
-        p_work_order,
-        p_employee_number,
-        p_created_date,
-        0  -- Default: not archived
+        p_line_number,
+        p_description,
+        p_recipient_id,
+        p_quantity,
+        p_created_by,
+        p_other_reason_id,
+        1,
+        0
     );
-    
-    -- Get the newly created ID
+
     SET p_new_label_id = LAST_INSERT_ID();
-    
-    -- Commit transaction
+    SET p_status = 1;
+    SET p_error_msg = 'Label created successfully';
+
     COMMIT;
-END proc$$
+END $$
 
 DELIMITER ;

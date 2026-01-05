@@ -272,6 +272,74 @@ $serverText.Text = "$Server`:$Port"
 $databaseText.Text = $Database
 $userText.Text = $User
 
+# Function to execute SQL command (for database drop/create)
+function Execute-SqlCommand {
+    param(
+        [string]$SqlCommand,
+        [switch]$NoDatabase
+    )
+    
+    try {
+        $mampPaths = @(
+            "C:\MAMP\bin\mysql\bin\mysql.exe",
+            "C:\MAMP\bin\mysql\mysql8\bin\mysql.exe",
+            "mysql"
+        )
+        
+        $mysqlCmd = $null
+        foreach ($path in $mampPaths) {
+            if (Test-Path $path -ErrorAction SilentlyContinue) {
+                $mysqlCmd = $path
+                break
+            }
+            if ($path -eq "mysql") {
+                try {
+                    $null = Get-Command mysql -ErrorAction Stop
+                    $mysqlCmd = "mysql"
+                    break
+                }
+                catch { }
+            }
+        }
+        
+        if (-not $mysqlCmd) {
+            throw "MySQL command not found"
+        }
+        
+        if ($NoDatabase) {
+            $arguments = "-h$Server -P$Port -u$User -p$Password -e `"$SqlCommand`""
+        }
+        else {
+            $arguments = "-h$Server -P$Port -u$User -p$Password $Database -e `"$SqlCommand`""
+        }
+        
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $mysqlCmd
+        $psi.Arguments = $arguments
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $psi
+        $process.Start() | Out-Null
+        
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        
+        if ($process.ExitCode -ne 0) {
+            throw "MySQL error: $stderr"
+        }
+        
+        return $true
+    }
+    catch {
+        throw $_
+    }
+}
+
 # Function to execute SQL file
 function Execute-SqlFile {
     param(
@@ -394,17 +462,33 @@ $deployButton.Add_Click({
                         Write-Host "DEBUG: Timer tick - Step $script:deploymentStep" -ForegroundColor Green
                 
                         if ($script:deploymentStep -eq 0) {
-                            # Step 1: Schemas
-                            $schemasPath = Join-Path $script:DatabaseRoot "Schemas"
-                            Write-Host "DEBUG: Checking schemas path: $schemasPath" -ForegroundColor Yellow
-                    
-                            if (Test-Path $schemasPath) {
-                                $script:currentFiles = Get-ChildItem -Path $schemasPath -Filter "*.sql" | 
-                                Where-Object { 
-                                    $filename = $_.Name
-                                    -not ($script:ExcludedFilePatterns | Where-Object { $filename -like $_ })
-                                } | Sort-Object Name
-                        
+                            # Step 0: Drop and recreate database
+                            Write-Host "DEBUG: Dropping and recreating database: $Database" -ForegroundColor Yellow
+                            $overallStatusText.Text = "Recreating database..."
+                            $currentFileText.Text = "Dropping existing database..."
+                            
+                            # Drop database
+                            Execute-SqlCommand -SqlCommand "DROP DATABASE IF EXISTS ``$Database``;" -NoDatabase
+                            
+                            # Create database
+                            $currentFileText.Text = "Creating new database..."
+                            Execute-SqlCommand -SqlCommand "CREATE DATABASE ``$Database`` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" -NoDatabase
+                            
+                            Write-Host "DEBUG: Database recreated successfully" -ForegroundColor Green
+                            $script:deploymentStep = 1
+                        }3
+                                }
+                                else {
+                                    $script:currentIndex = 0
+                                    $script:deploymentStep = 2
+                                }
+                            }
+                            else {
+                                Write-Host "DEBUG: Schemas path not found, skipping to step 3" -ForegroundColor Yellow
+                                $script:deploymentStep = 3
+                            }
+                        }
+                        elseif ($script:deploymentStep -eq 2
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) schema files" -ForegroundColor Yellow
                         
                                 if ($script:currentFiles.Count -eq 0) {
@@ -437,13 +521,13 @@ $deployButton.Add_Click({
                             }
                             else {
                                 # Move to next step
-                                Write-Host "DEBUG: Schema deployment complete, moving to step 2" -ForegroundColor Yellow
-                                $script:deploymentStep = 2
+                                Write-Host "DEBUG: Schema deployment complete, moving to step 3" -ForegroundColor Yellow
+                                $script:deploymentStep = 3
                                 $script:currentFiles = @()
                                 $script:currentIndex = 0
                             }
                         }
-                        elseif ($script:deploymentStep -eq 2) {
+                        elseif ($script:deploymentStep -eq 3) {
                             # Step 2: Stored Procedures
                             $storedProcsPath = Join-Path $script:DatabaseRoot "StoredProcedures"
                             Write-Host "DEBUG: Checking stored procedures path: $storedProcsPath" -ForegroundColor Yellow
@@ -458,19 +542,19 @@ $deployButton.Add_Click({
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
                         
                                 if ($script:currentFiles.Count -eq 0) {
-                                    $script:deploymentStep = 4
+                                    $script:deploymentStep = 5
                                 }
                                 else {
                                     $script:currentIndex = 0
-                                    $script:deploymentStep = 3
+                                    $script:deploymentStep = 4
                                 }
                             }
                             else {
-                                Write-Host "DEBUG: Stored procedures path not found, skipping to step 4" -ForegroundColor Yellow
-                                $script:deploymentStep = 4
+                                Write-Host "DEBUG: Stored procedures path not found, skipping to step 5" -ForegroundColor Yellow
+                                $script:deploymentStep = 5
                             }
                         }
-                        elseif ($script:deploymentStep -eq 3) {
+                        elseif ($script:deploymentStep -eq 4) {
                             if ($script:currentIndex -lt $script:currentFiles.Count) {
                                 $file = $script:currentFiles[$script:currentIndex]
                                 $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
@@ -484,12 +568,12 @@ $deployButton.Add_Click({
                                 $script:currentIndex++
                             }
                             else {
-                                $script:deploymentStep = 4
+                                $script:deploymentStep = 5
                                 $script:currentFiles = @()
                                 $script:currentIndex = 0
                             }
                         }
-                        elseif ($script:deploymentStep -eq 4) {
+                        elseif ($script:deploymentStep -eq 5) {
                             # Step 3: Migrations
                             $migrationsPath = Join-Path $script:DatabaseRoot "Migrations"
                             Write-Host "DEBUG: Checking migrations path: $migrationsPath" -ForegroundColor Yellow
@@ -504,19 +588,19 @@ $deployButton.Add_Click({
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
                         
                                 if ($script:currentFiles.Count -eq 0) {
-                                    $script:deploymentStep = 6
+                                    $script:deploymentStep = 7
                                 }
                                 else {
                                     $script:currentIndex = 0
-                                    $script:deploymentStep = 5
+                                    $script:deploymentStep = 6
                                 }
                             }
                             else {
-                                Write-Host "DEBUG: Migrations path not found, skipping to step 6" -ForegroundColor Yellow
-                                $script:deploymentStep = 6
+                                Write-Host "DEBUG: Migrations path not found, skipping to step 7" -ForegroundColor Yellow
+                                $script:deploymentStep = 7
                             }
                         }
-                        elseif ($script:deploymentStep -eq 5) {
+                        elseif ($script:deploymentStep -eq 6) {
                             if ($script:currentIndex -lt $script:currentFiles.Count) {
                                 $file = $script:currentFiles[$script:currentIndex]
                                 $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
@@ -536,12 +620,12 @@ $deployButton.Add_Click({
                                 $script:currentIndex++
                             }
                             else {
-                                $script:deploymentStep = 6
+                                $script:deploymentStep = 7
                                 $script:currentFiles = @()
                                 $script:currentIndex = 0
                             }
                         }
-                        elseif ($script:deploymentStep -eq 6) {
+                        elseif ($script:deploymentStep -eq 7) {
                             # Step 4: Test Data
                             $testDataPath = Join-Path $script:DatabaseRoot "TestData"
                             Write-Host "DEBUG: Checking test data path: $testDataPath" -ForegroundColor Yellow
@@ -556,19 +640,19 @@ $deployButton.Add_Click({
                                 Write-Host "DEBUG: Found $($script:currentFiles.Count) test data files" -ForegroundColor Yellow
                         
                                 if ($script:currentFiles.Count -eq 0) {
-                                    $script:deploymentStep = 8
+                                    $script:deploymentStep = 9
                                 }
                                 else {
                                     $script:currentIndex = 0
-                                    $script:deploymentStep = 7
+                                    $script:deploymentStep = 8
                                 }
                             }
                             else {
-                                Write-Host "DEBUG: Test data path not found, skipping to step 8" -ForegroundColor Yellow
-                                $script:deploymentStep = 8
+                                Write-Host "DEBUG: Test data path not found, skipping to step 9" -ForegroundColor Yellow
+                                $script:deploymentStep = 9
                             }
                         }
-                        elseif ($script:deploymentStep -eq 7) {
+                        elseif ($script:deploymentStep -eq 8) {
                             if ($script:currentIndex -lt $script:currentFiles.Count) {
                                 $file = $script:currentFiles[$script:currentIndex]
                                 $percent = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
