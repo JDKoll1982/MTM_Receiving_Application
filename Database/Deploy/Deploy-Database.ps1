@@ -2,7 +2,7 @@
 # This script deploys all schemas, stored procedures, and initial data
 
 param(
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -125,7 +125,8 @@ $schemaFiles = @(
     "$ProjectRoot\Database\Schemas\06_add_default_dunnage_mode_to_users.sql",
     "$ProjectRoot\Database\Schemas\07_create_dunnage_tables_v2.sql",
     "$ProjectRoot\Database\Schemas\08_add_icon_to_dunnage_types.sql",
-    "$ProjectRoot\Database\Schemas\09_fix_bad_icon_data.sql"
+    "$ProjectRoot\Database\Schemas\09_fix_bad_icon_data.sql",
+    "$ProjectRoot\Database\Schemas\10_create_routing_tables.sql"
 )
 
 foreach ($file in $schemaFiles) {
@@ -155,7 +156,8 @@ Write-Host "-" * 80
 $storedProcDirs = @(
     "$ProjectRoot\Database\StoredProcedures\Authentication",
     "$ProjectRoot\Database\StoredProcedures\Receiving",
-    "$ProjectRoot\Database\StoredProcedures\Dunnage"
+    "$ProjectRoot\Database\StoredProcedures\Dunnage",
+    "$ProjectRoot\Database\StoredProcedures\Routing"
 )
 
 foreach ($dir in $storedProcDirs) {

@@ -94,9 +94,21 @@ namespace MTM_Receiving_Application
                         // Title will be set by ContentFrame_Navigated
                         ContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView));
                         break;
+                    case "RoutingLabelPage":
+                        // Title will be set by ContentFrame_Navigated
+                        ContentFrame.Navigate(typeof(Module_Routing.Views.View_Routing_Workflow));
+                        break;
                     case "CarrierDeliveryLabelPage":
                         PageTitleTextBlock.Text = "Carrier Delivery";
                         ContentFrame.Navigate(typeof(Module_Core.Views.Main.Main_CarrierDeliveryLabelPage));
+                        break;
+                    case "VolvoShipmentEntry":
+                        PageTitleTextBlock.Text = "Volvo Dunnage Requisition";
+                        ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry));
+                        break;
+                    case "VolvoHistory":
+                        PageTitleTextBlock.Text = "Volvo Shipment History";
+                        ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_History));
                         break;
                     case "ReportingMainPage":
                         PageTitleTextBlock.Text = "End of Day Reports";
@@ -159,6 +171,14 @@ namespace MTM_Receiving_Application
                         }
                     };
                 }
+            }
+            // If navigated to RoutingWorkflowView, set simple title
+            else if (ContentFrame.Content is Module_Routing.Views.View_Routing_Workflow routingView)
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    PageTitleTextBlock.Text = "Internal Routing";
+                });
             }
             // If navigated to SettingsWorkflowView, subscribe to ViewModel changes to update header
             else if (ContentFrame.Content is Module_Settings.Views.View_Settings_Workflow settingsView)
