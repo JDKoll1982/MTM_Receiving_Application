@@ -91,6 +91,15 @@ public partial class App : Application
                 // Register Routing DAOs (Singleton - 001-routing-module)
                 services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
+                
+                // Register NEW Routing Module DAOs (Phase 2 implementation)
+                services.AddSingleton(sp => new Dao_RoutingLabel(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_RoutingRecipient(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_RoutingOtherReason(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_RoutingUsageTracking(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_RoutingUserPreference(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_RoutingLabelHistory(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_InforVisualPO(inforVisualConnectionString));
 
                 // Register Volvo DAOs (Singleton)
                 services.AddSingleton(sp => new Dao_VolvoShipment(mySqlConnectionString));
@@ -103,6 +112,42 @@ public partial class App : Application
                 services.AddSingleton<IService_Routing, Service_Routing>();
                 services.AddSingleton<IService_Routing_History, Service_Routing_History>();
                 services.AddSingleton<IService_Routing_RecipientLookup, Service_Routing_RecipientLookup>();
+                
+                // Register NEW Routing Module Services (Phase 2 implementation)
+                services.AddSingleton<IRoutingService>(sp =>
+                {
+                    var daoLabel = sp.GetRequiredService<Dao_RoutingLabel>();
+                    var daoHistory = sp.GetRequiredService<Dao_RoutingLabelHistory>();
+                    var inforVisualService = sp.GetRequiredService<IRoutingInforVisualService>();
+                    var usageTrackingService = sp.GetRequiredService<IRoutingUsageTrackingService>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    var configuration = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                    return new RoutingService(daoLabel, daoHistory, inforVisualService, usageTrackingService, logger, configuration);
+                });
+                services.AddSingleton<IRoutingInforVisualService>(sp =>
+                {
+                    var daoInforVisual = sp.GetRequiredService<Dao_InforVisualPO>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new RoutingInforVisualService(daoInforVisual, logger);
+                });
+                services.AddSingleton<IRoutingRecipientService>(sp =>
+                {
+                    var daoRecipient = sp.GetRequiredService<Dao_RoutingRecipient>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new RoutingRecipientService(daoRecipient, logger);
+                });
+                services.AddSingleton<IRoutingUsageTrackingService>(sp =>
+                {
+                    var daoUsageTracking = sp.GetRequiredService<Dao_RoutingUsageTracking>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new RoutingUsageTrackingService(daoUsageTracking, logger);
+                });
+                services.AddSingleton<IRoutingUserPreferenceService>(sp =>
+                {
+                    var daoUserPreference = sp.GetRequiredService<Dao_RoutingUserPreference>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new RoutingUserPreferenceService(daoUserPreference, logger);
+                });
 
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp =>
@@ -279,6 +324,21 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Routing_History>();
                 services.AddTransient<ViewModel_Routing_ModeSelection>();
 
+                // NEW Routing Wizard ViewModels (Phase 3 implementation)
+                services.AddTransient<RoutingWizardContainerViewModel>();
+                services.AddTransient<RoutingWizardStep1ViewModel>();
+                services.AddTransient<RoutingWizardStep2ViewModel>();
+                services.AddTransient<RoutingWizardStep3ViewModel>();
+                
+                // Routing Manual Entry ViewModel (Phase 4 implementation)
+                services.AddTransient<RoutingManualEntryViewModel>();
+                
+                // Routing Edit Mode ViewModel (Phase 5 implementation)
+                services.AddTransient<RoutingEditModeViewModel>();
+                
+                // Routing Mode Selection ViewModel (Phase 6 implementation)
+                services.AddTransient<RoutingModeSelectionViewModel>();
+
                 // Reporting ViewModels (003-reporting-module)
                 services.AddTransient<ViewModel_Reporting_Main>();
 
@@ -300,6 +360,21 @@ public partial class App : Application
                 services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
                 services.AddTransient<Module_Routing.Views.View_Routing_History>();
                 services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
+
+                // NEW Routing Wizard Views (Phase 3 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingWizardContainerView>();
+                services.AddTransient<Module_Routing.Views.RoutingWizardStep1View>();
+                services.AddTransient<Module_Routing.Views.RoutingWizardStep2View>();
+                services.AddTransient<Module_Routing.Views.RoutingWizardStep3View>();
+                
+                // Routing Manual Entry View (Phase 4 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingManualEntryView>();
+                
+                // Routing Edit Mode View (Phase 5 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingEditModeView>();
+                
+                // Routing Mode Selection View (Phase 6 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
 
                 // Settings Views
                 services.AddTransient<View_Settings_Workflow>();
