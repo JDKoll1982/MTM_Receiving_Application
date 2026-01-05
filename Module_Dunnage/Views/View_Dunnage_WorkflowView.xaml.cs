@@ -43,7 +43,9 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     private async System.Threading.Tasks.Task ShowHelpForCurrentStepAsync()
     {
         if (_helpService == null || _workflowService == null)
+        {
             return;
+        }
 
         await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
     }

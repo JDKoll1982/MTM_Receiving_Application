@@ -25,6 +25,7 @@ public class Dao_VolvoPart
     /// <summary>
     /// Gets all Volvo parts (optionally including inactive)
     /// </summary>
+    /// <param name="includeInactive"></param>
     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllAsync(bool includeInactive = false)
     {
         var parameters = new Dictionary<string, object>
@@ -43,6 +44,7 @@ public class Dao_VolvoPart
     /// <summary>
     /// Gets a part by part number
     /// </summary>
+    /// <param name="partNumber"></param>
     public async Task<Model_Dao_Result<Model_VolvoPart>> GetByIdAsync(string partNumber)
     {
         var parameters = new Dictionary<string, object>
@@ -61,6 +63,7 @@ public class Dao_VolvoPart
     /// <summary>
     /// Inserts a new Volvo part
     /// </summary>
+    /// <param name="part"></param>
     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoPart part)
     {
         var parameters = new Dictionary<string, object>
@@ -81,6 +84,7 @@ public class Dao_VolvoPart
     /// <summary>
     /// Updates an existing Volvo part
     /// </summary>
+    /// <param name="part"></param>
     public async Task<Model_Dao_Result> UpdateAsync(Model_VolvoPart part)
     {
         var parameters = new Dictionary<string, object>
@@ -100,6 +104,7 @@ public class Dao_VolvoPart
     /// <summary>
     /// Deactivates a Volvo part (soft delete)
     /// </summary>
+    /// <param name="partNumber"></param>
     public async Task<Model_Dao_Result> DeactivateAsync(string partNumber)
     {
         var parameters = new Dictionary<string, object>

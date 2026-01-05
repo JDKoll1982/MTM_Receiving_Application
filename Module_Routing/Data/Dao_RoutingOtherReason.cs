@@ -43,11 +43,11 @@ public class Dao_RoutingOtherReason
     {
         return new Model_RoutingOtherReason
         {
-            Id = reader.GetInt32("id"),
-            ReasonCode = reader.GetString("reason_code"),
-            Description = reader.GetString("description"),
-            IsActive = reader.GetBoolean("is_active"),
-            DisplayOrder = reader.GetInt32("display_order")
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            ReasonCode = reader.GetString(reader.GetOrdinal("reason_code")),
+            Description = reader.GetString(reader.GetOrdinal("description")),
+            IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
+            DisplayOrder = reader.GetInt32(reader.GetOrdinal("display_order"))
         };
     }
 }

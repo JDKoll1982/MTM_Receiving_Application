@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Views;
 
 public sealed partial class VolvoShipmentEditDialog : ContentDialog
 {
-    public Model_VolvoShipment Shipment { get; private set; }
+    public Model_VolvoShipment Shipment { get; set; } = null!;
     public ObservableCollection<Model_VolvoShipmentLine> Lines { get; private set; }
     public ObservableCollection<Model_VolvoPart> AvailableParts { get; set; }
 
@@ -16,11 +16,11 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         InitializeComponent();
         Lines = new ObservableCollection<Model_VolvoShipmentLine>();
         AvailableParts = new ObservableCollection<Model_VolvoPart>();
-        
+
         // Wire up button events
         AddPartButton.Click += (s, e) => AddNewLine();
         RemovePartButton.Click += (s, e) => RemoveSelectedLine();
-        
+
         // Set DataGrid ItemsSource
         PartsDataGrid.ItemsSource = Lines;
     }
@@ -29,21 +29,21 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
     {
         Shipment = shipment;
         AvailableParts = availableParts;
-        
+
         // Populate header fields
         ShipmentDatePicker.Date = shipment.ShipmentDate;
         ShipmentNumberBox.Text = shipment.ShipmentNumber.ToString();
         PONumberBox.Text = shipment.PONumber ?? string.Empty;
         ReceiverNumberBox.Text = shipment.ReceiverNumber ?? string.Empty;
         NotesBox.Text = shipment.Notes ?? string.Empty;
-        
+
         // Load lines
         Lines.Clear();
         foreach (var line in lines)
         {
             Lines.Add(line);
         }
-        
+
         // Show/hide CSV warning based on status
         CsvWarningBar.IsOpen = shipment.Status == "completed";
     }
@@ -54,7 +54,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         Shipment.PONumber = string.IsNullOrWhiteSpace(PONumberBox.Text) ? null : PONumberBox.Text;
         Shipment.ReceiverNumber = string.IsNullOrWhiteSpace(ReceiverNumberBox.Text) ? null : ReceiverNumberBox.Text;
         Shipment.Notes = string.IsNullOrWhiteSpace(NotesBox.Text) ? null : NotesBox.Text;
-        
+
         return Shipment;
     }
 

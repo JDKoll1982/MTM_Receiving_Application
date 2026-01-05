@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
 
@@ -18,7 +18,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
 {
     private readonly IRoutingRecipientService _recipientService;
     private readonly IService_ErrorHandler _errorHandler;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
     private readonly RoutingWizardContainerViewModel _containerViewModel;
 
     // Full list for filtering
@@ -28,7 +28,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     public RoutingWizardStep2ViewModel(
         IRoutingRecipientService recipientService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger,
+        IService_LoggingUtility logger,
         RoutingWizardContainerViewModel containerViewModel)
     {
         _recipientService = recipientService;
@@ -83,7 +83,10 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     [RelayCommand]
     public async Task LoadRecipientsAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -92,8 +95,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
 
             // Load Quick Add recipients (top 5 for current employee)
             var quickAddResult = await _recipientService.GetQuickAddRecipientsAsync(
-                GetCurrentEmployeeNumber(),
-                count: 5);
+                GetCurrentEmployeeNumber());
 
             if (quickAddResult.IsSuccess && quickAddResult.Data != null)
             {
@@ -105,7 +107,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
             }
 
             // Load all active recipients for searchable list
-            var allRecipientsResult = await _recipientService.GetAllActiveRecipientsAsync();
+            var allRecipientsResult = await _recipientService.GetActiveRecipientsSortedByUsageAsync(0);
 
             if (allRecipientsResult.IsSuccess && allRecipientsResult.Data != null)
             {
@@ -121,7 +123,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     "Failed to load recipients",
                     "Data Load Error",
                     nameof(LoadRecipientsAsync));
@@ -146,10 +148,14 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     /// <summary>
     /// Quick Add button clicked - auto-select recipient and navigate to Step 3
     /// </summary>
+    /// <param name="recipient"></param>
     [RelayCommand]
     private void QuickAddRecipient(Model_RoutingRecipient recipient)
     {
-        if (recipient == null) return;
+        if (recipient == null)
+        {
+            return;
+        }
 
         SelectedRecipient = recipient;
         StatusMessage = $"Quick Add selected: {recipient.Name}";
@@ -209,7 +215,10 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanProceedToStep3))]
     private void ProceedToStep3()
     {
-        if (SelectedRecipient == null) return;
+        if (SelectedRecipient == null)
+        {
+            return;
+        }
 
         // Update container with selected recipient
         _containerViewModel.SelectedRecipient = SelectedRecipient;

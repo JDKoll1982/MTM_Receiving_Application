@@ -11,21 +11,21 @@ public interface IService_SettingsWorkflow
     /// <summary>
     /// Event raised when workflow step changes
     /// </summary>
-    event EventHandler<Enum_SettingsWorkflowStep>? StepChanged;
+    public event EventHandler<Enum_SettingsWorkflowStep>? StepChanged;
 
     /// <summary>
     /// Navigate to a specific step in the settings workflow
     /// </summary>
     /// <param name="step"></param>
-    void GoToStep(Enum_SettingsWorkflowStep step);
+    public void GoToStep(Enum_SettingsWorkflowStep step);
 
     /// <summary>
     /// Go back to the previous step
     /// </summary>
-    void GoBack();
+    public void GoBack();
 
     /// <summary>
     /// Reset workflow to initial state
     /// </summary>
-    void Reset();
+    public void Reset();
 }

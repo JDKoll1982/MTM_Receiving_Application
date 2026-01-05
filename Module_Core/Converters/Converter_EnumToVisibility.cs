@@ -12,7 +12,9 @@ public class Converter_EnumToVisibility : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         if (value == null || parameter == null)
+        {
             return Visibility.Collapsed;
+        }
 
         var enumValue = value.ToString();
         var targetValue = parameter.ToString();

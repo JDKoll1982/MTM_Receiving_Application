@@ -192,7 +192,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Saving to CSV...";
             var saveResult = await _workflowService.SaveToCSVOnlyAsync();
-            
+
             if (!saveResult.IsSuccess)
             {
                 await _errorHandler.HandleErrorAsync(
@@ -342,7 +342,10 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     [RelayCommand]
     private async Task SaveAllAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -388,7 +391,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
             IsSuccessMessageVisible = true;
 
             await _logger.LogInfoAsync($"Completed SaveAllAsync: {LoadCount} loads processed successfully");
-            
+
             // Auto-navigation removed to allow user to see success message and choose next action
         }
         catch (Exception ex)

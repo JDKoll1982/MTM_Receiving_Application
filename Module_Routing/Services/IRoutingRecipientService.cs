@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Models;
 
 namespace MTM_Receiving_Application.Module_Routing.Services;
@@ -15,20 +16,20 @@ public interface IRoutingRecipientService
     /// </summary>
     /// <param name="employeeNumber">Employee number for personalized sorting</param>
     /// <returns>Result with list of active recipients sorted by usage count DESC</returns>
-    Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetActiveRecipientsSortedByUsageAsync(int employeeNumber);
+    public Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetActiveRecipientsSortedByUsageAsync(int employeeNumber);
 
     /// <summary>
     /// Retrieves all recipients (including inactive) for admin purposes
     /// </summary>
     /// <returns>Result with list of all recipients</returns>
-    Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetAllRecipientsAsync();
+    public Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetAllRecipientsAsync();
 
     /// <summary>
     /// Retrieves a single recipient by ID
     /// </summary>
     /// <param name="recipientId">Recipient ID to retrieve</param>
     /// <returns>Result with recipient data or error</returns>
-    Task<Model_Dao_Result<Model_RoutingRecipient>> GetRecipientByIdAsync(int recipientId);
+    public Task<Model_Dao_Result<Model_RoutingRecipient>> GetRecipientByIdAsync(int recipientId);
 
     /// <summary>
     /// Filters recipients by search text (name, location, department)
@@ -36,12 +37,12 @@ public interface IRoutingRecipientService
     /// <param name="recipients">Full list of recipients to filter</param>
     /// <param name="searchText">Search text (case-insensitive)</param>
     /// <returns>Filtered list of recipients</returns>
-    List<Model_RoutingRecipient> FilterRecipients(List<Model_RoutingRecipient> recipients, string searchText);
+    public List<Model_RoutingRecipient> FilterRecipients(List<Model_RoutingRecipient> recipients, string searchText);
 
     /// <summary>
     /// Calculates top 5 Quick Add recipients for employee
     /// </summary>
     /// <param name="employeeNumber">Employee number</param>
     /// <returns>Result with top 5 recipients (personalized if employee has 20+ labels, otherwise system-wide)</returns>
-    Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetQuickAddRecipientsAsync(int employeeNumber);
+    public Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetQuickAddRecipientsAsync(int employeeNumber);
 }

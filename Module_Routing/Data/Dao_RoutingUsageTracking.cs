@@ -21,6 +21,8 @@ public class Dao_RoutingUsageTracking
     /// <summary>
     /// Increments usage count for employee-recipient pair
     /// </summary>
+    /// <param name="employeeNumber"></param>
+    /// <param name="recipientId"></param>
     public async Task<Model_Dao_Result> IncrementUsageAsync(int employeeNumber, int recipientId)
     {
         try

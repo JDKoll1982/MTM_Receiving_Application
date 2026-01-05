@@ -25,6 +25,7 @@ public class Dao_VolvoShipmentLine
     /// <summary>
     /// Inserts a new shipment line
     /// </summary>
+    /// <param name="line"></param>
     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoShipmentLine line)
     {
         var parameters = new Dictionary<string, object>
@@ -48,6 +49,7 @@ public class Dao_VolvoShipmentLine
     /// <summary>
     /// Gets all lines for a shipment
     /// </summary>
+    /// <param name="shipmentId"></param>
     public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetByShipmentIdAsync(int shipmentId)
     {
         var parameters = new Dictionary<string, object>
@@ -66,6 +68,7 @@ public class Dao_VolvoShipmentLine
     /// <summary>
     /// Updates a shipment line
     /// </summary>
+    /// <param name="line"></param>
     public async Task<Model_Dao_Result> UpdateAsync(Model_VolvoShipmentLine line)
     {
         var parameters = new Dictionary<string, object>
@@ -88,6 +91,7 @@ public class Dao_VolvoShipmentLine
     /// <summary>
     /// Deletes a shipment line
     /// </summary>
+    /// <param name="lineId"></param>
     public async Task<Model_Dao_Result> DeleteAsync(int lineId)
     {
         var parameters = new Dictionary<string, object>

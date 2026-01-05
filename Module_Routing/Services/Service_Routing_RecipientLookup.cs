@@ -46,7 +46,7 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
             _logger.LogInfo("Fetching recipients from database");
             var result = await _daoRecipient.GetAllAsync();
 
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null)
             {
                 _cachedRecipients = result.Data;
                 _cacheTimestamp = DateTime.Now;
@@ -95,7 +95,7 @@ public class Service_Routing_RecipientLookup : IService_Routing_RecipientLookup
                 return Model_Dao_Result_Factory.Success<string?>(null);
             }
 
-            var defaultDept = result.Data.DefaultDepartment;
+            var defaultDept = result.Data?.DefaultDepartment;
             _logger.LogInfo($"Default department for '{recipientName}': {defaultDept ?? "(none)"}");
             return Model_Dao_Result_Factory.Success(defaultDept);
         }

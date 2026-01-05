@@ -99,13 +99,17 @@ public class Service_Reporting : IService_Reporting
     {
         // Handle null or empty
         if (string.IsNullOrWhiteSpace(poNumber))
+        {
             return "No PO";
+        }
 
         poNumber = poNumber.Trim();
 
         // Pass through specific non-numeric values
         if (poNumber.Equals("Customer Supplied", StringComparison.OrdinalIgnoreCase))
+        {
             return "Customer Supplied";
+        }
 
         // Extract numeric part and suffix
         string numericPart = new string(poNumber.TakeWhile(char.IsDigit).ToArray());
@@ -113,11 +117,15 @@ public class Service_Reporting : IService_Reporting
 
         // Validate length (must be at least 5 digits)
         if (numericPart.Length < 5)
+        {
             return "Validate PO";
+        }
 
         // Pad to 6 digits if exactly 5
         if (numericPart.Length == 5)
+        {
             numericPart = "0" + numericPart;
+        }
 
         // Format as PO-XXXXXX + optional suffix
         return "PO-" + numericPart + suffix;
@@ -212,7 +220,9 @@ public class Service_Reporting : IService_Reporting
             _logger.LogInfo($"Formatting {data.Count} records for email");
 
             if (data.Count == 0)
+            {
                 return Model_Dao_Result_Factory.Success("<p>No data to display</p>");
+            }
 
             var html = new StringBuilder();
             html.AppendLine("<table style='border-collapse: collapse; width: 100%;'>");

@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using CommunityToolkit.WinUI.UI.Controls;
 using MTM_Receiving_Application.Module_Routing.ViewModels;
 using MTM_Receiving_Application.Module_Routing.Models;
 
@@ -25,11 +26,10 @@ public sealed partial class RoutingManualEntryView : Page
         // If PO Number column was edited, validate PO
         if (e.Column.Header.ToString() == "PO Number" && !e.Cancel)
         {
-            var label = e.Row.DataContext as Model_RoutingLabel;
-            if (label != null)
+            if (e.Row.DataContext is Model_RoutingLabel label)
             {
                 // Defer validation to avoid concurrent access issues
-                _ = Dispatcher.TryEnqueue(async () =>
+                _ = DispatcherQueue.TryEnqueue(async () =>
                 {
                     await ViewModel.ValidatePOAsync(label);
                 });

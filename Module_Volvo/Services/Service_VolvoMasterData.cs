@@ -37,7 +37,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting all Volvo parts (includeInactive={includeInactive})");
+            await _logger.LogInfoAsync($"Getting all Volvo parts (includeInactive={includeInactive})");
             var result = await _daoPart.GetAllAsync(includeInactive);
 
             if (!result.IsSuccess)
@@ -55,7 +55,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                 Enum_ErrorSeverity.Medium,
                 ex,
                 showDialog: false);
-            return Model_Dao_Result<List<Model_VolvoPart>>.Failure($"Error retrieving parts: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<List<Model_VolvoPart>>($"Error retrieving parts: {ex.Message}");
         }
     }
 
@@ -63,20 +63,21 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting part by number: {partNumber}");
+            await _logger.LogInfoAsync($"Getting part by number: {partNumber}");
             var result = await _daoPart.GetByIdAsync(partNumber);
 
             if (!result.IsSuccess)
             {
                 await _logger.LogErrorAsync($"Failed to get part {partNumber}: {result.ErrorMessage}");
+                return Model_Dao_Result_Factory.Failure<Model_VolvoPart?>(result.ErrorMessage);
             }
 
-            return result;
+            return Model_Dao_Result_Factory.Success<Model_VolvoPart?>(result.Data);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting part {partNumber}: {ex.Message}", ex);
-            return Model_Dao_Result<Model_VolvoPart>.Failure($"Error retrieving part: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<Model_VolvoPart?>($"Error retrieving part: {ex.Message}");
         }
     }
 
@@ -84,17 +85,17 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Adding new part: {part.PartNumber}");
+            await _logger.LogInfoAsync($"Adding new part: {part.PartNumber}");
 
             // Validate input
             if (string.IsNullOrWhiteSpace(part.PartNumber))
             {
-                return Model_Dao_Result.Failure("Part number is required");
+                return Model_Dao_Result_Factory.Failure("Part number is required");
             }
 
             if (part.QuantityPerSkid < 0)
             {
-                return Model_Dao_Result.Failure("Quantity per skid must be non-negative");
+                return Model_Dao_Result_Factory.Failure("Quantity per skid must be non-negative");
             }
 
             // Insert new part
@@ -102,11 +103,11 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
             if (!insertResult.IsSuccess)
             {
                 await _logger.LogErrorAsync($"Failed to insert part {part.PartNumber}: {insertResult.ErrorMessage}");
-                return Model_Dao_Result.Failure(insertResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure(insertResult.ErrorMessage);
             }
 
             // Insert components if provided
-            if (components != null && components.Any())
+            if (components?.Any() == true)
             {
                 foreach (var component in components)
                 {
@@ -115,23 +116,23 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     if (!componentResult.IsSuccess)
                     {
                         await _logger.LogErrorAsync($"Failed to insert component {component.ComponentPartNumber}: {componentResult.ErrorMessage}");
-                        return Model_Dao_Result.Failure($"Failed to save component {component.ComponentPartNumber}");
+                        return Model_Dao_Result_Factory.Failure($"Failed to save component {component.ComponentPartNumber}");
                     }
                 }
             }
 
-            await _logger.LogInformationAsync($"Successfully added part {part.PartNumber} with {components?.Count ?? 0} components");
-            return Model_Dao_Result.Success("Part added successfully");
+            await _logger.LogInfoAsync($"Successfully added part {part.PartNumber} with {components?.Count ?? 0} components");
+            return Model_Dao_Result_Factory.Success("Part added successfully");
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error adding part {part.PartNumber}: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 $"Failed to add part {part.PartNumber}",
-                Enum_ErrorSeverity.High,
+                Enum_ErrorSeverity.Error,
                 ex,
                 showDialog: false);
-            return Model_Dao_Result.Failure($"Error adding part: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure($"Error adding part: {ex.Message}");
         }
     }
 
@@ -139,17 +140,17 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Updating part: {part.PartNumber}");
+            await _logger.LogInfoAsync($"Updating part: {part.PartNumber}");
 
             // Validate input
             if (string.IsNullOrWhiteSpace(part.PartNumber))
             {
-                return Model_Dao_Result.Failure("Part number is required");
+                return Model_Dao_Result_Factory.Failure("Part number is required");
             }
 
             if (part.QuantityPerSkid < 0)
             {
-                return Model_Dao_Result.Failure("Quantity per skid must be non-negative");
+                return Model_Dao_Result_Factory.Failure("Quantity per skid must be non-negative");
             }
 
             // Update existing part
@@ -157,18 +158,18 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
             if (!updateResult.IsSuccess)
             {
                 await _logger.LogErrorAsync($"Failed to update part {part.PartNumber}: {updateResult.ErrorMessage}");
-                return Model_Dao_Result.Failure(updateResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure(updateResult.ErrorMessage);
             }
 
             // Update components (delete existing and re-insert)
-            if (components != null && components.Any())
+            if (components?.Any() == true)
             {
                 // Delete existing components
                 var deleteResult = await _daoComponent.DeleteByParentPartAsync(part.PartNumber);
                 if (!deleteResult.IsSuccess)
                 {
                     await _logger.LogErrorAsync($"Failed to delete components for {part.PartNumber}: {deleteResult.ErrorMessage}");
-                    return Model_Dao_Result.Failure($"Failed to update components: {deleteResult.ErrorMessage}");
+                    return Model_Dao_Result_Factory.Failure($"Failed to update components: {deleteResult.ErrorMessage}");
                 }
 
                 // Insert new components
@@ -179,7 +180,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     if (!insertResult.IsSuccess)
                     {
                         await _logger.LogErrorAsync($"Failed to insert component {component.ComponentPartNumber}: {insertResult.ErrorMessage}");
-                        return Model_Dao_Result.Failure($"Failed to save component {component.ComponentPartNumber}");
+                        return Model_Dao_Result_Factory.Failure($"Failed to save component {component.ComponentPartNumber}");
                     }
                 }
             }
@@ -189,18 +190,18 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                 await _daoComponent.DeleteByParentPartAsync(part.PartNumber);
             }
 
-            await _logger.LogInformationAsync($"Successfully updated part {part.PartNumber} with {components?.Count ?? 0} components");
-            return Model_Dao_Result.Success("Part updated successfully");
+            await _logger.LogInfoAsync($"Successfully updated part {part.PartNumber} with {components?.Count ?? 0} components");
+            return Model_Dao_Result_Factory.Success("Part updated successfully");
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error updating part {part.PartNumber}: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
                 $"Failed to update part {part.PartNumber}",
-                Enum_ErrorSeverity.High,
+                Enum_ErrorSeverity.Error,
                 ex,
                 showDialog: false);
-            return Model_Dao_Result.Failure($"Error updating part: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure($"Error updating part: {ex.Message}");
         }
     }
 
@@ -208,7 +209,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Deactivating part: {partNumber}");
+            await _logger.LogInfoAsync($"Deactivating part: {partNumber}");
 
             var result = await _daoPart.DeactivateAsync(partNumber);
 
@@ -218,7 +219,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
             }
             else
             {
-                await _logger.LogInformationAsync($"Successfully deactivated part {partNumber}");
+                await _logger.LogInfoAsync($"Successfully deactivated part {partNumber}");
             }
 
             return result;
@@ -226,7 +227,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error deactivating part {partNumber}: {ex.Message}", ex);
-            return Model_Dao_Result.Failure($"Error deactivating part: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure($"Error deactivating part: {ex.Message}");
         }
     }
 
@@ -234,7 +235,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting components for part: {partNumber}");
+            await _logger.LogInfoAsync($"Getting components for part: {partNumber}");
             var result = await _daoComponent.GetByParentPartAsync(partNumber);
 
             if (!result.IsSuccess)
@@ -247,7 +248,7 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting components for {partNumber}: {ex.Message}", ex);
-            return Model_Dao_Result<List<Model_VolvoPartComponent>>.Failure($"Error retrieving components: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>($"Error retrieving components: {ex.Message}");
         }
     }
 
@@ -255,25 +256,25 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync("Starting CSV import");
+            await _logger.LogInfoAsync("Starting CSV import");
 
-            if (string.IsNullOrWhiteSpace(csvContent))
+            if (string.IsNullOrWhiteSpace(csvFilePath))
             {
-                return Model_Dao_Result<string>.Failure("CSV content is empty");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV content is empty");
             }
 
-            var lines = csvContent.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
+            var lines = csvFilePath.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
 
             if (lines.Count < 2)
             {
-                return Model_Dao_Result<string>.Failure("CSV file must contain header and at least one data row");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV file must contain header and at least one data row");
             }
 
             // Validate header
             var header = lines[0];
             if (!header.Contains("PartNumber") || !header.Contains("Description") || !header.Contains("QuantityPerSkid"))
             {
-                return Model_Dao_Result<string>.Failure("CSV must contain columns: PartNumber, Description, QuantityPerSkid, Components");
+                return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV must contain columns: PartNumber, Description, QuantityPerSkid, Components");
             }
 
             int newCount = 0;
@@ -340,13 +341,26 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
                     var existing = await _daoPart.GetByIdAsync(partNumber);
                     bool isNew = !existing.IsSuccess || existing.Data == null;
 
-                    var saveResult = await SavePartAsync(part, components);
+                    Model_Dao_Result saveResult;
+                    if (isNew)
+                    {
+                        saveResult = await AddPartAsync(part, components);
+                    }
+                    else
+                    {
+                        saveResult = await UpdatePartAsync(part, components);
+                    }
+
                     if (saveResult.IsSuccess)
                     {
                         if (isNew)
+                        {
                             newCount++;
+                        }
                         else
+                        {
                             updatedCount++;
+                        }
                     }
                     else
                     {
@@ -362,19 +376,19 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
             }
 
             var summary = $"Import complete: {newCount} new, {updatedCount} updated, {errorCount} errors";
-            await _logger.LogInformationAsync(summary);
+            await _logger.LogInfoAsync(summary);
 
-            if (errors.Any())
+            if (errors.Count > 0)
             {
                 summary += "\nErrors:\n" + string.Join("\n", errors);
             }
 
-            return Model_Dao_Result<string>.Success(summary, summary);
+            return Model_Dao_Result_Factory.Success((newCount, updatedCount, errorCount));
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error importing CSV: {ex.Message}", ex);
-            return Model_Dao_Result<string>.Failure($"Import failed: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<(int, int, int)>($"Import failed: {ex.Message}");
         }
     }
 
@@ -382,37 +396,37 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     {
         try
         {
-            await _logger.LogInformationAsync($"Exporting parts to CSV (includeInactive={includeInactive})");
+            await _logger.LogInfoAsync($"Exporting parts to CSV (includeInactive={includeInactive})");
 
             var partsResult = await GetAllPartsAsync(includeInactive);
             if (!partsResult.IsSuccess)
             {
-                return Model_Dao_Result<string>.Failure(partsResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<string>(partsResult.ErrorMessage);
             }
 
             var csv = new StringBuilder();
             csv.AppendLine("PartNumber,Description,QuantityPerSkid,Components");
 
-            foreach (var part in partsResult.Data)
+            foreach (var part in partsResult.Data ?? new List<Model_VolvoPart>())
             {
-                var componentsResult = await GetComponentsAsync(part.PartNumber);
+                var componentsResult = await GetComponentsAsync(part.PartNumber ?? string.Empty);
                 var componentsStr = "";
 
-                if (componentsResult.IsSuccess && componentsResult.Data != null && componentsResult.Data.Any())
+                if (componentsResult.IsSuccess && componentsResult.Data?.Any() == true)
                 {
                     componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
                 }
 
-                csv.AppendLine($"{EscapeCsvField(part.PartNumber)},{EscapeCsvField(part.Description)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
+                csv.AppendLine($"{EscapeCsvField(part.PartNumber ?? string.Empty)},{EscapeCsvField(part.Description ?? string.Empty)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
             }
 
-            await _logger.LogInformationAsync($"Export complete: {partsResult.Data.Count} parts");
-            return Model_Dao_Result<string>.Success(csv.ToString(), $"Exported {partsResult.Data.Count} parts");
+            await _logger.LogInfoAsync($"Export complete: {partsResult.Data?.Count ?? 0} parts");
+            return Model_Dao_Result_Factory.Success(csv.ToString());
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error exporting CSV: {ex.Message}", ex);
-            return Model_Dao_Result<string>.Failure($"Export failed: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<string>($"Export failed: {ex.Message}");
         }
     }
 
@@ -448,7 +462,9 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
     private string EscapeCsvField(string field)
     {
         if (field == null)
+        {
             return "";
+        }
 
         if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
         {
@@ -458,3 +474,4 @@ public class Service_VolvoMasterData : IService_VolvoMasterData
         return field;
     }
 }
+

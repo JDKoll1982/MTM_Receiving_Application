@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Models;
 
 namespace MTM_Receiving_Application.Module_Routing.Services;
@@ -15,7 +17,7 @@ public interface IRoutingService
     /// </summary>
     /// <param name="label">Label data to create</param>
     /// <returns>Result with created label ID or error message</returns>
-    Task<Model_Dao_Result<int>> CreateLabelAsync(Model_RoutingLabel label);
+    public Task<Model_Dao_Result<int>> CreateLabelAsync(Model_RoutingLabel label);
 
     /// <summary>
     /// Updates an existing routing label (Edit Mode), logs changes to history
@@ -23,14 +25,14 @@ public interface IRoutingService
     /// <param name="label">Updated label data (must include ID)</param>
     /// <param name="editedByEmployeeNumber">Employee number making the edit</param>
     /// <returns>Result indicating success or failure</returns>
-    Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label, int editedByEmployeeNumber);
+    public Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label, int editedByEmployeeNumber);
 
     /// <summary>
     /// Retrieves a single label by ID
     /// </summary>
     /// <param name="labelId">Label ID to retrieve</param>
     /// <returns>Result with label data or error message</returns>
-    Task<Model_Dao_Result<Model_RoutingLabel>> GetLabelByIdAsync(int labelId);
+    public Task<Model_Dao_Result<Model_RoutingLabel>> GetLabelByIdAsync(int labelId);
 
     /// <summary>
     /// Retrieves all labels for Edit Mode grid (paginated, sorted by date DESC)
@@ -38,7 +40,7 @@ public interface IRoutingService
     /// <param name="limit">Number of records to return</param>
     /// <param name="offset">Number of records to skip</param>
     /// <returns>Result with list of labels or error message</returns>
-    Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetAllLabelsAsync(int limit = 100, int offset = 0);
+    public Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetAllLabelsAsync(int limit = 100, int offset = 0);
 
     /// <summary>
     /// Checks if a duplicate label exists (same PO, Line, Recipient, Date)
@@ -48,10 +50,10 @@ public interface IRoutingService
     /// <param name="recipientId">Recipient ID</param>
     /// <param name="createdDate">Date to check</param>
     /// <returns>Result with duplicate check data (exists flag + existing label ID if found)</returns>
-    Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateLabelAsync(
-        string poNumber, 
-        string lineNumber, 
-        int recipientId, 
+    public Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateLabelAsync(
+        string poNumber,
+        string lineNumber,
+        int recipientId,
         DateTime createdDate);
 
     /// <summary>
@@ -59,25 +61,25 @@ public interface IRoutingService
     /// </summary>
     /// <param name="label">Label to export</param>
     /// <returns>Result indicating CSV export success or failure</returns>
-    Task<Model_Dao_Result> ExportLabelToCsvAsync(Model_RoutingLabel label);
+    public Task<Model_Dao_Result> ExportLabelToCsvAsync(Model_RoutingLabel label);
 
     /// <summary>
     /// Regenerates CSV entry for a label (Reprint functionality in Edit Mode)
     /// </summary>
     /// <param name="labelId">Label ID to regenerate CSV for</param>
     /// <returns>Result indicating CSV regeneration success or failure</returns>
-    Task<Model_Dao_Result> RegenerateLabelCsvAsync(int labelId);
+    public Task<Model_Dao_Result> RegenerateLabelCsvAsync(int labelId);
 
     /// <summary>
     /// Resets (clears) the CSV file (with confirmation required)
     /// </summary>
     /// <returns>Result indicating CSV reset success or failure</returns>
-    Task<Model_Dao_Result> ResetCsvFileAsync();
+    public Task<Model_Dao_Result> ResetCsvFileAsync();
 
     /// <summary>
     /// Validates label data before creation (business rules)
     /// </summary>
     /// <param name="label">Label to validate</param>
     /// <returns>Validation result (IsSuccess=true if valid, ErrorMessage if invalid)</returns>
-    Model_Dao_Result ValidateLabel(Model_RoutingLabel label);
+    public Model_Dao_Result ValidateLabel(Model_RoutingLabel label);
 }

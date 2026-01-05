@@ -50,7 +50,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private async Task RefreshAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -73,7 +75,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load parts catalog",
                     "Load Error",
                     nameof(RefreshAsync));
@@ -84,7 +86,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Medium,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(RefreshAsync),
                 nameof(ViewModel_Volvo_Settings));
             StatusMessage = "Error loading parts";
@@ -99,7 +101,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private async Task AddPartAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -108,7 +112,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             var dialog = new Views.VolvoPartAddEditDialog();
             dialog.InitializeForAdd();
 
-            var windowService = App.GetService<IWindowService>();
+            var windowService = App.GetService<IService_Window>();
             if (windowService != null)
             {
                 dialog.XamlRoot = windowService.GetXamlRoot();
@@ -122,7 +126,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 StatusMessage = $"Adding part {dialog.Part.PartNumber}...";
 
                 // No components for now (simplified version)
-                var saveResult = await _masterDataService.SavePartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+                var saveResult = await _masterDataService.AddPartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
 
                 if (saveResult.IsSuccess)
                 {
@@ -131,7 +135,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _errorHandler.ShowUserError(
+                    await _errorHandler.ShowUserErrorAsync(
                         saveResult.ErrorMessage ?? "Failed to add part",
                         "Add Error",
                         nameof(AddPartAsync));
@@ -149,7 +153,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Medium,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(AddPartAsync),
                 nameof(ViewModel_Volvo_Settings));
             StatusMessage = "Error adding part";
@@ -160,7 +164,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private async Task EditPartAsync()
     {
         if (IsBusy || SelectedPart == null)
+        {
             return;
+        }
 
         try
         {
@@ -169,7 +175,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             var dialog = new Views.VolvoPartAddEditDialog();
             dialog.InitializeForEdit(SelectedPart);
 
-            var windowService = App.GetService<IWindowService>();
+            var windowService = App.GetService<IService_Window>();
             if (windowService != null)
             {
                 dialog.XamlRoot = windowService.GetXamlRoot();
@@ -183,7 +189,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 StatusMessage = $"Updating part {dialog.Part.PartNumber}...";
 
                 // No components for now (simplified version)
-                var saveResult = await _masterDataService.SavePartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+                var saveResult = await _masterDataService.UpdatePartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
 
                 if (saveResult.IsSuccess)
                 {
@@ -192,7 +198,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _errorHandler.ShowUserError(
+                    await _errorHandler.ShowUserErrorAsync(
                         saveResult.ErrorMessage ?? "Failed to update part",
                         "Update Error",
                         nameof(EditPartAsync));
@@ -210,7 +216,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Medium,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(EditPartAsync),
                 nameof(ViewModel_Volvo_Settings));
             StatusMessage = "Error editing part";
@@ -223,7 +229,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private async Task DeactivatePartAsync()
     {
         if (IsBusy || SelectedPart == null)
+        {
             return;
+        }
 
         try
         {
@@ -239,7 +247,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             };
 
             // Get XamlRoot from service
-            var windowService = App.GetService<IWindowService>();
+            var windowService = App.GetService<IService_Window>();
             if (windowService != null)
             {
                 dialog.XamlRoot = windowService.GetXamlRoot();
@@ -261,7 +269,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _errorHandler.ShowUserError(
+                    await _errorHandler.ShowUserErrorAsync(
                         deactivateResult.ErrorMessage ?? "Failed to deactivate part",
                         "Deactivate Error",
                         nameof(DeactivatePartAsync));
@@ -275,20 +283,22 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Medium,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(DeactivatePartAsync),
                 nameof(ViewModel_Volvo_Settings));
             IsBusy = false;
         }
     }
 
-    private bool CanDeactivatePart() => SelectedPart != null && SelectedPart.IsActive && !IsBusy;
+    private bool CanDeactivatePart() => SelectedPart?.IsActive == true && !IsBusy;
 
     [RelayCommand(CanExecute = nameof(CanViewComponents))]
     private async Task ViewComponentsAsync()
     {
         if (IsBusy || SelectedPart == null)
+        {
             return;
+        }
 
         try
         {
@@ -298,7 +308,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 
             if (result.IsSuccess && result.Data != null)
             {
-                var componentsList = result.Data.Any()
+                var componentsList = result.Data.Count > 0
                     ? string.Join("\n", result.Data.Select(c => $"• {c.ComponentPartNumber} (Qty: {c.Quantity})"))
                     : "No components defined";
 
@@ -309,7 +319,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     CloseButtonText = "Close"
                 };
 
-                var windowService = App.GetService<IWindowService>();
+                var windowService = App.GetService<IService_Window>();
                 if (windowService != null)
                 {
                     dialog.XamlRoot = windowService.GetXamlRoot();
@@ -320,7 +330,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load components",
                     "Load Error",
                     nameof(ViewComponentsAsync));
@@ -331,7 +341,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Low,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
                 nameof(ViewComponentsAsync),
                 nameof(ViewModel_Volvo_Settings));
         }
@@ -343,7 +353,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private async Task ImportCsvAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -358,28 +370,32 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 
             var file = await picker.PickSingleFileAsync();
             if (file == null)
+            {
                 return;
+            }
 
             IsBusy = true;
             StatusMessage = "Importing CSV...";
 
             var csvContent = await FileIO.ReadTextAsync(file);
-            var result = await _masterDataService.ImportFromCsvAsync(csvContent);
+            var result = await _masterDataService.ImportCsvAsync(csvContent);
 
             if (result.IsSuccess)
             {
-                StatusMessage = result.Data ?? "Import complete";
+                var (newCount, updatedCount, unchangedCount) = result.Data;
+                var summary = $"Import complete: {newCount} new, {updatedCount} updated, {unchangedCount} unchanged";
+                StatusMessage = summary;
                 await RefreshAsync();
 
                 // Show summary dialog
                 var dialog = new ContentDialog
                 {
                     Title = "Import Complete",
-                    Content = result.Data,
+                    Content = summary,
                     CloseButtonText = "OK"
                 };
 
-                var windowService = App.GetService<IWindowService>();
+                var windowService = App.GetService<IService_Window>();
                 if (windowService != null)
                 {
                     dialog.XamlRoot = windowService.GetXamlRoot();
@@ -389,7 +405,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to import CSV",
                     "Import Error",
                     nameof(ImportCsvAsync));
@@ -400,7 +416,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Medium,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(ImportCsvAsync),
                 nameof(ViewModel_Volvo_Settings));
             StatusMessage = "Error importing CSV";
@@ -415,7 +431,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private async Task ExportCsvAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -431,12 +449,14 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 
             var file = await picker.PickSaveFileAsync();
             if (file == null)
+            {
                 return;
+            }
 
             IsBusy = true;
             StatusMessage = "Exporting to CSV...";
 
-            var result = await _masterDataService.ExportToCsvAsync(ShowInactive);
+            var result = await _masterDataService.ExportCsvAsync(file.Path, ShowInactive);
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -445,7 +465,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to export CSV",
                     "Export Error",
                     nameof(ExportCsvAsync));
@@ -456,7 +476,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             _errorHandler.HandleException(
                 ex,
-                Models.Enums.Enum_ErrorSeverity.Medium,
+                Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(ExportCsvAsync),
                 nameof(ViewModel_Volvo_Settings));
             StatusMessage = "Error exporting CSV";

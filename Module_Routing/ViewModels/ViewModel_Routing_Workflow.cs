@@ -138,7 +138,9 @@ public partial class ViewModel_Routing_Workflow : ViewModel_Shared_Base
     private async Task PrintLabelsAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -148,7 +150,7 @@ public partial class ViewModel_Routing_Workflow : ViewModel_Shared_Base
 
             // Get today's labels
             var todayLabelsResult = await _routingService.GetTodayLabelsAsync();
-            if (!todayLabelsResult.IsSuccess || todayLabelsResult.Data.Count == 0)
+            if (!todayLabelsResult.IsSuccess || todayLabelsResult.Data == null || todayLabelsResult.Data.Count == 0)
             {
                 await _errorHandler.HandleErrorAsync("No labels to print", Enum_ErrorSeverity.Warning, null, true);
                 StatusMessage = "No labels to print";
@@ -208,7 +210,7 @@ public partial class ViewModel_Routing_Workflow : ViewModel_Shared_Base
         try
         {
             var result = await _routingService.GetTodayLabelsAsync();
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null)
             {
                 LabelCount = result.Data.Count;
                 CanPrint = LabelCount > 0;

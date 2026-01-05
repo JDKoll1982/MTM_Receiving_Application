@@ -101,7 +101,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
             var today = DateTime.Now.Date;
             var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
             if (startOfWeek > today)
+            {
                 startOfWeek = startOfWeek.AddDays(-7);
+            }
+
             return $"This Week ({startOfWeek:MMM d} - {today:MMM d})";
         }
     }

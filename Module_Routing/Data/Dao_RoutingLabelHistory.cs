@@ -24,6 +24,7 @@ public class Dao_RoutingLabelHistory
     /// <summary>
     /// Inserts a history entry for label edit
     /// </summary>
+    /// <param name="history"></param>
     public async Task<Model_Dao_Result> InsertHistoryAsync(Model_RoutingLabelHistory history)
     {
         try
@@ -54,6 +55,7 @@ public class Dao_RoutingLabelHistory
     /// <summary>
     /// Retrieves history entries for a label
     /// </summary>
+    /// <param name="labelId"></param>
     public async Task<Model_Dao_Result<List<Model_RoutingLabelHistory>>> GetHistoryByLabelAsync(int labelId)
     {
         try
@@ -80,13 +82,13 @@ public class Dao_RoutingLabelHistory
     {
         return new Model_RoutingLabelHistory
         {
-            Id = reader.GetInt32("id"),
-            LabelId = reader.GetInt32("label_id"),
-            FieldChanged = reader.GetString("field_changed"),
-            OldValue = reader.IsDBNull(reader.GetOrdinal("old_value")) ? null : reader.GetString("old_value"),
-            NewValue = reader.IsDBNull(reader.GetOrdinal("new_value")) ? null : reader.GetString("new_value"),
-            EditedBy = reader.GetInt32("edited_by"),
-            EditDate = reader.GetDateTime("edit_date")
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            LabelId = reader.GetInt32(reader.GetOrdinal("label_id")),
+            FieldChanged = reader.GetString(reader.GetOrdinal("field_changed")),
+            OldValue = reader.IsDBNull(reader.GetOrdinal("old_value")) ? null : reader.GetString(reader.GetOrdinal("old_value")),
+            NewValue = reader.IsDBNull(reader.GetOrdinal("new_value")) ? null : reader.GetString(reader.GetOrdinal("new_value")),
+            EditedBy = reader.GetInt32(reader.GetOrdinal("edited_by")),
+            EditDate = reader.GetDateTime(reader.GetOrdinal("edit_date"))
         };
     }
 }

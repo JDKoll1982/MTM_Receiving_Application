@@ -25,7 +25,7 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
         Title = "Add New Volvo Part";
         PartNumberTextBox.IsReadOnly = false;
         EditModeWarning.IsOpen = false;
-        
+
         // Clear fields
         PartNumberTextBox.Text = string.Empty;
         DescriptionTextBox.Text = string.Empty;
@@ -35,13 +35,14 @@ public sealed partial class VolvoPartAddEditDialog : ContentDialog
     /// <summary>
     /// Initialize dialog in Edit mode with existing part data
     /// </summary>
+    /// <param name="part"></param>
     public void InitializeForEdit(Model_VolvoPart part)
     {
         IsEditMode = true;
         Title = $"Edit Part: {part.PartNumber}";
         PartNumberTextBox.IsReadOnly = true; // Part number cannot be changed
         EditModeWarning.IsOpen = true;
-        
+
         // Pre-fill fields
         PartNumberTextBox.Text = part.PartNumber;
         DescriptionTextBox.Text = part.Description;

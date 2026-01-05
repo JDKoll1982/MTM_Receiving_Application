@@ -130,7 +130,7 @@ public class Service_Routing : IService_Routing
                 return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.ErrorMessage);
             }
 
-            var originalLabel = todayLabelsResult.Data.FirstOrDefault(l => l.Id == labelId);
+            var originalLabel = (todayLabelsResult.Data ?? new List<Model_Routing_Label>()).FirstOrDefault(l => l.Id == labelId);
             if (originalLabel == null)
             {
                 return Model_Dao_Result_Factory.Failure<int>("Label not found in today's queue");
@@ -177,7 +177,7 @@ public class Service_Routing : IService_Routing
             }
 
             var maxLabelNumber = 0;
-            if (todayLabelsResult.Data != null && todayLabelsResult.Data.Count > 0)
+            if (todayLabelsResult.Data?.Count > 0)
             {
                 maxLabelNumber = todayLabelsResult.Data.Max(l => l.LabelNumber);
             }

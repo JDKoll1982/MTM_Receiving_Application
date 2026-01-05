@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Routing.Models;
 
@@ -15,11 +16,11 @@ namespace MTM_Receiving_Application.Module_Routing.Services;
 public class RoutingInforVisualService : IRoutingInforVisualService
 {
     private readonly Dao_InforVisualPO _daoInforVisualPO;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
 
     public RoutingInforVisualService(
         Dao_InforVisualPO daoInforVisualPO,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
     {
         _daoInforVisualPO = daoInforVisualPO ?? throw new ArgumentNullException(nameof(daoInforVisualPO));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -29,19 +30,15 @@ public class RoutingInforVisualService : IRoutingInforVisualService
     {
         try
         {
-            await _logger.LogInformationAsync($"Validating PO number: {poNumber}");
-            
+            await _logger.LogInfoAsync($"Validating PO number: {poNumber}");
+
             // Check connection first (graceful degradation)
             var connectionResult = await _daoInforVisualPO.CheckConnectionAsync();
             if (!connectionResult.IsSuccess || !connectionResult.Data)
             {
                 await _logger.LogWarningAsync($"Infor Visual unavailable: {connectionResult.ErrorMessage}");
                 // Graceful degradation: return success but log the issue
-                return Model_Dao_Result<bool>.Success(
-                    true,
-                    "Infor Visual unavailable - proceeding with OTHER workflow",
-                    0
-                );
+                return Model_Dao_Result_Factory.Success(true);
             }
 
             return await _daoInforVisualPO.ValidatePOAsync(poNumber);
@@ -49,7 +46,7 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error validating PO {poNumber}: {ex.Message}", ex);
-            return Model_Dao_Result<bool>.Failure($"Error validating PO: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>($"Error validating PO: {ex.Message}", ex);
         }
     }
 
@@ -57,13 +54,13 @@ public class RoutingInforVisualService : IRoutingInforVisualService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting PO lines for: {poNumber}");
+            await _logger.LogInfoAsync($"Getting PO lines for: {poNumber}");
             return await _daoInforVisualPO.GetLinesAsync(poNumber);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting PO lines for {poNumber}: {ex.Message}", ex);
-            return Model_Dao_Result<List<Model_InforVisualPOLine>>.Failure($"Error getting PO lines: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>($"Error getting PO lines: {ex.Message}", ex);
         }
     }
 
@@ -71,19 +68,19 @@ public class RoutingInforVisualService : IRoutingInforVisualService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting PO line {poNumber}-{lineNumber}");
-            
+            await _logger.LogInfoAsync($"Getting PO line {poNumber}-{lineNumber}");
+
             if (!int.TryParse(lineNumber, out int lineNum))
             {
-                return Model_Dao_Result<Model_InforVisualPOLine>.Failure("Invalid line number format");
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPOLine>("Invalid line number format");
             }
-            
+
             return await _daoInforVisualPO.GetLineAsync(poNumber, lineNum);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting PO line {poNumber}-{lineNumber}: {ex.Message}", ex);
-            return Model_Dao_Result<Model_InforVisualPOLine>.Failure($"Error getting PO line: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPOLine>($"Error getting PO line: {ex.Message}", ex);
         }
     }
 
@@ -96,7 +93,7 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error checking Infor Visual connection: {ex.Message}", ex);
-            return Model_Dao_Result<bool>.Success(false, $"Connection check failed: {ex.Message}", 0);
+            return Model_Dao_Result_Factory.Success(false);
         }
     }
 }

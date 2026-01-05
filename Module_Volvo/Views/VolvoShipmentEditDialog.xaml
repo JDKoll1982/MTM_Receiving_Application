@@ -136,7 +136,7 @@
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
                                     <NumberBox
-                                        Value="{x:Bind ExpectedSkidCount, Mode=TwoWay}"
+                                        Value="{Binding ExpectedSkidCount, Mode=TwoWay, Converter={StaticResource NullableDoubleToDoubleConverter}}"
                                         Minimum="0"
                                         SpinButtonPlacementMode="Compact"
                                         IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"

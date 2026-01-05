@@ -47,12 +47,13 @@ public class Service_Volvo : IService_Volvo
     /// 4. For each component, calculate pieces: skidCount × componentQty × componentQtyPerSkid
     /// 5. Aggregate duplicates across all lines
     /// </summary>
+    /// <param name="lines"></param>
     public async Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
         List<Model_VolvoShipmentLine> lines)
     {
         try
         {
-            await _logger.LogInformationAsync("Calculating component explosion for shipment lines");
+            await _logger.LogInfoAsync("Calculating component explosion for shipment lines");
 
             var aggregatedPieces = new Dictionary<string, int>();
 
@@ -104,7 +105,7 @@ public class Service_Volvo : IService_Volvo
                 }
             }
 
-            await _logger.LogInformationAsync($"Component explosion complete: {aggregatedPieces.Count} unique parts");
+            await _logger.LogInfoAsync($"Component explosion complete: {aggregatedPieces.Count} unique parts");
 
             return new Model_Dao_Result<Dictionary<string, int>>
             {
@@ -129,11 +130,12 @@ public class Service_Volvo : IService_Volvo
     /// Generates CSV file for LabelView 2022 label printing
     /// Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
     /// </summary>
+    /// <param name="shipmentId"></param>
     public async Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(int shipmentId)
     {
         try
         {
-            await _logger.LogInformationAsync($"Generating label CSV for shipment {shipmentId}");
+            await _logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
 
             // Get shipment details
             var shipmentResult = await _shipmentDao.GetByIdAsync(shipmentId);
@@ -204,7 +206,7 @@ public class Service_Volvo : IService_Volvo
             // Write CSV file
             await File.WriteAllTextAsync(filePath, csvContent.ToString());
 
-            await _logger.LogInformationAsync($"Label CSV generated: {filePath}");
+            await _logger.LogInfoAsync($"Label CSV generated: {filePath}");
 
             return new Model_Dao_Result<string>
             {
@@ -228,6 +230,9 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Formats email text for PO requisition (with discrepancy notice if applicable)
     /// </summary>
+    /// <param name="shipment"></param>
+    /// <param name="lines"></param>
+    /// <param name="requestedLines"></param>
     public async Task<string> FormatEmailTextAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines,
@@ -247,7 +252,7 @@ public class Service_Volvo : IService_Volvo
 
         // Discrepancy section (if any)
         var discrepancies = lines.Where(l => l.HasDiscrepancy).ToList();
-        if (discrepancies.Any())
+        if (discrepancies.Count > 0)
         {
             emailText.AppendLine("**DISCREPANCIES NOTED**");
             emailText.AppendLine();
@@ -256,7 +261,7 @@ public class Service_Volvo : IService_Volvo
 
             foreach (var line in discrepancies)
             {
-                int difference = line.ReceivedSkidCount - (line.ExpectedSkidCount ?? 0);
+                int difference = line.ReceivedSkidCount - (int)(line.ExpectedSkidCount ?? 0);
                 string diffStr = difference > 0 ? $"+{difference}" : difference.ToString();
                 emailText.AppendLine($"{line.PartNumber}\t{line.ExpectedSkidCount}\t{line.ReceivedSkidCount}\t{diffStr}\t{line.DiscrepancyNote ?? ""}");
             }
@@ -289,7 +294,7 @@ public class Service_Volvo : IService_Volvo
         emailText.AppendLine("Thank you,");
         emailText.AppendLine($"Employee #{shipment.EmployeeNumber}");
 
-        await _logger.LogInformationAsync("Email text formatted");
+        await _logger.LogInfoAsync("Email text formatted");
 
         return emailText.ToString();
     }
@@ -298,13 +303,15 @@ public class Service_Volvo : IService_Volvo
     /// Saves shipment and lines with status='pending_po'
     /// Validates: Only one pending shipment allowed at a time
     /// </summary>
+    /// <param name="shipment"></param>
+    /// <param name="lines"></param>
     public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines)
     {
         try
         {
-            await _logger.LogInformationAsync("Saving Volvo shipment as pending PO");
+            await _logger.LogInfoAsync("Saving Volvo shipment as pending PO");
 
             // Validate: Only one pending shipment allowed
             var existingPendingResult = await _shipmentDao.GetPendingAsync();
@@ -381,7 +388,7 @@ public class Service_Volvo : IService_Volvo
                 }
             }
 
-            await _logger.LogInformationAsync($"Shipment saved successfully: ID={shipmentId}, Number={shipmentNumber}");
+            await _logger.LogInfoAsync($"Shipment saved successfully: ID={shipmentId}, Number={shipmentNumber}");
 
             return new Model_Dao_Result<(int, int)>
             {
@@ -408,7 +415,12 @@ public class Service_Volvo : IService_Volvo
     /// </summary>
     public async Task<Model_Dao_Result<Model_VolvoShipment?>> GetPendingShipmentAsync()
     {
-        return await _shipmentDao.GetPendingAsync();
+        var result = await _shipmentDao.GetPendingAsync();
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<Model_VolvoShipment?>(result.ErrorMessage);
+        }
+        return Model_Dao_Result_Factory.Success<Model_VolvoShipment?>(result.Data);
     }
 
     /// <summary>
@@ -471,11 +483,14 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Completes shipment with PO and Receiver numbers
     /// </summary>
+    /// <param name="shipmentId"></param>
+    /// <param name="poNumber"></param>
+    /// <param name="receiverNumber"></param>
     public async Task<Model_Dao_Result> CompleteShipmentAsync(int shipmentId, string poNumber, string receiverNumber)
     {
         try
         {
-            await _logger.LogInformationAsync($"Completing shipment {shipmentId} with PO={poNumber}, Receiver={receiverNumber}");
+            await _logger.LogInfoAsync($"Completing shipment {shipmentId} with PO={poNumber}, Receiver={receiverNumber}");
 
             // Validate inputs
             if (string.IsNullOrWhiteSpace(poNumber))
@@ -502,7 +517,7 @@ public class Service_Volvo : IService_Volvo
 
             if (result.Success)
             {
-                await _logger.LogInformationAsync($"Shipment {shipmentId} completed successfully");
+                await _logger.LogInfoAsync($"Shipment {shipmentId} completed successfully");
             }
 
             return result;
@@ -531,6 +546,9 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Gets shipment history with filtering
     /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="status"></param>
     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
         DateTime startDate,
         DateTime endDate,
@@ -542,6 +560,7 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Gets all shipment lines for a specific shipment
     /// </summary>
+    /// <param name="shipmentId"></param>
     public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId)
     {
         return await _lineDao.GetByShipmentIdAsync(shipmentId);
@@ -551,6 +570,8 @@ public class Service_Volvo : IService_Volvo
     /// Updates an existing shipment and its lines
     /// Regenerates CSV if applicable
     /// </summary>
+    /// <param name="shipment"></param>
+    /// <param name="lines"></param>
     public async Task<Model_Dao_Result> UpdateShipmentAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines)
@@ -583,6 +604,7 @@ public class Service_Volvo : IService_Volvo
                 {
                     await _logger.LogErrorAsync(
                         $"Failed to insert line: {lineResult.ErrorMessage}",
+                        null,
                         nameof(UpdateShipmentAsync));
                 }
             }
@@ -593,20 +615,24 @@ public class Service_Volvo : IService_Volvo
                 await GenerateLabelCsvAsync(shipment.Id);
             }
 
-            return Model_Dao_Result.Success("Shipment updated successfully");
+            return Model_Dao_Result_Factory.Success("Shipment updated successfully");
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync(
                 $"Error updating shipment: {ex.Message}",
+                ex,
                 nameof(UpdateShipmentAsync));
-            return Model_Dao_Result.Failure($"Error updating shipment: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure($"Error updating shipment: {ex.Message}");
         }
     }
 
     /// <summary>
     /// Exports shipment history to CSV format
     /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="status"></param>
     public async Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
         DateTime startDate,
         DateTime endDate,
@@ -617,7 +643,7 @@ public class Service_Volvo : IService_Volvo
             var historyResult = await GetHistoryAsync(startDate, endDate, status);
             if (!historyResult.IsSuccess || historyResult.Data == null)
             {
-                return Model_Dao_Result<string>.Failure("Failed to retrieve history data");
+                return Model_Dao_Result_Factory.Failure<string>("Failed to retrieve history data");
             }
 
             var csv = new StringBuilder();
@@ -634,24 +660,28 @@ public class Service_Volvo : IService_Volvo
                               $"{EscapeCsv(shipment.Notes)}");
             }
 
-            return Model_Dao_Result<string>.Success(csv.ToString(), "CSV generated successfully");
+            return Model_Dao_Result_Factory.Success(csv.ToString());
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync(
                 $"Error exporting history: {ex.Message}",
+                ex,
                 nameof(ExportHistoryToCsvAsync));
-            return Model_Dao_Result<string>.Failure($"Error exporting history: {ex.Message}");
+            return Model_Dao_Result_Factory.Failure<string>($"Error exporting history: {ex.Message}");
         }
     }
 
     /// <summary>
     /// Escapes CSV values (wraps in quotes if contains comma, quote, or newline)
     /// </summary>
+    /// <param name="value"></param>
     private string EscapeCsv(string? value)
     {
         if (string.IsNullOrEmpty(value))
+        {
             return string.Empty;
+        }
 
         if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
         {

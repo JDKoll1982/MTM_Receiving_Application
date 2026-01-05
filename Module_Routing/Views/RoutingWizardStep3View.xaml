@@ -48,7 +48,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="PO Number:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PONumber, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PoNumber, Mode=OneWay}"/>
                         <Button Grid.Column="2" 
                                 Content="Edit" 
                                 Command="{x:Bind ViewModel.EditPOSelectionCommand}"
@@ -64,7 +64,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Line Number:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.POLine, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PoLine, Mode=OneWay}"/>
                     </Grid>
 
                     <Grid ColumnSpacing="12"

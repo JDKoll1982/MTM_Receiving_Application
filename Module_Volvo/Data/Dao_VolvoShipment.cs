@@ -253,6 +253,7 @@ public class Dao_VolvoShipment
     /// <summary>
     /// Maps DataReader to Model_VolvoShipment
     /// </summary>
+    /// <param name="reader"></param>
     private static Model_VolvoShipment MapFromReader(IDataReader reader)
     {
         return new Model_VolvoShipment

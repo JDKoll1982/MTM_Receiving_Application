@@ -15,6 +15,7 @@
     <Nullable>enable</Nullable>
     <WindowsPackageType>None</WindowsPackageType>
     <UseRidGraph>true</UseRidGraph>
+    <NoWarn>RCS1060</NoWarn>
   </PropertyGroup>
 
   <!-- WindowsAppSDKSelfContained ensures the Windows App SDK runtime is included in the output -->

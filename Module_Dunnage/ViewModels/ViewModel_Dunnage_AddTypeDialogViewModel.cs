@@ -106,7 +106,9 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
     private async Task SaveTypeAsync()
     {
         if (IsBusy || !CanSave)
+        {
             return;
+        }
 
         try
         {
@@ -156,7 +158,9 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
     private void AddField()
     {
         if (string.IsNullOrWhiteSpace(FieldName) || CustomFields.Count >= 25)
+        {
             return;
+        }
 
         if (EditingField != null)
         {
@@ -270,7 +274,9 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
         FieldNameError = string.Empty;
 
         if (string.IsNullOrWhiteSpace(FieldName))
+        {
             return; // Don't show error if empty (only on add)
+        }
 
         if (FieldName.Length > 100)
         {

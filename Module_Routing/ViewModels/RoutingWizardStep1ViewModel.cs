@@ -3,10 +3,10 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using Microsoft.UI.Xaml.Controls;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
@@ -19,7 +19,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     private readonly IRoutingInforVisualService _inforVisualService;
     private readonly IRoutingService _routingService;
     private readonly IService_ErrorHandler _errorHandler;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
 
     // Reference to parent container
     private readonly RoutingWizardContainerViewModel _containerViewModel;
@@ -29,7 +29,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
         IRoutingInforVisualService inforVisualService,
         IRoutingService routingService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger,
+        IService_LoggingUtility logger,
         RoutingWizardContainerViewModel containerViewModel)
     {
         _inforVisualService = inforVisualService;
@@ -103,9 +103,12 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     [RelayCommand]
     private async Task ValidatePOAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
-        if (string.IsNullOrWhiteSpace(PONumber))
+        if (string.IsNullOrWhiteSpace(PoNumber))
         {
             StatusMessage = "Please enter a PO number";
             return;
@@ -117,22 +120,22 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
             StatusMessage = "Validating PO...";
 
             // Validate PO exists in Infor Visual
-            var validationResult = await _inforVisualService.ValidatePOAsync(PONumber);
+            var validationResult = await _inforVisualService.ValidatePoNumberAsync(PoNumber);
 
             if (validationResult.IsSuccess && validationResult.Data)
             {
                 // PO is valid - fetch lines
-                var linesResult = await _inforVisualService.GetPOLinesAsync(PONumber);
+                var linesResult = await _inforVisualService.GetPoLinesAsync(PoNumber);
 
                 if (linesResult.IsSuccess && linesResult.Data != null)
                 {
-                    POLines.Clear();
+                    PoLines.Clear();
                     foreach (var line in linesResult.Data)
                     {
-                        POLines.Add(line);
+                        PoLines.Add(line);
                     }
 
-                    StatusMessage = $"Found {POLines.Count} line(s) for PO {PONumber}";
+                    StatusMessage = $"Found {PoLines.Count} line(s) for PO {PoNumber}";
                 }
                 else
                 {
@@ -171,28 +174,31 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
             IsBusy = true;
             StatusMessage = "Loading OTHER reasons...";
 
-            // Load OTHER reasons
-            var reasonsResult = await _routingService.GetOtherReasonsAsync();
+            // TODO: Implement GetOtherReasonsAsync in IRoutingService
+            // var reasonsResult = await _routingService.GetOtherReasonsAsync();
+            // if (reasonsResult.IsSuccess && reasonsResult.Data != null)
+            // {
+            //     OtherReasons.Clear();
+            //     foreach (var reason in reasonsResult.Data)
+            //     {
+            //         OtherReasons.Add(reason);
+            //     }
+            //     IsOtherMode = true;
+            //     PoLines.Clear();
+            //     StatusMessage = "Select a reason for non-PO package";
+            // }
+            // else
+            // {
+            //     await _errorHandler.ShowUserErrorAsync(
+            //         "Failed to load OTHER reasons",
+            //         "Data Load Error",
+            //         nameof(SwitchToOtherModeAsync));
+            // }
 
-            if (reasonsResult.IsSuccess && reasonsResult.Data != null)
-            {
-                OtherReasons.Clear();
-                foreach (var reason in reasonsResult.Data)
-                {
-                    OtherReasons.Add(reason);
-                }
-
-                IsOtherMode = true;
-                POLines.Clear();
-                StatusMessage = "Select a reason for non-PO package";
-            }
-            else
-            {
-                _errorHandler.ShowUserError(
-                    "Failed to load OTHER reasons",
-                    "Data Load Error",
-                    nameof(SwitchToOtherModeAsync));
-            }
+            await Task.CompletedTask;
+            IsOtherMode = true;
+            PoLines.Clear();
+            StatusMessage = "OTHER reasons loading not yet implemented";
         }
         catch (Exception ex)
         {
@@ -250,7 +256,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
         var dialog = new ContentDialog
         {
             Title = "PO Not Found",
-            Content = $"PO '{PONumber}' was not found in Infor Visual.\n\nWould you like to treat this as an OTHER (non-PO) package?",
+            Content = $"PO '{PoNumber}' was not found in Infor Visual.\n\nWould you like to treat this as an OTHER (non-PO) package?",
             PrimaryButtonText = "Yes, treat as OTHER",
             CloseButtonText = "No, try again",
             DefaultButton = ContentDialogButton.Close
@@ -269,7 +275,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
         else
         {
             // User chose to retry
-            PONumber = string.Empty;
+            PoNumber = string.Empty;
             StatusMessage = "Enter a valid PO number";
         }
     }

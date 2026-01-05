@@ -15,7 +15,7 @@ public interface IService_Routing_RecipientLookup
     /// Gets all active recipients for dropdown population.
     /// </summary>
     /// <returns>DAO result with list of active recipients</returns>
-    Task<Model_Dao_Result<List<Model_Routing_Recipient>>> GetAllRecipientsAsync();
+    public Task<Model_Dao_Result<List<Model_Routing_Recipient>>> GetAllRecipientsAsync();
 
     /// <summary>
     /// Gets the default department for a recipient.
@@ -23,28 +23,28 @@ public interface IService_Routing_RecipientLookup
     /// </summary>
     /// <param name="recipientName">Recipient name</param>
     /// <returns>DAO result with default department, or null if not set</returns>
-    Task<Model_Dao_Result<string?>> GetDefaultDepartmentAsync(string recipientName);
+    public Task<Model_Dao_Result<string?>> GetDefaultDepartmentAsync(string recipientName);
 
     /// <summary>
     /// Adds a new recipient to the lookup table.
     /// </summary>
     /// <param name="recipient">Recipient to add</param>
     /// <returns>DAO result with created recipient ID</returns>
-    Task<Model_Dao_Result<int>> AddRecipientAsync(Model_Routing_Recipient recipient);
+    public Task<Model_Dao_Result<int>> AddRecipientAsync(Model_Routing_Recipient recipient);
 
     /// <summary>
     /// Updates an existing recipient.
     /// </summary>
     /// <param name="recipient">Updated recipient</param>
     /// <returns>DAO result</returns>
-    Task<Model_Dao_Result> UpdateRecipientAsync(Model_Routing_Recipient recipient);
+    public Task<Model_Dao_Result> UpdateRecipientAsync(Model_Routing_Recipient recipient);
 
     /// <summary>
     /// Deletes a recipient from the lookup table.
     /// </summary>
     /// <param name="recipientId">ID of recipient to delete</param>
     /// <returns>DAO result</returns>
-    Task<Model_Dao_Result> DeleteRecipientAsync(int recipientId);
+    public Task<Model_Dao_Result> DeleteRecipientAsync(int recipientId);
 }
 
 

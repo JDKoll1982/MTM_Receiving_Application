@@ -3,6 +3,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Routing.ViewModels;
 using MTM_Receiving_Application.Module_Routing.Models;
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Routing.Views;
 
@@ -26,21 +29,24 @@ public sealed partial class RoutingEditModeView : Page
         await EditSelectedLabelCommand.ExecuteAsync(null);
     }
 
-    private async void EditSelectedLabelCommand_ExecuteAsync(object? parameter)
+    private async Task EditSelectedLabelCommand_ExecuteAsync(object? parameter)
     {
-        if (ViewModel.SelectedLabel == null) return;
+        if (ViewModel.SelectedLabel == null)
+        {
+            return;
+        }
 
         // Create a copy for editing
         var editedLabel = new Model_RoutingLabel
         {
             Id = ViewModel.SelectedLabel.Id,
             PONumber = ViewModel.SelectedLabel.PONumber,
-            POLine = ViewModel.SelectedLabel.POLine,
-            PartID = ViewModel.SelectedLabel.PartID,
-            RecipientID = ViewModel.SelectedLabel.RecipientID,
+            LineNumber = ViewModel.SelectedLabel.LineNumber,
+            Description = ViewModel.SelectedLabel.Description,
+            RecipientId = ViewModel.SelectedLabel.RecipientId,
             Quantity = ViewModel.SelectedLabel.Quantity,
-            OtherReasonID = ViewModel.SelectedLabel.OtherReasonID,
-            EmployeeNumber = ViewModel.SelectedLabel.EmployeeNumber,
+            OtherReasonId = ViewModel.SelectedLabel.OtherReasonId,
+            CreatedBy = ViewModel.SelectedLabel.CreatedBy,
             CreatedDate = ViewModel.SelectedLabel.CreatedDate
         };
 
@@ -81,9 +87,9 @@ public sealed partial class RoutingEditModeView : Page
         grid.Children.Add(poLabel);
         grid.Children.Add(poValue);
 
-        // Part ID (read-only)
-        var partLabel = new TextBlock { Text = "Part ID:", VerticalAlignment = VerticalAlignment.Center };
-        var partValue = new TextBox { Text = editedLabel.PartID ?? "N/A", IsReadOnly = true };
+        // Part Description (read-only)
+        var partLabel = new TextBlock { Text = "Part Description:", VerticalAlignment = VerticalAlignment.Center };
+        var partValue = new TextBox { Text = editedLabel.Description ?? "N/A", IsReadOnly = true };
         Grid.SetRow(partLabel, 1);
         Grid.SetColumn(partLabel, 0);
         Grid.SetRow(partValue, 1);
@@ -98,7 +104,7 @@ public sealed partial class RoutingEditModeView : Page
             ItemsSource = ViewModel.AllRecipients,
             DisplayMemberPath = "Name",
             SelectedValuePath = "Id",
-            SelectedValue = editedLabel.RecipientID,
+            SelectedValue = editedLabel.RecipientId,
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
         Grid.SetRow(recipientLabel, 2);
@@ -140,7 +146,7 @@ public sealed partial class RoutingEditModeView : Page
         if (result == ContentDialogResult.Primary)
         {
             // Update edited label with new values
-            editedLabel.RecipientID = (int)(recipientCombo.SelectedValue ?? editedLabel.RecipientID);
+            editedLabel.RecipientId = (int)(recipientCombo.SelectedValue ?? editedLabel.RecipientId);
             editedLabel.Quantity = (int)qtyBox.Value;
 
             // Save changes
@@ -148,5 +154,5 @@ public sealed partial class RoutingEditModeView : Page
         }
     }
 
-    private CommunityToolkit.Mvvm.Input.IAsyncRelayCommand EditSelectedLabelCommand => new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(EditSelectedLabelCommand_ExecuteAsync);
+    private CommunityToolkit.Mvvm.Input.IAsyncRelayCommand EditSelectedLabelCommand => new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<object?>(EditSelectedLabelCommand_ExecuteAsync);
 }

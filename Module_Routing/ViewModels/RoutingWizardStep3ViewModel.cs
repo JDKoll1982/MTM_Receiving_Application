@@ -2,10 +2,10 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 using Microsoft.UI.Xaml.Controls;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
@@ -17,14 +17,14 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
 {
     private readonly IRoutingService _routingService;
     private readonly IService_ErrorHandler _errorHandler;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
     private readonly RoutingWizardContainerViewModel _containerViewModel;
 
     #region Constructor
     public RoutingWizardStep3ViewModel(
         IRoutingService routingService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger,
+        IService_LoggingUtility logger,
         RoutingWizardContainerViewModel containerViewModel)
     {
         _routingService = routingService;
@@ -89,17 +89,17 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
         {
             // PO workflow
             IsOtherWorkflow = false;
-            PONumber = _containerViewModel.SelectedPOLine.PONumber;
-            POLine = _containerViewModel.SelectedPOLine.LineNumber;
+            PoNumber = _containerViewModel.SelectedPOLine.PONumber;
+            PoLine = int.TryParse(_containerViewModel.SelectedPOLine.LineNumber, out var lineNum) ? lineNum : 0;
             PartID = _containerViewModel.SelectedPOLine.PartID;
-            PartDescription = _containerViewModel.SelectedPOLine.PartDescription;
+            PartDescription = _containerViewModel.SelectedPOLine.Description;
         }
         else if (_containerViewModel.SelectedOtherReason != null)
         {
             // OTHER workflow
             IsOtherWorkflow = true;
-            PONumber = "OTHER";
-            POLine = 0;
+            PoNumber = "OTHER";
+            PoLine = 0;
             PartID = $"OTHER-{_containerViewModel.SelectedOtherReason.ReasonCode}";
             PartDescription = _containerViewModel.SelectedOtherReason.Description;
             OtherReason = _containerViewModel.SelectedOtherReason.Description;
@@ -146,7 +146,10 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateLabelAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -155,13 +158,12 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
 
             // Check for duplicate labels (24-hour window)
             var duplicateCheckResult = await _routingService.CheckDuplicateLabelAsync(
-                poNumber: PONumber,
-                poLine: POLine,
-                partID: PartID,
-                recipientId: _containerViewModel.SelectedRecipient?.Id ?? 0,
-                windowHours: 24);
+                PoNumber,
+                PoLine.ToString(),
+                _containerViewModel.SelectedRecipient?.Id ?? 0,
+                DateTime.Now);
 
-            if (duplicateCheckResult.IsSuccess && duplicateCheckResult.Data)
+            if (duplicateCheckResult.IsSuccess && duplicateCheckResult.Data.Exists)
             {
                 // Duplicate found - show confirmation
                 var continueAnyway = await ShowDuplicateConfirmationAsync();
@@ -202,7 +204,7 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
         {
             Title = "Duplicate Label Detected",
             Content = $"A similar label was created within the last 24 hours.\n\n" +
-                     $"PO: {PONumber} Line: {POLine}\n" +
+                     $"PO: {PoNumber} Line: {PoLine}\n" +
                      $"Part: {PartID}\n" +
                      $"Recipient: {RecipientName}\n\n" +
                      $"Do you want to create this label anyway?",

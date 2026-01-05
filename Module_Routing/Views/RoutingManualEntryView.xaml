@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Loaded="OnPageLoaded">
 
@@ -23,7 +24,7 @@
         </StackPanel>
 
         <!-- DataGrid -->
-        <DataGrid 
+        <controls:DataGrid 
             Grid.Row="1"
             ItemsSource="{x:Bind ViewModel.Labels, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.SelectedLabel, Mode=TwoWay}"
@@ -36,52 +37,57 @@
             AlternatingRowBackground="#F5F5F5"
             CellEditEnding="OnCellEditEnding">
             
-            <DataGrid.Columns>
+            <controls:DataGrid.Columns>
                 <!-- PO Number -->
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="PO Number" 
                     Binding="{Binding PONumber, Mode=TwoWay}"
                     Width="150"/>
 
                 <!-- Line -->
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Line" 
                     Binding="{Binding POLine, Mode=TwoWay}"
                     Width="80"/>
 
-                <!-- Recipient -->
-                <DataGridComboBoxColumn 
+                <!-- Recipient - Using Template Column since WinUI DataGridComboBoxColumn has different API -->
+                <controls:DataGridTemplateColumn 
                     Header="Recipient"
-                    Width="200"
-                    SelectedValueBinding="{Binding RecipientID, Mode=TwoWay}"
-                    DisplayMemberPath="Name"
-                    SelectedValuePath="Id">
-                    <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" Value="{Binding DataContext.AllRecipients, ElementName=PageRoot}"/>
-                        </Style>
-                    </DataGridComboBoxColumn.ElementStyle>
-                    <DataGridComboBoxColumn.EditingElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" Value="{Binding DataContext.AllRecipients, ElementName=PageRoot}"/>
-                        </Style>
-                    </DataGridComboBoxColumn.EditingElementStyle>
-                </DataGridComboBoxColumn>
+                    Width="200">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding RecipientName}" 
+                                VerticalAlignment="Center"
+                                Padding="8,0"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox 
+                                SelectedValue="{Binding RecipientID, Mode=TwoWay}"
+                                ItemsSource="{Binding DataContext.AllRecipients, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                DisplayMemberPath="Name"
+                                SelectedValuePath="Id"
+                                HorizontalAlignment="Stretch"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
 
                 <!-- Quantity -->
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Quantity" 
                     Binding="{Binding Quantity, Mode=TwoWay}"
                     Width="100"/>
 
                 <!-- Part ID (Read-Only, auto-populated) -->
-                <DataGridTextColumn 
+                <controls:DataGridTextColumn 
                     Header="Part ID" 
                     Binding="{Binding PartID, Mode=OneWay}"
                     IsReadOnly="True"
                     Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
 
         <!-- Action Buttons -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12">

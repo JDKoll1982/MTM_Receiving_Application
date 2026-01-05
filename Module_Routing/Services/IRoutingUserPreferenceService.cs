@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Models;
 
 namespace MTM_Receiving_Application.Module_Routing.Services;
@@ -14,19 +15,19 @@ public interface IRoutingUserPreferenceService
     /// </summary>
     /// <param name="employeeNumber">Employee number</param>
     /// <returns>Result with user preference data (default_mode, enable_validation)</returns>
-    Task<Model_Dao_Result<Model_RoutingUserPreference>> GetUserPreferenceAsync(int employeeNumber);
+    public Task<Model_Dao_Result<Model_RoutingUserPreference>> GetUserPreferenceAsync(int employeeNumber);
 
     /// <summary>
     /// Creates or updates user preferences
     /// </summary>
     /// <param name="preference">User preference data to save</param>
     /// <returns>Result indicating success or failure</returns>
-    Task<Model_Dao_Result> SaveUserPreferenceAsync(Model_RoutingUserPreference preference);
+    public Task<Model_Dao_Result> SaveUserPreferenceAsync(Model_RoutingUserPreference preference);
 
     /// <summary>
     /// Resets user preferences to defaults (Wizard mode, validation enabled)
     /// </summary>
     /// <param name="employeeNumber">Employee number</param>
     /// <returns>Result indicating success or failure</returns>
-    Task<Model_Dao_Result> ResetToDefaultsAsync(int employeeNumber);
+    public Task<Model_Dao_Result> ResetToDefaultsAsync(int employeeNumber);
 }

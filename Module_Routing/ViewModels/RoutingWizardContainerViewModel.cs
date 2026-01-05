@@ -2,11 +2,11 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Routing.Enums;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
 
@@ -19,7 +19,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     private readonly IRoutingInforVisualService _inforVisualService;
     private readonly IRoutingUsageTrackingService _usageTrackingService;
     private readonly IService_ErrorHandler _errorHandler;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
 
     #region Constructor
     public RoutingWizardContainerViewModel(
@@ -27,7 +27,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
         IRoutingInforVisualService inforVisualService,
         IRoutingUsageTrackingService usageTrackingService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
     {
         _routingService = routingService;
         _inforVisualService = inforVisualService;
@@ -104,7 +104,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
         // Set quantity from PO line if applicable
         if (SelectedPOLine != null)
         {
-            FinalQuantity = SelectedPOLine.QuantityOrdered;
+            FinalQuantity = (int)SelectedPOLine.QuantityOrdered;
         }
         else
         {
@@ -160,7 +160,10 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateLabelAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -171,13 +174,12 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
             var label = new Model_RoutingLabel
             {
                 PONumber = SelectedPOLine?.PONumber ?? "OTHER",
-                POLine = SelectedPOLine?.LineNumber ?? 0,
-                PartID = SelectedPOLine?.PartID ?? $"OTHER-{SelectedOtherReason?.ReasonCode}",
-                PartDescription = SelectedPOLine?.PartDescription ?? SelectedOtherReason?.Description ?? string.Empty,
+                LineNumber = SelectedPOLine?.LineNumber.ToString() ?? "0",
+                Description = SelectedPOLine?.Description ?? SelectedOtherReason?.Description ?? string.Empty,
                 RecipientId = SelectedRecipient?.Id ?? 0,
                 Quantity = FinalQuantity,
                 OtherReasonId = SelectedOtherReason?.Id,
-                EmployeeNumber = GetCurrentEmployeeNumber(),
+                CreatedBy = GetCurrentEmployeeNumber(),
                 CreatedDate = DateTime.Now
             };
 
@@ -187,14 +189,14 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
             if (result.IsSuccess)
             {
                 // Increment usage tracking for personalization
-                await _usageTrackingService.IncrementUsageAsync(
-                    label.EmployeeNumber,
+                await _usageTrackingService.IncrementUsageCountAsync(
+                    label.CreatedBy,
                     label.RecipientId);
 
                 StatusMessage = "Label created successfully!";
-                
+
                 // Log success
-                await _logger.LogInformationAsync(
+                await _logger.LogInfoAsync(
                     $"Routing label created: PO={label.PONumber}, Recipient={SelectedRecipient?.Name}",
                     context: nameof(CreateLabelAsync));
 
@@ -203,7 +205,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage,
                     "Create Label Failed",
                     nameof(CreateLabelAsync));

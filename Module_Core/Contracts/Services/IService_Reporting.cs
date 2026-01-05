@@ -20,7 +20,7 @@ public interface IService_Reporting
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <returns>DAO result containing list of report rows</returns>
-    Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
+    public Task<Model_Dao_Result<List<Model_ReportRow>>> GetReceivingHistoryAsync(
         DateTime startDate,
         DateTime endDate);
 
@@ -31,7 +31,7 @@ public interface IService_Reporting
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <returns>DAO result containing list of report rows</returns>
-    Task<Model_Dao_Result<List<Model_ReportRow>>> GetDunnageHistoryAsync(
+    public Task<Model_Dao_Result<List<Model_ReportRow>>> GetDunnageHistoryAsync(
         DateTime startDate,
         DateTime endDate);
 
@@ -42,7 +42,7 @@ public interface IService_Reporting
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <returns>DAO result containing list of report rows</returns>
-    Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
+    public Task<Model_Dao_Result<List<Model_ReportRow>>> GetRoutingHistoryAsync(
         DateTime startDate,
         DateTime endDate);
 
@@ -53,7 +53,7 @@ public interface IService_Reporting
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <returns>DAO result containing list of report rows</returns>
-    Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
+    public Task<Model_Dao_Result<List<Model_ReportRow>>> GetVolvoHistoryAsync(
         DateTime startDate,
         DateTime endDate);
 
@@ -65,7 +65,7 @@ public interface IService_Reporting
     /// <param name="startDate">Start date for filter</param>
     /// <param name="endDate">End date for filter</param>
     /// <returns>DAO result containing dictionary of module names and record counts</returns>
-    Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
+    public Task<Model_Dao_Result<Dictionary<string, int>>> CheckAvailabilityAsync(
         DateTime startDate,
         DateTime endDate);
 
@@ -75,7 +75,7 @@ public interface IService_Reporting
     /// <param name="data">Filtered report rows</param>
     /// <param name="moduleName">Module name for filename (Receiving, Dunnage, Routing, Volvo)</param>
     /// <returns>DAO result with file path of generated CSV</returns>
-    Task<Model_Dao_Result<string>> ExportToCSVAsync(
+    public Task<Model_Dao_Result<string>> ExportToCSVAsync(
         List<Model_ReportRow> data,
         string moduleName);
 
@@ -86,7 +86,7 @@ public interface IService_Reporting
     /// <param name="data">Filtered report rows</param>
     /// <param name="applyDateGrouping">Apply alternating colors by date group</param>
     /// <returns>DAO result containing HTML-formatted string for email body</returns>
-    Task<Model_Dao_Result<string>> FormatForEmailAsync(
+    public Task<Model_Dao_Result<string>> FormatForEmailAsync(
         List<Model_ReportRow> data,
         bool applyDateGrouping = true);
 
@@ -102,6 +102,6 @@ public interface IService_Reporting
     /// </summary>
     /// <param name="poNumber">Raw PO number to normalize</param>
     /// <returns>Normalized PO number</returns>
-    string NormalizePONumber(string? poNumber);
+    public string NormalizePONumber(string? poNumber);
 }
 

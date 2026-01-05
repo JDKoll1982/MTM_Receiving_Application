@@ -24,6 +24,7 @@ public class Dao_RoutingUserPreference
     /// <summary>
     /// Retrieves user preferences by employee number
     /// </summary>
+    /// <param name="employeeNumber"></param>
     public async Task<Model_Dao_Result<Model_RoutingUserPreference>> GetUserPreferenceAsync(int employeeNumber)
     {
         try
@@ -49,6 +50,7 @@ public class Dao_RoutingUserPreference
     /// <summary>
     /// Saves or updates user preferences
     /// </summary>
+    /// <param name="preference"></param>
     public async Task<Model_Dao_Result> SaveUserPreferenceAsync(Model_RoutingUserPreference preference)
     {
         try
@@ -78,11 +80,11 @@ public class Dao_RoutingUserPreference
     {
         return new Model_RoutingUserPreference
         {
-            Id = reader.GetInt32("id"),
-            EmployeeNumber = reader.GetInt32("employee_number"),
-            DefaultMode = reader.GetString("default_mode"),
-            EnableValidation = reader.GetBoolean("enable_validation"),
-            UpdatedDate = reader.GetDateTime("updated_date")
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            EmployeeNumber = reader.GetInt32(reader.GetOrdinal("employee_number")),
+            DefaultMode = reader.GetString(reader.GetOrdinal("default_mode")),
+            EnableValidation = reader.GetBoolean(reader.GetOrdinal("enable_validation")),
+            UpdatedDate = reader.GetDateTime(reader.GetOrdinal("updated_date"))
         };
     }
 }

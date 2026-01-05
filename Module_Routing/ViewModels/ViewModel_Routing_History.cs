@@ -55,7 +55,9 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
     private async Task LoadHistoryAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -64,7 +66,7 @@ public partial class ViewModel_Routing_History : ViewModel_Shared_Base
             _logger.LogInfo($"Loading history from {StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd}");
 
             var result = await _historyService.GetHistoryAsync(StartDate.DateTime, EndDate.DateTime);
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null)
             {
                 var groupedData = result.Data
                     .GroupBy(l => l.CreatedDate.Date)

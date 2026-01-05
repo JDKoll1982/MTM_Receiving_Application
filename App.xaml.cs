@@ -99,7 +99,7 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_RoutingUsageTracking(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_RoutingUserPreference(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_RoutingLabelHistory(mySqlConnectionString));
-                services.AddSingleton(sp => new Dao_InforVisualPO(inforVisualConnectionString));
+                services.AddSingleton(sp => new MTM_Receiving_Application.Module_Routing.Data.Dao_InforVisualPO(inforVisualConnectionString));
 
                 // Register Volvo DAOs (Singleton)
                 services.AddSingleton(sp => new Dao_VolvoShipment(mySqlConnectionString));
@@ -126,7 +126,7 @@ public partial class App : Application
                 });
                 services.AddSingleton<IRoutingInforVisualService>(sp =>
                 {
-                    var daoInforVisual = sp.GetRequiredService<Dao_InforVisualPO>();
+                    var daoInforVisual = sp.GetRequiredService<MTM_Receiving_Application.Module_Routing.Data.Dao_InforVisualPO>();
                     var logger = sp.GetRequiredService<IService_LoggingUtility>();
                     return new RoutingInforVisualService(daoInforVisual, logger);
                 });
@@ -152,8 +152,7 @@ public partial class App : Application
                 // Register NEW Infor Visual DAOs (READ-ONLY)
                 services.AddSingleton(sp =>
                 {
-                    var logger = sp.GetService<IService_LoggingUtility>();
-                    return new Dao_InforVisualPO(inforVisualConnectionString, logger);
+                    return new MTM_Receiving_Application.Module_Routing.Data.Dao_InforVisualPO(inforVisualConnectionString);
                 });
                 services.AddSingleton(sp =>
                 {

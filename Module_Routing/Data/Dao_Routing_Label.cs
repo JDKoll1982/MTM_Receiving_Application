@@ -343,6 +343,7 @@ public class Dao_Routing_Label
     /// <summary>
     /// Maps a MySqlDataReader row to a Model_Routing_Label object.
     /// </summary>
+    /// <param name="reader"></param>
     private Model_Routing_Label MapReaderToLabel(MySqlDataReader reader)
     {
         return new Model_Routing_Label

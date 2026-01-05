@@ -26,6 +26,7 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Inserts a new routing label record
     /// </summary>
+    /// <param name="label"></param>
     public async Task<Model_Dao_Result<int>> InsertLabelAsync(Model_RoutingLabel label)
     {
         try
@@ -80,6 +81,7 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Updates an existing routing label
     /// </summary>
+    /// <param name="label"></param>
     public async Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label)
     {
         try
@@ -112,6 +114,7 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Retrieves a single label by ID
     /// </summary>
+    /// <param name="labelId"></param>
     public async Task<Model_Dao_Result<Model_RoutingLabel>> GetLabelByIdAsync(int labelId)
     {
         try
@@ -137,6 +140,8 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Retrieves all labels with pagination
     /// </summary>
+    /// <param name="limit"></param>
+    /// <param name="offset"></param>
     public async Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetAllLabelsAsync(int limit = 100, int offset = 0)
     {
         try
@@ -163,6 +168,7 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Soft deletes a label
     /// </summary>
+    /// <param name="labelId"></param>
     public async Task<Model_Dao_Result> DeleteLabelAsync(int labelId)
     {
         try
@@ -189,6 +195,7 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Marks label as CSV exported
     /// </summary>
+    /// <param name="labelId"></param>
     public async Task<Model_Dao_Result> MarkLabelExportedAsync(int labelId)
     {
         try
@@ -215,6 +222,10 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Checks for duplicate labels within time window
     /// </summary>
+    /// <param name="poNumber"></param>
+    /// <param name="lineNumber"></param>
+    /// <param name="recipientId"></param>
+    /// <param name="hoursWindow"></param>
     public async Task<Model_Dao_Result<Model_RoutingLabel>> CheckDuplicateLabelAsync(
         string poNumber, string lineNumber, int recipientId, int hoursWindow = 24)
     {
@@ -244,25 +255,54 @@ public class Dao_RoutingLabel
     /// <summary>
     /// Maps IDataReader to Model_RoutingLabel
     /// </summary>
+    /// <param name="reader"></param>
     private Model_RoutingLabel MapFromReader(IDataReader reader)
     {
         return new Model_RoutingLabel
         {
-            Id = reader.GetInt32("id"),
-            PONumber = reader.GetString("po_number"),
-            LineNumber = reader.GetString("line_number"),
-            Description = reader.GetString("description"),
-            RecipientId = reader.GetInt32("recipient_id"),
-            RecipientName = reader.IsDBNull(reader.GetOrdinal("recipient_name")) ? string.Empty : reader.GetString("recipient_name"),
-            RecipientLocation = reader.IsDBNull(reader.GetOrdinal("recipient_location")) ? string.Empty : reader.GetString("recipient_location"),
-            Quantity = reader.GetInt32("quantity"),
-            CreatedBy = reader.GetInt32("created_by"),
-            CreatedDate = reader.GetDateTime("created_date"),
-            OtherReasonId = reader.IsDBNull(reader.GetOrdinal("other_reason_id")) ? null : reader.GetInt32("other_reason_id"),
-            OtherReasonDescription = reader.IsDBNull(reader.GetOrdinal("other_reason_description")) ? null : reader.GetString("other_reason_description"),
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            PONumber = reader.GetString(reader.GetOrdinal("po_number")),
+            LineNumber = reader.GetString(reader.GetOrdinal("line_number")),
+            Description = reader.GetString(reader.GetOrdinal("description")),
+            RecipientId = reader.GetInt32(reader.GetOrdinal("recipient_id")),
+            RecipientName = reader.IsDBNull(reader.GetOrdinal("recipient_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("recipient_name")),
+            RecipientLocation = reader.IsDBNull(reader.GetOrdinal("recipient_location")) ? string.Empty : reader.GetString(reader.GetOrdinal("recipient_location")),
+            Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
+            CreatedBy = reader.GetInt32(reader.GetOrdinal("created_by")),
+            CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
+            OtherReasonId = reader.IsDBNull(reader.GetOrdinal("other_reason_id")) ? null : reader.GetInt32(reader.GetOrdinal("other_reason_id")),
+            OtherReasonDescription = reader.IsDBNull(reader.GetOrdinal("other_reason_description")) ? null : reader.GetString(reader.GetOrdinal("other_reason_description")),
             IsActive = true,  // Always true from query (WHERE is_active = 1)
-            CsvExported = reader.GetBoolean("csv_exported"),
-            CsvExportDate = reader.IsDBNull(reader.GetOrdinal("csv_export_date")) ? null : reader.GetDateTime("csv_export_date")
+            CsvExported = reader.GetBoolean(reader.GetOrdinal("csv_exported")),
+            CsvExportDate = reader.IsDBNull(reader.GetOrdinal("csv_export_date")) ? null : reader.GetDateTime(reader.GetOrdinal("csv_export_date"))
         };
     }
+
+    #region Alias Methods for Service Compatibility
+    public Task<Model_Dao_Result<int>> InsertAsync(Model_RoutingLabel label) => InsertLabelAsync(label);
+    public Task<Model_Dao_Result<Model_RoutingLabel>> GetByIdAsync(int id) => GetLabelByIdAsync(id);
+    public Task<Model_Dao_Result> UpdateAsync(Model_RoutingLabel label) => UpdateLabelAsync(label);
+    public Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetAllAsync() => GetAllLabelsAsync();
+
+    public async Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateAsync(string poNumber, string lineNumber, int recipientId, DateTime _)
+    {
+        var result = await CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, 24);
+        if (result.IsSuccess && result.Data != null)
+        {
+            return Model_Dao_Result_Factory.Success((Exists: true, ExistingLabelId: (int?)result.Data.Id));
+        }
+        return Model_Dao_Result_Factory.Success((Exists: false, ExistingLabelId: (int?)null));
+    }
+
+    public async Task<Model_Dao_Result> MarkExportedAsync(List<int> labelIds)
+    {
+        foreach (var id in labelIds)
+        {
+            var result = await MarkLabelExportedAsync(id);
+            if (!result.IsSuccess)
+                return result;
+        }
+        return Model_Dao_Result_Factory.Success();
+    }
+    #endregion
 }

@@ -11,7 +11,9 @@ namespace MTM_Receiving_Application.Module_Core.Services
         public void SetFocus(Control control)
         {
             if (control == null)
+            {
                 return;
+            }
 
             // Ensure we are on the UI thread or use DispatcherQueue
             if (control.DispatcherQueue != null)
@@ -30,7 +32,9 @@ namespace MTM_Receiving_Application.Module_Core.Services
         public void SetFocusFirstInput(DependencyObject container)
         {
             if (container == null)
+            {
                 return;
+            }
 
             if (container is FrameworkElement fe && fe.DispatcherQueue != null)
             {
@@ -45,7 +49,9 @@ namespace MTM_Receiving_Application.Module_Core.Services
         public void AttachFocusOnVisibility(FrameworkElement view, Control? targetControl = null)
         {
             if (view == null)
+            {
                 return;
+            }
 
             // Initial check if already visible and loaded
             if (view.IsLoaded && view.Visibility == Visibility.Visible)
@@ -96,7 +102,9 @@ namespace MTM_Receiving_Application.Module_Core.Services
         private Control? FindFirstFocusableChild(DependencyObject parent)
         {
             if (parent == null)
+            {
                 return null;
+            }
 
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)

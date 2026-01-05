@@ -9,14 +9,14 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// Sets focus to the specified control.
         /// </summary>
         /// <param name="control">The control to focus.</param>
-        void SetFocus(Control control);
+        public void SetFocus(Control control);
 
         /// <summary>
         /// Finds the first focusable input control (TextBox, NumberBox, ComboBox, Button, etc.) 
         /// within the container and sets focus to it.
         /// </summary>
         /// <param name="container">The container to search.</param>
-        void SetFocusFirstInput(DependencyObject container);
+        public void SetFocusFirstInput(DependencyObject container);
 
         /// <summary>
         /// Attaches a listener to the element's Visibility property. 
@@ -25,6 +25,6 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="view">The view/element to monitor for visibility changes.</param>
         /// <param name="targetControl">Optional specific control to focus. If null, searches for first input.</param>
-        void AttachFocusOnVisibility(FrameworkElement view, Control? targetControl = null);
+        public void AttachFocusOnVisibility(FrameworkElement view, Control? targetControl = null);
     }
 }

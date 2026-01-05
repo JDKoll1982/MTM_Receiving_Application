@@ -69,7 +69,9 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     private async Task LoadInventoriedPartsAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -288,7 +290,9 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     private async Task RemoveFromListAsync()
     {
         if (SelectedInventoriedPart == null)
+        {
             return;
+        }
 
         try
         {

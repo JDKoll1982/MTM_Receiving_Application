@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Routing.Models;
 
@@ -13,11 +14,11 @@ namespace MTM_Receiving_Application.Module_Routing.Services;
 public class RoutingUsageTrackingService : IRoutingUsageTrackingService
 {
     private readonly Dao_RoutingUsageTracking _daoUsageTracking;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
 
     public RoutingUsageTrackingService(
         Dao_RoutingUsageTracking daoUsageTracking,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
     {
         _daoUsageTracking = daoUsageTracking ?? throw new ArgumentNullException(nameof(daoUsageTracking));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -27,13 +28,13 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
     {
         try
         {
-            await _logger.LogInformationAsync($"Incrementing usage count for employee {employeeNumber}, recipient {recipientId}");
+            await _logger.LogInfoAsync($"Incrementing usage count for employee {employeeNumber}, recipient {recipientId}");
             return await _daoUsageTracking.IncrementUsageAsync(employeeNumber, recipientId);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error incrementing usage count: {ex.Message}", ex);
-            return Model_Dao_Result.Failure($"Error updating usage tracking: {ex.Message}", ex);
+            return new Model_Dao_Result { Success = false, ErrorMessage = $"Error updating usage tracking: {ex.Message}", Exception = ex };
         }
     }
 
@@ -41,16 +42,17 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting usage count for employee {employeeNumber}, recipient {recipientId}");
-            
-            // Note: Would need a new DAO method to get specific count
+            await _logger.LogInfoAsync($"Getting usage count for employee {employeeNumber}, recipient {recipientId}");
+
+            // TODO: Would need a new DAO method to get specific count
             // For now, returning success with 0 as fallback
-            return Model_Dao_Result<int>.Success(0, "Usage count retrieved", 1);
+            await Task.CompletedTask;
+            return Model_Dao_Result_Factory.Success<int>(0);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting usage count: {ex.Message}", ex);
-            return Model_Dao_Result<int>.Failure($"Error getting usage count: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>($"Error getting usage count: {ex.Message}", ex);
         }
     }
 
@@ -58,16 +60,17 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting label count for employee {employeeNumber}");
-            
-            // Note: Would need a new DAO method or query routing_usage_tracking SUM(usage_count)
+            await _logger.LogInfoAsync($"Getting label count for employee {employeeNumber}");
+
+            // TODO: Would need a new DAO method or query routing_usage_tracking SUM(usage_count)
             // For now, returning success with 0 as fallback
-            return Model_Dao_Result<int>.Success(0, "Label count retrieved", 1);
+            await Task.CompletedTask;
+            return Model_Dao_Result_Factory.Success<int>(0);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting employee label count: {ex.Message}", ex);
-            return Model_Dao_Result<int>.Failure($"Error getting label count: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<int>($"Error getting label count: {ex.Message}", ex);
         }
     }
 }

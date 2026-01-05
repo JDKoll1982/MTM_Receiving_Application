@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Models;
 
 namespace MTM_Receiving_Application.Module_Routing.Data;
@@ -26,7 +27,7 @@ public class Dao_InforVisualPO
         {
             throw new ArgumentException("Infor Visual connection must be READ ONLY (ApplicationIntent=ReadOnly)", nameof(connectionString));
         }
-        
+
         _connectionString = connectionString;
     }
 
@@ -39,7 +40,7 @@ public class Dao_InforVisualPO
     {
         try
         {
-            using (var connection = new SqlConnection(_connectionString))
+            await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
@@ -50,27 +51,23 @@ public class Dao_InforVisualPO
                       AND SITE_REF = '002'
                       AND STATUS IN ('O', 'P')"; // Open or Partial
 
-                using (var command = new SqlCommand(query, connection))
+                await using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@PoNumber", poNumber);
-                    
-                    var count = (int)await command.ExecuteScalarAsync();
-                    
-                    return Model_Dao_Result<bool>.Success(
-                        count > 0,
-                        count > 0 ? "PO is valid" : "PO not found or not open",
-                        1
-                    );
+
+                    var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+
+                    return Model_Dao_Result_Factory.Success(count > 0);
                 }
             }
         }
         catch (SqlException ex)
         {
-            return Model_Dao_Result<bool>.Failure($"Database error validating PO: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>($"Database error validating PO: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result<bool>.Failure($"Unexpected error validating PO: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>($"Unexpected error validating PO: {ex.Message}", ex);
         }
     }
 
@@ -83,7 +80,7 @@ public class Dao_InforVisualPO
     {
         try
         {
-            using (var connection = new SqlConnection(_connectionString))
+            await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
@@ -105,35 +102,31 @@ public class Dao_InforVisualPO
                       AND pol.SITE_REF = '002'
                     ORDER BY pol.PO_LINE";
 
-                using (var command = new SqlCommand(query, connection))
+                await using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@PoNumber", poNumber);
-                    
+
                     var lines = new List<Model_InforVisualPOLine>();
-                    
-                    using (var reader = await command.ExecuteReaderAsync())
+
+                    await using (var reader = await command.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
                             lines.Add(MapFromReader(reader));
                         }
                     }
-                    
-                    return Model_Dao_Result<List<Model_InforVisualPOLine>>.Success(
-                        lines,
-                        $"Retrieved {lines.Count} lines for PO {poNumber}",
-                        lines.Count
-                    );
+
+                    return Model_Dao_Result_Factory.Success(lines);
                 }
             }
         }
         catch (SqlException ex)
         {
-            return Model_Dao_Result<List<Model_InforVisualPOLine>>.Failure($"Database error getting PO lines: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>($"Database error getting PO lines: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result<List<Model_InforVisualPOLine>>.Failure($"Unexpected error getting PO lines: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>($"Unexpected error getting PO lines: {ex.Message}", ex);
         }
     }
 
@@ -147,7 +140,7 @@ public class Dao_InforVisualPO
     {
         try
         {
-            using (var connection = new SqlConnection(_connectionString))
+            await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
@@ -169,25 +162,21 @@ public class Dao_InforVisualPO
                       AND pol.PO_LINE = @LineNumber
                       AND pol.SITE_REF = '002'";
 
-                using (var command = new SqlCommand(query, connection))
+                await using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@PoNumber", poNumber);
                     command.Parameters.AddWithValue("@LineNumber", lineNumber);
-                    
-                    using (var reader = await command.ExecuteReaderAsync())
+
+                    await using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
                             var line = MapFromReader(reader);
-                            return Model_Dao_Result<Model_InforVisualPOLine>.Success(
-                                line,
-                                "PO line retrieved successfully",
-                                1
-                            );
+                            return Model_Dao_Result_Factory.Success(line);
                         }
                         else
                         {
-                            return Model_Dao_Result<Model_InforVisualPOLine>.Failure(
+                            return Model_Dao_Result_Factory.Failure<Model_InforVisualPOLine>(
                                 $"PO line {poNumber}-{lineNumber} not found"
                             );
                         }
@@ -197,11 +186,11 @@ public class Dao_InforVisualPO
         }
         catch (SqlException ex)
         {
-            return Model_Dao_Result<Model_InforVisualPOLine>.Failure($"Database error getting PO line: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPOLine>($"Database error getting PO line: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result<Model_InforVisualPOLine>.Failure($"Unexpected error getting PO line: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPOLine>($"Unexpected error getting PO line: {ex.Message}", ex);
         }
     }
 
@@ -213,53 +202,37 @@ public class Dao_InforVisualPO
     {
         try
         {
-            using (var connection = new SqlConnection(_connectionString))
+            await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                
-                return Model_Dao_Result<bool>.Success(
-                    true,
-                    "Infor Visual connection successful",
-                    1
-                );
+
+                return Model_Dao_Result_Factory.Success(true);
             }
         }
-        catch (SqlException ex)
+        catch (SqlException)
         {
-            return Model_Dao_Result<bool>.Success(
-                false,
-                $"Infor Visual connection failed: {ex.Message}",
-                0
-            );
+            return Model_Dao_Result_Factory.Success(false);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return Model_Dao_Result<bool>.Success(
-                false,
-                $"Infor Visual connection error: {ex.Message}",
-                0
-            );
+            return Model_Dao_Result_Factory.Success(false);
         }
     }
 
     /// <summary>
     /// Maps SqlDataReader row to Model_InforVisualPOLine
     /// </summary>
+    /// <param name="reader"></param>
     private Model_InforVisualPOLine MapFromReader(IDataReader reader)
     {
         return new Model_InforVisualPOLine
         {
             PONumber = reader["PO_ID"].ToString() ?? string.Empty,
-            LineNumber = Convert.ToInt32(reader["PO_LINE"]),
+            LineNumber = reader.GetInt32(reader.GetOrdinal("PO_LINE")).ToString(),
             PartID = reader["PART_ID"].ToString() ?? string.Empty,
-            PartName = reader.IsDBNull(reader.GetOrdinal("PART_NAME")) 
-                ? string.Empty 
-                : reader["PART_NAME"].ToString() ?? string.Empty,
-            QuantityOrdered = Convert.ToDecimal(reader["QTY_ORDERED"]),
-            QuantityReceived = Convert.ToDecimal(reader["QTY_RECEIVED"]),
-            UnitPrice = Convert.ToDecimal(reader["UNIT_PRICE"]),
-            Status = reader["STATUS"].ToString() ?? string.Empty,
-            VendorID = reader["VENDOR_ID"].ToString() ?? string.Empty
+            Description = reader["DESCRIPTION"].ToString() ?? string.Empty,
+            QuantityOrdered = reader.GetDecimal(reader.GetOrdinal("QTY_ORDERED")),
+            QuantityReceived = reader.GetDecimal(reader.GetOrdinal("QTY_RECEIVED"))
         };
     }
 }

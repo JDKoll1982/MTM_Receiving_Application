@@ -32,18 +32,8 @@ public sealed partial class View_Settings_Workflow : Page
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        // Set placeholder content for category views
-        var receivingVM = ReceivingPlaceholderView.ViewModel;
-        receivingVM.SetCategory("Receiving Settings", "Configure receiving workflows, label formats, and validation rules.");
-
-        var shippingVM = ShippingPlaceholderView.ViewModel;
-        shippingVM.SetCategory("UPS / FedEx Settings", "Configure carrier integration, tracking, and shipping label settings.");
-
-        var volvoVM = VolvoPlaceholderView.ViewModel;
-        volvoVM.SetCategory("Volvo Settings", "Configure Volvo-specific integration and customer requirements.");
-
-        var adminVM = AdministrativePlaceholderView.ViewModel;
-        adminVM.SetCategory("Administrative Settings", "Manage system settings, database configuration, and user permissions.");
+        // TODO: Initialize settings views if needed
+        // The actual ViewModels have their own initialization logic
     }
 
     private void OnWorkflowStepChanged(object? sender, Enum_SettingsWorkflowStep step)

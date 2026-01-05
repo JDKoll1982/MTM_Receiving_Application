@@ -113,7 +113,7 @@
                                                       Width="150">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <NumberBox Value="{x:Bind ExpectedSkidCount, Mode=TwoWay}"
+                                <NumberBox Value="{Binding ExpectedSkidCount, Mode=TwoWay, Converter={StaticResource NullableDoubleToDoubleConverter}}"
                                            Minimum="0"
                                            SpinButtonPlacementMode="Inline"
                                            HorizontalAlignment="Stretch"

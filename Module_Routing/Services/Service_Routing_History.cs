@@ -79,12 +79,12 @@ public class Service_Routing_History : IService_Routing_History
             }
 
             // Group by date
-            var groupedData = historyResult.Data
+            var groupedData = (historyResult.Data ?? new List<Model_Routing_Label>())
                 .GroupBy(l => l.CreatedDate.Date)
                 .OrderByDescending(g => g.Key)
                 .ToDictionary(g => g.Key, g => g.OrderBy(l => l.LabelNumber).ToList());
 
-            _logger.LogInfo($"Retrieved {groupedData.Count} days of history with {historyResult.Data.Count} total labels");
+            _logger.LogInfo($"Retrieved {groupedData.Count} days of history with {historyResult.Data?.Count ?? 0} total labels");
             return Model_Dao_Result_Factory.Success(groupedData);
         }
         catch (Exception ex)
@@ -119,8 +119,8 @@ public class Service_Routing_History : IService_Routing_History
                 return Model_Dao_Result_Factory.Failure<int>(todayLabelsResult.ErrorMessage);
             }
 
-            var labelIds = todayLabelsResult.Data.Select(l => l.Id).ToList();
-            return await ArchiveLabelsAsync(labelIds);
+            var labelIds = (todayLabelsResult.Data ?? new List<Model_Routing_Label>()).Select(l => l.Id);
+            return await ArchiveLabelsAsync(labelIds.ToList());
         }
         catch (Exception ex)
         {
@@ -143,8 +143,8 @@ public class Service_Routing_History : IService_Routing_History
     {
         try
         {
-            using (var writer = new System.IO.StreamWriter(filePath))
-            using (var csv = new CsvHelper.CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+            await using (var writer = new System.IO.StreamWriter(filePath))
+            await using (var csv = new CsvHelper.CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
             {
                 await csv.WriteRecordsAsync(labels);
             }

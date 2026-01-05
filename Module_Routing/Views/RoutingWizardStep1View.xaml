@@ -33,7 +33,7 @@
                 <TextBox Grid.Column="0"
                          Header="PO Number"
                          PlaceholderText="Enter PO number"
-                         Text="{x:Bind ViewModel.PONumber, Mode=TwoWay}"/>
+                         Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"/>
 
                 <Button Grid.Column="1"
                         Content="Validate PO"
@@ -89,12 +89,12 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Visibility="{x:Bind ViewModel.POLines.Count, Mode=OneWay, Converter={StaticResource IntToInverseVisibilityConverter}}"/>
+                           Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToInverseVisibilityConverter}}"/>
 
-                <ListView ItemsSource="{x:Bind ViewModel.POLines, Mode=OneWay}"
+                <ListView ItemsSource="{x:Bind ViewModel.PoLines, Mode=OneWay}"
                           SelectedItem="{x:Bind ViewModel.SelectedPOLine, Mode=TwoWay}"
                           SelectionMode="Single"
-                          Visibility="{x:Bind ViewModel.POLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}}">
+                          Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}}">
                     <ListView.HeaderTemplate>
                         <DataTemplate>
                             <Grid Padding="8" ColumnSpacing="12">
@@ -122,7 +122,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{x:Bind LineNumber}"/>
                                 <TextBlock Grid.Column="1" Text="{x:Bind PartID}"/>
-                                <TextBlock Grid.Column="2" Text="{x:Bind PartDescription}"/>
+                                <TextBlock Grid.Column="2" Text="{x:Bind Description}"/>
                                 <TextBlock Grid.Column="3" Text="{x:Bind QuantityOrdered}" HorizontalAlignment="Right"/>
                             </Grid>
                         </DataTemplate>

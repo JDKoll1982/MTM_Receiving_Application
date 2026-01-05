@@ -36,7 +36,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     #region Observable Properties
 
     [ObservableProperty]
-    private DateTime _shipmentDate = DateTime.Today;
+    private DateTimeOffset? _shipmentDate = DateTimeOffset.Now;
 
     [ObservableProperty]
     private int _shipmentNumber;
@@ -77,7 +77,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             StatusMessage = "Loading Volvo parts catalog...";
 
             // Load available parts
-            var partsResult = await _volvoService.GetAllPartsAsync();
+            var partsResult = await _volvoService.GetActivePartsAsync();
             if (partsResult.IsSuccess && partsResult.Data != null)
             {
                 AvailableParts.Clear();
@@ -131,7 +131,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         if (pendingResult.IsSuccess && pendingResult.Data != null)
         {
             var shipment = pendingResult.Data;
-            ShipmentDate = shipment.ShipmentDate;
+            ShipmentDate = new DateTimeOffset(shipment.ShipmentDate);
             ShipmentNumber = shipment.ShipmentNumber;
             Notes = shipment.Notes ?? string.Empty;
 
@@ -255,27 +255,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             // Build shipment object
             var shipment = new Model_VolvoShipment
             {
-                ShipmentDate = ShipmentDate,
+                ShipmentDate = ShipmentDate?.DateTime ?? DateTime.Today,
                 ShipmentNumber = ShipmentNumber,
                 Notes = Notes,
                 Status = "pending_po"
             };
 
             // Format email
-            var emailResult = await _volvoService.FormatEmailTextAsync(shipment, Parts.ToList());
-            if (emailResult.IsSuccess)
-            {
-                // Show email preview dialog
-                await ShowEmailPreviewDialogAsync(emailResult.Data ?? string.Empty);
-            }
-            else
-            {
-                await _errorHandler.HandleErrorAsync(
-                    emailResult.ErrorMessage ?? "Failed to format email",
-                    Enum_ErrorSeverity.Medium,
-                    null,
-                    true);
-            }
+            var emailText = await _volvoService.FormatEmailTextAsync(shipment, Parts.ToList(), new Dictionary<string, int>());
+
+            // Show email preview dialog
+            await ShowEmailPreviewDialogAsync(emailText ?? string.Empty);
         }
         catch (Exception ex)
         {
@@ -389,17 +379,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         // Validate
         if (!ValidateShipment())
         {
-            return Model_Dao_Result<(int, int)>.Failure("Shipment validation failed");
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment validation failed");
         }
 
         // Build shipment object
         var shipment = new Model_VolvoShipment
         {
-            ShipmentDate = ShipmentDate,
+            ShipmentDate = ShipmentDate?.DateTime ?? DateTime.Today,
             ShipmentNumber = ShipmentNumber,
             Notes = Notes,
             Status = "pending_po",
-            EmployeeNumber = 0 // TODO: Get from session
+            EmployeeNumber = string.Empty // TODO: Get from session
         };
 
         // Save
@@ -447,7 +437,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     {
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot == null)
+        {
             return;
+        }
 
         var dialog = new ContentDialog
         {

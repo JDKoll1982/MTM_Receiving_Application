@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Models;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Routing.Models;
 
@@ -15,11 +16,11 @@ namespace MTM_Receiving_Application.Module_Routing.Services;
 public class RoutingRecipientService : IRoutingRecipientService
 {
     private readonly Dao_RoutingRecipient _daoRecipient;
-    private readonly ILoggingService _logger;
+    private readonly IService_LoggingUtility _logger;
 
     public RoutingRecipientService(
         Dao_RoutingRecipient daoRecipient,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
     {
         _daoRecipient = daoRecipient ?? throw new ArgumentNullException(nameof(daoRecipient));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -29,13 +30,13 @@ public class RoutingRecipientService : IRoutingRecipientService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting active recipients sorted by usage for employee {employeeNumber}");
-            return await _daoRecipient.GetAllActiveAsync();
+            await _logger.LogInfoAsync($"Getting active recipients sorted by usage for employee {employeeNumber}");
+            return await _daoRecipient.GetAllActiveRecipientsAsync();
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting active recipients: {ex.Message}", ex);
-            return Model_Dao_Result<List<Model_RoutingRecipient>>.Failure($"Error getting recipients: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_RoutingRecipient>>($"Error getting recipients: {ex.Message}", ex);
         }
     }
 
@@ -43,13 +44,13 @@ public class RoutingRecipientService : IRoutingRecipientService
     {
         try
         {
-            await _logger.LogInformationAsync("Getting all recipients (including inactive)");
-            return await _daoRecipient.GetAllActiveAsync(); // Note: DAO only returns active - would need new method for all
+            await _logger.LogInfoAsync("Getting all recipients (including inactive)");
+            return await _daoRecipient.GetAllActiveRecipientsAsync(); // Note: DAO only returns active - would need new method for all
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting all recipients: {ex.Message}", ex);
-            return Model_Dao_Result<List<Model_RoutingRecipient>>.Failure($"Error getting recipients: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_RoutingRecipient>>($"Error getting recipients: {ex.Message}", ex);
         }
     }
 
@@ -57,28 +58,28 @@ public class RoutingRecipientService : IRoutingRecipientService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting recipient by ID: {recipientId}");
-            
-            var result = await _daoRecipient.GetAllActiveAsync();
+            await _logger.LogInfoAsync($"Getting recipient by ID: {recipientId}");
+
+            var result = await _daoRecipient.GetAllActiveRecipientsAsync();
             if (result.IsSuccess)
             {
                 var recipient = result.Data?.FirstOrDefault(r => r.Id == recipientId);
                 if (recipient != null)
                 {
-                    return Model_Dao_Result<Model_RoutingRecipient>.Success(recipient, "Recipient found", 1);
+                    return Model_Dao_Result_Factory.Success(recipient);
                 }
                 else
                 {
-                    return Model_Dao_Result<Model_RoutingRecipient>.Failure($"Recipient {recipientId} not found");
+                    return Model_Dao_Result_Factory.Failure<Model_RoutingRecipient>($"Recipient {recipientId} not found");
                 }
             }
-            
-            return Model_Dao_Result<Model_RoutingRecipient>.Failure(result.ErrorMessage);
+
+            return Model_Dao_Result_Factory.Failure<Model_RoutingRecipient>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting recipient {recipientId}: {ex.Message}", ex);
-            return Model_Dao_Result<Model_RoutingRecipient>.Failure($"Error getting recipient: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_RoutingRecipient>($"Error getting recipient: {ex.Message}", ex);
         }
     }
 
@@ -90,11 +91,11 @@ public class RoutingRecipientService : IRoutingRecipientService
         }
 
         var search = searchText.ToLowerInvariant();
-        
+
         return recipients.Where(r =>
             r.Name.ToLowerInvariant().Contains(search) ||
-            (r.Location != null && r.Location.ToLowerInvariant().Contains(search)) ||
-            (r.Department != null && r.Department.ToLowerInvariant().Contains(search))
+            (r.Location?.ToLowerInvariant().Contains(search) ?? false) ||
+            (r.Department?.ToLowerInvariant().Contains(search) ?? false)
         ).ToList();
     }
 
@@ -102,15 +103,15 @@ public class RoutingRecipientService : IRoutingRecipientService
     {
         try
         {
-            await _logger.LogInformationAsync($"Getting Quick Add recipients for employee {employeeNumber}");
-            
+            await _logger.LogInfoAsync($"Getting Quick Add recipients for employee {employeeNumber}");
+
             // Dao_RoutingRecipient.GetTopByUsageAsync implements the 20-label threshold logic
-            return await _daoRecipient.GetTopByUsageAsync(employeeNumber, 5);
+            return await _daoRecipient.GetTopRecipientsByUsageAsync(employeeNumber, 5);
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error getting Quick Add recipients: {ex.Message}", ex);
-            return Model_Dao_Result<List<Model_RoutingRecipient>>.Failure($"Error getting Quick Add recipients: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_RoutingRecipient>>($"Error getting Quick Add recipients: {ex.Message}", ex);
         }
     }
 }

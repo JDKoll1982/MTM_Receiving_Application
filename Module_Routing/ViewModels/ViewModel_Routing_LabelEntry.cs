@@ -59,7 +59,9 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     private async Task LoadTodayLabelsAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -68,7 +70,7 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
             _logger.LogInfo("Loading today's routing labels");
 
             var result = await _routingService.GetTodayLabelsAsync();
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null)
             {
                 Labels.Clear();
                 foreach (var label in result.Data.OrderBy(l => l.LabelNumber))
@@ -102,7 +104,7 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
         {
             _logger.LogInfo("Loading recipient list");
             var result = await _recipientLookup.GetAllRecipientsAsync();
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null)
             {
                 Recipients.Clear();
                 foreach (var recipient in result.Data.OrderBy(r => r.Name))
@@ -122,7 +124,9 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     private async Task AddNewLabelAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -171,7 +175,9 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     private async Task DuplicateSelectedLabelAsync()
     {
         if (SelectedLabel == null || IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -206,7 +212,9 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     private async Task DeleteSelectedLabelAsync()
     {
         if (SelectedLabel == null || IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -241,10 +249,13 @@ public partial class ViewModel_Routing_LabelEntry : ViewModel_Shared_Base
     /// <summary>
     /// Auto-fills department when a recipient is selected.
     /// </summary>
+    /// <param name="recipientName"></param>
     public async Task OnRecipientSelectedAsync(string recipientName)
     {
         if (string.IsNullOrWhiteSpace(recipientName))
+        {
             return;
+        }
 
         try
         {

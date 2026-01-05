@@ -4,17 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
 
 /// <summary>
 /// ViewModel for Edit Mode - searchable history with edit dialog and reprint
 /// </summary>
-public partial class RoutingEditModeViewModel : BaseViewModel
+public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
 {
     private readonly IRoutingService _routingService;
     private readonly IRoutingRecipientService _recipientService;
@@ -38,7 +38,7 @@ public partial class RoutingEditModeViewModel : BaseViewModel
         IRoutingService routingService,
         IRoutingRecipientService recipientService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
         _routingService = routingService;
@@ -50,7 +50,10 @@ public partial class RoutingEditModeViewModel : BaseViewModel
     /// </summary>
     public async Task InitializeAsync()
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
 
         try
         {
@@ -69,7 +72,7 @@ public partial class RoutingEditModeViewModel : BaseViewModel
             }
 
             // Load all recipients for edit dialog dropdown
-            var recipientsResult = await _recipientService.GetAllActiveRecipientsAsync();
+            var recipientsResult = await _recipientService.GetActiveRecipientsSortedByUsageAsync(0);
             if (recipientsResult.IsSuccess)
             {
                 AllRecipients.Clear();
@@ -86,8 +89,8 @@ public partial class RoutingEditModeViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Medium,
-                callerName: nameof(InitializeAsync), controlName: nameof(RoutingEditModeViewModel));
+            _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                nameof(InitializeAsync), nameof(RoutingEditModeViewModel));
             StatusMessage = "Error loading labels";
         }
         finally
@@ -99,6 +102,7 @@ public partial class RoutingEditModeViewModel : BaseViewModel
     /// <summary>
     /// Apply search filter to labels collection
     /// </summary>
+    /// <param name="value"></param>
     partial void OnSearchTextChanged(string value)
     {
         ApplySearchFilter();
@@ -115,7 +119,7 @@ public partial class RoutingEditModeViewModel : BaseViewModel
             : Labels.Where(l =>
                 (l.PONumber?.ToLower().Contains(searchLower) ?? false) ||
                 (l.RecipientName?.ToLower().Contains(searchLower) ?? false) ||
-                (l.PartID?.ToLower().Contains(searchLower) ?? false)
+                (l.Description?.ToLower().Contains(searchLower) ?? false)
             );
 
         foreach (var label in filtered)
@@ -129,10 +133,14 @@ public partial class RoutingEditModeViewModel : BaseViewModel
     /// <summary>
     /// Edit selected label - to be called from dialog
     /// </summary>
+    /// <param name="editedLabel"></param>
     [RelayCommand]
     private async Task SaveEditedLabelAsync(Model_RoutingLabel editedLabel)
     {
-        if (IsBusy || SelectedLabel == null) return;
+        if (IsBusy || SelectedLabel == null)
+        {
+            return;
+        }
 
         try
         {
@@ -142,8 +150,8 @@ public partial class RoutingEditModeViewModel : BaseViewModel
             // Compare and log changes
             await CompareAndLogChangesAsync(SelectedLabel, editedLabel);
 
-            // Update label
-            var updateResult = await _routingService.UpdateLabelAsync(editedLabel);
+            // Update label - TODO: Get current employee number from session
+            var updateResult = await _routingService.UpdateLabelAsync(editedLabel, 6229);
 
             if (updateResult.IsSuccess)
             {
@@ -159,14 +167,14 @@ public partial class RoutingEditModeViewModel : BaseViewModel
             }
             else
             {
-                _errorHandler.ShowUserError(updateResult.ErrorMessage, "Update Failed", nameof(SaveEditedLabelAsync));
+                await _errorHandler.ShowUserErrorAsync(updateResult.ErrorMessage, "Update Failed", nameof(SaveEditedLabelAsync));
                 StatusMessage = "Failed to update label";
             }
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Medium,
-                callerName: nameof(SaveEditedLabelAsync), controlName: nameof(RoutingEditModeViewModel));
+            _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                nameof(SaveEditedLabelAsync), nameof(RoutingEditModeViewModel));
             StatusMessage = "Error saving changes";
         }
         finally
@@ -178,22 +186,25 @@ public partial class RoutingEditModeViewModel : BaseViewModel
     /// <summary>
     /// Compare old and new label, log changes to audit trail
     /// </summary>
+    /// <param name="oldLabel"></param>
+    /// <param name="newLabel"></param>
     private async Task CompareAndLogChangesAsync(Model_RoutingLabel oldLabel, Model_RoutingLabel newLabel)
     {
         // Check RecipientID change
-        if (oldLabel.RecipientID != newLabel.RecipientID)
+        if (oldLabel.RecipientId != newLabel.RecipientId)
         {
             var history = new Model_RoutingLabelHistory
             {
-                LabelID = oldLabel.Id,
-                FieldName = "RecipientID",
-                OldValue = oldLabel.RecipientID.ToString(),
-                NewValue = newLabel.RecipientID.ToString(),
-                ChangedBy = oldLabel.EmployeeNumber, // TODO: Get current user from session
-                ChangedDate = DateTime.Now
+                LabelId = oldLabel.Id,
+                FieldChanged = "RecipientId",
+                OldValue = oldLabel.RecipientId.ToString(),
+                NewValue = newLabel.RecipientId.ToString(),
+                EditedBy = oldLabel.CreatedBy, // TODO: Get current user from session
+                EditDate = DateTime.Now
             };
 
-            await _routingService.LogLabelHistoryAsync(history);
+            // TODO: Implement LogLabelHistoryAsync in IRoutingService
+            // await _routingService.LogLabelHistoryAsync(history);
         }
 
         // Check Quantity change
@@ -201,31 +212,33 @@ public partial class RoutingEditModeViewModel : BaseViewModel
         {
             var history = new Model_RoutingLabelHistory
             {
-                LabelID = oldLabel.Id,
-                FieldName = "Quantity",
+                LabelId = oldLabel.Id,
+                FieldChanged = "Quantity",
                 OldValue = oldLabel.Quantity.ToString(),
                 NewValue = newLabel.Quantity.ToString(),
-                ChangedBy = oldLabel.EmployeeNumber,
-                ChangedDate = DateTime.Now
+                EditedBy = oldLabel.CreatedBy,
+                EditDate = DateTime.Now
             };
 
-            await _routingService.LogLabelHistoryAsync(history);
+            // TODO: Implement LogLabelHistoryAsync in IRoutingService
+            // await _routingService.LogLabelHistoryAsync(history);
         }
 
         // Check OtherReasonID change
-        if (oldLabel.OtherReasonID != newLabel.OtherReasonID)
+        if (oldLabel.OtherReasonId != newLabel.OtherReasonId)
         {
             var history = new Model_RoutingLabelHistory
             {
-                LabelID = oldLabel.Id,
-                FieldName = "OtherReasonID",
-                OldValue = oldLabel.OtherReasonID?.ToString() ?? "NULL",
-                NewValue = newLabel.OtherReasonID?.ToString() ?? "NULL",
-                ChangedBy = oldLabel.EmployeeNumber,
-                ChangedDate = DateTime.Now
+                LabelId = oldLabel.Id,
+                FieldChanged = "OtherReasonId",
+                OldValue = oldLabel.OtherReasonId?.ToString() ?? "NULL",
+                NewValue = newLabel.OtherReasonId?.ToString() ?? "NULL",
+                EditedBy = oldLabel.CreatedBy,
+                EditDate = DateTime.Now
             };
 
-            await _routingService.LogLabelHistoryAsync(history);
+            // TODO: Implement LogLabelHistoryAsync in IRoutingService
+            // await _routingService.LogLabelHistoryAsync(history);
         }
     }
 
@@ -235,7 +248,10 @@ public partial class RoutingEditModeViewModel : BaseViewModel
     [RelayCommand]
     private async Task ReprintLabelAsync()
     {
-        if (IsBusy || SelectedLabel == null) return;
+        if (IsBusy || SelectedLabel == null)
+        {
+            return;
+        }
 
         try
         {
@@ -243,7 +259,7 @@ public partial class RoutingEditModeViewModel : BaseViewModel
             StatusMessage = "Reprinting label...";
 
             // Export single label to CSV
-            var exportResult = await _routingService.ExportLabelToCSVAsync(SelectedLabel);
+            var exportResult = await _routingService.ExportLabelToCsvAsync(SelectedLabel);
 
             if (exportResult.IsSuccess)
             {
@@ -251,14 +267,14 @@ public partial class RoutingEditModeViewModel : BaseViewModel
             }
             else
             {
-                _errorHandler.ShowUserError(exportResult.ErrorMessage, "Reprint Failed", nameof(ReprintLabelAsync));
+                await _errorHandler.ShowUserErrorAsync(exportResult.ErrorMessage, "Reprint Failed", nameof(ReprintLabelAsync));
                 StatusMessage = "Failed to reprint label";
             }
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Low,
-                callerName: nameof(ReprintLabelAsync), controlName: nameof(RoutingEditModeViewModel));
+            _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
+                nameof(ReprintLabelAsync), nameof(RoutingEditModeViewModel));
             StatusMessage = "Error reprinting label";
         }
         finally
@@ -267,3 +283,4 @@ public partial class RoutingEditModeViewModel : BaseViewModel
         }
     }
 }
+

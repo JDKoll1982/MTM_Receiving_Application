@@ -221,6 +221,7 @@ public class Dao_Routing_Recipient
     /// <summary>
     /// Maps a MySqlDataReader row to a Model_Routing_Recipient object.
     /// </summary>
+    /// <param name="reader"></param>
     private Model_Routing_Recipient MapReaderToRecipient(MySqlDataReader reader)
     {
         return new Model_Routing_Recipient

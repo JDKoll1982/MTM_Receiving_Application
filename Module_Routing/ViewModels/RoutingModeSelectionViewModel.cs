@@ -2,29 +2,31 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MTM_Receiving_Application.Contracts.Services;
-using MTM_Receiving_Application.Module_Routing.Enums;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services.Navigation;
 using MTM_Receiving_Application.Module_Routing.Services;
-using MTM_Receiving_Application.ViewModels.Shared;
+using MTM_Receiving_Application.Module_Routing.Enums;
+using MTM_Receiving_Application.Module_Routing.Models;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
 
 /// <summary>
-/// ViewModel for Mode Selection screen - choose Wizard, Manual Entry, or Edit Mode
+/// ViewModel for Mode Selection - launching Wizard, Manual Entry, or Edit Mode
 /// </summary>
-public partial class RoutingModeSelectionViewModel : BaseViewModel
+public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
 {
     private readonly IRoutingUserPreferenceService _userPreferenceService;
-    private readonly INavigationService _navigationService;
+    private readonly IService_Navigation _navigationService;
 
     [ObservableProperty]
     private bool _setAsDefaultMode;
 
     public RoutingModeSelectionViewModel(
         IRoutingUserPreferenceService userPreferenceService,
-        INavigationService navigationService,
+        IService_Navigation navigationService,
         IService_ErrorHandler errorHandler,
-        ILoggingService logger)
+        IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
         _userPreferenceService = userPreferenceService;
@@ -48,9 +50,9 @@ public partial class RoutingModeSelectionViewModel : BaseViewModel
             if (prefsResult.IsSuccess && prefsResult.Data != null)
             {
                 // If default mode is set, navigate directly to that mode
-                if (prefsResult.Data.DefaultMode != Enum_RoutingMode.WIZARD)
+                if (Enum.TryParse<Enum_RoutingMode>(prefsResult.Data.DefaultMode, out var mode) && mode != Enum_RoutingMode.WIZARD)
                 {
-                    await NavigateToModeAsync(prefsResult.Data.DefaultMode);
+                    await NavigateToModeAsync(mode);
                 }
             }
 
@@ -58,8 +60,8 @@ public partial class RoutingModeSelectionViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Low,
-                callerName: nameof(InitializeAsync), controlName: nameof(RoutingModeSelectionViewModel));
+            _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
+                nameof(InitializeAsync), nameof(RoutingModeSelectionViewModel));
             StatusMessage = "Error loading preferences";
         }
         finally
@@ -74,7 +76,7 @@ public partial class RoutingModeSelectionViewModel : BaseViewModel
     [RelayCommand]
     private async Task SelectWizardModeAsync()
     {
-        await SavePreferenceIfChecked(Enum_RoutingMode.WIZARD);
+        await SavePreferenceIfCheckedAsync(Enum_RoutingMode.WIZARD);
         await NavigateToModeAsync(Enum_RoutingMode.WIZARD);
     }
 
@@ -84,7 +86,7 @@ public partial class RoutingModeSelectionViewModel : BaseViewModel
     [RelayCommand]
     private async Task SelectManualEntryModeAsync()
     {
-        await SavePreferenceIfChecked(Enum_RoutingMode.MANUAL);
+        await SavePreferenceIfCheckedAsync(Enum_RoutingMode.MANUAL);
         await NavigateToModeAsync(Enum_RoutingMode.MANUAL);
     }
 
@@ -94,43 +96,51 @@ public partial class RoutingModeSelectionViewModel : BaseViewModel
     [RelayCommand]
     private async Task SelectEditModeAsync()
     {
-        await SavePreferenceIfChecked(Enum_RoutingMode.EDIT);
+        await SavePreferenceIfCheckedAsync(Enum_RoutingMode.EDIT);
         await NavigateToModeAsync(Enum_RoutingMode.EDIT);
     }
 
     /// <summary>
     /// Save default mode preference if checkbox is checked
     /// </summary>
-    private async Task SavePreferenceIfChecked(Enum_RoutingMode mode)
+    /// <param name="mode"></param>
+    private async Task SavePreferenceIfCheckedAsync(Enum_RoutingMode mode)
     {
-        if (!SetAsDefaultMode) return;
+        if (!SetAsDefaultMode)
+        {
+            return;
+        }
 
         try
         {
             // TODO: Get current employee number from session
             int employeeNumber = 6229; // Placeholder
 
-            var result = await _userPreferenceService.SaveUserPreferenceAsync(
-                employeeNumber,
-                mode,
-                validatePOBeforeSave: true
-            );
+            var preference = new Model_RoutingUserPreference
+            {
+                EmployeeNumber = employeeNumber,
+                DefaultMode = mode.ToString(),
+                EnableValidation = true
+            };
+
+            var result = await _userPreferenceService.SaveUserPreferenceAsync(preference);
 
             if (result.IsSuccess)
             {
-                await _logger.LogInformationAsync($"Default mode set to {mode} for employee {employeeNumber}");
+                await _logger.LogInfoAsync($"Default mode set to {mode} for employee {employeeNumber}");
             }
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Low,
-                callerName: nameof(SavePreferenceIfChecked), controlName: nameof(RoutingModeSelectionViewModel));
+            _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
+                nameof(SavePreferenceIfCheckedAsync), nameof(RoutingModeSelectionViewModel));
         }
     }
 
     /// <summary>
     /// Navigate to selected mode
     /// </summary>
+    /// <param name="mode"></param>
     private async Task NavigateToModeAsync(Enum_RoutingMode mode)
     {
         try
@@ -143,12 +153,14 @@ public partial class RoutingModeSelectionViewModel : BaseViewModel
                 _ => throw new ArgumentException($"Unknown mode: {mode}")
             };
 
-            _navigationService.NavigateTo(viewName);
+            // TODO: Need Frame reference for navigation
+            // _navigationService.NavigateTo(frame, viewName);
+            await _logger.LogInfoAsync($"Navigation to {viewName} requested");
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Models.Enums.Enum_ErrorSeverity.Medium,
-                callerName: nameof(NavigateToModeAsync), controlName: nameof(RoutingModeSelectionViewModel));
+            _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+                nameof(NavigateToModeAsync), nameof(RoutingModeSelectionViewModel));
             await Task.CompletedTask;
         }
     }

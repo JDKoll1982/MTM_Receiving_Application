@@ -34,7 +34,9 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private void GenerateSpecFields()
     {
         if (_specs == null || _specs.Count == 0)
+        {
             return;
+        }
 
         foreach (var spec in _specs)
         {
@@ -91,9 +93,14 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
                     SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact
                 };
                 if (def.MinValue.HasValue)
+                {
                     numberBox.Minimum = def.MinValue.Value;
+                }
+
                 if (def.MaxValue.HasValue)
+                {
                     numberBox.Maximum = def.MaxValue.Value;
+                }
 
                 numberBox.ValueChanged += (s, e) => UpdatePartId();
                 inputControl = numberBox;
@@ -150,11 +157,19 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         // 3. Number specs in parentheses with x separator
         var numbers = new List<double>();
         if (!double.IsNaN(WidthNumberBox.Value) && WidthNumberBox.Value > 0)
+        {
             numbers.Add(WidthNumberBox.Value);
+        }
+
         if (!double.IsNaN(HeightNumberBox.Value) && HeightNumberBox.Value > 0)
+        {
             numbers.Add(HeightNumberBox.Value);
+        }
+
         if (!double.IsNaN(DepthNumberBox.Value) && DepthNumberBox.Value > 0)
+        {
             numbers.Add(DepthNumberBox.Value);
+        }
 
         // Add other number specs from dynamic inputs
         foreach (var kvp in _specInputs)

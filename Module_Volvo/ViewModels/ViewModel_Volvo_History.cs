@@ -26,10 +26,10 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private Model_VolvoShipment? _selectedShipment;
 
     [ObservableProperty]
-    private DateTime _startDate = DateTime.Now.AddDays(-30);
+    private DateTimeOffset? _startDate = DateTimeOffset.Now.AddDays(-30);
 
     [ObservableProperty]
-    private DateTime _endDate = DateTime.Now;
+    private DateTimeOffset? _endDate = DateTimeOffset.Now;
 
     [ObservableProperty]
     private string _statusFilter = "All";
@@ -61,14 +61,19 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private async Task FilterAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
             IsBusy = true;
             StatusMessage = "Loading history...";
 
-            var result = await _volvoService.GetHistoryAsync(StartDate, EndDate, StatusFilter);
+            var result = await _volvoService.GetHistoryAsync(
+                StartDate?.DateTime ?? DateTime.Now.AddDays(-30),
+                EndDate?.DateTime ?? DateTime.Now,
+                StatusFilter);
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -81,7 +86,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load history",
                     "Load Error",
                     nameof(FilterAsync));
@@ -110,7 +115,9 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private async Task ViewDetailAsync()
     {
         if (SelectedShipment == null)
+        {
             return;
+        }
 
         try
         {
@@ -127,7 +134,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to load shipment details",
                     "Load Error",
                     nameof(ViewDetailAsync));
@@ -152,7 +159,9 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private async Task EditAsync()
     {
         if (SelectedShipment == null)
+        {
             return;
+        }
 
         try
         {
@@ -163,7 +172,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             var linesResult = await _volvoService.GetShipmentLinesAsync(SelectedShipment.Id);
             if (!linesResult.IsSuccess || linesResult.Data == null)
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     linesResult.ErrorMessage ?? "Failed to load shipment lines",
                     "Load Error",
                     nameof(EditAsync));
@@ -176,8 +185,10 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             var availableParts = new ObservableCollection<Model_VolvoPart>();
 
             // Create and show edit dialog
-            var dialog = new Views.VolvoShipmentEditDialog();
-            dialog.XamlRoot = App.MainWindow?.Content?.XamlRoot;
+            var dialog = new Views.VolvoShipmentEditDialog
+            {
+                XamlRoot = App.MainWindow?.Content?.XamlRoot
+            };
 
             // Convert List to ObservableCollection for binding
             var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(linesResult.Data);
@@ -207,7 +218,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 }
                 else
                 {
-                    _errorHandler.ShowUserError(
+                    await _errorHandler.ShowUserErrorAsync(
                         updateResult.ErrorMessage ?? "Failed to update shipment",
                         "Update Error",
                         nameof(EditAsync));
@@ -243,14 +254,19 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     private async Task ExportAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
             IsBusy = true;
             StatusMessage = "Exporting history...";
 
-            var result = await _volvoService.ExportHistoryToCsvAsync(StartDate, EndDate, StatusFilter);
+            var result = await _volvoService.ExportHistoryToCsvAsync(
+                StartDate?.DateTime ?? DateTime.Now.AddDays(-30),
+                EndDate?.DateTime ?? DateTime.Now,
+                StatusFilter);
 
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {
@@ -259,7 +275,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             }
             else
             {
-                _errorHandler.ShowUserError(
+                await _errorHandler.ShowUserErrorAsync(
                     result.ErrorMessage ?? "Failed to export history",
                     "Export Error",
                     nameof(ExportAsync));

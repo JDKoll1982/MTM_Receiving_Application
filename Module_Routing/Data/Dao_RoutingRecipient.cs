@@ -42,6 +42,8 @@ public class Dao_RoutingRecipient
     /// <summary>
     /// Retrieves top recipients by usage (personalized or system-wide)
     /// </summary>
+    /// <param name="employeeNumber"></param>
+    /// <param name="topCount"></param>
     public async Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetTopRecipientsByUsageAsync(int employeeNumber, int topCount = 5)
     {
         try
@@ -69,20 +71,20 @@ public class Dao_RoutingRecipient
     {
         return new Model_RoutingRecipient
         {
-            Id = reader.GetInt32("id"),
-            Name = reader.GetString("name"),
-            Location = reader.GetString("location"),
-            Department = reader.IsDBNull(reader.GetOrdinal("department")) ? null : reader.GetString("department"),
-            IsActive = reader.GetBoolean("is_active"),
-            CreatedDate = reader.GetDateTime("created_date"),
-            UpdatedDate = reader.GetDateTime("updated_date")
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            Name = reader.GetString(reader.GetOrdinal("name")),
+            Location = reader.GetString(reader.GetOrdinal("location")),
+            Department = reader.IsDBNull(reader.GetOrdinal("department")) ? null : reader.GetString(reader.GetOrdinal("department")),
+            IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
+            CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
+            UpdatedDate = reader.GetDateTime(reader.GetOrdinal("updated_date"))
         };
     }
 
     private Model_RoutingRecipient MapFromReaderWithUsage(IDataReader reader)
     {
         var recipient = MapFromReader(reader);
-        recipient.UsageCount = reader.GetInt32("usage_count");
+        recipient.UsageCount = reader.GetInt32(reader.GetOrdinal("usage_count"));
         return recipient;
     }
 }

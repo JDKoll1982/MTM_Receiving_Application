@@ -45,7 +45,7 @@ public class Model_VolvoShipmentLine
     /// Expected skid count from Volvo packlist (NULL if no discrepancy)
     /// Used to calculate difference: ReceivedSkidCount - ExpectedSkidCount
     /// </summary>
-    public int? ExpectedSkidCount { get; set; }
+    public double? ExpectedSkidCount { get; set; }
 
     /// <summary>
     /// User's note about the discrepancy (NULL if no discrepancy)

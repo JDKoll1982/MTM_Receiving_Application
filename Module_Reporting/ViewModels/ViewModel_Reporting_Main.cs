@@ -89,7 +89,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private async Task CheckAvailabilityAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -188,7 +190,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private async Task ExportToCSVAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -229,7 +233,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private async Task CopyEmailFormatAsync()
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {
@@ -279,7 +285,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         Func<Task<Module_Core.Models.Core.Model_Dao_Result<List<Model_ReportRow>>>> fetchDataFunc)
     {
         if (IsBusy)
+        {
             return;
+        }
 
         try
         {

@@ -24,6 +24,7 @@ public class Dao_VolvoPartComponent
     /// <summary>
     /// Gets all components for a parent part (for component explosion)
     /// </summary>
+    /// <param name="parentPartNumber"></param>
     public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetByParentPartAsync(string parentPartNumber)
     {
         var parameters = new Dictionary<string, object>
@@ -42,6 +43,7 @@ public class Dao_VolvoPartComponent
     /// <summary>
     /// Inserts a new component relationship
     /// </summary>
+    /// <param name="component"></param>
     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoPartComponent component)
     {
         var parameters = new Dictionary<string, object>
@@ -61,6 +63,7 @@ public class Dao_VolvoPartComponent
     /// <summary>
     /// Deletes all components for a parent part (used before updating component list)
     /// </summary>
+    /// <param name="parentPartNumber"></param>
     public async Task<Model_Dao_Result> DeleteByParentPartAsync(string parentPartNumber)
     {
         var parameters = new Dictionary<string, object>
