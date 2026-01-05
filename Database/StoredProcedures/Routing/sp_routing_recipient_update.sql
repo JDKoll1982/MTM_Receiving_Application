@@ -1,28 +1,26 @@
 -- ============================================================================
--- Stored Procedure: sp_routing_label_update
--- Description: Update existing routing label
+-- Stored Procedure: sp_routing_recipient_update
+-- Description: Update existing routing recipient
 -- Feature: Routing Module (001-routing-module)
 -- Created: January 4, 2026
 -- ============================================================================
 
 USE mtm_receiving_application;
 
-DROP PROCEDURE IF EXISTS sp_routing_label_update;
+DROP PROCEDURE IF EXISTS sp_routing_recipient_update;
 
 DELIMITER $$
 
-CREATE PROCEDURE sp_routing_label_update(
+CREATE PROCEDURE sp_routing_recipient_update(
     IN p_id INT,
-    IN p_label_number INT,
-    IN p_deliver_to VARCHAR(100),
-    IN p_department VARCHAR(100),
-    IN p_package_description TEXT,
-    IN p_po_number VARCHAR(20),
-    IN p_work_order VARCHAR(50),
+    IN p_name VARCHAR(100),
+    IN p_default_department VARCHAR(100),
+    IN p_is_active TINYINT(1),
     OUT p_error_message VARCHAR(500)
 )
 proc: BEGIN
     DECLARE v_exists INT DEFAULT 0;
+    DECLARE v_name_duplicate INT DEFAULT 0;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -39,37 +37,40 @@ proc: BEGIN
     
     -- Validate ID exists
     SELECT COUNT(*) INTO v_exists
-    FROM routing_labels
+    FROM routing_recipients
     WHERE id = p_id;
     
     IF v_exists = 0 THEN
-        SET p_error_message = 'Label ID not found';
+        SET p_error_message = 'Recipient ID not found';
         ROLLBACK;
         LEAVE proc;
     END IF;
     
-    -- Validate required fields
-    IF p_deliver_to IS NULL OR TRIM(p_deliver_to) = '' THEN
-        SET p_error_message = 'Deliver To recipient is required';
+    -- Validate name is provided
+    IF p_name IS NULL OR TRIM(p_name) = '' THEN
+        SET p_error_message = 'Recipient name is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
     
-    IF p_department IS NULL OR TRIM(p_department) = '' THEN
-        SET p_error_message = 'Department is required';
+    -- Check if name already exists for a different recipient
+    SELECT COUNT(*) INTO v_name_duplicate
+    FROM routing_recipients
+    WHERE name = p_name
+        AND id != p_id;
+    
+    IF v_name_duplicate > 0 THEN
+        SET p_error_message = 'Recipient name already exists';
         ROLLBACK;
         LEAVE proc;
     END IF;
     
-    -- Update label
-    UPDATE routing_labels
+    -- Update recipient
+    UPDATE routing_recipients
     SET 
-        label_number = p_label_number,
-        deliver_to = p_deliver_to,
-        department = p_department,
-        package_description = p_package_description,
-        po_number = p_po_number,
-        work_order = p_work_order
+        name = p_name,
+        default_department = p_default_department,
+        is_active = p_is_active
     WHERE id = p_id;
     
     -- Commit transaction
