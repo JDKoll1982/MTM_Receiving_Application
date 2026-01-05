@@ -91,7 +91,7 @@ public partial class App : Application
                 // Register Routing DAOs (Singleton - 001-routing-module)
                 services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
-                
+
                 // Register NEW Routing Module DAOs (Phase 2 implementation)
                 services.AddSingleton(sp => new Dao_RoutingLabel(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_RoutingRecipient(mySqlConnectionString));
@@ -112,7 +112,7 @@ public partial class App : Application
                 services.AddSingleton<IService_Routing, Service_Routing>();
                 services.AddSingleton<IService_Routing_History, Service_Routing_History>();
                 services.AddSingleton<IService_Routing_RecipientLookup, Service_Routing_RecipientLookup>();
-                
+
                 // Register NEW Routing Module Services (Phase 2 implementation)
                 services.AddSingleton<IRoutingService>(sp =>
                 {
@@ -329,13 +329,13 @@ public partial class App : Application
                 services.AddTransient<RoutingWizardStep1ViewModel>();
                 services.AddTransient<RoutingWizardStep2ViewModel>();
                 services.AddTransient<RoutingWizardStep3ViewModel>();
-                
+
                 // Routing Manual Entry ViewModel (Phase 4 implementation)
                 services.AddTransient<RoutingManualEntryViewModel>();
-                
+
                 // Routing Edit Mode ViewModel (Phase 5 implementation)
                 services.AddTransient<RoutingEditModeViewModel>();
-                
+
                 // Routing Mode Selection ViewModel (Phase 6 implementation)
                 services.AddTransient<RoutingModeSelectionViewModel>();
 
@@ -366,13 +366,13 @@ public partial class App : Application
                 services.AddTransient<Module_Routing.Views.RoutingWizardStep1View>();
                 services.AddTransient<Module_Routing.Views.RoutingWizardStep2View>();
                 services.AddTransient<Module_Routing.Views.RoutingWizardStep3View>();
-                
+
                 // Routing Manual Entry View (Phase 4 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingManualEntryView>();
-                
+
                 // Routing Edit Mode View (Phase 5 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingEditModeView>();
-                
+
                 // Routing Mode Selection View (Phase 6 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
 
