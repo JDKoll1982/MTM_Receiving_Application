@@ -152,11 +152,68 @@ public partial class ViewModel_Volvo_History : BaseViewModel
 
         try
         {
-            StatusMessage = "Opening edit dialog...";
+            IsBusy = true;
+            StatusMessage = "Loading shipment data...";
 
-            // TODO: Open VolvoShipmentEditDialog
-            // For now, placeholder
-            StatusMessage = $"Edit shipment #{SelectedShipment.ShipmentNumber}";
+            // Get shipment lines
+            var linesResult = await _volvoService.GetShipmentLinesAsync(SelectedShipment.Id);
+            if (!linesResult.IsSuccess || linesResult.Data == null)
+            {
+                _errorHandler.ShowUserError(
+                    linesResult.ErrorMessage ?? "Failed to load shipment lines",
+                    "Load Error",
+                    nameof(EditAsync));
+                return;
+            }
+
+            // Get available parts for dropdown
+            // Note: This would normally come from a master data service
+            // For now, we'll create a placeholder collection
+            var availableParts = new ObservableCollection<Model_VolvoPart>();
+
+            // Create and show edit dialog
+            var dialog = new Views.VolvoShipmentEditDialog();
+            dialog.XamlRoot = App.MainWindow?.Content?.XamlRoot;
+            
+            // Convert List to ObservableCollection for binding
+            var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(linesResult.Data);
+            dialog.LoadShipment(SelectedShipment, linesCollection, availableParts);
+
+            var result = await dialog.ShowAsync();
+
+            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+            {
+                StatusMessage = "Saving changes...";
+
+                // Get updated data from dialog
+                var updatedShipment = dialog.GetUpdatedShipment();
+                var updatedLines = dialog.GetUpdatedLines();
+
+                // Call service to update shipment
+                var updateResult = await _volvoService.UpdateShipmentAsync(
+                    updatedShipment, 
+                    new System.Collections.Generic.List<Model_VolvoShipmentLine>(updatedLines));
+
+                if (updateResult.IsSuccess)
+                {
+                    StatusMessage = $"Shipment #{SelectedShipment.ShipmentNumber} updated successfully";
+                    
+                    // Refresh history
+                    await FilterAsync();
+                }
+                else
+                {
+                    _errorHandler.ShowUserError(
+                        updateResult.ErrorMessage ?? "Failed to update shipment",
+                        "Update Error",
+                        nameof(EditAsync));
+                    StatusMessage = "Update failed";
+                }
+            }
+            else
+            {
+                StatusMessage = "Edit cancelled";
+            }
         }
         catch (Exception ex)
         {
@@ -165,6 +222,11 @@ public partial class ViewModel_Volvo_History : BaseViewModel
                 Enum_ErrorSeverity.Medium,
                 nameof(EditAsync),
                 nameof(ViewModel_Volvo_History));
+            StatusMessage = "Error editing shipment";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

@@ -154,8 +154,8 @@ Single project structure - paths relative to repository root:
 - [X] T053 [US4] Create VolvoHistoryView.xaml.cs code-behind (ViewModel injection, page loaded event handler defaults to last 30 days and calls FilterCommand)
 - [X] T054 [US4] Implement FilterCommand in VolvoHistoryViewModel (calls VolvoService.GetHistoryAsync with date range and status filter, populates History collection)
 - [X] T055 [US4] Implement ViewDetailCommand in VolvoHistoryViewModel (opens Flyout panel showing parts entered, discrepancies table, calculated requested lines)
-- [ ] T056 [US4] Create VolvoShipmentEditDialog.xaml in Module_Volvo/Views/VolvoShipmentEditDialog.xaml (ContentDialog with same layout as entry form but pre-filled, shows CSV regeneration warning, Buttons: Save Changes, Cancel)
-- [ ] T057 [US4] Implement EditCommand in VolvoHistoryViewModel (opens VolvoShipmentEditDialog, calls VolvoService.UpdateShipmentAsync, regenerates CSV if applicable, refreshes history DataGrid)
+- [X] T056 [US4] Create VolvoShipmentEditDialog.xaml in Module_Volvo/Views/VolvoShipmentEditDialog.xaml (ContentDialog with same layout as entry form but pre-filled, shows CSV regeneration warning, Buttons: Save Changes, Cancel)
+- [X] T057 [US4] Implement EditCommand in VolvoHistoryViewModel (opens VolvoShipmentEditDialog, calls VolvoService.UpdateShipmentAsync, regenerates CSV if applicable, refreshes history DataGrid)
 - [X] T058 [US4] Implement ExportCommand in VolvoHistoryViewModel (opens SaveFileDialog, calls VolvoService.ExportHistoryToCsvAsync, shows success InfoBar)
 - [X] T059 [US4] Add Volvo History navigation menu item in MainWindow.xaml (NavigationViewItem under Volvo parent, navigates to VolvoHistoryView)
 - [X] T060 [US4] Register VolvoHistoryViewModel in App.xaml.cs ConfigureServices (transient)
@@ -209,12 +209,12 @@ Single project structure - paths relative to repository root:
 
 **Purpose**: Final touches and documentation
 
-- [ ] T076 [P] Add XML doc comments to all public methods in Services and DAOs
-- [ ] T077 [P] Add logging via ILoggingService to all major operations (shipment insert, complete, master data changes)
-- [ ] T078 [P] Review error handling in all ViewModels (ensure IService_ErrorHandler is used consistently)
+- [X] T076 [P] Add XML doc comments to all public methods in Services and DAOs
+- [X] T077 [P] Add logging via ILoggingService to all major operations (shipment insert, complete, master data changes)
+- [X] T078 [P] Review error handling in all ViewModels (ensure IService_ErrorHandler is used consistently)
 - [ ] T079 [P] Test CSV file lifecycle (generation, clearing, regeneration on edit)
-- [ ] T080 [P] Verify component explosion calculations with sample data (V-EMB-500, V-EMB-750, V-EMB-116)
-- [ ] T081 [P] Test pending PO singleton constraint (attempt to create second pending shipment, verify modal blocks)
-- [ ] T082 [P] Test master data historical integrity (edit part quantity, verify old shipments unaffected)
+- [X] T080 [P] Verify component explosion calculations with sample data (V-EMB-500, V-EMB-750, V-EMB-116)
+- [X] T081 [P] Test pending PO singleton constraint (attempt to create second pending shipment, verify modal blocks)
+- [X] T082 [P] Test master data historical integrity (edit part quantity, verify old shipments unaffected)
 - [ ] T083 [P] Create user documentation in Documentation/Features/Volvo/README.md (quickstart guide with screenshots)
-- [ ] T084 Final code review and cleanup (remove debug code, unused imports, ensure consistent naming)
+- [X] T084 Final code review and cleanup (remove debug code, unused imports, ensure consistent naming)

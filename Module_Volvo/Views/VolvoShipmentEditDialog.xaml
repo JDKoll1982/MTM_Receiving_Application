@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_Volvo.Views.VolvoShipmentEditDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+    Title="Edit Shipment"
+    PrimaryButtonText="Save Changes"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary">
+
+    <ScrollViewer MaxHeight="600">
+        <StackPanel Spacing="16" Padding="24">
+            
+            <!-- CSV Regeneration Warning -->
+            <InfoBar
+                x:Name="CsvWarningBar"
+                Severity="Warning"
+                Title="CSV File Will Be Regenerated"
+                Message="For completed shipments, the label CSV file will be regenerated with updated piece counts."
+                IsOpen="True"
+                IsClosable="False" />
+            
+            <!-- Shipment Header -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Shipment Details" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                
+                <Grid ColumnSpacing="12" RowSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Shipment Date -->
+                    <CalendarDatePicker
+                        Grid.Row="0" Grid.Column="0"
+                        Header="Shipment Date"
+                        x:Name="ShipmentDatePicker"
+                        HorizontalAlignment="Stretch" />
+                    
+                    <!-- Shipment Number (Read-only) -->
+                    <TextBox
+                        Grid.Row="0" Grid.Column="1"
+                        Header="Shipment Number"
+                        x:Name="ShipmentNumberBox"
+                        IsReadOnly="True"
+                        HorizontalAlignment="Stretch" />
+                    
+                    <!-- PO Number -->
+                    <TextBox
+                        Grid.Row="1" Grid.Column="0"
+                        Header="PO Number"
+                        PlaceholderText="Optional"
+                        x:Name="PONumberBox"
+                        HorizontalAlignment="Stretch" />
+                    
+                    <!-- Receiver Number -->
+                    <TextBox
+                        Grid.Row="1" Grid.Column="1"
+                        Header="Receiver Number"
+                        PlaceholderText="Optional"
+                        x:Name="ReceiverNumberBox"
+                        HorizontalAlignment="Stretch" />
+                    
+                    <!-- Notes -->
+                    <TextBox
+                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        Header="Notes"
+                        PlaceholderText="Optional notes"
+                        x:Name="NotesBox"
+                        TextWrapping="Wrap"
+                        AcceptsReturn="True"
+                        Height="80"
+                        HorizontalAlignment="Stretch" />
+                </Grid>
+            </StackPanel>
+            
+            <!-- Parts DataGrid -->
+            <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Parts" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <Button x:Name="AddPartButton" Content="Add Part" Style="{StaticResource AccentButtonStyle}" Height="32"/>
+                    <Button x:Name="RemovePartButton" Content="Remove Part" Height="32"/>
+                </StackPanel>
+                
+                <DataGrid
+                    x:Name="PartsDataGrid"
+                    Height="300"
+                    AutoGenerateColumns="False"
+                    CanUserReorderColumns="False"
+                    CanUserSortColumns="False"
+                    SelectionMode="Single"
+                    GridLinesVisibility="All"
+                    HorizontalScrollBarVisibility="Auto">
+                    
+                    <DataGrid.Columns>
+                        <!-- Part Number -->
+                        <DataGridComboBoxColumn
+                            Header="Part Number"
+                            Width="150"/>
+                        
+                        <!-- Received Skids -->
+                        <DataGridTemplateColumn Header="Received Skids" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                    <NumberBox
+                                        Value="{x:Bind ReceivedSkidCount, Mode=TwoWay}"
+                                        Minimum="0"
+                                        SpinButtonPlacementMode="Compact"
+                                        HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Calculated Pieces (Read-only) -->
+                        <DataGridTextColumn
+                            Header="Calculated Pieces"
+                            Binding="{Binding CalculatedPieceCount}"
+                            IsReadOnly="True"
+                            Width="120"/>
+                        
+                        <!-- Has Discrepancy -->
+                        <DataGridCheckBoxColumn
+                            Header="Discrepancy?"
+                            Binding="{Binding HasDiscrepancy, Mode=TwoWay}"
+                            Width="100"/>
+                        
+                        <!-- Expected Skids -->
+                        <DataGridTemplateColumn Header="Expected Skids" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                    <NumberBox
+                                        Value="{x:Bind ExpectedSkidCount, Mode=TwoWay}"
+                                        Minimum="0"
+                                        SpinButtonPlacementMode="Compact"
+                                        IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+                                        HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Discrepancy Note -->
+                        <DataGridTemplateColumn Header="Discrepancy Note" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                    <TextBox
+                                        Text="{x:Bind DiscrepancyNote, Mode=TwoWay}"
+                                        IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+                                        PlaceholderText="Enter note"
+                                        HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+            
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>
