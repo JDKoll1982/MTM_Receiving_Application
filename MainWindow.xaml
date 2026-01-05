@@ -98,34 +98,15 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Internal Routing" Tag="RoutingLabelPage" Margin="0,0,0,4">
-<<<<<<< HEAD
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE724;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Carrier Delivery" Tag="CarrierDeliveryLabelPage" Margin="0,0,0,4">
-=======
->>>>>>> origin/master
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE724;" />
+                        <FontIcon Glyph="&#xE707;" />
                     </NavigationViewItem.Icon>
-<<<<<<< HEAD
                 </NavigationViewItem>
-                <NavigationViewItem Content="Volvo Dunnage" Tag="VolvoShipmentEntry" Margin="0,0,0,4">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE7B8;" />
-                    </NavigationViewItem.Icon>
-                    <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="History" Tag="VolvoHistory" Margin="0,0,0,4">
-                            <NavigationViewItem.Icon>
-                                <FontIcon Glyph="&#xE81C;" />
-                            </NavigationViewItem.Icon>
-                        </NavigationViewItem>
-                    </NavigationViewItem.MenuItems>
-                </NavigationViewItem>
-=======
-                </NavigationViewItem>                
->>>>>>> origin/master
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" />
