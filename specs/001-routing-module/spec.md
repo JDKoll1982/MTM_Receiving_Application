@@ -7,59 +7,63 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Create Single Routing Label via Wizard (Priority: P1)
+### User Story 1 - Wizard Mode: Create Labels with Smart Features (Priority: P1)
 
-A receiving clerk needs to quickly generate an internal routing label for a package they've just received. The clerk has the package in front of them with the PO number visible, and needs to route it to the correct department/person.
+A receiving clerk needs to quickly generate internal routing labels for packages. The wizard provides a guided 3-step flow (PO Selection → Recipient Selection → Review) with smart features like Quick Add buttons for frequent recipients, intelligent sorting, and handling of non-PO packages.
 
-**Why this priority**: This is the core MVP functionality - without the ability to create labels, the feature has no value. This delivers immediate ROI by replacing the current legacy/undefined system.
+**Why this priority**: This is the core MVP functionality - without the ability to create labels, the feature has no value. The smart features (Quick Add, Smart Sorting) are integral to achieving the 30% speed improvement goal and make this the primary workflow for most users.
 
-**Independent Test**: Can be fully tested by launching the wizard, entering a valid PO number, selecting a recipient, reviewing the details, and verifying a label is saved to CSV/database. Success means a clerk can create their first label end-to-end.
+**Independent Test**: Can be fully tested by:
+1. Creating a label with a valid PO and using Quick Add button to select recipient
+2. Creating a label with "OTHER" PO and selecting a reason
+3. Verifying recipients are sorted by usage frequency
+4. Confirming labels are saved to CSV/database correctly
 
 **Acceptance Scenarios**:
 
+**Step 1: PO & Line Selection**
 1. **Given** the Routing Module is open on Mode Selection screen with three mode options (Wizard, Manual Entry, Edit), **When** user clicks "Start Wizard", **Then** wizard opens to Step 1 (PO & Line Selection)
 
 2. **Given** user is on Step 1, **When** user enters a valid PO number and presses Tab/Next, **Then** system retrieves line items from Infor Visual and displays them in a list
 
 3. **Given** user selects a line item on Step 1, **When** user clicks "Next", **Then** wizard advances to Step 2 (Recipient Selection)
 
-4. **Given** user is on Step 2, **When** user types in the search box, **Then** recipient list filters in real-time to show matching names
+**Step 1: Non-PO Package Handling**
+4. **Given** user enters "OTHER" as PO number on Step 1, **When** user presses Tab/Next, **Then** system displays an inline dropdown for "Other Reason" selection (e.g., "Returned Item", "Vendor Sample")
 
-5. **Given** user selects a recipient on Step 2, **When** user clicks "Next", **Then** wizard advances to Step 3 (Review)
+5. **Given** user selects an "Other" reason and enters description/quantity, **When** user clicks "Next", **Then** wizard advances to Step 2 with the reason stored
 
-6. **Given** user reviews all details on Step 3, **When** user clicks "Create Label", **Then** label is saved to CSV and database, and wizard returns to Mode Selection
+6. **Given** user enters a PO that's not found in Infor Visual, **When** user presses Tab/Next, **Then** system displays "PO not found - treat as OTHER?" with Yes/No options
 
-7. **Given** user is on any wizard step, **When** user clicks "Cancel", **Then** wizard prompts for confirmation and clears all inputs if confirmed
+7. **Given** user confirms "treat as OTHER", **When** user selects an "Other" reason, **Then** wizard proceeds to Step 2 normally
+
+**Step 2: Recipient Selection with Smart Features**
+8. **Given** user arrives at Step 2, **When** page loads, **Then** system displays 5 Quick Add buttons at the top showing the most frequently used recipients (personalized if user has 20+ labels, otherwise system-wide top 5)
+
+9. **Given** user clicks a Quick Add button, **When** button is clicked, **Then** recipient is auto-selected and wizard immediately advances to Step 3
+
+10. **Given** user types in the search box, **When** user enters text, **Then** recipient list filters in real-time to show matching names
+
+11. **Given** search box is empty, **When** viewing the recipient list, **Then** recipients are sorted by usage count (most frequently used at top)
+
+12. **Given** user has created multiple labels, **When** viewing sorted recipient list, **Then** user's personal usage counts affect sorting (not other users' data)
+
+13. **Given** user selects a recipient from the list, **When** user clicks "Next", **Then** wizard advances to Step 3 (Review)
+
+**Step 3: Review & Confirm**
+14. **Given** user reviews all details on Step 3, **When** user clicks "Create Label", **Then** label is saved to CSV and database, wizard returns to Mode Selection (or Step 1 if default mode set), and success message displays with label ID
+
+15. **Given** user reviews a label with "OTHER" PO, **When** viewing Step 3, **Then** review screen shows the selected "Other" reason prominently
+
+16. **Given** user is on any wizard step, **When** user clicks "Cancel", **Then** wizard prompts for confirmation and clears all inputs if confirmed
 
 ---
 
-### User Story 2 - Handle Non-PO Packages ("Other" Reason) (Priority: P2)
-
-A receiving clerk receives a package that doesn't have a valid PO number (e.g., returned item, vendor sample, or mislabeled box). They need to create a routing label without blocking the workflow.
-
-**Why this priority**: This handles a common edge case that would otherwise force clerks to skip the system or use workarounds. Capturing the "Other" reason ensures data quality and auditability.
-
-**Independent Test**: Can be tested by entering "OTHER" or an invalid PO, selecting an "Other" reason from a dropdown, and verifying the label is created with the reason tracked in the database.
-
-**Acceptance Scenarios**:
-
-1. **Given** user enters "OTHER" as PO number on Step 1, **When** user presses Tab/Next, **Then** system displays an inline dropdown for "Other Reason" selection
-
-2. **Given** user selects an "Other" reason (e.g., "Returned Item"), **When** user clicks "Next", **Then** wizard advances to Step 2 with the reason stored
-
-3. **Given** user enters a PO that's not found in Infor Visual, **When** user presses Tab/Next, **Then** system displays "PO not found - treat as OTHER?" with Yes/No options
-
-4. **Given** user confirms "treat as OTHER", **When** user selects an "Other" reason, **Then** wizard proceeds to Step 2 normally
-
-5. **Given** user reviews a label with "OTHER" PO, **When** viewing Step 3, **Then** review screen shows the selected "Other" reason prominently
-
----
-
-### User Story 3 - Rapid Entry via Manual Mode (Grid) (Priority: P3)
+### User Story 2 - Manual Entry Mode: Rapid Grid-Based Entry (Priority: P2)
 
 An experienced receiving clerk needs to create multiple routing labels quickly without the guided wizard flow. They prefer to work in a spreadsheet-like grid with tab navigation.
 
-**Why this priority**: This is a power-user feature for high-throughput scenarios. While important for efficiency, it's not required for the MVP - the wizard can handle all cases, just slower for batch operations.
+**Why this priority**: This is a power-user feature for high-throughput scenarios. Critical for users who create 10+ labels per session and find the wizard too slow. Complements the Wizard mode by offering an alternative workflow for batch operations.
 
 **Independent Test**: Can be tested by opening Manual Entry mode, entering 5-10 labels using tab navigation, and verifying all are saved correctly without using the wizard.
 
@@ -77,47 +81,7 @@ An experienced receiving clerk needs to create multiple routing labels quickly w
 
 ---
 
-### User Story 4 - Speed Up Entry with Quick Add Buttons (Priority: P2)
-
-A receiving clerk frequently routes packages to the same 5 people (e.g., Production Manager, QA Lead, Purchasing). They need a one-click way to select these recipients instead of searching/typing.
-
-**Why this priority**: This directly addresses the "30% speed improvement" goal. Quick Add buttons eliminate the most time-consuming step (searching for recipients) for the majority of labels.
-
-**Independent Test**: Can be tested by configuring the Top 5 recipients, clicking a Quick Add button on Step 2, and verifying the recipient is auto-selected and wizard advances.
-
-**Acceptance Scenarios**:
-
-1. **Given** user is on Step 2 (Recipient Selection), **When** page loads, **Then** system displays 5 Quick Add buttons at the top showing the most frequently used recipients
-
-2. **Given** user clicks a Quick Add button, **When** button is clicked, **Then** recipient is auto-selected and wizard immediately advances to Step 3
-
-3. **Given** a new user with no history, **When** Step 2 loads, **Then** Quick Add buttons show system-wide top 5 recipients (all users' data combined)
-
-4. **Given** user has created 20+ labels, **When** Step 2 loads, **Then** Quick Add buttons show the user's personal top 5 recipients (personalized)
-
----
-
-### User Story 5 - Smart Sorting of Recipient List (Priority: P2)
-
-A receiving clerk sees the same recipients repeatedly throughout the day. They need the recipient list to be sorted by frequency so the most common choices appear first.
-
-**Why this priority**: Complements Quick Add buttons - even when searching, frequently used recipients appear at the top, reducing scroll time. Critical for the speed improvement goal.
-
-**Independent Test**: Can be tested by creating 10 labels for "John Smith" and 2 labels for "Jane Doe", then verifying that "John Smith" appears above "Jane Doe" in the recipient list on subsequent labels.
-
-**Acceptance Scenarios**:
-
-1. **Given** user opens Step 2 with a search box, **When** search is empty, **Then** recipient list is sorted by usage count (most frequently used at top)
-
-2. **Given** user types in the search box, **When** filtering occurs, **Then** filtered results are still sorted by usage count among matches
-
-3. **Given** a recipient has been used 10 times, **When** another recipient is used for the 11th time, **Then** the newly promoted recipient moves to the top in real-time
-
-4. **Given** system tracks usage per user, **When** User A creates labels, **Then** only User A's usage count affects their recipient sorting (not other users' data)
-
----
-
-### User Story 6 - Edit Mode for Label Corrections (Priority: P3)
+### User Story 3 - Edit Mode: Correct Historical Labels (Priority: P3)
 
 A receiving clerk made a typo on a label (e.g., wrong recipient or quantity) and needs to correct it. They select "Edit Mode" from the Mode Selection screen to search for and modify existing labels.
 
@@ -141,9 +105,9 @@ A receiving clerk made a typo on a label (e.g., wrong recipient or quantity) and
 
 ---
 
-### User Story 7 - Set Default Mode to Skip Selection Screen (Priority: P3)
+### User Story 4 - Mode Selection & Preferences (Priority: P3)
 
-An experienced clerk who always uses Manual Entry mode wants to skip the Mode Selection screen on every launch and go straight to the grid.
+An experienced clerk who always uses the same mode (e.g., Manual Entry or Wizard) wants to skip the Mode Selection screen on every launch and go straight to their preferred workflow.
 
 **Why this priority**: Quality-of-life feature that reduces one click per session. Nice polish but doesn't block core functionality.
 
@@ -151,13 +115,17 @@ An experienced clerk who always uses Manual Entry mode wants to skip the Mode Se
 
 **Acceptance Scenarios**:
 
-1. **Given** user is on Mode Selection screen, **When** user checks "Set as default mode" for Wizard and clicks "Start Wizard", **Then** system saves this preference to the database
+1. **Given** user opens Routing Module for first time, **When** module loads, **Then** system displays Mode Selection screen with three mode options: Wizard, Manual Entry, Edit Mode
 
-2. **Given** user has set Wizard as default, **When** user opens the Routing Module in a future session, **Then** system skips Mode Selection and launches directly into Wizard Step 1
+2. **Given** user is on Mode Selection screen, **When** user checks "Set as default mode" for Wizard and clicks "Start Wizard", **Then** system saves this preference to the database (user_preferences table)
 
-3. **Given** user has a default mode set, **When** user clicks "Mode Selection" in the bottom bar, **Then** system displays Mode Selection screen and allows changing the default
+3. **Given** user has set Wizard as default, **When** user opens the Routing Module in a future session, **Then** system skips Mode Selection and launches directly into Wizard Step 1
 
-4. **Given** user changes default mode, **When** user reopens the module, **Then** system honors the new default mode
+4. **Given** user has a default mode set, **When** user clicks "Mode Selection" in the bottom bar, **Then** system displays Mode Selection screen and allows changing the default
+
+5. **Given** user changes default mode from Wizard to Manual Entry, **When** user reopens the module, **Then** system honors the new default mode and launches directly into Manual Entry grid
+
+6. **Given** user is in any mode (Wizard, Manual, Edit), **When** user clicks "Mode Selection" button, **Then** system confirms "Return to Mode Selection? Current progress will be lost" before navigating
 
 ---
 
