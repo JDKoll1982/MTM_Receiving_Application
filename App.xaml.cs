@@ -287,6 +287,12 @@ public partial class App : Application
                 
                 // Routing Manual Entry ViewModel (Phase 4 implementation)
                 services.AddTransient<RoutingManualEntryViewModel>();
+                
+                // Routing Edit Mode ViewModel (Phase 5 implementation)
+                services.AddTransient<RoutingEditModeViewModel>();
+                
+                // Routing Mode Selection ViewModel (Phase 6 implementation)
+                services.AddTransient<RoutingModeSelectionViewModel>();
 
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
@@ -308,6 +314,12 @@ public partial class App : Application
                 
                 // Routing Manual Entry View (Phase 4 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingManualEntryView>();
+                
+                // Routing Edit Mode View (Phase 5 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingEditModeView>();
+                
+                // Routing Mode Selection View (Phase 6 implementation)
+                services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
 
                 // Settings Views
                 services.AddTransient<View_Settings_Workflow>();

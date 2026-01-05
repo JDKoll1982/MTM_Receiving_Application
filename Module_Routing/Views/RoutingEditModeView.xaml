@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_Routing.Views.RoutingEditModeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Routing.ViewModels"
+    xmlns:models="using:MTM_Receiving_Application.Module_Routing.Models"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="OnPageLoaded">
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock 
+            Grid.Row="0"
+            Text="Edit Mode - Label History"
+            Style="{StaticResource TitleTextBlockStyle}"/>
+
+        <!-- Search Bar -->
+        <Grid Grid.Row="1" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                Grid.Column="0"
+                PlaceholderText="Search by PO, Recipient, or Part ID..."
+                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Button
+                Grid.Column="1"
+                Content="Edit Selected"
+                Command="{x:Bind EditSelectedLabelCommand}"
+                IsEnabled="{x:Bind ViewModel.SelectedLabel, Mode=OneWay, Converter={StaticResource NullToBooleanConverter}}"/>
+
+            <Button
+                Grid.Column="2"
+                Content="Reprint"
+                Command="{x:Bind ViewModel.ReprintLabelCommand}"
+                IsEnabled="{x:Bind ViewModel.SelectedLabel, Mode=OneWay, Converter={StaticResource NullToBooleanConverter}}"/>
+        </Grid>
+
+        <!-- Labels DataGrid -->
+        <DataGrid
+            Grid.Row="2"
+            ItemsSource="{x:Bind ViewModel.FilteredLabels, Mode=OneWay}"
+            SelectedItem="{x:Bind ViewModel.SelectedLabel, Mode=TwoWay}"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            AlternatingRowBackground="{ThemeResource LayerFillColorDefaultBrush}"
+            SelectionMode="Single"
+            DoubleTapped="OnDataGridDoubleTapped">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                <DataGridTextColumn Header="PO #" Binding="{Binding PONumber}" Width="100"/>
+                <DataGridTextColumn Header="Line" Binding="{Binding POLine}" Width="60"/>
+                <DataGridTextColumn Header="Part ID" Binding="{Binding PartID}" Width="120"/>
+                <DataGridTextColumn Header="Recipient" Binding="{Binding RecipientName}" Width="150"/>
+                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="80"/>
+                <DataGridTextColumn Header="Date" Binding="{Binding CreatedDate}" Width="120"/>
+                <DataGridTextColumn Header="Creator" Binding="{Binding EmployeeNumber}" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status Bar -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">
+            <ProgressRing 
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                Width="20" Height="20"/>
+            <TextBlock 
+                Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                VerticalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Page>
