@@ -7,11 +7,13 @@ using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Volvo.Services;
 using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Routing.Data;
+using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
@@ -85,6 +87,12 @@ public partial class App : Application
                 // Register Routing DAOs (Singleton - 001-routing-module)
                 services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
+
+                // Register Volvo DAOs (Singleton)
+                services.AddSingleton(sp => new Dao_VolvoShipment(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_VolvoShipmentLine(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_VolvoPart(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_VolvoPartComponent(mySqlConnectionString));
 
                 // Register Routing Services
                 services.AddSingleton<IService_RoutingWorkflow, Service_RoutingWorkflow>();
@@ -180,6 +188,25 @@ public partial class App : Application
                     return new Service_Routing_RecipientLookup(daoRecipient, logger);
                 });
 
+                // Volvo Services (002-volvo-module)
+                services.AddSingleton<IService_Volvo>(sp =>
+                {
+                    var shipmentDao = sp.GetRequiredService<Dao_VolvoShipment>();
+                    var lineDao = sp.GetRequiredService<Dao_VolvoShipmentLine>();
+                    var partDao = sp.GetRequiredService<Dao_VolvoPart>();
+                    var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    return new Service_Volvo(shipmentDao, lineDao, partDao, componentDao, logger);
+                });
+                services.AddSingleton<IService_VolvoMasterData>(sp =>
+                {
+                    var partDao = sp.GetRequiredService<Dao_VolvoPart>();
+                    var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
+                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
+                    var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
+                    return new Service_VolvoMasterData(partDao, componentDao, logger, errorHandler);
+                });
+
                 // Settings Services
                 services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
                 services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, Module_Core.Services.Navigation.Service_Navigation>();
@@ -222,6 +249,11 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Dunnage_AdminInventory>();
                 services.AddTransient<ViewModel_Dunnage_AddTypeDialog>();
 
+                // Volvo Workflow ViewModels
+                services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
+                services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
+                services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
+
                 // Settings Workflow ViewModels
                 services.AddTransient<ViewModel_Settings_Workflow>();
                 services.AddTransient<ViewModel_Settings_ModeSelection>();
@@ -234,10 +266,23 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Routing_History>();
                 services.AddTransient<ViewModel_Routing_ModeSelection>();
 
+                // Routing Workflow ViewModels (001-routing-module)
+                services.AddTransient<ViewModel_Routing_Workflow>();
+                services.AddTransient<ViewModel_Routing_LabelEntry>();
+                services.AddTransient<ViewModel_Routing_History>();
+                services.AddTransient<ViewModel_Routing_ModeSelection>();
+
                 // Views
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
+                services.AddTransient<Main_RoutingLabelPage>();
+
+                // Routing Views (001-routing-module)
+                services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
+                services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
+                services.AddTransient<Module_Routing.Views.View_Routing_History>();
+                services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
                 services.AddTransient<Main_RoutingLabelPage>();
 
                 // Routing Views (001-routing-module)
@@ -260,6 +305,10 @@ public partial class App : Application
 
                 // Dunnage Dialogs
                 services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
+
+                // Volvo Views
+                services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
+                services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
 
                 // Windows
                 services.AddTransient<View_Shared_SplashScreenWindow>();

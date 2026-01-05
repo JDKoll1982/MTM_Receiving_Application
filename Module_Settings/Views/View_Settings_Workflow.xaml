@@ -7,6 +7,7 @@
     xmlns:enums="using:MTM_Receiving_Application.Module_Settings.Enums"
     xmlns:settings="using:MTM_Receiving_Application.Module_Settings.Views"
     xmlns:dunnage="using:MTM_Receiving_Application.Views.Dunnage"
+    xmlns:volvo="using:MTM_Receiving_Application.Module_Volvo.Views"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d">
 
@@ -34,8 +35,8 @@
             x:Name="ShippingPlaceholderView"
             Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=ShippingSettings}"/>
 
-        <settings:View_Settings_Placeholder 
-            x:Name="VolvoPlaceholderView"
+        <volvo:View_Volvo_Settings 
+            x:Name="VolvoSettingsView"
             Visibility="{x:Bind ViewModel.CurrentStep, Mode=OneWay, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=VolvoSettings}"/>
 
         <settings:View_Settings_Placeholder 

@@ -1,0 +1,113 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Volvo.Views.View_Volvo_Settings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+    mc:Ignorable="d"
+    Loaded="OnPageLoaded">
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock 
+            Grid.Row="0"
+            Text="Volvo Dunnage Parts Master Data"
+            Style="{StaticResource TitleTextBlockStyle}"/>
+
+        <!-- Toolbar -->
+        <CommandBar Grid.Row="1" DefaultLabelPosition="Right">
+            <AppBarButton 
+                Icon="Add" 
+                Label="Add Part" 
+                Command="{x:Bind ViewModel.AddPartCommand, Mode=OneWay}"/>
+            <AppBarButton 
+                Icon="Edit" 
+                Label="Edit Part" 
+                Command="{x:Bind ViewModel.EditPartCommand, Mode=OneWay}"/>
+            <AppBarButton 
+                Icon="Delete" 
+                Label="Deactivate" 
+                Command="{x:Bind ViewModel.DeactivatePartCommand, Mode=OneWay}"/>
+            <AppBarSeparator/>
+            <AppBarButton 
+                Icon="PreviewLink" 
+                Label="View Components" 
+                Command="{x:Bind ViewModel.ViewComponentsCommand, Mode=OneWay}"/>
+            <AppBarSeparator/>
+            <AppBarButton 
+                Icon="Import" 
+                Label="Import CSV" 
+                Command="{x:Bind ViewModel.ImportCsvCommand, Mode=OneWay}"/>
+            <AppBarButton 
+                Icon="Save" 
+                Label="Export CSV" 
+                Command="{x:Bind ViewModel.ExportCsvCommand, Mode=OneWay}"/>
+            <AppBarSeparator/>
+            <AppBarButton 
+                Icon="Refresh" 
+                Label="Refresh" 
+                Command="{x:Bind ViewModel.RefreshCommand, Mode=OneWay}"/>
+            <AppBarSeparator/>
+            <AppBarToggleButton 
+                Icon="View" 
+                Label="Show Inactive"
+                IsChecked="{x:Bind ViewModel.ShowInactive, Mode=TwoWay}"/>
+        </CommandBar>
+
+        <!-- Data Grid -->
+        <Grid Grid.Row="2">
+            <DataGrid
+                ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                GridLinesVisibility="All"
+                HeadersVisibility="Column"
+                AlternatingRowBackground="{ThemeResource SystemListLowColor}"
+                SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" Width="150"/>
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                    <DataGridTextColumn Header="Qty/Skid" Binding="{Binding QuantityPerSkid}" Width="100"/>
+                    <DataGridTemplateColumn Header="Active" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoPart">
+                                <TextBlock 
+                                    Text="{x:Bind IsActive}" 
+                                    Foreground="{x:Bind IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Gray'}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Grid Grid.Row="3" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ProgressRing 
+                Grid.Column="0"
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                Width="20" 
+                Height="20"
+                Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}"/>
+
+            <TextBlock 
+                Grid.Column="1"
+                Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                VerticalAlignment="Center"/>
+        </Grid>
+    </Grid>
+</Page>
