@@ -104,7 +104,7 @@ namespace MTM_Receiving_Application
                         break;
                     case "RoutingLabelPage":
                         // Title will be set by ContentFrame_Navigated
-                        ContentFrame.Navigate(typeof(Module_Routing.Views.View_Routing_Workflow));
+                        ContentFrame.Navigate(typeof(Module_Routing.Views.RoutingModeSelectionView));
                         break;
                     case "CarrierDeliveryLabelPage":
                         PageTitleTextBlock.Text = "Carrier Delivery";
@@ -180,8 +180,8 @@ namespace MTM_Receiving_Application
                     };
                 }
             }
-            // If navigated to RoutingWorkflowView, set simple title
-            else if (ContentFrame.Content is Module_Routing.Views.View_Routing_Workflow routingView)
+            // If navigated to RoutingModeSelectionView, set simple title
+            else if (ContentFrame.Content is Module_Routing.Views.RoutingModeSelectionView)
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {

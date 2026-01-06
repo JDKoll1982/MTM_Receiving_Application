@@ -16,6 +16,10 @@ public sealed partial class RoutingModeSelectionView : Page
 
     private async void OnPageLoaded(object sender, RoutedEventArgs e)
     {
+        if (this.Frame != null)
+        {
+            ViewModel.SetNavigationFrame(this.Frame);
+        }
         await ViewModel.InitializeAsync();
     }
 }

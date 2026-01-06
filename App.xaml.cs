@@ -88,10 +88,6 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_DunnageCustomField(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_DunnageUserPreference(mySqlConnectionString));
 
-                // Register Routing DAOs (Singleton - 001-routing-module)
-                services.AddSingleton(sp => new Dao_Routing_Label(mySqlConnectionString));
-                services.AddSingleton(sp => new Dao_Routing_Recipient(mySqlConnectionString));
-
                 // Register NEW Routing Module DAOs (Phase 2 implementation)
                 services.AddSingleton(sp => new Dao_RoutingLabel(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_RoutingRecipient(mySqlConnectionString));
@@ -107,11 +103,6 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_VolvoPart(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_VolvoPartComponent(mySqlConnectionString));
 
-                // Register Routing Services
-                services.AddSingleton<IService_RoutingWorkflow, Service_RoutingWorkflow>();
-                services.AddSingleton<IService_Routing, Service_Routing>();
-                services.AddSingleton<IService_Routing_History, Service_Routing_History>();
-                services.AddSingleton<IService_Routing_RecipientLookup, Service_Routing_RecipientLookup>();
 
                 // Register NEW Routing Module Services (Phase 2 implementation)
                 services.AddSingleton<IRoutingService>(sp =>
@@ -214,28 +205,6 @@ public partial class App : Application
                 services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
                 services.AddSingleton<IService_DunnageAdminWorkflow, Service_DunnageAdminWorkflow>();
 
-                // Routing Services (001-routing-module)
-                services.AddSingleton<IService_Routing>(sp =>
-                {
-                    var daoLabel = sp.GetRequiredService<Dao_Routing_Label>();
-                    var daoRecipient = sp.GetRequiredService<Dao_Routing_Recipient>();
-                    var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
-                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    return new Service_Routing(daoLabel, daoRecipient, sessionManager, logger);
-                });
-                services.AddSingleton<IService_Routing_History>(sp =>
-                {
-                    var daoLabel = sp.GetRequiredService<Dao_Routing_Label>();
-                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    return new Service_Routing_History(daoLabel, logger);
-                });
-                services.AddSingleton<IService_Routing_RecipientLookup>(sp =>
-                {
-                    var daoRecipient = sp.GetRequiredService<Dao_Routing_Recipient>();
-                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    return new Service_Routing_RecipientLookup(daoRecipient, logger);
-                });
-
                 // Volvo Services (002-volvo-module)
                 services.AddSingleton<IService_VolvoAuthorization>(sp =>
                 {
@@ -323,12 +292,6 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Settings_DunnageMode>();
                 services.AddTransient<ViewModel_Settings_Placeholder>();
 
-                // Routing Workflow ViewModels (001-routing-module)
-                services.AddTransient<ViewModel_Routing_Workflow>();
-                services.AddTransient<ViewModel_Routing_LabelEntry>();
-                services.AddTransient<ViewModel_Routing_History>();
-                services.AddTransient<ViewModel_Routing_ModeSelection>();
-
                 // NEW Routing Wizard ViewModels (Phase 3 implementation)
                 services.AddTransient<RoutingWizardContainerViewModel>();
                 services.AddTransient<RoutingWizardStep1ViewModel>();
@@ -351,20 +314,6 @@ public partial class App : Application
                 services.AddTransient<Main_ReceivingLabelPage>();
                 services.AddTransient<Main_DunnageLabelPage>();
                 services.AddTransient<Main_CarrierDeliveryLabelPage>();
-                services.AddTransient<Main_RoutingLabelPage>();
-
-                // Routing Views (001-routing-module)
-                services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
-                services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
-                services.AddTransient<Module_Routing.Views.View_Routing_History>();
-                services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
-                services.AddTransient<Main_RoutingLabelPage>();
-
-                // Routing Views (001-routing-module)
-                services.AddTransient<Module_Routing.Views.View_Routing_Workflow>();
-                services.AddTransient<Module_Routing.Views.View_Routing_LabelEntry>();
-                services.AddTransient<Module_Routing.Views.View_Routing_History>();
-                services.AddTransient<Module_Routing.Views.View_Routing_ModeSelection>();
 
                 // NEW Routing Wizard Views (Phase 3 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingWizardContainerView>();

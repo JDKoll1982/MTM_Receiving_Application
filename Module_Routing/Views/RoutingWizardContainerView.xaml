@@ -4,7 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:MTM_Receiving_Application.Module_Routing.ViewModels"
     xmlns:views="using:MTM_Receiving_Application.Module_Routing.Views"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Routing.Converters"
+    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter"/>
+        <converters:IntToProgressBrushConverter x:Key="IntToProgressBrushConverter"/>
+        <coreConverters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>

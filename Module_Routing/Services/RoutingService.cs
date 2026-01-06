@@ -70,7 +70,7 @@ public class RoutingService : IRoutingService
             }
 
             // Insert label
-            var insertResult = await _daoLabel.InsertAsync(label);
+            var insertResult = await _daoLabel.InsertLabelAsync(label);
             if (!insertResult.IsSuccess)
             {
                 return insertResult;
@@ -114,7 +114,7 @@ public class RoutingService : IRoutingService
             await _logger.LogInfoAsync($"Updating label {label.Id} by employee {editedByEmployeeNumber}");
 
             // Get original label for history tracking
-            var originalResult = await _daoLabel.GetByIdAsync(label.Id);
+            var originalResult = await _daoLabel.GetLabelByIdAsync(label.Id);
             if (!originalResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure($"Original label not found: {originalResult.ErrorMessage}");
@@ -130,7 +130,7 @@ public class RoutingService : IRoutingService
             }
 
             // Update label
-            var updateResult = await _daoLabel.UpdateAsync(label);
+            var updateResult = await _daoLabel.UpdateLabelAsync(label);
             if (!updateResult.IsSuccess)
             {
                 return updateResult;
@@ -169,7 +169,7 @@ public class RoutingService : IRoutingService
     {
         try
         {
-            return await _daoLabel.GetByIdAsync(labelId);
+            return await _daoLabel.GetLabelByIdAsync(labelId);
         }
         catch (Exception ex)
         {
@@ -183,7 +183,7 @@ public class RoutingService : IRoutingService
         try
         {
             // TODO: Add limit/offset support to DAO
-            return await _daoLabel.GetAllAsync();
+            return await _daoLabel.GetAllLabelsAsync(limit, offset);
         }
         catch (Exception ex)
         {

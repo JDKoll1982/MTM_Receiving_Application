@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.Services.Navigation;
 using MTM_Receiving_Application.Module_Routing.Services;
@@ -18,9 +19,12 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
 {
     private readonly IRoutingUserPreferenceService _userPreferenceService;
     private readonly IService_Navigation _navigationService;
+    private Frame? _frame;
 
-    [ObservableProperty]
-    private bool _setAsDefaultMode;
+    // Separate default flags for each mode
+    [ObservableProperty] private bool _isWizardDefault;
+    [ObservableProperty] private bool _isManualDefault;
+    [ObservableProperty] private bool _isEditDefault;
 
     public RoutingModeSelectionViewModel(
         IRoutingUserPreferenceService userPreferenceService,
@@ -31,6 +35,14 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
     {
         _userPreferenceService = userPreferenceService;
         _navigationService = navigationService;
+    }
+
+    /// <summary>
+    /// Sets the navigation frame
+    /// </summary>
+    public void SetNavigationFrame(Frame frame)
+    {
+        _frame = frame;
     }
 
     /// <summary>
@@ -49,10 +61,20 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
             var prefsResult = await _userPreferenceService.GetUserPreferenceAsync(employeeNumber);
             if (prefsResult.IsSuccess && prefsResult.Data != null)
             {
-                // If default mode is set, navigate directly to that mode
-                if (Enum.TryParse<Enum_RoutingMode>(prefsResult.Data.DefaultMode, out var mode) && mode != Enum_RoutingMode.WIZARD)
+                if (Enum.TryParse<Enum_RoutingMode>(prefsResult.Data.DefaultMode, out var mode))
                 {
-                    await NavigateToModeAsync(mode);
+                    // Set checkbox state based on preference
+                    IsWizardDefault = mode == Enum_RoutingMode.WIZARD;
+                    IsManualDefault = mode == Enum_RoutingMode.MANUAL;
+                    IsEditDefault = mode == Enum_RoutingMode.EDIT;
+
+                    // If default mode is set and not Wizard (which might be the landing page), auto-nav
+                    // Revisit this logic if Wizard SHOULD technically be skipped to Step 1 directly. 
+                    // For now keeping existing logic but fixing navigation.
+                    if (mode != Enum_RoutingMode.WIZARD)
+                    {
+                        await NavigateToModeAsync(mode);
+                    }
                 }
             }
 
@@ -70,47 +92,50 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
         }
     }
 
-    /// <summary>
-    /// Navigate to Wizard mode
-    /// </summary>
     [RelayCommand]
-    private async Task SelectWizardModeAsync()
-    {
-        await SavePreferenceIfCheckedAsync(Enum_RoutingMode.WIZARD);
-        await NavigateToModeAsync(Enum_RoutingMode.WIZARD);
-    }
+    private async Task SelectWizardModeAsync() => await NavigateToModeAsync(Enum_RoutingMode.WIZARD);
 
-    /// <summary>
-    /// Navigate to Manual Entry mode
-    /// </summary>
     [RelayCommand]
-    private async Task SelectManualEntryModeAsync()
-    {
-        await SavePreferenceIfCheckedAsync(Enum_RoutingMode.MANUAL);
-        await NavigateToModeAsync(Enum_RoutingMode.MANUAL);
-    }
+    private async Task SelectManualEntryModeAsync() => await NavigateToModeAsync(Enum_RoutingMode.MANUAL);
 
-    /// <summary>
-    /// Navigate to Edit mode
-    /// </summary>
     [RelayCommand]
-    private async Task SelectEditModeAsync()
-    {
-        await SavePreferenceIfCheckedAsync(Enum_RoutingMode.EDIT);
-        await NavigateToModeAsync(Enum_RoutingMode.EDIT);
-    }
+    private async Task SelectEditModeAsync() => await NavigateToModeAsync(Enum_RoutingMode.EDIT);
 
-    /// <summary>
-    /// Save default mode preference if checkbox is checked
-    /// </summary>
-    /// <param name="mode"></param>
-    private async Task SavePreferenceIfCheckedAsync(Enum_RoutingMode mode)
+    [RelayCommand]
+    private async Task SetWizardAsDefaultAsync(bool isChecked)
     {
-        if (!SetAsDefaultMode)
+        if (isChecked)
         {
-            return;
+            IsManualDefault = false;
+            IsEditDefault = false;
+            await SavePreferenceAsync(Enum_RoutingMode.WIZARD);
         }
+    }
 
+    [RelayCommand]
+    private async Task SetManualAsDefaultAsync(bool isChecked)
+    {
+        if (isChecked)
+        {
+            IsWizardDefault = false;
+            IsEditDefault = false;
+            await SavePreferenceAsync(Enum_RoutingMode.MANUAL);
+        }
+    }
+
+    [RelayCommand]
+    private async Task SetEditAsDefaultAsync(bool isChecked)
+    {
+        if (isChecked)
+        {
+            IsWizardDefault = false;
+            IsManualDefault = false;
+            await SavePreferenceAsync(Enum_RoutingMode.EDIT);
+        }
+    }
+
+    private async Task SavePreferenceAsync(Enum_RoutingMode mode)
+    {
         try
         {
             // TODO: Get current employee number from session
@@ -133,18 +158,24 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
         catch (Exception ex)
         {
             _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
-                nameof(SavePreferenceIfCheckedAsync), nameof(RoutingModeSelectionViewModel));
+                nameof(SavePreferenceAsync), nameof(RoutingModeSelectionViewModel));
         }
     }
 
-    /// <summary>
-    /// Navigate to selected mode
-    /// </summary>
-    /// <param name="mode"></param>
     private async Task NavigateToModeAsync(Enum_RoutingMode mode)
     {
         try
         {
+            if (_frame == null)
+            {
+                // Fallback attempt to find frame if not explicitly set? 
+                // For now just log usage error
+                _errorHandler.HandleException(new InvalidOperationException("Navigation Frame not set"),
+                    Module_Core.Models.Enums.Enum_ErrorSeverity.Error,
+                    nameof(NavigateToModeAsync), nameof(RoutingModeSelectionViewModel));
+                return;
+            }
+
             string viewName = mode switch
             {
                 Enum_RoutingMode.WIZARD => typeof(Views.RoutingWizardContainerView).FullName!,
@@ -153,15 +184,13 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
                 _ => throw new ArgumentException($"Unknown mode: {mode}")
             };
 
-            // TODO: Need Frame reference for navigation
-            // _navigationService.NavigateTo(frame, viewName);
-            await _logger.LogInfoAsync($"Navigation to {viewName} requested");
+            _navigationService.NavigateTo(_frame, viewName);
+            await _logger.LogInfoAsync($"Navigated to {viewName}");
         }
         catch (Exception ex)
         {
             _errorHandler.HandleException(ex, Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
                 nameof(NavigateToModeAsync), nameof(RoutingModeSelectionViewModel));
-            await Task.CompletedTask;
         }
     }
 }

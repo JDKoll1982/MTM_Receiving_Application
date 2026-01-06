@@ -23,161 +23,164 @@
             Margin="0,0,0,24"/>
 
         <!-- Mode Selection Cards -->
-        <Grid Grid.Row="2" ColumnSpacing="24" MaxWidth="1200">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="1" Spacing="32" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                
+                <!-- Wizard Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button 
+                        Command="{x:Bind ViewModel.SelectWizardModeCommand}"
+                        Width="280" Height="180"
+                        Padding="20"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        AutomationProperties.Name="Wizard Mode">
+                        <Grid RowSpacing="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-            <!-- Wizard Mode Card -->
-            <Button 
-                Grid.Column="0"
-                Command="{x:Bind ViewModel.SelectWizardModeCommand}"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Padding="0"
-                BorderThickness="2"
-                BorderBrush="{ThemeResource AccentFillColorDefaultBrush}">
-                <Grid Padding="24" RowSpacing="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                            <FontIcon 
+                                Grid.Row="0"
+                                Glyph="&#xE82D;"
+                                FontSize="48"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
 
-                    <FontIcon 
-                        Grid.Row="0"
-                        Glyph="&#xE82D;"
-                        FontSize="48"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock 
+                                Grid.Row="1"
+                                Text="Wizard Mode"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                TextAlignment="Center"/>
 
-                    <TextBlock 
-                        Grid.Row="1"
-                        Text="Wizard Mode"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        TextAlignment="Center"/>
+                            <TextBlock 
+                                Grid.Row="2"
+                                Text="Step-by-step guided workflow with Quick Add buttons. Ideal for single label creation."
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                FontSize="12"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
 
-                    <TextBlock 
-                        Grid.Row="2"
-                        Text="Step-by-step guided workflow with Quick Add buttons and smart recipient sorting. Ideal for single label creation."
-                        TextWrapping="Wrap"
-                        TextAlignment="Center"
-                        Margin="0,8,0,0"/>
+                            <TextBlock 
+                                Grid.Row="3"
+                                Text="(Recommended)"
+                                FontStyle="Italic"
+                                FontSize="12"
+                                TextAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Grid>
+                    </Button>
 
-                    <TextBlock 
-                        Grid.Row="3"
-                        Text="(Recommended for most users)"
-                        FontStyle="Italic"
-                        FontSize="12"
-                        TextAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                </Grid>
-            </Button>
+                    <CheckBox 
+                        Content="Set as default mode"
+                        IsChecked="{x:Bind ViewModel.IsWizardDefault, Mode=TwoWay}"
+                        Command="{x:Bind ViewModel.SetWizardAsDefaultCommand}"
+                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        HorizontalAlignment="Center"/>
+                </StackPanel>
 
-            <!-- Manual Entry Mode Card -->
-            <Button 
-                Grid.Column="1"
-                Command="{x:Bind ViewModel.SelectManualEntryModeCommand}"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Padding="0"
-                BorderThickness="2">
-                <Grid Padding="24" RowSpacing="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <!-- Manual Entry Column -->
+                <StackPanel Spacing="12">
+                    <Button 
+                        Command="{x:Bind ViewModel.SelectManualEntryModeCommand}"
+                        Width="280" Height="180"
+                        Padding="20"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        AutomationProperties.Name="Manual Entry Mode">
+                        <Grid RowSpacing="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                    <FontIcon 
-                        Grid.Row="0"
-                        Glyph="&#xE70F;"
-                        FontSize="48"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <FontIcon 
+                                Grid.Row="0"
+                                Glyph="&#xE745;"
+                                FontSize="48"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
 
-                    <TextBlock 
-                        Grid.Row="1"
-                        Text="Manual Entry"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        TextAlignment="Center"/>
+                            <TextBlock 
+                                Grid.Row="1"
+                                Text="Manual Entry"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                TextAlignment="Center"/>
 
-                    <TextBlock 
-                        Grid.Row="2"
-                        Text="Batch entry using editable grid. Supports tab navigation, PO auto-fill, and batch save. Ideal for creating multiple labels quickly."
-                        TextWrapping="Wrap"
-                        TextAlignment="Center"
-                        Margin="0,8,0,0"/>
+                            <TextBlock 
+                                Grid.Row="2"
+                                Text="Batch entry using editable grid. Ideal for creating multiple labels quickly."
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                FontSize="12"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Grid>
+                    </Button>
 
-                    <TextBlock 
-                        Grid.Row="3"
-                        Text="(Power users)"
-                        FontStyle="Italic"
-                        FontSize="12"
-                        TextAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                </Grid>
-            </Button>
+                    <CheckBox 
+                        Content="Set as default mode"
+                        IsChecked="{x:Bind ViewModel.IsManualDefault, Mode=TwoWay}"
+                        Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
+                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        HorizontalAlignment="Center"/>
+                </StackPanel>
 
-            <!-- Edit Mode Card -->
-            <Button 
-                Grid.Column="2"
-                Command="{x:Bind ViewModel.SelectEditModeCommand}"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Padding="0"
-                BorderThickness="2">
-                <Grid Padding="24" RowSpacing="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <!-- Edit Mode Column -->
+                <StackPanel Spacing="12">
+                    <Button 
+                        Command="{x:Bind ViewModel.SelectEditModeCommand}"
+                        Width="280" Height="180"
+                        Padding="20"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        AutomationProperties.Name="Edit Mode">
+                        <Grid RowSpacing="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                    <FontIcon 
-                        Grid.Row="0"
-                        Glyph="&#xE104;"
-                        FontSize="48"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <FontIcon 
+                                Grid.Row="0"
+                                Glyph="&#xE104;"
+                                FontSize="48"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
 
-                    <TextBlock 
-                        Grid.Row="1"
-                        Text="Edit Mode"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        TextAlignment="Center"/>
+                            <TextBlock 
+                                Grid.Row="1"
+                                Text="Edit Mode"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                TextAlignment="Center"/>
 
-                    <TextBlock 
-                        Grid.Row="2"
-                        Text="Search and edit existing labels with full audit trail. Supports reprinting without database changes."
-                        TextWrapping="Wrap"
-                        TextAlignment="Center"
-                        Margin="0,8,0,0"/>
+                            <TextBlock 
+                                Grid.Row="2"
+                                Text="Search and edit existing labels. Supports reprinting and audit trail."
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                FontSize="12"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Grid>
+                    </Button>
 
-                    <TextBlock 
-                        Grid.Row="3"
-                        Text="(Corrections &amp; reprints)"
-                        FontStyle="Italic"
-                        FontSize="12"
-                        TextAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                </Grid>
-            </Button>
-        </Grid>
-
-        <!-- Set as Default Checkbox -->
-        <CheckBox
-            Grid.Row="3"
-            Content="Set as default mode (skip this screen next time)"
-            IsChecked="{x:Bind ViewModel.SetAsDefaultMode, Mode=TwoWay}"
-            Margin="0,24,0,0"/>
+                    <CheckBox 
+                        Content="Set as default mode"
+                        IsChecked="{x:Bind ViewModel.IsEditDefault, Mode=TwoWay}"
+                        Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
+                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                        HorizontalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Page>

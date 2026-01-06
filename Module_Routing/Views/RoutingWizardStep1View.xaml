@@ -4,7 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:MTM_Receiving_Application.Module_Routing.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Routing.Models"
+    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <coreConverters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
+        <coreConverters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
@@ -22,7 +28,7 @@
 
         <!-- PO Input Section (visible when NOT in OTHER mode) -->
         <StackPanel Grid.Row="1" Spacing="12" 
-                    Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                    Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
             <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
@@ -52,7 +58,7 @@
 
         <!-- OTHER Mode Section (visible when in OTHER mode) -->
         <StackPanel Grid.Row="1" Spacing="12"
-                    Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="OTHER Package (Non-PO)" 
                        Style="{StaticResource SubtitleTextBlockStyle}"/>
 
@@ -83,13 +89,13 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
-                Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
             <Grid>
                 <TextBlock Text="Select a line from the PO"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToInverseVisibilityConverter}}"/>
+                           Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"/>
 
                 <ListView ItemsSource="{x:Bind ViewModel.PoLines, Mode=OneWay}"
                           SelectedItem="{x:Bind ViewModel.SelectedPOLine, Mode=TwoWay}"
