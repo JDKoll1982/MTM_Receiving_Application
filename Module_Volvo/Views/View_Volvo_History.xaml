@@ -18,10 +18,18 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <TextBlock 
-            Grid.Row="0"
-            Text="Volvo Shipment History"
-            Style="{StaticResource TitleTextBlockStyle}"/>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+            <Button 
+                Command="{x:Bind ViewModel.GoBackCommand}"
+                VerticalAlignment="Center"
+                ToolTipService.ToolTip="Back to Shipment Entry">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
+            <TextBlock 
+                Text="Volvo Shipment History"
+                Style="{StaticResource TitleTextBlockStyle}"
+                VerticalAlignment="Center"/>
+        </StackPanel>
 
         <!-- Filters -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="16">
@@ -71,7 +79,7 @@
                 
                 <controls:DataGridTextColumn 
                     Header="Date" 
-                    Binding="{Binding ShipmentDate, Converter={StaticResource DateFormatConverter}}"
+                    Binding="{Binding ShipmentDate}"
                     Width="120"/>
                 
                 <controls:DataGridTextColumn 

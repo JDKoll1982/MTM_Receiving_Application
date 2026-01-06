@@ -30,7 +30,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 
 ### Database Access
 - **MySql.Data 9.4.0**: MySQL ADO.NET provider
-  - Server: 172.16.1.104:3306
+  - Server: localhost:3306
   - Database: `mtm_receiving_application`
   - Access: Full READ/WRITE
   - All operations via stored procedures
@@ -132,7 +132,7 @@ services.AddTransient<ViewModel_Receiving_POEntry>();
 - **Purpose**: Application transactional data
 - **Access**: Full READ/WRITE
 - **Operations**: Via stored procedures only
-- **Location**: 172.16.1.104:3306
+- **Location**: localhost:3306
 
 **SQL Server (Infor Visual ERP - MTMFG)**: Source of truth
 - **Purpose**: PO and Part master data

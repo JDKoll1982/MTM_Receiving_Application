@@ -5,22 +5,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     Title="Edit Shipment"
     PrimaryButtonText="Save Changes"
     CloseButtonText="Cancel"
     DefaultButton="Primary">
+    
+    <ContentDialog.Resources>
+        <x:Double x:Key="ContentDialogMaxWidth">1200</x:Double>
+        <x:Double x:Key="ContentDialogMinWidth">1200</x:Double>
+        <converters:NullableDoubleToDoubleConverter x:Key="NullableDoubleToDoubleConverter"/>
+    </ContentDialog.Resources>
 
     <ScrollViewer MaxHeight="600">
         <StackPanel Spacing="16" Padding="24">
-            
-            <!-- CSV Regeneration Warning -->
-            <InfoBar
-                x:Name="CsvWarningBar"
-                Severity="Warning"
-                Title="CSV File Will Be Regenerated"
-                Message="For completed shipments, the label CSV file will be regenerated with updated piece counts."
-                IsOpen="True"
-                IsClosable="False" />
             
             <!-- Shipment Header -->
             <StackPanel Spacing="8">
@@ -101,8 +99,9 @@
                     
                     <controls:DataGrid.Columns>
                         <!-- Part Number -->
-                        <controls:DataGridComboBoxColumn
+                        <controls:DataGridTextColumn
                             Header="Part Number"
+                            Binding="{Binding PartNumber}"
                             Width="150"/>
                         
                         <!-- Received Skids -->
@@ -139,8 +138,8 @@
                                         Value="{Binding ExpectedSkidCount, Mode=TwoWay, Converter={StaticResource NullableDoubleToDoubleConverter}}"
                                         Minimum="0"
                                         SpinButtonPlacementMode="Compact"
-                                        IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
-                                        HorizontalAlignment="Stretch" />
+                                        HorizontalAlignment="Stretch"
+                                        IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}" />
                                 </DataTemplate>
                             </controls:DataGridTemplateColumn.CellTemplate>
                         </controls:DataGridTemplateColumn>

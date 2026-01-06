@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS volvo_shipments (
   INDEX idx_status (status),
   INDEX idx_shipment_date (shipment_date),
   INDEX idx_po_number (po_number)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Volvo dunnage shipment headers';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo dunnage shipment headers';
 
 -- Table 2: volvo_shipment_lines
 -- Purpose: Individual part line items within a shipment
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS volvo_shipment_lines (
   
   FOREIGN KEY (shipment_id) REFERENCES volvo_shipments(id) ON DELETE CASCADE,
   FOREIGN KEY (part_number) REFERENCES volvo_parts_master(part_number) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Volvo shipment line items';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo shipment line items';
 
 -- Table 3: volvo_parts_master
 -- Purpose: Catalog of Volvo dunnage parts with quantities per skid
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS volvo_parts_master (
   modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   PRIMARY KEY (part_number)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Volvo parts catalog (from DataSheet.csv)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo parts catalog (from DataSheet.csv)';
 
 -- Table 4: volvo_part_components
 -- Purpose: Defines which components are included with each parent part (component explosion)
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS volvo_part_components (
   
   FOREIGN KEY (parent_part_number) REFERENCES volvo_parts_master(part_number) ON DELETE CASCADE,
   FOREIGN KEY (component_part_number) REFERENCES volvo_parts_master(part_number) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Component explosion for Volvo parts';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Component explosion for Volvo parts';
 
 -- View: vw_volvo_shipments_history
 -- Purpose: Flattened view for reporting with part details

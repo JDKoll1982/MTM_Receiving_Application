@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
-using Microsoft.UI.Xaml.Controls;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 
@@ -374,22 +375,44 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Formatting email...";
 
-            // Build shipment object
-            var shipment = new Model_VolvoShipment
+            // First, ensure the shipment is saved
+            if (!HasPendingShipment)
             {
-                ShipmentDate = ShipmentDate?.DateTime ?? DateTime.Today,
-                ShipmentNumber = ShipmentNumber,
-                Notes = Notes,
-                Status = "pending_po"
-            };
+                var saveResult = await SaveShipmentInternalAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        saveResult.ErrorMessage ?? "Failed to save shipment before preview",
+                        Enum_ErrorSeverity.Medium,
+                        null,
+                        true);
+                    return;
+                }
+            }
+
+            // Get the saved pending shipment
+            var pendingResult = await _volvoService.GetPendingShipmentWithLinesAsync();
+            if (!pendingResult.IsSuccess || pendingResult.Data.Shipment == null)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No pending shipment found",
+                    Enum_ErrorSeverity.Medium,
+                    null,
+                    true);
+                return;
+            }
+
+            var shipment = pendingResult.Data.Shipment;
+            var lines = pendingResult.Data.Lines;
 
             // Calculate component explosion to get actual part quantities
-            var explosionResult = await _volvoService.CalculateComponentExplosionAsync(Parts.ToList());
+            var explosionResult = await _volvoService.CalculateComponentExplosionAsync(lines);
 
             Dictionary<string, int> requestedLines;
             if (explosionResult.IsSuccess && explosionResult.Data != null)
             {
                 requestedLines = explosionResult.Data;
+                await _logger.LogInfoAsync($"Component explosion successful: {requestedLines.Count} parts");
             }
             else
             {
@@ -398,8 +421,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 await _logger.LogWarningAsync($"Component explosion failed for email preview: {explosionResult.ErrorMessage}");
             }
 
+            await _logger.LogInfoAsync($"Email preview - RequestedLines count: {requestedLines.Count}");
+
             // Format email data with actual part quantities
-            var emailData = await _volvoService.FormatEmailDataAsync(shipment, Parts.ToList(), requestedLines);
+            var emailData = await _volvoService.FormatEmailDataAsync(shipment, lines, requestedLines);
+
+            await _logger.LogInfoAsync($"Email data formatted - RequestedLines count: {emailData.RequestedLines.Count}");
 
             // Show email preview dialog
             await ShowEmailPreviewDialogAsync(emailData);
@@ -432,38 +459,135 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
+        // Load email recipients from settings
+        var settingsDao = new Data.Dao_VolvoSettings(Module_Core.Helpers.Database.Helper_Database_Variables.GetConnectionString());
+        var toResult = await settingsDao.GetSettingAsync("email_to_recipients");
+        var ccResult = await settingsDao.GetSettingAsync("email_cc_recipients");
+
+        string toRecipients = FormatRecipientsFromJson(
+            toResult.IsSuccess && toResult.Data != null ? toResult.Data.SettingValue : null,
+            "\"Jose Rosas\" <jrosas@mantoolmfg.com>; \"Sandy Miller\" <smiller@mantoolmfg.com>; \"Steph Wittmus\" <swittmus@mantoolmfg.com>"
+        );
+
+        string ccRecipients = FormatRecipientsFromJson(
+            ccResult.IsSuccess && ccResult.Data != null ? ccResult.Data.SettingValue : null,
+            "\"Debra Alexander\" <dalexander@mantoolmfg.com>; \"Michelle Laurin\" <mlaurin@mantoolmfg.com>"
+        );
+
         var dialog = new ContentDialog
         {
             Title = "PO Requisition Email Preview",
-            PrimaryButtonText = "Copy to Clipboard",
+            PrimaryButtonText = "Copy Email Body",
             CloseButtonText = "Close",
             DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = xamlRoot
+            XamlRoot = xamlRoot,
+            MaxWidth = 800
         };
 
         // Build structured preview UI
-        var mainStack = new StackPanel { Spacing = 12 };
+        var mainStack = new StackPanel { Spacing = 12, Margin = new Microsoft.UI.Xaml.Thickness(0) };
+
+        // TO Recipients
+        var toPanel = new Grid { ColumnSpacing = 8 };
+        toPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
+        toPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+        var toBox = new TextBox
+        {
+            Header = "To:",
+            Text = toRecipients,
+            IsReadOnly = true,
+            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+            MaxHeight = 80
+        };
+        toBox.SetValue(Grid.ColumnProperty, 0);
+        var toCopyButton = new Button
+        {
+            Content = "📋",
+            Width = 40,
+            Height = 40,
+            FontSize = 16,
+            VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+        };
+        toCopyButton.SetValue(Grid.ColumnProperty, 1);
+        Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(toCopyButton, "Copy To Recipients");
+        toCopyButton.Click += (s, e) =>
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(toBox.Text);
+            Clipboard.SetContent(dataPackage);
+        };
+        toPanel.Children.Add(toBox);
+        toPanel.Children.Add(toCopyButton);
+        mainStack.Children.Add(toPanel);
+
+        // CC Recipients
+        var ccPanel = new Grid { ColumnSpacing = 8 };
+        ccPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
+        ccPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+        var ccBox = new TextBox
+        {
+            Header = "Cc:",
+            Text = ccRecipients,
+            IsReadOnly = true,
+            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+            MaxHeight = 80
+        };
+        ccBox.SetValue(Grid.ColumnProperty, 0);
+        var ccCopyButton = new Button
+        {
+            Content = "📋",
+            Width = 40,
+            Height = 40,
+            FontSize = 16,
+            VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+        };
+        ccCopyButton.SetValue(Grid.ColumnProperty, 1);
+        Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(ccCopyButton, "Copy CC Recipients");
+        ccCopyButton.Click += (s, e) =>
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(ccBox.Text);
+            Clipboard.SetContent(dataPackage);
+        };
+        ccPanel.Children.Add(ccBox);
+        ccPanel.Children.Add(ccCopyButton);
+        mainStack.Children.Add(ccPanel);
 
         // Subject
+        var subjectPanel = new Grid { ColumnSpacing = 8 };
+        subjectPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
+        subjectPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
         var subjectBox = new TextBox
         {
             Header = "Subject:",
             Text = emailData.Subject,
             IsReadOnly = true,
-            FontWeight = Microsoft.UI.Text.FontWeights.Bold
+            FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
         };
-        mainStack.Children.Add(subjectBox);
-
-        // Greeting and Message
-        var messageBox = new TextBox
+        subjectBox.SetValue(Grid.ColumnProperty, 0);
+        var subjectCopyButton = new Button
         {
-            Text = $"{emailData.Greeting}\n\n{emailData.Message}",
-            IsReadOnly = true,
-            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
-            Height = 80,
-            BorderThickness = new Microsoft.UI.Xaml.Thickness(0)
+            Content = "📋",
+            Width = 40,
+            Height = 40,
+            FontSize = 16,
+            VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
+            Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
         };
-        mainStack.Children.Add(messageBox);
+        subjectCopyButton.SetValue(Grid.ColumnProperty, 1);
+        Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(subjectCopyButton, "Copy Subject");
+        subjectCopyButton.Click += (s, e) =>
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(subjectBox.Text);
+            Clipboard.SetContent(dataPackage);
+        };
+        subjectPanel.Children.Add(subjectBox);
+        subjectPanel.Children.Add(subjectCopyButton);
+        mainStack.Children.Add(subjectPanel);
 
         // Discrepancies (if any)
         if (emailData.Discrepancies.Count > 0)
@@ -481,10 +605,12 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 IsReadOnly = true,
                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
                 FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
-                Height = 120
+                AcceptsReturn = true,
+                MinHeight = 120,
+                MaxHeight = 250
             };
             var discText = new StringBuilder();
-            discText.AppendLine("Part Number\tPacklist Qty\tReceived Qty\tDifference\tNote");
+            discText.AppendLine("Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote");
             discText.AppendLine(new string('-', 80));
             foreach (var disc in emailData.Discrepancies)
             {
@@ -509,7 +635,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsReadOnly = true,
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
             FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
-            Height = 150
+            AcceptsReturn = true,
+            MinHeight = 150,
+            MaxHeight = 300
         };
         var reqText = new StringBuilder();
         reqText.AppendLine("Part Number\tQuantity (pcs)");
@@ -534,16 +662,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             };
             mainStack.Children.Add(notesBox);
         }
-
-        // Signature
-        var signatureBox = new TextBox
-        {
-            Text = emailData.Signature,
-            IsReadOnly = true,
-            BorderThickness = new Microsoft.UI.Xaml.Thickness(0),
-            Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 0)
-        };
-        mainStack.Children.Add(signatureBox);
 
         var scrollViewer = new ScrollViewer
         {
@@ -618,6 +736,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     }
 
     [RelayCommand]
+    private void ViewHistory()
+    {
+        _logger.LogInfo("Navigating to Volvo Shipment History");
+        if (App.MainWindow is MainWindow mainWindow)
+        {
+            var contentFrame = mainWindow.GetContentFrame();
+            contentFrame?.Navigate(typeof(Views.View_Volvo_History));
+        }
+    }
+
+    [RelayCommand]
     private async Task SaveAsPendingAsync()
     {
         try
@@ -676,7 +805,43 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         };
 
         // Save
-        return await _volvoService.SaveShipmentAsync(shipment, Parts.ToList());
+        var saveResult = await _volvoService.SaveShipmentAsync(shipment, Parts.ToList());
+
+        // Check if there's an existing pending shipment
+        if (!saveResult.IsSuccess && saveResult.ErrorMessage.StartsWith("PENDING_EXISTS"))
+        {
+            var parts = saveResult.ErrorMessage.Split('|');
+            var existingShipmentNumber = parts.Length > 1 ? parts[1] : "Unknown";
+            var existingShipmentDate = parts.Length > 2 ? parts[2] : "Unknown Date";
+
+            // Show confirmation dialog
+            var dialog = new ContentDialog
+            {
+                Title = "Overwrite Pending Shipment?",
+                Content = $"A pending shipment already exists (Shipment #{existingShipmentNumber} from {existingShipmentDate}).{Environment.NewLine}{Environment.NewLine}Do you want to delete it and create a new one?",
+                PrimaryButtonText = "Overwrite",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+                XamlRoot = App.MainWindow?.Content?.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                // User confirmed - delete existing and save new
+                await _logger.LogInfoAsync($"User confirmed overwrite of pending shipment #{existingShipmentNumber}");
+                return await _volvoService.SaveShipmentAsync(shipment, Parts.ToList(), overwriteExisting: true);
+            }
+            else
+            {
+                // User canceled
+                await _logger.LogInfoAsync("User canceled shipment overwrite");
+                return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment save canceled by user");
+            }
+        }
+
+        return saveResult;
     }
 
     [RelayCommand]
@@ -850,6 +1015,33 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Formats JSON array of recipients into Outlook format
+    /// </summary>
+    private string FormatRecipientsFromJson(string? jsonValue, string fallbackValue)
+    {
+        if (string.IsNullOrWhiteSpace(jsonValue))
+        {
+            return fallbackValue;
+        }
+
+        try
+        {
+            var recipients = System.Text.Json.JsonSerializer.Deserialize<List<Models.Model_EmailRecipient>>(jsonValue);
+            if (recipients == null || recipients.Count == 0)
+            {
+                return fallbackValue;
+            }
+
+            return string.Join("; ", recipients.Select(r => r.ToOutlookFormat()));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogErrorAsync($"Error parsing email recipients JSON: {ex.Message}", ex).ConfigureAwait(false);
+            return fallbackValue;
+        }
     }
 
     private void ValidateSaveEligibility()

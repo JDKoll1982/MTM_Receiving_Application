@@ -31,11 +31,7 @@
                  IsOpen="{x:Bind ViewModel.IsSuccessMessageVisible, Mode=OneWay}"
                  Severity="Success"
                  Message="{x:Bind ViewModel.SuccessMessage, Mode=OneWay}"
-                 IsClosable="True">
-            <InfoBar.ActionButton>
-                <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}"/>
-            </InfoBar.ActionButton>
-        </InfoBar>
+                 IsClosable="True"/>
 
         <!-- Header Section -->
         <StackPanel Grid.Row="1" Spacing="16">
@@ -201,6 +197,8 @@
                           Label="Complete Shipment" 
                           Command="{x:Bind ViewModel.CompleteShipmentCommand}"
                           Visibility="{x:Bind ViewModel.HasPendingShipment, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <AppBarSeparator/>
+            <AppBarButton Icon="Calendar" Label="View History" Command="{x:Bind ViewModel.ViewHistoryCommand}"/>
         </CommandBar>
 
         <!-- Status Bar -->

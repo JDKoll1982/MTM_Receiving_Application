@@ -1,45 +1,53 @@
+-- ============================================================================
+-- Stored Procedure: sp_routing_label_delete
+-- Description: Delete routing label by ID
+-- Feature: Routing Module (001-routing-module)
+-- Created: January 4, 2026
+-- ============================================================================
+
+USE mtm_receiving_application;
+
+DROP PROCEDURE IF EXISTS sp_routing_label_delete;
+
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_routing_label_delete` $$
-
-CREATE PROCEDURE `sp_routing_label_delete`(
-    IN p_label_id INT,
-    OUT p_status INT,
-    OUT p_error_msg VARCHAR(500)
+CREATE PROCEDURE sp_routing_label_delete(
+    IN p_id INT,
+    OUT p_error_message VARCHAR(500)
 )
-sp_routing_label_delete: BEGIN
+proc: BEGIN
+    DECLARE v_exists INT DEFAULT 0;
+    
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
-        SET p_status = -1;
+        GET DIAGNOSTICS CONDITION 1
+            p_error_message = MESSAGE_TEXT;
         ROLLBACK;
     END;
-
+    
+    -- Initialize output
+    SET p_error_message = NULL;
+    
+    -- Start transaction
     START TRANSACTION;
-
-    IF p_label_id IS NULL THEN
-        SET p_status = -1;
-        SET p_error_msg = 'Label ID is required';
+    
+    -- Validate ID exists
+    SELECT COUNT(*) INTO v_exists
+    FROM routing_labels
+    WHERE id = p_id;
+    
+    IF v_exists = 0 THEN
+        SET p_error_message = 'Label ID not found';
         ROLLBACK;
-        LEAVE sp_routing_label_delete;
+        LEAVE proc;
     END IF;
-
-    -- Soft delete (set is_active = 0)
-    UPDATE routing_labels
-    SET is_active = 0
-    WHERE id = p_label_id;
-
-    IF ROW_COUNT() = 0 THEN
-        SET p_status = -1;
-        SET p_error_msg = 'Label not found';
-        ROLLBACK;
-        LEAVE sp_routing_label_delete;
-    END IF;
-
-    SET p_status = 1;
-    SET p_error_msg = 'Label deleted successfully';
-
+    
+    -- Delete label
+    DELETE FROM routing_labels
+    WHERE id = p_id;
+    
+    -- Commit transaction
     COMMIT;
-END $$
+END proc$$
 
 DELIMITER ;

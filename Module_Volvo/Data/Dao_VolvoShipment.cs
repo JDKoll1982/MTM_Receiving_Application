@@ -140,6 +140,25 @@ public class Dao_VolvoShipment
     }
 
     /// <summary>
+    /// Deletes a shipment and all its lines (CASCADE DELETE)
+    /// </summary>
+    /// <param name="shipmentId">Shipment ID to delete</param>
+    /// <returns>Model_Dao_Result indicating success/failure</returns>
+    public async Task<Model_Dao_Result> DeleteAsync(int shipmentId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "shipment_id", shipmentId }
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_volvo_shipment_delete",
+            parameters
+        );
+    }
+
+    /// <summary>
     /// Gets the pending shipment if one exists
     /// </summary>
     /// <returns>Model_Dao_Result with pending shipment or null if none exists</returns>

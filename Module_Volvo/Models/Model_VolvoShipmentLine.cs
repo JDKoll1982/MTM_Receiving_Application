@@ -99,6 +99,7 @@ public partial class Model_VolvoShipmentLine : ObservableObject
     /// </summary>
     partial void OnQuantityPerSkidChanged(int value)
     {
+        CalculatedPieceCount = ReceivedSkidCount * value;
         OnPropertyChanged(nameof(ExpectedPieceCount));
         OnPropertyChanged(nameof(PieceDifference));
     }

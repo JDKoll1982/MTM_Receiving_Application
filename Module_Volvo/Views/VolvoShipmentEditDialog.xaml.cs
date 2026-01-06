@@ -43,9 +43,6 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         {
             Lines.Add(line);
         }
-
-        // Show/hide CSV warning based on status
-        CsvWarningBar.IsOpen = shipment.Status == "completed";
     }
 
     public Model_VolvoShipment GetUpdatedShipment()

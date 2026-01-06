@@ -244,19 +244,8 @@ public class Service_Volvo : IService_Volvo
             string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
             Directory.CreateDirectory(csvDirectory);
 
-            // Generate CSV file path
-            string dateStr = shipment.ShipmentDate.ToString("yyyyMMdd");
-            string fileName = $"Shipment_{shipmentId}_{dateStr}.csv";
-            // Validate filename contains no invalid path characters
-            if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-            {
-                return new Model_Dao_Result<string>
-                {
-                    Success = false,
-                    ErrorMessage = "Generated filename contains invalid characters",
-                    Severity = Enum_ErrorSeverity.Error
-                };
-            }
+            // Use fixed filename Volvo_Labels.csv (overwrites previous)
+            string fileName = "Volvo_Labels.csv";
             string filePath = Path.Combine(csvDirectory, fileName);
 
             // Build CSV content
@@ -329,14 +318,16 @@ public class Service_Volvo : IService_Volvo
         {
             emailText.AppendLine("**DISCREPANCIES NOTED**");
             emailText.AppendLine();
-            emailText.AppendLine("Part Number\tPacklist Qty\tReceived Qty\tDifference\tNote");
+            emailText.AppendLine("Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote");
             emailText.AppendLine(new string('-', 80));
 
             foreach (var line in discrepancies)
             {
-                int difference = line.ReceivedSkidCount - (int)(line.ExpectedSkidCount ?? 0);
+                int expectedPieces = line.ExpectedPieceCount ?? 0;
+                int receivedPieces = line.CalculatedPieceCount;
+                int difference = receivedPieces - expectedPieces;
                 string diffStr = difference > 0 ? $"+{difference}" : difference.ToString();
-                emailText.AppendLine($"{line.PartNumber}\t{line.ExpectedSkidCount}\t{line.ReceivedSkidCount}\t{diffStr}\t{line.DiscrepancyNote ?? ""}");
+                emailText.AppendLine($"{line.PartNumber}\t{expectedPieces}\t{receivedPieces}\t{diffStr}\t{line.DiscrepancyNote ?? ""}");
             }
 
             emailText.AppendLine();
@@ -362,10 +353,6 @@ public class Service_Volvo : IService_Volvo
             emailText.AppendLine(shipment.Notes);
             emailText.AppendLine();
         }
-
-        // Signature
-        emailText.AppendLine("Thank you,");
-        emailText.AppendLine($"Employee #{shipment.EmployeeNumber}");
 
         await _logger.LogInfoAsync("Email text formatted");
 
@@ -393,19 +380,21 @@ public class Service_Volvo : IService_Volvo
             Message = $"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:",
             RequestedLines = requestedLines,
             AdditionalNotes = string.IsNullOrWhiteSpace(shipment.Notes) ? null : shipment.Notes,
-            Signature = $"Thank you,\\nEmployee #{shipment.EmployeeNumber}"
+            Signature = string.Empty
         };
 
         // Build discrepancy list
         var discrepancies = lines.Where(l => l.HasDiscrepancy).ToList();
         foreach (var line in discrepancies)
         {
-            int difference = line.ReceivedSkidCount - (int)(line.ExpectedSkidCount ?? 0);
+            int expectedPieces = line.ExpectedPieceCount ?? 0;
+            int receivedPieces = line.CalculatedPieceCount;
+            int difference = receivedPieces - expectedPieces;
             emailData.Discrepancies.Add(new Model_VolvoEmailData.DiscrepancyLineItem
             {
                 PartNumber = line.PartNumber,
-                PacklistQty = (int)(line.ExpectedSkidCount ?? 0),
-                ReceivedQty = line.ReceivedSkidCount,
+                PacklistQty = expectedPieces,
+                ReceivedQty = receivedPieces,
                 Difference = difference,
                 Note = line.DiscrepancyNote ?? string.Empty
             });
@@ -552,9 +541,11 @@ public class Service_Volvo : IService_Volvo
     /// </summary>
     /// <param name="shipment"></param>
     /// <param name="lines"></param>
+    /// <param name="overwriteExisting">If true, deletes any existing pending shipment before saving</param>
     public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
         Model_VolvoShipment shipment,
-        List<Model_VolvoShipmentLine> lines)
+        List<Model_VolvoShipmentLine> lines,
+        bool overwriteExisting = false)
     {
         try
         {
@@ -572,16 +563,36 @@ public class Service_Volvo : IService_Volvo
 
             await _logger.LogInfoAsync("Saving Volvo shipment as pending PO");
 
-            // Validate: Only one pending shipment allowed
+            // Check for existing pending shipment
             var existingPendingResult = await _shipmentDao.GetPendingAsync();
             if (existingPendingResult.IsSuccess && existingPendingResult.Data != null)
             {
-                return new Model_Dao_Result<(int, int)>
+                if (overwriteExisting)
                 {
-                    Success = false,
-                    ErrorMessage = $"A pending shipment already exists (Shipment #{existingPendingResult.Data.ShipmentNumber} from {existingPendingResult.Data.ShipmentDate:MM/dd/yyyy}). Please complete it before creating a new one.",
-                    Severity = Enum_ErrorSeverity.Warning
-                };
+                    // Delete the existing pending shipment
+                    await _logger.LogInfoAsync($"Deleting existing pending shipment #{existingPendingResult.Data.ShipmentNumber}");
+                    var deleteResult = await _shipmentDao.DeleteAsync(existingPendingResult.Data.Id);
+                    if (!deleteResult.IsSuccess)
+                    {
+                        return new Model_Dao_Result<(int, int)>
+                        {
+                            Success = false,
+                            ErrorMessage = $"Failed to delete existing shipment: {deleteResult.ErrorMessage}",
+                            Severity = Enum_ErrorSeverity.Error
+                        };
+                    }
+                }
+                else
+                {
+                    // Return the existing shipment info so the UI can prompt for overwrite
+                    return new Model_Dao_Result<(int, int)>
+                    {
+                        Success = false,
+                        ErrorMessage = $"PENDING_EXISTS|{existingPendingResult.Data.ShipmentNumber}|{existingPendingResult.Data.ShipmentDate:MM/dd/yyyy}",
+                        Data = (existingPendingResult.Data.Id, existingPendingResult.Data.ShipmentNumber),
+                        Severity = Enum_ErrorSeverity.Warning
+                    };
+                }
             }
 
             // Validate: At least one line required
@@ -629,6 +640,8 @@ public class Service_Volvo : IService_Volvo
             int shipmentId = insertResult.Data.ShipmentId;
             int shipmentNumber = insertResult.Data.ShipmentNumber;
 
+            await _logger.LogInfoAsync($"Starting line insertion transaction for shipment {shipmentId}, {lines.Count} lines to insert");
+
             // Insert lines within transaction for data integrity
             await using var connection = new MySqlConnection(Helper_Database_Variables.GetConnectionString());
             await connection.OpenAsync();
@@ -636,29 +649,53 @@ public class Service_Volvo : IService_Volvo
 
             try
             {
+                int lineIndex = 0;
                 foreach (var line in lines)
                 {
+                    lineIndex++;
                     line.ShipmentId = shipmentId;
+
+                    await _logger.LogInfoAsync($"Inserting line {lineIndex}/{lines.Count}: " +
+                        $"Part={line.PartNumber}, " +
+                        $"Skids={line.ReceivedSkidCount}, " +
+                        $"Pieces={line.CalculatedPieceCount}, " +
+                        $"HasDiscrepancy={line.HasDiscrepancy}, " +
+                        $"ExpectedSkids={line.ExpectedSkidCount?.ToString() ?? "NULL"}, " +
+                        $"Note={(!string.IsNullOrEmpty(line.DiscrepancyNote) ? "PROVIDED" : "NULL")}");
+
+                    var parameters = new Dictionary<string, object>
+                    {
+                        { "shipment_id", line.ShipmentId },
+                        { "part_number", line.PartNumber },
+                        { "received_skid_count", line.ReceivedSkidCount },
+                        { "calculated_piece_count", line.CalculatedPieceCount },
+                        { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
+                        { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
+                        { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+                    };
+
+                    await _logger.LogInfoAsync($"Parameters: {string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}"))}");
+
                     var lineResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
                         connection,
                         (MySqlTransaction)transaction,
                         "sp_volvo_shipment_line_insert",
-                        new Dictionary<string, object>
-                        {
-                            { "shipment_id", line.ShipmentId },
-                            { "part_number", line.PartNumber },
-                            { "quantity_per_skid", line.QuantityPerSkid },
-                            { "received_skid_count", line.ReceivedSkidCount },
-                            { "calculated_piece_count", line.CalculatedPieceCount },
-                            { "has_discrepancy", line.HasDiscrepancy },
-                            { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
-                            { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
-                        });
+                        parameters);
 
                     if (!lineResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
-                        await _logger.LogErrorAsync($"Failed to insert line for part {line.PartNumber}, rolling back");
+                        await _logger.LogErrorAsync($"Failed to insert line {lineIndex} for part {line.PartNumber}");
+                        await _logger.LogErrorAsync($"Error: {lineResult.ErrorMessage}");
+                        if (lineResult.Exception != null)
+                        {
+                            await _logger.LogErrorAsync($"Exception Type: {lineResult.Exception.GetType().Name}");
+                            await _logger.LogErrorAsync($"Exception Message: {lineResult.Exception.Message}");
+                            if (lineResult.Exception.InnerException != null)
+                            {
+                                await _logger.LogErrorAsync($"Inner Exception: {lineResult.Exception.InnerException.Message}");
+                            }
+                        }
                         return new Model_Dao_Result<(int, int)>
                         {
                             Success = false,
@@ -666,10 +703,12 @@ public class Service_Volvo : IService_Volvo
                             Severity = Enum_ErrorSeverity.Error
                         };
                     }
+
+                    await _logger.LogInfoAsync($"Line {lineIndex} inserted successfully");
                 }
 
                 await transaction.CommitAsync();
-                await _logger.LogInfoAsync($"Shipment {shipmentId} saved with {lines.Count} lines");
+                await _logger.LogInfoAsync($"Transaction committed: Shipment {shipmentId} saved with {lines.Count} lines");
 
                 return new Model_Dao_Result<(int, int)>
                 {

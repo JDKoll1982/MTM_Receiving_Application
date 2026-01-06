@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -48,6 +50,23 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         : base(errorHandler, logger)
     {
         _volvoService = volvoService ?? throw new ArgumentNullException(nameof(volvoService));
+    }
+
+    #endregion
+
+    #region Navigation Commands
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        if (App.MainWindow is MainWindow mainWindow)
+        {
+            var contentFrame = mainWindow.GetContentFrame();
+            if (contentFrame != null && contentFrame.CanGoBack)
+            {
+                contentFrame.GoBack();
+            }
+        }
     }
 
     #endregion
@@ -121,16 +140,59 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 
         try
         {
+            IsBusy = true;
             StatusMessage = $"Loading details for shipment #{SelectedShipment.ShipmentNumber}...";
+            await _logger.LogInfoAsync($"Loading details for shipment ID: {SelectedShipment.Id}");
 
             // Get shipment lines
             var result = await _volvoService.GetShipmentLinesAsync(SelectedShipment.Id);
 
             if (result.IsSuccess && result.Data != null)
             {
-                // Show detail flyout/dialog with shipment lines
-                // For now, just update status message
-                StatusMessage = $"Loaded {result.Data.Count} line(s) for shipment #{SelectedShipment.ShipmentNumber}";
+                // Build detail message
+                var details = new System.Text.StringBuilder();
+                details.AppendLine($"Shipment #{SelectedShipment.ShipmentNumber}");
+                details.AppendLine($"Date: {SelectedShipment.ShipmentDate:d}");
+                details.AppendLine($"PO Number: {SelectedShipment.PONumber ?? "N/A"}");
+                details.AppendLine($"Receiver: {SelectedShipment.ReceiverNumber ?? "N/A"}");
+                details.AppendLine($"Status: {SelectedShipment.Status}");
+                details.AppendLine();
+                details.AppendLine($"Parts ({result.Data.Count}):");
+                foreach (var line in result.Data)
+                {
+                    details.AppendLine($"  • {line.PartNumber}: {line.ReceivedSkidCount} skids ({line.CalculatedPieceCount} pieces)");
+                    if (line.HasDiscrepancy)
+                    {
+                        details.AppendLine($"    ⚠ Discrepancy: Expected {line.ExpectedSkidCount} skids");
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(SelectedShipment.Notes))
+                {
+                    details.AppendLine();
+                    details.AppendLine($"Notes: {SelectedShipment.Notes}");
+                }
+
+                // Show dialog
+                var dialog = new ContentDialog
+                {
+                    Title = $"Shipment #{SelectedShipment.ShipmentNumber} Details",
+                    Content = new ScrollViewer
+                    {
+                        Content = new TextBlock
+                        {
+                            Text = details.ToString(),
+                            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas")
+                        },
+                        MaxHeight = 500
+                    },
+                    CloseButtonText = "Close",
+                    XamlRoot = App.MainWindow?.Content?.XamlRoot
+                };
+                await dialog.ShowAsync();
+
+                StatusMessage = $"Viewed details for shipment #{SelectedShipment.ShipmentNumber}";
+                await _logger.LogInfoAsync($"Successfully loaded {result.Data.Count} lines");
             }
             else
             {
@@ -138,6 +200,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                     result.ErrorMessage ?? "Failed to load shipment details",
                     "Load Error",
                     nameof(ViewDetailAsync));
+                StatusMessage = "Failed to load details";
             }
         }
         catch (Exception ex)
@@ -147,6 +210,11 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 Enum_ErrorSeverity.Medium,
                 nameof(ViewDetailAsync),
                 nameof(ViewModel_Volvo_History));
+            StatusMessage = "Error loading details";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

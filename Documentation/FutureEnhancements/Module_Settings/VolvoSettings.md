@@ -73,22 +73,72 @@ if (Parts.Any(p => p.PartNumber.Equals(SelectedPartToAdd.PartNumber, StringCompa
 
 ### 4. Email Formatting
 
-| Setting Name | Current Value | Type | Description | Validation |
-|--------------|---------------|------|-------------|------------|
-| **Email Subject Template** | `PO Requisition - Volvo Dunnage - {Date} Shipment #{Number}` | String Template | Email subject line format | Variables: `{Date}`, `{Number}`, `{EmployeeNumber}` |
-| **Email Greeting** | `Good morning,` | String | Opening greeting for email body | Max 100 chars |
-| **Email Signature** | `Thank you,\nEmployee #{EmployeeNumber}` | String | Closing signature for email | Variables: `{EmployeeNumber}`, `{UserName}` |
-| **Include Discrepancy Table** | `true` | Boolean | Show discrepancy section if applicable | N/A |
+| Setting Name | Current Value | Type | Description | Validation | Status |
+|--------------|---------------|------|-------------|------------|--------|
+| **Email To Recipients** | JSON array: `[{"name":"Jose Rosas","email":"jrosas@mantoolmfg.com"},...]` | String (JSON) | JSON array of primary recipients with separate name and email fields | Must be valid JSON array with name/email objects | ✅ **IMPLEMENTED** |
+| **Email CC Recipients** | JSON array: `[{"name":"Debra Alexander","email":"dalexander@mantoolmfg.com"},...]` | String (JSON) | JSON array of CC recipients with separate name and email fields | Must be valid JSON array with name/email objects | ✅ **IMPLEMENTED** |
+| **Email Subject Template** | `PO Requisition - Volvo Dunnage - {Date} Shipment #{Number}` | String Template | Email subject line format | Variables: `{Date}`, `{Number}`, `{EmployeeNumber}` | 📝 Stored in DB |
+| **Email Greeting** | `Good morning,` | String | Opening greeting for email body | Max 100 chars | 📝 Stored in DB |
+| **Include Discrepancy Table** | `true` | Boolean | Show discrepancy section if applicable | N/A | 🔜 Planned |
 
 **Implementation Notes:**
-- Templates use `{Variable}` syntax for replacement
-- Support multiline for greeting/signature with `\n` or rich text editor
-- Preview button to show example email
+- ✅ TO/CC recipients stored in `volvo_settings` table as JSON arrays
+- ✅ Each recipient has separate `name` and `email` fields for easy editing
+- ✅ Application automatically formats into Outlook format: `"Name" <email@domain.com>`
+- Multiple recipients separated by semicolon (`;`) when displayed
+- Recipients loaded from database and shown in email preview with dedicated Copy buttons
+- ✅ Stored procedures created: `sp_volvo_settings_get`, `sp_volvo_settings_get_all`, `sp_volvo_settings_upsert`, `sp_volvo_settings_reset`
+- ✅ Migration script created to populate initial default values in JSON format
+- ✅ `Model_EmailRecipient` class with `ToOutlookFormat()` method
+- Settings UI will allow easy add/remove of recipients with name/email fields
+- JSON format example: `[{"name":"John Doe","email":"jdoe@example.com"}]`
+- Validation ensures proper JSON structure and required fields
 
-**Current Code Location:**
+**Database Schema:**
+```sql
+CREATE TABLE volvo_settings (
+    setting_key VARCHAR(100) PRIMARY KEY,
+    setting_value TEXT NOT NULL,  -- JSON array for recipients
+    setting_type ENUM('String','Integer','Boolean','Path','Enum') NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    description TEXT,
+    default_value TEXT NOT NULL,
+    min_value INT NULL,
+    max_value INT NULL,
+    modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    modified_by VARCHAR(50),
+    INDEX idx_category (category)
+);
+```
+
+**Recipient JSON Format:**
+```json
+[
+  {"name": "Jose Rosas", "email": "jrosas@mantoolmfg.com"},
+  {"name": "Sandy Miller", "email": "smiller@mantoolmfg.com"}
+]
+```
+
+**Current Code Locations:**
 ```csharp
 // Services/Service_Volvo.cs - FormatEmailTextAsync() Lines 295-355
+// ViewModels/ViewModel_Volvo_ShipmentEntry.cs - ShowEmailPreviewDialogAsync()
+// ViewModels/ViewModel_Volvo_ShipmentEntry.cs - FormatRecipientsFromJson()
+// Data/Dao_VolvoSettings.cs - Settings database access
+// Models/Model_VolvoSetting.cs - Settings model
+// Models/Model_EmailRecipient.cs - Recipient model with formatting
 ```
+
+**Files Created:**
+- `Database/Schemas/volvo_settings.sql` - Table schema
+- `Database/Migrations/001_volvo_settings_initial_data.sql` - Initial data migration (JSON format)
+- `Database/StoredProcedures/Volvo/sp_volvo_settings_get.sql` - Get single setting
+- `Database/StoredProcedures/Volvo/sp_volvo_settings_get_all.sql` - Get all settings
+- `Database/StoredProcedures/Volvo/sp_volvo_settings_upsert.sql` - Insert/update setting
+- `Database/StoredProcedures/Volvo/sp_volvo_settings_reset.sql` - Reset to default
+- `Module_Volvo/Models/Model_VolvoSetting.cs` - Settings model
+- `Module_Volvo/Models/Model_EmailRecipient.cs` - Recipient model
+- `Module_Volvo/Data/Dao_VolvoSettings.cs` - Settings DAO
 
 ---
 

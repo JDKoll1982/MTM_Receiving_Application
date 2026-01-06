@@ -18,6 +18,7 @@ BEGIN
   SELECT 
     s.id, s.shipment_date, s.shipment_number, s.po_number, s.receiver_number,
     s.employee_number, s.notes, s.status, s.created_date, s.modified_date,
+    s.is_archived,
     COUNT(l.id) as part_count
   FROM volvo_shipments s
   LEFT JOIN volvo_shipment_lines l ON s.id = l.shipment_id

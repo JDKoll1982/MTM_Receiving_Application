@@ -80,10 +80,12 @@ public interface IService_Volvo
     /// </summary>
     /// <param name="shipment">Shipment header data</param>
     /// <param name="lines">Shipment line items</param>
+    /// <param name="overwriteExisting">If true, deletes any existing pending shipment before saving</param>
     /// <returns>Tuple of (ShipmentId, ShipmentNumber) for the saved shipment</returns>
     public Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
         Model_VolvoShipment shipment,
-        List<Model_VolvoShipmentLine> lines);
+        List<Model_VolvoShipmentLine> lines,
+        bool overwriteExisting = false);
 
     /// <summary>
     /// Gets pending shipment if one exists (status='pending_po')

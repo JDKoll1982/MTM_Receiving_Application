@@ -15,6 +15,11 @@ namespace MTM_Receiving_Application
         private readonly IService_UserSessionManager _sessionManager;
         private bool _hasNavigatedOnStartup = false;
 
+        /// <summary>
+        /// Gets the main content frame for navigation
+        /// </summary>
+        public Frame GetContentFrame() => ContentFrame;
+
         public MainWindow(ViewModel_Shared_MainWindow viewModel, IService_UserSessionManager sessionManager)
         {
             InitializeComponent();
