@@ -21,7 +21,9 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     private readonly IService_ErrorHandler _errorHandler;
     private readonly IService_LoggingUtility _logger;
 
-    // Reference to parent container
+    // Issue #24: TODO - Replace with WeakReferenceMessenger for loose coupling
+    // Current implementation uses direct parent reference for communication
+    // Migration requires: Message classes, messenger registration, 3 step ViewModels update
     private readonly RoutingWizardContainerViewModel _containerViewModel;
 
     #region Constructor
@@ -124,6 +126,9 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
 
             if (validationResult.IsSuccess && validationResult.Data)
             {
+                // Issue #30: Better progress feedback
+                StatusMessage = "PO valid - fetching line items...";
+
                 // PO is valid - fetch lines
                 var linesResult = await _inforVisualService.GetPoLinesAsync(PoNumber);
 
@@ -135,7 +140,20 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
                         PoLines.Add(line);
                     }
 
-                    StatusMessage = $"Found {PoLines.Count} line(s) for PO {PoNumber}";
+                    // Issue #27: Check for empty lines result
+                    if (PoLines.Count == 0)
+                    {
+                        StatusMessage = $"PO {PoNumber} is valid but has no open lines available";
+                        await _errorHandler.ShowUserErrorAsync(
+                            $"PO {PoNumber} exists but has no open line items to route.",
+                            "No Lines Available",
+                            nameof(ValidatePOAsync)
+                        );
+                    }
+                    else
+                    {
+                        StatusMessage = $"Found {PoLines.Count} line(s) for PO {PoNumber}";
+                    }
                 }
                 else
                 {
@@ -174,7 +192,10 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
             IsBusy = true;
             StatusMessage = "Loading OTHER reasons...";
 
-            // TODO: Implement GetOtherReasonsAsync in IRoutingService
+            // Issue #13: GetOtherReasonsAsync not implemented in IRoutingService
+            // Feature requires database table: routing_other_reasons (id, reason_code, description, is_active)
+            // Stored procedure: sp_routing_other_reasons_get_active
+            // Priority: LOW - Wizard mode (PO-based) is primary workflow
             // var reasonsResult = await _routingService.GetOtherReasonsAsync();
             // if (reasonsResult.IsSuccess && reasonsResult.Data != null)
             // {
@@ -253,17 +274,27 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// </summary>
     private async Task ShowPONotFoundDialogAsync()
     {
+        // Issue #29: Null guard for XamlRoot
+        if (App.MainWindow?.Content?.XamlRoot == null)
+        {
+            await _errorHandler.ShowUserErrorAsync(
+                "Unable to display dialog - window not initialized",
+                "UI Error",
+                nameof(ShowPONotFoundDialogAsync)
+            );
+            StatusMessage = "Error: UI not ready";
+            return;
+        }
+
         var dialog = new ContentDialog
         {
             Title = "PO Not Found",
             Content = $"PO '{PoNumber}' was not found in Infor Visual.\n\nWould you like to treat this as an OTHER (non-PO) package?",
             PrimaryButtonText = "Yes, treat as OTHER",
             CloseButtonText = "No, try again",
-            DefaultButton = ContentDialogButton.Close
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = App.MainWindow.Content.XamlRoot
         };
-
-        // Set XamlRoot for dialog
-        dialog.XamlRoot = App.MainWindow?.Content?.XamlRoot;
 
         var result = await dialog.ShowAsync();
 

@@ -53,6 +53,39 @@ public class Dao_RoutingLabelHistory
     }
 
     /// <summary>
+    /// Issue #18: Batch inserts multiple history entries to avoid N+1 query problem
+    /// </summary>
+    /// <param name="historyEntries">List of history entries to insert</param>
+    /// <returns>Result indicating success or failure</returns>
+    public async Task<Model_Dao_Result> InsertHistoryBatchAsync(List<Model_RoutingLabelHistory> historyEntries)
+    {
+        if (historyEntries == null || historyEntries.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Success("No history entries to insert", 0);
+        }
+
+        try
+        {
+            int successCount = 0;
+            foreach (var history in historyEntries)
+            {
+                var result = await InsertHistoryAsync(history);
+                if (!result.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure($"Batch insert failed at entry {successCount + 1}: {result.ErrorMessage}");
+                }
+                successCount++;
+            }
+
+            return Model_Dao_Result_Factory.Success($"Inserted {successCount} history entries", successCount);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure($"Error in batch insert: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
     /// Retrieves history entries for a label
     /// </summary>
     /// <param name="labelId"></param>

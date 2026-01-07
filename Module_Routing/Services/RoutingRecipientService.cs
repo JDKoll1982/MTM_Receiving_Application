@@ -40,6 +40,10 @@ public class RoutingRecipientService : IRoutingRecipientService
         }
     }
 
+    /// <summary>
+    /// Retrieves all active recipients
+    /// </summary>
+    /// <returns>Result with list of all active recipients</returns>
     public async Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetAllRecipientsAsync()
     {
         try
@@ -49,8 +53,9 @@ public class RoutingRecipientService : IRoutingRecipientService
         }
         catch (Exception ex)
         {
+            // Issue #11: Standardized error handling pattern
             await _logger.LogErrorAsync($"Error getting all recipients: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_RoutingRecipient>>($"Error getting recipients: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_RoutingRecipient>>($"Failed to retrieve recipients: {ex.Message}", ex);
         }
     }
 
@@ -112,6 +117,20 @@ public class RoutingRecipientService : IRoutingRecipientService
         {
             await _logger.LogErrorAsync($"Error getting Quick Add recipients: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_RoutingRecipient>>($"Error getting Quick Add recipients: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<Model_Dao_Result<bool>> ValidateRecipientExistsAsync(int recipientId)
+    {
+        try
+        {
+            var recipientResult = await GetRecipientByIdAsync(recipientId);
+            return Model_Dao_Result_Factory.Success(recipientResult.IsSuccess);
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error validating recipient {recipientId}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<bool>($"Error validating recipient: {ex.Message}", ex);
         }
     }
 }

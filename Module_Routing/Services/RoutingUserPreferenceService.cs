@@ -25,6 +25,11 @@ public class RoutingUserPreferenceService : IRoutingUserPreferenceService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Retrieves user preferences for the specified employee
+    /// </summary>
+    /// <param name="employeeNumber">Employee number</param>
+    /// <returns>Result with user preference or null if not found</returns>
     public async Task<Model_Dao_Result<Model_RoutingUserPreference>> GetUserPreferenceAsync(int employeeNumber)
     {
         try
@@ -50,11 +55,17 @@ public class RoutingUserPreferenceService : IRoutingUserPreferenceService
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error getting user preference: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<Model_RoutingUserPreference>($"Error getting preferences: {ex.Message}", ex);
+            // Issue #11: Standardized error handling pattern
+            await _logger.LogErrorAsync($"Error getting user preference for employee {employeeNumber}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<Model_RoutingUserPreference>($"Failed to retrieve user preferences: {ex.Message}", ex);
         }
     }
 
+    /// <summary>
+    /// Saves or updates user preferences
+    /// </summary>
+    /// <param name="preference">User preference to save</param>
+    /// <returns>Result indicating success or failure</returns>
     public async Task<Model_Dao_Result> SaveUserPreferenceAsync(Model_RoutingUserPreference preference)
     {
         try
@@ -76,6 +87,11 @@ public class RoutingUserPreferenceService : IRoutingUserPreferenceService
         }
     }
 
+    /// <summary>
+    /// Resets user preferences to default values
+    /// </summary>
+    /// <param name="employeeNumber">Employee number</param>
+    /// <returns>Result indicating success or failure</returns>
     public async Task<Model_Dao_Result> ResetToDefaultsAsync(int employeeNumber)
     {
         try

@@ -24,6 +24,12 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Increments the usage count for a recipient-employee pair
+    /// </summary>
+    /// <param name="employeeNumber">Employee number creating the label</param>
+    /// <param name="recipientId">ID of the recipient</param>
+    /// <returns>Result indicating success or failure</returns>
     public async Task<Model_Dao_Result> IncrementUsageCountAsync(int employeeNumber, int recipientId)
     {
         try
@@ -38,13 +44,22 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
         }
     }
 
+    /// <summary>
+    /// Gets the usage count for a specific employee-recipient pair
+    /// </summary>
+    /// <param name="employeeNumber">Employee number</param>
+    /// <param name="recipientId">Recipient ID</param>
+    /// <returns>Result with usage count</returns>
     public async Task<Model_Dao_Result<int>> GetUsageCountAsync(int employeeNumber, int recipientId)
     {
         try
         {
             await _logger.LogInfoAsync($"Getting usage count for employee {employeeNumber}, recipient {recipientId}");
 
-            // TODO: Would need a new DAO method to get specific count
+            // Issue #13: GetUsageCountAsync requires new DAO method
+            // Would need: sp_routing_usage_tracking_get_count(p_employee_number, p_recipient_id)
+            // Returns: COUNT(*) or SUM(usage_count) from routing_usage_tracking table
+            // Priority: LOW - Feature not critical for production
             // For now, returning success with 0 as fallback
             await Task.CompletedTask;
             return Model_Dao_Result_Factory.Success<int>(0);
@@ -62,7 +77,12 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
         {
             await _logger.LogInfoAsync($"Getting label count for employee {employeeNumber}");
 
-            // TODO: Would need a new DAO method or query routing_usage_tracking SUM(usage_count)
+            // Issue #13: GetEmployeeLabelCountAsync requires aggregation query
+            // Would need: sp_routing_usage_tracking_get_employee_total(p_employee_number)
+            // Returns: Total label count for employee across all recipients
+            // Issue #28: When implementing, add zero-check guard to prevent division by zero
+            // Example: if (totalCount == 0) return 0; before calculating percentages
+            // Priority: LOW - Analytics feature, not blocking for core functionality
             // For now, returning success with 0 as fallback
             await Task.CompletedTask;
             return Model_Dao_Result_Factory.Success<int>(0);

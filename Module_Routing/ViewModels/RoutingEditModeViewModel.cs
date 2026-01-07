@@ -18,6 +18,7 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
 {
     private readonly IRoutingService _routingService;
     private readonly IRoutingRecipientService _recipientService;
+    private readonly IService_UserSessionManager _sessionManager;
 
     [ObservableProperty]
     private ObservableCollection<Model_RoutingLabel> _labels = new();
@@ -38,11 +39,13 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
         IRoutingService routingService,
         IRoutingRecipientService recipientService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger,
+        IService_UserSessionManager sessionManager)
         : base(errorHandler, logger)
     {
         _routingService = routingService;
         _recipientService = recipientService;
+        _sessionManager = sessionManager;
     }
 
     /// <summary>
@@ -114,13 +117,14 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
 
         var searchLower = SearchText?.ToLower() ?? string.Empty;
 
+        // Issue #19: Optimized collection filtering - using ToList() to materialize before loop
         var filtered = string.IsNullOrWhiteSpace(searchLower)
-            ? Labels
+            ? Labels.ToList()
             : Labels.Where(l =>
                 (l.PONumber?.ToLower().Contains(searchLower) ?? false) ||
                 (l.RecipientName?.ToLower().Contains(searchLower) ?? false) ||
                 (l.Description?.ToLower().Contains(searchLower) ?? false)
-            );
+            ).ToList();
 
         foreach (var label in filtered)
         {
@@ -150,8 +154,10 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
             // Compare and log changes
             await CompareAndLogChangesAsync(SelectedLabel, editedLabel);
 
-            // Update label - TODO: Get current employee number from session
-            var updateResult = await _routingService.UpdateLabelAsync(editedLabel, 6229);
+            // Issue #13: Update label - Get current employee number from session
+            // Issue #7: Implemented using IService_UserSessionManager
+            var currentEmployeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
+            var updateResult = await _routingService.UpdateLabelAsync(editedLabel, currentEmployeeNumber);
 
             if (updateResult.IsSuccess)
             {
@@ -184,62 +190,15 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
     }
 
     /// <summary>
-    /// Compare old and new label, log changes to audit trail
+    /// Compare old and new label - history logging handled by RoutingService.UpdateLabelAsync
     /// </summary>
     /// <param name="oldLabel"></param>
     /// <param name="newLabel"></param>
     private async Task CompareAndLogChangesAsync(Model_RoutingLabel oldLabel, Model_RoutingLabel newLabel)
     {
-        // Check RecipientID change
-        if (oldLabel.RecipientId != newLabel.RecipientId)
-        {
-            var history = new Model_RoutingLabelHistory
-            {
-                LabelId = oldLabel.Id,
-                FieldChanged = "RecipientId",
-                OldValue = oldLabel.RecipientId.ToString(),
-                NewValue = newLabel.RecipientId.ToString(),
-                EditedBy = oldLabel.CreatedBy, // TODO: Get current user from session
-                EditDate = DateTime.Now
-            };
-
-            // TODO: Implement LogLabelHistoryAsync in IRoutingService
-            // await _routingService.LogLabelHistoryAsync(history);
-        }
-
-        // Check Quantity change
-        if (oldLabel.Quantity != newLabel.Quantity)
-        {
-            var history = new Model_RoutingLabelHistory
-            {
-                LabelId = oldLabel.Id,
-                FieldChanged = "Quantity",
-                OldValue = oldLabel.Quantity.ToString(),
-                NewValue = newLabel.Quantity.ToString(),
-                EditedBy = oldLabel.CreatedBy,
-                EditDate = DateTime.Now
-            };
-
-            // TODO: Implement LogLabelHistoryAsync in IRoutingService
-            // await _routingService.LogLabelHistoryAsync(history);
-        }
-
-        // Check OtherReasonID change
-        if (oldLabel.OtherReasonId != newLabel.OtherReasonId)
-        {
-            var history = new Model_RoutingLabelHistory
-            {
-                LabelId = oldLabel.Id,
-                FieldChanged = "OtherReasonId",
-                OldValue = oldLabel.OtherReasonId?.ToString() ?? "NULL",
-                NewValue = newLabel.OtherReasonId?.ToString() ?? "NULL",
-                EditedBy = oldLabel.CreatedBy,
-                EditDate = DateTime.Now
-            };
-
-            // TODO: Implement LogLabelHistoryAsync in IRoutingService
-            // await _routingService.LogLabelHistoryAsync(history);
-        }
+        // History logging is now handled automatically by RoutingService.UpdateLabelAsync
+        // This method is kept for potential future custom validation before save
+        await Task.CompletedTask;
     }
 
     /// <summary>

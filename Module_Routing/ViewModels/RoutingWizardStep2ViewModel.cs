@@ -19,6 +19,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     private readonly IRoutingRecipientService _recipientService;
     private readonly IService_ErrorHandler _errorHandler;
     private readonly IService_LoggingUtility _logger;
+    private readonly IService_UserSessionManager _sessionManager;
     private readonly RoutingWizardContainerViewModel _containerViewModel;
 
     // Full list for filtering
@@ -29,11 +30,13 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
         IRoutingRecipientService recipientService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
+        IService_UserSessionManager sessionManager,
         RoutingWizardContainerViewModel containerViewModel)
     {
         _recipientService = recipientService;
         _errorHandler = errorHandler;
         _logger = logger;
+        _sessionManager = sessionManager;
         _containerViewModel = containerViewModel;
     }
     #endregion
@@ -184,11 +187,12 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
         else
         {
             // Filter by name, location, or department (case-insensitive)
+            // Issue #19: Optimized collection filtering - materialize before iteration
             var searchLower = SearchText.ToLower();
             var filtered = _allRecipients.Where(r =>
                 r.Name.ToLower().Contains(searchLower) ||
                 (r.Location?.ToLower().Contains(searchLower) ?? false) ||
-                (r.Department?.ToLower().Contains(searchLower) ?? false));
+                (r.Department?.ToLower().Contains(searchLower) ?? false)).ToList();
 
             foreach (var recipient in filtered)
             {
@@ -248,12 +252,11 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     #region Helper Methods
     /// <summary>
     /// Get current employee number from session
-    /// TODO: Replace with actual session service
+    /// Issue #7: Implemented using IService_UserSessionManager
     /// </summary>
     private int GetCurrentEmployeeNumber()
     {
-        // Placeholder - replace with ISessionService
-        return 6229; // Default employee number
+        return _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
     }
 
     /// <summary>

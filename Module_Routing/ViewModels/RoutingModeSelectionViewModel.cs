@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Routing.Enums;
 using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
+
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
 
 /// <summary>
@@ -19,6 +20,8 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
 {
     private readonly IRoutingUserPreferenceService _userPreferenceService;
     private readonly IService_Navigation _navigationService;
+    private readonly IService_UserSessionManager _sessionManager;
+
     private Frame? _frame;
 
     // Separate default flags for each mode
@@ -30,9 +33,11 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
         IRoutingUserPreferenceService userPreferenceService,
         IService_Navigation navigationService,
         IService_ErrorHandler errorHandler,
+        IService_UserSessionManager sessionManager,
         IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
+        _sessionManager = sessionManager;
         _userPreferenceService = userPreferenceService;
         _navigationService = navigationService;
     }
@@ -40,6 +45,7 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
     /// <summary>
     /// Sets the navigation frame
     /// </summary>
+    /// <param name="frame"></param>
     public void SetNavigationFrame(Frame frame)
     {
         _frame = frame;
@@ -55,8 +61,8 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading preferences...";
 
-            // TODO: Get current employee number from session
-            int employeeNumber = 6229; // Placeholder
+            // Issue #7: Get current user from session
+            var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
 
             var prefsResult = await _userPreferenceService.GetUserPreferenceAsync(employeeNumber);
             if (prefsResult.IsSuccess && prefsResult.Data != null)
@@ -138,8 +144,8 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
     {
         try
         {
-            // TODO: Get current employee number from session
-            int employeeNumber = 6229; // Placeholder
+            // Issue #7: Get current user from session
+            var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
 
             var preference = new Model_RoutingUserPreference
             {

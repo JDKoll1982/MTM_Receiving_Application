@@ -31,6 +31,9 @@ public class Dao_RoutingLabel
     {
         try
         {
+            // Issue #32: Enhanced logging
+            Console.WriteLine($"[DAO] Inserting label: PO={label.PONumber}, Recipient={label.RecipientId}");
+
             var parameters = new MySqlParameter[]
             {
                 new MySqlParameter("@p_po_number", label.PONumber),
@@ -55,6 +58,23 @@ public class Dao_RoutingLabel
             {
                 var newIdParam = Array.Find(parameters, p => p.ParameterName == "@p_new_label_id");
                 int newId = newIdParam?.Value != DBNull.Value ? Convert.ToInt32(newIdParam?.Value) : 0;
+
+                // Issue #12: Extract output parameters for better error reporting
+                var statusParam = Array.Find(parameters, p => p.ParameterName == "@p_status");
+                var errorMsgParam = Array.Find(parameters, p => p.ParameterName == "@p_error_msg");
+
+                int status = statusParam?.Value != DBNull.Value ? Convert.ToInt32(statusParam?.Value) : 1;
+                string spErrorMsg = errorMsgParam?.Value?.ToString() ?? string.Empty;
+
+                if (status != 1 && !string.IsNullOrEmpty(spErrorMsg))
+                {
+                    return new Model_Dao_Result<int>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Stored procedure error: {spErrorMsg}",
+                        Severity = Enum_ErrorSeverity.Medium
+                    };
+                }
 
                 return new Model_Dao_Result<int>
                 {
@@ -85,9 +105,10 @@ public class Dao_RoutingLabel
     public async Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label)
     {
         try
-        {
+        {            // Issue #32: Enhanced logging
+            Console.WriteLine($"[DAO] Updating label {label.Id}");
             var parameters = new MySqlParameter[]
-            {
+{
                 new MySqlParameter("@p_label_id", label.Id),
                 new MySqlParameter("@p_po_number", label.PONumber),
                 new MySqlParameter("@p_line_number", label.LineNumber),
@@ -97,7 +118,7 @@ public class Dao_RoutingLabel
                 new MySqlParameter("@p_other_reason_id", (object?)label.OtherReasonId ?? DBNull.Value),
                 new MySqlParameter("@p_status", MySqlDbType.Int32) { Direction = ParameterDirection.Output },
                 new MySqlParameter("@p_error_msg", MySqlDbType.VarChar, 500) { Direction = ParameterDirection.Output }
-            };
+};
 
             return await Helper_Database_StoredProcedure.ExecuteAsync(
                 "sp_routing_label_update",
@@ -258,12 +279,13 @@ public class Dao_RoutingLabel
     /// <param name="reader"></param>
     private Model_RoutingLabel MapFromReader(IDataReader reader)
     {
+        // Issue #17: Standardized null handling - use IsDBNull consistently
         return new Model_RoutingLabel
         {
             Id = reader.GetInt32(reader.GetOrdinal("id")),
-            PONumber = reader.GetString(reader.GetOrdinal("po_number")),
-            LineNumber = reader.GetString(reader.GetOrdinal("line_number")),
-            Description = reader.GetString(reader.GetOrdinal("description")),
+            PONumber = reader.IsDBNull(reader.GetOrdinal("po_number")) ? string.Empty : reader.GetString(reader.GetOrdinal("po_number")),
+            LineNumber = reader.IsDBNull(reader.GetOrdinal("line_number")) ? string.Empty : reader.GetString(reader.GetOrdinal("line_number")),
+            Description = reader.IsDBNull(reader.GetOrdinal("description")) ? string.Empty : reader.GetString(reader.GetOrdinal("description")),
             RecipientId = reader.GetInt32(reader.GetOrdinal("recipient_id")),
             RecipientName = reader.IsDBNull(reader.GetOrdinal("recipient_name")) ? string.Empty : reader.GetString(reader.GetOrdinal("recipient_name")),
             RecipientLocation = reader.IsDBNull(reader.GetOrdinal("recipient_location")) ? string.Empty : reader.GetString(reader.GetOrdinal("recipient_location")),
@@ -278,15 +300,21 @@ public class Dao_RoutingLabel
         };
     }
 
-    #region Alias Methods for Service Compatibility
-    public Task<Model_Dao_Result<int>> InsertAsync(Model_RoutingLabel label) => InsertLabelAsync(label);
-    public Task<Model_Dao_Result<Model_RoutingLabel>> GetByIdAsync(int id) => GetLabelByIdAsync(id);
-    public Task<Model_Dao_Result> UpdateAsync(Model_RoutingLabel label) => UpdateLabelAsync(label);
-    public Task<Model_Dao_Result<List<Model_RoutingLabel>>> GetAllAsync() => GetAllLabelsAsync();
-
-    public async Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateAsync(string poNumber, string lineNumber, int recipientId, DateTime _)
+    #region Helper Methods for Duplicate Detection
+    public async Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateAsync(string poNumber, string lineNumber, int recipientId, DateTime createdWithinDate)
     {
-        var result = await CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, 24);
+        // Issue #8: Use DateTime parameter to calculate hours window
+        int hours = createdWithinDate == default(DateTime)
+            ? 24  // Default to 24 hours if no date provided
+            : (int)(DateTime.Now - createdWithinDate).TotalHours;
+
+        // Ensure positive hours value
+        if (hours < 0)
+            hours = 0;
+        if (hours > 168)
+            hours = 168; // Cap at 1 week
+
+        var result = await CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, hours);
         if (result.IsSuccess && result.Data != null)
         {
             return Model_Dao_Result_Factory.Success((Exists: true, ExistingLabelId: (int?)result.Data.Id));

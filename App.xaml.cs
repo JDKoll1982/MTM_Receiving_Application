@@ -111,9 +111,10 @@ public partial class App : Application
                     var daoHistory = sp.GetRequiredService<Dao_RoutingLabelHistory>();
                     var inforVisualService = sp.GetRequiredService<IRoutingInforVisualService>();
                     var usageTrackingService = sp.GetRequiredService<IRoutingUsageTrackingService>();
+                    var recipientService = sp.GetRequiredService<IRoutingRecipientService>();
                     var logger = sp.GetRequiredService<IService_LoggingUtility>();
                     var configuration = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
-                    return new RoutingService(daoLabel, daoHistory, inforVisualService, usageTrackingService, logger, configuration);
+                    return new RoutingService(daoLabel, daoHistory, inforVisualService, usageTrackingService, recipientService, logger, configuration);
                 });
                 services.AddSingleton<IRoutingInforVisualService>(sp =>
                 {

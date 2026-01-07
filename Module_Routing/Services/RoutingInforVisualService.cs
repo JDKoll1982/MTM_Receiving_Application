@@ -26,6 +26,11 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Validates that a PO number exists in Infor Visual ERP
+    /// </summary>
+    /// <param name="poNumber">PO number to validate</param>
+    /// <returns>Result with true if PO exists, false otherwise</returns>
     public async Task<Model_Dao_Result<bool>> ValidatePoNumberAsync(string poNumber)
     {
         try
@@ -50,6 +55,11 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         }
     }
 
+    /// <summary>
+    /// Retrieves all line items for a purchase order from Infor Visual
+    /// </summary>
+    /// <param name="poNumber">PO number</param>
+    /// <returns>Result with list of PO lines</returns>
     public async Task<Model_Dao_Result<List<Model_InforVisualPOLine>>> GetPoLinesAsync(string poNumber)
     {
         try
@@ -59,11 +69,18 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         }
         catch (Exception ex)
         {
+            // Issue #11: Standardized error handling pattern
             await _logger.LogErrorAsync($"Error getting PO lines for {poNumber}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>($"Error getting PO lines: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>($"Failed to retrieve PO lines: {ex.Message}", ex);
         }
     }
 
+    /// <summary>
+    /// Retrieves a specific line item from a purchase order
+    /// </summary>
+    /// <param name="poNumber">PO number</param>
+    /// <param name="lineNumber">Line number</param>
+    /// <returns>Result with PO line data</returns>
     public async Task<Model_Dao_Result<Model_InforVisualPOLine>> GetPoLineAsync(string poNumber, string lineNumber)
     {
         try
@@ -84,6 +101,10 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         }
     }
 
+    /// <summary>
+    /// Tests connection to Infor Visual database
+    /// </summary>
+    /// <returns>Result with true if connection successful</returns>
     public async Task<Model_Dao_Result<bool>> CheckConnectionAsync()
     {
         try

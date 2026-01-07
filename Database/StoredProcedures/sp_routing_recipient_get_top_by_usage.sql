@@ -2,20 +2,20 @@ DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `sp_routing_recipient_get_top_by_usage` $$
 
+-- =============================================
+-- Procedure: sp_routing_recipient_get_top_by_usage
+-- Purpose: Get top N recipients by usage frequency
+-- Parameters:
+--   p_employee_number: Employee to get personalized results for
+--   p_top_count: Number of recipients to return
+-- Returns: Result set with recipients sorted by usage
+-- =============================================
 CREATE PROCEDURE `sp_routing_recipient_get_top_by_usage`(
     IN p_employee_number INT,
-    IN p_top_count INT,
-    OUT p_status INT,
-    OUT p_error_msg VARCHAR(500)
+    IN p_top_count INT
 )
 BEGIN
     DECLARE v_employee_label_count INT DEFAULT 0;
-    
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
-        SET p_status = -1;
-    END;
 
     IF p_top_count IS NULL OR p_top_count <= 0 THEN
         SET p_top_count = 5;
@@ -35,6 +35,9 @@ BEGIN
             r.name,
             r.location,
             r.department,
+            r.is_active,
+            r.created_date,
+            r.updated_date,
             COALESCE(u.usage_count, 0) AS usage_count
         FROM routing_recipients r
         LEFT JOIN routing_usage_tracking u ON r.id = u.recipient_id AND u.employee_number = p_employee_number
@@ -48,17 +51,17 @@ BEGIN
             r.name,
             r.location,
             r.department,
+            r.is_active,
+            r.created_date,
+            r.updated_date,
             COALESCE(SUM(u.usage_count), 0) AS usage_count
         FROM routing_recipients r
         LEFT JOIN routing_usage_tracking u ON r.id = u.recipient_id
         WHERE r.is_active = 1
-        GROUP BY r.id, r.name, r.location, r.department
+        GROUP BY r.id, r.name, r.location, r.department, r.is_active, r.created_date, r.updated_date
         ORDER BY COALESCE(SUM(u.usage_count), 0) DESC, r.name
         LIMIT p_top_count;
     END IF;
-
-    SET p_status = 1;
-    SET p_error_msg = 'Top recipients retrieved successfully';
 END $$
 
 DELIMITER ;

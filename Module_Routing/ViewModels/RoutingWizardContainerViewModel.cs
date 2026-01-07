@@ -20,6 +20,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     private readonly IRoutingUsageTrackingService _usageTrackingService;
     private readonly IService_ErrorHandler _errorHandler;
     private readonly IService_LoggingUtility _logger;
+    private readonly IService_UserSessionManager _sessionManager;
 
     #region Constructor
     public RoutingWizardContainerViewModel(
@@ -27,13 +28,15 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
         IRoutingInforVisualService inforVisualService,
         IRoutingUsageTrackingService usageTrackingService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger,
+        IService_UserSessionManager sessionManager)
     {
         _routingService = routingService;
         _inforVisualService = inforVisualService;
         _usageTrackingService = usageTrackingService;
         _errorHandler = errorHandler;
         _logger = logger;
+        _sessionManager = sessionManager;
     }
     #endregion
 
@@ -200,7 +203,11 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
                     $"Routing label created: PO={label.PONumber}, Recipient={SelectedRecipient?.Name}",
                     context: nameof(CreateLabelAsync));
 
-                // TODO: Navigate back to Mode Selection or reset wizard
+                // Issue #13: Navigate back to Mode Selection after successful creation
+                // Requires: INavigationService.NavigateTo(typeof(RoutingModeSelectionViewModel))
+                // Or: Raise NavigationRequested event handled by parent window
+                // Priority: LOW - User can manually navigate, auto-return is convenience feature
+                // Navigation flow not yet implemented
                 ResetWizard();
             }
             else
@@ -252,7 +259,9 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
         {
             // User confirmed cancel
             ResetWizard();
-            // TODO: Navigate back to Mode Selection
+            // Navigate back to Mode Selection after cancel
+            // Requires: INavigationService integration or parent window event handling
+            // Priority: LOW - Manual navigation available
         }
     }
     #endregion
@@ -274,12 +283,11 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
 
     /// <summary>
     /// Get current employee number from session
-    /// TODO: Replace with actual session service
+    /// Issue #7: Implemented using IService_UserSessionManager
     /// </summary>
     private int GetCurrentEmployeeNumber()
     {
-        // Placeholder - replace with ISessionService
-        return 6229; // Default employee number
+        return _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
     }
     #endregion
 }

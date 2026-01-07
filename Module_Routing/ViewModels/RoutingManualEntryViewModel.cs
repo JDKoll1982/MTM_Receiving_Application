@@ -144,7 +144,11 @@ public partial class RoutingManualEntryViewModel : ViewModel_Shared_Base
                         label.Description = line.PartID;
                         label.LineNumber = line.LineNumber.ToString();
                     }
-                    // TODO: If multiple lines, user must select Line in DataGrid
+                    // Issue #13: Multi-line PO selection feature
+                    // If PO has multiple lines, show dialog/grid for user to select specific line
+                    // Requires: ViewModel_LineSelectionDialog with DataGrid of Model_InforVisualPOLine
+                    // Priority: MEDIUM - Manual entry is alternate workflow, single-line POs are common
+                    // Current behavior: Auto-selects if 1 line, leaves blank if multiple (user enters manually)
                 }
             }
             else
@@ -210,7 +214,10 @@ public partial class RoutingManualEntryViewModel : ViewModel_Shared_Base
 
             StatusMessage = $"Created {successCount} of {Labels.Count} labels. Exporting to CSV...";
 
-            // TODO: Verify ExportLabelsToCSVAsync method signature
+            // Issue #13: Batch CSV export after label creation
+            // ExportLabelsToCSVAsync method would combine multiple labels into single CSV file
+            // Each label is already exported individually via CreateLabelAsync background task
+            // Priority: LOW - Individual CSV export is functional, batch is optimization
             // var exportResult = await _routingService.ExportLabelsToCSVAsync(Labels.ToList());
             // if (!exportResult.IsSuccess)
             // {

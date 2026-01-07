@@ -5,5 +5,25 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "john-koll",
         "projectKey": "JDKoll1982_MTM_Receiving_Application"
-    }
+    },
+    "todo-tree.filtering.excludeGlobs": [
+        "**/*.md",
+        "**/Documentation/**",
+        "**/docs/**",
+        "**/specs/**",
+        "**/_bmad/**",
+        "**/_bmad-output/**",
+        "**/CODE_REVIEW*.md",
+        "**/AGENTS.md",
+        "**/README.md",
+        "**/*.instructions.md",
+        "**/IMPLEMENTATION_SUMMARY.md",
+        "**/VALIDATION_REPORT.md"
+    ],
+    "todo-tree.filtering.includeGlobs": [
+        "**/*.cs",
+        "**/*.xaml",
+        "**/*.csproj",
+        "**/*.sql"
+    ]
 }

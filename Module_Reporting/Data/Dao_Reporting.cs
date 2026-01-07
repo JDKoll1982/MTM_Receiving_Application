@@ -11,6 +11,7 @@ namespace MTM_Receiving_Application.Module_Reporting.Data;
 /// <summary>
 /// Data Access Object for Reporting module
 /// Queries database views for end-of-day reporting
+/// Uses raw SQL for read-only reporting queries from views
 /// </summary>
 public class Dao_Reporting
 {

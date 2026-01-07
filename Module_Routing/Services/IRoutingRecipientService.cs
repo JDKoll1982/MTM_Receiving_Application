@@ -45,4 +45,11 @@ public interface IRoutingRecipientService
     /// <param name="employeeNumber">Employee number</param>
     /// <returns>Result with top 5 recipients (personalized if employee has 20+ labels, otherwise system-wide)</returns>
     public Task<Model_Dao_Result<List<Model_RoutingRecipient>>> GetQuickAddRecipientsAsync(int employeeNumber);
+
+    /// <summary>
+    /// Validates that a recipient ID exists and is active (Issue #9: FK validation)
+    /// </summary>
+    /// <param name="recipientId">Recipient ID to validate</param>
+    /// <returns>Result with true if recipient exists and is active, false otherwise</returns>
+    public Task<Model_Dao_Result<bool>> ValidateRecipientExistsAsync(int recipientId);
 }

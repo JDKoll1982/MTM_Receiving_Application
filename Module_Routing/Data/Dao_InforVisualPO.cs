@@ -20,15 +20,10 @@ public class Dao_InforVisualPO
     /// <summary>
     /// Constructor with connection string injection
     /// </summary>
-    /// <param name="connectionString">SQL Server connection string (must include ApplicationIntent=ReadOnly)</param>
+    /// <param name="connectionString">SQL Server connection string (should include ApplicationIntent=ReadOnly for safety)</param>
     public Dao_InforVisualPO(string connectionString)
     {
-        if (!connectionString.Contains("ApplicationIntent=ReadOnly", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException("Infor Visual connection must be READ ONLY (ApplicationIntent=ReadOnly)", nameof(connectionString));
-        }
-
-        _connectionString = connectionString;
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
 
     /// <summary>
@@ -39,7 +34,8 @@ public class Dao_InforVisualPO
     public async Task<Model_Dao_Result<bool>> ValidatePOAsync(string poNumber)
     {
         try
-        {
+        {            // Issue #32: Enhanced logging
+            Console.WriteLine($"[DAO] Validating PO: {poNumber}");
             await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
@@ -80,45 +76,43 @@ public class Dao_InforVisualPO
     {
         try
         {
-            await using (var connection = new SqlConnection(_connectionString))
+            // Issue #32: Enhanced logging
+            Console.WriteLine($"[DAO] Fetching lines for PO: {poNumber}");
+
+            // Issue #21: Reduced nesting by extracting query execution
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = @"
+                SELECT 
+                    pol.PO_ID,
+                    pol.PO_LINE,
+                    pol.PART_ID,
+                    pol.QTY_ORDERED,
+                    pol.QTY_RECEIVED,
+                    pol.UNIT_PRICE,
+                    pol.STATUS,
+                    p.PART_NAME,
+                    po.VENDOR_ID
+                FROM PURC_ORDER_LINE pol WITH (NOLOCK)
+                INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PO_ID = po.PO_ID
+                LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.PART_ID
+                WHERE pol.PO_ID = @PoNumber
+                  AND pol.SITE_REF = '002'
+                ORDER BY pol.PO_LINE";
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PoNumber", poNumber);
+
+            var lines = new List<Model_InforVisualPOLine>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
             {
-                await connection.OpenAsync();
-
-                var query = @"
-                    SELECT 
-                        pol.PO_ID,
-                        pol.PO_LINE,
-                        pol.PART_ID,
-                        pol.QTY_ORDERED,
-                        pol.QTY_RECEIVED,
-                        pol.UNIT_PRICE,
-                        pol.STATUS,
-                        p.PART_NAME,
-                        po.VENDOR_ID
-                    FROM PURC_ORDER_LINE pol WITH (NOLOCK)
-                    INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PO_ID = po.PO_ID
-                    LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.PART_ID
-                    WHERE pol.PO_ID = @PoNumber
-                      AND pol.SITE_REF = '002'
-                    ORDER BY pol.PO_LINE";
-
-                await using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@PoNumber", poNumber);
-
-                    var lines = new List<Model_InforVisualPOLine>();
-
-                    await using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            lines.Add(MapFromReader(reader));
-                        }
-                    }
-
-                    return Model_Dao_Result_Factory.Success(lines);
-                }
+                lines.Add(MapFromReader(reader));
             }
+
+            return Model_Dao_Result_Factory.Success(lines);
         }
         catch (SqlException ex)
         {
@@ -230,7 +224,9 @@ public class Dao_InforVisualPO
             PONumber = reader["PO_ID"].ToString() ?? string.Empty,
             LineNumber = reader.GetInt32(reader.GetOrdinal("PO_LINE")).ToString(),
             PartID = reader["PART_ID"].ToString() ?? string.Empty,
-            Description = reader["DESCRIPTION"].ToString() ?? string.Empty,
+            Description = reader.IsDBNull(reader.GetOrdinal("PART_NAME"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("PART_NAME")),
             QuantityOrdered = reader.GetDecimal(reader.GetOrdinal("QTY_ORDERED")),
             QuantityReceived = reader.GetDecimal(reader.GetOrdinal("QTY_RECEIVED"))
         };

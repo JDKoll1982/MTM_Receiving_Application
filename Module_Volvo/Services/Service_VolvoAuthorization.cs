@@ -13,7 +13,8 @@ namespace MTM_Receiving_Application.Module_Volvo.Services;
 public class Service_VolvoAuthorization : IService_VolvoAuthorization
 {
     private readonly IService_LoggingUtility _logger;
-    // TODO: Inject IService_UserSessionManager when available
+    // Issue #6: TODO - Inject IService_UserSessionManager when available
+    // Required for proper authentication and role-based authorization
 
     public Service_VolvoAuthorization(IService_LoggingUtility logger)
     {
@@ -27,7 +28,8 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
     {
         try
         {
-            // TODO: Implement actual role check when user session management is available
+            // Issue #6: TODO - Implement actual role check when user session management is available
+            // For now, returning true to allow development/testing
             // For now, log the authorization check
             await _logger.LogInfoAsync("Authorization check: CanManageShipments");
 
