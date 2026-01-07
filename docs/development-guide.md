@@ -22,6 +22,14 @@
   - User: `SHOP2` (read-only account)
   - Connection: `ApplicationIntent=ReadOnly` required
 
+### Database Development Standards
+- **Stored Procedures**: All application logic must use stored procedures.
+- **Idempotency**: All SQL scripts (schemas, seed data, migrations) must be idempotent (safe to run multiple times).
+  - Use `IF NOT EXISTS` for table creation.
+  - Use `INSERT IGNORE` or `ON DUPLICATE KEY UPDATE` for seed data.
+  - Use `DROP PROCEDURE IF EXISTS` before `CREATE PROCEDURE`.
+- **No Raw SQL**: C# code must strictly call stored procedures, not execute raw SQL queries.
+
 ### Additional Tools
 - **MySQL CLI**: For database deployment and testing
 - **LabelView 2022**: For printing receiving/dunnage labels (CSV-driven)

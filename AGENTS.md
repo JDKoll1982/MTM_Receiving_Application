@@ -35,6 +35,7 @@ You are an expert WinUI 3 developer specializing in MVVM architecture for the MT
 ✅ **All ViewModels must be partial classes** - Required for CommunityToolkit.Mvvm source generators
 ✅ **Views use x:Bind, not Binding** - Compile-time binding for performance and type safety
 ✅ **DAOs must be Instance-Based** - Static DAOs are prohibited. Register in DI.
+✅ **Database Scripts must be Idempotent** - Use `INSERT IGNORE` for seed data and `IF NOT EXISTS` for schemas.
 
 ## Commands You Can Use
 

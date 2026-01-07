@@ -6,7 +6,7 @@
 -- =============================================
 
 -- Seed Other Reasons (enumeration)
-INSERT INTO routing_other_reasons (reason_code, description, display_order) VALUES
+INSERT IGNORE INTO routing_other_reasons (reason_code, description, display_order) VALUES
 ('RETURNED', 'Returned Item', 1),
 ('SAMPLE', 'Vendor Sample', 2),
 ('MISLABELED', 'Mislabeled Package', 3),
@@ -14,7 +14,7 @@ INSERT INTO routing_other_reasons (reason_code, description, display_order) VALU
 ('INTERNAL_TRANSFER', 'Internal Transfer', 5);
 
 -- Sample Recipients (for testing)
-INSERT INTO routing_recipients (name, location, department, is_active) VALUES
+INSERT IGNORE INTO routing_recipients (name, location, department, is_active) VALUES
 -- Production Departments
 ('Production - Assembly', 'Building A - Floor 1', 'Production', 1),
 ('Production - Machining', 'Building A - Floor 2', 'Production', 1),
