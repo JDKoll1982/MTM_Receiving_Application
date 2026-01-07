@@ -5,8 +5,7 @@
     xmlns:vm="using:MTM_Receiving_Application.Module_Routing.ViewModels"
     xmlns:views="using:MTM_Receiving_Application.Module_Routing.Views"
     xmlns:converters="using:MTM_Receiving_Application.Module_Routing.Converters"
-    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters">
 
     <Page.Resources>
         <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter"/>

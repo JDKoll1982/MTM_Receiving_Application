@@ -38,6 +38,16 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
         _logger = logger;
         _sessionManager = sessionManager;
         _containerViewModel = containerViewModel;
+
+        // Subscribe to container property changes to update button text
+        _containerViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(_containerViewModel.IsEditingFromReview))
+            {
+                OnPropertyChanged(nameof(IsEditingFromReview));
+                OnPropertyChanged(nameof(NavigationButtonText));
+            }
+        };
     }
     #endregion
 
@@ -77,6 +87,16 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _statusMessage = "Select a recipient";
+
+    /// <summary>
+    /// Is user editing from review (Step 3)
+    /// </summary>
+    public bool IsEditingFromReview => _containerViewModel.IsEditingFromReview;
+
+    /// <summary>
+    /// Button text for navigation (changes when editing from review)
+    /// </summary>
+    public string NavigationButtonText => IsEditingFromReview ? "Back to Review" : "Next: Review";
     #endregion
 
     #region Initialization
@@ -219,16 +239,34 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanProceedToStep3))]
     private void ProceedToStep3()
     {
-        if (SelectedRecipient == null)
+        try
         {
-            return;
+            _logger.LogInfo($"ProceedToStep3 called with recipient: {SelectedRecipient?.Name ?? "null"}");
+
+            if (SelectedRecipient == null)
+            {
+                _logger.LogWarning("ProceedToStep3: No recipient selected");
+                StatusMessage = "Please select a recipient before proceeding";
+                return;
+            }
+
+            // Update container with selected recipient
+            _containerViewModel.SelectedRecipient = SelectedRecipient;
+            _logger.LogInfo($"Updated container with recipient: {SelectedRecipient.Name}");
+
+            // Navigate to Step 3 (always goes to Step 3 whether editing or not)
+            _containerViewModel.NavigateToStep3Command.Execute(null);
+            _logger.LogInfo("Navigation to Step 3 triggered");
         }
-
-        // Update container with selected recipient
-        _containerViewModel.SelectedRecipient = SelectedRecipient;
-
-        // Navigate to Step 3
-        _containerViewModel.NavigateToStep3Command.Execute(null);
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in ProceedToStep3: {ex.Message}", ex);
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Error,
+                nameof(ProceedToStep3),
+                nameof(RoutingWizardStep2ViewModel));
+        }
     }
 
     /// <summary>
@@ -236,7 +274,9 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     /// </summary>
     private bool CanProceedToStep3()
     {
-        return SelectedRecipient != null;
+        var canProceed = SelectedRecipient != null;
+        _logger.LogInfo($"CanProceedToStep3: {canProceed} (SelectedRecipient: {SelectedRecipient?.Name ?? "null"})");
+        return canProceed;
     }
 
     /// <summary>
@@ -264,7 +304,13 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     /// </summary>
     partial void OnSelectedRecipientChanged(Model_RoutingRecipient? value)
     {
+        _logger.LogInfo($"Selected recipient changed to: {value?.Name ?? "null"}");
         ProceedToStep3Command.NotifyCanExecuteChanged();
+
+        if (value != null)
+        {
+            StatusMessage = $"Selected: {value.Name} - Click 'Next' to continue";
+        }
     }
     #endregion
 }

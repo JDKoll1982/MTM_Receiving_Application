@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:MTM_Receiving_Application.Module_Routing.ViewModels"
     xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded">
 
     <Page.Resources>

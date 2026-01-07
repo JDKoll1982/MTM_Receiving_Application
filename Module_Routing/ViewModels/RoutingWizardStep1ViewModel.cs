@@ -8,6 +8,7 @@ using MTM_Receiving_Application.Module_Routing.Models;
 using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Extensions.Configuration;
 
 namespace MTM_Receiving_Application.Module_Routing.ViewModels;
 
@@ -20,6 +21,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     private readonly IRoutingService _routingService;
     private readonly IService_ErrorHandler _errorHandler;
     private readonly IService_LoggingUtility _logger;
+    private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
 
     // Issue #24: TODO - Replace with WeakReferenceMessenger for loose coupling
     // Current implementation uses direct parent reference for communication
@@ -32,13 +34,28 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
         IRoutingService routingService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        RoutingWizardContainerViewModel containerViewModel)
+        RoutingWizardContainerViewModel containerViewModel,
+        Microsoft.Extensions.Configuration.IConfiguration configuration)
     {
         _inforVisualService = inforVisualService;
         _routingService = routingService;
         _errorHandler = errorHandler;
         _logger = logger;
         _containerViewModel = containerViewModel;
+        _configuration = configuration;
+
+        // Subscribe to container property changes to update button text
+        _containerViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(_containerViewModel.IsEditingFromReview))
+            {
+                OnPropertyChanged(nameof(IsEditingFromReview));
+                OnPropertyChanged(nameof(NavigationButtonText));
+            }
+        };
+
+        // Auto-fill PO number if using mock data
+        InitializeAsync();
     }
     #endregion
 
@@ -96,6 +113,16 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _statusMessage = "Enter PO number or select OTHER";
+
+    /// <summary>
+    /// Is user editing from review (Step 3)
+    /// </summary>
+    public bool IsEditingFromReview => _containerViewModel.IsEditingFromReview;
+
+    /// <summary>
+    /// Button text for navigation (changes when editing from review)
+    /// </summary>
+    public string NavigationButtonText => IsEditingFromReview ? "Back to Review" : "Next: Select Recipient";
     #endregion
 
     #region Commands
@@ -241,21 +268,53 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanProceedToStep2))]
     private void ProceedToStep2()
     {
-        // Update container with selected data
-        if (IsOtherMode && SelectedOtherReason != null)
+        try
         {
-            _containerViewModel.SelectedOtherReason = SelectedOtherReason;
-            _containerViewModel.OtherQuantity = OtherQuantity;
-            _containerViewModel.SelectedPOLine = null;
-        }
-        else if (SelectedPOLine != null)
-        {
-            _containerViewModel.SelectedPOLine = SelectedPOLine;
-            _containerViewModel.SelectedOtherReason = null;
-        }
+            _logger.LogInfo($"ProceedToStep2 called - IsOtherMode: {IsOtherMode}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
 
-        // Navigate to Step 2
-        _containerViewModel.NavigateToStep2Command.Execute(null);
+            // Update container with selected data
+            if (IsOtherMode && SelectedOtherReason != null)
+            {
+                _containerViewModel.SelectedOtherReason = SelectedOtherReason;
+                _containerViewModel.OtherQuantity = OtherQuantity;
+                _containerViewModel.SelectedPOLine = null;
+                _logger.LogInfo($"Updated container with OTHER reason: {SelectedOtherReason.Description}, Quantity: {OtherQuantity}");
+            }
+            else if (SelectedPOLine != null)
+            {
+                _containerViewModel.SelectedPOLine = SelectedPOLine;
+                _containerViewModel.SelectedOtherReason = null;
+                _logger.LogInfo($"Updated container with PO Line: {SelectedPOLine.PartID}, PO: {SelectedPOLine.PONumber}");
+            }
+            else
+            {
+                _logger.LogWarning("ProceedToStep2: Neither PO line nor OTHER reason selected");
+                StatusMessage = "Please select a PO line or OTHER reason";
+                return;
+            }
+
+            // Navigate based on edit mode
+            if (IsEditingFromReview)
+            {
+                _logger.LogInfo("Returning to Step 3 (Review) after edit");
+                _containerViewModel.NavigateToStep3Command.Execute(null);
+            }
+            else
+            {
+                _logger.LogInfo("Executing NavigateToStep2Command");
+                _containerViewModel.NavigateToStep2Command.Execute(null);
+                _logger.LogInfo("NavigateToStep2Command executed");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in ProceedToStep2: {ex.Message}", ex);
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Error,
+                nameof(ProceedToStep2),
+                nameof(RoutingWizardStep1ViewModel));
+        }
     }
 
     /// <summary>
@@ -263,8 +322,10 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// </summary>
     private bool CanProceedToStep2()
     {
-        return (IsOtherMode && SelectedOtherReason != null) ||
+        var canProceed = (IsOtherMode && SelectedOtherReason != null) ||
                (!IsOtherMode && SelectedPOLine != null);
+        _logger.LogInfo($"CanProceedToStep2: {canProceed} - IsOtherMode: {IsOtherMode}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
+        return canProceed;
     }
     #endregion
 
@@ -316,12 +377,52 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// </summary>
     partial void OnSelectedPOLineChanged(Model_InforVisualPOLine? value)
     {
+        _logger.LogInfo($"SelectedPOLine changed to: {value?.PartID ?? "null"} (PO: {value?.PONumber ?? "null"})");
         ProceedToStep2Command.NotifyCanExecuteChanged();
+
+        if (value != null)
+        {
+            StatusMessage = $"Selected: {value.PartID} - Click 'Next' to continue";
+        }
     }
 
     partial void OnSelectedOtherReasonChanged(Model_RoutingOtherReason? value)
     {
+        _logger.LogInfo($"SelectedOtherReason changed to: {value?.Description ?? "null"}");
         ProceedToStep2Command.NotifyCanExecuteChanged();
+
+        if (value != null)
+        {
+            StatusMessage = $"Selected: {value.Description} - Click 'Next' to continue";
+        }
+    }
+
+    /// <summary>
+    /// Initialize component - autofill PO if mock data enabled
+    /// </summary>
+    private async void InitializeAsync()
+    {
+        try
+        {
+            var useMockData = _configuration.GetValue<bool>("AppSettings:UseInforVisualMockData");
+
+            if (useMockData)
+            {
+                var defaultPO = _configuration.GetValue<string>("AppSettings:DefaultMockPONumber") ?? "PO-066868";
+                await _logger.LogInfoAsync($"[MOCK DATA MODE] Auto-filling PO number: {defaultPO}");
+
+                PoNumber = defaultPO;
+                StatusMessage = $"[MOCK DATA] Auto-filled PO: {defaultPO}";
+
+                // Auto-validate and load mock data
+                await Task.Delay(500); // Small delay for UI update
+                await ValidatePOAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error during initialization: {ex.Message}", ex);
+        }
     }
     #endregion
 }

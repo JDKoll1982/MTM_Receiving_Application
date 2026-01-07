@@ -4,15 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:MTM_Receiving_Application.Module_Routing.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Routing.Models"
-    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters">
 
     <Page.Resources>
         <coreConverters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
         <coreConverters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
     </Page.Resources>
 
-    <Grid Padding="24" RowSpacing="16">
+    <Grid Padding="20" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -27,68 +26,107 @@
                    Style="{StaticResource TitleTextBlockStyle}"/>
 
         <!-- PO Input Section (visible when NOT in OTHER mode) -->
-        <StackPanel Grid.Row="1" Spacing="12" 
-                    Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
-            <Grid ColumnSpacing="12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+        <Border Grid.Row="1" 
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="20"
+                Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
+            <StackPanel Spacing="16">
+                <!-- PO Number Input with Icon -->
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE8A5;" 
+                                 FontSize="16"
+                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                        <TextBlock Text="Purchase Order Number" 
+                                  Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                    </StackPanel>
+                    
+                    <TextBox Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"
+                             PlaceholderText="Enter PO number"
+                             MaxWidth="400"
+                             HorizontalAlignment="Stretch"/>
+                </StackPanel>
 
-                <TextBox Grid.Column="0"
-                         Header="PO Number"
-                         PlaceholderText="Enter PO number"
-                         Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay}"/>
-
-                <Button Grid.Column="1"
-                        Content="Validate PO"
-                        Command="{x:Bind ViewModel.ValidatePOCommand}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Bottom"
-                        Style="{StaticResource AccentButtonStyle}"/>
-
-                <Button Grid.Column="2"
-                        Content="Switch to OTHER"
-                        Command="{x:Bind ViewModel.SwitchToOtherModeCommand}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Bottom"/>
-            </Grid>
-        </StackPanel>
+                <!-- Action Buttons -->
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Grid.Column="0"
+                            Command="{x:Bind ViewModel.ValidatePOCommand}"
+                            Style="{StaticResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE896;" FontSize="16"/>
+                            <TextBlock Text="Validate PO"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Grid.Column="1"
+                            Content="Switch to OTHER"
+                            Command="{x:Bind ViewModel.SwitchToOtherModeCommand}"/>
+                </Grid>
+            </StackPanel>
+        </Border>
 
         <!-- OTHER Mode Section (visible when in OTHER mode) -->
-        <StackPanel Grid.Row="1" Spacing="12"
-                    Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Text="OTHER Package (Non-PO)" 
-                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+        <Border Grid.Row="1" 
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="20"
+                Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Spacing="16">
+                <TextBlock Text="OTHER Package (Non-PO)" 
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
 
-            <Grid ColumnSpacing="12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE8B4;" 
+                                 FontSize="16"
+                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                        <TextBlock Text="Reason" 
+                                  Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                    </StackPanel>
+                    
+                    <ComboBox PlaceholderText="Select reason"
+                              ItemsSource="{x:Bind ViewModel.OtherReasons, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedOtherReason, Mode=TwoWay}"
+                              DisplayMemberPath="Description"
+                              HorizontalAlignment="Stretch"
+                              MaxWidth="400"/>
+                </StackPanel>
 
-                <ComboBox Grid.Column="0"
-                          Header="Reason"
-                          PlaceholderText="Select reason"
-                          ItemsSource="{x:Bind ViewModel.OtherReasons, Mode=OneWay}"
-                          SelectedItem="{x:Bind ViewModel.SelectedOtherReason, Mode=TwoWay}"
-                          DisplayMemberPath="Description"
-                          HorizontalAlignment="Stretch"/>
-
-                <NumberBox Grid.Column="1"
-                           Header="Quantity"
-                           Minimum="1"
-                           SpinButtonPlacementMode="Inline"
-                           Value="{x:Bind ViewModel.OtherQuantity, Mode=TwoWay}"/>
-            </Grid>
-        </StackPanel>
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE9F9;" 
+                                 FontSize="16"
+                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                        <TextBlock Text="Quantity" 
+                                  Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                    </StackPanel>
+                    
+                    <NumberBox Minimum="1"
+                               SpinButtonPlacementMode="Inline"
+                               Value="{x:Bind ViewModel.OtherQuantity, Mode=TwoWay}"
+                               MaxWidth="200"
+                               HorizontalAlignment="Left"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
         <!-- PO Lines DataGrid (visible when NOT in OTHER mode) -->
         <Border Grid.Row="2" 
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                CornerRadius="4"
+                CornerRadius="8"
+                Padding="16"
                 Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
             <Grid>
                 <TextBlock Text="Select a line from the PO"
@@ -147,7 +185,7 @@
 
         <!-- Action Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
-            <Button Content="Next: Select Recipient"
+            <Button Content="{x:Bind ViewModel.NavigationButtonText, Mode=OneWay}"
                     Command="{x:Bind ViewModel.ProceedToStep2Command}"
                     Style="{StaticResource AccentButtonStyle}"/>
         </StackPanel>

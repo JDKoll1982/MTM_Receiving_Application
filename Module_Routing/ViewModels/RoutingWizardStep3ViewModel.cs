@@ -31,6 +31,10 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
         _errorHandler = errorHandler;
         _logger = logger;
         _containerViewModel = containerViewModel;
+
+        // Register with container so it can trigger LoadReviewData
+        _containerViewModel.RegisterStep3ViewModel(this);
+        _logger.LogInfo("Step3ViewModel initialized and registered");
     }
     #endregion
 
@@ -84,6 +88,9 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
     /// </summary>
     public void LoadReviewData()
     {
+        _logger.LogInfo("LoadReviewData called");
+        _logger.LogInfo($"Container state - SelectedPOLine: {_containerViewModel.SelectedPOLine?.PartID ?? "null"}, SelectedRecipient: {_containerViewModel.SelectedRecipient?.Name ?? "null"}, FinalQuantity: {_containerViewModel.FinalQuantity}");
+
         // Load from container state
         if (_containerViewModel.SelectedPOLine != null)
         {
@@ -93,6 +100,7 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
             PoLine = int.TryParse(_containerViewModel.SelectedPOLine.LineNumber, out var lineNum) ? lineNum : 0;
             PartID = _containerViewModel.SelectedPOLine.PartID;
             PartDescription = _containerViewModel.SelectedPOLine.Description;
+            _logger.LogInfo($"Loaded PO data - PO: {PoNumber}, Line: {PoLine}, Part: {PartID}");
         }
         else if (_containerViewModel.SelectedOtherReason != null)
         {
@@ -103,6 +111,11 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
             PartID = $"OTHER-{_containerViewModel.SelectedOtherReason.ReasonCode}";
             PartDescription = _containerViewModel.SelectedOtherReason.Description;
             OtherReason = _containerViewModel.SelectedOtherReason.Description;
+            _logger.LogInfo($"Loaded OTHER data - Reason: {OtherReason}");
+        }
+        else
+        {
+            _logger.LogWarning("LoadReviewData: No PO line or OTHER reason in container!");
         }
 
         // Load recipient
@@ -110,10 +123,16 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
         {
             RecipientName = _containerViewModel.SelectedRecipient.Name;
             RecipientLocation = _containerViewModel.SelectedRecipient.Location ?? string.Empty;
+            _logger.LogInfo($"Loaded recipient - Name: {RecipientName}, Location: {RecipientLocation}");
+        }
+        else
+        {
+            _logger.LogWarning("LoadReviewData: No recipient in container!");
         }
 
         // Load quantity
         Quantity = _containerViewModel.FinalQuantity;
+        _logger.LogInfo($"Final quantity: {Quantity}");
 
         StatusMessage = "Review and confirm label details";
     }
@@ -126,7 +145,8 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
     [RelayCommand]
     private void EditPOSelection()
     {
-        _containerViewModel.NavigateToStep1Command.Execute(null);
+        _logger.LogInfo("EditPOSelection - Navigating to Step 1 in edit mode");
+        _containerViewModel.NavigateToStep1ForEditCommand.Execute(null);
     }
 
     /// <summary>
@@ -135,7 +155,8 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
     [RelayCommand]
     private void EditRecipientSelection()
     {
-        _containerViewModel.NavigateBackToStep2Command.Execute(null);
+        _logger.LogInfo("EditRecipientSelection - Navigating to Step 2 in edit mode");
+        _containerViewModel.NavigateToStep2ForEditCommand.Execute(null);
     }
     #endregion
 

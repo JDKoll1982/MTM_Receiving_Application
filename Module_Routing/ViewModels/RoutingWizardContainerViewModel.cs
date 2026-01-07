@@ -22,6 +22,9 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     private readonly IService_LoggingUtility _logger;
     private readonly IService_UserSessionManager _sessionManager;
 
+    // Lazy-loaded Step3 ViewModel for triggering data refresh
+    private RoutingWizardStep3ViewModel? _step3ViewModel;
+
     #region Constructor
     public RoutingWizardContainerViewModel(
         IRoutingService routingService,
@@ -88,6 +91,12 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private int _finalQuantity;
+
+    /// <summary>
+    /// Indicates if we're in edit mode from Step 3 review
+    /// </summary>
+    [ObservableProperty]
+    private bool _isEditingFromReview;
     #endregion
 
     #region Navigation Commands
@@ -97,9 +106,12 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToStep2()
     {
+        _logger.LogInfo($"NavigateToStep2 called - CurrentStep: {CurrentStep}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
+
         // Validation: Must have either PO line or OTHER reason
         if (SelectedPOLine == null && SelectedOtherReason == null)
         {
+            _logger.LogWarning("NavigateToStep2: No PO line or OTHER reason selected");
             StatusMessage = "Please select a PO line or OTHER reason";
             return;
         }
@@ -108,14 +120,18 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
         if (SelectedPOLine != null)
         {
             FinalQuantity = (int)SelectedPOLine.QuantityOrdered;
+            _logger.LogInfo($"Set FinalQuantity from PO line: {FinalQuantity}");
         }
         else
         {
             FinalQuantity = OtherQuantity;
+            _logger.LogInfo($"Set FinalQuantity from OTHER: {FinalQuantity}");
         }
 
+        _logger.LogInfo($"Changing CurrentStep from {CurrentStep} to 2");
         CurrentStep = 2;
         StatusMessage = "Select recipient";
+        _logger.LogInfo($"CurrentStep is now: {CurrentStep}");
     }
 
     /// <summary>
@@ -124,15 +140,40 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToStep3()
     {
+        _logger.LogInfo($"NavigateToStep3 called - SelectedRecipient: {SelectedRecipient?.Name ?? "null"}");
+
         // Validation: Must have recipient
         if (SelectedRecipient == null)
         {
+            _logger.LogWarning("NavigateToStep3: No recipient selected");
             StatusMessage = "Please select a recipient";
             return;
         }
 
+        _logger.LogInfo($"Navigating to Step 3 - Recipient: {SelectedRecipient.Name}, CurrentStep changing from {CurrentStep} to 3");
         CurrentStep = 3;
         StatusMessage = "Review label details";
+        _logger.LogInfo($"CurrentStep is now: {CurrentStep}");
+
+        // Trigger Step3 to reload data
+        if (_step3ViewModel != null)
+        {
+            _logger.LogInfo("Calling Step3ViewModel.LoadReviewData()");
+            _step3ViewModel.LoadReviewData();
+        }
+        else
+        {
+            _logger.LogWarning("Step3ViewModel not yet initialized");
+        }
+    }
+
+    /// <summary>
+    /// Register Step 3 ViewModel for data refresh coordination
+    /// </summary>
+    public void RegisterStep3ViewModel(RoutingWizardStep3ViewModel step3ViewModel)
+    {
+        _step3ViewModel = step3ViewModel;
+        _logger.LogInfo("Step3ViewModel registered with Container");
     }
 
     /// <summary>
@@ -141,8 +182,21 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToStep1()
     {
+        IsEditingFromReview = false;
         CurrentStep = 1;
         StatusMessage = "Enter PO or select OTHER";
+    }
+
+    /// <summary>
+    /// Navigate to Step 1 for editing (from Step 3)
+    /// </summary>
+    [RelayCommand]
+    private void NavigateToStep1ForEdit()
+    {
+        _logger.LogInfo("NavigateToStep1ForEdit called - Setting edit mode");
+        IsEditingFromReview = true;
+        CurrentStep = 1;
+        StatusMessage = "Edit PO selection";
     }
 
     /// <summary>
@@ -151,8 +205,21 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     [RelayCommand]
     private void NavigateBackToStep2()
     {
+        IsEditingFromReview = false;
         CurrentStep = 2;
         StatusMessage = "Select recipient";
+    }
+
+    /// <summary>
+    /// Navigate to Step 2 for editing (from Step 3)
+    /// </summary>
+    [RelayCommand]
+    private void NavigateToStep2ForEdit()
+    {
+        _logger.LogInfo("NavigateToStep2ForEdit called - Setting edit mode");
+        IsEditingFromReview = true;
+        CurrentStep = 2;
+        StatusMessage = "Edit recipient selection";
     }
     #endregion
 

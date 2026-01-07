@@ -10,6 +10,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -65,18 +67,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Help helpService,
-            IService_ViewModelRegistry viewModelRegistry)
+            IService_ViewModelRegistry viewModelRegistry,
+            Microsoft.Extensions.Configuration.IConfiguration configuration)
             : base(errorHandler, logger)
         {
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
             _helpService = helpService;
             _viewModelRegistry = viewModelRegistry;
+            _configuration = configuration;
 
             _viewModelRegistry.Register(this);
 
             // Update visibility when parts collection changes
             Parts.CollectionChanged += (s, e) => IsPartsListVisible = Parts.Count > 0;
+
+            // Auto-fill PO number if using mock data
+            InitializeAsync();
         }
 
         public void ResetToDefaults()
@@ -344,6 +351,34 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public string GetTip(string key) => _helpService.GetTip(key);
 
         #endregion
+
+        /// <summary>
+        /// Initialize component - autofill PO if mock data enabled
+        /// </summary>
+        private async void InitializeAsync()
+        {
+            try
+            {
+                var useMockData = _configuration.GetValue<bool>("AppSettings:UseInforVisualMockData");
+
+                if (useMockData)
+                {
+                    var defaultPO = _configuration.GetValue<string>("AppSettings:DefaultMockPONumber") ?? "PO-066868";
+                    await _logger.LogInfoAsync($"[MOCK DATA MODE] Auto-filling PO number: {defaultPO}");
+
+                    PoNumber = defaultPO;
+                    _workflowService.RaiseStatusMessage($"[MOCK DATA] Auto-filled PO: {defaultPO}");
+
+                    // Auto-load mock data
+                    await Task.Delay(500); // Small delay for UI update
+                    await LoadPOAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync($"Error during initialization: {ex.Message}", ex);
+            }
+        }
     }
 }
 

@@ -7,7 +7,6 @@
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Routing.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Routing.Models"
     xmlns:converters="using:MTM_Receiving_Application.Module_Routing.Converters"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnPageLoaded">
 
     <Page.Resources>

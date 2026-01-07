@@ -179,7 +179,6 @@ public partial class App : Application
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
                 // NEW: Infor Visual Connection Service with mock data support
-                var useMockData = true; // Set to true to use mock data instead of connecting to VISUAL server
                 services.AddSingleton(sp =>
                 {
                     var logger = sp.GetService<IService_LoggingUtility>();
@@ -190,6 +189,8 @@ public partial class App : Application
                 {
                     var dao = sp.GetRequiredService<Dao_InforVisualConnection>();
                     var logger = sp.GetService<IService_LoggingUtility>();
+                    var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                    var useMockData = config.GetValue<bool>("AppSettings:UseInforVisualMockData");
                     return new Service_InforVisualConnect(dao, useMockData, logger);
                 });
 
@@ -297,7 +298,8 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Settings_Placeholder>();
 
                 // NEW Routing Wizard ViewModels (Phase 3 implementation)
-                services.AddTransient<RoutingWizardContainerViewModel>();
+                // Container must be Singleton so all step VMs share the same instance
+                services.AddSingleton<RoutingWizardContainerViewModel>();
                 services.AddTransient<RoutingWizardStep1ViewModel>();
                 services.AddTransient<RoutingWizardStep2ViewModel>();
                 services.AddTransient<RoutingWizardStep3ViewModel>();
