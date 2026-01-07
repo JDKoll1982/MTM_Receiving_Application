@@ -258,7 +258,8 @@ public class Service_LoggingUtility : IService_LoggingUtility
 
     public Task LogWarningAsync(string message, string? context = null)
     {
-        throw new NotImplementedException();
+        LogWarning(message, context);
+        return Task.CompletedTask;
     }
 }
 

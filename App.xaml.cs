@@ -37,6 +37,7 @@ using MTM_Receiving_Application.Module_Reporting.Data;
 using MTM_Receiving_Application.Module_Reporting.Services;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
 using MTM_Receiving_Application.Module_Reporting.Views;
+using Microsoft.Extensions.Configuration;
 
 namespace MTM_Receiving_Application;
 
@@ -120,7 +121,9 @@ public partial class App : Application
                 {
                     var daoInforVisual = sp.GetRequiredService<MTM_Receiving_Application.Module_Routing.Data.Dao_InforVisualPO>();
                     var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    return new RoutingInforVisualService(daoInforVisual, logger);
+                    var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                    var useMockData = config.GetValue<bool>("AppSettings:UseInforVisualMockData");
+                    return new RoutingInforVisualService(daoInforVisual, logger, useMockData);
                 });
                 services.AddSingleton<IRoutingRecipientService>(sp =>
                 {

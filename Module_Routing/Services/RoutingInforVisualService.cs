@@ -17,13 +17,16 @@ public class RoutingInforVisualService : IRoutingInforVisualService
 {
     private readonly Dao_InforVisualPO _daoInforVisualPO;
     private readonly IService_LoggingUtility _logger;
+    private readonly bool _useMockData;
 
     public RoutingInforVisualService(
         Dao_InforVisualPO daoInforVisualPO,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger,
+        bool useMockData = false)
     {
         _daoInforVisualPO = daoInforVisualPO ?? throw new ArgumentNullException(nameof(daoInforVisualPO));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _useMockData = useMockData;
     }
 
     /// <summary>
@@ -36,6 +39,12 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         try
         {
             await _logger.LogInfoAsync($"Validating PO number: {poNumber}");
+
+            if (_useMockData)
+            {
+                await _logger.LogInfoAsync($"[MOCK DATA MODE] Validating PO {poNumber}");
+                return Model_Dao_Result_Factory.Success(true);
+            }
 
             // Check connection first (graceful degradation)
             var connectionResult = await _daoInforVisualPO.CheckConnectionAsync();
@@ -65,6 +74,36 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         try
         {
             await _logger.LogInfoAsync($"Getting PO lines for: {poNumber}");
+
+            if (_useMockData)
+            {
+                await _logger.LogInfoAsync($"[MOCK DATA MODE] Returning mock lines for PO {poNumber}");
+                var mockLines = new List<Model_InforVisualPOLine>
+                {
+                    new Model_InforVisualPOLine
+                    {
+                        PONumber = poNumber,
+                        LineNumber = "1",
+                        PartID = "MOCK-PART-001",
+                        Description = "Mock Part 1 Description",
+                        QuantityOrdered = 100,
+                        QuantityReceived = 0,
+                        VendorName = "MOCK VENDOR"
+                    },
+                    new Model_InforVisualPOLine
+                    {
+                        PONumber = poNumber,
+                        LineNumber = "2",
+                        PartID = "MOCK-PART-002",
+                        Description = "Mock Part 2 Description",
+                        QuantityOrdered = 50,
+                        QuantityReceived = 10,
+                        VendorName = "MOCK VENDOR"
+                    }
+                };
+                return Model_Dao_Result_Factory.Success(mockLines);
+            }
+
             return await _daoInforVisualPO.GetLinesAsync(poNumber);
         }
         catch (Exception ex)
@@ -86,6 +125,22 @@ public class RoutingInforVisualService : IRoutingInforVisualService
         try
         {
             await _logger.LogInfoAsync($"Getting PO line {poNumber}-{lineNumber}");
+
+            if (_useMockData)
+            {
+                await _logger.LogInfoAsync($"[MOCK DATA MODE] Returning mock data for line {lineNumber}");
+                var mockLine = new Model_InforVisualPOLine
+                {
+                    PONumber = poNumber,
+                    LineNumber = lineNumber,
+                    PartID = $"MOCK-PART-{lineNumber.PadLeft(3, '0')}",
+                    Description = $"Mock Part {lineNumber} Description",
+                    QuantityOrdered = 100,
+                    QuantityReceived = 0,
+                    VendorName = "MOCK VENDOR"
+                };
+                return Model_Dao_Result_Factory.Success(mockLine);
+            }
 
             if (!int.TryParse(lineNumber, out int lineNum))
             {
