@@ -90,7 +90,7 @@ Add routing module configuration:
 ```json
 {
   "ConnectionStrings": {
-    "MySQL": "Server=localhost;Port=3306;Database=mtm_receiving_application;User Id=root;Password=root;",
+    "MySQL": "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;User Id=root;Password=root;",
     "InforVisual": "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;"
   },
   "RoutingModule": {

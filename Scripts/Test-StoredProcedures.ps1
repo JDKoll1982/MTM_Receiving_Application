@@ -3,7 +3,7 @@
 # Dependency: MySql.Data.dll (Usually available if the app builds, or we use pure SQL via mysql.exe if available, but .NET is safer here given the environment)
 
 param (
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
     [string]$Password = "root"

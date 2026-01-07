@@ -22,7 +22,7 @@ Before starting implementation, ensure:
 
 ```bash
 # Deploy schema
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database/Schemas/schema_volvo.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Database/Schemas/schema_volvo.sql
 ```
 
 **Tables Created**:
@@ -36,7 +36,7 @@ mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database/Schem
 ```bash
 # Deploy all stored procedures
 for file in Database/StoredProcedures/Volvo/sp_volvo_*.sql; do
-  mysql -h localhost -P 3306 -u root -p mtm_receiving_application < "$file"
+  mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < "$file"
 done
 ```
 
@@ -51,7 +51,7 @@ done
 
 ```bash
 # Import DataSheet.csv into volvo_parts_master
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database/TestData/volvo_sample_data.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Database/TestData/volvo_sample_data.sql
 ```
 
 **Data Loaded**:

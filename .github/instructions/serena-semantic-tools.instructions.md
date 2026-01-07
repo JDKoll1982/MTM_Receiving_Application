@@ -838,7 +838,7 @@ execute_shell_command(
 
 # 3. Execute stored procedure migration
 execute_shell_command(
-    command='& "C:\\MAMP\\bin\\mysql\\bin\\mysql.exe" -h localhost -P 3306 -u root -proot mtm_receiving_application < Database/Schemas/01_create_receiving_tables.sql'
+    command='& "C:\\MAMP\\bin\\mysql\\bin\\mysql.exe" -h 172.16.1.104 -P 3306 -u root -proot mtm_receiving_application < Database/Schemas/01_create_receiving_tables.sql'
 )
 
 # 4. Git diff before committing
