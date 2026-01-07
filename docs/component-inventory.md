@@ -78,6 +78,35 @@ WinUI 3 desktop application with modular MVVM architecture. All views use `x:Bin
 - **View_Settings_DunnageMode**: Configure default dunnage behavior
 - **View_Settings_Placeholder**: Placeholder for future settings
 
+## Module_Routing Components
+
+### Workflow Views
+- **RoutingWizardContainerView**: Main workflow container
+- **RoutingModeSelectionView**: Mode selection (Wizard/Manual)
+- **RoutingWizardStep1View**: Step 1 of routing wizard
+- **RoutingWizardStep2View**: Step 2 of routing wizard
+- **RoutingWizardStep3View**: Step 3 of routing wizard
+
+### Alternate Modes
+- **RoutingManualEntryView**: Manual routing entry
+- **RoutingEditModeView**: Edit existing routing records
+
+## Module_Volvo Components
+
+### Shipment Management
+- **View_Volvo_ShipmentEntry**: Shipment entry form
+- **View_Volvo_History**: Shipment history and logs
+- **View_Volvo_Settings**: Volvo module configuration
+
+### Dialogs
+- **VolvoPartAddEditDialog**: Add/Edit Volvo parts
+- **VolvoShipmentEditDialog**: Edit shipment details
+
+## Module_Reporting Components
+
+### Main Reporting
+- **View_Reporting_Main**: Central reporting dashboard
+
 ## Design System
 
 ### Theming

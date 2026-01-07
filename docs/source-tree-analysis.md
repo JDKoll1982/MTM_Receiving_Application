@@ -153,15 +153,63 @@ MTM_Receiving_Application/
 │       ├── View_Settings_ModeSelection.xaml
 │       └── View_Settings_DunnageMode.xaml
 │
-├── Module_Routing/                      # Routing module (future feature)
-│   ├── Data/                            # Routing DAOs (placeholder)
-│   ├── Database/                        # Routing schema scripts
+├── Module_Routing/                      # Routing module
+│   ├── Archived_Code_Reviews/           # Code review archives
+│   ├── Constants/                       # Routing constants
+│   ├── Converters/                      # Routing-specific converters
+│   ├── Data/                            # Routing DAOs
+│   │   ├── Dao_InforVisualPO.cs         # Shared PO access
+│   │   ├── Dao_RoutingLabel.cs          # Label data access
+│   │   ├── Dao_RoutingLabelHistory.cs   # Label history
+│   │   ├── Dao_RoutingOtherReason.cs    # Reason codes
+│   │   ├── Dao_RoutingRecipient.cs      # Recipients
+│   │   ├── Dao_RoutingUsageTracking.cs  # Usage tracking
+│   │   └── Dao_RoutingUserPreference.cs # User preferences
+│   ├── Database/                        # Routing database scripts
 │   ├── Enums/                           # Routing enumerations
 │   ├── Interfaces/                      # Routing contracts
 │   ├── Models/                          # Routing models
 │   ├── Services/                        # Routing services
+│   │   ├── IRoutingService.cs
+│   │   └── RoutingService.cs
 │   ├── ViewModels/                      # Routing ViewModels
+│   │   ├── RoutingWizardContainerViewModel.cs
+│   │   └── RoutingManualEntryViewModel.cs
 │   └── Views/                           # Routing Views
+│       ├── RoutingWizardContainerView.xaml
+│       └── RoutingManualEntryView.xaml
+│
+├── Module_Volvo/                        # Volvo integration module
+│   ├── Data/                            # Volvo DAOs
+│   │   ├── Dao_VolvoPart.cs
+│   │   ├── Dao_VolvoPartComponent.cs
+│   │   ├── Dao_VolvoSettings.cs
+│   │   ├── Dao_VolvoShipment.cs
+│   │   └── Dao_VolvoShipmentLine.cs
+│   ├── Models/                          # Volvo models
+│   ├── Interfaces/                      # Volvo contracts
+│   ├── Services/                        # Volvo services
+│   │   ├── Service_Volvo.cs
+│   │   ├── Service_VolvoAuthorization.cs
+│   │   └── Service_VolvoMasterData.cs
+│   ├── ViewModels/                      # Volvo ViewModels
+│   │   ├── ViewModel_Volvo_ShipmentEntry.cs
+│   │   ├── ViewModel_Volvo_History.cs
+│   │   └── ViewModel_Volvo_Settings.cs
+│   └── Views/                           # Volvo Views
+│       ├── View_Volvo_ShipmentEntry.xaml
+│       ├── View_Volvo_History.xaml
+│       └── View_Volvo_Settings.xaml
+│
+├── Module_Reporting/                    # Reporting module
+│   ├── Data/                            # Reporting DAOs
+│   │   └── Dao_Reporting.cs
+│   ├── Services/                        # Reporting services
+│   │   └── Service_Reporting.cs
+│   ├── ViewModels/                      # Reporting ViewModels
+│   │   └── ViewModel_Reporting_Main.cs
+│   └── Views/                           # Reporting Views
+│       └── View_Reporting_Main.xaml
 │
 ├── Database/                            # SQL schemas and stored procedures
 │   ├── Schemas/                         # Table definitions (MySQL)

@@ -25,5 +25,11 @@
         "**/*.xaml",
         "**/*.csproj",
         "**/*.sql"
-    ]
+    ],
+    "files.associations": {
+        "**/.github/workflows/*.{yml,yaml}": "yaml",
+        "**/Taskfile.{yml,yaml}": "yaml",
+        "**/*.instructions.md": "markdown",
+        "**/*.prompt.md": "markdown"
+    }
 }
