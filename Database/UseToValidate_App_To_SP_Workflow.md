@@ -357,7 +357,7 @@ Move-Item -Path "Database\StoredProcedures\Volvo\sp_unused_procedure.sql" `
 .\Database\Deploy\Deploy-Database-GUI-Fixed.ps1
 
 # OR manually deploy single SP
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Database\StoredProcedures\Volvo\sp_volvo_part_master_get_by_id.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database\StoredProcedures\Volvo\sp_volvo_part_master_get_by_id.sql
 ```
 
 ### Verify Deployment:

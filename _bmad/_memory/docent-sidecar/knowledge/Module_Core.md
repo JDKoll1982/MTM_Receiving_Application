@@ -134,9 +134,9 @@ Diagrams are split by user journey to stay under the node limit.
 ### Workflow 1: Authentication and Session Management
 
 ```mermaid
-flowchart TD
+flowchart LR
   subgraph UI[UI Layer]
-    Splash[Splash / Login UI]
+    Splash[Splash and Login UI]
   end
 
   subgraph SVC[Service Layer]
@@ -148,76 +148,61 @@ flowchart TD
     UserDAO[Dao_User]
   end
 
-  subgraph DB[MySQL - mtm_receiving_application]
+  subgraph DB[MySQL]
+    SP_Shared[sp_GetSharedTerminalNames]
     SP_GetUser[sp_GetUserByWindowsUsername]
     SP_ValidatePin[sp_ValidateUserPin]
     SP_Log[sp_LogUserActivity]
-    SP_Shared[sp_GetSharedTerminalNames]
   end
 
-  Splash -->|Detect workstation| AuthSVC
-  AuthSVC -->|GetSharedTerminalNamesAsync| UserDAO
-  UserDAO -->|Exec| SP_Shared
+  Splash --> AuthSVC
 
-  Splash -->|Windows username or PIN| AuthSVC
-  AuthSVC -->|GetUserByWindowsUsernameAsync| UserDAO
-  UserDAO -->|Exec| SP_GetUser
+  AuthSVC -->|Get shared terminals| UserDAO -->|Exec| SP_Shared
+  AuthSVC -->|Get user by username| UserDAO -->|Exec| SP_GetUser
+  AuthSVC -->|Validate PIN| UserDAO -->|Exec| SP_ValidatePin
+  AuthSVC -->|Log activity| UserDAO -->|Exec| SP_Log
 
-  AuthSVC -->|ValidateUserPinAsync| UserDAO
-  UserDAO -->|Exec| SP_ValidatePin
-
-  AuthSVC -->|LogUserActivityAsync| UserDAO
-  UserDAO -->|Exec| SP_Log
-
-  AuthSVC -->|CreateSession| SessSVC
-  SessSVC -->|StartTimeoutMonitoring| SessSVC
+  AuthSVC -->|Create session| SessSVC
+  SessSVC -->|Start timeout monitoring| SessSVC
 ```
 
 ### Workflow 2: Infor Visual PO and Part Lookup
 
 ```mermaid
-flowchart TD
+flowchart LR
   subgraph UI[UI Layer]
-    ReceivingUI[Receiving Workflow UI]
+    ReceivingUI[Receiving workflow UI]
   end
 
   subgraph SVC[Service Layer]
-    InforSVC[Service_InforVisualConnect - IService_InforVisual]
+    InforSVC[Service_InforVisualConnect]
   end
 
   subgraph DAO[DAO Layer]
     InforDAO[Dao_InforVisualConnection]
   end
 
-  subgraph DB[SQL Server - VISUAL/MTMFG - ReadOnly]
-    Q1[01_GetPOWithParts.sql]
-    Q2[03_GetPartByNumber.sql]
+  subgraph DB[SQL Server ReadOnly]
+    Q1[Query 01 Get PO with parts]
+    Q2[Query 03 Get part by number]
   end
 
-  ReceivingUI -->|GetPOWithPartsAsync| InforSVC
-  InforSVC -->|Calls| InforDAO
-  InforDAO -->|Exec SELECT| Q1
-  Q1 -.->|Rows| InforDAO
-  InforDAO -.->|List lines| InforSVC
-  InforSVC -.->|Result| ReceivingUI
-
-  ReceivingUI -->|GetPartByIDAsync| InforSVC
-  InforSVC -->|Calls| InforDAO
-  InforDAO -->|Exec SELECT| Q2
+  ReceivingUI -->|Get PO with parts| InforSVC --> InforDAO -->|Exec SELECT| Q1
+  ReceivingUI -->|Get part by ID| InforSVC --> InforDAO -->|Exec SELECT| Q2
 ```
 
 ### Workflow 3: Receiving Label Entry (Core bridge)
 
 ```mermaid
-flowchart TD
+flowchart LR
   subgraph UI[UI Layer]
-    Page[Main_ReceivingLabelPage]
+    Page[Main Receiving Label Page]
   end
 
   subgraph VM[ViewModel Layer]
     VM_Recv[Main_ReceivingLabelViewModel]
-    Prop_Current[CurrentLine - Model_ReceivingLine]
     Cmd_Add[AddLineAsync]
+    Current[CurrentLine Model_ReceivingLine]
   end
 
   subgraph SVC[Service Layer]
@@ -225,17 +210,15 @@ flowchart TD
   end
 
   subgraph DB[MySQL]
-    SP_Insert[receiving_line_Insert.sql]
+    SP_Insert[receiving_line_Insert]
   end
 
-  Page -->|Planned x:Bind| VM_Recv
-  VM_Recv -->|Updates| Prop_Current
-  Page -->|UI action| Cmd_Add
-  Cmd_Add -->|InsertReceivingLineAsync| RecLineSVC
-  RecLineSVC -->|Exec SP| SP_Insert
-  SP_Insert -.->|Result| RecLineSVC
-  RecLineSVC -.->|Model_Dao_Result| Cmd_Add
-  Cmd_Add -.->|Updates TotalRows and ReceivingLines| VM_Recv
+  Page --> VM_Recv
+  VM_Recv --> Current
+  Page -->|User action| Cmd_Add
+  Cmd_Add --> RecLineSVC -->|Exec SP| SP_Insert
+  SP_Insert -.->|Result| Cmd_Add
+  Cmd_Add -.->|Update list and totals| VM_Recv
 ```
 
 ---

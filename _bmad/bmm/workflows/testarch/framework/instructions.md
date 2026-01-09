@@ -108,7 +108,7 @@ Initialize a production-ready test framework architecture (Playwright or Cypress
      },
 
      use: {
-       baseURL: process.env.BASE_URL || 'http://172.16.1.104:3000',
+       baseURL: process.env.BASE_URL || 'http://localhost:3000',
        trace: 'retain-on-failure',
        screenshot: 'only-on-failure',
        video: 'retain-on-failure',
@@ -133,7 +133,7 @@ Initialize a production-ready test framework architecture (Playwright or Cypress
 
    export default defineConfig({
      e2e: {
-       baseUrl: process.env.BASE_URL || 'http://172.16.1.104:3000',
+       baseUrl: process.env.BASE_URL || 'http://localhost:3000',
        specPattern: 'tests/e2e/**/*.cy.{js,jsx,ts,tsx}',
        supportFile: 'tests/support/e2e.ts',
        video: false,
@@ -163,8 +163,8 @@ Initialize a production-ready test framework architecture (Playwright or Cypress
    ```bash
    # Test Environment Configuration
    TEST_ENV=local
-   BASE_URL=http://172.16.1.104:3000
-   API_URL=http://172.16.1.104:3001/api
+   BASE_URL=http://localhost:3000
+   API_URL=http://localhost:3001/api
 
    # Authentication (if applicable)
    TEST_USER_EMAIL=test@example.com

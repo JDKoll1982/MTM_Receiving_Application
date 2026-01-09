@@ -2,7 +2,7 @@
 
 **Purpose:** Track analyzed modules, validation history, and discovered patterns.
 
-**Last Updated:** 2026-01-08 (Initial creation)
+**Last Updated:** 2026-01-09
 
 ---
 
@@ -11,6 +11,13 @@
 | Module Name | Documentation Path | Last Analyzed | Last Validated | Status | Notes |
 |-------------|-------------------|---------------|----------------|--------|-------|
 | Module_Core | _bmad/_memory/docent-sidecar/knowledge/Module_Core.md | 2026-01-08 | 2026-01-08 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
+| Module_Receiving | _bmad/_memory/docent-sidecar/knowledge/Module_Receiving.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
+| Module_Dunnage | _bmad/_memory/docent-sidecar/knowledge/Module_Dunnage.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
+| Module_Volvo | _bmad/_memory/docent-sidecar/knowledge/Module_Volvo.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
+| Module_Reporting | _bmad/_memory/docent-sidecar/knowledge/Module_Reporting.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for consistency |
+| Module_Routing | _bmad/_memory/docent-sidecar/knowledge/Module_Routing.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for consistency |
+| Module_Shared | _bmad/_memory/docent-sidecar/knowledge/Module_Shared.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for consistency |
+| Module_Settings | _bmad/_memory/docent-sidecar/knowledge/Module_Settings.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; companion code inventory maintained |
 
 **Template for new entries:**
 
@@ -35,6 +42,18 @@ _None currently - agent just created_
 ---
 
 ## Discovered Patterns Library
+
+### Documentation Patterns
+
+**Pattern:** Preferred Mermaid Diagram Style (Readability)
+
+- Use `flowchart LR` for main diagrams (left-to-right layout).
+- Use `subgraph` blocks to group by layer or feature area (UI, VM, Service, DAO, DB).
+- Avoid large fan-out from a single node; prefer a single “controller”/“hub” node plus grouped edges.
+- Avoid many direct `StepChanged`/event edges to multiple nodes; represent repeated event wiring as a single note node with dotted edges.
+- Keep node labels simple (avoid parentheses/brackets/special characters) to reduce Mermaid parse issues and visual clutter.
+
+**Source:** User preference (2026-01-08)
 
 ### ViewModel Patterns
 

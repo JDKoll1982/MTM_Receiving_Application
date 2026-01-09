@@ -106,7 +106,7 @@ test.describe('Magic Link Authentication', () => {
 
   test('should handle expired magic link', async ({ page }) => {
     // Use pre-expired link (older than 15 minutes)
-    const expiredLink = 'http://172.16.1.104:3000/auth/verify?token=expired-token-123';
+    const expiredLink = 'http://localhost:3000/auth/verify?token=expired-token-123';
 
     await page.goto(expiredLink);
 
@@ -368,7 +368,7 @@ test.describe('Email Auth Negative Flows', () => {
       }),
     ).toString('base64');
 
-    const expiredLink = `http://172.16.1.104:3000/auth/verify?token=${expiredToken}`;
+    const expiredLink = `http://localhost:3000/auth/verify?token=${expiredToken}`;
 
     // Visit expired link
     await page.goto(expiredLink);
@@ -385,7 +385,7 @@ test.describe('Email Auth Negative Flows', () => {
   });
 
   test('should reject invalid magic link token', async ({ page }) => {
-    const invalidLink = 'http://172.16.1.104:3000/auth/verify?token=invalid-garbage';
+    const invalidLink = 'http://localhost:3000/auth/verify?token=invalid-garbage';
 
     await page.goto(invalidLink);
 

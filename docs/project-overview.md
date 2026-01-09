@@ -99,7 +99,7 @@ MTM_Receiving_Application/
 - **Purpose**: Transactional data for receiving and dunnage operations
 - **Access**: Full READ/WRITE
 - **Operations**: Via stored procedures only (no raw SQL in C# code)
-- **Server**: 172.16.1.104:3306
+- **Server**: localhost:3306
 
 **SQL Server (Infor Visual ERP - MTMFG)** - Master Data
 - **Purpose**: Purchase order and part data validation
@@ -154,7 +154,7 @@ Each module follows a consistent structure:
 - Windows 10/11 (build 17763+)
 - Visual Studio 2022 with .NET Desktop Development workload
 - .NET 8 SDK
-- MySQL Server 8.x (access to 172.16.1.104:3306)
+- MySQL Server 8.x (access to localhost:3306)
 - SQL Server (optional, can use mock data)
 
 ### Build & Run
@@ -177,9 +177,9 @@ dotnet run
 ```powershell
 # Deploy MySQL schemas and stored procedures
 cd Database
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/02_create_authentication_tables.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/03_create_receiving_tables.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/07_create_dunnage_tables_v2.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/02_create_authentication_tables.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/03_create_receiving_tables.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/07_create_dunnage_tables_v2.sql
 # Deploy stored procedures (see development-guide.md)
 ```
 
