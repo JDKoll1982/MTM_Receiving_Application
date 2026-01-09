@@ -7,6 +7,7 @@
 ## 1) What We’re Building (from meeting input)
 
 ### Goals
+
 - A **desktop, module-based** application where each department/module is self-contained and changes don’t ripple across unrelated areas.
 - Store all application state in **MySQL**.
 - Integrate with **Visual ERP (SQL Server)** for **read-only** validation/lookups.
@@ -17,11 +18,13 @@
 - Support **Quality-only queue** and a plan for alerting/notification (subject to IT/security approvals).
 
 ### Non-goals (initial MVP)
+
 - Writing to Visual ERP (explicitly forbidden).
 - “Perfect” automated notifications (email/Teams/intercom) without security signoff.
 - Full analytics suite on day 1 (start with essentials + audit trail).
 
 ### Hard constraints
+
 - **Visual ERP is read-only**: `SELECT` only.
 - **MySQL writes use stored procedures** (no raw SQL in app code).
 - Must remain usable by non-tech-savvy operators: minimize typing, maximize guided choices.
@@ -67,22 +70,26 @@ mindmap
 ## 3) Recommended Stack (best fit for this app)
 
 ### Framework + language
+
 - **Framework**: Windows Desktop UI framework that supports strong MVVM + DI.
   - Recommended for your ecosystem: **WinUI 3 + .NET 8+**
 - **Language**: **C#**
 
 ### Why this stack
+
 - Fits the existing patterns you already have (MVVM, DI, modular folders, service/DAO layering).
 - Good performance for kiosk/production floor use.
 - Strong typing helps prevent binding/runtime errors.
 
 ### VS Code extensions (recommended)
+
 - Mermaid preview/diagrams extension (for editing this doc and future specs)
 - C# (Dev Kit)
 - XAML tools
 - markdownlint + Markdown All in One
 
 ### NuGet package shortlist (baseline)
+
 - MVVM: `CommunityToolkit.Mvvm`
 - DI/config/logging: `Microsoft.Extensions.DependencyInjection`, `Microsoft.Extensions.Configuration`, `Microsoft.Extensions.Logging`
 - SQL Server RO integration: `Microsoft.Data.SqlClient`
@@ -92,6 +99,7 @@ mindmap
 ## 4) MVVM Toolkit Patterns (code-agnostic)
 
 Use these consistently across modules:
+
 - **Observable state**: properties generated through MVVM toolkit attributes (no manual INotifyPropertyChanged boilerplate).
 - **Commands**: generated command properties for UI actions.
 - **Busy + status**: one standard pattern for `IsBusy` and `StatusMessage` (or equivalent) to drive loading indicators and prevent double-submits.
@@ -170,6 +178,7 @@ flowchart LR
 ## 8) Key Workflows (Mermaid diagrams)
 
 ### 8.1 Role-based entry flow
+
 ```mermaid
 flowchart TB
   A[User launches app] --> B[Login]
@@ -193,6 +202,7 @@ flowchart TB
 ```
 
 ### 8.2 Operator wizard → waitlist creation
+
 ```mermaid
 sequenceDiagram
   participant Operator
@@ -223,6 +233,7 @@ sequenceDiagram
 ```
 
 ### 8.3 Auto-assignment by zone/priority
+
 ```mermaid
 sequenceDiagram
   participant Waitlist as Waitlist Service
@@ -243,6 +254,7 @@ sequenceDiagram
 ```
 
 ### 8.4 Waitlist item lifecycle
+
 ```mermaid
 stateDiagram-v2
   [*] --> Draft
@@ -319,12 +331,14 @@ erDiagram
 ## 10) Implementation Sequence (the “first steps”)
 
 ### Phase 0 — Repo + scaffolding
+
 1. Confirm target devices, Windows version, and deployment method.
 2. Create the new solution/app shell with modular folder boundaries.
 3. Wire DI + configuration + logging.
 4. Add a minimal navigation shell that can show module placeholders.
 
 ### Phase 1 — Core services
+
 1. Error handling service (UI safe + logging).
 2. Session/identity service (user, role, analytics rights).
 3. Navigation service + module registration.
@@ -332,17 +346,20 @@ erDiagram
 5. Event bus/messaging service.
 
 ### Phase 2 — Data access foundations
+
 1. Visual RO gateway (SELECT-only enforcement).
 2. MySQL stored procedure gateway (single way to call SPs).
 3. Audit trail events.
 
 ### Phase 3 — Waitlist MVP
+
 1. Waitlist domain model + statuses.
 2. Waitlist CRUD via stored procedures.
 3. Operator wizard to create waitlist items.
 4. Material handler queue to accept/complete items.
 
 ### Phase 4 — Routing + quality + analytics
+
 1. Zone-based routing rules (auto-assign).
 2. Quality-only queue + workflow.
 3. Lead analytics view (basic metrics + filtering).
@@ -378,6 +395,7 @@ gantt
 Use these placeholders as prompts/inputs when driving implementation via BMAD.
 
 ### BMAD inputs (fill in)
+
 - **App name**: `<TBD>`
 - **Sites**: `<list of site codes>`
 - **Roles**: `Operator | MaterialHandler | Quality | Lead | Admin`
@@ -388,6 +406,7 @@ Use these placeholders as prompts/inputs when driving implementation via BMAD.
 - **Notification channels** (approved?): `<none|email|teams|intercom>`
 
 ### BMAD task slices (repeat per module)
+
 - Define module scope + navigation entry
 - Define models (DTOs + persistence models)
 - Define service contracts
@@ -398,6 +417,7 @@ Use these placeholders as prompts/inputs when driving implementation via BMAD.
 - Add tests (service + DAO)
 
 ## 13) Open questions (track early)
+
 - Site identification: do we map by **hostname**, **IP**, or both?
 - How are “favorites/recents” scoped: per user, per site, or shared?
 - What is the minimum acceptable Quality alert path under security policy?
@@ -406,7 +426,9 @@ Use these placeholders as prompts/inputs when driving implementation via BMAD.
 ---
 
 ## Source Notes
+
 This kickoff is derived from:
+
 - MeetingOutline.md
 - MeetingSummary.md
 - MeetingTranscript.md
