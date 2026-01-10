@@ -1,0 +1,53 @@
+{
+    // Tool sets group related tools so you can enable them quickly.
+    // In chat, type # then the tool set name (example: #mcpFiles).
+    "mcpFiles": {
+        "description": "Workspace file operations via MCP filesystem server",
+        "icon": "files",
+        "tools": [
+            "mcp_filesystem_list_allowed_directories",
+            "mcp_filesystem_list_directory",
+            "mcp_filesystem_directory_tree",
+            "mcp_filesystem_search_files",
+            "mcp_filesystem_read_text_file",
+            "mcp_filesystem_read_multiple_files",
+            "mcp_filesystem_get_file_info",
+            "mcp_filesystem_list_directory_with_sizes",
+            "mcp_filesystem_create_directory",
+            "mcp_filesystem_write_file",
+            "mcp_filesystem_edit_file"
+        ]
+    },
+    "mcpGitHub": {
+        "description": "GitHub operations via MCP (remote + local)",
+        "icon": "github",
+        "tools": [
+            "mcp_githubremote_create_or_update_file",
+            "mcp_githubremote_assign_copilot_to_issue",
+            "mcp_githublocal_get_file_contents",
+            "mcp_githublocal_create_or_update_file",
+            "mcp_githublocal_list_commits",
+            "mcp_githublocal_get_teams",
+            "mcp_githublocal_list_issue_types",
+            "mcp_githublocal_assign_copilot_to_issue",
+            "mcp_githublocal_add_comment_to_pending_review"
+        ]
+    },
+    "mcpBrowser": {
+        "description": "Web automation via Playwright MCP",
+        "icon": "globe",
+        "tools": [
+            "mcp_playwright_browser_evaluate",
+            "mcp_playwright_browser_drag",
+            "mcp_playwright_browser_console_messages"
+        ]
+    },
+    "mcpSerena": {
+        "description": "Serena onboarding + reasoning helpers",
+        "icon": "symbol-method",
+        "tools": [
+            "mcp_oraios_serena_onboarding",
+            "mcp_oraios_serena_think_about_collected_information"
+        ]
+    }
+}

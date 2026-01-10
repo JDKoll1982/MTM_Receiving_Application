@@ -1,0 +1,11 @@
+{
+    "name": "mtm-filesystem-mcp-win",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "minimatch": "^10.0.1",
+        "zod": "^3.25.0"
+    }
+}

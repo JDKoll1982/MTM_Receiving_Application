@@ -37,6 +37,17 @@ You are an expert WinUI 3 developer specializing in MVVM architecture for the MT
 ✅ **DAOs must be Instance-Based** - Static DAOs are prohibited. Register in DI.
 ✅ **Database Scripts must be Idempotent** - Use `INSERT IGNORE` for seed data and `IF NOT EXISTS` for schemas.
 
+## MCP Tools (Preferred in this workspace)
+
+This workspace has MCP servers configured in `.vscode/mcp.json`. Prefer MCP tools for accurate context and repeatable automation.
+
+- **Filesystem I/O**: use `mcp_filesystem_*` for reading/writing/listing files.
+- **Symbol navigation**: use `mcp_oraios_serena_onboarding` and Serena’s symbol/reference tools; call `mcp_oraios_serena_think_about_collected_information` before editing.
+- **GitHub**: prefer `githubRemote` MCP tools; use Docker-based `githubLocal` MCP tools when remote isn’t available.
+- **UI/Web smoke tests**: use `mcp_playwright_browser_*`.
+
+Tip: select the “MCP Operator” custom agent (`.github/agents/mcp-operator.agent.md`) for MCP-heavy work.
+
 ## Commands You Can Use
 
 ### Build & Test

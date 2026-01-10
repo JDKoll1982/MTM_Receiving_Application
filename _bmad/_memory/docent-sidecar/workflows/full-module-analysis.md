@@ -1,8 +1,8 @@
 ---
 workflow: full-module-analysis
 command: AM
-description: Generate comprehensive 7-section documentation for entire module
-version: 1.0.0
+description: Generate comprehensive 7-section documentation for entire module (includes module self-sufficiency validation)
+version: 1.1.0
 ---
 
 # Full Module Analysis Workflow
@@ -168,6 +168,25 @@ integration_points:
 
 **Events Subscribed:**
 - {Event subscriptions if any}
+
+### Module Self-Sufficiency (Removal Readiness)
+
+**Question:** If `Module_{ModuleName}/` is removed entirely, will the app still build and run without crashes?
+
+**Verdict:** ✅ Self-sufficient / ❌ Not self-sufficient / ⚠️ Inconclusive
+
+**Primary blockers (if any):**
+- {Build-time dependency examples}
+- {DI/navigation/resource references}
+
+**Required Remediation (ALL STEPS):**
+
+Group by impacted file/module and list every required change, including cross-module edits:
+- {File} → {Change} → {Why}
+
+**Re-validation:**
+- `dotnet build` (x64)
+- Smoke-test navigation paths that referenced the module
 
 ### Architecture Compliance
 

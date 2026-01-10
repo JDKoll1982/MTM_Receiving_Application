@@ -2,7 +2,7 @@
 workflow: validate-documentation
 command: VD
 description: Check docs against codebase, identify drift, and update outdated sections
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Validate Documentation Workflow
@@ -93,6 +93,25 @@ Component Drift Analysis:
 ❌ ViewModels: 5 documented, 6 found (+1 NEW)
 ❌ Services: 12 documented, 11 found (-1 REMOVED)
 ✅ DAOs: 4 documented, 4 found (no change)
+
+---
+
+### Step 3b: Self-Sufficiency Section Drift (New)
+
+Validate that the module documentation includes a **Module Self-Sufficiency (Removal Readiness)** section and that it still matches current reality:
+
+1. **Section exists:**
+   - Find heading: `Module Self-Sufficiency (Removal Readiness)`
+   - If missing: mark as ❌ DRIFT (critical)
+
+2. **Cross-module references check (static):**
+   - Re-scan repo (excluding the module folder) for `Module_{ModuleName}` and the module namespace
+   - If new references exist not reflected in remediation list: mark as ⚠️ DRIFT
+
+3. **DI/navigation/resource hooks:**
+   - Ensure documented blockers include DI registrations and routing/menu entries when present
+
+If auto-update is enabled, update the section with current findings and required remediation steps.
 ```
 
 ---

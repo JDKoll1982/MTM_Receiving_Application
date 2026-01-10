@@ -10,6 +10,15 @@ The MTM Receiving Application streamlines the receiving process for manufacturin
 - **Database integration** with MySQL for data persistence and audit trails
 - **Session management** with automatic timeout for security
 
+## Copilot MCP (High-Intelligence Setup)
+
+This repo includes a curated Copilot configuration to encourage MCP-first workflows (better context, fewer guesses):
+
+- MCP servers are defined in `.vscode/mcp.json` (Serena, filesystem, Playwright, GitHub Remote, GitHub Local via Docker).
+- Use the custom agent **MCP Operator** (see `.github/agents/mcp-operator.agent.md`) when you want Copilot to rely heavily on MCP tools.
+- Use the prompt files `/mcp-triage` and `/mcp-implement` (see `.github/prompts/`) to run repeatable MCP-first workflows.
+- Optional tool sets are in `.vscode/toolsets.jsonc` (use `#mcpFiles`, `#mcpGitHub`, `#mcpBrowser`, `#mcpSerena`).
+
 ## Features
 
 ### Authentication System

@@ -2,6 +2,12 @@
     "markdown-preview-enhanced.plantumlServer": "https://www.plantuml.com/plantuml",
     "editor.fontFamily": "'Fluent System Icons'",
     "editor.fontLigatures": true,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "chat.useAgentsMdFile": true,
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.mcp.access": true,
+    "chat.mcp.discovery.enabled": false,
+    "chat.mcp.autoStart": "newAndOutdated",
     "sonarlint.connectedMode.project": {
         "connectionId": "john-koll",
         "projectKey": "JDKoll1982_MTM_Receiving_Application"
