@@ -5,14 +5,13 @@
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "chat.useAgentsMdFile": true,
     "chat.useNestedAgentsMdFiles": true,
-    "chat.mcp.access": true,
+    "chat.mcp.access": "all",
     "chat.mcp.discovery.enabled": {
         "claude-desktop": false,
         "windsurf": false,
         "cursor-global": false,
         "cursor-workspace": false
     },
-    "chat.mcp.autoStart": "newAndOutdated",
     "sonarlint.connectedMode.project": {
         "connectionId": "john-koll",
         "projectKey": "JDKoll1982_MTM_Receiving_Application"

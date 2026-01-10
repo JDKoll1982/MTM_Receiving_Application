@@ -10,9 +10,9 @@
 
 | Module Name | Documentation Path | Last Analyzed | Last Validated | Status | Notes |
 |-------------|-------------------|---------------|----------------|--------|-------|
-| Module_Core | _bmad/_memory/docent-sidecar/knowledge/Module_Core.md | 2026-01-08 | 2026-01-08 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
+| Module_Core | _bmad/_memory/docent-sidecar/knowledge/Module_Core.md | 2026-01-08 | 2026-01-10 | ✅ Current | Validated - Updated counts and removed obsolete workflows |
 | Module_Receiving | _bmad/_memory/docent-sidecar/knowledge/Module_Receiving.md | 2026-01-09 | 2026-01-10 | ✅ Current | Re-validated build after restoring folder; MS removal log captured |
-| Module_Dunnage | _bmad/_memory/docent-sidecar/knowledge/Module_Dunnage.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
+| Module_Dunnage | _bmad/_memory/docent-sidecar/knowledge/Module_Dunnage.md | 2026-01-09 | 2026-01-10 | ✅ Current | Validated - Updated VM count |
 | Module_Volvo | _bmad/_memory/docent-sidecar/knowledge/Module_Volvo.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for token safety |
 | Module_Reporting | _bmad/_memory/docent-sidecar/knowledge/Module_Reporting.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for consistency |
 | Module_Routing | _bmad/_memory/docent-sidecar/knowledge/Module_Routing.md | 2026-01-09 | 2026-01-09 | ✅ Current | Full AM analysis generated; split into companion docs for consistency |

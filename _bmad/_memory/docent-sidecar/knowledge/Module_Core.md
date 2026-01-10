@@ -2,13 +2,13 @@
 module_name: Module_Core
 module_path: Module_Core/
 last_analyzed: 2026-01-08
-last_validated: 2026-01-08
+last_validated: 2026-01-10
 analyst: Docent v1.0.0
 documentation_scope: full-module-analysis
 component_counts:
-  views: 3
-  viewmodels: 3
-  services_interfaces: 28
+  views: 0
+  viewmodels: 0
+  services_interfaces: 29
   services_implementations: 18
   daos: 4
   models: 25
@@ -92,10 +92,7 @@ Module_Core is the shared foundation layer for the MTM Receiving Application. It
 
 1) **Receiving label entry (Core landing -> Receiving service)**
 
-- Entry point: `Main_ReceivingLabelPage` (currently implemented as a placeholder page)
-- Primary ViewModel: `Main_ReceivingLabelViewModel`
-- Primary service dependency:
-  - `IService_MySQL_ReceivingLine` (implementation in Module_Receiving)
+- *(Workflow removed: Components `Main_ReceivingLabelPage` and `Main_ReceivingLabelViewModel` no longer exist in Module_Core. Functionality likely moved to Module_Receiving or deprecated.)*
 
 ### Integration Points
 
@@ -190,38 +187,6 @@ flowchart LR
   ReceivingUI -->|Get PO with parts| InforSVC --> InforDAO -->|Exec SELECT| Q1
   ReceivingUI -->|Get part by ID| InforSVC --> InforDAO -->|Exec SELECT| Q2
 ```
-
-### Workflow 3: Receiving Label Entry (Core bridge)
-
-```mermaid
-flowchart LR
-  subgraph UI[UI Layer]
-    Page[Main Receiving Label Page]
-  end
-
-  subgraph VM[ViewModel Layer]
-    VM_Recv[Main_ReceivingLabelViewModel]
-    Cmd_Add[AddLineAsync]
-    Current[CurrentLine Model_ReceivingLine]
-  end
-
-  subgraph SVC[Service Layer]
-    RecLineSVC[IService_MySQL_ReceivingLine]
-  end
-
-  subgraph DB[MySQL]
-    SP_Insert[receiving_line_Insert]
-  end
-
-  Page --> VM_Recv
-  VM_Recv --> Current
-  Page -->|User action| Cmd_Add
-  Cmd_Add --> RecLineSVC -->|Exec SP| SP_Insert
-  SP_Insert -.->|Result| Cmd_Add
-  Cmd_Add -.->|Update list and totals| VM_Recv
-```
-
----
 
 ## User Interaction Lifecycle
 

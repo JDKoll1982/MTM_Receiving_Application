@@ -2,12 +2,12 @@
 module_name: Module_Dunnage
 module_path: Module_Dunnage/
 last_analyzed: 2026-01-09
-last_validated: 2026-01-09
+last_validated: 2026-01-10
 analyst: Docent v1.0.0
 documentation_scope: full-module-analysis
 component_counts:
   views_xaml: 19
-  viewmodels: 13
+  viewmodels: 14
   services_implementations: 3
   daos: 8
   models: 12

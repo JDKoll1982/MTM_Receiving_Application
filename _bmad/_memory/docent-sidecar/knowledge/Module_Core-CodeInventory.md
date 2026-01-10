@@ -2,7 +2,7 @@
 module_name: Module_Core
 section: 4
 title: Code Inventory
-generated: 2026-01-08
+generated: 2026-01-10
 scope: "Inventory for Module_Core; companion to Module_Core.md"
 ---
 
@@ -12,19 +12,19 @@ This file contains the detail inventory for Section 4 of the AM workflow.
 
 ## Views
 
+*(No Views in Module_Core. Previously contained placeholder views which have been removed.)*
+
 | View | Location | Notes |
 |---|---|---|
-| Main_ReceivingLabelPage | Module_Core/Views/Main/Main_ReceivingLabelPage.xaml | Landing page (not fully reviewed here) |
-| Main_DunnageLabelPage | Module_Core/Views/Main/Main_DunnageLabelPage.xaml | Placeholder; points to Dunnage workflow view |
-| Main_CarrierDeliveryLabelPage | Module_Core/Views/Main/Main_CarrierDeliveryLabelPage.xaml | Placeholder |
+| *None* | | |
 
 ## ViewModels
 
+*(No ViewModels in Module_Core. Previously contained placeholder VMs which have been removed.)*
+
 | ViewModel | Location | Observable Properties | Commands (RelayCommand) | Key Dependencies |
 |---|---|---:|---:|---|
-| Main_ReceivingLabelViewModel | Module_Core/ViewModels/Main/Main_ReceivingLabelViewModel.cs | 3+ | 4+ | IService_MySQL_ReceivingLine, IService_ErrorHandler, IService_LoggingUtility |
-| Main_DunnageLabelViewModel | Module_Core/ViewModels/Main/Main_DunnageLabelViewModel.cs | 10+ | 3+ | (Dunnage + logging + error handling dependencies) |
-| Main_CarrierDeliveryLabelViewModel | Module_Core/ViewModels/Main/Main_CarrierDeliveryLabelViewModel.cs | 1+ | 1+ | (Receiving/Carrier label service dependencies) |
+| *None* | | | | |
 
 ## Service Interfaces (Contracts)
 
@@ -95,24 +95,24 @@ Service contracts live in `Module_Core/Contracts/Services/`.
 
 ## Service Implementations (selected)
 
-| Service | Location | Notes |
-|---|---|---|
-| Service_Authentication | Module_Core/Services/Authentication/Service_Authentication.cs | Orchestrates auth and audit trail |
-| Service_UserSessionManager | Module_Core/Services/Authentication/Service_UserSessionManager.cs | Timer-based session timeout |
-| Service_InforVisualConnect | Module_Core/Services/Database/Service_InforVisualConnect.cs | Converts DAO PO lines to Receiving model |
-| Service_ErrorHandler | Module_Core/Services/Database/Service_ErrorHandler.cs | Logs + ContentDialog display |
-| Service_MySQL_Dunnage | Module_Core/Services/Database/Service_MySQL_Dunnage.cs | Large orchestration surface over Dunnage DAOs |
-| Service_MySQL_Receiving | Module_Core/Services/Database/Service_MySQL_Receiving.cs | Uses Dao_ReceivingLoad; throws on failure |
-| Service_MySQL_PackagePreferences | Module_Core/Services/Database/Service_MySQL_PackagePreferences.cs | Uses Dao_PackageTypePreference; throws on failure |
-| Service_Help | Module_Core/Services/Help/Service_Help.cs | Help key routing and dismissal tracking |
+| Service | Location | Notes | Dependent Modules | Potential Duplicates |
+|---|---|---|---|---|
+| Service_Authentication | Module_Core/Services/Authentication/Service_Authentication.cs | Orchestrates auth and audit trail | Module_Shared, Module_Volvo, Module_Settings | - |
+| Service_UserSessionManager | Module_Core/Services/Authentication/Service_UserSessionManager.cs | Timer-based session timeout | Module_Shared, Module_Receiving, Module_Dunnage, Module_Routing, Module_Volvo | - |
+| Service_InforVisualConnect | Module_Core/Services/Database/Service_InforVisualConnect.cs | Converts DAO PO lines to Receiving model | Module_Receiving, Module_Routing | `Module_Routing` (RoutingInforVisualService) |
+| Service_ErrorHandler | Module_Core/Services/Database/Service_ErrorHandler.cs | Logs + ContentDialog display | **All Modules** (Receiving, Dunnage, Routing, Settings, Reporting, Volvo, Shared) | - |
+| Service_MySQL_Dunnage | Module_Core/Services/Database/Service_MySQL_Dunnage.cs | Large orchestration surface over Dunnage DAOs | Module_Dunnage, Module_Reporting, Module_Settings | - |
+| Service_MySQL_Receiving | Module_Core/Services/Database/Service_MySQL_Receiving.cs | Uses Dao_ReceivingLoad; throws on failure | Module_Receiving, Module_Reporting | - |
+| Service_MySQL_PackagePreferences | Module_Core/Services/Database/Service_MySQL_PackagePreferences.cs | Uses Dao_PackageTypePreference; throws on failure | Module_Receiving | - |
+| Service_Help | Module_Core/Services/Help/Service_Help.cs | Help key routing and dismissal tracking | Module_Shared, Module_Dunnage, Module_Receiving | - |
 
 ## DAOs (Infor Visual)
 
-| DAO | Location | Key Methods |
-|---|---|---|
-| Dao_InforVisualConnection | Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs | TestConnectionAsync, GetPOWithPartsAsync, ValidatePoNumberAsync, GetPartByNumberAsync |
-| Dao_InforVisualPO | Module_Core/Data/InforVisual/Dao_InforVisualPO.cs | GetByPoNumberAsync, ValidatePoNumberAsync |
-| Dao_InforVisualPart | Module_Core/Data/InforVisual/Dao_InforVisualPart.cs | GetByPartNumberAsync, SearchPartsByDescriptionAsync |
+| DAO | Location | Key Methods | Dependent Modules | Potential Duplicates |
+|---|---|---|---|---|
+| Dao_InforVisualConnection | Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs | TestConnectionAsync, GetPOWithPartsAsync, ValidatePoNumberAsync, GetPartByNumberAsync | Module_Receiving, Module_Routing | - |
+| Dao_InforVisualPO | Module_Core/Data/InforVisual/Dao_InforVisualPO.cs | GetByPoNumberAsync, ValidatePoNumberAsync | Module_Receiving, Module_Routing | `Module_Routing` (Dao_InforVisualPO) - **Exact Duplicate** |
+| Dao_InforVisualPart | Module_Core/Data/InforVisual/Dao_InforVisualPart.cs | GetByPartNumberAsync, SearchPartsByDescriptionAsync | Module_Receiving, Module_Routing | `Module_Volvo` (Dao_VolvoPart - concept overlap) |
 
 ## Converters
 
