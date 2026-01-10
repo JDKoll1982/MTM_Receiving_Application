@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Receiving - Code Inventory
 
 This file is a companion to the main module doc:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Receiving.md](../docent-sidecar/knowledge/Module_Receiving.md)
 
 ## Views and Primary Bindings

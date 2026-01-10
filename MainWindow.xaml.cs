@@ -106,10 +106,6 @@ namespace MTM_Receiving_Application
                         // Title will be set by ContentFrame_Navigated
                         ContentFrame.Navigate(typeof(Module_Routing.Views.RoutingModeSelectionView));
                         break;
-                    case "CarrierDeliveryLabelPage":
-                        PageTitleTextBlock.Text = "Carrier Delivery";
-                        ContentFrame.Navigate(typeof(Module_Core.Views.Main.Main_CarrierDeliveryLabelPage));
-                        break;
                     case "VolvoShipmentEntry":
                         PageTitleTextBlock.Text = "Volvo Dunnage Requisition";
                         ContentFrame.Navigate(typeof(Module_Volvo.Views.View_Volvo_ShipmentEntry));

@@ -4,24 +4,21 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
-
-namespace MTM_Receiving_Application.Module_Core.ViewModels.Main;
+namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 /// <summary>
 /// ViewModel for Dunnage Label entry page - Orchestrates workflow step visibility
 /// </summary>
-public partial class Main_DunnageLabelViewModel : ViewModel_Shared_Base
+public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Window _windowService;
 
-    public Main_DunnageLabelViewModel(
+    public ViewModel_Dunnage_WorkFlowViewModel(
         IService_DunnageWorkflow workflowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -54,7 +51,7 @@ public partial class Main_DunnageLabelViewModel : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(InitializeWorkflowAsync),
-                nameof(Main_DunnageLabelViewModel));
+                nameof(ViewModel_Dunnage_WorkFlowViewModel));
         }
     }
 

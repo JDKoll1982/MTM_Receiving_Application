@@ -25,8 +25,6 @@ using MTM_Receiving_Application.Module_Settings.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Views;
-using MTM_Receiving_Application.Module_Core.ViewModels.Main;
-using MTM_Receiving_Application.Module_Core.Views.Main;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 
 using MTM_Receiving_Application.Module_Core.Services;
@@ -255,9 +253,9 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Shared_SharedTerminalLogin>();
                 services.AddTransient<ViewModel_Shared_NewUserSetup>();
                 services.AddTransient<ViewModel_Shared_HelpDialog>();
-                services.AddTransient<Main_ReceivingLabelViewModel>();
-                services.AddTransient<Main_DunnageLabelViewModel>();
-                services.AddTransient<Main_CarrierDeliveryLabelViewModel>();
+                //services.AddTransient<Main_ReceivingLabelViewModel>();
+                services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
+                //services.AddTransient<Main_CarrierDeliveryLabelViewModel>();
 
                 // Receiving Workflow ViewModels
                 services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -317,9 +315,9 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Reporting_Main>();
 
                 // Views
-                services.AddTransient<Main_ReceivingLabelPage>();
-                services.AddTransient<Main_DunnageLabelPage>();
-                services.AddTransient<Main_CarrierDeliveryLabelPage>();
+                //services.AddTransient<Main_ReceivingLabelPage>();
+                //services.AddTransient<Main_DunnageLabelPage>();
+                //services.AddTransient<Main_CarrierDeliveryLabelPage>();
 
                 // NEW Routing Wizard Views (Phase 3 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingWizardContainerView>();

@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.ViewModels.Main;
-using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using System;
@@ -10,14 +9,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 public sealed partial class View_Dunnage_WorkflowView : Page
 {
-    public Main_DunnageLabelViewModel ViewModel { get; }
+    public ViewModel_Dunnage_WorkFlowViewModel ViewModel { get; }
     private IService_DunnageWorkflow? _workflowService;
     private IService_Help? _helpService;
     private readonly IService_Focus _focusService;
 
     public View_Dunnage_WorkflowView()
     {
-        ViewModel = App.GetService<Main_DunnageLabelViewModel>();
+        ViewModel = App.GetService<ViewModel_Dunnage_WorkFlowViewModel>();
         _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
 
