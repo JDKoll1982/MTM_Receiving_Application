@@ -12,6 +12,7 @@
 ## Purpose
 
 The application serves manufacturing floor operators at touchscreen terminals to:
+
 1. **Receive Materials**: Validate purchase orders against ERP, capture weight/quantity, generate receiving labels
 2. **Manage Dunnage**: Track returnable packaging (bins, racks, pallets) with incoming/outgoing/transfer/count workflows
 3. **Generate Labels**: Create CSV files for LabelView 2022 label printing system
@@ -39,6 +40,7 @@ The application serves manufacturing floor operators at touchscreen terminals to
 **Pattern**: Modular Monolith with Strict MVVM
 
 The application is a single executable with modular feature separation:
+
 - Each feature module has its own Models, Views, ViewModels, Services, and Data layers
 - Strict MVVM architecture enforced via CommunityToolkit.Mvvm source generators
 - Dependency Injection for all cross-module dependencies
@@ -47,7 +49,7 @@ The application is a single executable with modular feature separation:
 
 ## Repository Structure
 
-```
+```bash
 MTM_Receiving_Application/
 ├── Module_Core/         # Infrastructure (auth, logging, navigation, error handling)
 ├── Module_Receiving/    # Purchase order receiving workflows
@@ -70,6 +72,7 @@ MTM_Receiving_Application/
 ## Key Features
 
 ### Receiving Workflow
+
 - **PO Entry & Validation**: Validate purchase orders against Infor Visual ERP
 - **Load Details**: Capture carrier, packing slip, and shipment information
 - **Weight & Quantity**: Enter received quantities with weight validation
@@ -78,6 +81,7 @@ MTM_Receiving_Application/
 - **Label Generation**: Automatic CSV creation for LabelView printing
 
 ### Dunnage Management
+
 - **Transaction Modes**: Incoming, Outgoing, Transfer, Count
 - **Type & Part Selection**: Hierarchical selection (Type → Part)
 - **Quantity Entry**: Large touch-optimized number entry
@@ -86,6 +90,7 @@ MTM_Receiving_Application/
 - **Inventory Tracking**: Real-time inventory levels with transaction history
 
 ### Authentication & User Management
+
 - **Windows Integration**: Auto-detects Windows username
 - **Shared Terminal Support**: PIN-based authentication
 - **User Preferences**: Default modes, department assignments
@@ -96,12 +101,14 @@ MTM_Receiving_Application/
 ### Dual-Database Architecture
 
 **MySQL (mtm_receiving_application)** - Application Data
+
 - **Purpose**: Transactional data for receiving and dunnage operations
 - **Access**: Full READ/WRITE
 - **Operations**: Via stored procedures only (no raw SQL in C# code)
 - **Server**: localhost:3306
 
 **SQL Server (Infor Visual ERP - MTMFG)** - Master Data
+
 - **Purpose**: Purchase order and part data validation
 - **Access**: READ-ONLY (`ApplicationIntent=ReadOnly`)
 - **Operations**: Direct queries (SELECT only)
@@ -113,27 +120,32 @@ MTM_Receiving_Application/
 Each module follows a consistent structure:
 
 ### Module_Core (Infrastructure)
+
 - **Services**: Error handling, logging, authentication, navigation
 - **Data**: User authentication, ERP integration (READ-ONLY)
 - **Helpers**: Database connection management, stored procedure execution
 
 ### Module_Receiving (PO Receiving)
+
 - **Workflows**: 8-step wizard (Mode → PO → Load → Weight → Heat → Package → Review → Label)
 - **Services**: Workflow orchestration, validation, CSV generation
 - **Data**: Receiving loads/lines, package preferences
 - **ViewModels**: 10 ViewModels (workflow steps + manual/edit modes)
 
 ### Module_Dunnage (Packaging Management)
+
 - **Workflows**: 6-step user workflow, admin dashboard
 - **Services**: Workflow orchestration, admin operations, CSV generation
 - **Data**: Dunnage types/parts/specs, inventory, transactions
 - **ViewModels**: 20+ ViewModels (workflow + admin + dialogs)
 
 ### Module_Shared (Reusable Components)
+
 - **Components**: Splash screen, login dialog, help system, icon picker
 - **ViewModels**: 5 shared ViewModels
 
 ### Module_Settings (Configuration)
+
 - **Features**: Default mode selection, user preferences
 - **ViewModels**: 3 settings ViewModels
 
@@ -151,6 +163,7 @@ Each module follows a consistent structure:
 ## Quick Start
 
 ### Prerequisites
+
 - Windows 10/11 (build 17763+)
 - Visual Studio 2022 with .NET Desktop Development workload
 - .NET 8 SDK
@@ -158,6 +171,7 @@ Each module follows a consistent structure:
 - SQL Server (optional, can use mock data)
 
 ### Build & Run
+
 ```powershell
 # Clone repository
 git clone https://github.com/JDKoll1982/MTM_Receiving_Application.git
@@ -174,6 +188,7 @@ dotnet run
 ```
 
 ### Database Setup
+
 ```powershell
 # Deploy MySQL schemas and stored procedures
 cd Database
@@ -201,6 +216,7 @@ dotnet test --filter "FullyQualifiedName~Integration"
 **Target Environment**: Manufacturing floor touchscreen terminals
 
 **Deployment Steps**:
+
 1. Build release package: `dotnet build -c Release /p:Platform=x64`
 2. Copy application to target terminal
 3. Configure `appsettings.json` with database connections
@@ -210,6 +226,7 @@ dotnet test --filter "FullyQualifiedName~Integration"
 ## Project Status
 
 ### Implemented Modules
+
 - ✅ Module_Core (Infrastructure)
 - ✅ Module_Receiving (PO Receiving workflows)
 - ✅ Module_Dunnage (Packaging management with admin dashboard)
@@ -217,6 +234,7 @@ dotnet test --filter "FullyQualifiedName~Integration"
 - ✅ Module_Settings (User preferences)
 
 ### Planned Features (specs/)
+
 - 📋 Module_Routing: Warehouse routing and logistics
 - 📋 Volvo Module: Volvo-specific receiving workflows
 - 📋 Reporting Module: Analytics and reporting dashboard
@@ -224,6 +242,7 @@ dotnet test --filter "FullyQualifiedName~Integration"
 ## Contributing
 
 This is an internal MTM Manufacturing application. For development guidelines, see [AGENTS.md](../AGENTS.md) which contains:
+
 - MVVM architecture patterns
 - DAO patterns and database access rules
 - ViewModel creation guidelines
@@ -237,7 +256,7 @@ Internal MTM Manufacturing application. All rights reserved.
 ## Contact
 
 **Developer**: John Koll  
-**Repository**: https://github.com/JDKoll1982/MTM_Receiving_Application
+**Repository**: <https://github.com/JDKoll1982/MTM_Receiving_Application>
 
 ---
 

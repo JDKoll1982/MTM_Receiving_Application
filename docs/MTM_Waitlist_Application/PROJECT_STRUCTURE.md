@@ -131,7 +131,9 @@ MTM_Waitlist_Application/
 ## Module Descriptions
 
 ### Module_Core
+
 Foundation services used by all other modules:
+
 - Logging and error handling
 - Messaging/event bus
 - Application state management
@@ -139,33 +141,43 @@ Foundation services used by all other modules:
 - Themes and styling
 
 ### Module_Login
+
 User authentication and authorization:
+
 - Badge + PIN authentication
 - Role-based access control
 - User session management
 
 ### Module_Operator
+
 Press operator workflows:
+
 - Guided wizards for task requests
 - Favorites and recents for quick access
 - Dashboard for operator-specific tasks
 - Work order integration
 
 ### Module_SetupTech
+
 Setup technician tools:
+
 - Change request management
 - Module configuration
 - Setup task tracking
 
 ### Module_Leads
+
 Production lead analytics and oversight:
+
 - Analytics dashboards
 - Time tracking and reporting
 - Supervisor controls
 - Team performance metrics
 
 ### Module_WaitList
+
 Central task queue:
+
 - Task creation and management
 - Priority-based sorting
 - Quick add functionality
@@ -173,35 +185,45 @@ Central task queue:
 - Auto-assignment logic
 
 ### Module_MaterialHandling
+
 Material handler operations:
+
 - Zone-based task assignment
 - Project tracking
 - Quick add for non-waitlist tasks
 - Material movement logging
 
 ### Module_Quality
+
 Quality control workflows:
+
 - Quality-only task queue
 - Alert configuration
 - Notification management
 - Quality issue tracking
 
 ### Module_Logistics
+
 Truck and van logistics:
+
 - Truck task assignment
 - Van task management
 - Location mapping
 - Red-flag validation
 
 ### Module_Training
+
 Operator and technician training:
+
 - Training program management
 - Session tracking
 - Guided training flows
 - Progress monitoring
 
 ### Module_SystemIntegration
+
 Backend system integration:
+
 - Visual ERP (read-only) integration
 - Site/IP detection and mapping
 - MySQL data storage
@@ -210,22 +232,26 @@ Backend system integration:
 ## Architecture Principles
 
 ### MVVM Pattern
+
 - **Models**: Pure data classes matching database schemas
 - **Views**: XAML-only, no business logic
 - **ViewModels**: Business logic, inherit from BaseViewModel, use `[ObservableProperty]` and `[RelayCommand]`
 
 ### Module Independence
+
 - Each module is self-contained
 - Changes to one module do not affect others
 - Modules communicate through Core services/events
 - Modules can be developed and tested independently
 
 ### Database Strategy
+
 - **MySQL**: Application data (full CRUD via stored procedures)
 - **SQL Server (Infor Visual)**: READ ONLY for validation and lookups
 - All MySQL operations use stored procedures (no raw SQL in code)
 
 ### Deployment
+
 - Copy-folder deployment via MTM Application Loader
 - Installed folder is read-only at runtime
 - Runtime artifacts stored in %LOCALAPPDATA%
@@ -246,21 +272,25 @@ Backend system integration:
 ## Implementation Strategy
 
 ### Phase 1: Core Foundation
+
 1. Set up Module_Core with base services
 2. Implement authentication (Module_Login)
 3. Create base UI shell and navigation
 
 ### Phase 2: Essential Modules
+
 1. Module_Operator (guided wizards)
 2. Module_WaitList (basic queue)
 3. Module_MaterialHandling (zone assignment)
 
 ### Phase 3: Enhanced Features
+
 1. Module_Quality (alerts and notifications)
 2. Module_Leads (analytics)
 3. Module_Training (guided flows)
 
 ### Phase 4: Advanced Modules
+
 1. Module_SetupTech
 2. Module_Logistics
 3. Module_SystemIntegration enhancements

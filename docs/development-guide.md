@@ -3,6 +3,7 @@
 ## Prerequisites
 
 ### Development Environment
+
 - **Operating System**: Windows 10 version 1809 (build 17763) or later
 - **IDE**: Visual Studio 2022 (Community, Professional, or Enterprise)
   - Workload: .NET Desktop Development
@@ -11,6 +12,7 @@
 - **Windows App SDK**: 1.8+ (installed via NuGet)
 
 ### Database Requirements
+
 - **MySQL Server 8.x**: Application database server
   - Host: localhost:3306
   - Database: `mtm_receiving_application`
@@ -23,6 +25,7 @@
   - Connection: `ApplicationIntent=ReadOnly` required
 
 ### Database Development Standards
+
 - **Stored Procedures**: All application logic must use stored procedures.
 - **Idempotency**: All SQL scripts (schemas, seed data, migrations) must be idempotent (safe to run multiple times).
   - Use `IF NOT EXISTS` for table creation.
@@ -31,6 +34,7 @@
 - **No Raw SQL**: C# code must strictly call stored procedures, not execute raw SQL queries.
 
 ### Additional Tools
+
 - **MySQL CLI**: For database deployment and testing
 - **LabelView 2022**: For printing receiving/dunnage labels (CSV-driven)
 - **PowerShell 5.1+**: For build scripts
@@ -39,12 +43,14 @@
 ## Environment Setup
 
 ### 1. Clone Repository
+
 ```powershell
 git clone https://github.com/JDKoll1982/MTM_Receiving_Application.git
 cd MTM_Receiving_Application
 ```
 
 ### 2. Configure Database Connection
+
 Edit `appsettings.json` to match your environment:
 
 ```json
@@ -63,6 +69,7 @@ Edit `appsettings.json` to match your environment:
 **Note**: For development without ERP access, set `UseInforVisualMockData: true` to use mock data.
 
 ### 3. Deploy MySQL Database
+
 ```powershell
 # Navigate to Database directory
 cd Database
@@ -86,6 +93,7 @@ mysql -h localhost -P 3306 -u root -p mtm_receiving_application < TestData/010_s
 ```
 
 ### 4. Restore NuGet Packages
+
 ```powershell
 dotnet restore
 ```
@@ -95,6 +103,7 @@ dotnet restore
 ### Build Commands
 
 #### Debug Build (Default)
+
 ```powershell
 dotnet build
 # or
@@ -102,11 +111,13 @@ dotnet build /p:Platform=x64
 ```
 
 #### Release Build
+
 ```powershell
 dotnet build -c Release /p:Platform=x64
 ```
 
 #### Visual Studio Build (for XAML error diagnostics)
+
 ```powershell
 $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
 & "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Build "Debug|x64"
@@ -115,16 +126,19 @@ $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 ### Run Application
 
 #### From Visual Studio
+
 1. Open `MTM_Receiving_Application.slnx` in Visual Studio
 2. Set platform to **x64**
 3. Press F5 to run with debugging
 
 #### From Command Line
+
 ```powershell
 dotnet run
 ```
 
 #### Packaged Application (for deployment testing)
+
 ```powershell
 dotnet publish -c Release /p:Platform=x64 /p:PublishReadyToRun=false
 ```
@@ -132,11 +146,13 @@ dotnet publish -c Release /p:Platform=x64 /p:PublishReadyToRun=false
 ## Testing
 
 ### Run All Tests
+
 ```powershell
 dotnet test
 ```
 
 ### Run Specific Test Categories
+
 ```powershell
 # Unit tests only
 dotnet test --filter "FullyQualifiedName~Unit"
@@ -149,7 +165,9 @@ dotnet test --filter "FullyQualifiedName~Dao_ReceivingLoad_Tests"
 ```
 
 ### Database Integration Tests
+
 Integration tests require live MySQL connection to test database:
+
 - Tests use separate test database schema
 - Stored procedures are tested against actual MySQL
 - Infor Visual integration uses mock data (no live ERP required)
@@ -159,7 +177,8 @@ Integration tests require live MySQL connection to test database:
 ### Adding a New Feature Module
 
 1. **Create Module Folder Structure**
-   ```
+
+   ```bash
    Module_{FeatureName}/
    ├── Data/               # DAOs
    ├── Enums/              # Enumerations
@@ -171,6 +190,7 @@ Integration tests require live MySQL connection to test database:
    ```
 
 2. **Register Services in DI** (`App.xaml.cs`)
+
    ```csharp
    // DAOs (Singleton)
    services.AddSingleton(sp => new Dao_MyFeature(mySqlConnectionString));
@@ -191,6 +211,7 @@ Integration tests require live MySQL connection to test database:
    - Naming: `sp_{table}_{operation}.sql`
 
 5. **Build and Test**
+
    ```powershell
    dotnet build
    dotnet test
@@ -207,6 +228,7 @@ $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 ```
 
 Common XAML issues:
+
 - **WMC1121**: Type mismatch in binding (e.g., `DateTime` to `DateTimeOffset?`)
 - **WMC1110**: Property not found on ViewModel (check spelling, ensure ViewModel is `partial`)
 - **Invalid x:Bind**: Always specify `Mode=OneWay`, `Mode=TwoWay`, or `Mode=OneTime`
@@ -214,11 +236,13 @@ Common XAML issues:
 ## Configuration Files
 
 ### appsettings.json
+
 - **UseInforVisualMockData**: Set to `true` for development without ERP access
 - **Environment**: `Development` or `Production`
 - **ConnectionStrings**: MySQL and SQL Server connections
 
 ### App.xaml.cs
+
 - Dependency Injection container setup
 - Service registrations (DAOs, Services, ViewModels)
 - Application lifecycle management
@@ -226,6 +250,7 @@ Common XAML issues:
 ## Common Development Tasks
 
 ### Adding a New ViewModel
+
 1. Create partial class inheriting from `BaseViewModel`
 2. Use `[ObservableProperty]` for bindable properties
 3. Use `[RelayCommand]` for commands
@@ -233,18 +258,21 @@ Common XAML issues:
 5. Register in `App.xaml.cs` DI
 
 ### Adding a New DAO
+
 1. Create instance-based class (no static)
 2. All methods return `Model_Dao_Result` or `Model_Dao_Result<T>`
 3. Use `Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync()`
 4. Register as Singleton in `App.xaml.cs`
 
 ### Creating a Stored Procedure
+
 1. Write SQL in `Database/StoredProcedures/{Module}/sp_{operation}.sql`
 2. Deploy to MySQL via CLI
 3. Create corresponding DAO method
 4. Never write raw SQL in C# code
 
 ### Debugging Tips
+
 - Use Visual Studio debugger for step-through debugging
 - Check `IsBusy` flags in ViewModels to prevent re-entry
 - Validate database connections via `appsettings.json`
@@ -254,11 +282,13 @@ Common XAML issues:
 ## Build Output
 
 ### Debug Build
+
 - **Location**: `bin/x64/Debug/net8.0-windows10.0.22621.0/`
 - **Executable**: `MTM_Receiving_Application.exe`
 - **Symbols**: `.pdb` files included for debugging
 
 ### Release Build
+
 - **Location**: `bin/x64/Release/net8.0-windows10.0.22621.0/`
 - **Optimizations**: Disabled (WinUI 3 compatibility)
 - **ReadyToRun**: Disabled (COM interop issues)
@@ -267,6 +297,7 @@ Common XAML issues:
 ## Continuous Integration
 
 Currently no CI/CD pipeline configured. Future considerations:
+
 - GitHub Actions for automated builds
 - Automated testing on pull requests
 - Deployment to test environments
