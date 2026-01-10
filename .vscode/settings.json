@@ -6,7 +6,12 @@
     "chat.useAgentsMdFile": true,
     "chat.useNestedAgentsMdFiles": true,
     "chat.mcp.access": true,
-    "chat.mcp.discovery.enabled": false,
+    "chat.mcp.discovery.enabled": {
+        "claude-desktop": false,
+        "windsurf": false,
+        "cursor-global": false,
+        "cursor-workspace": false
+    },
     "chat.mcp.autoStart": "newAndOutdated",
     "sonarlint.connectedMode.project": {
         "connectionId": "john-koll",
