@@ -4,7 +4,9 @@
     "editor.fontLigatures": true,
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "chat.useAgentsMdFile": true,
-    "chat.useNestedAgentsMdFiles": true,
+    // Prevent Copilot Chat from pulling in nested agent/workflow guidance from subfolders
+    // (e.g., BMAD workflows that explicitly require STOP/WAIT checkpoints).
+    "chat.useNestedAgentsMdFiles": false,
     "chat.mcp.access": "all",
     "chat.mcp.discovery.enabled": {
         "claude-desktop": false,

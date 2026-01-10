@@ -118,6 +118,12 @@ namespace MTM_Receiving_Application
                         PageTitleTextBlock.Text = "End of Day Reports";
                         ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
                         break;
+                    case "LaunchUIGallery":
+                        // Launch UI Mockup window (new window, not navigation)
+                        Module_UI_Mockup.Window_UI_Mockup.Launch();
+                        // Deselect the item since we're not navigating in the main frame
+                        sender.SelectedItem = null;
+                        break;
                 }
             }
         }

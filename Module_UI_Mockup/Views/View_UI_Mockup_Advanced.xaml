@@ -1,0 +1,40 @@
+<Page
+    x:Class="Module_UI_Mockup.Views.View_UI_Mockup_Advanced"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <ScrollViewer>
+        <StackPanel Padding="40" Spacing="24">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Advanced &amp; Special Controls"/>
+
+            <!-- RefreshContainer -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="RefreshContainer (Pull to Refresh)"/>
+                <RefreshContainer x:Name="RefreshControl" RefreshRequested="RefreshControl_RefreshRequested" Height="200" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <ScrollViewer>
+                        <StackPanel Padding="16" Spacing="8">
+                            <TextBlock Text="Pull down to refresh"/>
+                            <TextBlock Text="Item 1"/>
+                            <TextBlock Text="Item 2"/>
+                            <TextBlock Text="Item 3"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </RefreshContainer>
+            </StackPanel>
+
+            <!-- SelectorBar -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="SelectorBar"/>
+                <SelectorBar>
+                    <SelectorBarItem Text="Option 1" Icon="Home"/>
+                    <SelectorBarItem Text="Option 2" Icon="Favorite"/>
+                    <SelectorBarItem Text="Option 3" Icon="Contact"/>
+                </SelectorBar>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

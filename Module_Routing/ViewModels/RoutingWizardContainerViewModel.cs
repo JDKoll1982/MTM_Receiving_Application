@@ -170,6 +170,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
     /// <summary>
     /// Register Step 3 ViewModel for data refresh coordination
     /// </summary>
+    /// <param name="step3ViewModel"></param>
     public void RegisterStep3ViewModel(RoutingWizardStep3ViewModel step3ViewModel)
     {
         _step3ViewModel = step3ViewModel;

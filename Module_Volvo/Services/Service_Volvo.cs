@@ -407,6 +407,7 @@ public class Service_Volvo : IService_Volvo
     /// <summary>
     /// Converts structured email data to HTML format with tables for Outlook paste
     /// </summary>
+    /// <param name="emailData"></param>
     public string FormatEmailAsHtml(Model_VolvoEmailData emailData)
     {
         var html = new StringBuilder();
@@ -494,6 +495,8 @@ public class Service_Volvo : IService_Volvo
     /// Validates shipment data before save
     /// Centralized validation logic for data integrity
     /// </summary>
+    /// <param name="shipment"></param>
+    /// <param name="lines"></param>
     public async Task<Model_Dao_Result> ValidateShipmentAsync(
         Model_VolvoShipment shipment,
         List<Model_VolvoShipmentLine> lines)

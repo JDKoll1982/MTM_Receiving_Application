@@ -1,0 +1,47 @@
+<Page
+    x:Class="Module_UI_Mockup.Views.View_UI_Mockup_Status"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <ScrollViewer>
+        <StackPanel Padding="40" Spacing="24">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Status &amp; Feedback Controls"/>
+
+            <!-- ProgressBar -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="ProgressBar"/>
+                <ProgressBar Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" Maximum="100" Width="300" HorizontalAlignment="Left"/>
+                <ProgressBar IsIndeterminate="True" Width="300" HorizontalAlignment="Left"/>
+            </StackPanel>
+
+            <!-- ProgressRing -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="ProgressRing"/>
+                <ProgressRing IsActive="True"/>
+            </StackPanel>
+
+            <!-- InfoBar -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="InfoBar"/>
+                <InfoBar Title="Informational" Message="This is an informational message." Severity="Informational" IsOpen="True"/>
+                <InfoBar Title="Success" Message="Operation completed successfully." Severity="Success" IsOpen="True"/>
+                <InfoBar Title="Warning" Message="Please review before proceeding." Severity="Warning" IsOpen="True"/>
+                <InfoBar Title="Error" Message="An error occurred during processing." Severity="Error" IsOpen="True"/>
+            </StackPanel>
+
+            <!-- ToolTip -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="ToolTip"/>
+                <Button Content="Hover for Tooltip">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="This is a helpful tooltip"/>
+                    </ToolTipService.ToolTip>
+                </Button>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

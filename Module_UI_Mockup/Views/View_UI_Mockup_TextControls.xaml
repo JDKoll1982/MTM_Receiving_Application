@@ -1,0 +1,58 @@
+<Page
+    x:Class="Module_UI_Mockup.Views.View_UI_Mockup_TextControls"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <ScrollViewer>
+        <StackPanel Padding="40" Spacing="24">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Text Controls"/>
+
+            <!-- TextBox -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="TextBox"/>
+                <TextBox Header="Standard TextBox" PlaceholderText="Enter text..." Text="{x:Bind ViewModel.InputText, Mode=TwoWay}" Width="300" HorizontalAlignment="Left"/>
+                <TextBox Header="Multi-line TextBox" AcceptsReturn="True" Height="100" TextWrapping="Wrap" Width="300" HorizontalAlignment="Left"/>
+                <TextBox Header="Read-only" IsReadOnly="True" Text="This is read-only" Width="300" HorizontalAlignment="Left"/>
+            </StackPanel>
+
+            <!-- PasswordBox -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="PasswordBox"/>
+                <PasswordBox Header="Password" PlaceholderText="Enter password..." Password="{x:Bind ViewModel.Password, Mode=TwoWay}" Width="300" HorizontalAlignment="Left"/>
+                <PasswordBox Header="With Reveal Button" PasswordRevealMode="Peek" PlaceholderText="Enter password..." Width="300" HorizontalAlignment="Left"/>
+            </StackPanel>
+
+            <!-- NumberBox -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="NumberBox"/>
+                <NumberBox Header="Quantity" SpinButtonPlacementMode="Inline" Value="{x:Bind ViewModel.Quantity, Mode=TwoWay}" Minimum="0" Maximum="100" Width="200" HorizontalAlignment="Left"/>
+            </StackPanel>
+
+            <!-- ComboBox -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="ComboBox"/>
+                <ComboBox Header="Select an option" PlaceholderText="Choose..." SelectedIndex="0" Width="300" HorizontalAlignment="Left">
+                    <ComboBoxItem Content="Option 1"/>
+                    <ComboBoxItem Content="Option 2"/>
+                    <ComboBoxItem Content="Option 3"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- AutoSuggestBox -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="AutoSuggestBox"/>
+                <AutoSuggestBox Header="Part Number Search" PlaceholderText="Type to search..." ItemsSource="{x:Bind ViewModel.PartNumbers}" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}" Width="300" HorizontalAlignment="Left"/>
+            </StackPanel>
+
+            <!-- RatingControl -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="RatingControl"/>
+                <RatingControl Value="{x:Bind ViewModel.Rating, Mode=TwoWay}"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

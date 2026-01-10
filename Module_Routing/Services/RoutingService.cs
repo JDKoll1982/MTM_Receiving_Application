@@ -91,6 +91,7 @@ public class RoutingService : IRoutingService
     /// <summary>
     /// Issue #20: Validates label and checks for duplicates (extracted from CreateLabelAsync)
     /// </summary>
+    /// <param name="label"></param>
     private async Task<Model_Dao_Result> ValidateAndCheckDuplicatesAsync(Model_RoutingLabel label)
     {
         // Basic validation
@@ -128,6 +129,8 @@ public class RoutingService : IRoutingService
     /// <summary>
     /// Issue #20: Executes CSV export and usage tracking in background (extracted from CreateLabelAsync)
     /// </summary>
+    /// <param name="label"></param>
+    /// <param name="labelId"></param>
     private void ExecuteBackgroundTasks(Model_RoutingLabel label, int labelId)
     {
         // Issue #2: CSV export and usage tracking are non-critical operations

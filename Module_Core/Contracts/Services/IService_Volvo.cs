@@ -69,6 +69,8 @@ public interface IService_Volvo
     /// </summary>
     /// <param name=\"shipment\">Shipment header to validate</param>
     /// <param name=\"lines\">Shipment lines to validate</param>
+    /// <param name="shipment"></param>
+    /// <param name="lines"></param>
     /// <returns>Validation result with error message if failed</returns>
     public Task<Model_Dao_Result> ValidateShipmentAsync(
         Model_VolvoShipment shipment,

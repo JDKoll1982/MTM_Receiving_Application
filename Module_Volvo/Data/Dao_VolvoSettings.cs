@@ -22,6 +22,7 @@ public class Dao_VolvoSettings
     /// <summary>
     /// Gets a specific setting by key
     /// </summary>
+    /// <param name="settingKey"></param>
     public async Task<Model_Dao_Result<Model_VolvoSetting>> GetSettingAsync(string settingKey)
     {
         var parameters = new Dictionary<string, object>
@@ -40,6 +41,7 @@ public class Dao_VolvoSettings
     /// <summary>
     /// Gets all settings, optionally filtered by category
     /// </summary>
+    /// <param name="category"></param>
     public async Task<Model_Dao_Result<List<Model_VolvoSetting>>> GetAllSettingsAsync(string? category = null)
     {
         var parameters = new Dictionary<string, object>
@@ -58,6 +60,9 @@ public class Dao_VolvoSettings
     /// <summary>
     /// Inserts or updates a setting value
     /// </summary>
+    /// <param name="settingKey"></param>
+    /// <param name="settingValue"></param>
+    /// <param name="modifiedBy"></param>
     public async Task<Model_Dao_Result> UpsertSettingAsync(string settingKey, string settingValue, string modifiedBy)
     {
         var parameters = new Dictionary<string, object>
@@ -77,6 +82,8 @@ public class Dao_VolvoSettings
     /// <summary>
     /// Resets a setting to its default value
     /// </summary>
+    /// <param name="settingKey"></param>
+    /// <param name="modifiedBy"></param>
     public async Task<Model_Dao_Result> ResetSettingAsync(string settingKey, string modifiedBy)
     {
         var parameters = new Dictionary<string, object>
@@ -95,6 +102,7 @@ public class Dao_VolvoSettings
     /// <summary>
     /// Maps DataReader to Model_VolvoSetting
     /// </summary>
+    /// <param name="reader"></param>
     private static Model_VolvoSetting MapFromReader(IDataReader reader)
     {
         return new Model_VolvoSetting

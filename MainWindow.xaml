@@ -112,6 +112,19 @@
                         <FontIcon Glyph="&#xE9F9;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                
+                <!-- UI Design Reference - Developer Only (johnk) -->
+                <NavigationViewItem x:Name="UIGalleryNavItem" 
+                                    Content="UI Design Reference" 
+                                    Tag="LaunchUIGallery" 
+                                    Margin="0,0,0,4">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE771;" />
+                    </NavigationViewItem.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Open WinUI 3 control gallery in new window"/>
+                    </ToolTipService.ToolTip>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" />

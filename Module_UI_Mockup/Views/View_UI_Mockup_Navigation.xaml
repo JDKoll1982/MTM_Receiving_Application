@@ -1,0 +1,82 @@
+<Page
+    x:Class="Module_UI_Mockup.Views.View_UI_Mockup_Navigation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <ScrollViewer>
+        <StackPanel Padding="40" Spacing="24">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Navigation Controls"/>
+
+            <!-- BreadcrumbBar -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="BreadcrumbBar"/>
+                <BreadcrumbBar x:Name="NavBreadcrumb" ItemsSource="{x:Bind ViewModel.BreadcrumbItems, Mode=OneWay}">
+                    <BreadcrumbBar.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"/>
+                        </DataTemplate>
+                    </BreadcrumbBar.ItemTemplate>
+                </BreadcrumbBar>
+            </StackPanel>
+
+            <!-- CommandBar -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="CommandBar"/>
+                <CommandBar>
+                    <AppBarButton Icon="Add" Label="Add"/>
+                    <AppBarButton Icon="Edit" Label="Edit"/>
+                    <AppBarButton Icon="Delete" Label="Delete"/>
+                    <AppBarSeparator/>
+                    <AppBarButton Icon="Save" Label="Save"/>
+                    <CommandBar.SecondaryCommands>
+                        <AppBarButton Label="Settings"/>
+                        <AppBarButton Label="Help"/>
+                    </CommandBar.SecondaryCommands>
+                </CommandBar>
+            </StackPanel>
+
+            <!-- MenuBar -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="MenuBar"/>
+                <MenuBar>
+                    <MenuBarItem Title="File">
+                        <MenuFlyoutItem Text="New"/>
+                        <MenuFlyoutItem Text="Open"/>
+                        <MenuFlyoutItem Text="Save"/>
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="Exit"/>
+                    </MenuBarItem>
+                    <MenuBarItem Title="Edit">
+                        <MenuFlyoutItem Text="Cut"/>
+                        <MenuFlyoutItem Text="Copy"/>
+                        <MenuFlyoutItem Text="Paste"/>
+                    </MenuBarItem>
+                    <MenuBarItem Title="Help">
+                        <MenuFlyoutItem Text="Documentation"/>
+                        <MenuFlyoutItem Text="About"/>
+                    </MenuBarItem>
+                </MenuBar>
+            </StackPanel>
+
+            <!-- Pivot (Mobile-style tabs) -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Pivot"/>
+                <Pivot>
+                    <PivotItem Header="Recent">
+                        <TextBlock Text="Recent items appear here" Padding="16"/>
+                    </PivotItem>
+                    <PivotItem Header="All">
+                        <TextBlock Text="All items appear here" Padding="16"/>
+                    </PivotItem>
+                    <PivotItem Header="Favorites">
+                        <TextBlock Text="Favorite items appear here" Padding="16"/>
+                    </PivotItem>
+                </Pivot>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

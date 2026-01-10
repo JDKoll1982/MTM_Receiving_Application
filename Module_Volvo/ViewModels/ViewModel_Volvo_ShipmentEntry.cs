@@ -1020,6 +1020,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// <summary>
     /// Formats JSON array of recipients into Outlook format
     /// </summary>
+    /// <param name="jsonValue"></param>
+    /// <param name="fallbackValue"></param>
     private string FormatRecipientsFromJson(string? jsonValue, string fallbackValue)
     {
         if (string.IsNullOrWhiteSpace(jsonValue))

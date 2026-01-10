@@ -1,0 +1,64 @@
+<Page
+    x:Class="Module_UI_Mockup.Views.View_UI_Mockup_Dialogs"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <ScrollViewer>
+        <StackPanel Padding="40" Spacing="24">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Dialogs &amp; Flyouts"/>
+
+            <!-- ContentDialog -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="ContentDialog"/>
+                <Button Content="Show Dialog" Click="ShowContentDialog_Click"/>
+            </StackPanel>
+
+            <!-- Flyout -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Flyout"/>
+                <Button Content="Show Flyout">
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Flyout Content" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Additional information can be displayed here." TextWrapping="Wrap" MaxWidth="200"/>
+                                <Button Content="Action"/>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+
+            <!-- MenuFlyout -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="MenuFlyout"/>
+                <Button Content="Show Menu">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Option 1"/>
+                            <MenuFlyoutItem Text="Option 2"/>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Delete" Icon="Delete"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+
+            <!-- TeachingTip -->
+            <StackPanel Spacing="16">
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="TeachingTip"/>
+                <Button x:Name="TeachingTipButton" Content="Show Teaching Tip" Click="ShowTeachingTip_Click"/>
+                <TeachingTip
+                    x:Name="SampleTeachingTip"
+                    Target="{x:Bind TeachingTipButton}"
+                    Title="New Feature!"
+                    Subtitle="Click here to learn about this new feature."
+                    IsLightDismissEnabled="True"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
