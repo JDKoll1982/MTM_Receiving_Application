@@ -7,9 +7,9 @@ CREATE PROCEDURE sp_get_user_default_mode(
 )
 BEGIN
     -- Retrieve user's default receiving mode
-    
+
     SELECT default_receiving_mode
-    FROM users
+    FROM auth_users
     WHERE employee_number = p_user_id;
 END$$
 

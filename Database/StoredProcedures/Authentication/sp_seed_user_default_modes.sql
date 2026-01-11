@@ -27,7 +27,7 @@ BEGIN
       AND COLUMN_NAME = 'default_receiving_mode';
 
     IF v_has_default_receiving_mode > 0 THEN
-        UPDATE users
+        FROM auth_users
         SET default_receiving_mode = COALESCE(default_receiving_mode, 'guided'),
             modified_date = NOW()
         WHERE employee_number = p_user_id;
@@ -42,7 +42,7 @@ BEGIN
       AND COLUMN_NAME = 'default_dunnage_mode';
 
     IF v_has_default_dunnage_mode > 0 THEN
-        UPDATE users
+        FROM auth_users
         SET default_dunnage_mode = COALESCE(default_dunnage_mode, 'guided'),
             modified_date = NOW()
         WHERE employee_number = p_user_id;

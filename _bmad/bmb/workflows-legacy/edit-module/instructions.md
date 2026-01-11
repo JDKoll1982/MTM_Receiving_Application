@@ -65,7 +65,7 @@ Be conversational and insightful. Help {user_name} see their module through your
 Ask open-ended questions to understand their goals:
 
 - What prompted you to want to edit this module?
-- What feedback have you gotten from users of this module?
+- What feedback have you gotten auth_users of this module?
 - Are there specific agents or workflows that need attention?
 - Is the module fulfilling its intended purpose?
 - Are there new capabilities you want to add?

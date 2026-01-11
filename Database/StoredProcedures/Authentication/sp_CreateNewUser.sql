@@ -47,7 +47,7 @@ BEGIN
 
     -- Check if employee number already exists
     SELECT COUNT(*) INTO v_emp_count
-    FROM users
+    FROM auth_users
     WHERE employee_number = p_employee_number;
 
     IF v_emp_count > 0 THEN
@@ -57,7 +57,7 @@ BEGIN
 
     -- Check if Windows username already exists
     SELECT COUNT(*) INTO v_existing_count
-    FROM users
+    FROM auth_users
     WHERE windows_username = p_windows_username;
 
     IF v_existing_count > 0 THEN
@@ -122,22 +122,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-
--- ============================================================================
--- Test Query (comment out in production)
--- ============================================================================
-/*
-CALL sp_CreateNewUser(
-    'JDOE',                  -- windows_username
-    'Jane Doe',              -- full_name
-    '3456',                  -- pin
-    'Receiving',             -- department
-    '1st Shift',             -- shift
-    'ADMIN',                 -- created_by
-    NULL,                    -- visual_username
-    NULL,                    -- visual_password
-    @emp_num,                -- OUT employee_number
-    @error                   -- OUT error_message
-);
-SELECT @emp_num AS employee_number, @error AS error_message;
-*/

@@ -18,8 +18,8 @@ CREATE PROCEDURE sp_ValidateUserPin(
 BEGIN
     -- Validate username and PIN combination
     -- Returns user data if credentials valid and account active
-    
-    SELECT 
+
+    SELECT
         employee_number,
         windows_username,
         full_name,
@@ -34,12 +34,12 @@ BEGIN
         created_date,
         created_by,
         modified_date
-    FROM users
+    FROM auth_users
     WHERE (windows_username = p_username OR full_name = p_username)
       AND pin = p_pin
       AND is_active = TRUE
     LIMIT 1;
-    
+
 END$$
 
 DELIMITER ;

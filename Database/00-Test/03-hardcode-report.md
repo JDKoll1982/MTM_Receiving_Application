@@ -24,7 +24,7 @@ These queries access the read-only Infor Visual ERP database.
 
 | File | Class | Method | Line | Query Preview |
 |------|-------|--------|------|---------------|
-| Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `IsWindowsUsernameUniqueAsync` | 177 | `SELECT COUNT(*) FROM users WHERE windows_username = @username` |
+| Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `IsWindowsUsernameUniqueAsync` | 177 | `SELECT COUNT(*) auth_users WHERE windows_username = @username` |
 | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestTablesAsync` | 448 | `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'mtm_receiving_application' AND table_name = '{tableName}'` |
 | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 562 | `SELECT COUNT(*) FROM information_schema.routines WHERE routine_schema = 'mtm_receiving_application' AND routine_name = '{procName}'` |
 

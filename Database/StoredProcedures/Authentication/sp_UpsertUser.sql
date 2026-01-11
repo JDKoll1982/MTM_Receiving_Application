@@ -32,7 +32,7 @@ sp: BEGIN
     -- Prevent accidental cross-updates when other UNIQUE keys collide.
     SELECT COUNT(*)
     INTO v_conflict_username
-    FROM users
+    FROM auth_users
     WHERE windows_username = p_windows_username
       AND employee_number <> p_employee_number;
 
@@ -46,11 +46,11 @@ sp: BEGIN
     -- Deterministic upsert keyed on employee_number (PK)
     SELECT COUNT(*)
     INTO v_emp_exists
-    FROM users
+    FROM auth_users
     WHERE employee_number = p_employee_number;
 
     IF v_emp_exists > 0 THEN
-        UPDATE users
+        UPDATE auth_users
         SET windows_username = p_windows_username,
             full_name = p_full_name,
             pin = p_pin,

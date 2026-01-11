@@ -335,8 +335,8 @@ See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
 ### Authentication Fails
 
 **Check**:
-1. User exists in database: `SELECT * FROM users WHERE windows_username = 'username';`
-2. Account is active: `SELECT is_active FROM users WHERE ...;`
+1. User exists in database: `SELECT * auth_users WHERE windows_username = 'username';`
+2. Account is active: `SELECT is_active auth_users WHERE ...;`
 3. Workstation configured correctly: `SELECT * FROM auth_workstation_config WHERE ...;`
 
 ### Database Connection Errors

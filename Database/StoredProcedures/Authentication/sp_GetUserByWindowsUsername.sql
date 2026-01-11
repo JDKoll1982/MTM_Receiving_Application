@@ -17,8 +17,8 @@ CREATE PROCEDURE sp_GetUserByWindowsUsername(
 BEGIN
     -- Get user by Windows username
     -- Returns user data if found and active, NULL if not found or inactive
-    
-    SELECT 
+
+    SELECT
         employee_number,
         windows_username,
         full_name,
@@ -33,11 +33,11 @@ BEGIN
         created_date,
         created_by,
         modified_date
-    FROM users
+    FROM auth_users
     WHERE windows_username = p_windows_username
       AND is_active = TRUE
     LIMIT 1;
-    
+
 END$$
 
 DELIMITER ;

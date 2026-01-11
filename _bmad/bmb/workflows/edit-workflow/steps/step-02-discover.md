@@ -84,7 +84,7 @@ Listen for:
 
 Ask about how users interact with the workflow:
 
-"What feedback have you gotten from users running this workflow?"
+"What feedback have you gotten auth_users running this workflow?"
 
 Probe for:
 

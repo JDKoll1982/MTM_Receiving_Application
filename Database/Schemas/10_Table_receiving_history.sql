@@ -13,14 +13,18 @@ CREATE TABLE IF NOT EXISTS receiving_history (
     PONumber VARCHAR(20) NULL COMMENT 'Purchase Order number (nullable for non-PO items)',
     POLineNumber VARCHAR(10) NOT NULL COMMENT 'Purchase Order line number',
     LoadNumber INT NOT NULL COMMENT 'Sequential load number assigned by receiving',
-    WeightQuantity DECIMAL(10,2) NOT NULL CHECK (WeightQuantity > 0) COMMENT 'Total weight for the entire load (units: configured weight unit)',
+    WeightQuantity DECIMAL(10,2) NOT NULL COMMENT 'Total weight for the entire load (units: configured weight unit)',
     HeatLotNumber VARCHAR(50) NOT NULL COMMENT 'Heat or lot tracking number for traceability',
-    PackagesPerLoad INT NOT NULL CHECK (PackagesPerLoad > 0) COMMENT 'Number of packages contained in this load',
+    PackagesPerLoad INT NOT NULL COMMENT 'Number of packages contained in this load',
     PackageTypeName VARCHAR(50) NOT NULL COMMENT 'Human-readable package type name (e.g., pallet, skid, coil)',
     WeightPerPackage DECIMAL(10,2) NOT NULL COMMENT 'Calculated or recorded weight per package (units: configured weight unit)',
-    IsNonPOItem BIT NOT NULL DEFAULT 0 COMMENT 'Flag indicating this item was received without a purchase order (1 = non-PO)',
+    IsNonPOItem TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Flag indicating this item was received without a purchase order (1 = non-PO)',
     ReceivedDate DATETIME NOT NULL COMMENT 'Date and time when the load was received by warehouse',
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp (automatically set)',
+
+    -- Table-level constraints for compatibility
+    CONSTRAINT ck_weightquantity CHECK (WeightQuantity > 0),
+    CONSTRAINT ck_packagesperload CHECK (PackagesPerLoad > 0),
 
     -- Indexes for common queries
     -- Index to speed lookups by PartID

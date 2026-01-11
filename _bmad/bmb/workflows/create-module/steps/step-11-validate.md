@@ -232,7 +232,7 @@ Fix issues one by one with user confirmation
    - Verify all menu options work
 
 4. **Iterate and Improve:**
-   - Gather feedback from users
+   - Gather feedback auth_users
    - Add missing features
    - Fix any bugs found
 

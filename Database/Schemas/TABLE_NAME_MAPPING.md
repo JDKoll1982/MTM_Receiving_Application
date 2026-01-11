@@ -70,7 +70,7 @@ Generated: 2026-01-11
 
 ### Table Naming Pattern
 - **Format**: `{module}_{purpose}` or `{module}_{entity}_{qualifier}`
-- **Examples**: 
+- **Examples**:
   - `auth_users` (module: auth, entity: users)
   - `receiving_label_data` (module: receiving, purpose: label data)
   - `settings_routing_personal` (module: settings, scope: routing, level: personal)
@@ -81,7 +81,7 @@ Generated: 2026-01-11
 
 ### Key Changes
 1. **Module-first naming**: All tables now start with their module name
-2. **Consistent suffixes**: 
+2. **Consistent suffixes**:
    - `_data` for transactional tables
    - `_history` for archival/transaction log tables
    - `_personal` for user-specific settings
@@ -102,8 +102,8 @@ Generated: 2026-01-11
 ### Verification Query
 ```sql
 -- Check for references to old table names in stored procedures
-SELECT ROUTINE_NAME, ROUTINE_DEFINITION 
-FROM INFORMATION_SCHEMA.ROUTINES 
+SELECT ROUTINE_NAME, ROUTINE_DEFINITION
+FROM INFORMATION_SCHEMA.ROUTINES
 WHERE ROUTINE_SCHEMA = 'mtm_receiving_application'
 AND (
     ROUTINE_DEFINITION LIKE '%label_table_%' OR
