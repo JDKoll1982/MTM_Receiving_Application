@@ -2,7 +2,7 @@
   SYNC IMPACT REPORT
   Version Change: Initial → 1.0.0
   Rationale: MINOR bump - First formal constitution establishing governance framework
-  
+
   Principles Defined:
   - I. MVVM Architecture (NON-NEGOTIABLE)
   - II. Database Layer Consistency (NON-NEGOTIABLE)
@@ -11,17 +11,17 @@
   - V. Security & Authentication (REQUIRED)
   - VI. WinUI 3 Modern Practices (REQUIRED)
   - VII. Specification-Driven Development (REQUIRED)
-  
+
   Sections Added:
   - Technology Constraints
   - Development Workflow
   - Governance
-  
+
   Templates Requiring Updates:
   ✅ plan-template.md - Updated Constitution Check section with all 7 principles
   ✅ spec-template.md - Aligned with structured requirements approach
   ✅ tasks-template.md - Will align task categorization with principle domains
-  
+
   Follow-up TODOs:
   - Monitor principle adherence during first 3 implementation cycles
   - Review DAO migration progress (instance-based pattern adoption)
@@ -37,6 +37,7 @@
 **Strict Layer Separation**: View (XAML) → ViewModel → Service → DAO → Database
 
 **Mandatory Rules**:
+
 - ViewModels MUST inherit from `ViewModel_Shared_Base` or `ObservableObject`
 - ViewModels MUST be `partial` classes (required for CommunityToolkit.Mvvm source generators)
 - ViewModels SHALL NOT directly call DAOs (`Dao_*` classes)
@@ -53,6 +54,7 @@
 **Instance-Based DAOs**: All Data Access Objects MUST be instance-based classes (NOT static)
 
 **Mandatory Rules**:
+
 - DAOs MUST accept `connectionString` in constructor
 - DAOs MUST be registered in DI container as Singletons
 - DAOs MUST return `Model_Dao_Result` or `Model_Dao_Result<T>`
@@ -70,6 +72,7 @@
 **Constructor Injection**: All dependencies MUST be injected via constructor
 
 **Mandatory Rules**:
+
 - ALL services MUST have interface definitions (`IService_*`)
 - ALL services MUST be registered in `App.xaml.cs` ConfigureServices
 - ViewModels MUST be registered as Transient (new instance per navigation)
@@ -85,6 +88,7 @@
 **Structured Error Management**: All errors MUST be logged and handled consistently
 
 **Mandatory Rules**:
+
 - DAOs MUST return `Model_Dao_Result` with `Success`, `ErrorMessage`, and `Severity` properties
 - DAOs MUST catch exceptions and return failure results (never propagate exceptions)
 - ViewModels MUST use `IService_ErrorHandler.HandleException()` for user-facing errors
@@ -100,6 +104,7 @@
 **Tiered Access Control**: Authentication adapts to workstation type
 
 **Mandatory Rules**:
+
 - Personal workstations: Auto-login with Windows username (30-minute timeout)
 - Shared terminals: Username + 4-digit PIN authentication (15-minute timeout)
 - Session management MUST track user activity (mouse, keyboard, window activation)
@@ -115,6 +120,7 @@
 **Platform-Specific Patterns**: Leverage WinUI 3 and .NET 8 modern capabilities
 
 **Mandatory Rules**:
+
 - Use `[ObservableProperty]` attribute on private fields (not manual PropertyChanged)
 - Use `[RelayCommand]` attribute for command methods (not manual ICommand implementation)
 - Use `async/await` for all I/O operations (database, file, network)
@@ -132,6 +138,7 @@
 **Speckit Workflow**: All features MUST follow structured specification process
 
 **Mandatory Rules**:
+
 - Features MUST have specification in `specs/[###-feature-name]/` directory
 - Specifications MUST include: User scenarios, requirements, constitution check
 - Implementation plans MUST verify constitutional compliance before Phase 0
@@ -148,10 +155,12 @@
 **Platform**: Windows 10/11, .NET 8.0, WinUI 3 (Windows App SDK 1.8+)
 
 **Databases**:
+
 - MySQL 5.7.24 (mtm_receiving_application) - Full READ/WRITE access
 - SQL Server (Infor Visual - VISUAL/MTMFG) - READ ONLY (ApplicationIntent=ReadOnly)
 
 **MySQL 5.7.24 Compatibility Constraints**:
+
 - NO JSON functions (JSON_EXTRACT, JSON_OBJECT)
 - NO Common Table Expressions (WITH clause)
 - NO Window functions (ROW_NUMBER, RANK)
@@ -159,12 +168,14 @@
 - NO generated columns (use triggers to populate)
 
 **Required NuGet Packages**:
+
 - CommunityToolkit.Mvvm (MVVM source generators)
 - MySql.Data (MySQL connector)
 - Microsoft.Data.SqlClient (SQL Server connector)
 - xUnit + FluentAssertions (testing)
 
 **Modules** (logical separation within monolith):
+
 - `Module_Core` - Shared infrastructure, helpers, base classes
 - `Module_Shared` - Shared ViewModels, Views, models
 - `Module_Receiving` - Receiving workflow, label generation
@@ -177,6 +188,7 @@
 ## Development Workflow
 
 **Feature Implementation Sequence**:
+
 1. Read specification from `specs/[###-feature-name]/spec.md`
 2. Run constitution compliance check (verify MVVM, database, DI principles)
 3. Create Models (`Models/[Module]/Model_*.cs`)
@@ -191,12 +203,14 @@
 12. Run `dotnet build && dotnet test` before commit
 
 **MCP Tools (Preferred)**:
+
 - Filesystem I/O: `mcp_filesystem_*` for reading/writing/listing files
 - Symbol navigation: `mcp_oraios_serena_*` for code exploration
 - GitHub: `githubRemote` MCP tools (use `githubLocal` Docker-based when remote unavailable)
 - UI/Web testing: `mcp_playwright_browser_*` for smoke tests
 
 **Naming Conventions**:
+
 - ViewModels: `ViewModel_[Module]_[Feature]`
 - Views: `View_[Module]_[Feature]` or `[Feature]View`
 - Services: `Service_[Purpose]` with `IService_[Purpose]`
@@ -209,6 +223,7 @@
 - Constants: PascalCase in static classes (NOT UPPER_SNAKE_CASE)
 
 **Testing Requirements**:
+
 - Framework: xUnit with FluentAssertions
 - Pattern: Arrange-Act-Assert (AAA)
 - Coverage: Unit tests for all Services and DAOs
@@ -220,6 +235,7 @@
 **Constitutional Authority**: This constitution supersedes all other development practices, coding guidelines, and architectural preferences. When conflicts arise between this document and other guidance (READMEs, inline comments, historical patterns), this constitution MUST take precedence.
 
 **Amendment Process**:
+
 1. Proposed changes MUST be documented in specification format
 2. Impact analysis MUST assess affected code, templates, and workflows
 3. Migration plan MUST be created for existing code violating new principles
@@ -230,6 +246,7 @@
 5. Sync Impact Report MUST be updated as HTML comment at top of this file
 
 **Compliance Review**:
+
 - All PRs MUST verify constitutional compliance before merge
 - Speckit `/speckit.plan` command MUST run Constitution Check during Phase 0
 - Feature specifications MUST include "Constitution Check" section
@@ -237,12 +254,14 @@
 - Complexity MUST be justified with rationale (avoid premature optimization)
 
 **Runtime Development Guidance**:
+
 - Use `AGENTS.md` for AI agent instructions and quick reference patterns
 - Use `.github/copilot-instructions.md` for detailed Copilot coding standards
 - Use `.github/instructions/*.instructions.md` for domain-specific patterns
 - Use `specs/[feature]/` for feature-specific context and requirements
 
 **Enforcement**:
+
 - Constitutional violations MUST be documented as technical debt if shipping urgently
 - Refactoring tasks MUST be created to resolve violations within 2 release cycles
 - Repeated violations indicate need for tooling/automation (linters, analyzers)
