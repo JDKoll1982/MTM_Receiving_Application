@@ -1,6 +1,6 @@
 # Stored Procedure Analysis Report
 
-**Generated:** 2026-01-11 17:29:41
+**Generated:** 2026-01-11 17:36:19
 **Database:** mtm_receiving_application
 **Server:** localhost:3306
 
@@ -337,5 +337,6 @@
 
 | Fixed | SP Name | Missing Column/Table | Schema File | Table Name | Expected Column | Current Status | SQL Fix Required | Priority | Fix Notes |
 |-------|---------|----------------------|-------------|------------|-----------------|----------------|------------------|----------|-----------|
-| - | *No schema issues detected - run 02-Test-StoredProcedures.ps1 first* | - | - | - | - | - | - | - | - |
+| [ ] | sp_Dunnage_Types_GetAll |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
+| [ ] | sp_Receiving_PackageTypes_Delete |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
 

@@ -1,6 +1,6 @@
 # Stored Procedure Execution Test Report
 
-**Generated:** 2026-01-11 17:30:19
+**Generated:** 2026-01-11 17:36:34
 **Database:** mtm_receiving_application
 **Server:** localhost:3306
 **Execution Mode:** Alphabetical
@@ -10,9 +10,9 @@
 | Metric                     | Count              | Percentage           |
 | -------------------------- | ------------------ | -------------------- |
 | **Total Tests**            | 149    | 100%                 |
-| **Passed**                 | 87         | 58.4%    |
-| **Failed**                 | 62         | 41.6%       |
-| Schema Broken              | 2  | 1.3%     |
+| **Passed**                 | 89         | 59.7%    |
+| **Failed**                 | 60         | 40.3%       |
+| Schema Broken              | 0  | 0%     |
 | Runtime Errors             | 60 | 40.3%    |
 | Constraint Violations      | 0    | 0% |
 | Business Logic Validations | 0   | 0%      |
@@ -24,9 +24,9 @@
 | Departments | 1 | 1 | 0 | 100% |
 | DunnageParts | 9 | 7 | 2 | 77.8% |
 | DunnageSpecs | 9 | 8 | 1 | 88.9% |
-| DunnageTypes | 11 | 5 | 6 | 45.5% |
+| DunnageTypes | 11 | 6 | 5 | 54.5% |
 | Other | 45 | 27 | 18 | 60% |
-| PackageTypes | 9 | 4 | 5 | 44.4% |
+| PackageTypes | 9 | 5 | 4 | 55.6% |
 | Preferences | 4 | 0 | 4 | 0% |
 | ReceivingLines | 1 | 0 | 1 | 0% |
 | ReceivingLoads | 4 | 2 | 2 | 50% |
@@ -43,8 +43,7 @@ These stored procedures reference columns or tables that don't exist in the data
 
 | SP Name | Error Code | Message | IN Params | OUT Params |
 | ------- | ---------- | ------- | --------- | ---------- |
-| **sp_Dunnage_Types_GetAll** | 1054 | Exception calling "ExecuteNonQuery" with "0" argument(s): "Unknown column 'is_active' in 'where clause'" | 0 | 0 |
-| **sp_Receiving_PackageTypes_Delete** | 1054 | Exception calling "ExecuteNonQuery" with "0" argument(s): "Unknown column 'package_type_id' in 'where clause'" | 1 | 0 |
+| - | - | ✓ No schema errors | - | - |
 
 ## ⚠️ Parameter Mismatches
 
@@ -138,10 +137,6 @@ These stored procedures failed due to data validation issues.
 
 ## 💡 Recommendations
 
-### Critical: Fix Schema Issues
-- 2 stored procedure(s) reference non-existent columns or tables
-- Review and update stored procedure SQL or database schema
-
 ### High Priority: Fix Parameter Mismatches
 - 49 stored procedure(s) have parameter count issues
 - Regenerate mock data: `pwsh -File .\Database\00-Test\01-Generate-SP-TestData.ps1`
@@ -152,7 +147,7 @@ These stored procedures failed due to data validation issues.
 - Or add prerequisite test data to the database
 
 ### Needs Attention
-- Only 58.4% success rate
+- Only 59.7% success rate
 - Review error categories above and prioritize fixes
 
 
