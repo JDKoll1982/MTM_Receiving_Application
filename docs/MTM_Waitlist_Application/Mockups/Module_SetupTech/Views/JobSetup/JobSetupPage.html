@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Setup Queue - Setup Tech</title>
+    <link rel="stylesheet" href="../../../Assets/styles/app.css" />
+</head>
+
+<body>
+    <div class="module-page">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Job Setup Queue</h1>
+                <p class="page-subtitle">Setup Tech Module - Press job setup and changeover tracking</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn--primary" id="newSetupBtn">Request Setup Assistance</button>
+            </div>
+        </header>
+
+        <main class="page-content">
+            <!-- Filters and Controls -->
+            <section class="card">
+                <div class="row">
+                    <div class="field">
+                        <div class="label">View</div>
+                        <div class="segment" id="segView" role="group">
+                            <button type="button" data-value="My" aria-pressed="true">My Tasks</button>
+                            <button type="button" data-value="Shared" aria-pressed="false">All Setup Tasks</button>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Status</div>
+                        <div class="segment" id="segStatus" role="group">
+                            <button type="button" data-value="Pending" aria-pressed="true">Pending</button>
+                            <button type="button" data-value="InProgress" aria-pressed="false">In Progress</button>
+                            <button type="button" data-value="Complete" aria-pressed="false">Complete</button>
+                        </div>
+                    </div>
+
+                    <div class="field" style="min-width: 180px;">
+                        <div class="label">Press</div>
+                        <select id="pressFilter">
+                            <option value="">All Presses</option>
+                            <option value="Press 1">Press 1</option>
+                            <option value="Press 2">Press 2</option>
+                            <option value="Press 3">Press 3</option>
+                            <option value="Press 5">Press 5</option>
+                            <option value="Press 7">Press 7</option>
+                            <option value="Press 12">Press 12</option>
+                            <option value="Press 14">Press 14</option>
+                        </select>
+                    </div>
+
+                    <div class="field" style="min-width: 220px;">
+                        <div class="label">Setup Type</div>
+                        <select id="typeFilter">
+                            <option value="">All Types</option>
+                            <option value="DieChange">Die Change</option>
+                            <option value="NewJob">New Job Setup</option>
+                            <option value="MaterialChange">Material/Coil Change</option>
+                            <option value="ToolingIssue">Tooling Issue</option>
+                            <option value="FirstPieceApproval">First Piece Approval</option>
+                        </select>
+                    </div>
+
+                    <div class="spacer"></div>
+
+                    <div class="chip" aria-live="polite">
+                        <span id="resultCount">0 tasks</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Setup Queue Table -->
+            <section class="card">
+                <div class="table-wrap">
+                    <table class="table" aria-label="Setup queue">
+                        <thead>
+                            <tr>
+                                <th>Urgency</th>
+                                <th>Age</th>
+                                <th>Press</th>
+                                <th>Setup Type</th>
+                                <th>Work Order</th>
+                                <th>Part ID</th>
+                                <th>Die Set</th>
+                                <th>Requested By</th>
+                                <th>Assigned To</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="setupTbody">
+                            <!-- Sample Data -->
+                            <tr data-id="setup001" tabindex="0">
+                                <td><span class="chip chip--bad">RED</span></td>
+                                <td><span class="cell-strong">45m</span> <span class="cell-muted">ago</span></td>
+                                <td class="cell-strong">Press 12</td>
+                                <td>Die Change</td>
+                                <td>WO-123456</td>
+                                <td>MTM-PART-789</td>
+                                <td>DIE-42A</td>
+                                <td>lead1</td>
+                                <td>setup_tech_1</td>
+                                <td><span class="chip chip--warn">In Progress</span></td>
+                            </tr>
+                            <tr data-id="setup002" tabindex="0">
+                                <td><span class="chip">Normal</span></td>
+                                <td><span class="cell-strong">12m</span> <span class="cell-muted">ago</span></td>
+                                <td class="cell-strong">Press 7</td>
+                                <td>First Piece Approval</td>
+                                <td>WO-123457</td>
+                                <td>MTM-PART-101</td>
+                                <td>-</td>
+                                <td>op_jdoe</td>
+                                <td>-</td>
+                                <td><span class="chip">Pending</span></td>
+                            </tr>
+                            <tr data-id="setup003" tabindex="0">
+                                <td><span class="chip">Normal</span></td>
+                                <td><span class="cell-strong">8m</span> <span class="cell-muted">ago</span></td>
+                                <td class="cell-strong">Press 3</td>
+                                <td>New Job Setup</td>
+                                <td>WO-123458</td>
+                                <td>MTM-PART-202</td>
+                                <td>DIE-17B</td>
+                                <td>lead2</td>
+                                <td>-</td>
+                                <td><span class="chip">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div id="emptyState" class="card" style="margin: 12px; display:none;">
+                        <div class="h2">No setup tasks</div>
+                        <div class="p">No tasks match your current filters.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Info Section -->
+            <section class="card">
+                <div class="h2">Setup Tech Module Features</div>
+                <ul class="list">
+                    <li><strong>Die Change Tracking:</strong> Full workflow from request to completion with die set
+                        verification</li>
+                    <li><strong>First Piece Approval:</strong> Quality gate integration before production run</li>
+                    <li><strong>Job Setup Context:</strong> Pulls work order, part, operation, and die info from Visual
+                        ERP (read-only)</li>
+                    <li><strong>Time Standards:</strong> Tracks setup duration vs. standards for analytics</li>
+                    <li><strong>Tooling Notes:</strong> Document recurring issues or die-specific setup requirements
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <!-- New Setup Request Modal -->
+    <div id="modalNewSetup" class="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog">
+            <div class="modal__header">
+                <div>
+                    <div class="modal__title">Request Setup Assistance</div>
+                    <div class="modal__subtitle">Create a new setup task for the queue</div>
+                </div>
+                <button class="btn btn--ghost" id="closeModal">Close</button>
+            </div>
+            <div class="modal__body">
+                <div class="form-grid">
+                    <div class="field">
+                        <div class="label">Press</div>
+                        <select id="modalPress">
+                            <option value="Press 1">Press 1</option>
+                            <option value="Press 2">Press 2</option>
+                            <option value="Press 3">Press 3</option>
+                            <option value="Press 5">Press 5</option>
+                            <option value="Press 7">Press 7</option>
+                            <option value="Press 12">Press 12</option>
+                            <option value="Press 14">Press 14</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Setup Type</div>
+                        <select id="modalType">
+                            <option value="DieChange">Die Change</option>
+                            <option value="NewJob">New Job Setup</option>
+                            <option value="MaterialChange">Material/Coil Change</option>
+                            <option value="ToolingIssue">Tooling Issue</option>
+                            <option value="FirstPieceApproval">First Piece Approval</option>
+                        </select>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                        <div class="label">Work Order #</div>
+                        <input id="modalWO" type="text" class="input" placeholder="Scan or type work order..." />
+                        <div class="field-hint">Will auto-load part, die, and operation from Visual ERP</div>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                        <div class="label">Notes</div>
+                        <textarea id="modalNotes"
+                            placeholder="Additional setup notes or special requirements..."></textarea>
+                    </div>
+
+                    <div class="field">
+                        <div class="label">Urgency</div>
+                        <select id="modalUrgency">
+                            <option value="Normal">Normal</option>
+                            <option value="High">High (line down)</option>
+                            <option value="Red">Red (critical)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--ghost" id="cancelModal">Cancel</button>
+                <button class="btn btn--primary" id="submitSetup">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple modal controls
+        const newSetupBtn = document.getElementById('newSetupBtn');
+        const modal = document.getElementById('modalNewSetup');
+        const closeModal = document.getElementById('closeModal');
+        const cancelModal = document.getElementById('cancelModal');
+        const submitSetup = document.getElementById('submitSetup');
+
+        function openModal() {
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeModalFn() {
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        newSetupBtn.addEventListener('click', openModal);
+        closeModal.addEventListener('click', closeModalFn);
+        cancelModal.addEventListener('click', closeModalFn);
+
+        submitSetup.addEventListener('click', () => {
+            alert('Setup request submitted (mockup)');
+            closeModalFn();
+        });
+
+        // Segment toggle logic
+        document.querySelectorAll('.segment').forEach(segment => {
+            segment.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-value]');
+                if (!btn) return;
+
+                segment.querySelectorAll('button').forEach(b => {
+                    b.setAttribute('aria-pressed', 'false');
+                });
+                btn.setAttribute('aria-pressed', 'true');
+            });
+        });
+
+        // Row click
+        document.querySelectorAll('#setupTbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                alert(`Setup task details (mockup):\nID: ${row.dataset.id}`);
+            });
+        });
+    </script>
+
+    <style>
+        .module-page {
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field-hint {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</body>
+
+</html>

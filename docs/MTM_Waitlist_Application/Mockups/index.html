@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MTM Waitlist - Module Architecture Mockups</title>
+    <link rel="stylesheet" href="./Assets/styles/app.css" />
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="topbar__left">
+                <div class="appmark">
+                    <div class="appmark__logo" aria-hidden="true"></div>
+                    <div class="appmark__text">
+                        <div class="appmark__title">MTM Waitlist</div>
+                        <div class="appmark__subtitle">Module-Based WinUI3 Application Mockups</div>
+                    </div>
+                </div>
+            </div>
+            <div class="topbar__right row">
+                <a class="btn btn--primary" href="./Module_Core/Views/Auth/LoginPage.html">Launch App</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Important Notice -->
+            <section class="card" style="border-left: 4px solid var(--warn);">
+                <h1 class="h1">HTML Mockups for WinUI3 Desktop Application</h1>
+                <p class="p">
+                    These are <strong>interactive HTML mockups</strong> for design validation only.
+                    The final product will be a <strong>Windows desktop application</strong> (WinUI3 on .NET 8),
+                    NOT a web application.
+                </p>
+                <div class="row" style="gap: 8px; margin-top: 16px;">
+                    <div class="chip chip--warn"><strong>Platform:</strong> Windows Desktop Only</div>
+                    <div class="chip chip--warn"><strong>Technology:</strong> WinUI3 + .NET 8</div>
+                    <div class="chip chip--warn"><strong>Deployment:</strong> MTM Loader (copy-folder)</div>
+                </div>
+            </section>
+
+            <!-- Module Architecture Overview -->
+            <section class="card">
+                <h2 class="h2">Module-Based Architecture</h2>
+                <p class="p">
+                    Each department has its own module, allowing changes for one group without breaking others.
+                    This was a core requirement from the stakeholder meeting.
+                </p>
+            </section>
+
+            <!-- Module_Core -->
+            <section class="card">
+                <h2 class="h2">Module_Core - Foundation Services</h2>
+                <p class="p">Badge/PIN auth, shell navigation, offline queue, notifications, site context</p>
+                <div class="grid-2">
+                    <a class="tile" href="./Module_Core/Views/Auth/LoginPage.html">
+                        <div class="tile__icon">🔐</div>
+                        <div class="tile__title">Login Page</div>
+                        <div class="tile__meta">Badge + PIN Authentication</div>
+                        <div class="tile__hint">Mock users: BADGE001-004, BADGE999 (admin)</div>
+                    </a>
+                    <a class="tile" href="./Module_Core/Views/Shell/ShellPage.html">
+                        <div class="tile__icon">🏠</div>
+                        <div class="tile__title">Application Shell</div>
+                        <div class="tile__meta">Role-based navigation sidebar</div>
+                        <div class="tile__hint">Shows/hides modules by role</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Waitlist Queue (Shared) -->
+            <section class="card">
+                <h2 class="h2">Waitlist Queue (Shared Across Modules)</h2>
+                <p class="p">Table-first queue with My/Shared views and Active/Recent modes</p>
+                <div class="grid-2">
+                    <a class="tile" href="./Views/Waitlist/WaitlistPage.html">
+                        <div class="tile__icon">📋</div>
+                        <div class="tile__title">WaitlistPage</div>
+                        <div class="tile__meta">Original table-first queue design</div>
+                        <div class="tile__hint">Complete, Reopen, Use as Template actions</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Module_Operator -->
+            <section class="card">
+                <h2 class="h2">Module_Operator - Press Operators</h2>
+                <p class="p">Minimal typing, selection-first workflows, guided wizard, favorites</p>
+                <div class="grid-2">
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">✨</div>
+                        <div class="tile__title">Request Wizard</div>
+                        <div class="tile__meta">Step-by-step guided requests</div>
+                        <div class="tile__hint">Placeholder - Phase 2</div>
+                    </a>
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">⭐</div>
+                        <div class="tile__title">Favorites</div>
+                        <div class="tile__meta">Quick access to frequent requests</div>
+                        <div class="tile__hint">Placeholder - Phase 2</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Module_MaterialHandling -->
+            <section class="card">
+                <h2 class="h2">Module_MaterialHandling - Material Handlers</h2>
+                <p class="p">Zone assignment (A/B/C), auto-assign logic, task completion</p>
+                <div class="grid-2">
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">🗺️</div>
+                        <div class="tile__title">Zone Assignment</div>
+                        <div class="tile__meta">Assign handlers to zones A/B/C</div>
+                        <div class="tile__hint">Placeholder - Optional auto-assign</div>
+                    </a>
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">📦</div>
+                        <div class="tile__title">Active Tasks</div>
+                        <div class="tile__meta">Complete, reassign, add notes</div>
+                        <div class="tile__hint">Placeholder</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Module_Quality -->
+            <section class="card">
+                <h2 class="h2">Module_Quality - Quality Technicians</h2>
+                <p class="p">Operator-initiated quality alerts without leaving the press</p>
+                <div class="grid-2">
+                    <a class="tile" href="./Module_Quality/Views/QualityQueue/QualityQueuePage.html">
+                        <div class="tile__icon">🔍</div>
+                        <div class="tile__title">Quality Alerts Queue</div>
+                        <div class="tile__meta">Real-time quality issues from press floor</div>
+                        <div class="tile__hint">Email/Teams notifications (optional)</div>
+                    </a>
+                </div>
+                <div class="chip chip--warn" style="margin-top: 12px;">
+                    <strong>Stakeholder Requirement:</strong> Operators create alerts without leaving press.
+                    Email/Teams need approval. No phone apps permitted.
+                </div>
+            </section>
+
+            <!-- Module_SetupTech -->
+            <section class="card">
+                <h2 class="h2">Module_SetupTech - Setup Technicians</h2>
+                <p class="p">Die changes, job setups, first piece approvals, tooling issues</p>
+                <div class="grid-2">
+                    <a class="tile" href="./Module_SetupTech/Views/JobSetup/JobSetupPage.html">
+                        <div class="tile__icon">🔧</div>
+                        <div class="tile__title">Job Setup Queue</div>
+                        <div class="tile__meta">Die changes and setup tracking</div>
+                        <div class="tile__hint">Work order context from Visual ERP</div>
+                    </a>
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">🎯</div>
+                        <div class="tile__title">Die Management</div>
+                        <div class="tile__meta">Die notes and issue tracking</div>
+                        <div class="tile__hint">Placeholder</div>
+                    </a>
+                </div>
+                <div class="chip chip--good" style="margin-top: 12px;">
+                    <strong>From Meeting Transcript:</strong> "Setup techs will have their own module so changes
+                    for them don't affect other groups."
+                </div>
+            </section>
+
+            <!-- Module_AnalyticsAdmin -->
+            <section class="card">
+                <h2 class="h2">Module_AnalyticsAdmin - Leads & Admins</h2>
+                <p class="p">Analytics rights, time standards management, user administration</p>
+                <div class="grid-2">
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">📊</div>
+                        <div class="tile__title">Analytics Dashboard</div>
+                        <div class="tile__meta">Duration, usage, trend data</div>
+                        <div class="tile__hint">Placeholder - Operator visibility restricted</div>
+                    </a>
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">⏱️</div>
+                        <div class="tile__title">Time Standards</div>
+                        <div class="tile__meta">Manage red urgency thresholds</div>
+                        <div class="tile__hint">Placeholder - Nick & Chris only</div>
+                    </a>
+                    <a class="tile tile--placeholder" href="#">
+                        <div class="tile__icon">👥</div>
+                        <div class="tile__title">User Management</div>
+                        <div class="tile__meta">Badge/PIN, role assignment</div>
+                        <div class="tile__hint">Placeholder</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Stakeholder Requirements -->
+            <section class="card">
+                <h2 class="h2">Stakeholder Requirements Met</h2>
+                <div class="grid-2">
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>In-house only</strong><br>
+                            <span class="cell-muted">Windows desktop, no web hosting, no phone apps</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Read-only Visual ERP</strong><br>
+                            <span class="cell-muted">No writes to Visual database</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Module-based design</strong><br>
+                            <span class="cell-muted">Each role has independent module</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Minimal operator typing</strong><br>
+                            <span class="cell-muted">Selection-first workflows</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Quality alerts</strong><br>
+                            <span class="cell-muted">Without leaving the press</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Zone assignment</strong><br>
+                            <span class="cell-muted">Material handler A/B/C zones</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Analytics rights</strong><br>
+                            <span class="cell-muted">Leads see duration, operators don't</span>
+                        </div>
+                    </div>
+                    <div class="requirement-card">
+                        <div class="requirement-check">✅</div>
+                        <div class="requirement-text">
+                            <strong>Offline support</strong><br>
+                            <span class="cell-muted">Queued sync when online</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Stack -->
+            <section class="card">
+                <h2 class="h2">Final Application Stack (WinUI3)</h2>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td class="cell-strong">Platform</td>
+                            <td>WinUI3 on .NET 8 (Windows Desktop)</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-strong">Architecture</td>
+                            <td>Strict MVVM with CommunityToolkit.Mvvm</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-strong">Databases</td>
+                            <td>
+                                MySQL (app data - full CRUD via stored procedures)<br>
+                                SQL Server (Infor Visual ERP - <strong>READ ONLY</strong>)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="cell-strong">Deployment</td>
+                            <td>MTM Application Loader (copy-folder installer)</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-strong">Printing</td>
+                            <td>LabelView 2022 integration via adapter pattern</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-strong">Offline Queue</td>
+                            <td>SQLite local store with background sync service</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-strong">Approval Required</td>
+                            <td>Nick Wunsch, Cristofer Muchowski, Brett Lusk, Dan Smith</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Next Steps -->
+            <section class="card">
+                <h2 class="h2">Next Steps</h2>
+                <ol class="list">
+                    <li><strong>Stakeholder Review:</strong> Validate UX flows with leadership team</li>
+                    <li><strong>Iterate Mockups:</strong> Address feedback before WinUI3 build</li>
+                    <li><strong>Begin Module_Core:</strong> Badge/PIN auth, shell, offline queue, site context</li>
+                    <li><strong>Module-by-module:</strong> Operator → Material Handling → Quality → Setup Tech → Admin
+                    </li>
+                    <li><strong>Training Module:</strong> In-app tutorials (train-the-trainer approach)</li>
+                </ol>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer__left">© 2026 MTM Waitlist Application Mockups</div>
+            <div class="footer__right">
+                <a href="./README.md" style="color: inherit; text-decoration: none;">📖 Documentation</a> •
+                Module-Based • WinUI3 Desktop • HTML Design Validation
+            </div>
+        </footer>
+    </div>
+
+    <style>
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .tile {
+            display: block;
+            padding: 20px;
+            background: var(--surface-0);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .tile:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tile--placeholder {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        .tile--placeholder:hover {
+            opacity: 0.8;
+        }
+
+        .tile__icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .tile__title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tile__meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .tile__hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .requirement-card {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--surface-0);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .requirement-check {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .requirement-text {
+            flex: 1;
+        }
+
+        .requirement-text strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</body>
+
+</html>

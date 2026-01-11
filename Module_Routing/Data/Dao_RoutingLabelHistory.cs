@@ -85,43 +85,4 @@ public class Dao_RoutingLabelHistory
         }
     }
 
-    /// <summary>
-    /// Retrieves history entries for a label
-    /// </summary>
-    /// <param name="labelId"></param>
-    public async Task<Model_Dao_Result<List<Model_RoutingLabelHistory>>> GetHistoryByLabelAsync(int labelId)
-    {
-        try
-        {
-            var parameters = new Dictionary<string, object>
-            {
-                { "p_label_id", labelId }
-            };
-
-            return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_RoutingLabelHistory>(
-                _connectionString,
-                "sp_routing_label_history_get_by_label",
-                MapFromReader,
-                parameters
-            );
-        }
-        catch (Exception ex)
-        {
-            return Model_Dao_Result_Factory.Failure<List<Model_RoutingLabelHistory>>($"Error retrieving history: {ex.Message}", ex);
-        }
-    }
-
-    private Model_RoutingLabelHistory MapFromReader(IDataReader reader)
-    {
-        return new Model_RoutingLabelHistory
-        {
-            Id = reader.GetInt32(reader.GetOrdinal("id")),
-            LabelId = reader.GetInt32(reader.GetOrdinal("label_id")),
-            FieldChanged = reader.GetString(reader.GetOrdinal("field_changed")),
-            OldValue = reader.IsDBNull(reader.GetOrdinal("old_value")) ? null : reader.GetString(reader.GetOrdinal("old_value")),
-            NewValue = reader.IsDBNull(reader.GetOrdinal("new_value")) ? null : reader.GetString(reader.GetOrdinal("new_value")),
-            EditedBy = reader.GetInt32(reader.GetOrdinal("edited_by")),
-            EditDate = reader.GetDateTime(reader.GetOrdinal("edit_date"))
-        };
-    }
 }

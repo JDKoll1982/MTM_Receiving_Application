@@ -1,0 +1,161 @@
+<svg width="1400" height="900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#f3f3f3"/>
+  
+  <!-- Shadow Filter Definition -->
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.1"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Header Section -->
+  <g id="header">
+    <circle cx="700" cy="80" r="24" fill="#0078d4"/>
+    <path d="M 695 80 L 705 80 M 700 75 L 700 85 M 695 75 L 705 85 M 695 85 L 705 75" stroke="white" stroke-width="2" fill="none"/>
+    <text x="700" y="130" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="600" text-anchor="middle" fill="#1a1a1a">Settings</text>
+    <text x="700" y="160" font-family="Segoe UI, Arial, sans-serif" font-size="14" text-anchor="middle" fill="#666">Configure application preferences and system settings</text>
+  </g>
+  
+  <!-- Search Bar -->
+  <g id="search">
+    <rect x="450" y="190" width="500" height="44" rx="22" fill="white" stroke="#d1d1d1" stroke-width="1"/>
+    <circle cx="475" cy="212" r="10" fill="none" stroke="#666" stroke-width="2"/>
+    <line x1="483" y1="220" x2="488" y2="225" stroke="#666" stroke-width="2"/>
+    <text x="500" y="218" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#999">Search settings...</text>
+  </g>
+  
+  <!-- Card Grid Container -->
+  <g id="cards" transform="translate(200, 260)">
+    
+    <!-- Row 1 -->
+    <!-- Card 1: System Settings -->
+    <g id="card-system">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#0078d4" opacity="0.1"/>
+      <path d="M 135 45 L 145 45 M 135 50 L 145 50 M 135 55 L 145 55" stroke="#0078d4" stroke-width="2"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">System Settings</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Environment & Database</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">15 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#0078d4" opacity="0.3"/>
+    </g>
+    
+    <!-- Card 2: Security & Session -->
+    <g id="card-security" transform="translate(300, 0)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#d83b01" opacity="0.1"/>
+      <path d="M 135 42 Q 135 38 140 38 Q 145 38 145 42 L 145 50 Q 145 54 140 54 Q 135 54 135 50 Z M 138 46 L 142 46 L 142 50 L 138 50 Z" fill="#d83b01"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Security & Session</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Authentication & Timeout</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">8 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#d83b01" opacity="0.3"/>
+    </g>
+    
+    <!-- Card 3: ERP Integration -->
+    <g id="card-erp" transform="translate(600, 0)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#107c10" opacity="0.1"/>
+      <path d="M 135 45 L 145 45 L 145 55 L 135 55 Z M 138 42 L 142 42 L 142 45 L 138 45 Z" fill="none" stroke="#107c10" stroke-width="2"/>
+      <line x1="130" y1="50" x2="150" y2="50" stroke="#107c10" stroke-width="2"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">ERP Integration</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Infor Visual Connection</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">7 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#107c10" opacity="0.3"/>
+    </g>
+    
+    <!-- Row 2 -->
+    <!-- Card 4: Receiving -->
+    <g id="card-receiving" transform="translate(0, 200)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#8764b8" opacity="0.1"/>
+      <rect x="132" y="44" width="16" height="12" rx="2" fill="none" stroke="#8764b8" stroke-width="2"/>
+      <line x1="132" y1="48" x2="128" y2="52" stroke="#8764b8" stroke-width="2"/>
+      <line x1="148" y1="48" x2="152" y2="52" stroke="#8764b8" stroke-width="2"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Receiving</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Workflow & Package Types</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">10 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#8764b8" opacity="0.3"/>
+    </g>
+    
+    <!-- Card 5: Dunnage -->
+    <g id="card-dunnage" transform="translate(300, 200)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#ca5010" opacity="0.1"/>
+      <rect x="130" y="42" width="20" height="16" rx="2" fill="none" stroke="#ca5010" stroke-width="2"/>
+      <line x1="135" y1="50" x2="145" y2="50" stroke="#ca5010" stroke-width="1.5"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Dunnage</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Workflow & Inventory</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">3 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#ca5010" opacity="0.3"/>
+    </g>
+    
+    <!-- Card 6: Routing -->
+    <g id="card-routing" transform="translate(600, 200)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#004e8c" opacity="0.1"/>
+      <path d="M 130 45 L 135 50 L 130 55 M 145 50 L 150 50 M 135 50 L 145 50" fill="none" stroke="#004e8c" stroke-width="2"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Routing</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">CSV Export & Validation</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">18 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#004e8c" opacity="0.3"/>
+    </g>
+    
+    <!-- Row 3 -->
+    <!-- Card 7: Volvo -->
+    <g id="card-volvo" transform="translate(0, 400)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#00188f" opacity="0.1"/>
+      <circle cx="140" cy="50" r="12" fill="none" stroke="#00188f" stroke-width="2"/>
+      <path d="M 135 48 L 140 55 L 145 48" fill="none" stroke="#00188f" stroke-width="2"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Volvo</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Email & Customer Config</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">5 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#00188f" opacity="0.3"/>
+    </g>
+    
+    <!-- Card 8: Reporting -->
+    <g id="card-reporting" transform="translate(300, 400)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#038387" opacity="0.1"/>
+      <rect x="132" y="44" width="16" height="12" fill="none" stroke="#038387" stroke-width="2"/>
+      <line x1="135" y1="48" x2="145" y2="48" stroke="#038387" stroke-width="1.5"/>
+      <line x1="135" y1="52" x2="142" y2="52" stroke="#038387" stroke-width="1.5"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">Reporting</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Export & CSV Formatting</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">8 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#038387" opacity="0.3"/>
+    </g>
+    
+    <!-- Card 9: User Preferences -->
+    <g id="card-preferences" transform="translate(600, 400)">
+      <rect x="0" y="0" width="280" height="180" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" filter="url(#shadow)"/>
+      <circle cx="140" cy="50" r="20" fill="#5c2d91" opacity="0.1"/>
+      <circle cx="140" cy="45" r="6" fill="none" stroke="#5c2d91" stroke-width="2"/>
+      <path d="M 132 54 Q 132 50 140 50 Q 148 50 148 54 L 148 58 L 132 58 Z" fill="none" stroke="#5c2d91" stroke-width="2"/>
+      <text x="140" y="95" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#1a1a1a">User Preferences</text>
+      <text x="140" y="115" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Personal Defaults & UI</text>
+      <text x="140" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle" fill="#999">5 settings</text>
+      <rect x="100" y="155" width="80" height="2" fill="#5c2d91" opacity="0.3"/>
+    </g>
+  </g>
+  
+  <!-- Footer Legend -->
+  <g id="legend" transform="translate(50, 850)">
+    <text x="0" y="0" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#666">
+      <tspan font-weight="600">Role Access:</tspan>
+      <tspan x="100" fill="#999">User</tspan>
+      <tspan x="170" fill="#666">Operator</tspan>
+      <tspan x="260" fill="#333">Admin</tspan>
+      <tspan x="340" fill="#0078d4">Developer</tspan>
+      <tspan x="450" fill="#d83b01">Super Admin</tspan>
+    </text>
+  </g>
+</svg>
