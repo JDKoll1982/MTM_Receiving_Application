@@ -157,14 +157,14 @@ foreach ($sp in $spList) {
 # Categorize SPs and determine dependencies
 $tableCreationOrder = @(
     # Core/lookup tables first
-    "users", "departments", "package_types", "dunnage_types", "dunnage_specs", "volvo_parts_master"
+    "users", "departments", "dunnage_types", "dunnage_types", "dunnage_specs", "volvo_masterdata"
     # Then reference data
-    "routing_recipients", "routing_other_reasons", "dunnage_parts"
+    "routing_recipients", "routing_po_alternatives", "dunnage_parts"
     # Then transactional tables
-    "receiving_loads", "receiving_packages", "receiving_lines", "dunnage_loads", "inventoried_dunnage"
-    "routing_labels", "routing_label_history", "volvo_shipments", "volvo_shipment_lines", "volvo_part_components"
+    "receiving_history", "receiving_packages", "receiving_lines", "dunnage_history", "dunnage_requires_inventory"
+    "routing_label_data", "routing_history", "volvo_label_data", "volvo_line_data", "volvo_part_components"
     # Finally settings/preferences
-    "user_preferences", "system_settings", "scheduled_reports"
+    "user_preferences", "settings_universal", "reporting_scheduled_reports"
 )
 
 foreach ($sp in $spDetails.Keys) {
@@ -208,16 +208,16 @@ foreach ($sp in $spDetails.Keys) {
     } elseif ($sp -match "receiving.*line|receiving_line") {
         $category = "ReceivingLines"
         $order = 120
-    } elseif ($sp -match "dunnage_loads") {
+    } elseif ($sp -match "dunnage_history") {
         $category = "DunnageLoads"
         $order = 130
-    } elseif ($sp -match "inventoried_dunnage") {
+    } elseif ($sp -match "dunnage_requires_inventory") {
         $category = "InventoriedDunnage"
         $order = 140
     } elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
         $category = "RoutingLabels"
         $order = 150
-    } elseif ($sp -match "routing_label_history") {
+    } elseif ($sp -match "routing_history") {
         $category = "RoutingHistory"
         $order = 160
     } elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {

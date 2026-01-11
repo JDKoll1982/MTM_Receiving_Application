@@ -14,9 +14,9 @@ SELECT
     WeightPerPackage AS weight_lbs,
     HeatLotNumber AS heat_lot_number,
     DATE(ReceivedDate) AS created_date,
-    NULL AS employee_number,  -- Not tracked in receiving_loads
+    NULL AS employee_number,
     'Receiving' AS source_module
-FROM receiving_loads
+FROM receiving_history
 ORDER BY ReceivedDate DESC, LoadID DESC;
 
 -- ============================================================================

@@ -1,14 +1,14 @@
 -- ============================================================================
--- Table: user_preferences
+-- Table: settings_dunnage_personal
 -- Module: Dunnage
 -- Purpose: Per-user UI preferences (recently used icons, pagination settings)
 -- ============================================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS user_preferences;
+DROP TABLE IF EXISTS settings_dunnage_personal;
 SET FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE IF NOT EXISTS user_preferences (
+CREATE TABLE IF NOT EXISTS settings_dunnage_personal (
     ID INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for each preference record',
     UserId VARCHAR(50) NOT NULL COMMENT 'Windows username or employee number',
     PreferenceKey VARCHAR(100) NOT NULL COMMENT 'Preference identifier (e.g., icon_usage_history, pagination_size)',

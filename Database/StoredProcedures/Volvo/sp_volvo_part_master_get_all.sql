@@ -14,7 +14,7 @@ CREATE PROCEDURE sp_volvo_part_master_get_all(
 )
 BEGIN
   SELECT part_number, quantity_per_skid, is_active, created_date, modified_date
-  FROM volvo_parts_master
+  FROM volvo_masterdata
   WHERE (p_include_inactive = 1 OR is_active = 1)
   ORDER BY part_number;
 END$$

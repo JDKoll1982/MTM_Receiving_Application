@@ -6,7 +6,7 @@ CREATE PROCEDURE sp_dunnage_parts_get_by_type(
     IN p_type_id INT
 )
 BEGIN
-    SELECT 
+    SELECT
         p.id,
         p.part_id,
         p.type_id,

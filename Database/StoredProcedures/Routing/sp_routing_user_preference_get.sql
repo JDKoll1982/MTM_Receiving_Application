@@ -26,7 +26,7 @@ sp_routing_user_preference_get: BEGIN
         default_mode,
         enable_validation,
         updated_date
-    FROM routing_user_preferences
+    FROM settings_routing_personal
     WHERE employee_number = p_employee_number;
 
     SET p_status = 1;

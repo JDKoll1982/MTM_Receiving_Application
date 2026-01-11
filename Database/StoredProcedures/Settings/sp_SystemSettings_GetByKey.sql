@@ -13,7 +13,7 @@ CREATE PROCEDURE sp_SystemSettings_GetByKey(
     IN p_setting_key VARCHAR(100)
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         category,
         sub_category,
@@ -33,8 +33,8 @@ BEGIN
         created_at,
         updated_at,
         updated_by
-    FROM system_settings
-    WHERE category = p_category 
+    FROM settings_universal
+    WHERE category = p_category
       AND setting_key = p_setting_key;
 END$$
 

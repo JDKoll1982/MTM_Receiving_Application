@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_routing_label_history_insert` $$
+DROP PROCEDURE IF EXISTS `sp_routing_history_insert` $$
 
-CREATE PROCEDURE `sp_routing_label_history_insert`(
+CREATE PROCEDURE `sp_routing_history_insert`(
     IN p_label_id INT,
     IN p_field_changed VARCHAR(50),
     IN p_old_value VARCHAR(200),
@@ -11,7 +11,7 @@ CREATE PROCEDURE `sp_routing_label_history_insert`(
     OUT p_status INT,
     OUT p_error_msg VARCHAR(500)
 )
-sp_routing_label_history_insert: BEGIN
+sp_routing_history_insert: BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
@@ -25,17 +25,17 @@ sp_routing_label_history_insert: BEGIN
         SET p_status = -1;
         SET p_error_msg = 'Label ID is required';
         ROLLBACK;
-        LEAVE sp_routing_label_history_insert;
+        LEAVE sp_routing_history_insert;
     END IF;
 
     IF p_field_changed IS NULL OR p_field_changed = '' THEN
         SET p_status = -1;
         SET p_error_msg = 'Field changed is required';
         ROLLBACK;
-        LEAVE sp_routing_label_history_insert;
+        LEAVE sp_routing_history_insert;
     END IF;
 
-    INSERT INTO routing_label_history (
+    INSERT INTO routing_history (
         label_id,
         field_changed,
         old_value,

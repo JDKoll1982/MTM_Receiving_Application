@@ -18,13 +18,13 @@ CREATE PROCEDURE sp_InsertReceivingLoad(
     IN p_ReceivedDate DATETIME
 )
 BEGIN
-    INSERT INTO receiving_loads 
-    (LoadID, PartID, PartType, PONumber, POLineNumber, LoadNumber, 
-     WeightQuantity, HeatLotNumber, PackagesPerLoad, PackageTypeName, 
+    INSERT INTO receiving_history
+    (LoadID, PartID, PartType, PONumber, POLineNumber, LoadNumber,
+     WeightQuantity, HeatLotNumber, PackagesPerLoad, PackageTypeName,
      WeightPerPackage, IsNonPOItem, ReceivedDate)
-    VALUES 
-    (p_LoadID, p_PartID, p_PartType, p_PONumber, p_POLineNumber, p_LoadNumber, 
-     p_WeightQuantity, p_HeatLotNumber, p_PackagesPerLoad, p_PackageTypeName, 
+    VALUES
+    (p_LoadID, p_PartID, p_PartType, p_PONumber, p_POLineNumber, p_LoadNumber,
+     p_WeightQuantity, p_HeatLotNumber, p_PackagesPerLoad, p_PackageTypeName,
      p_WeightPerPackage, p_IsNonPOItem, p_ReceivedDate);
 END //
 

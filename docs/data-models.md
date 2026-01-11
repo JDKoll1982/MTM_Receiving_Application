@@ -17,14 +17,14 @@ The application uses two databases:
 - **departments**: Department definitions
 
 ### Receiving Schema
-- **receiving_loads**: Header-level receiving transactions
+- **receiving_history**: Header-level receiving transactions
   - PO number, carrier, packing slip
   - Created by user and timestamp
 - **receiving_lines**: Line-item details for each load
   - Weight, quantity, heat/lot numbers
   - Package type preferences
   - Links to PO line items
-- **package_type_preferences**: User-defined package configurations
+- **receiving_package_types**: User-defined package configurations
 
 ### Dunnage Schema
 - **dunnage_types**: Categories of returnable packaging (bins, racks, pallets)
@@ -33,8 +33,8 @@ The application uses two databases:
   - Home locations
   - Custom field definitions
 - **dunnage_specs**: Specification templates for parts
-- **inventoried_dunnage**: Current inventory counts
-- **dunnage_loads**: Transaction log for dunnage movements
+- **dunnage_requires_inventory**: Current inventory counts
+- **dunnage_history**: Transaction log for dunnage movements
   - Mode (Incoming, Outgoing, Transfer, Count)
 - **dunnage_custom_fields**: Extensible metadata
 

@@ -294,7 +294,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     config.Description = "Personal workstation (default)";
                 }
 
-                // Best-effort persistence: ensure this machine exists in workstation_config.
+                // Best-effort persistence: ensure this machine exists in auth_workstation_config.
                 // If the SP isn't deployed yet, ignore and proceed.
                 try
                 {
@@ -377,4 +377,3 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         }
     }
 }
-

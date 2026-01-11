@@ -1,12 +1,12 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_inventoried_dunnage_delete$$
+DROP PROCEDURE IF EXISTS sp_dunnage_requires_inventory_delete$$
 
-CREATE PROCEDURE sp_inventoried_dunnage_delete(
+CREATE PROCEDURE sp_dunnage_requires_inventory_delete(
     IN p_id INT
 )
 BEGIN
-    DELETE FROM inventoried_dunnage
+    DELETE FROM dunnage_requires_inventory
     WHERE id = p_id;
 END$$
 

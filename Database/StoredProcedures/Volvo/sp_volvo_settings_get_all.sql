@@ -1,5 +1,5 @@
 -- =====================================================
--- Stored Procedure: sp_volvo_settings_get_all
+-- Stored Procedure: sp_settings_module_volvo_get_all
 -- =====================================================
 -- Purpose: Get all Volvo settings, optionally filtered by category
 -- Database: mtm_receiving_application
@@ -7,14 +7,14 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_volvo_settings_get_all$$
+DROP PROCEDURE IF EXISTS sp_settings_module_volvo_get_all$$
 
-CREATE PROCEDURE sp_volvo_settings_get_all(
+CREATE PROCEDURE sp_settings_module_volvo_get_all(
   IN p_category VARCHAR(50)
 )
 BEGIN
   IF p_category IS NULL OR p_category = '' THEN
-    SELECT 
+    SELECT
       setting_key,
       setting_value,
       setting_type,
@@ -25,10 +25,10 @@ BEGIN
       max_value,
       modified_date,
       modified_by
-    FROM volvo_settings
+    FROM settings_module_volvo
     ORDER BY category, setting_key;
   ELSE
-    SELECT 
+    SELECT
       setting_key,
       setting_value,
       setting_type,
@@ -39,7 +39,7 @@ BEGIN
       max_value,
       modified_date,
       modified_by
-    FROM volvo_settings
+    FROM settings_module_volvo
     WHERE category = p_category
     ORDER BY setting_key;
   END IF;

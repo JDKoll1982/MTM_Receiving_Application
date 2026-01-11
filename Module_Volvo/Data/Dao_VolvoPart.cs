@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
 /// <summary>
-/// Data Access Object for volvo_parts_master table
+/// Data Access Object for volvo_masterdata table
 /// Provides CRUD operations using stored procedures
 /// </summary>
 public class Dao_VolvoPart

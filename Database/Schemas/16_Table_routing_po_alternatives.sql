@@ -1,13 +1,13 @@
 -- ============================================================================
--- Table: routing_other_reasons
+-- Table: routing_po_alternatives
 -- Module: Routing
 -- Purpose: Enumerated reasons for non-PO packages
 -- ============================================================================
 
 -- Drop existing table if present
-DROP TABLE IF EXISTS `routing_other_reasons`;
+DROP TABLE IF EXISTS `routing_po_alternatives`;
 
-CREATE TABLE `routing_other_reasons` (
+CREATE TABLE `routing_po_alternatives` (
     `id` INT NOT NULL AUTO_INCREMENT COMMENT 'Primary surrogate key for the reasons table',
     `reason_code` VARCHAR(20) NOT NULL COMMENT 'Short unique code identifying the non-PO reason',
     `description` VARCHAR(200) NOT NULL COMMENT 'Human-readable description of the reason',

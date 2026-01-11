@@ -55,7 +55,7 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 
         /// <summary>
         /// Detects workstation type (personal workstation or shared terminal).
-        /// Queries workstation_config table to determine authentication flow.
+        /// Queries auth_workstation_config table to determine authentication flow.
         /// </summary>
         /// <param name="computerName">Computer name (defaults to Environment.MachineName)</param>
         /// <returns>Workstation configuration with type and timeout settings</returns>
@@ -77,4 +77,3 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task LogUserActivityAsync(string eventType, string username, string workstationName, string details);
     }
 }
-

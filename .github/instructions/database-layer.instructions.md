@@ -112,7 +112,7 @@ BEGIN
     END IF;
 
     -- Insert operation
-    INSERT INTO label_table_receiving (
+    INSERT INTO receiving_label_data (
         quantity, part_id, po_number, employee_number, heat,
         transaction_date, initial_location, coils_on_skid
     ) VALUES (
@@ -151,8 +151,8 @@ DELIMITER ;
 
 ## Parameter Naming Convention
 
-**C# (Dictionary Key)**: `"PartID"` (NO prefix)  
-**SQL (Stored Procedure)**: `IN p_PartID` (WITH p_ prefix)  
+**C# (Dictionary Key)**: `"PartID"` (NO prefix)
+**SQL (Stored Procedure)**: `IN p_PartID` (WITH p_ prefix)
 **Automatic**: Helper_Database_StoredProcedure adds `p_` prefix automatically
 
 **Example**:
@@ -288,5 +288,5 @@ await Helper_Database_StoredProcedure.ExecuteNonQueryWithStatusAsync(...);
 
 ---
 
-**Last Updated**: December 15, 2025  
+**Last Updated**: December 15, 2025
 **Pattern Source**: MTM WIP Application Constitution

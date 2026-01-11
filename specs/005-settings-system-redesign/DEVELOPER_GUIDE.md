@@ -33,7 +33,7 @@ cd ..\StoredProcedures
 mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_SettingsSystem.sql
 
 # Verify deployment
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application -e "SELECT COUNT(*) FROM system_settings;"
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application -e "SELECT COUNT(*) FROM settings_universal;"
 # Expected: 79 rows (or close to it)
 ```
 
@@ -153,8 +153,8 @@ public class Service_Settings : IService_Settings
     private readonly IService_LoggingUtility _logger;
 
     public async Task<Model_Dao_Result<Model_SettingValue>> GetSettingAsync(
-        string category, 
-        string key, 
+        string category,
+        string key,
         int? userId = null)
     {
         // Check cache first
@@ -177,8 +177,8 @@ public class Service_Settings : IService_Settings
         var systemResult = await _systemSettingsDao.GetByKeyAsync(category, key);
         if (systemResult.IsSuccess)
         {
-            var value = new Model_SettingValue 
-            { 
+            var value = new Model_SettingValue
+            {
                 RawValue = systemResult.Data.SettingValue ?? string.Empty,
                 DataType = systemResult.Data.DataType
             };
@@ -190,10 +190,10 @@ public class Service_Settings : IService_Settings
     }
 
     public async Task<Model_Dao_Result> SaveSettingAsync(
-        string category, 
-        string key, 
-        string value, 
-        int userId, 
+        string category,
+        string key,
+        string value,
+        int userId,
         bool isUserOverride = false)
     {
         // Get setting definition
@@ -220,9 +220,9 @@ public class Service_Settings : IService_Settings
         else
         {
             result = await _systemSettingsDao.UpdateValueAsync(
-                setting.Id, 
-                valueToStore, 
-                userId, 
+                setting.Id,
+                valueToStore,
+                userId,
                 "127.0.0.1", // Get actual IP
                 Environment.MachineName
             );
@@ -238,7 +238,7 @@ public class Service_Settings : IService_Settings
     }
 
     private async Task<Model_Dao_Result> ValidateSettingAsync(
-        Model_SystemSetting setting, 
+        Model_SystemSetting setting,
         string proposedValue)
     {
         if (string.IsNullOrEmpty(setting.ValidationRules))
@@ -254,10 +254,10 @@ public class Service_Settings : IService_Settings
             case "int":
                 if (!int.TryParse(proposedValue, out var intValue))
                     return Model_Dao_Result.Failure("Value must be an integer");
-                
+
                 if (rules.ContainsKey("min") && intValue < Convert.ToInt32(rules["min"]))
                     return Model_Dao_Result.Failure($"Value must be >= {rules["min"]}");
-                
+
                 if (rules.ContainsKey("max") && intValue > Convert.ToInt32(rules["max"]))
                     return Model_Dao_Result.Failure($"Value must be <= {rules["max"]}");
                 break;
@@ -345,22 +345,22 @@ public abstract partial class ViewModel_Settings_Base : ViewModel_Shared_Base
 {
     protected readonly IService_Settings _settingsService;
     protected readonly IService_UserSession _userSession;
-    
+
     [ObservableProperty]
     private string _categoryTitle = string.Empty;
-    
+
     [ObservableProperty]
     private string _categoryIcon = "Cog";
-    
+
     [ObservableProperty]
     private string _searchText = string.Empty;
-    
+
     [ObservableProperty]
     private bool _isSaving;
-    
+
     [ObservableProperty]
     private ObservableCollection<Model_SystemSetting> _settings = new();
-    
+
     protected ViewModel_Settings_Base(
         IService_Settings settingsService,
         IService_UserSession userSession,
@@ -381,7 +381,7 @@ public abstract partial class ViewModel_Settings_Base : ViewModel_Shared_Base
     protected virtual async Task LoadSettingsAsync()
     {
         var result = await _settingsService.GetCategorySettingsAsync(
-            SettingsCategory, 
+            SettingsCategory,
             _userSession.CurrentUser?.Id
         );
 
@@ -398,7 +398,7 @@ public abstract partial class ViewModel_Settings_Base : ViewModel_Shared_Base
     protected async Task SaveSettingAsync(Model_SystemSetting setting, string newValue)
     {
         IsSaving = true;
-        
+
         var result = await _settingsService.SaveSettingAsync(
             setting.Category,
             setting.SettingKey,
@@ -441,7 +441,7 @@ public partial class ViewModel_Settings_System : ViewModel_Settings_Base
         IService_Settings settingsService,
         IService_UserSession userSession,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) 
+        IService_LoggingUtility logger)
         : base(settingsService, userSession, errorHandler, logger)
     {
         CategoryTitle = "System Settings";

@@ -1,7 +1,7 @@
 # Security & Session Settings - WinUI 3 Controls
 
-**SVG File**: `02-security-session.svg`  
-**Category**: Security & Session  
+**SVG File**: `02-security-session.svg`
+**Category**: Security & Session
 **Purpose**: Authentication, session management, and encryption configuration
 
 ---
@@ -13,7 +13,7 @@
 #### Require Authentication - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Require User Authentication"
     IsOn="{x:Bind ViewModel.RequireAuth, Mode=TwoWay}"
     OnContent="On"
@@ -29,14 +29,14 @@
 - Data type: `boolean`
 - Default: `true`
 - Permission: Admin
-- Database: `system_settings.RequireAuth`
+- Database: `settings_universal.RequireAuth`
 
 ---
 
 #### Remember Credentials - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Remember User Credentials"
     IsOn="{x:Bind ViewModel.RememberUserCredentials, Mode=TwoWay}"
     OnContent="On"
@@ -60,7 +60,7 @@
 #### Idle Timeout - `NumberBox`
 
 ```xml
-<NumberBox 
+<NumberBox
     Header="Idle Timeout (minutes)"
     Value="{x:Bind ViewModel.SessionIdleTimeoutMinutes, Mode=TwoWay}"
     Minimum="5"
@@ -89,7 +89,7 @@
 #### Show Timeout Warning - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Show Timeout Warning"
     IsOn="{x:Bind ViewModel.SessionShowWarning, Mode=TwoWay}"
     OnContent="On"
@@ -113,7 +113,7 @@
 #### Master Encryption Key - `PasswordBox`
 
 ```xml
-<PasswordBox 
+<PasswordBox
     Header="Master Encryption Key"
     Password="{x:Bind ViewModel.EncryptionMasterKey, Mode=TwoWay}"
     PasswordRevealMode="Peek"
@@ -145,7 +145,7 @@
 #### Encrypt Passwords - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Encrypt Stored Passwords"
     IsOn="{x:Bind ViewModel.EncryptPasswords, Mode=TwoWay}"
     OnContent="On"
@@ -168,7 +168,7 @@
 #### Rotate Encryption Key - `Button`
 
 ```xml
-<Button 
+<Button
     Content="Rotate Encryption Key"
     Command="{x:Bind ViewModel.RotateEncryptionKeyCommand}"
     Style="{StaticResource DefaultButtonStyle}"
@@ -190,7 +190,7 @@
 ### 4. **Warning/Info Card - Custom Control**
 
 ```xml
-<Border 
+<Border
     Background="#fff4e5"
     BorderBrush="#f0ad4e"
     BorderThickness="1"
@@ -198,11 +198,11 @@
     Padding="16"
     Width="400">
     <StackPanel Spacing="8">
-        <TextBlock 
+        <TextBlock
             Text="⚠ Security Notice"
             FontWeight="SemiBold"
             Foreground="#856404"/>
-        <TextBlock 
+        <TextBlock
             TextWrapping="Wrap"
             Foreground="#856404">
             <Run Text="Changing the encryption key will re-encrypt all"/>
@@ -216,7 +216,7 @@
 **Alternative using InfoBar**:
 
 ```xml
-<InfoBar 
+<InfoBar
     Severity="Warning"
     IsOpen="True"
     IsClosable="False"
@@ -234,26 +234,26 @@
     <StackPanel Grid.Column="0" Spacing="32">
         <!-- Authentication Section -->
         <StackPanel Spacing="16">
-            <TextBlock Text="Authentication" 
+            <TextBlock Text="Authentication"
                        Style="{StaticResource SubtitleTextBlockStyle}"
                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
             <ToggleSwitch ... />
             <ToggleSwitch ... />
         </StackPanel>
-        
+
         <!-- Session Management Section -->
         <StackPanel Spacing="16">
-            <TextBlock Text="Session Management" 
+            <TextBlock Text="Session Management"
                        Style="{StaticResource SubtitleTextBlockStyle}"
                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
             <NumberBox ... />
             <ToggleSwitch ... />
         </StackPanel>
     </StackPanel>
-    
+
     <!-- Right Column -->
     <StackPanel Grid.Column="1" Spacing="16">
-        <TextBlock Text="Data Encryption" 
+        <TextBlock Text="Data Encryption"
                    Style="{StaticResource SubtitleTextBlockStyle}"
                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
         <PasswordBox ... />
@@ -274,24 +274,24 @@ public partial class SecuritySessionViewModel : BaseViewModel
     // Authentication
     [ObservableProperty]
     private bool _requireAuth = true;
-    
+
     [ObservableProperty]
     private bool _rememberUserCredentials = true;
-    
+
     // Session Management
     [ObservableProperty]
     private int _sessionIdleTimeoutMinutes = 30;
-    
+
     [ObservableProperty]
     private bool _sessionShowWarning = true;
-    
+
     // Encryption
     [ObservableProperty]
     private string _encryptionMasterKey = string.Empty;
-    
+
     [ObservableProperty]
     private bool _encryptPasswords = true;
-    
+
     [RelayCommand]
     private async Task RotateEncryptionKeyAsync()
     {
@@ -303,7 +303,7 @@ public partial class SecuritySessionViewModel : BaseViewModel
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close
         };
-        
+
         if (await dialog.ShowAsync() == ContentDialogResult.Primary)
         {
             await _encryptionService.RotateKeyAsync();
@@ -326,7 +326,7 @@ partial void OnSessionIdleTimeoutMinutesChanged(int value)
     {
         SessionIdleTimeoutMinutes = (value / 5) * 5;
     }
-    
+
     // Enforce range
     if (value < 5) SessionIdleTimeoutMinutes = 5;
     if (value > 120) SessionIdleTimeoutMinutes = 120;
@@ -343,13 +343,13 @@ partial void OnEncryptionMasterKeyChanged(string value)
         ValidationErrors["EncryptionMasterKey"] = "Encryption key is required";
         return;
     }
-    
+
     if (!IsValidAES256Key(value))
     {
         ValidationErrors["EncryptionMasterKey"] = "Invalid AES-256 key format";
         return;
     }
-    
+
     ValidationErrors.Remove("EncryptionMasterKey");
 }
 
@@ -375,16 +375,16 @@ public class EncryptionService : IEncryptionService
         using var aes = Aes.Create();
         aes.Key = Convert.FromBase64String(masterKey);
         aes.GenerateIV();
-        
+
         var encrypted = aes.CreateEncryptor().TransformFinalBlock(
             Encoding.UTF8.GetBytes(plaintext), 0, plaintext.Length);
-        
+
         // 2. Apply DPAPI for additional Windows security
         var protectedData = ProtectedData.Protect(
-            encrypted, 
-            null, 
+            encrypted,
+            null,
             DataProtectionScope.CurrentUser);
-        
+
         return Convert.ToBase64String(protectedData);
     }
 }
@@ -397,7 +397,7 @@ public class SessionTimeoutService : ISessionTimeoutService
 {
     private DispatcherTimer _idleTimer;
     private DateTime _lastActivity;
-    
+
     public void StartMonitoring(int timeoutMinutes, bool showWarning)
     {
         _idleTimer = new DispatcherTimer
@@ -406,16 +406,16 @@ public class SessionTimeoutService : ISessionTimeoutService
         };
         _idleTimer.Tick += CheckIdleTimeout;
         _idleTimer.Start();
-        
+
         // Monitor user activity
         App.Current.Window.Content.PointerMoved += ResetIdleTimer;
         App.Current.Window.Content.KeyDown += ResetIdleTimer;
     }
-    
+
     private void CheckIdleTimeout(object sender, object e)
     {
         var elapsed = DateTime.Now - _lastActivity;
-        
+
         if (elapsed.TotalMinutes >= _timeoutMinutes - 2 && _showWarning)
         {
             ShowWarningDialog();
@@ -448,17 +448,17 @@ public class SessionTimeoutService : ISessionTimeoutService
 
 ```xml
 <!-- PasswordBox -->
-<PasswordBox 
+<PasswordBox
     AutomationProperties.Name="Master Encryption Key"
     AutomationProperties.HelpText="Enter AES-256 encryption key for sensitive data storage"/>
 
 <!-- Button -->
-<Button 
+<Button
     AutomationProperties.Name="Rotate Encryption Key"
     AutomationProperties.HelpText="Generate new encryption key and re-encrypt all sensitive data"/>
 
 <!-- InfoBar -->
-<InfoBar 
+<InfoBar
     AutomationProperties.LiveSetting="Polite"
     AutomationProperties.Name="Security Warning"/>
 ```

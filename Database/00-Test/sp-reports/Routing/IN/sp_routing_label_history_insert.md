@@ -1,4 +1,4 @@
-# sp_routing_label_history_insert
+# sp_routing_history_insert
 
 **Category:** Routing
 **Parameter Types:** IN,OUT
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Routing\Data\Dao_RoutingLabelHistory.cs:44
-"sp_routing_label_history_insert",
+"sp_routing_history_insert",
 
 ```
 
@@ -28,5 +28,3 @@
 **Called by (2 references):**
 - Same file (2 calls)
 - Module_Routing\Interfaces\IDao_RoutingLabelHistory.cs
-
-

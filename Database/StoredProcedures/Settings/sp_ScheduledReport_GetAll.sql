@@ -10,7 +10,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ScheduledReport_GetAll$$
 CREATE PROCEDURE sp_ScheduledReport_GetAll()
 BEGIN
-    SELECT 
+    SELECT
         id,
         report_type,
         schedule,
@@ -21,7 +21,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM scheduled_reports
+    FROM reporting_scheduled_reports
     WHERE is_active = TRUE
     ORDER BY next_run_date ASC, report_type;
 END$$

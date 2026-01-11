@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Models;
 
 /// <summary>
 /// Represents a Volvo dunnage shipment header
-/// Maps to volvo_shipments database table
+/// Maps to volvo_label_data database table
 /// </summary>
 public class Model_VolvoShipment
 {

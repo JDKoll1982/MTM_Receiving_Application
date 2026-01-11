@@ -20,7 +20,7 @@
 ### Approved Schema Approach
 
 - Use unified settings table for system-level settings
-- Use `user_settings` table with individual column per setting for user-specific settings
+- Use `settings_personal` table with individual column per setting for user-specific settings
 - All existing settings cards to be removed and replaced by settings from `SETTABLE_OBJECTS_REPORT.md`
 - If there are existing setting values not incorporated into a SETTABLE_OBJECT file, add them
 

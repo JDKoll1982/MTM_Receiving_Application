@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Models;
 
 /// <summary>
 /// Represents a Volvo dunnage part in the master catalog
-/// Maps to volvo_parts_master database table
+/// Maps to volvo_masterdata database table
 /// </summary>
 public class Model_VolvoPart
 {

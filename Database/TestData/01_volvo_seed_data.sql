@@ -5,9 +5,9 @@
 -- Database: mtm_receiving_application
 -- =====================================================
 
--- Sample data for volvo_parts_master (from DataSheet.csv)
+-- Sample data for volvo_masterdata (from DataSheet.csv)
 -- All 30 parts from the Volvo Dunnage data sheet
-INSERT INTO volvo_parts_master (part_number, quantity_per_skid) VALUES
+INSERT INTO volvo_masterdata (part_number, quantity_per_skid) VALUES
 ('V-EMB-1', 10),
 ('V-EMB-2', 20),
 ('V-EMB-6', 10),

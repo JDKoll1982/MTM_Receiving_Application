@@ -1,4 +1,4 @@
-# sp_dunnage_loads_get_by_date_range
+# sp_dunnage_history_get_by_date_range
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_DunnageLoad.cs:44
-"sp_dunnage_loads_get_by_date_range",
+"sp_dunnage_history_get_by_date_range",
 
 ```
 
@@ -28,5 +28,3 @@
 **Called by (2 references):**
 - Module_Core\Services\Database\Service_MySQL_Dunnage.cs
 - Same file (1 calls)
-
-

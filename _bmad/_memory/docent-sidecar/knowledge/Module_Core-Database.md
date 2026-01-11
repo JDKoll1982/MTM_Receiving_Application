@@ -38,7 +38,7 @@ These stored procedures are used by `Dao_User` (auth / session) and `Service_Aut
   - Performs validation and inserts a new user within a transaction.
 
 - `sp_LogUserActivity(p_event_type, p_username, p_workstation_name, p_details)`
-  - Table: `user_activity_log`
+  - Table: `settings_personal_activity_log`
   - Inserts audit entries and returns `ROW_COUNT()`.
 
 - `sp_GetSharedTerminalNames()`
@@ -72,8 +72,8 @@ Representative set (see `Database/StoredProcedures/Dunnage/`):
 - Types: `sp_dunnage_types_get_all`, `sp_dunnage_types_insert`, `sp_dunnage_types_update`, `sp_dunnage_types_delete`, `sp_dunnage_types_check_duplicate`
 - Specs: `sp_dunnage_specs_get_by_type`, `sp_dunnage_specs_insert`, `sp_dunnage_specs_update`, `sp_dunnage_specs_delete_by_id`, `sp_dunnage_specs_delete_by_type`
 - Parts: `sp_dunnage_parts_get_all`, `sp_dunnage_parts_get_by_id`, `sp_dunnage_parts_get_by_type`, `sp_dunnage_parts_insert`, `sp_dunnage_parts_update`, `sp_dunnage_parts_delete`, `sp_dunnage_parts_search`
-- Loads: `sp_dunnage_loads_insert`, `sp_dunnage_loads_insert_batch`, `sp_dunnage_loads_get_all`, `sp_dunnage_loads_get_by_id`, `sp_dunnage_loads_get_by_date_range`, `sp_dunnage_loads_update`, `sp_dunnage_loads_delete`
-- Inventory: `sp_inventoried_dunnage_check`, `sp_inventoried_dunnage_get_by_part`, `sp_inventoried_dunnage_get_all`, `sp_inventoried_dunnage_insert`, `sp_inventoried_dunnage_update`, `sp_inventoried_dunnage_delete`
+- Loads: `sp_dunnage_history_insert`, `sp_dunnage_history_insert_batch`, `sp_dunnage_history_get_all`, `sp_dunnage_history_get_by_id`, `sp_dunnage_history_get_by_date_range`, `sp_dunnage_history_update`, `sp_dunnage_history_delete`
+- Inventory: `sp_dunnage_requires_inventory_check`, `sp_dunnage_requires_inventory_get_by_part`, `sp_dunnage_requires_inventory_get_all`, `sp_dunnage_requires_inventory_insert`, `sp_dunnage_requires_inventory_update`, `sp_dunnage_requires_inventory_delete`
 - Custom fields: `sp_custom_fields_get_by_type`, `sp_custom_fields_insert`
 - User prefs: `sp_user_preferences_upsert`, `sp_user_preferences_get_recent_icons`
 

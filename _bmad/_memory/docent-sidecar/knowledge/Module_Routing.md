@@ -135,6 +135,6 @@ See: [_bmad/_memory/docent-sidecar/knowledge/Module_Routing-Database.md](../doce
 
 ## Known Deviations & Notes
 
-- Wizard Step 1 “OTHER workflow” reasons are not currently loaded via service (placeholder behavior), even though a DAO and stored procedure exist for `routing_other_reasons`.
+- Wizard Step 1 “OTHER workflow” reasons are not currently loaded via service (placeholder behavior), even though a DAO and stored procedure exist for `routing_po_alternatives`.
 - Infor Visual integration uses graceful degradation: if the SQL Server connection check fails, PO validation returns success (true) to avoid blocking label creation.
 - CSV export is serialized with a static semaphore to prevent concurrent writes; network path is attempted first with retries, then a local fallback is used.

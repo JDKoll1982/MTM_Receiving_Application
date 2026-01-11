@@ -9,8 +9,8 @@ CREATE PROCEDURE sp_dunnage_parts_search(
 BEGIN
     -- Search by part_id or within JSON spec values
     -- If p_type_id is NULL or 0, search all types
-    
-    SELECT 
+
+    SELECT
         p.id,
         p.part_id,
         p.type_id,

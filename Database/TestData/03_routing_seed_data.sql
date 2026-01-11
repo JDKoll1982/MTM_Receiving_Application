@@ -6,7 +6,7 @@
 -- =============================================
 
 -- Seed Other Reasons (enumeration)
-INSERT IGNORE INTO routing_other_reasons (reason_code, description, display_order) VALUES
+INSERT IGNORE INTO routing_po_alternatives (reason_code, description, display_order) VALUES
 ('RETURNED', 'Returned Item', 1),
 ('SAMPLE', 'Vendor Sample', 2),
 ('MISLABELED', 'Mislabeled Package', 3),
@@ -38,5 +38,5 @@ INSERT IGNORE INTO routing_recipients (name, location, department, is_active) VA
 ('Sarah Johnson - Inspector', 'Building B - Floor 1', 'Quality', 1),
 ('Mike Davis - Technician', 'Building C - Lab 3', 'Engineering', 1);
 
--- Note: routing_labels, routing_usage_tracking, routing_user_preferences, and routing_label_history
+-- Note: routing_label_data, routing_recipient_tracker, settings_routing_personal, and routing_history
 -- will be populated by user activity, not seed data

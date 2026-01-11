@@ -17,7 +17,7 @@ DELIMITER //
 -- CREATE TRIGGER: BEFORE INSERT
 -- Purpose: On insert, reject a new row that would create a second pending shipment.
 CREATE TRIGGER trigger_volvo_shipment_prevent_duplicate_pending
-BEFORE INSERT ON volvo_shipments
+BEFORE INSERT ON volvo_label_data
 FOR EACH ROW
 BEGIN
     -- Local variable to hold count of existing pending shipments
@@ -29,7 +29,7 @@ BEGIN
         -- Count existing pending, non-archived shipments in the table
         -- (this counts the current table state before the INSERT is applied)
         SELECT COUNT(*) INTO pending_count
-        FROM volvo_shipments
+        FROM volvo_label_data
         WHERE status = 'pending_po'
           AND is_archived = 0;
 
@@ -55,7 +55,7 @@ DELIMITER //
 -- Purpose: Prevent changing an existing row TO pending_po (and non-archived) if
 --          another pending, non-archived shipment exists (excluding the current row).
 CREATE TRIGGER trigger_volvo_shipment_prevent_duplicate_pending_update
-BEFORE UPDATE ON volvo_shipments
+BEFORE UPDATE ON volvo_label_data
 FOR EACH ROW
 BEGIN
     -- Local variable to hold count of existing pending shipments (excluding current row)
@@ -68,7 +68,7 @@ BEGIN
 
         -- Count existing pending, non-archived shipments excluding the row being updated
         SELECT COUNT(*) INTO pending_count
-        FROM volvo_shipments
+        FROM volvo_label_data
         WHERE status = 'pending_po'
           AND is_archived = 0
           AND id != NEW.id; -- Exclude current row to allow changing the current row itself

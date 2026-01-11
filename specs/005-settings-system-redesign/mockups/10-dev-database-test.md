@@ -1,8 +1,8 @@
 # Settings Database Test - Development Tool
 
-**SVG File**: `10-dev-database-test.svg`  
-**Type**: Development Window  
-**Purpose**: Test and validate Settings System database schema, stored procedures, and DAOs  
+**SVG File**: `10-dev-database-test.svg`
+**Type**: Development Window
+**Purpose**: Test and validate Settings System database schema, stored procedures, and DAOs
 **Access**: Development Mode Only - "Settings DB Test" button in MainWindow
 
 ---
@@ -35,7 +35,7 @@ This development tool provides comprehensive testing and validation of the Setti
     Title="Settings Database Test"
     Width="1200"
     Height="900">
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -44,30 +44,30 @@ This development tool provides comprehensive testing and validation of the Setti
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <!-- Header -->
         <Grid Grid.Row="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="40,25">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            
+
             <StackPanel>
                 <TextBlock Text="Settings Database Test" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock Text="Development Tool - Schema &amp; Stored Procedure Validation" 
-                           FontSize="12" 
+                <TextBlock Text="Development Tool - Schema &amp; Stored Procedure Validation"
+                           FontSize="12"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
             </StackPanel>
-            
-            <Button Grid.Column="1" 
-                    Content="Refresh All Tests" 
+
+            <Button Grid.Column="1"
+                    Content="Refresh All Tests"
                     Command="{x:Bind ViewModel.RefreshAllCommand}"
                     Style="{StaticResource AccentButtonStyle}"
                     Width="140"/>
         </Grid>
-        
+
         <!-- Connection Status Card -->
-        <Border Grid.Row="1" 
+        <Border Grid.Row="1"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -76,7 +76,7 @@ This development tool provides comprehensive testing and validation of the Setti
                 Padding="20">
             <StackPanel Spacing="12">
                 <TextBlock Text="Database Connection" FontWeight="SemiBold" FontSize="16"/>
-                
+
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <FontIcon Glyph="{x:Bind ViewModel.ConnectionStatus.IsConnected, Converter={StaticResource BoolToGlyphConverter}, Mode=OneWay}"
                               Foreground="{x:Bind ViewModel.ConnectionStatus.IsConnected, Converter={StaticResource BoolToColorConverter}, Mode=OneWay}"
@@ -84,7 +84,7 @@ This development tool provides comprehensive testing and validation of the Setti
                     <TextBlock Text="{x:Bind ViewModel.ConnectionStatus.StatusMessage, Mode=OneWay}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
-                
+
                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12">
                     <Run Text="Connection time: "/>
                     <Run Text="{x:Bind ViewModel.ConnectionStatus.ConnectionTimeMs, Mode=OneWay}"/>
@@ -93,7 +93,7 @@ This development tool provides comprehensive testing and validation of the Setti
                 </TextBlock>
             </StackPanel>
         </Border>
-        
+
         <!-- Summary Cards -->
         <Grid Grid.Row="2" Margin="40,20">
             <Grid.ColumnDefinitions>
@@ -102,9 +102,9 @@ This development tool provides comprehensive testing and validation of the Setti
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
             <!-- Tables Summary -->
-            <Border Grid.Column="0" 
+            <Border Grid.Column="0"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
@@ -122,11 +122,11 @@ This development tool provides comprehensive testing and validation of the Setti
                     <TextBlock Text="✓ Indexes OK" Foreground="#107c10" FontSize="11"/>
                 </StackPanel>
             </Border>
-            
+
             <!-- Similar cards for SP, Data, DAOs -->
             <!-- ... -->
         </Grid>
-        
+
         <!-- Tabs and Test Results -->
         <TabView Grid.Row="3" Margin="40,0">
             <TabViewItem Header="Schema Tests">
@@ -141,15 +141,15 @@ This development tool provides comprehensive testing and validation of the Setti
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <FontIcon Grid.Column="0" 
+
+                                    <FontIcon Grid.Column="0"
                                               Glyph="{x:Bind IsValid, Converter={StaticResource BoolToGlyphConverter}}"
                                               Foreground="{x:Bind IsValid, Converter={StaticResource BoolToColorConverter}}"
                                               Margin="0,0,15,0"/>
-                                    
+
                                     <TextBlock Grid.Column="1" Text="{x:Bind TableName}" VerticalAlignment="Center"/>
-                                    
-                                    <TextBlock Grid.Column="2" 
+
+                                    <TextBlock Grid.Column="2"
                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                VerticalAlignment="Center">
                                         <Run Text="{x:Bind RowCount}"/>
@@ -159,13 +159,13 @@ This development tool provides comprehensive testing and validation of the Setti
                                         <Run Text="{x:Bind IndexCount}"/>
                                         <Run Text=" indexes"/>
                                     </TextBlock>
-                                    
+
                                     <Border Grid.Column="3"
                                             BorderBrush="{x:Bind IsValid, Converter={StaticResource BoolToColorConverter}}"
                                             BorderThickness="1"
                                             CornerRadius="4"
                                             Padding="12,4">
-                                        <TextBlock Text="{x:Bind StatusText}" 
+                                        <TextBlock Text="{x:Bind StatusText}"
                                                    Foreground="{x:Bind IsValid, Converter={StaticResource BoolToColorConverter}}"
                                                    FontSize="11"/>
                                     </Border>
@@ -175,27 +175,27 @@ This development tool provides comprehensive testing and validation of the Setti
                     </ItemsControl>
                 </ScrollViewer>
             </TabViewItem>
-            
+
             <TabViewItem Header="SP Tests">
                 <!-- Stored Procedure Test Results -->
             </TabViewItem>
-            
+
             <TabViewItem Header="DAO Tests">
                 <!-- DAO Test Results -->
             </TabViewItem>
-            
+
             <TabViewItem Header="Logs">
                 <ScrollViewer>
-                    <TextBlock Text="{x:Bind ViewModel.TestLogs, Mode=OneWay}" 
+                    <TextBlock Text="{x:Bind ViewModel.TestLogs, Mode=OneWay}"
                                FontFamily="Consolas"
                                FontSize="11"
                                Padding="20"/>
                 </ScrollViewer>
             </TabViewItem>
         </TabView>
-        
+
         <!-- Footer -->
-        <Grid Grid.Row="4" 
+        <Grid Grid.Row="4"
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
               BorderThickness="0,1,0,0"
@@ -204,7 +204,7 @@ This development tool provides comprehensive testing and validation of the Setti
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            
+
             <StackPanel>
                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12">
                     <Run Text="Last run: "/>
@@ -216,12 +216,12 @@ This development tool provides comprehensive testing and validation of the Setti
                     <Run Text=" ms"/>
                 </TextBlock>
             </StackPanel>
-            
+
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                <Button Content="Export Results" 
+                <Button Content="Export Results"
                         Command="{x:Bind ViewModel.ExportResultsCommand}"
                         Width="140"/>
-                <Button Content="Close" 
+                <Button Content="Close"
                         Click="Close_Click"
                         Width="100"/>
             </StackPanel>
@@ -244,46 +244,46 @@ public partial class DatabaseTestViewModel : BaseViewModel
     private readonly Dao_RoutingRule _routingRuleDao;
     private readonly Dao_ScheduledReport _scheduledReportDao;
     private readonly Dao_PackageTypeMapping _packageTypeMappingDao;
-    
+
     [ObservableProperty]
     private Model_ConnectionTestResult _connectionStatus = new();
-    
+
     [ObservableProperty]
     private int _totalTables = 7;
-    
+
     [ObservableProperty]
     private int _tablesValidated;
-    
+
     [ObservableProperty]
     private int _totalStoredProcedures = 25;
-    
+
     [ObservableProperty]
     private int _storedProceduresTested;
-    
+
     [ObservableProperty]
     private int _totalDaos = 6;
-    
+
     [ObservableProperty]
     private int _daosValidated;
-    
+
     [ObservableProperty]
     private ObservableCollection<TableTestResult> _tableTestResults = new();
-    
+
     [ObservableProperty]
     private ObservableCollection<StoredProcedureTestResult> _spTestResults = new();
-    
+
     [ObservableProperty]
     private ObservableCollection<DaoTestResult> _daoTestResults = new();
-    
+
     [ObservableProperty]
     private string _testLogs = string.Empty;
-    
+
     [ObservableProperty]
     private DateTime _lastRunTime;
-    
+
     [ObservableProperty]
     private int _totalDurationMs;
-    
+
     public DatabaseTestViewModel(
         IService_Settings settingsService,
         Dao_SystemSettings systemSettingsDao,
@@ -303,36 +303,36 @@ public partial class DatabaseTestViewModel : BaseViewModel
         _scheduledReportDao = scheduledReportDao;
         _packageTypeMappingDao = packageTypeMappingDao;
     }
-    
+
     [RelayCommand]
     private async Task RefreshAllAsync()
     {
         if (IsBusy) return;
-        
+
         try
         {
             IsBusy = true;
             var startTime = DateTime.Now;
             var stopwatch = Stopwatch.StartNew();
-            
+
             TestLogs = $"[{DateTime.Now:HH:mm:ss}] Starting comprehensive database tests...\n";
-            
+
             // Test connection
             await TestConnectionAsync();
-            
+
             // Test schema
             await TestSchemaAsync();
-            
+
             // Test stored procedures
             await TestStoredProceduresAsync();
-            
+
             // Test DAOs
             await TestDaosAsync();
-            
+
             stopwatch.Stop();
             LastRunTime = startTime;
             TotalDurationMs = (int)stopwatch.ElapsedMilliseconds;
-            
+
             TestLogs += $"\n[{DateTime.Now:HH:mm:ss}] All tests completed in {TotalDurationMs}ms";
             StatusMessage = $"Tests completed: {TablesValidated}/{TotalTables} tables, {StoredProceduresTested}/{TotalStoredProcedures} SPs, {DaosValidated}/{TotalDaos} DAOs";
         }
@@ -345,18 +345,18 @@ public partial class DatabaseTestViewModel : BaseViewModel
             IsBusy = false;
         }
     }
-    
+
     private async Task TestConnectionAsync()
     {
         TestLogs += $"[{DateTime.Now:HH:mm:ss}] Testing database connection...\n";
-        
+
         var stopwatch = Stopwatch.StartNew();
         var connectionString = Helper_Database_Variables.GetConnectionString();
-        
+
         using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync();
         stopwatch.Stop();
-        
+
         ConnectionStatus = new Model_ConnectionTestResult
         {
             IsConnected = true,
@@ -364,51 +364,51 @@ public partial class DatabaseTestViewModel : BaseViewModel
             ConnectionTimeMs = (int)stopwatch.ElapsedMilliseconds,
             ServerVersion = connection.ServerVersion
         };
-        
+
         TestLogs += $"[{DateTime.Now:HH:mm:ss}] ✓ Connection successful ({ConnectionStatus.ConnectionTimeMs}ms)\n";
     }
-    
+
     private async Task TestSchemaAsync()
     {
         TestLogs += $"\n[{DateTime.Now:HH:mm:ss}] Validating database schema...\n";
-        
+
         TableTestResults.Clear();
         TablesValidated = 0;
-        
+
         var tables = new[]
         {
-            "system_settings",
-            "user_settings",
-            "settings_audit_log",
-            "package_type_mappings",
-            "package_types",
-            "routing_rules",
-            "scheduled_reports"
+            "settings_universal",
+            "settings_personal",
+            "settings_activity",
+            "receiving_package_type_mapping",
+            "dunnage_types",
+            "routing_home_locations",
+            "reporting_scheduled_reports"
         };
-        
+
         foreach (var table in tables)
         {
             var result = await ValidateTableAsync(table);
             TableTestResults.Add(result);
-            
+
             if (result.IsValid)
                 TablesValidated++;
         }
-        
+
         TestLogs += $"[{DateTime.Now:HH:mm:ss}] ✓ Schema validation complete: {TablesValidated}/{TotalTables} tables valid\n";
     }
-    
+
     private async Task<TableTestResult> ValidateTableAsync(string tableName)
     {
         var connectionString = Helper_Database_Variables.GetConnectionString();
-        
+
         using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync();
-        
+
         // Check table exists
         var checkCmd = new MySqlCommand($"SHOW TABLES LIKE '{tableName}'", connection);
         var exists = await checkCmd.ExecuteScalarAsync() != null;
-        
+
         if (!exists)
         {
             TestLogs += $"[{DateTime.Now:HH:mm:ss}] ✗ Table '{tableName}' not found\n";
@@ -419,21 +419,21 @@ public partial class DatabaseTestViewModel : BaseViewModel
                 StatusText = "Not Found"
             };
         }
-        
+
         // Get row count
         var countCmd = new MySqlCommand($"SELECT COUNT(*) FROM {tableName}", connection);
         var rowCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
-        
+
         // Get column count
         var colCmd = new MySqlCommand($"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{tableName}'", connection);
         var columnCount = Convert.ToInt32(await colCmd.ExecuteScalarAsync());
-        
+
         // Get index count
         var idxCmd = new MySqlCommand($"SELECT COUNT(DISTINCT INDEX_NAME) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{tableName}'", connection);
         var indexCount = Convert.ToInt32(await idxCmd.ExecuteScalarAsync());
-        
+
         TestLogs += $"[{DateTime.Now:HH:mm:ss}] ✓ {tableName}: {rowCount} rows, {columnCount} columns, {indexCount} indexes\n";
-        
+
         return new TableTestResult
         {
             TableName = tableName,
@@ -444,31 +444,31 @@ public partial class DatabaseTestViewModel : BaseViewModel
             StatusText = "Validated"
         };
     }
-    
+
     private async Task TestStoredProceduresAsync()
     {
         TestLogs += $"\n[{DateTime.Now:HH:mm:ss}] Testing stored procedures...\n";
-        
+
         SpTestResults.Clear();
         StoredProceduresTested = 0;
-        
+
         // Test each SP category
         await TestSystemSettingsSPs();
         await TestUserSettingsSPs();
         await TestPackageTypeSPs();
         await TestRoutingRuleSPs();
         await TestScheduledReportSPs();
-        
+
         TestLogs += $"[{DateTime.Now:HH:mm:ss}] ✓ Stored procedure tests complete: {StoredProceduresTested}/{TotalStoredProcedures} passed\n";
     }
-    
+
     private async Task TestDaosAsync()
     {
         TestLogs += $"\n[{DateTime.Now:HH:mm:ss}] Testing DAOs...\n";
-        
+
         DaoTestResults.Clear();
         DaosValidated = 0;
-        
+
         // Test each DAO
         await TestSystemSettingsDao();
         await TestUserSettingsDao();
@@ -476,22 +476,22 @@ public partial class DatabaseTestViewModel : BaseViewModel
         await TestRoutingRuleDao();
         await TestScheduledReportDao();
         await TestPackageTypeMappingDao();
-        
+
         TestLogs += $"[{DateTime.Now:HH:mm:ss}] ✓ DAO tests complete: {DaosValidated}/{TotalDaos} operational\n";
     }
-    
+
     [RelayCommand]
     private async Task ExportResultsAsync()
     {
         var savePicker = new FileSavePicker();
         savePicker.SuggestedFileName = $"DatabaseTest_{DateTime.Now:yyyyMMdd_HHmmss}";
         savePicker.FileTypeChoices.Add("Text File", new List<string> { ".txt" });
-        
+
         var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
         InitializeWithWindow.Initialize(savePicker, hwnd);
-        
+
         var file = await savePicker.PickSaveFileAsync();
-        
+
         if (file != null)
         {
             await FileIO.WriteTextAsync(file, TestLogs);
@@ -510,13 +510,13 @@ public partial class Model_ConnectionTestResult : ObservableObject
 {
     [ObservableProperty]
     private bool _isConnected;
-    
+
     [ObservableProperty]
     private string _statusMessage = string.Empty;
-    
+
     [ObservableProperty]
     private int _connectionTimeMs;
-    
+
     [ObservableProperty]
     private string _serverVersion = string.Empty;
 }
@@ -525,19 +525,19 @@ public partial class TableTestResult : ObservableObject
 {
     [ObservableProperty]
     private string _tableName = string.Empty;
-    
+
     [ObservableProperty]
     private int _rowCount;
-    
+
     [ObservableProperty]
     private int _columnCount;
-    
+
     [ObservableProperty]
     private int _indexCount;
-    
+
     [ObservableProperty]
     private bool _isValid;
-    
+
     [ObservableProperty]
     private string _statusText = string.Empty;
 }
@@ -546,13 +546,13 @@ public partial class StoredProcedureTestResult : ObservableObject
 {
     [ObservableProperty]
     private string _procedureName = string.Empty;
-    
+
     [ObservableProperty]
     private bool _isPassed;
-    
+
     [ObservableProperty]
     private int _executionTimeMs;
-    
+
     [ObservableProperty]
     private string _testDetails = string.Empty;
 }
@@ -561,13 +561,13 @@ public partial class DaoTestResult : ObservableObject
 {
     [ObservableProperty]
     private string _daoName = string.Empty;
-    
+
     [ObservableProperty]
     private bool _isOperational;
-    
+
     [ObservableProperty]
     private string _testedOperations = string.Empty; // "CRUD"
-    
+
     [ObservableProperty]
     private string _statusText = string.Empty;
 }
@@ -581,8 +581,8 @@ Add button to MainWindow.xaml (for development builds only):
 
 ```xml
 <!-- In NavigationView.MenuItems, add: -->
-<NavigationViewItem Content="Settings DB Test" 
-                    Tag="DatabaseTestView" 
+<NavigationViewItem Content="Settings DB Test"
+                    Tag="DatabaseTestView"
                     Visibility="{x:Bind IsDevelopmentMode, Mode=OneWay}">
     <NavigationViewItem.Icon>
         <FontIcon Glyph="&#xE9F9;"/>
@@ -593,7 +593,7 @@ Add button to MainWindow.xaml (for development builds only):
 In MainWindow.xaml.cs:
 
 ```csharp
-private bool IsDevelopmentMode => 
+private bool IsDevelopmentMode =>
     Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
 private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -601,14 +601,14 @@ private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelec
     if (args.SelectedItem is NavigationViewItem item)
     {
         var tag = item.Tag?.ToString();
-        
+
         if (tag == "DatabaseTestView")
         {
             var window = new DatabaseTestWindow();
             window.Activate();
             return;
         }
-        
+
         // ... existing navigation
     }
 }

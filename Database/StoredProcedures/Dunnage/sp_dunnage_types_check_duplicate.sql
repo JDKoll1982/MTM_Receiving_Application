@@ -10,8 +10,8 @@ CREATE PROCEDURE `sp_dunnage_types_check_duplicate`(
 BEGIN
     -- Check if duplicate type name exists (excluding specified ID)
     IF EXISTS (
-        SELECT 1 FROM dunnage_types 
-        WHERE DunnageType = p_type_name 
+        SELECT 1 FROM dunnage_types
+        WHERE DunnageType = p_type_name
         AND (p_exclude_id IS NULL OR ID != p_exclude_id)
     ) THEN
         SET p_exists = TRUE;

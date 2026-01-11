@@ -15,13 +15,13 @@ CREATE PROCEDURE sp_PackageTypeMappings_Update(
     IN p_display_order INT
 )
 BEGIN
-    UPDATE package_type_mappings
+    UPDATE receiving_package_type_mapping
     SET package_type = p_package_type,
         is_default = p_is_default,
         display_order = p_display_order,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = p_id;
-    
+
     SELECT ROW_COUNT() AS affected_rows;
 END$$
 

@@ -11,7 +11,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Routing.Data;
 
 /// <summary>
-/// Data Access Object for routing_labels table
+/// Data Access Object for routing_label_data table
 /// Provides CRUD operations using stored procedures
 /// </summary>
 public class Dao_RoutingLabel

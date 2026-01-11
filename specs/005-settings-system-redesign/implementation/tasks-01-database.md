@@ -1,7 +1,7 @@
 # Tasks: Database Setup + Data Layer - Settings System
 
-**Priority**: CRITICAL (Week 1-2)  
-**Phase**: Foundation  
+**Priority**: CRITICAL (Week 1-2)
+**Phase**: Foundation
 **Status**: In Progress
 
 **Note**: This phase now includes DAO implementation since DAOs are required to test stored procedures effectively.
@@ -82,13 +82,13 @@
 **Goal**: Create complete MySQL schema with all tables, indexes, and constraints
 
 - [x] **DB001** [P] Review all SETTABLE_OBJECTS reports and extract 79 settings into spreadsheet
-- [x] **DB002** [P] Design `system_settings` table structure with all columns per spec
-- [x] **DB003** [P] Design `user_settings` table with foreign keys to system_settings
-- [x] **DB004** [P] Design `settings_audit_log` table with change tracking columns
-- [x] **DB005** [P] Design `package_type_mappings` table per Receiving requirements
-- [x] **DB006** [P] Design `package_types` table for CRUD operations (from modal requirements)
-- [x] **DB007** [P] Design `routing_rules` table with pattern matching support
-- [x] **DB008** [P] Design `scheduled_reports` table with schedule string parsing
+- [x] **DB002** [P] Design `settings_universal` table structure with all columns per spec
+- [x] **DB003** [P] Design `settings_personal` table with foreign keys to settings_universal
+- [x] **DB004** [P] Design `settings_activity` table with change tracking columns
+- [x] **DB005** [P] Design `receiving_package_type_mapping` table per Receiving requirements
+- [x] **DB006** [P] Design `dunnage_types` table for CRUD operations (from modal requirements)
+- [x] **DB007** [P] Design `routing_home_locations` table with pattern matching support
+- [x] **DB008** [P] Design `reporting_scheduled_reports` table with schedule string parsing
 - [x] **DB009** Create complete `Database/Schemas/12_settings_system_schema.sql` with all 7 tables
 - [x] **DB010** Add all indexes: category, scope, permission_level, priority, next_run_date
 - [x] **DB011** Add all foreign key constraints with ON DELETE/UPDATE rules
@@ -352,7 +352,7 @@
 - [ ] **DB149** Deploy all stored procedures to test database
 - [ ] **DB150** Run seed data INSERT statements
 - [ ] **DB151** Execute all stored procedures with test data
-- [ ] **DB152** Verify all 79 settings exist in system_settings table
+- [ ] **DB152** Verify all 79 settings exist in settings_universal table
 - [ ] **DB153** Verify all indexes created correctly
 - [ ] **DB154** Verify all foreign keys enforce constraints
 - [ ] **DB155** Test audit logging works for all operations

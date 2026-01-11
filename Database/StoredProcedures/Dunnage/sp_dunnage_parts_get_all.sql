@@ -4,7 +4,7 @@ DROP PROCEDURE IF EXISTS sp_dunnage_parts_get_all$$
 
 CREATE PROCEDURE sp_dunnage_parts_get_all()
 BEGIN
-    SELECT 
+    SELECT
         p.id,
         p.part_id,
         p.type_id,

@@ -1,4 +1,4 @@
-# sp_volvo_settings_get
+# sp_settings_module_volvo_get
 
 **Category:** Settings
 **Parameter Types:** IN
@@ -19,10 +19,10 @@
 
 ```csharp
 // Module_Volvo\Data\Dao_VolvoSettings.cs:35
-"sp_volvo_settings_get",
+"sp_settings_module_volvo_get",
 
 // Module_Volvo\Data\Dao_VolvoSettings.cs:54
-"sp_volvo_settings_get_all",
+"sp_settings_module_volvo_get_all",
 
 ```
 
@@ -36,5 +36,3 @@
 ### Dao_VolvoSettings.GetAllSettingsAsync
 **Called by (1 references):**
 - Same file (1 calls)
-
-

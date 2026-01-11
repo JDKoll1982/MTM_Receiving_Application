@@ -10,7 +10,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_PackageTypeMappings_GetAll$$
 CREATE PROCEDURE sp_PackageTypeMappings_GetAll()
 BEGIN
-    SELECT 
+    SELECT
         id,
         part_prefix,
         package_type,
@@ -20,7 +20,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM package_type_mappings
+    FROM receiving_package_type_mapping
     WHERE is_active = TRUE
     ORDER BY display_order, part_prefix;
 END$$

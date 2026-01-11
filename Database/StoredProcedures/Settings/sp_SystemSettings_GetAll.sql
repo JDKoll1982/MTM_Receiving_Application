@@ -10,7 +10,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_SystemSettings_GetAll$$
 CREATE PROCEDURE sp_SystemSettings_GetAll()
 BEGIN
-    SELECT 
+    SELECT
         id,
         category,
         sub_category,
@@ -30,7 +30,7 @@ BEGIN
         created_at,
         updated_at,
         updated_by
-    FROM system_settings
+    FROM settings_universal
     ORDER BY category, ui_order, setting_name;
 END$$
 

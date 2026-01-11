@@ -45,11 +45,11 @@ Companion to:
 
 | DAO | Primary Entity |
 |-----|----------------|
-| Dao_VolvoShipment | volvo_shipments |
-| Dao_VolvoShipmentLine | volvo_shipment_lines |
-| Dao_VolvoPart | volvo_parts_master |
+| Dao_VolvoShipment | volvo_label_data |
+| Dao_VolvoShipmentLine | volvo_line_data |
+| Dao_VolvoPart | volvo_masterdata |
 | Dao_VolvoPartComponent | volvo_part_components |
-| Dao_VolvoSettings | volvo_settings |
+| Dao_VolvoSettings | settings_module_volvo |
 
 ## Models
 

@@ -15,7 +15,7 @@ CREATE PROCEDURE sp_GetAllReceivingLoads(
     IN p_EndDate DATE
 )
 BEGIN
-    SELECT 
+    SELECT
         LoadID,
         PartID,
         PartType,
@@ -29,8 +29,8 @@ BEGIN
         WeightPerPackage,
         IsNonPOItem,
         ReceivedDate
-    FROM receiving_loads
-    WHERE ReceivedDate >= p_StartDate 
+    FROM receiving_history
+    WHERE ReceivedDate >= p_StartDate
       AND ReceivedDate <= p_EndDate
     ORDER BY ReceivedDate DESC, LoadNumber ASC;
 END$$

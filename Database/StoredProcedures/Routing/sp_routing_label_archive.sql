@@ -24,24 +24,24 @@ BEGIN
         SET p_archived_count = 0;
         ROLLBACK;
     END;
-    
+
     -- Initialize outputs
     SET p_archived_count = 0;
     SET p_error_message = NULL;
-    
+
     -- Start transaction
     START TRANSACTION;
-    
+
     -- Archive labels by setting is_archived = 1
     -- Note: In MySQL 5.7.24, we can't use JSON or CTEs, so we use FIND_IN_SET for simple comma-separated values
-    UPDATE routing_labels
+    UPDATE routing_label_data
     SET is_archived = 1
     WHERE FIND_IN_SET(id, p_label_ids) > 0
         AND is_archived = 0;
-    
+
     -- Get count of archived rows
     SET p_archived_count = ROW_COUNT();
-    
+
     -- Commit transaction
     COMMIT;
 END$$

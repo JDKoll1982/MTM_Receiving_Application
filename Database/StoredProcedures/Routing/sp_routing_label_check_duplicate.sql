@@ -13,7 +13,7 @@ CREATE PROCEDURE `sp_routing_label_check_duplicate`(
 BEGIN
     DECLARE v_count INT DEFAULT 0;
     DECLARE v_latest_date DATETIME;
-    
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
@@ -27,7 +27,7 @@ BEGIN
     -- Check for duplicate labels in time window
     SELECT COUNT(*), MAX(created_date)
     INTO v_count, v_latest_date
-    FROM routing_labels
+    FROM routing_label_data
     WHERE po_number = p_po_number
         AND line_number = p_line_number
         AND recipient_id = p_recipient_id
@@ -43,7 +43,7 @@ BEGIN
             recipient_id,
             created_by,
             created_date
-        FROM routing_labels
+        FROM routing_label_data
         WHERE po_number = p_po_number
             AND line_number = p_line_number
             AND recipient_id = p_recipient_id
@@ -51,7 +51,7 @@ BEGIN
             AND created_date >= DATE_SUB(NOW(), INTERVAL p_hours_window HOUR)
         ORDER BY created_date DESC
         LIMIT 1;
-        
+
         SET p_status = 0;  -- Duplicate found
         SET p_error_msg = CONCAT('Duplicate label found created at ', v_latest_date);
     ELSE

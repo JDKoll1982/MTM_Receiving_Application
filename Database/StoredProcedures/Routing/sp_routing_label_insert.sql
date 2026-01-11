@@ -32,47 +32,47 @@ proc: BEGIN
             p_error_message = MESSAGE_TEXT;
         ROLLBACK;
     END;
-    
+
     -- Initialize output parameters
     SET p_new_label_id = NULL;
     SET p_error_message = NULL;
-    
+
     -- Start transaction
     START TRANSACTION;
-    
+
     -- Validate required fields
     IF p_label_number IS NULL OR p_label_number <= 0 THEN
         SET p_error_message = 'Label number is required and must be positive';
         ROLLBACK;
         LEAVE proc;
     END IF;
-    
+
     IF p_deliver_to IS NULL OR TRIM(p_deliver_to) = '' THEN
         SET p_error_message = 'Deliver To recipient is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
-    
+
     IF p_department IS NULL OR TRIM(p_department) = '' THEN
         SET p_error_message = 'Department is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
-    
+
     IF p_employee_number IS NULL OR TRIM(p_employee_number) = '' THEN
         SET p_error_message = 'Employee number is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
-    
+
     IF p_created_date IS NULL THEN
         SET p_error_message = 'Created date is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
-    
+
     -- Insert routing label
-    INSERT INTO routing_labels (
+    INSERT INTO routing_label_data (
         label_number,
         deliver_to,
         department,
@@ -93,10 +93,10 @@ proc: BEGIN
         p_created_date,
         0  -- Default: not archived
     );
-    
+
     -- Get the newly created ID
     SET p_new_label_id = LAST_INSERT_ID();
-    
+
     -- Commit transaction
     COMMIT;
 END proc$$

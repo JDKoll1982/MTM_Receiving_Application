@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Stored Procedure: sp_UpsertWorkstationConfig
--- Description: Insert or update the current workstation_config row
+-- Description: Insert or update the current auth_workstation_config row
 -- Notes:
 --  - Used to ensure the current machine is persisted on startup
 --  - Validates workstation_type to allowed enum values
@@ -27,7 +27,7 @@ BEGIN
         SET v_type = 'personal_workstation';
     END IF;
 
-    INSERT INTO workstation_config (
+    INSERT INTO auth_workstation_config (
         workstation_name,
         workstation_type,
         is_active,

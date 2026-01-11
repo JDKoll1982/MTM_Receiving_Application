@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents a user-specific override for a system setting
-/// Database Table: user_settings
+/// Database Table: settings_personal
 /// </summary>
 public partial class Model_UserSetting : ObservableObject
 {

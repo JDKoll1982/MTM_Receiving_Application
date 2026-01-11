@@ -23,7 +23,7 @@
 
 ### Basic Syntax
 
-All PlantUML diagrams start and end with: 
+All PlantUML diagrams start and end with:
 
 ```plantuml
 @startuml
@@ -53,7 +53,7 @@ java -jar plantuml.jar diagram.puml
 ## Diagram Types Overview
 
 ### 1. Sequence Diagram
-**Purpose**: Show interactions between objects/actors over time  
+**Purpose**: Show interactions between objects/actors over time
 **Best For**: API flows, user interactions, workflow steps, message passing
 
 **Basic Syntax**:
@@ -128,7 +128,7 @@ end
 ---
 
 ### 2. Class Diagram
-**Purpose**: Show static structure of classes, attributes, methods, and relationships  
+**Purpose**: Show static structure of classes, attributes, methods, and relationships
 **Best For**: Object-oriented design, data models, inheritance hierarchies
 
 **Basic Syntax**:
@@ -183,10 +183,10 @@ Dao_DunnageType ..> Model_DunnageType : "uses"
 ---
 
 ### 3. Use Case Diagram
-**Purpose**: Show user interactions with a system  
+**Purpose**: Show user interactions with a system
 **Best For**: Requirements gathering, feature mapping, stakeholder communication
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startuml
 left to right direction
@@ -230,10 +230,10 @@ UC2 ..> UC5 : <<includes>>
 ---
 
 ### 4. Activity Diagram
-**Purpose**: Show step-by-step workflows with decisions and parallel paths  
+**Purpose**: Show step-by-step workflows with decisions and parallel paths
 **Best For**: Business processes, algorithms, user workflows, approval flows
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startuml
 start
@@ -310,10 +310,10 @@ stop
 ---
 
 ### 5. Component Diagram
-**Purpose**: Show high-level system components and their dependencies  
+**Purpose**: Show high-level system components and their dependencies
 **Best For**: System architecture, module dependencies, layer separation
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startuml
 package "Presentation Layer" {
@@ -337,7 +337,7 @@ package "Data Access Layer" {
 database "MySQL Database" {
     [dunnage_types]
     [dunnage_parts]
-    [dunnage_loads]
+    [dunnage_history]
 }
 
 [DunnageWorkflowViewModel] --> [Service_DunnageWorkflow]
@@ -366,10 +366,10 @@ database "MySQL Database" {
 ---
 
 ### 6. State Diagram
-**Purpose**: Show state transitions of an object or system  
+**Purpose**: Show state transitions of an object or system
 **Best For**: Workflow states, entity lifecycle, validation states
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startuml
 [*] --> ModeSelection
@@ -427,7 +427,7 @@ Active --> [*] : Cancel
 ---
 
 ### 7. Entity-Relationship Diagram (ER)
-**Purpose**: Show database table relationships and schema  
+**Purpose**: Show database table relationships and schema
 **Best For**: Database design, data modeling, schema documentation
 
 **Basic Syntax**:
@@ -449,7 +449,7 @@ entity "dunnage_parts" {
     DunnageSpecValues : JSON
 }
 
-entity "dunnage_loads" {
+entity "dunnage_history" {
     * ID :  CHAR(36) <<PK>>
     --
     * PartID : VARCHAR(100) <<FK>>
@@ -459,8 +459,8 @@ entity "dunnage_loads" {
 }
 
 dunnage_parts }o--|| dunnage_types : "belongs to"
-dunnage_loads }o--|| dunnage_parts : "references"
-dunnage_loads }o--|| dunnage_types : "classified by"
+dunnage_history }o--|| dunnage_parts : "references"
+dunnage_history }o--|| dunnage_types : "classified by"
 @enduml
 ```
 
@@ -483,10 +483,10 @@ dunnage_loads }o--|| dunnage_types : "classified by"
 ---
 
 ### 8. Deployment Diagram
-**Purpose**: Show physical deployment of artifacts on nodes  
+**Purpose**: Show physical deployment of artifacts on nodes
 **Best For**: Infrastructure, server topology, network architecture
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startuml
 node "Client Workstation" {
@@ -523,10 +523,10 @@ app --> csv : SMB
 ---
 
 ### 9. Timing Diagram
-**Purpose**: Show timing constraints and state changes over time  
+**Purpose**: Show timing constraints and state changes over time
 **Best For**: Real-time systems, protocol timing, performance analysis
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startuml
 robust "User Action" as USER
@@ -575,7 +575,7 @@ API is Idle
 ---
 
 ### 10. Gantt Chart
-**Purpose**: Show project timeline and task dependencies  
+**Purpose**: Show project timeline and task dependencies
 **Best For**: Project planning, milestone tracking, resource allocation
 
 **Basic Syntax**:
@@ -611,10 +611,10 @@ API is Idle
 ---
 
 ### 11. Mind Map
-**Purpose**: Show hierarchical breakdown of concepts  
+**Purpose**: Show hierarchical breakdown of concepts
 **Best For**: Brainstorming, feature decomposition, knowledge organization
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startmindmap
 * Dunnage Receiving System
@@ -650,7 +650,7 @@ API is Idle
 ---
 
 ### 12. JSON/YAML Diagram
-**Purpose**:  Visualize JSON/YAML data structures  
+**Purpose**:  Visualize JSON/YAML data structures
 **Best For**: API payload documentation, configuration schemas
 
 **Basic Syntax**:
@@ -679,7 +679,7 @@ API is Idle
 ---
 
 ### 13. WBS (Work Breakdown Structure)
-**Purpose**: Show hierarchical task decomposition  
+**Purpose**: Show hierarchical task decomposition
 **Best For**: Project planning, task organization, deliverable tracking
 
 **Basic Syntax**:
@@ -717,7 +717,7 @@ API is Idle
 ---
 
 ### 14. Network Diagram (nwdiag)
-**Purpose**: Show network topology and connections  
+**Purpose**: Show network topology and connections
 **Best For**: Network architecture, infrastructure documentation
 
 **Basic Syntax**:
@@ -750,15 +750,15 @@ nwdiag {
 ---
 
 ### 15. Salt (UI Mockup/Wireframe)
-**Purpose**: Show UI layout and form structure  
+**Purpose**: Show UI layout and form structure
 **Best For**:  Wireframes, form design, UI specifications
 
-**Basic Syntax**: 
+**Basic Syntax**:
 ```plantuml
 @startsalt
 {+
   == Dunnage Label - Type Selection ==
-  . 
+  .
   .Select dunnage type (Page 1 of 2):
   .
   {
@@ -772,7 +772,7 @@ nwdiag {
   {
     [ < Previous Page ] | Page 1 of 2 | [ Next Page > ] | [ + Add New Type ]
   }
-  . 
+  .
   [ < Back ] | [ Cancel ]
 }
 @endsalt
@@ -930,12 +930,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Generate diagrams
         uses: cloudbees/plantuml-github-action@master
         with:
           args: -v -tpng docs/diagrams/*.puml
-      
+
       - name: Commit images
         run: |
           git config user.name github-actions
@@ -1079,7 +1079,7 @@ note right
     - Replaced legacy table
 end note
 
-' Diagram content... 
+' Diagram content...
 @enduml
 ```
 
@@ -1089,7 +1089,7 @@ end note
 
 ```plantuml
 @startuml
-' Single diagram showing EVERYTHING: 
+' Single diagram showing EVERYTHING:
 ' - All classes
 ' - All relationships
 ' - All methods
@@ -1166,7 +1166,7 @@ state "Wizard Flow" as Wizard {
     PartSelection --> QuantityEntry : Part Chosen
     QuantityEntry --> DetailsEntry :  Quantity Entered
     DetailsEntry --> Review : Details Complete
-    
+
     Review --> TypeSelection : Add Another
     Review --> [*] : Save & Finish
 }
@@ -1204,7 +1204,7 @@ loop For each load
     activate SQL
     SQL -> DAO:  Dao_DunnageLoad. InsertLoadAsync()
     activate DAO
-    DAO -> DB: sp_dunnage_loads_insert
+    DAO -> DB: sp_dunnage_history_insert
     DB --> DAO: Success
     deactivate DAO
     SQL --> WF: Model_Dao_Result
@@ -1243,7 +1243,7 @@ entity "dunnage_parts" {
     DunnageSpecValues : JSON
 }
 
-entity "dunnage_loads" {
+entity "dunnage_history" {
     * ID :  CHAR(36) <<PK>>
     --
     * PartID : VARCHAR(100) <<FK>>
@@ -1254,8 +1254,8 @@ entity "dunnage_loads" {
 
 dunnage_specs }o--|| dunnage_types : CASCADE
 dunnage_parts }o--|| dunnage_types :  RESTRICT
-dunnage_loads }o--|| dunnage_parts :  RESTRICT
-dunnage_loads }o--|| dunnage_types : RESTRICT
+dunnage_history }o--|| dunnage_parts :  RESTRICT
+dunnage_history }o--|| dunnage_types : RESTRICT
 @enduml
 ```
 

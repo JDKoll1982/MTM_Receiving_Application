@@ -1,14 +1,14 @@
 -- ============================================================================
--- Table: inventoried_dunnage
+-- Table: dunnage_requires_inventory
 -- Module: Dunnage
 -- Purpose: Parts requiring Visual ERP inventory notification
 -- ============================================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS inventoried_dunnage;
+DROP TABLE IF EXISTS dunnage_requires_inventory;
 SET FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE inventoried_dunnage (
+CREATE TABLE dunnage_requires_inventory (
     -- Primary key
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for inventoried dunnage record',
 
@@ -26,7 +26,7 @@ CREATE TABLE inventoried_dunnage (
     modified_date DATETIME COMMENT 'Timestamp when record was last modified',
 
     -- Foreign key constraint
-    CONSTRAINT FK_inventoried_dunnage_part_id
+    CONSTRAINT FK_dunnage_requires_inventory_part_id
         FOREIGN KEY (part_id)
         REFERENCES dunnage_parts(part_id)
         ON DELETE CASCADE

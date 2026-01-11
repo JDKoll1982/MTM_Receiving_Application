@@ -27,29 +27,29 @@ INSERT IGNORE INTO dunnage_types (type_name, icon, created_by, created_date) VAL
 -- =============================================
 -- Width, Height, Depth for all types
 INSERT IGNORE INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date)
-SELECT 
-    id, 
-    'Width', 
-    JSON_OBJECT('type', 'number', 'unit', 'inches', 'required', true), 
-    'SYSTEM', 
+SELECT
+    id,
+    'Width',
+    JSON_OBJECT('type', 'number', 'unit', 'inches', 'required', true),
+    'SYSTEM',
     NOW()
 FROM dunnage_types;
 
 INSERT IGNORE INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date)
-SELECT 
-    id, 
-    'Height', 
-    JSON_OBJECT('type', 'number', 'unit', 'inches', 'required', true), 
-    'SYSTEM', 
+SELECT
+    id,
+    'Height',
+    JSON_OBJECT('type', 'number', 'unit', 'inches', 'required', true),
+    'SYSTEM',
     NOW()
 FROM dunnage_types;
 
 INSERT IGNORE INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date)
-SELECT 
-    id, 
-    'Depth', 
-    JSON_OBJECT('type', 'number', 'unit', 'inches', 'required', true), 
-    'SYSTEM', 
+SELECT
+    id,
+    'Depth',
+    JSON_OBJECT('type', 'number', 'unit', 'inches', 'required', true),
+    'SYSTEM',
     NOW()
 FROM dunnage_types;
 
@@ -59,7 +59,7 @@ FROM dunnage_types;
 -- Add 'Material' and 'Color' to Pallet
 SET @pallet_id = (SELECT id FROM dunnage_types WHERE type_name = 'Pallet');
 
-INSERT IGNORE INTO custom_field_definitions (DunnageTypeID, FieldName, DatabaseColumnName, FieldType, DisplayOrder, IsRequired, CreatedBy) VALUES
+INSERT IGNORE INTO dunnage_custom_fields (DunnageTypeID, FieldName, DatabaseColumnName, FieldType, DisplayOrder, IsRequired, CreatedBy) VALUES
 (@pallet_id, 'Material', 'material', 'Text', 1, TRUE, 'SYSTEM'),
 (@pallet_id, 'Color', 'color', 'Text', 2, FALSE, 'SYSTEM');
 
@@ -168,7 +168,7 @@ INSERT IGNORE INTO dunnage_parts (part_id, type_id, spec_values, home_location, 
 -- =============================================
 -- 5. Seed Inventoried Dunnage
 -- =============================================
-INSERT IGNORE INTO inventoried_dunnage (part_id, inventory_method, notes, created_by, created_date) VALUES
+INSERT IGNORE INTO dunnage_requires_inventory (part_id, inventory_method, notes, created_by, created_date) VALUES
 ('PALLET-48X40', 'Both', 'Standard pallet tracking for Visual ERP', 'SYSTEM', NOW()),
 ('CRATE-L-48X48', 'Visual', 'Large crate tracking', 'SYSTEM', NOW()),
 ('TOTE-BLUE-24X15', 'Manual', 'Plastic tote tracking', 'SYSTEM', NOW());
@@ -177,7 +177,7 @@ INSERT IGNORE INTO inventoried_dunnage (part_id, inventory_method, notes, create
 -- 6. Seed User Preferences
 -- =============================================
 -- Seed some recently used icons for 'johnk'
-INSERT IGNORE INTO user_preferences (UserId, PreferenceKey, PreferenceValue) VALUES
+INSERT IGNORE INTO settings_dunnage_personal (UserId, PreferenceKey, PreferenceValue) VALUES
 ('johnk', 'recent_icons', '["Pallet", "PackageVariantClosed", "CubeOutline", "Wrap", "Archive", "BubbleSheet"]');
 
 -- =============================================

@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: volvo_settings
+-- Table: settings_module_volvo
 -- Module: Volvo
 -- Purpose: Stores configurable settings for Volvo module
 -- ============================================================================
 
-DROP TABLE IF EXISTS volvo_settings;
+DROP TABLE IF EXISTS settings_module_volvo;
 
-CREATE TABLE IF NOT EXISTS volvo_settings (
+CREATE TABLE IF NOT EXISTS settings_module_volvo (
     setting_key VARCHAR(100) NOT NULL COMMENT 'Unique key identifier for the setting (e.g., AutoPrintEnabled)',
     setting_value TEXT NOT NULL COMMENT 'Stored value as text; interpretation depends on setting_type',
     setting_type ENUM('String','Integer','Boolean','Path','Enum') NOT NULL COMMENT 'Data type used to interpret setting_value',

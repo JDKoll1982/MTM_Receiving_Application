@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents a package type definition for receiving operations
-/// Database Table: package_types
+/// Database Table: dunnage_types
 /// </summary>
 public partial class Model_PackageType : ObservableObject
 {

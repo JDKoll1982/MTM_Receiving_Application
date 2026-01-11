@@ -1,8 +1,8 @@
 # Receiving - Add/Edit Package Type Modal
 
-**SVG File**: `04-receiving-modal-add-type.svg`  
-**Parent Page**: Receiving Settings  
-**Type**: ContentDialog  
+**SVG File**: `04-receiving-modal-add-type.svg`
+**Parent Page**: Receiving Settings
+**Type**: ContentDialog
 **Purpose**: Create or modify package type definitions
 
 ---
@@ -22,27 +22,27 @@
     DefaultButton="Primary"
     PrimaryButtonClick="SaveButton_Click"
     CloseButtonClick="CancelButton_Click">
-    
+
     <StackPanel Spacing="16" MinWidth="400" Padding="0,8,0,0">
         <!-- Name -->
-        <TextBox 
+        <TextBox
             x:Name="NameTextBox"
             Header="Name"
             Text="{x:Bind PackageType.Name, Mode=TwoWay}"
             PlaceholderText="e.g., Box, Pallet, Crate"
             MaxLength="50"/>
-        
+
         <!-- Code -->
-        <TextBox 
+        <TextBox
             x:Name="CodeTextBox"
             Header="Code"
             Text="{x:Bind PackageType.Code, Mode=TwoWay}"
             PlaceholderText="e.g., BOX, PLT, CRT"
             CharacterCasing="Upper"
             MaxLength="10"/>
-        
+
         <!-- Active -->
-        <ToggleSwitch 
+        <ToggleSwitch
             Header="Active"
             IsOn="{x:Bind PackageType.IsActive, Mode=TwoWay}"
             OnContent="Yes"
@@ -59,7 +59,7 @@
 public sealed partial class PackageTypeDialog : ContentDialog
 {
     public Model_PackageType PackageType { get; set; }
-    
+
     public PackageTypeDialog()
     {
         InitializeComponent();
@@ -68,14 +68,14 @@ public sealed partial class PackageTypeDialog : ContentDialog
             IsActive = true
         };
     }
-    
+
     public PackageTypeDialog(Model_PackageType existingType)
     {
         InitializeComponent();
         PackageType = existingType;
         Title = "Edit Package Type";
     }
-    
+
     private void SaveButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         // Validation
@@ -85,14 +85,14 @@ public sealed partial class PackageTypeDialog : ContentDialog
             ShowValidationError("Name is required");
             return;
         }
-        
+
         if (string.IsNullOrWhiteSpace(PackageType.Code))
         {
             args.Cancel = true;
             ShowValidationError("Code is required");
             return;
         }
-        
+
         if (!Regex.IsMatch(PackageType.Code, @"^[A-Z0-9]+$"))
         {
             args.Cancel = true;
@@ -100,12 +100,12 @@ public sealed partial class PackageTypeDialog : ContentDialog
             return;
         }
     }
-    
+
     private void CancelButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         // No action needed
     }
-    
+
     private async void ShowValidationError(string message)
     {
         var errorDialog = new ContentDialog
@@ -131,13 +131,13 @@ private async Task AddPackageTypeAsync()
     {
         XamlRoot = _xamlRoot // Set from Page
     };
-    
+
     var result = await dialog.ShowAsync();
-    
+
     if (result == ContentDialogResult.Primary)
     {
         var saveResult = await _packageTypeService.SavePackageTypeAsync(dialog.PackageType);
-        
+
         if (saveResult.IsSuccess)
         {
             await LoadPackageTypesAsync();
@@ -158,14 +158,14 @@ private async Task AddPackageTypeAsync()
 private async Task EditPackageTypeAsync()
 {
     if (SelectedPackageType == null) return;
-    
+
     var dialog = new PackageTypeDialog(SelectedPackageType)
     {
         XamlRoot = _xamlRoot
     };
-    
+
     var result = await dialog.ShowAsync();
-    
+
     if (result == ContentDialogResult.Primary)
     {
         await _packageTypeService.SavePackageTypeAsync(dialog.PackageType);
@@ -193,20 +193,20 @@ public partial class Model_PackageType : ObservableObject
 {
     [ObservableProperty]
     private int _id;
-    
+
     [ObservableProperty]
     [property: Required]
     [property: MaxLength(50)]
     private string _name = string.Empty;
-    
+
     [ObservableProperty]
     [property: Required]
     [property: MaxLength(10)]
     private string _code = string.Empty;
-    
+
     [ObservableProperty]
     private bool _isActive = true;
-    
+
     [ObservableProperty]
     private DateTime _createdDate = DateTime.Now;
 }
@@ -219,14 +219,14 @@ public partial class Model_PackageType : ObservableObject
 ### Insert
 
 ```sql
-INSERT INTO package_types (name, code, is_active, created_date)
+INSERT INTO dunnage_types (name, code, is_active, created_date)
 VALUES (@Name, @Code, @IsActive, CURRENT_TIMESTAMP);
 ```
 
 ### Update
 
 ```sql
-UPDATE package_types 
+UPDATE dunnage_types
 SET name = @Name,
     code = @Code,
     is_active = @IsActive,
@@ -237,9 +237,9 @@ WHERE id = @Id;
 ### Validation (Check Unique)
 
 ```sql
-SELECT COUNT(*) 
-FROM package_types 
-WHERE (name = @Name OR code = @Code) 
+SELECT COUNT(*)
+FROM dunnage_types
+WHERE (name = @Name OR code = @Code)
   AND id != @Id;
 ```
 
@@ -248,15 +248,15 @@ WHERE (name = @Name OR code = @Code)
 ## Accessibility
 
 ```xml
-<ContentDialog 
+<ContentDialog
     AutomationProperties.Name="Package Type Editor"
     AutomationProperties.HelpText="Create or modify package type definitions">
-    
-    <TextBox 
+
+    <TextBox
         AutomationProperties.Name="Package Type Name"
         AutomationProperties.IsRequiredForForm="True"/>
-    
-    <TextBox 
+
+    <TextBox
         AutomationProperties.Name="Package Type Code"
         AutomationProperties.IsRequiredForForm="True"/>
 </ContentDialog>

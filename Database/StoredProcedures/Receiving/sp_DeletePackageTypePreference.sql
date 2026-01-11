@@ -6,7 +6,7 @@ CREATE PROCEDURE sp_DeletePackageTypePreference(
     IN p_PartID VARCHAR(50)
 )
 BEGIN
-    DELETE FROM package_type_preferences WHERE PartID = p_PartID;
+    DELETE FROM receiving_package_types WHERE PartID = p_PartID;
 END //
 
 DELIMITER ;

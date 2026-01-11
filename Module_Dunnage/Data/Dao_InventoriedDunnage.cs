@@ -23,7 +23,7 @@ public class Dao_InventoriedDunnage
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_InventoriedDunnage>(
             _connectionString,
-            "sp_inventoried_dunnage_get_all",
+            "sp_dunnage_requires_inventory_get_all",
             MapFromReader
         );
     }
@@ -37,7 +37,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<bool>(
             _connectionString,
-            "sp_inventoried_dunnage_check",
+            "sp_dunnage_requires_inventory_check",
             reader => reader.GetBoolean(reader.GetOrdinal("requires_inventory")),
             parameters
         );
@@ -52,7 +52,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_InventoriedDunnage>(
             _connectionString,
-            "sp_inventoried_dunnage_get_by_part",
+            "sp_dunnage_requires_inventory_get_by_part",
             MapFromReader,
             parameters
         );
@@ -75,7 +75,7 @@ public class Dao_InventoriedDunnage
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-            "sp_inventoried_dunnage_insert",
+            "sp_dunnage_requires_inventory_insert",
             parameters,
             _connectionString
         );
@@ -104,7 +104,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_inventoried_dunnage_update",
+            "sp_dunnage_requires_inventory_update",
             parameters
         );
     }
@@ -118,7 +118,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_inventoried_dunnage_delete",
+            "sp_dunnage_requires_inventory_delete",
             parameters
         );
     }
@@ -138,5 +138,3 @@ public class Dao_InventoriedDunnage
         };
     }
 }
-
-

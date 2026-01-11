@@ -16,7 +16,7 @@ CREATE PROCEDURE sp_routing_label_get_today(
 )
 BEGIN
     -- Return all labels created today that haven't been archived yet
-    SELECT 
+    SELECT
         id,
         label_number,
         deliver_to,
@@ -27,7 +27,7 @@ BEGIN
         employee_number,
         created_date,
         created_at
-    FROM routing_labels
+    FROM routing_label_data
     WHERE created_date = p_today_date
         AND is_archived = 0
     ORDER BY label_number ASC;

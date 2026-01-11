@@ -16,14 +16,14 @@ CREATE PROCEDURE sp_SystemSettings_SetLocked(
     IN p_workstation_name VARCHAR(100)
 )
 BEGIN
-    UPDATE system_settings
+    UPDATE settings_universal
     SET is_locked = p_is_locked,
         updated_at = CURRENT_TIMESTAMP,
         updated_by = p_changed_by
     WHERE id = p_setting_id;
-    
+
     -- Log the lock/unlock
-    INSERT INTO settings_audit_log (
+    INSERT INTO settings_activity (
         setting_id,
         old_value,
         new_value,
@@ -40,7 +40,7 @@ BEGIN
         p_ip_address,
         p_workstation_name
     );
-    
+
     SELECT 1 AS success;
 END$$
 

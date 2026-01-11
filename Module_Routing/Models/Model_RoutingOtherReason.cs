@@ -2,7 +2,7 @@ namespace MTM_Receiving_Application.Module_Routing.Models;
 
 /// <summary>
 /// Represents a reason code for non-PO packages (po_number='OTHER')
-/// Maps to routing_other_reasons database table
+/// Maps to routing_po_alternatives database table
 /// </summary>
 public class Model_RoutingOtherReason
 {

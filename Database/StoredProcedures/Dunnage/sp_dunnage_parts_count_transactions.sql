@@ -7,7 +7,7 @@ CREATE PROCEDURE sp_dunnage_parts_count_transactions(
 )
 BEGIN
     SELECT COUNT(*) as transaction_count
-    FROM dunnage_loads
+    FROM dunnage_history
     WHERE part_id = p_part_id;
 END$$
 

@@ -7,7 +7,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Routing.Data;
 
 /// <summary>
-/// Data Access Object for routing_usage_tracking table
+/// Data Access Object for routing_recipient_tracker table
 /// </summary>
 public class Dao_RoutingUsageTracking
 {

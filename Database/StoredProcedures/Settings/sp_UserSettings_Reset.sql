@@ -15,21 +15,21 @@ CREATE PROCEDURE sp_UserSettings_Reset(
 BEGIN
     DECLARE v_user_setting_id INT DEFAULT NULL;
     DECLARE v_old_value TEXT DEFAULT NULL;
-    
+
     -- Get the user override if it exists
-    SELECT id, setting_value 
+    SELECT id, setting_value
     INTO v_user_setting_id, v_old_value
-    FROM user_settings 
-    WHERE user_id = p_user_id 
+    FROM settings_personal
+    WHERE user_id = p_user_id
       AND setting_id = p_setting_id;
-    
+
     IF v_user_setting_id IS NOT NULL THEN
         -- Delete the override
-        DELETE FROM user_settings 
+        DELETE FROM settings_personal
         WHERE id = v_user_setting_id;
-        
+
         -- Log the reset
-        INSERT INTO settings_audit_log (
+        INSERT INTO settings_activity (
             setting_id,
             user_setting_id,
             old_value,
@@ -47,7 +47,7 @@ BEGIN
             CURRENT_TIMESTAMP
         );
     END IF;
-    
+
     SELECT 1 AS success;
 END$$
 

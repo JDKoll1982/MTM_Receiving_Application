@@ -6,7 +6,7 @@ CREATE PROCEDURE sp_dunnage_types_get_by_id(
     IN p_id INT
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         type_name,
         icon,

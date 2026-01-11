@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 {
     /// <summary>
     /// Data Access Object for user authentication operations.
-    /// Handles all database interactions for the users table.
+    /// Handles all database interactions for the auth_users table.
     /// </summary>
     public class Dao_User
     {
@@ -173,8 +173,8 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 await connection.OpenAsync();
 
                 var query = excludeEmployeeNumber.HasValue
-                    ? "SELECT COUNT(*) FROM users WHERE windows_username = @username AND employee_number != @excludeId"
-                    : "SELECT COUNT(*) FROM users WHERE windows_username = @username";
+                    ? "SELECT COUNT(*) FROMauth_users WHERE windows_username = @username AND employee_number != @excludeId"
+                    : "SELECT COUNT(*) FROMauth_users WHERE windows_username = @username";
 
                 await using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@username", username);
@@ -428,5 +428,3 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         }
     }
 }
-
-

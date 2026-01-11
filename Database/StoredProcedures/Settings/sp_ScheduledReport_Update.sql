@@ -16,14 +16,14 @@ CREATE PROCEDURE sp_ScheduledReport_Update(
     IN p_next_run_date DATETIME
 )
 BEGIN
-    UPDATE scheduled_reports
+    UPDATE reporting_scheduled_reports
     SET report_type = p_report_type,
         schedule = p_schedule,
         email_recipients = p_email_recipients,
         next_run_date = p_next_run_date,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = p_id;
-    
+
     SELECT ROW_COUNT() AS affected_rows;
 END$$
 

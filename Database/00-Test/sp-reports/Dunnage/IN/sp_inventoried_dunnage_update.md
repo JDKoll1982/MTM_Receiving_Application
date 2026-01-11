@@ -1,4 +1,4 @@
-# sp_inventoried_dunnage_update
+# sp_dunnage_requires_inventory_update
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_InventoriedDunnage.cs:107
-"sp_inventoried_dunnage_update",
+"sp_dunnage_requires_inventory_update",
 
 ```
 
@@ -45,5 +45,3 @@
 - Module_Volvo\Interfaces\IDao_VolvoShipmentLine.cs
 - Module_Volvo\Services\Service_Volvo.cs
 - Module_Volvo\Services\Service_VolvoMasterData.cs
-
-

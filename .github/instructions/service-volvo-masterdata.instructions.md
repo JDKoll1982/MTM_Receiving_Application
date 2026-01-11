@@ -1,8 +1,8 @@
 # Service_VolvoMasterData - Implementation Guide
 
-**Service Name:** Service_VolvoMasterData  
-**Interface:** IService_VolvoMasterData  
-**Module:** Module_Volvo  
+**Service Name:** Service_VolvoMasterData
+**Interface:** IService_VolvoMasterData
+**Module:** Module_Volvo
 **Purpose:** Master data management for Volvo parts, components, and assemblies
 
 ---
@@ -136,7 +136,7 @@ else
 **Validation Flow:**
 ```csharp
 1. Check if part used in active shipments
-   - Query volvo_shipment_lines WHERE part_number=X AND shipment.is_archived=0
+   - Query volvo_line_data WHERE part_number=X AND shipment.is_archived=0
 2. Check if part has component relationships
    - Query volvo_part_components WHERE parent_part_number=X OR component_part_number=X
 3. If any references exist → return error
@@ -356,15 +356,15 @@ transaction.Commit();
 ## Common Issues & Solutions
 
 ### Issue: "Cannot deactivate part" even though no active shipments visible
-**Cause:** Part used in archived shipments or as component  
+**Cause:** Part used in archived shipments or as component
 **Solution:** Check `volvo_part_components` table, implement proper reference check
 
 ### Issue: Circular dependency not detected
-**Cause:** Incomplete recursive check  
+**Cause:** Incomplete recursive check
 **Solution:** Implement breadth-first search through entire component tree
 
 ### Issue: Part number case mismatch causing duplicates
-**Cause:** Database collation case-sensitive  
+**Cause:** Database collation case-sensitive
 **Solution:** Always normalize to uppercase before database operations
 
 ---
@@ -389,6 +389,6 @@ transaction.Commit();
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** January 5, 2026  
+**Version:** 1.0
+**Last Updated:** January 5, 2026
 **Maintained By:** Development Team

@@ -20,7 +20,7 @@ BEGIN
         p_user,
         NOW()
     );
-    
+
     SET p_new_id = LAST_INSERT_ID();
 END$$
 

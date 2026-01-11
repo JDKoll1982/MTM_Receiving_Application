@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Models;
 
 /// <summary>
 /// Represents an individual part line item within a Volvo shipment
-/// Maps to volvo_shipment_lines database table
+/// Maps to volvo_line_data database table
 /// </summary>
 public partial class Model_VolvoShipmentLine : ObservableObject
 {
@@ -22,7 +22,7 @@ public partial class Model_VolvoShipmentLine : ObservableObject
     private int _shipmentId;
 
     /// <summary>
-    /// Volvo part number (from volvo_parts_master)
+    /// Volvo part number (from volvo_masterdata)
     /// Example: V-EMB-500, V-EMB-750
     /// </summary>
     [ObservableProperty]

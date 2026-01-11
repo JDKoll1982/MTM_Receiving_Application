@@ -1,8 +1,8 @@
 # Reporting - Schedule Report Configuration
 
-**SVG File**: `08-reporting-modal-schedule.svg`  
-**Parent Page**: Reporting Settings  
-**Type**: ContentDialog  
+**SVG File**: `08-reporting-modal-schedule.svg`
+**Parent Page**: Reporting Settings
+**Type**: ContentDialog
 **Purpose**: Configure scheduled report parameters
 
 ---
@@ -16,10 +16,10 @@
     PrimaryButtonText="Save"
     CloseButtonText="Cancel"
     DefaultButton="Primary">
-    
+
     <StackPanel Spacing="16" MinWidth="400">
         <!-- Report Type -->
-        <ComboBox 
+        <ComboBox
             Header="Report Type"
             SelectedItem="{x:Bind ScheduledReport.ReportType, Mode=TwoWay}"
             Width="360">
@@ -28,9 +28,9 @@
             <ComboBoxItem Content="Dunnage Usage Report"/>
             <ComboBoxItem Content="Routing Performance"/>
         </ComboBox>
-        
+
         <!-- Schedule -->
-        <ComboBox 
+        <ComboBox
             Header="Schedule"
             SelectedItem="{x:Bind ScheduledReport.Schedule, Mode=TwoWay}"
             Width="360">
@@ -39,16 +39,16 @@
             <ComboBoxItem Content="Monthly on 1st"/>
             <ComboBoxItem Content="Custom..."/>
         </ComboBox>
-        
+
         <!-- Email Recipients -->
-        <TextBox 
+        <TextBox
             Header="Email Recipients"
             Text="{x:Bind ScheduledReport.EmailRecipients, Mode=TwoWay}"
             PlaceholderText="comma-separated emails"
             Width="360"/>
-        
+
         <!-- Active -->
-        <ToggleSwitch 
+        <ToggleSwitch
             Header="Active"
             IsOn="{x:Bind ScheduledReport.IsActive, Mode=TwoWay}"/>
     </StackPanel>
@@ -64,22 +64,22 @@ public partial class Model_ScheduledReport : ObservableObject
 {
     [ObservableProperty]
     private int _id;
-    
+
     [ObservableProperty]
     private string _reportType = string.Empty;
-    
+
     [ObservableProperty]
     private string _schedule = "Daily at 8:00 AM";
-    
+
     [ObservableProperty]
     private string _emailRecipients = string.Empty;
-    
+
     [ObservableProperty]
     private bool _isActive = true;
-    
+
     [ObservableProperty]
     private DateTime _nextRunDate;
-    
+
     [ObservableProperty]
     private DateTime? _lastRunDate;
 }
@@ -97,13 +97,13 @@ private async Task AddScheduledReportAsync()
     {
         XamlRoot = _xamlRoot
     };
-    
+
     var result = await dialog.ShowAsync();
-    
+
     if (result == ContentDialogResult.Primary)
     {
         var saveResult = await _reportingService.SaveScheduledReportAsync(dialog.ScheduledReport);
-        
+
         if (saveResult.IsSuccess)
         {
             await LoadScheduledReportsAsync();
@@ -123,7 +123,7 @@ public class ScheduleParser
     public static DateTime GetNextRunDate(string schedule)
     {
         var now = DateTime.Now;
-        
+
         return schedule switch
         {
             "Daily at 8:00 AM" => GetNextDailyRun(now, 8, 0),
@@ -132,16 +132,16 @@ public class ScheduleParser
             _ => now.AddDays(1)
         };
     }
-    
+
     private static DateTime GetNextDailyRun(DateTime from, int hour, int minute)
     {
         var next = new DateTime(from.Year, from.Month, from.Day, hour, minute, 0);
-        
+
         if (next <= from)
         {
             next = next.AddDays(1);
         }
-        
+
         return next;
     }
 }
@@ -152,7 +152,7 @@ public class ScheduleParser
 ## Database Schema
 
 ```sql
-CREATE TABLE scheduled_reports (
+CREATE TABLE reporting_scheduled_reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     report_type VARCHAR(100) NOT NULL,
     schedule VARCHAR(50) NOT NULL,

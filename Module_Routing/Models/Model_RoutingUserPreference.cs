@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Routing.Models;
 
 /// <summary>
 /// Represents user preferences for routing module (default mode, validation toggle)
-/// Maps to routing_user_preferences database table
+/// Maps to settings_routing_personal database table
 /// </summary>
 public class Model_RoutingUserPreference
 {

@@ -18,8 +18,8 @@ CREATE PROCEDURE sp_volvo_shipment_line_update(
   IN p_discrepancy_note TEXT
 )
 BEGIN
-  UPDATE volvo_shipment_lines
-  SET 
+  UPDATE volvo_line_data
+  SET
     received_skid_count = p_received_skid_count,
     calculated_piece_count = p_calculated_piece_count,
     has_discrepancy = p_has_discrepancy,

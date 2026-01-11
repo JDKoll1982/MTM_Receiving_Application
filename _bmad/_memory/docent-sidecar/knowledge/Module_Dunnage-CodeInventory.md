@@ -16,7 +16,7 @@ Companion to:
 |------|----------------------|-------|
 | View_Dunnage_WorkflowView | ViewModel_Dunnage_WorkFlowViewModel | Hosts all step views, provides Help + Back/Next in code-behind. |
 | View_Dunnage_ModeSelectionView | ViewModel_Dunnage_ModeSelectionViewModel | Choose Guided/Manual/Edit; set default mode. |
-| View_Dunnage_TypeSelectionView | ViewModel_Dunnage_TypeSelectionViewModel | Select type; likely drives available specs + part list. |
+| View_dunnage_typeselectionView | ViewModel_dunnage_typeselectionViewModel | Select type; likely drives available specs + part list. |
 | View_Dunnage_PartSelectionView | ViewModel_Dunnage_PartSelectionViewModel | Select part; may support quick-add. |
 | View_Dunnage_QuantityEntryView | ViewModel_Dunnage_QuantityEntryViewModel | Enter quantity. |
 | View_Dunnage_DetailsEntryView | ViewModel_Dunnage_DetailsEntryViewModel | PO, location, spec inputs. |
@@ -48,7 +48,7 @@ Companion to:
 |----------|------------------|
 | ViewModel_Dunnage_WorkFlowViewModel | Main shell VM: visibility switching + Reset CSV + ReturnToModeSelection. Used as step orchestrator. |
 | ViewModel_Dunnage_ModeSelectionViewModel | Pick mode; set default mode; confirm mode change if unsaved data exists. |
-| ViewModel_Dunnage_TypeSelectionViewModel | Select type; resettable; loads types/specs for selected type. |
+| ViewModel_dunnage_typeselectionViewModel | Select type; resettable; loads types/specs for selected type. |
 | ViewModel_Dunnage_PartSelectionViewModel | Select part; filters/search; likely type-scoped list. |
 | ViewModel_Dunnage_QuantityEntryViewModel | Quantity input validation and session sync. |
 | ViewModel_Dunnage_DetailsEntryViewModel | PO, location, and dynamic spec input collection. |

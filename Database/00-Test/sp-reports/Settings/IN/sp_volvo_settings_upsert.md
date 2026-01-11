@@ -1,4 +1,4 @@
-# sp_volvo_settings_upsert
+# sp_settings_module_volvo_upsert
 
 **Category:** Settings
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Volvo\Data\Dao_VolvoSettings.cs:77
-"sp_volvo_settings_upsert",
+"sp_settings_module_volvo_upsert",
 
 ```
 
@@ -27,5 +27,3 @@
 ### Dao_VolvoSettings.UpsertSettingAsync
 **Called by (1 references):**
 - Same file (1 calls)
-
-

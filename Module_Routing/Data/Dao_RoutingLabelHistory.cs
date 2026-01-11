@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Routing.Data;
 
 /// <summary>
-/// Data Access Object for routing_label_history table
+/// Data Access Object for routing_history table
 /// </summary>
 public class Dao_RoutingLabelHistory
 {
@@ -41,7 +41,7 @@ public class Dao_RoutingLabelHistory
             };
 
             return await Helper_Database_StoredProcedure.ExecuteAsync(
-                "sp_routing_label_history_insert",
+                "sp_routing_history_insert",
                 parameters,
                 _connectionString
             );

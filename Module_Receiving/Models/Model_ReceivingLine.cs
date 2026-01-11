@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 
 /// <summary>
 /// Represents a receiving label entry from Google Sheets "Receiving Data"
-/// Maps to label_table_receiving database table
+/// Maps to receiving_label_data database table
 /// </summary>
 public class Model_ReceivingLine
 {

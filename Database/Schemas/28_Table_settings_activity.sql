@@ -1,17 +1,17 @@
 -- ============================================================================
--- Table: settings_audit_log
+-- Table: settings_activity
 -- Module: Settings
 -- Purpose: Tracks all changes to settings for compliance
 -- ============================================================================
 
-DROP TABLE IF EXISTS settings_audit_log;
+DROP TABLE IF EXISTS settings_activity;
 
-CREATE TABLE settings_audit_log (
+CREATE TABLE settings_activity (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for the audit record',
 
     -- What changed
-    setting_id INT NOT NULL COMMENT 'FK to system_settings(id)',
-    user_setting_id INT NULL COMMENT 'FK to user_settings(id) if a user-specific override was changed',
+    setting_id INT NOT NULL COMMENT 'FK to settings_universal(id)',
+    user_setting_id INT NULL COMMENT 'FK to settings_personal(id) if a user-specific override was changed',
 
     -- Change details
     old_value TEXT NULL COMMENT 'Previous value (serialized as stored; e.g., JSON or plain text)',
@@ -28,7 +28,7 @@ CREATE TABLE settings_audit_log (
     workstation_name VARCHAR(100) NULL COMMENT 'Client workstation or host name where change originated',
 
     -- Indexes / Constraints
-    FOREIGN KEY (setting_id) REFERENCES system_settings(id) ON DELETE CASCADE,
+    FOREIGN KEY (setting_id) REFERENCES settings_universal(id) ON DELETE CASCADE,
     INDEX idx_setting (setting_id),
     INDEX idx_user (changed_by),
     INDEX idx_timestamp (changed_at)

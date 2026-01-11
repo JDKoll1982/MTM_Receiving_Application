@@ -14,7 +14,7 @@ CREATE PROCEDURE sp_SettingsAuditLog_GetByUser(
     IN p_limit INT
 )
 BEGIN
-    SELECT 
+    SELECT
         sal.id,
         sal.setting_id,
         ss.category,
@@ -28,8 +28,8 @@ BEGIN
         sal.changed_at,
         sal.ip_address,
         sal.workstation_name
-    FROM settings_audit_log sal
-    INNER JOIN system_settings ss ON sal.setting_id = ss.id
+    FROM settings_activity sal
+    INNER JOIN settings_universal ss ON sal.setting_id = ss.id
     WHERE sal.changed_by = p_changed_by
     ORDER BY sal.changed_at DESC
     LIMIT p_limit;

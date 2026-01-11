@@ -16,7 +16,7 @@ CREATE PROCEDURE sp_ScheduledReport_Insert(
     IN p_created_by INT
 )
 BEGIN
-    INSERT INTO scheduled_reports (
+    INSERT INTO reporting_scheduled_reports (
         report_type,
         schedule,
         email_recipients,
@@ -31,7 +31,7 @@ BEGIN
         p_next_run_date,
         p_created_by
     );
-    
+
     SELECT LAST_INSERT_ID() AS id;
 END$$
 

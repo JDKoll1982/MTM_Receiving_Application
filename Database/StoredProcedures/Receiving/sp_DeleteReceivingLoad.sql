@@ -12,7 +12,7 @@ CREATE PROCEDURE sp_DeleteReceivingLoad(
     IN p_LoadID VARCHAR(36)
 )
 BEGIN
-    DELETE FROM receiving_loads 
+    DELETE FROM receiving_history
     WHERE LoadID = p_LoadID;
 END$$
 

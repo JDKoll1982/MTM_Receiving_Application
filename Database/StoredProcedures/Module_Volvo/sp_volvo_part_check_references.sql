@@ -13,8 +13,8 @@ CREATE PROCEDURE sp_volvo_part_check_references(
 BEGIN
     -- Count shipment lines using this part where shipment is not completed/archived
     SELECT COUNT(*) INTO p_active_reference_count
-    FROM volvo_shipment_lines vsl
-    INNER JOIN volvo_shipments vs ON vsl.shipment_id = vs.id
+    FROM volvo_line_data vsl
+    INNER JOIN volvo_label_data vs ON vsl.shipment_id = vs.id
     WHERE vsl.part_number = p_part_number
       AND vs.status NOT IN ('completed', 'archived')
       AND vs.is_archived = 0;

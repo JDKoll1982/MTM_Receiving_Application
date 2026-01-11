@@ -1,4 +1,4 @@
-# sp_inventoried_dunnage_check
+# sp_dunnage_requires_inventory_check
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_InventoriedDunnage.cs:40
-"sp_inventoried_dunnage_check",
+"sp_dunnage_requires_inventory_check",
 
 ```
 
@@ -28,5 +28,3 @@
 **Called by (2 references):**
 - Module_Core\Services\Database\Service_MySQL_Dunnage.cs
 - Same file (1 calls)
-
-

@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Models;
 
 /// <summary>
 /// Represents a configurable setting for the Volvo module
-/// Database Table: volvo_settings
+/// Database Table: settings_module_volvo
 /// </summary>
 public partial class Model_VolvoSetting : ObservableObject
 {

@@ -278,7 +278,7 @@ public partial class App : Application
 
                 // Dunnage Workflow ViewModels
                 services.AddTransient<ViewModel_Dunnage_ModeSelection>();
-                services.AddTransient<ViewModel_Dunnage_TypeSelection>();
+                services.AddTransient<ViewModel_dunnage_typeselection>();
                 services.AddTransient<ViewModel_Dunnage_PartSelection>();
                 services.AddTransient<ViewModel_Dunnage_QuantityEntry>();
                 services.AddTransient<ViewModel_Dunnage_DetailsEntry>();
@@ -414,4 +414,3 @@ public partial class App : Application
             ?? throw new InvalidOperationException($"Service {typeof(T)} not found");
     }
 }
-

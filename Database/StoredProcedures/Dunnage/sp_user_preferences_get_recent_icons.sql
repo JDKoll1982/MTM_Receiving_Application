@@ -7,9 +7,9 @@ CREATE PROCEDURE `sp_user_preferences_get_recent_icons`(
     IN p_count INT
 )
 BEGIN
-    SELECT 
+    SELECT
         SUBSTRING(PreferenceKey, 12) as icon_name
-    FROM user_preferences
+    FROM settings_dunnage_personal
     WHERE UserId = p_user_id
       AND PreferenceKey LIKE 'RecentIcon_%'
     ORDER BY LastUpdated DESC

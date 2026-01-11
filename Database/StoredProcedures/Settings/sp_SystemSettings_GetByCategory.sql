@@ -12,7 +12,7 @@ CREATE PROCEDURE sp_SystemSettings_GetByCategory(
     IN p_category VARCHAR(50)
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         category,
         sub_category,
@@ -32,7 +32,7 @@ BEGIN
         created_at,
         updated_at,
         updated_by
-    FROM system_settings
+    FROM settings_universal
     WHERE category = p_category
     ORDER BY ui_order, setting_name;
 END$$

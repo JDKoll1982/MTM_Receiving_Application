@@ -9,7 +9,7 @@ CREATE PROCEDURE `sp_dunnage_types_get_transaction_count`(
 BEGIN
     -- Get count of transaction records referencing this dunnage type
     SELECT COUNT(*) INTO p_count
-    FROM dunnage_loads
+    FROM dunnage_history
     WHERE DunnageTypeID = p_type_id;
 END $$
 

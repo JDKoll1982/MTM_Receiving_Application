@@ -18,7 +18,7 @@ SELECT
     DATE(dl.received_date) AS created_date,
     dl.created_by AS employee_number,
     'Dunnage' AS source_module
-FROM dunnage_loads dl
+FROM dunnage_history dl
 INNER JOIN dunnage_parts dp ON dl.part_id = dp.part_id
 INNER JOIN dunnage_types dt ON dp.type_id = dt.id
 LEFT JOIN dunnage_specs ds ON dp.type_id = ds.type_id

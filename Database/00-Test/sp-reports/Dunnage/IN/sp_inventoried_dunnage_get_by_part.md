@@ -1,4 +1,4 @@
-# sp_inventoried_dunnage_get_by_part
+# sp_dunnage_requires_inventory_get_by_part
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_InventoriedDunnage.cs:55
-"sp_inventoried_dunnage_get_by_part",
+"sp_dunnage_requires_inventory_get_by_part",
 
 ```
 
@@ -29,5 +29,3 @@
 - Module_Core\Services\Database\Service_MySQL_Dunnage.cs
 - Same file (1 calls)
 - Module_Dunnage\Views\View_Dunnage_Dialog_AddToInventoriedListDialog.xaml.cs
-
-

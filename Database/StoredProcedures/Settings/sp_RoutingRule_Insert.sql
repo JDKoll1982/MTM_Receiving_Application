@@ -17,14 +17,14 @@ CREATE PROCEDURE sp_RoutingRule_Insert(
 )
 BEGIN
     -- Check for duplicate pattern
-    IF EXISTS (SELECT 1 FROM routing_rules WHERE match_type = p_match_type AND pattern = p_pattern AND is_active = TRUE) THEN
+    IF EXISTS (SELECT 1 FROM routing_home_locations WHERE match_type = p_match_type AND pattern = p_pattern AND is_active = TRUE) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Routing rule with this match type and pattern already exists';
     END IF;
-    
-    INSERT INTO routing_rules (match_type, pattern, destination_location, priority, is_active, created_by)
+
+    INSERT INTO routing_home_locations (match_type, pattern, destination_location, priority, is_active, created_by)
     VALUES (p_match_type, p_pattern, p_destination_location, p_priority, TRUE, p_created_by);
-    
+
     SELECT LAST_INSERT_ID() AS id;
 END$$
 

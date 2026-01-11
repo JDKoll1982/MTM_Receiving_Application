@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
 /// <summary>
 /// Represents a user-defined custom field for dunnage types.
-/// Corresponds to custom_field_definitions table.
+/// Corresponds to dunnage_custom_fields table.
 /// </summary>
 public partial class Model_CustomFieldDefinition : ObservableObject
 {

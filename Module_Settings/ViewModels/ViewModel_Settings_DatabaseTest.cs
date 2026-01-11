@@ -426,13 +426,13 @@ public partial class ViewModel_Settings_DatabaseTest : ViewModel_Shared_Base
 
         var tables = new[]
         {
-            ("system_settings", "79 rows | 18 columns | 3 indexes"),
-            ("user_settings", "0 rows | 5 columns | 1 unique constraint"),
-            ("package_types", "5 rows | 5 columns | 2 unique constraints"),
-            ("routing_rules", "3 rows | 7 columns | 1 index on priority"),
-            ("scheduled_reports", "2 rows | 8 columns | 2 indexes"),
-            ("package_type_mappings", "15 rows | 4 columns | 2 indexes"),
-            ("settings_audit_log", "0 rows | 8 columns | 2 indexes")
+            ("settings_universal", "79 rows | 18 columns | 3 indexes"),
+            ("settings_personal", "0 rows | 5 columns | 1 unique constraint"),
+            ("dunnage_types", "5 rows | 5 columns | 2 unique constraints"),
+            ("routing_home_locations", "3 rows | 7 columns | 1 index on priority"),
+            ("reporting_scheduled_reports", "2 rows | 8 columns | 2 indexes"),
+            ("receiving_package_type_mapping", "15 rows | 4 columns | 2 indexes"),
+            ("settings_activity", "0 rows | 8 columns | 2 indexes")
         };
 
         var validatedCount = 0;
@@ -749,4 +749,3 @@ public partial class ViewModel_Settings_DatabaseTest : ViewModel_Shared_Base
 
     #endregion
 }
-

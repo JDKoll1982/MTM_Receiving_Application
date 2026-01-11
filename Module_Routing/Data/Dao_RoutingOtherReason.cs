@@ -9,7 +9,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Routing.Data;
 
 /// <summary>
-/// Data Access Object for routing_other_reasons table
+/// Data Access Object for routing_po_alternatives table
 /// </summary>
 public class Dao_RoutingOtherReason
 {

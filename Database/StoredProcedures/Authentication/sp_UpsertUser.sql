@@ -63,7 +63,7 @@ sp: BEGIN
             modified_date = NOW()
         WHERE employee_number = p_employee_number;
     ELSE
-        INSERT INTO users (
+        INSERT INTO auth_users (
             employee_number,
             windows_username,
             full_name,

@@ -1,7 +1,7 @@
 # Settings System Redesign - Comprehensive Specification
 
-**Version:** 1.0  
-**Date:** January 10, 2026  
+**Version:** 1.0
+**Date:** January 10, 2026
 **Status:** Planning / Design Phase
 
 ---
@@ -28,12 +28,12 @@ This specification outlines the complete redesign of the MTM Receiving Applicati
 ```mermaid
 flowchart TD
     A[appsettings.json<br/>Deployment-time only<br/>connection strings, environment] --> B[MySQL Database]
-    
-    B --> C[system_settings<br/>All configurable settings]
-    B --> D[user_settings<br/>User-specific overrides]
+
+    B --> C[settings_universal<br/>All configurable settings]
+    B --> D[settings_personal<br/>User-specific overrides]
     B --> E[audit_log<br/>Change tracking]
     B --> F[package_mappings<br/>Business rule data]
-    
+
     style A fill:#e1f5ff
     style B fill:#fff4e6
     style C fill:#f3e5f5
@@ -58,7 +58,7 @@ flowchart TD
 
 ### Tables
 
-#### 1. `system_settings`
+#### 1. `settings_universal`
 
 Stores all system-wide configuration settings.
 
@@ -89,7 +89,7 @@ Stores all system-wide configuration settings.
 - `INDEX (scope)`
 - `INDEX (permission_level)`
 
-#### 2. `user_settings`
+#### 2. `settings_personal`
 
 User-specific overrides for settings where `scope='user'`.
 
@@ -97,7 +97,7 @@ User-specific overrides for settings where `scope='user'`.
 
 - `id` (PK)
 - `user_id` (FK to users)
-- `setting_id` (FK to system_settings)
+- `setting_id` (FK to settings_universal)
 - `setting_value` - Override value
 - `created_at`, `updated_at`
 
@@ -105,7 +105,7 @@ User-specific overrides for settings where `scope='user'`.
 
 - `UNIQUE (user_id, setting_id)`
 
-#### 3. `settings_audit_log`
+#### 3. `settings_activity`
 
 Tracks all changes to settings.
 
@@ -122,7 +122,7 @@ Tracks all changes to settings.
 - `ip_address`
 - `workstation_name`
 
-#### 4. `package_type_mappings`
+#### 4. `receiving_package_type_mapping`
 
 Business rules for part prefix → package type mapping.
 
@@ -136,7 +136,7 @@ Business rules for part prefix → package type mapping.
 - `is_active`
 - `created_at`, `updated_at`, `created_by`
 
-#### 5. `package_types`
+#### 5. `dunnage_types`
 
 Master list of package types for CRUD operations (from Receiving Settings).
 
@@ -152,7 +152,7 @@ Master list of package types for CRUD operations (from Receiving Settings).
 - `UNIQUE (name)`
 - `UNIQUE (code)`
 
-#### 6. `routing_rules`
+#### 6. `routing_home_locations`
 
 Auto-routing rules with pattern matching (from Routing Settings).
 
@@ -170,7 +170,7 @@ Auto-routing rules with pattern matching (from Routing Settings).
 - `UNIQUE (match_type, pattern)`
 - `INDEX (priority)`
 
-#### 7. `scheduled_reports`
+#### 7. `reporting_scheduled_reports`
 
 Scheduled report configurations (from Reporting Settings).
 
@@ -511,7 +511,7 @@ Settings: CsvExportPathNetwork, CsvExportPathLocal, DefaultMode, Personalization
 ##### `ViewModel_Settings_Volvo.cs`
 
 Settings: HistoryStatusOptions
-Note: Email settings already in DB via `volvo_settings` table
+Note: Email settings already in DB via `settings_module_volvo` table
 
 ##### `ViewModel_Settings_Reporting.cs`
 
@@ -598,7 +598,7 @@ All modals documented in `mockups/MODAL_INDEX.md` with complete implementation g
 
 **Service Implementations:**
 - Connection testing with friendly error messages
-- Encryption key rotation with re-encryption workflow  
+- Encryption key rotation with re-encryption workflow
 - Master data synchronization with progress reporting
 - Schedule parsing (daily/weekly/monthly patterns)
 - Routing pattern matching (`*` wildcard support)
@@ -676,7 +676,7 @@ All modals documented in `mockups/MODAL_INDEX.md` with complete implementation g
 
 ### Audit Trail
 
-All changes logged to `settings_audit_log` with:
+All changes logged to `settings_activity` with:
 
 - Old/new values
 - User who made change
@@ -799,16 +799,16 @@ If critical issues arise:
 
 ## Success Criteria
 
-✅ All 79 settable objects from SETTABLE_OBJECTS reports migrated to database  
-✅ Zero hardcoded configuration values in code  
-✅ Role-based access working correctly  
-✅ Audit trail captures all changes  
-✅ User preferences override system defaults  
-✅ Auto-save functions without errors  
-✅ Validation prevents invalid values  
-✅ Sensitive settings encrypted  
-✅ UI responsive and intuitive  
-✅ Zero regressions in existing functionality  
+✅ All 79 settable objects from SETTABLE_OBJECTS reports migrated to database
+✅ Zero hardcoded configuration values in code
+✅ Role-based access working correctly
+✅ Audit trail captures all changes
+✅ User preferences override system defaults
+✅ Auto-save functions without errors
+✅ Validation prevents invalid values
+✅ Sensitive settings encrypted
+✅ UI responsive and intuitive
+✅ Zero regressions in existing functionality
 
 ---
 
@@ -863,6 +863,6 @@ See individual `SETTABLE_OBJECTS_REPORT.md` files in each module:
 
 ---
 
-**Document Prepared By:** GitHub Copilot (AI Assistant)  
-**Approved By:** [Pending User Review]  
+**Document Prepared By:** GitHub Copilot (AI Assistant)
+**Approved By:** [Pending User Review]
 **Next Review Date:** [After Phase 1 Completion]

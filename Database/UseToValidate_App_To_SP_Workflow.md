@@ -67,7 +67,7 @@ Application Code (DAO) → Stored Procedure → Database Schema → Response →
 **Search DAOs for SP calls:**
 ```powershell
 # Find all stored procedure invocations
-Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse | 
+Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
     Select-String -Pattern "ExecuteStoredProcedureAsync|ExecuteNonQueryAsync" -Context 0,5
 ```
 
@@ -130,7 +130,7 @@ CREATE PROCEDURE sp_volvo_shipment_line_insert(
 
 **Search pattern:**
 ```powershell
-Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse | 
+Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
     Select-String -Pattern "MapFromReader"
 ```
 
@@ -159,7 +159,7 @@ private static Model_VolvoPart MapFromReader(IDataReader reader)
 **Read SP SELECT clause:**
 ```sql
 SELECT part_number, quantity_per_skid, is_active
-FROM volvo_parts_master
+FROM volvo_masterdata
 WHERE part_number = p_part_number;
 ```
 
@@ -200,10 +200,10 @@ CALL sp_volvo_shipment_line_insert(
 );
 
 -- Verify result
-SELECT * FROM volvo_shipment_lines WHERE shipment_id = 1;
+SELECT * FROM volvo_line_data WHERE shipment_id = 1;
 
 -- Cleanup
-DELETE FROM volvo_shipment_lines WHERE shipment_id = 1;
+DELETE FROM volvo_line_data WHERE shipment_id = 1;
 ```
 
 **Common Errors:**
@@ -220,7 +220,7 @@ DELETE FROM volvo_shipment_lines WHERE shipment_id = 1;
 
 **Step 1: Inventory All Stored Procedures**
 ```powershell
-Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" | 
+Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" |
     Select-Object Name
 ```
 
@@ -232,9 +232,9 @@ Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" |
 
 **Step 2: Inventory All DAO SP Calls**
 ```powershell
-Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse | 
-    Select-String -Pattern '"sp_volvo' | 
-    ForEach-Object { $_ -replace '.*"(sp_\w+)".*', '$1' } | 
+Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse |
+    Select-String -Pattern '"sp_volvo' |
+    ForEach-Object { $_ -replace '.*"(sp_\w+)".*', '$1' } |
     Sort-Object -Unique
 ```
 
@@ -265,11 +265,11 @@ For each SP found in DAOs:
 ```sql
 -- BEFORE (BROKEN)
 SELECT part_number, description, quantity_per_skid
-FROM volvo_parts_master;
+FROM volvo_masterdata;
 
 -- AFTER (FIXED)
 SELECT part_number, quantity_per_skid
-FROM volvo_parts_master;
+FROM volvo_masterdata;
 ```
 
 **Example Fix 2: Remove Invalid Parameter**
@@ -405,13 +405,13 @@ SHOW CREATE PROCEDURE sp_volvo_part_master_get_by_id;
 
 ### Find All SP Calls in Module
 ```powershell
-Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse | 
+Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse |
     Select-String -Pattern '"sp_' -Context 0,3
 ```
 
 ### List All SPs for Module
 ```powershell
-Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" | 
+Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" |
     Select-Object Name
 ```
 
@@ -430,7 +430,7 @@ dotnet build
 ## Lessons Learned
 
 ### Issue 1: `description` Column in Volvo Module
-**Problem**: 4 stored procedures referenced a `description` column that didn't exist in `volvo_parts_master` table.
+**Problem**: 4 stored procedures referenced a `description` column that didn't exist in `volvo_masterdata` table.
 
 **Root Cause**: SPs were created before final schema was locked in.
 
@@ -443,7 +443,7 @@ dotnet build
 ### Issue 2: `quantity_per_skid` Parameter Mismatch
 **Problem**: `Service_Volvo.cs` passed `quantity_per_skid` to `sp_volvo_shipment_line_insert`, causing MySQL error 1318.
 
-**Root Cause**: `QuantityPerSkid` is a cached UI property in `Model_VolvoShipmentLine`, but NOT a database column in `volvo_shipment_lines`.
+**Root Cause**: `QuantityPerSkid` is a cached UI property in `Model_VolvoShipmentLine`, but NOT a database column in `volvo_line_data`.
 
 **Fix**: Removed parameter from dictionary in Service call.
 
@@ -482,7 +482,7 @@ dotnet build
 
 **Root Cause**: Simple regex parsing couldn't handle complex SQL expressions.
 
-**Fix**: 
+**Fix**:
 - Handle table aliases by extracting last segment after `.`
 - Skip validation for any column containing `(` (function calls)
 - Smart comma-splitting that respects parentheses
@@ -517,9 +517,9 @@ After completing this workflow:
 
 ---
 
-**Document Maintained By**: Development Team  
-**Contact**: See project README for team contacts  
-**Related Files**: 
+**Document Maintained By**: Development Team
+**Contact**: See project README for team contacts
+**Related Files**:
 - `Scripts/Audit-StoredProcedures.ps1`
 - `StoredProcedure_Audit.md` (generated)
 - `Database/Deploy/Deploy-Database-GUI-Fixed.ps1`

@@ -7,7 +7,7 @@ CREATE PROCEDURE `sp_custom_fields_get_by_type`(
 )
 BEGIN
     -- Retrieve all custom fields for a dunnage type, ordered by DisplayOrder
-    SELECT 
+    SELECT
         ID,
         DunnageTypeID,
         FieldName,
@@ -18,7 +18,7 @@ BEGIN
         ValidationRules,
         CreatedDate,
         CreatedBy
-    FROM custom_field_definitions
+    FROM dunnage_custom_fields
     WHERE DunnageTypeID = p_dunnage_type_id
     ORDER BY DisplayOrder;
 END $$

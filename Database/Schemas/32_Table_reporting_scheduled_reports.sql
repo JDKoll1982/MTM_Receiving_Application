@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: scheduled_reports
+-- Table: reporting_scheduled_reports
 -- Module: Settings
 -- Purpose: Scheduled report configurations
 -- ============================================================================
 
-DROP TABLE IF EXISTS scheduled_reports;
+DROP TABLE IF EXISTS reporting_scheduled_reports;
 
-CREATE TABLE IF NOT EXISTS scheduled_reports (
+CREATE TABLE IF NOT EXISTS reporting_scheduled_reports (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key: unique scheduled report identifier',
 
     -- Report configuration
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS scheduled_reports (
     -- Metadata
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record last updated timestamp',
-    created_by INT NULL COMMENT 'FK to users table who created this schedule',
+    created_by INT NULL COMMENT 'FK toauth_users table who created this schedule',
 
     -- Indexes (for query performance; comments describe purpose)
     -- Index on next_run_date to efficiently find upcoming runs

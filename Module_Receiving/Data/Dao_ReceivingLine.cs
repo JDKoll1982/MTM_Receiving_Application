@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
 /// <summary>
-/// Data Access Object for label_table_receiving table
+/// Data Access Object for receiving_label_data table
 /// Provides CRUD operations using stored procedures
 /// </summary>
 public class Dao_ReceivingLine
@@ -79,4 +79,3 @@ public class Dao_ReceivingLine
         }
     }
 }
-

@@ -34,7 +34,7 @@ sp_routing_user_preference_save: BEGIN
     END IF;
 
     -- Insert or update preference
-    INSERT INTO routing_user_preferences (employee_number, default_mode, enable_validation)
+    INSERT INTO settings_routing_personal (employee_number, default_mode, enable_validation)
     VALUES (p_employee_number, p_default_mode, p_enable_validation)
     ON DUPLICATE KEY UPDATE
         default_mode = p_default_mode,

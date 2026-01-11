@@ -4,7 +4,7 @@
 -- Purpose: Store employee information for authentication and session management
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS auth_users (
     employee_number INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for each employee',
     windows_username VARCHAR(50) UNIQUE NOT NULL COMMENT 'Active Directory username for Windows authentication',
     full_name VARCHAR(100) NOT NULL COMMENT 'Employee full name for display purposes',

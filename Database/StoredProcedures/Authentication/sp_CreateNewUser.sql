@@ -26,64 +26,64 @@ CREATE PROCEDURE sp_CreateNewUser(
 BEGIN
     DECLARE v_existing_count INT DEFAULT 0;
     DECLARE v_emp_count INT DEFAULT 0;
-    
+
     -- Initialize output parameters
     SET p_error_message = NULL;
-    
+
     -- Start transaction
     START TRANSACTION;
-    
+
     -- Validate PIN format (4 digits)
     IF p_pin NOT REGEXP '^[0-9]{4}$' THEN
         SET p_error_message = 'PIN must be exactly 4 numeric digits';
         ROLLBACK;
     END IF;
-    
+
     -- Validate employee number
     IF p_employee_number IS NULL OR p_employee_number <= 0 THEN
         SET p_error_message = 'Employee number must be a positive number';
         ROLLBACK;
     END IF;
-    
+
     -- Check if employee number already exists
     SELECT COUNT(*) INTO v_emp_count
     FROM users
     WHERE employee_number = p_employee_number;
-    
+
     IF v_emp_count > 0 THEN
         SET p_error_message = 'Employee number already exists in database';
         ROLLBACK;
     END IF;
-    
+
     -- Check if Windows username already exists
     SELECT COUNT(*) INTO v_existing_count
     FROM users
     WHERE windows_username = p_windows_username;
-    
+
     IF v_existing_count > 0 THEN
         SET p_error_message = 'Windows username already exists in database';
         ROLLBACK;
     END IF;
-    
+
     -- Validate required fields
     IF p_error_message IS NULL AND (p_full_name IS NULL OR TRIM(p_full_name) = '') THEN
         SET p_error_message = 'Full Name is required';
         ROLLBACK;
     END IF;
-    
+
     IF p_error_message IS NULL AND (p_department IS NULL OR TRIM(p_department) = '') THEN
         SET p_error_message = 'Department is required';
         ROLLBACK;
     END IF;
-    
+
     IF p_error_message IS NULL AND p_shift NOT IN ('1st Shift', '2nd Shift', '3rd Shift') THEN
         SET p_error_message = 'Shift must be 1st Shift, 2nd Shift, or 3rd Shift';
         ROLLBACK;
     END IF;
-    
+
     -- Insert new user only if no errors
     IF p_error_message IS NULL THEN
-        INSERT INTO users (
+        INSERT INTO auth_users (
         employee_number,
         windows_username,
         full_name,
@@ -114,11 +114,11 @@ BEGIN
         -- Best-effort seed of default workflow modes.
         -- Safe even if default_* columns are not yet migrated (procedure checks column existence).
         CALL sp_seed_user_default_modes(p_employee_number);
-        
+
         -- Commit transaction
         COMMIT;
     END IF;
-    
+
 END$$
 
 DELIMITER ;

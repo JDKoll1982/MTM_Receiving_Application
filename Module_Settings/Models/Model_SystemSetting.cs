@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents a system-wide configuration setting
-/// Database Table: system_settings
+/// Database Table: settings_universal
 /// </summary>
 public partial class Model_SystemSetting : ObservableObject
 {

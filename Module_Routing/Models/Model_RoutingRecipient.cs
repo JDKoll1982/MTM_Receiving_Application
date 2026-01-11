@@ -44,7 +44,7 @@ public class Model_RoutingRecipient
     public DateTime UpdatedDate { get; set; } = DateTime.Now;
 
     /// <summary>
-    /// Usage count for sorting (from JOIN with routing_usage_tracking, not stored in table)
+    /// Usage count for sorting (from JOIN with routing_recipient_tracker, not stored in table)
     /// </summary>
     public int UsageCount { get; set; } = 0;
 }

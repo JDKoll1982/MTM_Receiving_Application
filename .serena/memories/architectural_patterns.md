@@ -32,12 +32,12 @@ Services MUST delegate to DAOs - NO direct database access in service classes.
 public class Service_MySQL_Receiving : IService_MySQL_Receiving
 {
     private readonly Dao_ReceivingLoad _dao;
-    
+
     public Service_MySQL_Receiving(Dao_ReceivingLoad dao)
     {
         _dao = dao;
     }
-    
+
     public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync()
     {
         return await _dao.GetAllAsync();
@@ -63,17 +63,17 @@ ALL DAOs must be instance-based classes (NOT static).
 public class Dao_ReceivingLoad
 {
     private readonly string _connectionString;
-    
+
     public Dao_ReceivingLoad(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }
-    
+
     public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync()
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_ReceivingLoad>(
             _connectionString,
-            "sp_receiving_loads_get_all",
+            "sp_receiving_history_get_all",
             MapFromReader
         );
     }
@@ -123,7 +123,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
             { "p_part_id", line.PartID },
             { "p_quantity", line.Quantity }
         };
-        
+
         return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
             _connectionString,
             "sp_receiving_line_insert",

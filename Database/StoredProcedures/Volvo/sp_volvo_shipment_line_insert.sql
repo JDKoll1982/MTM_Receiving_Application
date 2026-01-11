@@ -20,7 +20,7 @@ CREATE PROCEDURE sp_volvo_shipment_line_insert(
   IN p_discrepancy_note TEXT
 )
 BEGIN
-  INSERT INTO volvo_shipment_lines (
+  INSERT INTO volvo_line_data (
     shipment_id, part_number, quantity_per_skid, received_skid_count, calculated_piece_count,
     has_discrepancy, expected_skid_count, discrepancy_note
   ) VALUES (

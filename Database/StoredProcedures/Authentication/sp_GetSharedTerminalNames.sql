@@ -15,16 +15,16 @@ CREATE PROCEDURE sp_GetSharedTerminalNames()
 BEGIN
     -- Get list of active shared terminal workstation names
     -- Used for workstation type detection during startup
-    
-    SELECT 
+
+    SELECT
         workstation_name,
         workstation_type,
         description
-    FROM workstation_config
+    FROM auth_workstation_config
     WHERE workstation_type = 'shared_terminal'
       AND is_active = TRUE
     ORDER BY workstation_name;
-    
+
 END$$
 
 DELIMITER ;

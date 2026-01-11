@@ -24,7 +24,7 @@ sp_routing_label_mark_exported: BEGIN
         LEAVE sp_routing_label_mark_exported;
     END IF;
 
-    UPDATE routing_labels
+    UPDATE routing_label_data
     SET csv_exported = 1,
         csv_export_date = NOW()
     WHERE id = p_label_id;

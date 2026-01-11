@@ -9,14 +9,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 /// <summary>
 /// UserControl for Dunnage Type Selection view with 3x3 paginated grid
 /// </summary>
-public sealed partial class View_Dunnage_TypeSelectionView : UserControl
+public sealed partial class View_dunnage_typeselectionView : UserControl
 {
-    public ViewModel_Dunnage_TypeSelection ViewModel { get; }
+    public ViewModel_dunnage_typeselection ViewModel { get; }
     private readonly IService_Focus _focusService;
 
-    public View_Dunnage_TypeSelectionView()
+    public View_dunnage_typeselectionView()
     {
-        ViewModel = App.GetService<ViewModel_Dunnage_TypeSelection>();
+        ViewModel = App.GetService<ViewModel_dunnage_typeselection>();
         _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
 
@@ -25,7 +25,7 @@ public sealed partial class View_Dunnage_TypeSelectionView : UserControl
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine("Dunnage_TypeSelectionView: OnLoaded called");
+        System.Diagnostics.Debug.WriteLine("dunnage_typeselectionView: OnLoaded called");
         await ViewModel.InitializeAsync();
     }
 

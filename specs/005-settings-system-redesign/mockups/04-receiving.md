@@ -1,7 +1,7 @@
 # Receiving Settings - WinUI 3 Controls
 
-**SVG File**: `04-receiving.svg`  
-**Category**: Receiving  
+**SVG File**: `04-receiving.svg`
+**Category**: Receiving
 **Purpose**: Workflow configuration and package type management
 
 ---
@@ -15,7 +15,7 @@ All workflow toggles use `ToggleSwitch` control:
 #### Auto-verify Purchase Orders
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Auto-verify Purchase Orders"
     IsOn="{x:Bind ViewModel.ReceivingAutoVerifyPO, Mode=TwoWay}"
     OnContent="On"
@@ -29,7 +29,7 @@ All workflow toggles use `ToggleSwitch` control:
 #### Require Package Type Selection
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Require Package Type Selection"
     IsOn="{x:Bind ViewModel.ReceivingRequirePackageType, Mode=TwoWay}"/>
 ```
@@ -37,7 +37,7 @@ All workflow toggles use `ToggleSwitch` control:
 #### Allow Partial Receiving
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Allow Partial Receiving"
     IsOn="{x:Bind ViewModel.ReceivingAllowPartialReceiving, Mode=TwoWay}"/>
 ```
@@ -45,7 +45,7 @@ All workflow toggles use `ToggleSwitch` control:
 #### Show Over-Receiving Warnings
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Show Over-Receiving Warnings"
     IsOn="{x:Bind ViewModel.ReceivingShowOverReceivingWarnings, Mode=TwoWay}"/>
 ```
@@ -55,7 +55,7 @@ All workflow toggles use `ToggleSwitch` control:
 ### 2. **Package Types - ListView with DataTemplate**
 
 ```xml
-<ListView 
+<ListView
     ItemsSource="{x:Bind ViewModel.PackageTypes}"
     SelectedItem="{x:Bind ViewModel.SelectedPackageType, Mode=TwoWay}"
     SelectionMode="Single"
@@ -64,22 +64,22 @@ All workflow toggles use `ToggleSwitch` control:
     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
     BorderThickness="1"
     CornerRadius="4">
-    
+
     <ListView.Header>
-        <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-              Padding="12,8" 
+        <Grid Background="{ThemeResource LayerFillColorDefaultBrush}"
+              Padding="12,8"
               ColumnDefinitions="180,100,*">
             <TextBlock Text="Package Type" FontWeight="SemiBold" Grid.Column="0"/>
             <TextBlock Text="Code" FontWeight="SemiBold" Grid.Column="1"/>
             <TextBlock Text="Active" FontWeight="SemiBold" Grid.Column="2"/>
         </Grid>
     </ListView.Header>
-    
+
     <ListView.ItemTemplate>
         <DataTemplate x:DataType="local:Model_PackageType">
             <Grid Padding="12,8" ColumnDefinitions="180,100,*">
                 <TextBlock Text="{x:Bind Name}" Grid.Column="0"/>
-                <TextBlock Text="{x:Bind Code}" Grid.Column="1" 
+                <TextBlock Text="{x:Bind Code}" Grid.Column="1"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 <FontIcon Grid.Column="2"
                           Glyph="{x:Bind IsActive, Converter={StaticResource BoolToCheckmarkConverter}}"
@@ -98,13 +98,13 @@ public partial class Model_PackageType : ObservableObject
 {
     [ObservableProperty]
     private int _id;
-    
+
     [ObservableProperty]
     private string _name = string.Empty;
-    
+
     [ObservableProperty]
     private string _code = string.Empty;
-    
+
     [ObservableProperty]
     private bool _isActive = true;
 }
@@ -116,19 +116,19 @@ public partial class Model_PackageType : ObservableObject
 
 ```xml
 <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,12,0,0">
-    <Button 
+    <Button
         Content="Add New"
         Command="{x:Bind ViewModel.AddPackageTypeCommand}"
         Style="{StaticResource AccentButtonStyle}"
         Width="120"/>
-    
-    <Button 
+
+    <Button
         Content="Edit Selected"
         Command="{x:Bind ViewModel.EditPackageTypeCommand}"
         Width="120"
         IsEnabled="{x:Bind ViewModel.SelectedPackageType, Converter={StaticResource NullToBoolConverter}}"/>
-    
-    <Button 
+
+    <Button
         Content="Delete"
         Command="{x:Bind ViewModel.DeletePackageTypeCommand}"
         Width="120"
@@ -156,7 +156,7 @@ public partial class Model_PackageType : ObservableObject
 #### Default Package Type - `ComboBox`
 
 ```xml
-<ComboBox 
+<ComboBox
     Header="Default Package Type"
     ItemsSource="{x:Bind ViewModel.ActivePackageTypes}"
     SelectedItem="{x:Bind ViewModel.ReceivingDefaultPackageType, Mode=TwoWay}"
@@ -172,7 +172,7 @@ public partial class Model_PackageType : ObservableObject
 #### Default Receiver Name - `TextBox`
 
 ```xml
-<TextBox 
+<TextBox
     Header="Default Receiver Name"
     Text="{x:Bind ViewModel.ReceivingDefaultReceiverName, Mode=TwoWay}"
     PlaceholderText="Enter receiver name"
@@ -192,51 +192,51 @@ public partial class Model_PackageType : ObservableObject
 public partial class ReceivingSettingsViewModel : BaseViewModel
 {
     private readonly IService_PackageType _packageTypeService;
-    
+
     // Workflow
     [ObservableProperty]
     private bool _receivingAutoVerifyPO = true;
-    
+
     [ObservableProperty]
     private bool _receivingRequirePackageType = true;
-    
+
     [ObservableProperty]
     private bool _receivingAllowPartialReceiving = true;
-    
+
     [ObservableProperty]
     private bool _receivingShowOverReceivingWarnings = true;
-    
+
     // Package Types
     [ObservableProperty]
     private ObservableCollection<Model_PackageType> _packageTypes = new();
-    
+
     [ObservableProperty]
     private Model_PackageType? _selectedPackageType;
-    
+
     [ObservableProperty]
     private ObservableCollection<Model_PackageType> _activePackageTypes = new();
-    
+
     // Defaults
     [ObservableProperty]
     private Model_PackageType? _receivingDefaultPackageType;
-    
+
     [ObservableProperty]
     private string _receivingDefaultReceiverName = string.Empty;
-    
+
     public ReceivingSettingsViewModel(IService_PackageType packageTypeService)
     {
         _packageTypeService = packageTypeService;
     }
-    
+
     public override async Task OnNavigatedToAsync(object parameter)
     {
         await LoadPackageTypesAsync();
     }
-    
+
     private async Task LoadPackageTypesAsync()
     {
         var result = await _packageTypeService.GetAllPackageTypesAsync();
-        
+
         if (result.IsSuccess)
         {
             PackageTypes.Clear();
@@ -244,51 +244,51 @@ public partial class ReceivingSettingsViewModel : BaseViewModel
             {
                 PackageTypes.Add(pt);
             }
-            
+
             // Filter active types for dropdown
             ActivePackageTypes = new ObservableCollection<Model_PackageType>(
                 PackageTypes.Where(pt => pt.IsActive)
             );
         }
     }
-    
+
     [RelayCommand]
     private async Task AddPackageTypeAsync()
     {
         var dialog = new PackageTypeDialog();
         var result = await dialog.ShowAsync();
-        
+
         if (result == ContentDialogResult.Primary && dialog.PackageType != null)
         {
             var saveResult = await _packageTypeService.SavePackageTypeAsync(dialog.PackageType);
-            
+
             if (saveResult.IsSuccess)
             {
                 await LoadPackageTypesAsync();
             }
         }
     }
-    
+
     [RelayCommand]
     private async Task EditPackageTypeAsync()
     {
         if (SelectedPackageType == null) return;
-        
+
         var dialog = new PackageTypeDialog(SelectedPackageType);
         var result = await dialog.ShowAsync();
-        
+
         if (result == ContentDialogResult.Primary)
         {
             await _packageTypeService.SavePackageTypeAsync(dialog.PackageType);
             await LoadPackageTypesAsync();
         }
     }
-    
+
     [RelayCommand]
     private async Task DeletePackageTypeAsync()
     {
         if (SelectedPackageType == null) return;
-        
+
         var confirm = new ContentDialog
         {
             Title = "Confirm Delete",
@@ -297,7 +297,7 @@ public partial class ReceivingSettingsViewModel : BaseViewModel
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close
         };
-        
+
         if (await confirm.ShowAsync() == ContentDialogResult.Primary)
         {
             await _packageTypeService.DeletePackageTypeAsync(SelectedPackageType.Id);
@@ -318,21 +318,21 @@ public partial class ReceivingSettingsViewModel : BaseViewModel
     PrimaryButtonText="Save"
     CloseButtonText="Cancel"
     DefaultButton="Primary">
-    
+
     <StackPanel Spacing="16" MinWidth="400">
-        <TextBox 
+        <TextBox
             Header="Name"
             Text="{x:Bind PackageType.Name, Mode=TwoWay}"
             PlaceholderText="e.g., Box"/>
-        
-        <TextBox 
+
+        <TextBox
             Header="Code"
             Text="{x:Bind PackageType.Code, Mode=TwoWay}"
             PlaceholderText="e.g., BOX"
             CharacterCasing="Upper"
             MaxLength="10"/>
-        
-        <ToggleSwitch 
+
+        <ToggleSwitch
             Header="Active"
             IsOn="{x:Bind PackageType.IsActive, Mode=TwoWay}"/>
     </StackPanel>
@@ -352,7 +352,7 @@ public class BoolToCheckmarkConverter : IValueConverter
     {
         return (bool)value ? "\uE73E" : "\uE711"; // Checkmark : Circle
     }
-    
+
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
         throw new NotImplementedException();
@@ -368,11 +368,11 @@ public class BoolToColorConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         var isActive = (bool)value;
-        return isActive 
+        return isActive
             ? Application.Current.Resources["SystemFillColorSuccessBrush"]
             : Application.Current.Resources["SystemFillColorCriticalBrush"];
     }
-    
+
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
         throw new NotImplementedException();
@@ -385,7 +385,7 @@ public class BoolToColorConverter : IValueConverter
 ## Database Schema
 
 ```sql
-CREATE TABLE package_types (
+CREATE TABLE dunnage_types (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     code VARCHAR(10) NOT NULL UNIQUE,
@@ -395,7 +395,7 @@ CREATE TABLE package_types (
 );
 
 -- Seed data
-INSERT IGNORE INTO package_types (name, code, is_active) VALUES
+INSERT IGNORE INTO dunnage_types (name, code, is_active) VALUES
 ('Box', 'BOX', 1),
 ('Pallet', 'PLT', 1),
 ('Crate', 'CRT', 1),
@@ -432,7 +432,7 @@ partial void OnReceivingDefaultPackageTypeChanged(Model_PackageType? value)
             "Validation Error",
             nameof(OnReceivingDefaultPackageTypeChanged)
         );
-        
+
         ReceivingDefaultPackageType = ActivePackageTypes.FirstOrDefault();
     }
 }
@@ -460,11 +460,11 @@ partial void OnReceivingDefaultPackageTypeChanged(Model_PackageType? value)
 ## Accessibility
 
 ```xml
-<ListView 
+<ListView
     AutomationProperties.Name="Package Types List"
     AutomationProperties.HelpText="List of available package types for receiving operations"/>
 
-<Button 
+<Button
     AutomationProperties.Name="Add Package Type"
     AutomationProperties.HelpText="Create new package type"/>
 ```

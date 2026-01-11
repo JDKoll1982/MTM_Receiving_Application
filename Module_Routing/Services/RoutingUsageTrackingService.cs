@@ -57,8 +57,8 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
             await _logger.LogInfoAsync($"Getting usage count for employee {employeeNumber}, recipient {recipientId}");
 
             // Issue #13: GetUsageCountAsync requires new DAO method
-            // Would need: sp_routing_usage_tracking_get_count(p_employee_number, p_recipient_id)
-            // Returns: COUNT(*) or SUM(usage_count) from routing_usage_tracking table
+            // Would need: sp_routing_recipient_tracker_get_count(p_employee_number, p_recipient_id)
+            // Returns: COUNT(*) or SUM(usage_count) from routing_recipient_tracker table
             // Priority: LOW - Feature not critical for production
             // For now, returning success with 0 as fallback
             await Task.CompletedTask;
@@ -78,7 +78,7 @@ public class RoutingUsageTrackingService : IRoutingUsageTrackingService
             await _logger.LogInfoAsync($"Getting label count for employee {employeeNumber}");
 
             // Issue #13: GetEmployeeLabelCountAsync requires aggregation query
-            // Would need: sp_routing_usage_tracking_get_employee_total(p_employee_number)
+            // Would need: sp_routing_recipient_tracker_get_employee_total(p_employee_number)
             // Returns: Total label count for employee across all recipients
             // Issue #28: When implementing, add zero-check guard to prevent division by zero
             // Example: if (totalCount == 0) return 0; before calculating percentages

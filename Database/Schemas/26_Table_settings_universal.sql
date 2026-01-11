@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: system_settings
+-- Table: settings_universal
 -- Module: Settings
 -- Purpose: Stores all system-wide configuration settings
 -- ============================================================================
 
-DROP TABLE IF EXISTS system_settings;
+DROP TABLE IF EXISTS settings_universal;
 
-CREATE TABLE system_settings (
+CREATE TABLE settings_universal (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto-incrementing primary key for the setting record',
 
     -- Organization
@@ -16,7 +16,7 @@ CREATE TABLE system_settings (
     -- Setting identification
     setting_key VARCHAR(100) NOT NULL COMMENT 'Unique key for the setting (machine identifier, used in code)',
     setting_name VARCHAR(200) NOT NULL COMMENT 'Human-readable display name shown in UI',
-    description TEXT NULL COMMENT 'Detailed description / help text shown to users or administrators',
+    description TEXT NULL COMMENT 'Detailed description / help text shown toauth_users or administrators',
 
     -- Value and type
     setting_value TEXT NULL COMMENT 'Current value (store JSON for complex types; plain text for simple types)',
@@ -26,7 +26,7 @@ CREATE TABLE system_settings (
     -- Access control
     scope ENUM('system', 'user') NOT NULL DEFAULT 'system' COMMENT 'Determines if the setting is system-wide or can be overridden per user',
     permission_level ENUM('user', 'operator', 'admin', 'developer', 'superadmin') NOT NULL DEFAULT 'admin' COMMENT 'Minimum permission level required to view/modify this setting',
-    is_locked BOOLEAN DEFAULT FALSE COMMENT 'If true, prevents modification even by higher-permission users (administrative lock)',
+    is_locked BOOLEAN DEFAULT FALSE COMMENT 'If true, prevents modification even by higher-permission auth_users (administrative lock)',
     is_sensitive BOOLEAN DEFAULT FALSE COMMENT 'If true, value should be treated as sensitive: encrypted at rest and masked in the UI',
 
     -- Validation
@@ -39,7 +39,7 @@ CREATE TABLE system_settings (
     -- Metadata
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp (UTC recommended)',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record last updated timestamp (updated automatically)',
-    updated_by INT NULL COMMENT 'FK to users table - ID of the user who last updated the setting',
+    updated_by INT NULL COMMENT 'FK toauth_users table - ID of the user who last updated the setting',
 
     -- Indexes
     UNIQUE KEY unique_setting (category, setting_key),

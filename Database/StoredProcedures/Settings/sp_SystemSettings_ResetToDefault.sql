@@ -18,27 +18,27 @@ BEGIN
     DECLARE v_old_value TEXT;
     DECLARE v_default_value TEXT;
     DECLARE v_is_locked BOOLEAN;
-    
+
     -- Get current and default values
     SELECT setting_value, default_value, is_locked
     INTO v_old_value, v_default_value, v_is_locked
-    FROM system_settings 
+    FROM settings_universal
     WHERE id = p_setting_id;
-    
+
     IF v_is_locked THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Setting is locked and cannot be reset';
     END IF;
-    
+
     -- Reset to default
-    UPDATE system_settings
+    UPDATE settings_universal
     SET setting_value = v_default_value,
         updated_at = CURRENT_TIMESTAMP,
         updated_by = p_changed_by
     WHERE id = p_setting_id;
-    
+
     -- Log the reset
-    INSERT INTO settings_audit_log (
+    INSERT INTO settings_activity (
         setting_id,
         old_value,
         new_value,
@@ -55,7 +55,7 @@ BEGIN
         p_ip_address,
         p_workstation_name
     );
-    
+
     SELECT 1 AS success;
 END$$
 

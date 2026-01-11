@@ -54,7 +54,7 @@ WinUI 3 desktop application with modular MVVM architecture. All views use `x:Bin
 
 - **View_Dunnage_WorkflowView**: Main dunnage workflow container
 - **View_Dunnage_ModeSelectionView**: Select Incoming/Outgoing/Transfer/Count
-- **View_Dunnage_TypeSelectionView**: Choose packaging type (bins/racks/pallets)
+- **View_dunnage_typeselectionView**: Choose packaging type (bins/racks/pallets)
 - **View_Dunnage_PartSelectionView**: Select specific part number
 - **View_Dunnage_QuantityEntryView**: Enter quantity with large touch targets
 - **View_Dunnage_DetailsEntryView**: Capture custom field data

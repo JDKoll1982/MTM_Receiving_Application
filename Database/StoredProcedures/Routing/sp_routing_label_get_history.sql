@@ -18,7 +18,7 @@ CREATE PROCEDURE sp_routing_label_get_history(
 BEGIN
     -- Return archived routing labels within date range
     -- Ordered by date (descending) and label number (ascending)
-    SELECT 
+    SELECT
         id,
         label_number,
         deliver_to,
@@ -29,7 +29,7 @@ BEGIN
         employee_number,
         created_date,
         created_at
-    FROM routing_labels
+    FROM routing_label_data
     WHERE created_date BETWEEN p_start_date AND p_end_date
         AND is_archived = 1
     ORDER BY created_date DESC, label_number ASC;

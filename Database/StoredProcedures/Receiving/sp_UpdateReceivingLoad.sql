@@ -24,8 +24,8 @@ CREATE PROCEDURE sp_UpdateReceivingLoad(
     IN p_ReceivedDate DATETIME
 )
 BEGIN
-    UPDATE receiving_loads 
-    SET 
+    UPDATE receiving_history
+    SET
         PartID = p_PartID,
         PartType = p_PartType,
         PONumber = p_PONumber,

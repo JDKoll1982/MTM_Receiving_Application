@@ -24,7 +24,7 @@ BEGIN
     -- Check how many labels this employee has created
     SELECT COUNT(*)
     INTO v_employee_label_count
-    FROM routing_labels
+    FROM routing_label_data
     WHERE created_by = p_employee_number
         AND is_active = 1;
 
@@ -40,7 +40,7 @@ BEGIN
             r.updated_date,
             COALESCE(u.usage_count, 0) AS usage_count
         FROM routing_recipients r
-        LEFT JOIN routing_usage_tracking u ON r.id = u.recipient_id AND u.employee_number = p_employee_number
+        LEFT JOIN routing_recipient_tracker u ON r.id = u.recipient_id AND u.employee_number = p_employee_number
         WHERE r.is_active = 1
         ORDER BY COALESCE(u.usage_count, 0) DESC, r.name
         LIMIT p_top_count;
@@ -56,7 +56,7 @@ BEGIN
             r.updated_date,
             COALESCE(SUM(u.usage_count), 0) AS usage_count
         FROM routing_recipients r
-        LEFT JOIN routing_usage_tracking u ON r.id = u.recipient_id
+        LEFT JOIN routing_recipient_tracker u ON r.id = u.recipient_id
         WHERE r.is_active = 1
         GROUP BY r.id, r.name, r.location, r.department, r.is_active, r.created_date, r.updated_date
         ORDER BY COALESCE(SUM(u.usage_count), 0) DESC, r.name

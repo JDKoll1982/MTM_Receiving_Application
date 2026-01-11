@@ -188,7 +188,7 @@ powershell -ExecutionPolicy Bypass -File Deploy-Database.ps1
 Update the database connection in `Helpers/Database/Helper_Database_Variables.cs`:
 
 ```csharp
-private static readonly string ProductionConnectionString = 
+private static readonly string ProductionConnectionString =
     "Server=localhost;Database=mtm_receiving_application;Uid=your_username;Pwd=your_password;";
 ```
 
@@ -216,7 +216,7 @@ Configure workstations in the database:
 
 **Shared Terminal** (PIN login):
 ```sql
-INSERT INTO workstation_config (computer_name, workstation_type, description)
+INSERT INTO auth_workstation_config (computer_name, workstation_type, description)
 VALUES ('SHOP2', 'shared_terminal', 'Shop floor terminal - Receiving area');
 ```
 
@@ -337,7 +337,7 @@ See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
 **Check**:
 1. User exists in database: `SELECT * FROM users WHERE windows_username = 'username';`
 2. Account is active: `SELECT is_active FROM users WHERE ...;`
-3. Workstation configured correctly: `SELECT * FROM workstation_config WHERE ...;`
+3. Workstation configured correctly: `SELECT * FROM auth_workstation_config WHERE ...;`
 
 ### Database Connection Errors
 
@@ -443,7 +443,7 @@ For issues, questions, or feature requests:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: December 2025  
-**Platform**: Windows 10/11  
+**Version**: 1.0.0
+**Last Updated**: December 2025
+**Platform**: Windows 10/11
 **.NET Version**: 8.0

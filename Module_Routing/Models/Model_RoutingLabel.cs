@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Routing.Models;
 
 /// <summary>
 /// Represents an internal routing label for packages/materials
-/// Maps to routing_labels database table
+/// Maps to routing_label_data database table
 /// </summary>
 public class Model_RoutingLabel
 {
@@ -59,7 +59,7 @@ public class Model_RoutingLabel
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 
     /// <summary>
-    /// Foreign key to routing_other_reasons table (nullable, required if PONumber='OTHER')
+    /// Foreign key to routing_po_alternatives table (nullable, required if PONumber='OTHER')
     /// </summary>
     public int? OtherReasonId { get; set; }
 

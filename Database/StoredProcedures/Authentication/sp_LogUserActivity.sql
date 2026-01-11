@@ -20,8 +20,8 @@ CREATE PROCEDURE sp_LogUserActivity(
 BEGIN
     -- Log user activity event
     -- Event types: login_success, login_failed, session_timeout, user_created, pin_reset
-    
-    INSERT INTO user_activity_log (
+
+    INSERT INTO settings_personal_activity_log (
         event_type,
         username,
         workstation_name,
@@ -34,10 +34,10 @@ BEGIN
         NOW(),
         p_details
     );
-    
+
     -- Return success indicator
     SELECT ROW_COUNT() AS rows_affected;
-    
+
 END$$
 
 DELIMITER ;

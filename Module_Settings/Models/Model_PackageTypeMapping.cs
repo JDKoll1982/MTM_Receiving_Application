@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents a mapping from part prefix to package type
-/// Database Table: package_type_mappings
+/// Database Table: receiving_package_type_mapping
 /// </summary>
 public partial class Model_PackageTypeMapping : ObservableObject
 {

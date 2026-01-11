@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Routing.Models;
 
 /// <summary>
 /// Represents audit trail entry for label edits
-/// Maps to routing_label_history database table
+/// Maps to routing_history database table
 /// </summary>
 public class Model_RoutingLabelHistory
 {
@@ -14,7 +14,7 @@ public class Model_RoutingLabelHistory
     public int Id { get; set; }
 
     /// <summary>
-    /// Foreign key to routing_labels table
+    /// Foreign key to routing_label_data table
     /// </summary>
     public int LabelId { get; set; }
 

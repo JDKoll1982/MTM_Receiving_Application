@@ -1,10 +1,10 @@
 -- ============================================================================
--- Table: workstation_config
+-- Table: auth_workstation_config
 -- Module: Authentication
 -- Purpose: Workstation computer names and types for authentication flow determination
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS workstation_config (
+CREATE TABLE IF NOT EXISTS auth_workstation_config (
     config_id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for workstation configuration',
     workstation_name VARCHAR(50) UNIQUE NOT NULL COMMENT 'Computer name or hostname for workstation identification',
     workstation_type ENUM('shared_terminal', 'personal_workstation') NOT NULL COMMENT 'Type of workstation: shared_terminal (requires login) or personal_workstation (auto-login)',

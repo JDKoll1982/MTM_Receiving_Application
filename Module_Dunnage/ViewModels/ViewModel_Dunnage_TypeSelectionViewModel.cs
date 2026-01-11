@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// <summary>
 /// ViewModel for Dunnage Type Selection with 3x3 paginated grid
 /// </summary>
-public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IResettableViewModel
+public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IResettableViewModel
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_MySQL_Dunnage _dunnageService;
@@ -26,7 +26,7 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
     private readonly IService_Help _helpService;
     private readonly IService_ViewModelRegistry _viewModelRegistry;
 
-    public ViewModel_Dunnage_TypeSelection(
+    public ViewModel_dunnage_typeselection(
         IService_DunnageWorkflow workflowService,
         IService_MySQL_Dunnage dunnageService,
         IService_Pagination paginationService,
@@ -85,11 +85,11 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
     /// </summary>
     public async Task InitializeAsync()
     {
-        _logger.LogInfo("TypeSelection: InitializeAsync called", "ViewModel_Dunnage_TypeSelection");
+        _logger.LogInfo("TypeSelection: InitializeAsync called", "ViewModel_dunnage_typeselection");
 
         if (IsBusy)
         {
-            _logger.LogInfo("TypeSelection: Already busy, returning", "ViewModel_Dunnage_TypeSelection");
+            _logger.LogInfo("TypeSelection: Already busy, returning", "ViewModel_dunnage_typeselection");
             return;
         }
 
@@ -97,7 +97,7 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
         {
             IsBusy = true;
             StatusMessage = "Loading dunnage types...";
-            _logger.LogInfo("TypeSelection: Starting to load types", "ViewModel_Dunnage_TypeSelection");
+            _logger.LogInfo("TypeSelection: Starting to load types", "ViewModel_dunnage_typeselection");
 
             await LoadTypesAsync();
 
@@ -126,27 +126,27 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
     [RelayCommand]
     private async Task LoadTypesAsync()
     {
-        _logger.LogInfo("TypeSelection: LoadTypesAsync called", "ViewModel_Dunnage_TypeSelection");
+        _logger.LogInfo("TypeSelection: LoadTypesAsync called", "ViewModel_dunnage_typeselection");
 
         try
         {
-            _logger.LogInfo("TypeSelection: Calling service.GetAllTypesAsync()", "ViewModel_Dunnage_TypeSelection");
+            _logger.LogInfo("TypeSelection: Calling service.GetAllTypesAsync()", "ViewModel_dunnage_typeselection");
 
             var result = await _dunnageService.GetAllTypesAsync();
 
-            _logger.LogInfo($"TypeSelection: Service returned - IsSuccess: {result.IsSuccess}, Data null: {result.Data == null}, Count: {result.Data?.Count ?? 0}", "ViewModel_Dunnage_TypeSelection");
+            _logger.LogInfo($"TypeSelection: Service returned - IsSuccess: {result.IsSuccess}, Data null: {result.Data == null}, Count: {result.Data?.Count ?? 0}", "ViewModel_dunnage_typeselection");
 
             if (result.IsSuccess && result.Data != null)
             {
                 // Configure pagination for 3x3 grid (9 items per page)
                 _paginationService.PageSize = 9;
                 _paginationService.SetSource(result.Data);
-                _logger.LogInfo($"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}", "ViewModel_Dunnage_TypeSelection");
+                _logger.LogInfo($"TypeSelection: Pagination configured with PageSize=9, TotalItems={result.Data.Count}", "ViewModel_dunnage_typeselection");
 
                 UpdatePaginationProperties();
                 UpdatePageDisplay();
 
-                _logger.LogInfo($"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}", "ViewModel_Dunnage_TypeSelection");
+                _logger.LogInfo($"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}", "ViewModel_dunnage_typeselection");
             }
             else
             {
@@ -433,7 +433,7 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
 
                     if (existingSpecsDict.ContainsKey(specItem.Name))
                     {
-                        // Update existing? 
+                        // Update existing?
                         // We need to check if definition changed.
                         // For simplicity, we can just update the value if it's different.
                         var existingModel = specsResult.Data?.FirstOrDefault(s => s.SpecKey == specItem.Name);
@@ -539,16 +539,16 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
     private void UpdatePageDisplay()
     {
         var currentItems = _paginationService.GetCurrentPageItems<Model_DunnageType>();
-        _logger.LogInfo($"TypeSelection: UpdatePageDisplay - Got {currentItems.Count()} items from pagination service", "ViewModel_Dunnage_TypeSelection");
+        _logger.LogInfo($"TypeSelection: UpdatePageDisplay - Got {currentItems.Count()} items from pagination service", "ViewModel_dunnage_typeselection");
 
         DisplayedTypes.Clear();
         foreach (var type in currentItems)
         {
             DisplayedTypes.Add(type);
-            _logger.LogInfo($"TypeSelection: Added type to DisplayedTypes - ID: {type.Id}, Name: {type.TypeName}", "ViewModel_Dunnage_TypeSelection");
+            _logger.LogInfo($"TypeSelection: Added type to DisplayedTypes - ID: {type.Id}, Name: {type.TypeName}", "ViewModel_dunnage_typeselection");
         }
 
-        _logger.LogInfo($"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}", "ViewModel_Dunnage_TypeSelection");
+        _logger.LogInfo($"TypeSelection: DisplayedTypes.Count after update: {DisplayedTypes.Count}", "ViewModel_dunnage_typeselection");
     }
 
     #endregion
@@ -575,4 +575,3 @@ public partial class ViewModel_Dunnage_TypeSelection : ViewModel_Shared_Base, IR
 
     #endregion
 }
-

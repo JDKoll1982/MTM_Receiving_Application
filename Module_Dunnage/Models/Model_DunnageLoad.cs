@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
 /// <summary>
 /// Represents a received dunnage load transaction.
-/// Database Table: dunnage_loads
+/// Database Table: dunnage_history
 /// </summary>
 public partial class Model_DunnageLoad : ObservableObject
 {

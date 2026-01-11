@@ -14,4 +14,3 @@ This stored procedure was not found in the codebase.
 - Called dynamically via string concatenation
 - Used by external systems
 - Candidate for removal
-

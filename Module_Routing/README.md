@@ -1,7 +1,7 @@
 # Module_Routing - Internal Routing Labels
 
-**Version:** 2.0  
-**Last Updated:** 2026-01-06  
+**Version:** 2.0
+**Last Updated:** 2026-01-06
 **Status:** ✅ Production Ready (with noted improvements pending)
 
 ---
@@ -46,11 +46,11 @@ The Routing Module enables receiving personnel to generate internal routing labe
 ### 🗄️ Database Integration
 
 **MySQL (`mtm_receiving_application`)** - Full CRUD:
-- `routing_labels` - Label master data
+- `routing_label_data` - Label master data
 - `routing_recipients` - Recipient directory
-- `routing_label_history` - Edit audit trail
-- `routing_usage_tracking` - Quick Add analytics
-- `routing_other_reasons` - Non-PO package types
+- `routing_history` - Edit audit trail
+- `routing_recipient_tracker` - Quick Add analytics
+- `routing_po_alternatives` - Non-PO package types
 
 **SQL Server (Infor Visual - `MTMFG`)** - READ ONLY:
 - `po` - Purchase order validation
@@ -167,8 +167,8 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 {
   "RoutingModule": {
     "CsvExportPath": {
-      "Network": "\\\\server\\share\\routing_labels.csv",
-      "Local": "C:\\RoutingLabels\\routing_labels.csv"
+      "Network": "\\\\server\\share\\routing_label_data.csv",
+      "Local": "C:\\RoutingLabels\\routing_label_data.csv"
     },
     "CsvRetry": {
       "MaxAttempts": 3,
@@ -213,9 +213,9 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 ## Integration Points
 
 ### Infor Visual (SQL Server)
-**Purpose**: PO validation and line item retrieval  
-**Access**: Read-only (`ApplicationIntent=ReadOnly`)  
-**Tables**: `po`, `po_detail`  
+**Purpose**: PO validation and line item retrieval
+**Access**: Read-only (`ApplicationIntent=ReadOnly`)
+**Tables**: `po`, `po_detail`
 **Warehouse Filter**: `site_ref = '002'`
 
 **Example Query:**
@@ -226,8 +226,8 @@ WHERE po_num = @PoNumber AND site_ref = '002'
 ```
 
 ### Usage Tracking
-**Purpose**: Personalize Quick Add buttons based on employee history  
-**Logic**: 
+**Purpose**: Personalize Quick Add buttons based on employee history
+**Logic**:
 - If employee has 20+ labels: Show their top 5 recipients
 - Otherwise: Show system-wide top 5 recipients
 - Increments on every label creation
@@ -393,8 +393,8 @@ Module_Routing/
 
 ## Support & Maintenance
 
-**Primary Developer**: GitHub Copilot AI + Human Review  
-**Documentation**: This README, CODE_REVIEW.md, inline XML comments  
+**Primary Developer**: GitHub Copilot AI + Human Review
+**Documentation**: This README, CODE_REVIEW.md, inline XML comments
 **Issue Tracking**: CODE_REVIEW.md (current findings)
 
 **For Questions:**
@@ -404,6 +404,6 @@ Module_Routing/
 
 ---
 
-**Last Updated**: 2026-01-06  
-**Module Version**: 2.0  
+**Last Updated**: 2026-01-06
+**Module Version**: 2.0
 **Build Status**: ✅ Passing

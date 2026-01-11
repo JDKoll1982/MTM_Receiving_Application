@@ -99,7 +99,7 @@ MTM_Receiving_Application/
 │   │   └── Service_DunnageCSVWriter.cs
 │   ├── ViewModels/                      # Dunnage ViewModels (20+ views)
 │   │   ├── ViewModel_Dunnage_ModeSelection.cs
-│   │   ├── ViewModel_Dunnage_TypeSelection.cs
+│   │   ├── ViewModel_dunnage_typeselection.cs
 │   │   ├── ViewModel_Dunnage_PartSelection.cs
 │   │   ├── ViewModel_Dunnage_QuantityEntry.cs
 │   │   ├── ViewModel_Dunnage_DetailsEntry.cs
@@ -111,7 +111,7 @@ MTM_Receiving_Application/
 │   └── Views/                           # Dunnage XAML Views
 │       ├── View_Dunnage_WorkflowView.xaml
 │       ├── View_Dunnage_ModeSelectionView.xaml
-│       ├── View_Dunnage_TypeSelectionView.xaml
+│       ├── View_dunnage_typeselectionView.xaml
 │       ├── View_Dunnage_PartSelectionView.xaml
 │       ├── View_Dunnage_QuantityEntryView.xaml
 │       ├── View_Dunnage_DetailsEntryView.xaml
@@ -230,14 +230,14 @@ MTM_Receiving_Application/
 │   │   │   ├── sp_CreateNewUser.sql
 │   │   │   └── sp_update_user_default_*.sql
 │   │   ├── Receiving/                   # Receiving procedures
-│   │   │   ├── sp_receiving_loads_*.sql
+│   │   │   ├── sp_receiving_history_*.sql
 │   │   │   ├── sp_receiving_lines_*.sql
 │   │   │   └── sp_package_preferences_*.sql
 │   │   └── Dunnage/                     # Dunnage procedures
-│   │       ├── sp_dunnage_loads_*.sql
+│   │       ├── sp_dunnage_history_*.sql
 │   │       ├── sp_dunnage_parts_*.sql
 │   │       ├── sp_dunnage_types_*.sql
-│   │       └── sp_inventoried_dunnage_*.sql
+│   │       └── sp_dunnage_requires_inventory_*.sql
 │   ├── Migrations/                      # Migration scripts
 │   │   ├── 010-dunnage-complete-schema.sql
 │   │   ├── 011_migrate_icons_to_material.sql

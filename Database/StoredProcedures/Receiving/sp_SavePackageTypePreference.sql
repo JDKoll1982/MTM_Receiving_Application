@@ -9,9 +9,9 @@ CREATE PROCEDURE sp_SavePackageTypePreference(
     IN p_LastModified DATETIME
 )
 BEGIN
-    INSERT INTO package_type_preferences (PartID, PackageTypeName, CustomTypeName, LastModified)
+    INSERT INTO receiving_package_types (PartID, PackageTypeName, CustomTypeName, LastModified)
     VALUES (p_PartID, p_PackageTypeName, p_CustomTypeName, p_LastModified)
-    ON DUPLICATE KEY UPDATE 
+    ON DUPLICATE KEY UPDATE
         PackageTypeName = p_PackageTypeName,
         CustomTypeName = p_CustomTypeName,
         LastModified = p_LastModified;

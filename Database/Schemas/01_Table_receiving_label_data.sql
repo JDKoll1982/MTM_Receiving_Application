@@ -1,10 +1,10 @@
 -- ============================================================================
--- Table: label_table_receiving
+-- Table: receiving_label_data
 -- Module: Receiving
 -- Purpose: Store receiving line label data
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS label_table_receiving (
+CREATE TABLE IF NOT EXISTS receiving_label_data (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key, auto-incrementing unique identifier',
     quantity INT NOT NULL COMMENT 'Quantity of parts received on this label',
     part_id VARCHAR(50) NOT NULL COMMENT 'Part identifier from Infor Visual',

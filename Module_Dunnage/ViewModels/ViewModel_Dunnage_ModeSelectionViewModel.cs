@@ -212,7 +212,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         try
         {
             // Clear TypeSelection ViewModel
-            var typeSelectionVM = App.GetService<ViewModel_Dunnage_TypeSelection>();
+            var typeSelectionVM = App.GetService<ViewModel_dunnage_typeselection>();
             if (typeSelectionVM != null)
             {
                 typeSelectionVM.SelectedType = null;
@@ -427,5 +427,3 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
 
     #endregion
 }
-
-

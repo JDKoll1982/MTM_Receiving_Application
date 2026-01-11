@@ -1,5 +1,5 @@
 {
-  "sp_dunnage_loads_update": {
+  "sp_dunnage_history_update": {
     "parameters": {
       "p_load_uuid": "TEST_VALUE",
       "p_quantity": 10,
@@ -24,7 +24,7 @@
     "category": "RoutingLabels",
     "executionOrder": 150
   },
-  "sp_inventoried_dunnage_delete": {
+  "sp_dunnage_requires_inventory_delete": {
     "parameters": {
       "p_id": 1
     },
@@ -48,7 +48,7 @@
     "category": "Other",
     "executionOrder": 1999
   },
-  "sp_dunnage_loads_get_by_date_range": {
+  "sp_dunnage_history_get_by_date_range": {
     "parameters": {
       "p_start_date": "2026-01-01",
       "p_end_date": "2026-01-01"
@@ -65,7 +65,7 @@
     "category": "DunnageTypes",
     "executionOrder": 1025
   },
-  "sp_inventoried_dunnage_insert": {
+  "sp_dunnage_requires_inventory_insert": {
     "parameters": {
       "p_part_id": 1,
       "p_inventory_method": "TEST_VALUE",
@@ -159,7 +159,7 @@
     "category": "DunnageParts",
     "executionOrder": 35
   },
-  "sp_inventoried_dunnage_update": {
+  "sp_dunnage_requires_inventory_update": {
     "parameters": {
       "p_inventory_method": "TEST_VALUE",
       "p_user": "TEST_VALUE",
@@ -222,7 +222,7 @@
     "category": "RoutingRecipients",
     "executionOrder": 45
   },
-  "sp_dunnage_loads_insert": {
+  "sp_dunnage_history_insert": {
     "parameters": {
       "p_part_id": 1,
       "p_load_uuid": "TEST_VALUE",
@@ -531,7 +531,7 @@
     "category": "PackageTypes",
     "executionOrder": 1020
   },
-  "sp_volvo_settings_get": {
+  "sp_settings_module_volvo_get": {
     "parameters": {
       "p_setting_key": "TEST_VALUE"
     },
@@ -582,7 +582,7 @@
     "category": "Users",
     "executionOrder": 1010
   },
-  "sp_volvo_settings_reset": {
+  "sp_settings_module_volvo_reset": {
     "parameters": {
       "p_modified_by": "TEST_VALUE",
       "p_setting_key": "TEST_VALUE"
@@ -591,7 +591,7 @@
     "category": "Settings",
     "executionOrder": 210
   },
-  "sp_inventoried_dunnage_check": {
+  "sp_dunnage_requires_inventory_check": {
     "parameters": {
       "p_part_id": 1
     },
@@ -770,7 +770,7 @@
     "category": "ReceivingLines",
     "executionOrder": 120
   },
-  "sp_dunnage_loads_get_all": {
+  "sp_dunnage_history_get_all": {
     "parameters": {},
     "enabled": true,
     "category": "DunnageLoads",
@@ -963,7 +963,7 @@
     "category": "VolvoParts",
     "executionOrder": 40
   },
-  "sp_inventoried_dunnage_get_all": {
+  "sp_dunnage_requires_inventory_get_all": {
     "parameters": {},
     "enabled": true,
     "category": "InventoriedDunnage",
@@ -1036,7 +1036,7 @@
     "category": "ReceivingLoads",
     "executionOrder": 2100
   },
-  "sp_routing_label_history_insert": {
+  "sp_routing_history_insert": {
     "parameters": {
       "p_edited_by": 1,
       "p_label_id": 1,
@@ -1048,7 +1048,7 @@
     "category": "RoutingHistory",
     "executionOrder": 160
   },
-  "sp_dunnage_loads_get_by_id": {
+  "sp_dunnage_history_get_by_id": {
     "parameters": {
       "p_load_uuid": "TEST_VALUE"
     },
@@ -1243,7 +1243,7 @@
     "category": "RoutingLabels",
     "executionOrder": 1150
   },
-  "sp_inventoried_dunnage_get_by_part": {
+  "sp_dunnage_requires_inventory_get_by_part": {
     "parameters": {
       "p_part_id": 1
     },
@@ -1273,7 +1273,7 @@
     "category": "RoutingLabels",
     "executionOrder": 150
   },
-  "sp_dunnage_loads_insert_batch": {
+  "sp_dunnage_history_insert_batch": {
     "parameters": {
       "p_user": "TEST_VALUE",
       "p_load_data": null
@@ -1367,7 +1367,7 @@
     "category": "DunnageSpecs",
     "executionOrder": 2030
   },
-  "sp_volvo_settings_get_all": {
+  "sp_settings_module_volvo_get_all": {
     "parameters": {
       "p_category": "TEST_VALUE"
     },
@@ -1375,7 +1375,7 @@
     "category": "Settings",
     "executionOrder": 1210
   },
-  "sp_volvo_settings_upsert": {
+  "sp_settings_module_volvo_upsert": {
     "parameters": {
       "p_setting_key": "TEST_VALUE",
       "p_setting_value": "TEST_VALUE",
@@ -1416,7 +1416,7 @@
     "category": "RoutingLabels",
     "executionOrder": 1150
   },
-  "sp_dunnage_loads_delete": {
+  "sp_dunnage_history_delete": {
     "parameters": {
       "p_load_uuid": "TEST_VALUE"
     },

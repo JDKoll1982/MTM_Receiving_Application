@@ -14,7 +14,7 @@ CREATE PROCEDURE sp_UserSettings_Get(
     IN p_setting_key VARCHAR(100)
 )
 BEGIN
-    SELECT 
+    SELECT
         ss.id AS setting_id,
         ss.category,
         ss.setting_key,
@@ -27,9 +27,9 @@ BEGIN
         ss.validation_rules,
         ss.ui_control_type,
         (us.id IS NOT NULL) AS has_override
-    FROM system_settings ss
-    LEFT JOIN user_settings us ON ss.id = us.setting_id AND us.user_id = p_user_id
-    WHERE ss.category = p_category 
+    FROM settings_universal ss
+    LEFT JOIN settings_personal us ON ss.id = us.setting_id AND us.user_id = p_user_id
+    WHERE ss.category = p_category
       AND ss.setting_key = p_setting_key
       AND ss.scope = 'user';
 END$$

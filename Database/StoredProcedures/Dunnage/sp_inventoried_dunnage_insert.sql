@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_inventoried_dunnage_insert$$
+DROP PROCEDURE IF EXISTS sp_dunnage_requires_inventory_insert$$
 
-CREATE PROCEDURE sp_inventoried_dunnage_insert(
+CREATE PROCEDURE sp_dunnage_requires_inventory_insert(
     IN p_part_id VARCHAR(50),
     IN p_inventory_method VARCHAR(100),
     IN p_notes TEXT,
@@ -10,7 +10,7 @@ CREATE PROCEDURE sp_inventoried_dunnage_insert(
     OUT p_new_id INT
 )
 BEGIN
-    INSERT INTO inventoried_dunnage (
+    INSERT INTO dunnage_requires_inventory (
         part_id,
         inventory_method,
         notes,
@@ -23,7 +23,7 @@ BEGIN
         p_user,
         NOW()
     );
-    
+
     SET p_new_id = LAST_INSERT_ID();
 END$$
 

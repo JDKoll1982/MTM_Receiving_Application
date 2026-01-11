@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents a scheduled report configuration
-/// Database Table: scheduled_reports
+/// Database Table: reporting_scheduled_reports
 /// </summary>
 public partial class Model_ScheduledReport : ObservableObject
 {

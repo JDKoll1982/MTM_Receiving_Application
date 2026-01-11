@@ -36,9 +36,9 @@ sp_routing_label_get_by_id: BEGIN
         l.is_active,
         l.csv_exported,
         l.csv_export_date
-    FROM routing_labels l
+    FROM routing_label_data l
     INNER JOIN routing_recipients r ON l.recipient_id = r.id
-    LEFT JOIN routing_other_reasons o ON l.other_reason_id = o.id
+    LEFT JOIN routing_po_alternatives o ON l.other_reason_id = o.id
     WHERE l.id = p_label_id AND l.is_active = 1;
 
     SET p_status = 1;

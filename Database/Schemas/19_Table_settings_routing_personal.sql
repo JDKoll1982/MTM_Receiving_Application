@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: routing_user_preferences
+-- Table: settings_routing_personal
 -- Module: Routing
 -- Purpose: User preferences for default mode and settings
 -- ============================================================================
 
-DROP TABLE IF EXISTS `routing_user_preferences`;
+DROP TABLE IF EXISTS `settings_routing_personal`;
 
-CREATE TABLE `routing_user_preferences` (
+CREATE TABLE `settings_routing_personal` (
     `id` INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate PK for user preference record',
     `employee_number` INT NOT NULL COMMENT 'Employee number (owner of these preferences)',
     `default_mode` VARCHAR(20) NOT NULL DEFAULT 'WIZARD' COMMENT 'Default routing mode (e.g., WIZARD, MANUAL)',

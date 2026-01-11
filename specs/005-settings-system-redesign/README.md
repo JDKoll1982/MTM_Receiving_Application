@@ -69,10 +69,10 @@ The settings system has been redesigned to:
 ### 3. Database Schema (`../../Database/Schemas/`)
 
 - **`settings_system_schema.sql`** - Complete database schema
-  - `system_settings` - All configurable settings (79 rows seeded)
-  - `user_settings` - User-specific overrides
-  - `settings_audit_log` - Change tracking
-  - `package_type_mappings` - Part prefix → package type rules
+  - `settings_universal` - All configurable settings (79 rows seeded)
+  - `settings_personal` - User-specific overrides
+  - `settings_activity` - Change tracking
+  - `receiving_package_type_mapping` - Part prefix → package type rules
   - All indexes and foreign keys
   - Initial data migration from `appsettings.json`
 
@@ -222,17 +222,17 @@ string mode = setting.Data.AsString(); // "guided"
 
 // Save a setting (creates audit log entry)
 await _settingsService.SaveSettingAsync(
-    "Routing", 
-    "CsvRetryMaxAttempts", 
-    "5", 
+    "Routing",
+    "CsvRetryMaxAttempts",
+    "5",
     userId: 456
 );
 
 // Reset user preference to system default
 await _settingsService.ResetSettingAsync(
-    "Receiving", 
-    "DefaultReceivingMode", 
-    userId: 123, 
+    "Receiving",
+    "DefaultReceivingMode",
+    userId: 123,
     isUserOverride: true
 );
 ```
@@ -276,6 +276,6 @@ Contact the development team for clarifications on:
 
 ---
 
-**Status:** ✅ Design Complete - Ready for Implementation  
-**Last Updated:** January 10, 2026  
+**Status:** ✅ Design Complete - Ready for Implementation
+**Last Updated:** January 10, 2026
 **Specification Version:** 1.0

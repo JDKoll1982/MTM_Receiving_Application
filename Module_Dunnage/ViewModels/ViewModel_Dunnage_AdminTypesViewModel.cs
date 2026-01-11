@@ -509,4 +509,3 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
 
     #endregion
 }
-

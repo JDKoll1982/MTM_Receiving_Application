@@ -1,7 +1,7 @@
 # System Settings Page - WinUI 3 Controls
 
-**SVG File**: `01-system-settings.svg`  
-**Category**: System Settings  
+**SVG File**: `01-system-settings.svg`
+**Category**: System Settings
 **Purpose**: Configure environment, database, and logging settings
 
 ---
@@ -39,7 +39,7 @@
 ```xml
 <StackPanel Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="40,20">
     <TextBlock Text="System Settings" Style="{StaticResource TitleTextBlockStyle}"/>
-    <TextBlock Text="Environment, Database, and Developer Configuration" 
+    <TextBlock Text="Environment, Database, and Developer Configuration"
                Style="{StaticResource CaptionTextBlockStyle}"
                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
 </StackPanel>
@@ -52,7 +52,7 @@
 #### Use Mock Data - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Use Infor Visual Mock Data"
     IsOn="{x:Bind ViewModel.UseInforVisualMockData, Mode=TwoWay}"
     OnContent="On"
@@ -74,7 +74,7 @@
 #### Default Mock PO - `TextBox`
 
 ```xml
-<TextBox 
+<TextBox
     Header="Default Mock PO Number"
     PlaceholderText="Enter PO number"
     Text="{x:Bind ViewModel.DefaultMockPONumber, Mode=TwoWay}"
@@ -98,7 +98,7 @@
 #### Environment - `ComboBox`
 
 ```xml
-<ComboBox 
+<ComboBox
     Header="Environment"
     SelectedItem="{x:Bind ViewModel.Environment, Mode=TwoWay}"
     Width="300"
@@ -125,7 +125,7 @@
 #### Database Max Retries - `NumberBox`
 
 ```xml
-<NumberBox 
+<NumberBox
     Header="Database Max Retries"
     Value="{x:Bind ViewModel.DatabaseMaxRetries, Mode=TwoWay}"
     Minimum="1"
@@ -151,7 +151,7 @@
 #### Retry Delays - `TextBox`
 
 ```xml
-<TextBox 
+<TextBox
     Header="Database Retry Delays (ms)"
     Text="{x:Bind ViewModel.DatabaseRetryDelaysMs, Mode=TwoWay}"
     PlaceholderText="e.g., 100,200,400"
@@ -177,7 +177,7 @@
 #### Enable Console Logging - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Enable Console Logging"
     IsOn="{x:Bind ViewModel.EnableConsoleLogging, Mode=TwoWay}"
     OnContent="On"
@@ -199,7 +199,7 @@
 #### Enable File Logging - `ToggleSwitch`
 
 ```xml
-<ToggleSwitch 
+<ToggleSwitch
     Header="Enable File Logging"
     IsOn="{x:Bind ViewModel.EnableFileLogging, Mode=TwoWay}"
     OnContent="On"
@@ -221,7 +221,7 @@
 #### Minimum Log Level - `ComboBox`
 
 ```xml
-<ComboBox 
+<ComboBox
     Header="Minimum Log Level"
     SelectedItem="{x:Bind ViewModel.MinimumLogLevel, Mode=TwoWay}"
     Width="200"
@@ -250,7 +250,7 @@
 #### Max Log Files - `NumberBox`
 
 ```xml
-<NumberBox 
+<NumberBox
     Header="Max Log Files to Retain"
     Value="{x:Bind ViewModel.MaxLogFilesToRetain, Mode=TwoWay}"
     Minimum="1"
@@ -278,7 +278,7 @@
 #### Save Button - `Button`
 
 ```xml
-<Button 
+<Button
     Content="Save"
     Style="{StaticResource AccentButtonStyle}"
     Command="{x:Bind ViewModel.SaveCommand}"
@@ -288,7 +288,7 @@
 #### Cancel Button - `Button`
 
 ```xml
-<Button 
+<Button
     Content="Cancel"
     Command="{x:Bind ViewModel.CancelCommand}"
     Width="100"
@@ -298,7 +298,7 @@
 #### Auto-save Indicator - `TextBlock`
 
 ```xml
-<TextBlock 
+<TextBlock
     Text="Changes auto-save after 500ms"
     Style="{StaticResource CaptionTextBlockStyle}"
     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -317,21 +317,21 @@
     <!-- Left column: Dev/Test + Database -->
     <StackPanel Grid.Column="0" Spacing="24">
         <StackPanel Spacing="16">
-            <TextBlock Text="Development &amp; Testing" 
+            <TextBlock Text="Development &amp; Testing"
                        Style="{StaticResource SubtitleTextBlockStyle}"/>
             <!-- Controls -->
         </StackPanel>
-        
+
         <StackPanel Spacing="16">
-            <TextBlock Text="Database Configuration" 
+            <TextBlock Text="Database Configuration"
                        Style="{StaticResource SubtitleTextBlockStyle}"/>
             <!-- Controls -->
         </StackPanel>
     </StackPanel>
-    
+
     <!-- Right column: Logging -->
     <StackPanel Grid.Column="1" Spacing="16">
-        <TextBlock Text="Logging &amp; Debugging" 
+        <TextBlock Text="Logging &amp; Debugging"
                    Style="{StaticResource SubtitleTextBlockStyle}"/>
         <!-- Controls -->
     </StackPanel>
@@ -349,28 +349,28 @@ public partial class SystemSettingsViewModel : BaseViewModel
 {
     [ObservableProperty]
     private bool _useInforVisualMockData = false;
-    
+
     [ObservableProperty]
     private string _defaultMockPONumber = "PO-066868";
-    
+
     [ObservableProperty]
     private string _environment = "Production";
-    
+
     [ObservableProperty]
     private int _databaseMaxRetries = 3;
-    
+
     [ObservableProperty]
     private string _databaseRetryDelaysMs = "100,200,400";
-    
+
     [ObservableProperty]
     private bool _enableConsoleLogging = true;
-    
+
     [ObservableProperty]
     private bool _enableFileLogging = true;
-    
+
     [ObservableProperty]
     private string _minimumLogLevel = "Information";
-    
+
     [ObservableProperty]
     private int _maxLogFilesToRetain = 7;
 }
@@ -456,17 +456,17 @@ public override async Task OnNavigatedToAsync(object parameter)
 
 ```xml
 <!-- ToggleSwitch -->
-<ToggleSwitch 
+<ToggleSwitch
     AutomationProperties.Name="Use Infor Visual Mock Data"
     AutomationProperties.HelpText="Enable mock data instead of querying Infor Visual database"/>
 
 <!-- NumberBox -->
-<NumberBox 
+<NumberBox
     AutomationProperties.Name="Database Max Retries"
     AutomationProperties.HelpText="Maximum retry attempts, range 1 to 10"/>
 
 <!-- ComboBox -->
-<ComboBox 
+<ComboBox
     AutomationProperties.Name="Environment Selection"
     AutomationProperties.HelpText="Select deployment environment"/>
 ```
@@ -475,7 +475,7 @@ public override async Task OnNavigatedToAsync(object parameter)
 
 ## Settings Persistence
 
-Settings are saved to database `system_settings` table:
+Settings are saved to database `settings_universal` table:
 
 ```csharp
 public async Task<Model_Dao_Result> SaveSettingsAsync()
@@ -492,7 +492,7 @@ public async Task<Model_Dao_Result> SaveSettingsAsync()
         ("MinimumLogLevel", MinimumLogLevel),
         ("MaxLogFilesToRetain", MaxLogFilesToRetain.ToString())
     };
-    
+
     return await _settingsService.SaveSystemSettingsAsync(settings);
 }
 ```

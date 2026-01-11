@@ -1,4 +1,4 @@
-# sp_inventoried_dunnage_delete
+# sp_dunnage_requires_inventory_delete
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_InventoriedDunnage.cs:121
-"sp_inventoried_dunnage_delete",
+"sp_dunnage_requires_inventory_delete",
 
 ```
 
@@ -41,5 +41,3 @@
 - Module_Volvo\Data\Dao_VolvoShipmentLine.cs
 - Module_Volvo\Interfaces\IDao_VolvoShipmentLine.cs
 - Module_Volvo\Services\Service_Volvo.cs
-
-

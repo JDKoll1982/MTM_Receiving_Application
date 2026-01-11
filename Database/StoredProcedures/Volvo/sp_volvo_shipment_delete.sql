@@ -14,7 +14,7 @@ CREATE PROCEDURE sp_volvo_shipment_delete(
 )
 BEGIN
   -- Lines will be deleted automatically by CASCADE DELETE
-  DELETE FROM volvo_shipments
+  DELETE FROM volvo_label_data
   WHERE id = p_shipment_id;
 END$$
 

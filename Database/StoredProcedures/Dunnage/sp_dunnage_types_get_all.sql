@@ -4,7 +4,7 @@ DROP PROCEDURE IF EXISTS sp_dunnage_types_get_all$$
 
 CREATE PROCEDURE sp_dunnage_types_get_all()
 BEGIN
-    SELECT 
+    SELECT
         id,
         type_name,
         icon,

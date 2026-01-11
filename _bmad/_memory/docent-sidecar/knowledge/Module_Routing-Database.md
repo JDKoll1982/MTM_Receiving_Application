@@ -20,11 +20,11 @@ Tables:
 | Table | Purpose |
 |-------|---------|
 | routing_recipients | Recipient directory for routing labels |
-| routing_other_reasons | Enumerated reasons for non-PO packages |
-| routing_labels | Primary routing label records |
-| routing_usage_tracking | Employee→recipient usage counts (Quick Add personalization) |
-| routing_user_preferences | Default routing mode and validation toggle |
-| routing_label_history | Audit trail of label edits |
+| routing_po_alternatives | Enumerated reasons for non-PO packages |
+| routing_label_data | Primary routing label records |
+| routing_recipient_tracker | Employee→recipient usage counts (Quick Add personalization) |
+| settings_routing_personal | Default routing mode and validation toggle |
+| routing_history | Audit trail of label edits |
 
 ## MySQL Stored Procedures
 
@@ -39,8 +39,8 @@ Module_Routing uses stored procedures via `Helper_Database_StoredProcedure`.
 | sp_routing_label_delete | Dao_RoutingLabel.DeleteLabelAsync | Database/StoredProcedures/sp_routing_label_delete.sql |
 | sp_routing_label_mark_exported | Dao_RoutingLabel.MarkLabelExportedAsync | Database/StoredProcedures/sp_routing_label_mark_exported.sql |
 | sp_routing_label_check_duplicate | Dao_RoutingLabel.CheckDuplicateLabelAsync | Database/StoredProcedures/sp_routing_label_check_duplicate.sql |
-| sp_routing_label_history_insert | Dao_RoutingLabelHistory.InsertHistoryAsync | Database/StoredProcedures/sp_routing_label_history_insert.sql |
-| sp_routing_label_history_get_by_label | Dao_RoutingLabelHistory.GetHistoryByLabelAsync | Database/StoredProcedures/sp_routing_label_history_get_by_label.sql |
+| sp_routing_history_insert | Dao_RoutingLabelHistory.InsertHistoryAsync | Database/StoredProcedures/sp_routing_history_insert.sql |
+| sp_routing_history_get_by_label | Dao_RoutingLabelHistory.GetHistoryByLabelAsync | Database/StoredProcedures/sp_routing_history_get_by_label.sql |
 | sp_routing_recipient_get_all_active | Dao_RoutingRecipient.GetAllActiveRecipientsAsync | Database/StoredProcedures/sp_routing_recipient_get_all_active.sql |
 | sp_routing_recipient_get_top_by_usage | Dao_RoutingRecipient.GetTopRecipientsByUsageAsync | Database/StoredProcedures/sp_routing_recipient_get_top_by_usage.sql |
 | sp_routing_other_reason_get_all_active | Dao_RoutingOtherReason.GetAllActiveReasonsAsync | Database/StoredProcedures/sp_routing_other_reason_get_all_active.sql |
@@ -56,7 +56,7 @@ The reporting view `view_routing_history` (used by Module_Reporting) is defined 
 - `Database/Schemas/views_01_create_reporting_views.sql`
 
 It reads from:
-- `routing_labels` joined to `routing_recipients` and `routing_other_reasons`.
+- `routing_label_data` joined to `routing_recipients` and `routing_po_alternatives`.
 
 ## SQL Server (Infor Visual) - READ ONLY
 

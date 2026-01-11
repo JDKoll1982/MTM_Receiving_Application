@@ -16,7 +16,7 @@ CREATE PROCEDURE sp_PackageTypeMappings_Insert(
     IN p_created_by INT
 )
 BEGIN
-    INSERT INTO package_type_mappings (
+    INSERT INTO receiving_package_type_mapping (
         part_prefix,
         package_type,
         is_default,
@@ -31,7 +31,7 @@ BEGIN
         TRUE,
         p_created_by
     );
-    
+
     SELECT LAST_INSERT_ID() AS id;
 END$$
 

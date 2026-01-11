@@ -13,11 +13,11 @@ CREATE PROCEDURE sp_RoutingRule_Delete(
 )
 BEGIN
     -- Soft delete
-    UPDATE routing_rules
+    UPDATE routing_home_locations
     SET is_active = FALSE,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = p_id;
-    
+
     SELECT ROW_COUNT() AS affected_rows;
 END$$
 

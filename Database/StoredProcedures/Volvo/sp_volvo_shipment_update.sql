@@ -11,11 +11,11 @@ CREATE PROCEDURE sp_volvo_shipment_update(
     IN p_notes TEXT
 )
 BEGIN
-    UPDATE volvo_shipments 
+    UPDATE volvo_label_data
     SET notes = p_notes,
         modified_date = CURRENT_TIMESTAMP
     WHERE id = p_id;
-    
+
     SELECT ROW_COUNT() AS affected_rows;
 END$$
 

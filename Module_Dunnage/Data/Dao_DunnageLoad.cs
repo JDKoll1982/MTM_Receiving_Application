@@ -26,7 +26,7 @@ public class Dao_DunnageLoad
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
             _connectionString,
-            "sp_dunnage_loads_get_all",
+            "sp_dunnage_history_get_all",
             MapFromReader
         );
     }
@@ -41,7 +41,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
             _connectionString,
-            "sp_dunnage_loads_get_by_date_range",
+            "sp_dunnage_history_get_by_date_range",
             MapFromReader,
             parameters
         );
@@ -56,7 +56,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageLoad>(
             _connectionString,
-            "sp_dunnage_loads_get_by_id",
+            "sp_dunnage_history_get_by_id",
             MapFromReader,
             parameters
         );
@@ -74,7 +74,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_loads_insert",
+            "sp_dunnage_history_insert",
             parameters
         );
     }
@@ -129,14 +129,14 @@ public class Dao_DunnageLoad
 
         var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_loads_insert_batch",
+            "sp_dunnage_history_insert_batch",
             parameters
         );
 
         // Enhance foreign key constraint error messages
         if (!result.Success && result.ErrorMessage != null)
         {
-            if (result.ErrorMessage.Contains("FK_dunnage_loads_part_id") ||
+            if (result.ErrorMessage.Contains("FK_dunnage_history_part_id") ||
                 result.ErrorMessage.Contains("foreign key constraint"))
             {
                 result.ErrorMessage = "Cannot save loads: One or more Part IDs are not registered in the system. " +
@@ -159,7 +159,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_loads_update",
+            "sp_dunnage_history_update",
             parameters
         );
     }
@@ -173,7 +173,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_loads_delete",
+            "sp_dunnage_history_delete",
             parameters
         );
     }
@@ -193,4 +193,3 @@ public class Dao_DunnageLoad
         };
     }
 }
-

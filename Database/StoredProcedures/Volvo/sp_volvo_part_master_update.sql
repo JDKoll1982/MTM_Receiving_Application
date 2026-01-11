@@ -14,8 +14,8 @@ CREATE PROCEDURE sp_volvo_part_master_update(
   IN p_quantity_per_skid INT
 )
 BEGIN
-  UPDATE volvo_parts_master
-  SET 
+  UPDATE volvo_masterdata
+  SET
     quantity_per_skid = p_quantity_per_skid,
     modified_date = CURRENT_TIMESTAMP
   WHERE part_number = p_part_number;

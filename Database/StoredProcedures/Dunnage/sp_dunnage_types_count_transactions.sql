@@ -7,7 +7,7 @@ CREATE PROCEDURE sp_dunnage_types_count_transactions(
 )
 BEGIN
     SELECT COUNT(*) as transaction_count
-    FROM dunnage_loads l
+    FROM dunnage_history l
     JOIN dunnage_parts p ON l.part_id = p.part_id
     WHERE p.type_id = p_type_id;
 END$$

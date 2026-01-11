@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: volvo_parts_master
+-- Table: volvo_masterdata
 -- Module: Volvo
 -- Purpose: Catalog of Volvo dunnage parts with quantities per skid
 -- ============================================================================
 
-DROP TABLE IF EXISTS volvo_parts_master;
+DROP TABLE IF EXISTS volvo_masterdata;
 
-CREATE TABLE IF NOT EXISTS volvo_parts_master (
+CREATE TABLE IF NOT EXISTS volvo_masterdata (
     part_number VARCHAR(20) NOT NULL COMMENT 'Volvo part identifier (primary key)',
     quantity_per_skid INT NOT NULL COMMENT 'Pieces per skid for this part (from DataSheet.csv)',
     is_active TINYINT(1) NOT NULL DEFAULT 1 COMMENT '0=deactivated, hidden from dropdowns',

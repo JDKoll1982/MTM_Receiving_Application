@@ -68,7 +68,7 @@ These stored procedures have parameter count mismatches between the database def
 | receiving_line_Insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.receiving_line_Insert; expected 12, got 10" | 10 | 2 |
 | sp_CreateNewUser | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_CreateNewUser; expected 10, got 9" | 9 | 1 |
 | sp_custom_fields_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_custom_fields_insert; expected 11, got 9" | 8 | 3 |
-| sp_dunnage_loads_get_by_date_range | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_loads_get_by_date_range; expected 2, got 4" | 2 | 0 |
+| sp_dunnage_history_get_by_date_range | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_history_get_by_date_range; expected 2, got 4" | 2 | 0 |
 | sp_dunnage_parts_get_transaction_count | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_parts_get_transaction_count; expected 2, got 1" | 1 | 1 |
 | sp_dunnage_parts_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_parts_insert; expected 6, got 5" | 5 | 1 |
 | sp_dunnage_specs_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_specs_insert; expected 5, got 4" | 4 | 1 |
@@ -78,7 +78,7 @@ These stored procedures have parameter count mismatches between the database def
 | sp_dunnage_types_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_types_insert; expected 4, got 3" | 3 | 1 |
 | sp_GetReceivingHistory | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_GetReceivingHistory; expected 3, got 5" | 3 | 0 |
 | sp_InsertReceivingLoad | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_InsertReceivingLoad; expected 13, got 14" | 13 | 0 |
-| sp_inventoried_dunnage_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_inventoried_dunnage_insert; expected 5, got 4" | 4 | 1 |
+| sp_dunnage_requires_inventory_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_dunnage_requires_inventory_insert; expected 5, got 4" | 4 | 1 |
 | sp_PackageTypeMappings_Insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_PackageTypeMappings_Insert; expected 5, got 6" | 5 | 0 |
 | sp_PackageTypeMappings_Update | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_PackageTypeMappings_Update; expected 4, got 5" | 4 | 0 |
 | sp_routing_label_archive | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_archive; expected 3, got 1" | 1 | 2 |
@@ -86,7 +86,7 @@ These stored procedures have parameter count mismatches between the database def
 | sp_routing_label_delete | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_delete; expected 2, got 1" | 1 | 1 |
 | sp_routing_label_get_all | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_get_all; expected 4, got 2" | 2 | 2 |
 | sp_routing_label_get_by_id | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_get_by_id; expected 3, got 1" | 1 | 2 |
-| sp_routing_label_history_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_history_insert; expected 7, got 5" | 5 | 2 |
+| sp_routing_history_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_history_insert; expected 7, got 5" | 5 | 2 |
 | sp_routing_label_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_insert; expected 10, got 8" | 8 | 2 |
 | sp_routing_label_mark_exported | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_mark_exported; expected 3, got 1" | 1 | 2 |
 | sp_routing_label_update | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_routing_label_update; expected 8, got 7" | 7 | 1 |
@@ -119,9 +119,9 @@ These stored procedures failed due to foreign key constraints (missing prerequis
 
 | SP Name | Message |
 |---------|---------|
-| sp_dunnage_loads_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Cannot add or update a child row: a foreign key constraint fails (`mtm_receiving_application`.`dunnage_loads`, CONSTRAINT `FK_dunnage_loads_part_id` FOREIGN KEY (`part_id`) REFERENCES `dunnage_parts` (`part_id`))" |
+| sp_dunnage_history_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Cannot add or update a child row: a foreign key constraint fails (`mtm_receiving_application`.`dunnage_history`, CONSTRAINT `FK_dunnage_history_part_id` FOREIGN KEY (`part_id`) REFERENCES `dunnage_parts` (`part_id`))" |
 | sp_dunnage_types_delete | Exception calling "ExecuteNonQuery" with "0" argument(s): "Cannot delete or update a parent row: a foreign key constraint fails (`mtm_receiving_application`.`dunnage_parts`, CONSTRAINT `FK_dunnage_parts_type_id` FOREIGN KEY (`type_id`) REFERENCES `dunnage_types` (`id`))" |
-| sp_volvo_part_component_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Cannot add or update a child row: a foreign key constraint fails (`mtm_receiving_application`.`volvo_part_components`, CONSTRAINT `volvo_part_components_ibfk_1` FOREIGN KEY (`parent_part_number`) REFERENCES `volvo_parts_master` (`part_number`) ON DELETE CASC)" |
+| sp_volvo_part_component_insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Cannot add or update a child row: a foreign key constraint fails (`mtm_receiving_application`.`volvo_part_components`, CONSTRAINT `volvo_part_components_ibfk_1` FOREIGN KEY (`parent_part_number`) REFERENCES `volvo_masterdata` (`part_number`) ON DELETE CASC)" |
 
 **Recommendation:** Run with `-UseExecutionOrder` flag or add prerequisite test data.
 
@@ -179,4 +179,3 @@ These stored procedures failed due to data validation issues.
 2. Regenerate mock data if parameter mismatches exist
 3. Run with `-UseExecutionOrder` flag to reduce FK constraint errors
 4. Review and customize mock data values in `01-mock-data.json`
-

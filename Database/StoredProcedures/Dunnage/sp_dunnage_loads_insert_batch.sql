@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_loads_insert_batch$$
+DROP PROCEDURE IF EXISTS sp_dunnage_history_insert_batch$$
 
-CREATE PROCEDURE sp_dunnage_loads_insert_batch(
+CREATE PROCEDURE sp_dunnage_history_insert_batch(
     IN p_load_data JSON,
     IN p_user VARCHAR(50)
 )
@@ -12,15 +12,15 @@ BEGIN
     DECLARE v_load_uuid CHAR(36);
     DECLARE v_part_id VARCHAR(50);
     DECLARE v_quantity DECIMAL(10,2);
-    
+
     SET count = JSON_LENGTH(p_load_data);
-    
+
     WHILE i < count DO
         SET v_load_uuid = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].load_uuid')));
         SET v_part_id = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].part_id')));
         SET v_quantity = JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].quantity'));
-        
-        INSERT INTO dunnage_loads (
+
+        INSERT INTO dunnage_history (
             load_uuid,
             part_id,
             quantity,
@@ -35,7 +35,7 @@ BEGIN
             p_user,
             NOW()
         );
-        
+
         SET i = i + 1;
     END WHILE;
 END$$

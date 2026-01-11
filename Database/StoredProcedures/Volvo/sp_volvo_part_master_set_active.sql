@@ -14,8 +14,8 @@ CREATE PROCEDURE sp_volvo_part_master_set_active(
   IN p_is_active TINYINT(1)
 )
 BEGIN
-  UPDATE volvo_parts_master
-  SET 
+  UPDATE volvo_masterdata
+  SET
     is_active = p_is_active,
     modified_date = CURRENT_TIMESTAMP
   WHERE part_number = p_part_number;

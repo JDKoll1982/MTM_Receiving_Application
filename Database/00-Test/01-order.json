@@ -117,18 +117,18 @@
     {
       "order": 1130,
       "storedProcedures": [
-        "sp_dunnage_loads_get_all",
-        "sp_dunnage_loads_get_by_date_range",
-        "sp_dunnage_loads_get_by_id"
+        "sp_dunnage_history_get_all",
+        "sp_dunnage_history_get_by_date_range",
+        "sp_dunnage_history_get_by_id"
       ],
       "category": "DunnageLoads"
     },
     {
       "order": 1140,
       "storedProcedures": [
-        "sp_inventoried_dunnage_check",
-        "sp_inventoried_dunnage_get_all",
-        "sp_inventoried_dunnage_get_by_part"
+        "sp_dunnage_requires_inventory_check",
+        "sp_dunnage_requires_inventory_get_all",
+        "sp_dunnage_requires_inventory_get_by_part"
       ],
       "category": "InventoriedDunnage"
     },
@@ -179,8 +179,8 @@
         "sp_SystemSettings_GetAll",
         "sp_SystemSettings_GetByCategory",
         "sp_SystemSettings_GetByKey",
-        "sp_volvo_settings_get",
-        "sp_volvo_settings_get_all"
+        "sp_settings_module_volvo_get",
+        "sp_settings_module_volvo_get_all"
       ],
       "category": "Settings"
     },
@@ -197,17 +197,17 @@
     {
       "order": 130,
       "storedProcedures": [
-        "sp_dunnage_loads_insert",
-        "sp_dunnage_loads_insert_batch",
-        "sp_dunnage_loads_update"
+        "sp_dunnage_history_insert",
+        "sp_dunnage_history_insert_batch",
+        "sp_dunnage_history_update"
       ],
       "category": "DunnageLoads"
     },
     {
       "order": 140,
       "storedProcedures": [
-        "sp_inventoried_dunnage_insert",
-        "sp_inventoried_dunnage_update"
+        "sp_dunnage_requires_inventory_insert",
+        "sp_dunnage_requires_inventory_update"
       ],
       "category": "InventoriedDunnage"
     },
@@ -223,7 +223,7 @@
     },
     {
       "order": 160,
-      "storedProcedures": "sp_routing_label_history_insert",
+      "storedProcedures": "sp_routing_history_insert",
       "category": "RoutingHistory"
     },
     {
@@ -294,8 +294,8 @@
         "sp_SystemSettings_ResetToDefault",
         "sp_SystemSettings_SetLocked",
         "sp_SystemSettings_UpdateValue",
-        "sp_volvo_settings_reset",
-        "sp_volvo_settings_upsert"
+        "sp_settings_module_volvo_reset",
+        "sp_settings_module_volvo_upsert"
       ],
       "category": "Settings"
     },
@@ -306,12 +306,12 @@
     },
     {
       "order": 2130,
-      "storedProcedures": "sp_dunnage_loads_delete",
+      "storedProcedures": "sp_dunnage_history_delete",
       "category": "DunnageLoads"
     },
     {
       "order": 2140,
-      "storedProcedures": "sp_inventoried_dunnage_delete",
+      "storedProcedures": "sp_dunnage_requires_inventory_delete",
       "category": "InventoriedDunnage"
     },
     {

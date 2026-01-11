@@ -1,4 +1,4 @@
-# sp_dunnage_loads_get_by_id
+# sp_dunnage_history_get_by_id
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_DunnageLoad.cs:59
-"sp_dunnage_loads_get_by_id",
+"sp_dunnage_history_get_by_id",
 
 ```
 
@@ -39,5 +39,3 @@
 - Module_Volvo\Interfaces\IDao_VolvoShipment.cs
 - Module_Volvo\Services\Service_Volvo.cs
 - Module_Volvo\Services\Service_VolvoMasterData.cs
-
-

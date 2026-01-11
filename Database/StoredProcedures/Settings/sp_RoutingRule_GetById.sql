@@ -12,7 +12,7 @@ CREATE PROCEDURE sp_RoutingRule_GetById(
     IN p_id INT
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         match_type,
         pattern,
@@ -22,7 +22,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM routing_rules
+    FROM routing_home_locations
     WHERE id = p_id;
 END$$
 

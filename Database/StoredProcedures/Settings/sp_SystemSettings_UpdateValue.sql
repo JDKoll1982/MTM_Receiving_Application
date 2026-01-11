@@ -18,27 +18,27 @@ CREATE PROCEDURE sp_SystemSettings_UpdateValue(
 BEGIN
     DECLARE v_old_value TEXT;
     DECLARE v_is_locked BOOLEAN;
-    
+
     -- Check if setting is locked
-    SELECT setting_value, is_locked 
+    SELECT setting_value, is_locked
     INTO v_old_value, v_is_locked
-    FROM system_settings 
+    FROM settings_universal
     WHERE id = p_setting_id;
-    
+
     IF v_is_locked THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Setting is locked and cannot be modified';
     END IF;
-    
+
     -- Update the setting
-    UPDATE system_settings
+    UPDATE settings_universal
     SET setting_value = p_new_value,
         updated_at = CURRENT_TIMESTAMP,
         updated_by = p_changed_by
     WHERE id = p_setting_id;
-    
+
     -- Log the change
-    INSERT INTO settings_audit_log (
+    INSERT INTO settings_activity (
         setting_id,
         old_value,
         new_value,
@@ -55,7 +55,7 @@ BEGIN
         p_ip_address,
         p_workstation_name
     );
-    
+
     SELECT 1 AS success;
 END$$
 

@@ -13,7 +13,7 @@ This file is a companion to the main module doc:
 
 ## MySQL Tables and Stored Procedures (Observed)
 
-### receiving_loads
+### receiving_history
 
 Used for Guided, Manual, and Edit workflows (save + history queries).
 
@@ -25,7 +25,7 @@ Used for Guided, Manual, and Edit workflows (save + history queries).
 | Dao_ReceivingLoad.GetHistoryAsync | sp_GetReceivingHistory | Database/StoredProcedures/Receiving/sp_GetReceivingHistory.sql | Returns rows by PartID and date range. |
 | Dao_ReceivingLoad.GetAllAsync | sp_GetAllReceivingLoads | Database/StoredProcedures/Receiving/sp_GetAllReceivingLoads.sql | Returns rows by date range (Edit Mode history). |
 
-### package_type_preferences
+### receiving_package_types
 
 Used for storing a default package type per part.
 
@@ -35,7 +35,7 @@ Used for storing a default package type per part.
 | Dao_PackageTypePreference.SavePreferenceAsync | sp_SavePackageTypePreference | Database/StoredProcedures/Receiving/sp_SavePackageTypePreference.sql | Upsert by PartID (ON DUPLICATE KEY). |
 | Dao_PackageTypePreference.DeletePreferenceAsync | sp_DeletePackageTypePreference | Database/StoredProcedures/Receiving/sp_DeletePackageTypePreference.sql | Delete by PartID. |
 
-### label_table_receiving
+### receiving_label_data
 
 Used for receiving label line inserts.
 

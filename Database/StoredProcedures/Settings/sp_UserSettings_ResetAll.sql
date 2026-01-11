@@ -14,7 +14,7 @@ CREATE PROCEDURE sp_UserSettings_ResetAll(
 )
 BEGIN
     -- Log all resets before deletion
-    INSERT INTO settings_audit_log (
+    INSERT INTO settings_activity (
         setting_id,
         user_setting_id,
         old_value,
@@ -23,7 +23,7 @@ BEGIN
         changed_by,
         changed_at
     )
-    SELECT 
+    SELECT
         us.setting_id,
         us.id,
         us.setting_value,
@@ -31,13 +31,13 @@ BEGIN
         'reset',
         p_changed_by,
         CURRENT_TIMESTAMP
-    FROM user_settings us
+    FROM settings_personal us
     WHERE us.user_id = p_user_id;
-    
+
     -- Delete all user overrides
-    DELETE FROM user_settings 
+    DELETE FROM settings_personal
     WHERE user_id = p_user_id;
-    
+
     SELECT ROW_COUNT() AS reset_count;
 END$$
 

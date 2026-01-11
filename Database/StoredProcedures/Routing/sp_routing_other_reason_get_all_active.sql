@@ -19,7 +19,7 @@ BEGIN
         description,
         is_active,
         display_order
-    FROM routing_other_reasons
+    FROM routing_po_alternatives
     WHERE is_active = 1
     ORDER BY display_order, description;
 

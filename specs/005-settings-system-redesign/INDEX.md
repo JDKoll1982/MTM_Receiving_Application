@@ -163,11 +163,11 @@ Categories:
 
 ## 🔐 Security Highlights
 
-✅ **Encryption**: AES-256 + DPAPI for passwords  
-✅ **Role-Based Access**: 5 permission levels  
-✅ **Audit Trail**: Complete change history  
-✅ **Locked Settings**: Admin-controlled  
-✅ **Masked Passwords**: UI shows `********` with reveal  
+✅ **Encryption**: AES-256 + DPAPI for passwords
+✅ **Role-Based Access**: 5 permission levels
+✅ **Audit Trail**: Complete change history
+✅ **Locked Settings**: Admin-controlled
+✅ **Masked Passwords**: UI shows `********` with reveal
 
 ---
 
@@ -176,25 +176,25 @@ Categories:
 ```csharp
 // Get a setting (with user override if applicable)
 var setting = await _settingsService.GetSettingAsync(
-    "Receiving", 
-    "DefaultReceivingMode", 
+    "Receiving",
+    "DefaultReceivingMode",
     userId: currentUser.Id
 );
 string mode = setting.Data.AsString(); // "guided"
 
 // Save a setting
 await _settingsService.SaveSettingAsync(
-    "Routing", 
-    "CsvRetryMaxAttempts", 
-    "5", 
+    "Routing",
+    "CsvRetryMaxAttempts",
+    "5",
     userId: currentUser.Id
 );
 
 // Reset user preference
 await _settingsService.ResetSettingAsync(
-    "Receiving", 
-    "DefaultReceivingMode", 
-    userId: currentUser.Id, 
+    "Receiving",
+    "DefaultReceivingMode",
+    userId: currentUser.Id,
     isUserOverride: true
 );
 ```
@@ -261,19 +261,19 @@ await _settingsService.ResetSettingAsync(
 
 ## ❓ FAQ
 
-**Q: Can we add new settings later?**  
-A: Yes! Simply add a row to `system_settings` table. No code changes needed.
+**Q: Can we add new settings later?**
+A: Yes! Simply add a row to `settings_universal` table. No code changes needed.
 
-**Q: What happens to existing appsettings.json?**  
+**Q: What happens to existing appsettings.json?**
 A: Deployment-only settings (connection strings) stay. Runtime config moves to database.
 
-**Q: How do user preferences work?**  
+**Q: How do user preferences work?**
 A: Users can override system defaults for settings where `scope='user'`. System default used as fallback.
 
-**Q: Can we rollback if something goes wrong?**  
+**Q: Can we rollback if something goes wrong?**
 A: Yes. Keep current appsettings.json as fallback during migration. Feature flag to toggle old/new system.
 
-**Q: How are passwords protected?**  
+**Q: How are passwords protected?**
 A: Encrypted with AES-256 using Windows DPAPI. Only visible as `********` in UI.
 
 ---
@@ -292,18 +292,18 @@ For questions or issues during implementation:
 
 This package provides **everything needed** to implement a modern, database-driven settings system for the MTM Receiving Application:
 
-✅ **Complete UI design** (mockup + template)  
-✅ **Full database schema** (tables + stored procedures)  
-✅ **Detailed specification** (400+ lines)  
-✅ **Developer guide** (step-by-step instructions)  
-✅ **Migration plan** (6-week phased approach)  
-✅ **Security strategy** (encryption + audit trail)  
+✅ **Complete UI design** (mockup + template)
+✅ **Full database schema** (tables + stored procedures)
+✅ **Detailed specification** (400+ lines)
+✅ **Developer guide** (step-by-step instructions)
+✅ **Migration plan** (6-week phased approach)
+✅ **Security strategy** (encryption + audit trail)
 ✅ **All 79 settings** from SETTABLE_OBJECTS reports
 
 **Ready to implement!** 🚀
 
 ---
 
-**Package Version:** 1.0  
-**Last Updated:** January 10, 2026  
+**Package Version:** 1.0
+**Last Updated:** January 10, 2026
 **Status:** ✅ Complete - Ready for Review & Implementation

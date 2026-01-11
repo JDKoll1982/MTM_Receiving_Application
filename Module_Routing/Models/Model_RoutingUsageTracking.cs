@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Routing.Models;
 
 /// <summary>
 /// Represents usage tracking for personalized Quick Add and smart sorting
-/// Maps to routing_usage_tracking database table
+/// Maps to routing_recipient_tracker database table
 /// </summary>
 public class Model_RoutingUsageTracking
 {

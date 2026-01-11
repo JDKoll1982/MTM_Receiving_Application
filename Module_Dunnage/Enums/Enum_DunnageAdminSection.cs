@@ -26,7 +26,7 @@ public enum Enum_DunnageAdminSection
     Specs = 3,
 
     /// <summary>
-    /// Inventoried Dunnage List (CRUD on inventoried_dunnage_list table)
+    /// Inventoried Dunnage List (CRUD on dunnage_requires_inventory_list table)
     /// </summary>
     InventoriedList = 4
 }

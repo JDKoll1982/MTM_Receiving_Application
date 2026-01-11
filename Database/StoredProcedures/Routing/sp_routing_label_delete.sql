@@ -17,35 +17,35 @@ CREATE PROCEDURE sp_routing_label_delete(
 )
 proc: BEGIN
     DECLARE v_exists INT DEFAULT 0;
-    
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         GET DIAGNOSTICS CONDITION 1
             p_error_message = MESSAGE_TEXT;
         ROLLBACK;
     END;
-    
+
     -- Initialize output
     SET p_error_message = NULL;
-    
+
     -- Start transaction
     START TRANSACTION;
-    
+
     -- Validate ID exists
     SELECT COUNT(*) INTO v_exists
-    FROM routing_labels
+    FROM routing_label_data
     WHERE id = p_id;
-    
+
     IF v_exists = 0 THEN
         SET p_error_message = 'Label ID not found';
         ROLLBACK;
         LEAVE proc;
     END IF;
-    
+
     -- Delete label
-    DELETE FROM routing_labels
+    DELETE FROM routing_label_data
     WHERE id = p_id;
-    
+
     -- Commit transaction
     COMMIT;
 END proc$$

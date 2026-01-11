@@ -10,7 +10,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_PackageType_GetAll$$
 CREATE PROCEDURE sp_PackageType_GetAll()
 BEGIN
-    SELECT 
+    SELECT
         id,
         name,
         code,
@@ -18,7 +18,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM package_types
+    FROM dunnage_types
     WHERE is_active = TRUE
     ORDER BY name;
 END$$

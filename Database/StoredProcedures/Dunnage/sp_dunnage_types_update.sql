@@ -10,7 +10,7 @@ CREATE PROCEDURE sp_dunnage_types_update(
 )
 BEGIN
     UPDATE dunnage_types
-    SET 
+    SET
         type_name = p_type_name,
         icon = p_icon,
         modified_by = p_user,

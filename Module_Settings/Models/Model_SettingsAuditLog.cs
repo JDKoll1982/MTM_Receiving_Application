@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents an audit log entry for settings changes
-/// Database Table: settings_audit_log
+/// Database Table: settings_activity
 /// </summary>
 public partial class Model_SettingsAuditLog : ObservableObject
 {

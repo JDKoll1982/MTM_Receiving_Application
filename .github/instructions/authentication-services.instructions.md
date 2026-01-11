@@ -1,7 +1,7 @@
 # Authentication Services Guidelines
 
-**Category**: Authentication  
-**Last Updated**: December 16, 2025  
+**Category**: Authentication
+**Last Updated**: December 16, 2025
 **Applies To**: Services/Authentication/* and Contracts/Services/IService_Authentication.cs, IService_SessionManager.cs
 
 ## Purpose
@@ -79,7 +79,7 @@ Authentication operations support optional progress reporting:
 
 ```csharp
 public async Task<AuthenticationResult> AuthenticateByWindowsUsernameAsync(
-    string windowsUsername, 
+    string windowsUsername,
     IProgress<string>? progress = null)
 {
     progress?.Report("Validating credentials...");
@@ -103,7 +103,7 @@ Authenticates users on personal workstations using Windows username.
 **Requirements**:
 - Query database for user by `windows_username`
 - Verify user is active (`is_active = true`)
-- Log successful authentication to `user_activity_log`
+- Log successful authentication to `settings_personal_activity_log`
 - Return user object on success
 
 **Error Cases**:
@@ -148,7 +148,7 @@ Validates PIN format and uniqueness.
 Determines if current workstation is personal or shared terminal.
 
 **Logic**:
-- Query `workstation_config` table by computer name
+- Query `auth_workstation_config` table by computer name
 - If found → Return configured type
 - If not found → Default to "personal_workstation"
 - Never throw exceptions (return safe defaults)

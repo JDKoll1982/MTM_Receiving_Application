@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Settings.Models;
 
 /// <summary>
 /// Represents an auto-routing rule with pattern matching
-/// Database Table: routing_rules
+/// Database Table: routing_home_locations
 /// </summary>
 public partial class Model_RoutingRule : ObservableObject
 {

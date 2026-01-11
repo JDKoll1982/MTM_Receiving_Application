@@ -1,15 +1,15 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_loads_insert$$
+DROP PROCEDURE IF EXISTS sp_dunnage_history_insert$$
 
-CREATE PROCEDURE sp_dunnage_loads_insert(
+CREATE PROCEDURE sp_dunnage_history_insert(
     IN p_load_uuid CHAR(36),
     IN p_part_id VARCHAR(50),
     IN p_quantity DECIMAL(10,2),
     IN p_user VARCHAR(50)
 )
 BEGIN
-    INSERT INTO dunnage_loads (
+    INSERT INTO dunnage_history (
         load_uuid,
         part_id,
         quantity,

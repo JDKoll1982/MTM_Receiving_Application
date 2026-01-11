@@ -1,4 +1,4 @@
-# sp_volvo_settings_reset
+# sp_settings_module_volvo_reset
 
 **Category:** Settings
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Volvo\Data\Dao_VolvoSettings.cs:97
-"sp_volvo_settings_reset",
+"sp_settings_module_volvo_reset",
 
 ```
 
@@ -27,5 +27,3 @@
 ### Dao_VolvoSettings.ResetSettingAsync
 **Called by (1 references):**
 - Same file (1 calls)
-
-

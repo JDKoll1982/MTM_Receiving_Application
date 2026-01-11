@@ -29,7 +29,7 @@ public class Model_VolvoPartComponent
     public int Quantity { get; set; } = 1;
 
     /// <summary>
-    /// Quantity per skid for the component part (from volvo_parts_master)
+    /// Quantity per skid for the component part (from volvo_masterdata)
     /// Used for calculating total piece count during component explosion
     /// </summary>
     public int ComponentQuantityPerSkid { get; set; }

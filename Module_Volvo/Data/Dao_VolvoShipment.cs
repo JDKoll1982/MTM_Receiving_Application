@@ -11,7 +11,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Volvo.Data;
 
 /// <summary>
-/// Data Access Object for volvo_shipments table
+/// Data Access Object for volvo_label_data table
 /// Provides CRUD operations using stored procedures
 /// </summary>
 public class Dao_VolvoShipment
@@ -190,7 +190,7 @@ public class Dao_VolvoShipment
                 CommandText = @"
                     SELECT id, shipment_date, shipment_number, po_number, receiver_number,
                            employee_number, notes, status, created_date, modified_date, is_archived
-                    FROM volvo_shipments
+                    FROM volvo_label_data
                     WHERE id = @p_id",
                 CommandType = CommandType.Text
             };

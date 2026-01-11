@@ -13,13 +13,13 @@ CREATE PROCEDURE sp_RoutingRule_FindMatch(
     IN p_value VARCHAR(100)
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         match_type,
         pattern,
         destination_location,
         priority
-    FROM routing_rules
+    FROM routing_home_locations
     WHERE match_type = p_match_type
       AND is_active = TRUE
       AND (

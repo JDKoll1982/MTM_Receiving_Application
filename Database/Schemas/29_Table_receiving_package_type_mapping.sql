@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: package_type_mappings
+-- Table: receiving_package_type_mapping
 -- Module: Settings
 -- Purpose: Maps part prefixes to package types (Receiving module)
 -- ============================================================================
 
-DROP TABLE IF EXISTS package_type_mappings;
+DROP TABLE IF EXISTS receiving_package_type_mapping;
 
-CREATE TABLE package_type_mappings (
+CREATE TABLE receiving_package_type_mapping (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for mapping record',
 
     -- Mapping
@@ -21,7 +21,7 @@ CREATE TABLE package_type_mappings (
     -- Timestamps
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when record was last updated',
-    created_by INT NULL COMMENT 'FK to users table (nullable)',
+    created_by INT NULL COMMENT 'FK toauth_users table (nullable)',
 
     -- Constraints
     UNIQUE KEY unique_prefix (part_prefix),
@@ -32,7 +32,7 @@ COMMENT='Part prefix to package type mappings for receiving workflow';
 -- ============================================================================
 -- Initial Data
 -- ============================================================================
-INSERT IGNORE INTO package_type_mappings (part_prefix, package_type, is_default, display_order, is_active) VALUES
+INSERT IGNORE INTO receiving_package_type_mapping (part_prefix, package_type, is_default, display_order, is_active) VALUES
 ('MCC', 'Coils', FALSE, 1, TRUE),
 ('MMF', 'Sheets', FALSE, 2, TRUE),
 ('DEFAULT', 'Skids', TRUE, 99, TRUE);

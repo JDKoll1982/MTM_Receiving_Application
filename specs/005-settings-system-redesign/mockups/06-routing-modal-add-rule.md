@@ -1,8 +1,8 @@
 # Routing - Add/Edit Routing Rule
 
-**SVG File**: `06-routing-modal-add-rule.svg`  
-**Parent Page**: Routing Settings  
-**Type**: ContentDialog  
+**SVG File**: `06-routing-modal-add-rule.svg`
+**Parent Page**: Routing Settings
+**Type**: ContentDialog
 **Purpose**: Create or modify automatic routing rules
 
 ---
@@ -16,10 +16,10 @@
     PrimaryButtonText="Save"
     CloseButtonText="Cancel"
     DefaultButton="Primary">
-    
+
     <StackPanel Spacing="16" MinWidth="400">
         <!-- Match Type -->
-        <ComboBox 
+        <ComboBox
             Header="Match Type"
             SelectedItem="{x:Bind RoutingRule.MatchType, Mode=TwoWay}"
             Width="360">
@@ -28,9 +28,9 @@
             <ComboBoxItem Content="PO Type"/>
             <ComboBoxItem Content="Part Category"/>
         </ComboBox>
-        
+
         <!-- Pattern -->
-        <TextBox 
+        <TextBox
             Header="Pattern"
             Text="{x:Bind RoutingRule.Pattern, Mode=TwoWay}"
             PlaceholderText="e.g., VOL-*, VENDOR-123, etc."
@@ -39,17 +39,17 @@
                 <TextBlock Text="Use * for wildcard matching"/>
             </TextBox.Description>
         </TextBox>
-        
+
         <!-- Destination -->
-        <ComboBox 
+        <ComboBox
             Header="Destination Location"
             ItemsSource="{x:Bind Locations}"
             SelectedItem="{x:Bind RoutingRule.DestinationLocation, Mode=TwoWay}"
             DisplayMemberPath="Name"
             Width="360"/>
-        
+
         <!-- Priority -->
-        <NumberBox 
+        <NumberBox
             Header="Priority"
             Value="{x:Bind RoutingRule.Priority, Mode=TwoWay}"
             Minimum="1"
@@ -73,22 +73,22 @@ public partial class Model_RoutingRule : ObservableObject
 {
     [ObservableProperty]
     private int _id;
-    
+
     [ObservableProperty]
     private string _matchType = "Part Number";
-    
+
     [ObservableProperty]
     private string _pattern = string.Empty;
-    
+
     [ObservableProperty]
     private string _destinationLocation = string.Empty;
-    
+
     [ObservableProperty]
     private int _priority = 1;
-    
+
     [ObservableProperty]
     private bool _isActive = true;
-    
+
     [ObservableProperty]
     private DateTime _createdDate = DateTime.Now;
 }
@@ -106,13 +106,13 @@ private async Task AddRoutingRuleAsync()
     {
         XamlRoot = _xamlRoot
     };
-    
+
     var result = await dialog.ShowAsync();
-    
+
     if (result == ContentDialogResult.Primary)
     {
         var saveResult = await _routingService.SaveRoutingRuleAsync(dialog.RoutingRule);
-        
+
         if (saveResult.IsSuccess)
         {
             await LoadRoutingRulesAsync();
@@ -135,7 +135,7 @@ public class RoutingRuleMatcher
         var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*") + "$";
         return Regex.IsMatch(value, regexPattern, RegexOptions.IgnoreCase);
     }
-    
+
     public static string GetDestination(List<Model_RoutingRule> rules, string partNumber)
     {
         // Sort by priority (lower = higher priority)
@@ -143,7 +143,7 @@ public class RoutingRuleMatcher
             .Where(r => r.IsActive)
             .OrderBy(r => r.Priority)
             .ToList();
-        
+
         foreach (var rule in sortedRules)
         {
             if (rule.MatchType == "Part Number" && Matches(rule.Pattern, partNumber))
@@ -151,7 +151,7 @@ public class RoutingRuleMatcher
                 return rule.DestinationLocation;
             }
         }
-        
+
         return null; // No match, use fallback
     }
 }
@@ -173,7 +173,7 @@ public class RoutingRuleMatcher
 ## Database Schema
 
 ```sql
-CREATE TABLE routing_rules (
+CREATE TABLE routing_home_locations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     match_type VARCHAR(50) NOT NULL,
     pattern VARCHAR(100) NOT NULL,
@@ -197,19 +197,19 @@ private bool ValidateRoutingRule()
         ShowError("Pattern is required");
         return false;
     }
-    
+
     if (string.IsNullOrWhiteSpace(RoutingRule.DestinationLocation))
     {
         ShowError("Destination location is required");
         return false;
     }
-    
+
     if (RoutingRule.Priority < 1 || RoutingRule.Priority > 100)
     {
         ShowError("Priority must be between 1 and 100");
         return false;
     }
-    
+
     return true;
 }
 ```

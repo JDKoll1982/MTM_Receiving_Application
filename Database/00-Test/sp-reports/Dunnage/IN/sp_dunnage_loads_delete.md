@@ -1,4 +1,4 @@
-# sp_dunnage_loads_delete
+# sp_dunnage_history_delete
 
 **Category:** Dunnage
 **Parameter Types:** IN
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_DunnageLoad.cs:176
-"sp_dunnage_loads_delete",
+"sp_dunnage_history_delete",
 
 ```
 
@@ -41,5 +41,3 @@
 - Module_Volvo\Data\Dao_VolvoShipmentLine.cs
 - Module_Volvo\Interfaces\IDao_VolvoShipmentLine.cs
 - Module_Volvo\Services\Service_Volvo.cs
-
-

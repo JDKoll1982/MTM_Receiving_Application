@@ -38,9 +38,9 @@ BEGIN
         o.description AS other_reason_description,
         l.csv_exported,
         l.csv_export_date
-    FROM routing_labels l
+    FROM routing_label_data l
     INNER JOIN routing_recipients r ON l.recipient_id = r.id
-    LEFT JOIN routing_other_reasons o ON l.other_reason_id = o.id
+    LEFT JOIN routing_po_alternatives o ON l.other_reason_id = o.id
     WHERE l.is_active = 1
     ORDER BY l.created_date DESC
     LIMIT p_limit OFFSET p_offset;

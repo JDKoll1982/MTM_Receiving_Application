@@ -220,8 +220,8 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
             StatusMessage = "Loading OTHER reasons...";
 
             // Issue #13: GetOtherReasonsAsync not implemented in IRoutingService
-            // Feature requires database table: routing_other_reasons (id, reason_code, description, is_active)
-            // Stored procedure: sp_routing_other_reasons_get_active
+            // Feature requires database table: routing_po_alternatives (id, reason_code, description, is_active)
+            // Stored procedure: sp_routing_po_alternatives_get_active
             // Priority: LOW - Wizard mode (PO-based) is primary workflow
             // var reasonsResult = await _routingService.GetOtherReasonsAsync();
             // if (reasonsResult.IsSuccess && reasonsResult.Data != null)

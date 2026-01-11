@@ -17,8 +17,8 @@ SELECT
     COUNT(vsl.id) AS part_count,
     vs.created_date,
     'Volvo' AS source_module
-FROM volvo_shipments vs
-LEFT JOIN volvo_shipment_lines vsl ON vs.id = vsl.shipment_id
+FROM volvo_label_data vs
+LEFT JOIN volvo_line_data vsl ON vs.id = vsl.shipment_id
 GROUP BY vs.id, vs.shipment_number, vs.shipment_date, vs.po_number, vs.receiver_number, vs.status, vs.employee_number, vs.notes, vs.created_date
 ORDER BY vs.created_date DESC;
 

@@ -30,8 +30,8 @@ BEGIN
 
     -- Check for duplicate DatabaseColumnName for same type
     IF EXISTS (
-        SELECT 1 FROM custom_field_definitions 
-        WHERE DunnageTypeID = p_dunnage_type_id 
+        SELECT 1 FROM dunnage_custom_fields
+        WHERE DunnageTypeID = p_dunnage_type_id
         AND DatabaseColumnName = p_database_column_name
     ) THEN
         SET p_status = -1;
@@ -40,7 +40,7 @@ BEGIN
         ROLLBACK;
     ELSE
         -- Insert custom field definition
-        INSERT INTO custom_field_definitions (
+        INSERT INTO dunnage_custom_fields (
             DunnageTypeID,
             FieldName,
             DatabaseColumnName,

@@ -13,8 +13,8 @@ CREATE PROCEDURE sp_PackageType_UsageCount(
 )
 BEGIN
     SELECT COUNT(*) AS usage_count
-    FROM package_type_mappings
-    WHERE package_type = (SELECT name FROM package_types WHERE id = p_id)
+    FROM receiving_package_type_mapping
+    WHERE package_type = (SELECT name FROM dunnage_types WHERE id = p_id)
       AND is_active = TRUE;
 END$$
 

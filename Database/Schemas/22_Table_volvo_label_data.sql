@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: volvo_shipments
+-- Table: volvo_label_data
 -- Module: Volvo
 -- Purpose: Header record for each Volvo dunnage shipment
 -- ============================================================================
 
-DROP TABLE IF EXISTS volvo_shipments;
+DROP TABLE IF EXISTS volvo_label_data;
 
-CREATE TABLE IF NOT EXISTS volvo_shipments (
+CREATE TABLE IF NOT EXISTS volvo_label_data (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for shipment record',
     shipment_date DATE NOT NULL COMMENT 'Date of the shipment (local business date)',
     shipment_number INT NOT NULL COMMENT 'Auto-increment within same day, resets daily; sequence number for shipment_date',

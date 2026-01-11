@@ -21,9 +21,9 @@ SELECT
         ELSE NULL
     END AS other_reason,
     'Routing' AS source_module
-FROM routing_labels rl
+FROM routing_label_data rl
 INNER JOIN routing_recipients rr ON rl.recipient_id = rr.id
-LEFT JOIN routing_other_reasons ror ON rl.other_reason_id = ror.id
+LEFT JOIN routing_po_alternatives ror ON rl.other_reason_id = ror.id
 WHERE rl.is_active = 1
 ORDER BY rl.created_date DESC, rl.id DESC;
 

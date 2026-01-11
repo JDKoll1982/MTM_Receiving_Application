@@ -12,7 +12,7 @@ CREATE PROCEDURE sp_ScheduledReport_GetById(
     IN p_id INT
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         report_type,
         schedule,
@@ -23,7 +23,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM scheduled_reports
+    FROM reporting_scheduled_reports
     WHERE id = p_id;
 END$$
 

@@ -162,7 +162,7 @@ All mockups include complete implementation examples for:
 
 Complete MySQL schema with:
 
-- ✅ 4 tables: `system_settings`, `user_settings`, `settings_audit_log`, `package_type_mappings`
+- ✅ 4 tables: `settings_universal`, `settings_personal`, `settings_activity`, `receiving_package_type_mapping`
 - ✅ All indexes and foreign keys
 - ✅ 79 settings seeded with data from SETTABLE_OBJECTS reports
 - ✅ Package type mappings (MCC→Coils, MMF→Sheets, DEFAULT→Skids)
@@ -303,15 +303,15 @@ Project overview with:
 
 ## 📊 Statistics
 
-**Total Settings Migrated:** 79  
-**Database Tables:** 4  
-**Stored Procedures:** 20  
-**Data Models:** 5+  
-**DAOs:** 3  
-**Services:** 2  
-**ViewModels:** 10  
-**Views:** 10  
-**Permission Levels:** 5  
+**Total Settings Migrated:** 79
+**Database Tables:** 4
+**Stored Procedures:** 20
+**Data Models:** 5+
+**DAOs:** 3
+**Services:** 2
+**ViewModels:** 10
+**Views:** 10
+**Permission Levels:** 5
 **Settings Categories:** 9
 
 ---
@@ -320,35 +320,35 @@ Project overview with:
 
 ### Database-Driven
 
-✅ All configuration moved from code/appsettings.json to MySQL  
-✅ Single source of truth for all settings  
+✅ All configuration moved from code/appsettings.json to MySQL
+✅ Single source of truth for all settings
 ✅ Change without redeployment
 
 ### Role-Based Access
 
-✅ User, Operator, Admin, Developer, Super Admin roles  
-✅ Enforced at UI and service layers  
+✅ User, Operator, Admin, Developer, Super Admin roles
+✅ Enforced at UI and service layers
 ✅ Locked settings prevent accidental changes
 
 ### User Preferences
 
-✅ Per-user overrides for applicable settings  
-✅ Fallback to system defaults  
+✅ Per-user overrides for applicable settings
+✅ Fallback to system defaults
 ✅ Reset to default capability
 
 ### Security
 
-✅ Sensitive settings encrypted using AES-256 + DPAPI  
-✅ Passwords masked in UI with reveal toggle  
+✅ Sensitive settings encrypted using AES-256 + DPAPI
+✅ Passwords masked in UI with reveal toggle
 ✅ Complete audit trail with who/what/when/where
 
 ### Modern UI
 
-✅ Auto-save with debounce (500ms)  
-✅ Inline validation errors  
-✅ Tooltips for help text  
-✅ Search/filter functionality  
-✅ File/folder pickers with test connection  
+✅ Auto-save with debounce (500ms)
+✅ Inline validation errors
+✅ Tooltips for help text
+✅ Search/filter functionality
+✅ File/folder pickers with test connection
 ✅ Grouped card layout
 
 ---
@@ -393,13 +393,13 @@ Project overview with:
 ```mermaid
 graph TD
     Root[specs/005-settings-system-redesign/]
-    
+
     Root --> README[README.md<br/>Project overview]
     Root --> SPEC[SPECIFICATION.md<br/>Complete technical spec]
     Root --> DEV[DEVELOPER_GUIDE.md<br/>Quick start guide]
     Root --> ANS[Answers.md<br/>Your requirements input]
     Root --> DELIV[DELIVERABLES_SUMMARY.md<br/>This document]
-    
+
     Root --> Mockups[mockups/]
     Mockups --> Nav[settings-mode-selection.svg<br/>Main navigation mockup]
     Mockups --> P01[01-system-settings.svg/.md<br/>System settings page]
@@ -420,17 +420,17 @@ graph TD
     Mockups --> M07[07-volvo-modal-sync.svg/.md<br/>Manual sync dialog]
     Mockups --> M08[08-reporting-modal-schedule.svg/.md<br/>Schedule report dialog]
     Mockups --> M09[09-preferences-modal-reset.svg/.md<br/>Reset preferences dialog]
-    
+
     Root --> Templates[templates/]
     Templates --> XAML[SettingsPageTemplate.xaml<br/>Reusable XAML template]
-    
+
     DB[Database/]
     DB --> Schemas[Schemas/]
     Schemas --> Schema[settings_system_schema.sql<br/>Tables + seed data]
-    
+
     DB --> SPs[StoredProcedures/]
     SPs --> SP[sp_SettingsSystem.sql<br/>All CRUD operations]
-    
+
     style Root fill:#e1f5ff
     style Mockups fill:#fff4e1
     style Templates fill:#e8f5e9
@@ -468,11 +468,11 @@ graph TB
         R17["Migrate to DB<br/>(deprecate appsettings)"]
         R18["Audit trail"]
     end
-    
+
     subgraph Implementation["Implementation Details"]
         I1["User, Operator, Admin,<br/>Developer, Super Admin"]
         I2["is_locked flag +<br/>enforcement in SPs"]
-        I3["user_settings table<br/>with fallback logic"]
+        I3["settings_personal table<br/>with fallback logic"]
         I4["All 79 settings in MySQL"]
         I5["Template + mockup provided"]
         I6["Debounced save<br/>in ViewModel"]
@@ -483,13 +483,13 @@ graph TB
         I11["Info icons with<br/>tooltips in template"]
         I12["Description text<br/>under controls"]
         I13["InforVisualSiteId setting"]
-        I14["package_type_mappings<br/>table + UI hint"]
+        I14["receiving_package_type_mapping<br/>table + UI hint"]
         I15["Test button in template"]
         I16["Single environment<br/>approach"]
         I17["Migration strategy<br/>in spec"]
-        I18["settings_audit_log table"]
+        I18["settings_activity table"]
     end
-    
+
     R1 --> I1
     R2 --> I2
     R3 --> I3
@@ -508,7 +508,7 @@ graph TB
     R16 --> I16
     R17 --> I17
     R18 --> I18
-    
+
     style R1 fill:#90EE90
     style R2 fill:#90EE90
     style R3 fill:#90EE90
@@ -527,7 +527,7 @@ graph TB
     style R16 fill:#90EE90
     style R17 fill:#90EE90
     style R18 fill:#90EE90
-    
+
     style I1 fill:#e1f5ff
     style I2 fill:#e1f5ff
     style I3 fill:#e1f5ff
@@ -573,7 +573,7 @@ Just let me know and I'll update the specification!
 
 ---
 
-**Status:** ✅ All Deliverables Complete  
-**Ready For:** Implementation  
-**Estimated Effort:** 6 weeks (phased approach)  
+**Status:** ✅ All Deliverables Complete
+**Ready For:** Implementation
+**Estimated Effort:** 6 weeks (phased approach)
 **Risk Level:** Low (comprehensive plan with rollback strategy)

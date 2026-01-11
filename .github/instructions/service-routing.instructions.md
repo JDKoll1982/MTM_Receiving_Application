@@ -1,10 +1,10 @@
 # Service Documentation: IRoutingService
 
-**Module:** Module_Routing  
-**Service:** RoutingService  
-**Interface:** IRoutingService  
-**Implementation:** `Services/RoutingService.cs`  
-**Version:** 1.0  
+**Module:** Module_Routing
+**Service:** RoutingService
+**Interface:** IRoutingService
+**Implementation:** `Services/RoutingService.cs`
+**Version:** 1.0
 **Date:** 2026-01-06
 
 ---
@@ -62,7 +62,7 @@ Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label, int editedByEm
 1. Retrieves original label from database
 2. Validates updated label data
 3. Updates label in database
-4. Compares old vs new, logs each changed field to routing_label_history
+4. Compares old vs new, logs each changed field to routing_history
 5. Returns success/failure result
 
 **Important Notes:**
@@ -101,9 +101,9 @@ Model_Dao_Result ValidateLabel(Model_RoutingLabel label)
 ### CheckDuplicateLabelAsync
 ```csharp
 Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateLabelAsync(
-    string poNumber, 
-    string lineNumber, 
-    int recipientId, 
+    string poNumber,
+    string lineNumber,
+    int recipientId,
     DateTime createdDate)
 ```
 
@@ -152,8 +152,8 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 {
   "RoutingModule": {
     "CsvExportPath": {
-      "Network": "\\\\server\\share\\routing_labels.csv",
-      "Local": "C:\\RoutingLabels\\routing_labels.csv"
+      "Network": "\\\\server\\share\\routing_label_data.csv",
+      "Local": "C:\\RoutingLabels\\routing_label_data.csv"
     },
     "CsvRetry": {
       "MaxAttempts": 3,
@@ -246,7 +246,7 @@ if (updateResult.IsSuccess)
 try
 {
     var result = await _routingService.CreateLabelAsync(label);
-    
+
     if (result.IsSuccess)
     {
         // Success path
@@ -327,6 +327,6 @@ catch (Exception ex)
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2026-01-06  
+**Document Version:** 1.0
+**Last Updated:** 2026-01-06
 **Next Review:** After implementing CODE_REVIEW fixes

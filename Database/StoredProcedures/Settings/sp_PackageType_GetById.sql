@@ -12,7 +12,7 @@ CREATE PROCEDURE sp_PackageType_GetById(
     IN p_id INT
 )
 BEGIN
-    SELECT 
+    SELECT
         id,
         name,
         code,
@@ -20,7 +20,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM package_types
+    FROM dunnage_types
     WHERE id = p_id;
 END$$
 

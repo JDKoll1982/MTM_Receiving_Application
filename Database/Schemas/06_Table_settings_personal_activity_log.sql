@@ -1,10 +1,10 @@
 -- ============================================================================
--- Table: user_activity_log
+-- Table: settings_personal_activity_log
 -- Module: Authentication
 -- Purpose: Audit trail for authentication events and user actions
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS user_activity_log (
+CREATE TABLE IF NOT EXISTS settings_personal_activity_log (
     log_id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for each log entry',
     event_type VARCHAR(50) NOT NULL COMMENT 'Type of event (e.g., Login, Logout, Failed_Login, Password_Change)',
     username VARCHAR(50) NULL COMMENT 'Username associated with the event (NULL for system events)',

@@ -15,8 +15,8 @@ CREATE PROCEDURE sp_volvo_shipment_complete(
   IN p_receiver_number VARCHAR(50)
 )
 BEGIN
-  UPDATE volvo_shipments
-  SET 
+  UPDATE volvo_label_data
+  SET
     po_number = p_po_number,
     receiver_number = p_receiver_number,
     status = 'completed',

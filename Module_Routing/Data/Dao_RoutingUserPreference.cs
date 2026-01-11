@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 namespace MTM_Receiving_Application.Module_Routing.Data;
 
 /// <summary>
-/// Data Access Object for routing_user_preferences table
+/// Data Access Object for settings_routing_personal table
 /// </summary>
 public class Dao_RoutingUserPreference
 {

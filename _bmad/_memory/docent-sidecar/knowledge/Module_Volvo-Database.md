@@ -55,10 +55,10 @@ Companion to:
 
 | DAO | Stored Procedure | Script Path |
 |-----|------------------|-------------|
-| Dao_VolvoSettings | sp_volvo_settings_get | Database/StoredProcedures/Volvo/sp_volvo_settings_get.sql |
-| Dao_VolvoSettings | sp_volvo_settings_get_all | Database/StoredProcedures/Volvo/sp_volvo_settings_get_all.sql |
-| Dao_VolvoSettings | sp_volvo_settings_upsert | Database/StoredProcedures/Volvo/sp_volvo_settings_upsert.sql |
-| Dao_VolvoSettings | sp_volvo_settings_reset | Database/StoredProcedures/Volvo/sp_volvo_settings_reset.sql |
+| Dao_VolvoSettings | sp_settings_module_volvo_get | Database/StoredProcedures/Volvo/sp_settings_module_volvo_get.sql |
+| Dao_VolvoSettings | sp_settings_module_volvo_get_all | Database/StoredProcedures/Volvo/sp_settings_module_volvo_get_all.sql |
+| Dao_VolvoSettings | sp_settings_module_volvo_upsert | Database/StoredProcedures/Volvo/sp_settings_module_volvo_upsert.sql |
+| Dao_VolvoSettings | sp_settings_module_volvo_reset | Database/StoredProcedures/Volvo/sp_settings_module_volvo_reset.sql |
 
 ## Notes / Gaps
 

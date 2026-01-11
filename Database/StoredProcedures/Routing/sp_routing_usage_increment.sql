@@ -33,7 +33,7 @@ sp_routing_usage_increment: BEGIN
     END IF;
 
     -- Insert or update usage tracking
-    INSERT INTO routing_usage_tracking (employee_number, recipient_id, usage_count, last_used_date)
+    INSERT INTO routing_recipient_tracker (employee_number, recipient_id, usage_count, last_used_date)
     VALUES (p_employee_number, p_recipient_id, 1, NOW())
     ON DUPLICATE KEY UPDATE
         usage_count = usage_count + 1,

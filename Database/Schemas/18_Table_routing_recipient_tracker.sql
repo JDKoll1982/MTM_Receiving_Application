@@ -1,12 +1,12 @@
 -- ============================================================================
--- Table: routing_usage_tracking
+-- Table: routing_recipient_tracker
 -- Module: Routing
 -- Purpose: Track employee-recipient usage frequency
 -- ============================================================================
 
-DROP TABLE IF EXISTS `routing_usage_tracking`;
+DROP TABLE IF EXISTS `routing_recipient_tracker`;
 
-CREATE TABLE `routing_usage_tracking` (
+CREATE TABLE `routing_recipient_tracker` (
     `id` INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key - surrogate id',
     `employee_number` INT NOT NULL COMMENT 'Employee number (MTM employee identifier)',
     `recipient_id` INT NOT NULL COMMENT 'Foreign key referencing routing_recipients.id',

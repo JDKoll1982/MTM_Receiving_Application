@@ -106,7 +106,7 @@
                     <g transform="translate(0, 30)">
                         <circle cx="8" cy="8" r="8" fill="#107c10" />
                         <path d="M 4 8 L 7 11 L 12 5" stroke="white" stroke-width="1.5" fill="none" />
-                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">system_settings</text>
+                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">settings_universal</text>
                         <text x="250" y="13" font-family="Segoe UI" font-size="12" fill="#666">79 rows | 18 columns | 3
                             indexes</text>
                         <g transform="translate(900, 0)">
@@ -120,7 +120,7 @@
                     <g transform="translate(0, 70)">
                         <circle cx="8" cy="8" r="8" fill="#107c10" />
                         <path d="M 4 8 L 7 11 L 12 5" stroke="white" stroke-width="1.5" fill="none" />
-                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">user_settings</text>
+                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">settings_personal</text>
                         <text x="250" y="13" font-family="Segoe UI" font-size="12" fill="#666">0 rows | 5 columns | 1
                             unique constraint</text>
                         <g transform="translate(900, 0)">
@@ -134,7 +134,7 @@
                     <g transform="translate(0, 110)">
                         <circle cx="8" cy="8" r="8" fill="#107c10" />
                         <path d="M 4 8 L 7 11 L 12 5" stroke="white" stroke-width="1.5" fill="none" />
-                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">package_types</text>
+                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">dunnage_types</text>
                         <text x="250" y="13" font-family="Segoe UI" font-size="12" fill="#666">5 rows | 5 columns | 2
                             unique constraints</text>
                         <g transform="translate(900, 0)">
@@ -148,7 +148,7 @@
                     <g transform="translate(0, 150)">
                         <circle cx="8" cy="8" r="8" fill="#107c10" />
                         <path d="M 4 8 L 7 11 L 12 5" stroke="white" stroke-width="1.5" fill="none" />
-                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">routing_rules</text>
+                        <text x="25" y="13" font-family="Segoe UI" font-size="13" fill="#1a1a1a">routing_home_locations</text>
                         <text x="250" y="13" font-family="Segoe UI" font-size="12" fill="#666">3 rows | 7 columns | 1
                             index on priority</text>
                         <g transform="translate(900, 0)">
@@ -163,7 +163,7 @@
                         <circle cx="8" cy="8" r="8" fill="#107c10" />
                         <path d="M 4 8 L 7 11 L 12 5" stroke="white" stroke-width="1.5" fill="none" />
                         <text x="25" y="13" font-family="Segoe UI" font-size="13"
-                            fill="#1a1a1a">scheduled_reports</text>
+                            fill="#1a1a1a">reporting_scheduled_reports</text>
                         <text x="250" y="13" font-family="Segoe UI" font-size="12" fill="#666">2 rows | 8 columns | 2
                             indexes</text>
                         <g transform="translate(900, 0)">

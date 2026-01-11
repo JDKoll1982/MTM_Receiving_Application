@@ -22,9 +22,9 @@ BEGIN
     START TRANSACTION;
 
     -- Insert or update user preference
-    INSERT INTO user_preferences (UserId, PreferenceKey, PreferenceValue, LastUpdated)
+    INSERT INTO settings_dunnage_personal (UserId, PreferenceKey, PreferenceValue, LastUpdated)
     VALUES (p_user_id, p_preference_key, p_preference_value, NOW())
-    ON DUPLICATE KEY UPDATE 
+    ON DUPLICATE KEY UPDATE
         PreferenceValue = VALUES(PreferenceValue),
         LastUpdated = NOW();
 
