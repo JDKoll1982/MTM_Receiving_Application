@@ -31,7 +31,7 @@ if (-not $Password) {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
-    
+
     if ([string]::IsNullOrWhiteSpace($PlainPassword)) {
         $PlainPassword = "root"
         Write-Host "Using default password 'root'" -ForegroundColor Cyan
@@ -49,8 +49,8 @@ $databaseDir = Split-Path -Parent $scriptDir
 $projectRoot = Split-Path -Parent $databaseDir
 $binPath = Join-Path $projectRoot "bin"
 
-$mysqlDll = Get-ChildItem -Path $binPath -Filter "MySql.Data.dll" -Recurse -ErrorAction SilentlyContinue | 
-Where-Object { $_.FullName -match "\\bin\\.*\\net8\.0" } | 
+$mysqlDll = Get-ChildItem -Path $binPath -Filter "MySql.Data.dll" -Recurse -ErrorAction SilentlyContinue |
+Where-Object { $_.FullName -match "\\bin\\.*\\net8\.0" } |
 Select-Object -First 1
 
 if (-not $mysqlDll) {
@@ -73,7 +73,7 @@ $onAssemblyResolve = [System.ResolveEventHandler] {
 [System.AppDomain]::CurrentDomain.add_AssemblyResolve($onAssemblyResolve)
 
 try {
-    $dependencyDlls = Get-ChildItem -Path $mysqlDir -Filter "*.dll" -File | 
+    $dependencyDlls = Get-ChildItem -Path $mysqlDir -Filter "*.dll" -File |
     Where-Object { $_.Name -match "^(MySql\.|System\.|ZstdSharp|K4os|BouncyCastle)" }
     foreach ($dll in $dependencyDlls) {
         try { $null = [System.Reflection.Assembly]::LoadFrom($dll.FullName) }
@@ -102,9 +102,9 @@ catch {
 # Get all stored procedures
 $cmd = $conn.CreateCommand()
 $cmd.CommandText = @"
-    SELECT ROUTINE_NAME 
-    FROM information_schema.ROUTINES 
-    WHERE ROUTINE_SCHEMA = '$Database' 
+    SELECT ROUTINE_NAME
+    FROM information_schema.ROUTINES
+    WHERE ROUTINE_SCHEMA = '$Database'
     AND ROUTINE_TYPE = 'PROCEDURE'
     ORDER BY ROUTINE_NAME
 "@
@@ -125,18 +125,18 @@ foreach ($sp in $spList) {
     $cmdParams = $conn.CreateCommand()
     $cmdParams.CommandText = @"
         SELECT PARAMETER_NAME, DATA_TYPE, PARAMETER_MODE, DTD_IDENTIFIER
-        FROM information_schema.PARAMETERS 
-        WHERE SPECIFIC_SCHEMA = '$Database' 
-        AND SPECIFIC_NAME = '$sp' 
+        FROM information_schema.PARAMETERS
+        WHERE SPECIFIC_SCHEMA = '$Database'
+        AND SPECIFIC_NAME = '$sp'
         ORDER BY ORDINAL_POSITION
 "@
     $reader = $cmdParams.ExecuteReader()
-    
+
     $params = @()
     while ($reader.Read()) {
         $paramName = if ($reader["PARAMETER_NAME"] -is [DBNull]) { $null } else { $reader["PARAMETER_NAME"].ToString() }
         $paramMode = if ($reader["PARAMETER_MODE"] -is [DBNull]) { "IN" } else { $reader["PARAMETER_MODE"].ToString() }
-        
+
         # Include IN and INOUT parameters (INOUT requires values, OUT does not)
         if ($paramName -and ($paramMode -eq "IN" -or $paramMode -eq "INOUT")) {
             $params += @{
@@ -148,7 +148,7 @@ foreach ($sp in $spList) {
         }
     }
     $reader.Close()
-    
+
     $spDetails[$sp] = @{
         parameters     = $params
         category       = ""
@@ -173,107 +173,107 @@ $tableCreationOrder = @(
 foreach ($sp in $spDetails.Keys) {
     $category = "Other"
     $order = 999
-    
+
     # Categorize by SP name patterns
-    if ($sp -match "^(sp_)?user") { 
+    if ($sp -match "^(sp_)?user") {
         $category = "Users"
         $order = 10
     }
-    elseif ($sp -match "department") { 
+    elseif ($sp -match "department") {
         $category = "Departments"
         $order = 15
     }
-    elseif ($sp -match "package_type|PackageType") { 
+    elseif ($sp -match "package_type|PackageType") {
         $category = "PackageTypes"
         $order = 20
     }
-    elseif ($sp -match "dunnage_types") { 
+    elseif ($sp -match "dunnage_types") {
         $category = "DunnageTypes"
         $order = 25
     }
-    elseif ($sp -match "dunnage_specs") { 
+    elseif ($sp -match "dunnage_specs") {
         $category = "DunnageSpecs"
         $order = 30
     }
-    elseif ($sp -match "dunnage_parts") { 
+    elseif ($sp -match "dunnage_parts") {
         $category = "DunnageParts"
         $order = 35
     }
-    elseif ($sp -match "volvo_part_master") { 
+    elseif ($sp -match "volvo_part_master") {
         $category = "VolvoParts"
         $order = 40
     }
-    elseif ($sp -match "routing_recipient") { 
+    elseif ($sp -match "routing_recipient") {
         $category = "RoutingRecipients"
         $order = 45
     }
-    elseif ($sp -match "routing_other_reason") { 
+    elseif ($sp -match "routing_other_reason") {
         $category = "RoutingReasons"
         $order = 50
     }
-    elseif ($sp -match "receiving.*load|ReceivingLoad") { 
+    elseif ($sp -match "receiving.*load|ReceivingLoad") {
         $category = "ReceivingLoads"
         $order = 100
     }
-    elseif ($sp -match "receiving.*package") { 
+    elseif ($sp -match "receiving.*package") {
         $category = "ReceivingPackages"
         $order = 110
     }
-    elseif ($sp -match "receiving.*line|receiving_line") { 
+    elseif ($sp -match "receiving.*line|receiving_line") {
         $category = "ReceivingLines"
         $order = 120
     }
-    elseif ($sp -match "dunnage_loads") { 
+    elseif ($sp -match "dunnage_loads") {
         $category = "DunnageLoads"
         $order = 130
     }
-    elseif ($sp -match "inventoried_dunnage") { 
+    elseif ($sp -match "inventoried_dunnage") {
         $category = "InventoriedDunnage"
         $order = 140
     }
-    elseif ($sp -match "routing_label" -and $sp -notmatch "history") { 
+    elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
         $category = "RoutingLabels"
         $order = 150
     }
-    elseif ($sp -match "routing_label_history") { 
+    elseif ($sp -match "routing_label_history") {
         $category = "RoutingHistory"
         $order = 160
     }
-    elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") { 
+    elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {
         $category = "VolvoShipments"
         $order = 170
     }
-    elseif ($sp -match "volvo_shipment_line") { 
+    elseif ($sp -match "volvo_shipment_line") {
         $category = "VolvoShipmentLines"
         $order = 180
     }
-    elseif ($sp -match "volvo_part_component") { 
+    elseif ($sp -match "volvo_part_component") {
         $category = "VolvoComponents"
         $order = 190
     }
-    elseif ($sp -match "preference") { 
+    elseif ($sp -match "preference") {
         $category = "Preferences"
         $order = 200
     }
-    elseif ($sp -match "settings|Settings") { 
+    elseif ($sp -match "settings|Settings") {
         $category = "Settings"
         $order = 210
     }
-    elseif ($sp -match "report") { 
+    elseif ($sp -match "report") {
         $category = "Reports"
         $order = 220
     }
-    
+
     # SELECT operations can run anytime
     if ($sp -match "get|Get|select|Select|find|Find|search|Search|count|Count|check|Check") {
         $order += 1000  # Push reads to later (they don't affect order)
     }
-    
+
     # DELETE operations should be last
     if ($sp -match "delete|Delete|remove|Remove") {
         $order += 2000
     }
-    
+
     $spDetails[$sp].category = $category
     $spDetails[$sp].executionOrder = $order
 }
@@ -286,7 +286,7 @@ function Get-MockValue {
         [string]$spName,
         [string]$dtd
     )
-    
+
     # Smart defaults based on parameter names
     if ($paramName -match "user.*id|p_user_id") { return 1 }
     if ($paramName -match "windows.*username|p_windows_username") { return "TEST_USER" }
@@ -304,20 +304,20 @@ function Get-MockValue {
     if ($paramName -match "deleted|is_deleted") { return $false }
     if ($paramName -match "recipient.*name|p_recipient_name") { return "John Doe" }
     if ($paramName -match "label.*number|p_label_number") { return 1000 }
-    
+
     # Type-based defaults
     switch -Regex ($type) {
-        'int|integer|bigint|smallint|tinyint' { 
+        'int|integer|bigint|smallint|tinyint' {
             if ($dtd -match 'unsigned') { return 1 }
-            return 1 
+            return 1
         }
         'decimal|numeric|float|double' { return 1.0 }
         'bool|bit' { return $true }
         'date' { return "2026-01-01" }
         'datetime|timestamp' { return "2026-01-01 12:00:00" }
-        'char|varchar|text|longtext' { 
+        'char|varchar|text|longtext' {
             if ($paramName -match "description|notes|comment") { return "Test data" }
-            return "TEST_VALUE" 
+            return "TEST_VALUE"
         }
         default { return $null }
     }
@@ -329,13 +329,13 @@ $mockData = @{}
 foreach ($sp in $spDetails.Keys) {
     $params = $spDetails[$sp].parameters
     $mockParams = @{}
-    
+
     # All stored parameters are now IN mode only
     foreach ($param in $params) {
         $mockValue = Get-MockValue -type $param.type -paramName $param.name -spName $sp -dtd $param.dtd
         $mockParams[$param.name] = $mockValue
     }
-    
+
     $mockData[$sp] = @{
         parameters     = $mockParams
         category       = $spDetails[$sp].category
@@ -351,7 +351,7 @@ $groupedSPs = $mockData.GetEnumerator() | Group-Object { $_.Value.executionOrder
 foreach ($group in $groupedSPs) {
     $sps = $group.Group | Sort-Object Name | ForEach-Object { $_.Key }
     $category = $group.Group[0].Value.category
-    
+
     $executionOrder += @{
         order            = [int]$group.Name
         category         = $category
@@ -378,26 +378,11 @@ $conn.Close()
 Write-Host "`n✓ Generated mock data configuration: $mockDataPath" -ForegroundColor Green
 Write-Host "✓ Generated execution order: $executionOrderPath" -ForegroundColor Green
 
-# Generate Analysis Report
+# Generate Analysis Report using template
 $reportFile = Join-Path $scriptDir "01-report.md"
-$report = @()
+$templatePath = Join-Path $scriptDir "templates\01-report-template.md"
 
-$report += "# Stored Procedure Analysis Report"
-$report += ""
-$report += "**Generated:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-$report += "**Database:** $Database"
-$report += "**Server:** $Server`:$Port"
-$report += ""
-
-# Summary Statistics
-$report += "## Summary"
-$report += ""
-$report += "- **Total Stored Procedures:** $($spList.Count)"
-$report += "- **Execution Groups:** $($executionOrder.Count)"
-$report += "- **Categories:** $(($mockData.Values | Select-Object -ExpandProperty category -Unique | Measure-Object).Count)"
-$report += ""
-
-# Parameter Statistics
+# Calculate parameter statistics
 $totalParams = 0
 $inParams = 0
 $outParams = 0
@@ -421,26 +406,14 @@ foreach ($sp in $spDetails.Keys) {
     }
 }
 
-$report += "## Parameter Statistics"
-$report += ""
-$report += "| Type | Count |"
-$report += "|------|-------|"
-$report += "| Total Parameters | $totalParams |"
-$report += "| IN Parameters | $inParams |"
-$report += "| OUT Parameters | $outParams |"
-$report += "| INOUT Parameters | $inoutParams |"
-$report += "| SPs without Parameters | $withoutParams |"
-$report += ""
-
-# Category Breakdown
-$report += "## Stored Procedures by Category"
-$report += ""
+# Build category breakdown section
+$categoryBreakdown = @()
 $categoryGroups = $mockData.GetEnumerator() | Group-Object { $_.Value.category } | Sort-Object Name
 
 foreach ($catGroup in $categoryGroups) {
-    $report += "### $($catGroup.Name) ($($catGroup.Count) procedures)"
-    $report += ""
-    
+    $categoryBreakdown += "### $($catGroup.Name) ($($catGroup.Count) procedures)"
+    $categoryBreakdown += ""
+
     $spsInCategory = $catGroup.Group | Sort-Object { $_.Value.executionOrder }, Name
     foreach ($spEntry in $spsInCategory) {
         $sp = $spEntry.Key
@@ -448,66 +421,71 @@ foreach ($catGroup in $categoryGroups) {
         $inCount = ($details.parameters | Where-Object { $_.mode -eq "IN" }).Count
         $outCount = ($details.parameters | Where-Object { $_.mode -eq "OUT" }).Count
         $inoutCount = ($details.parameters | Where-Object { $_.mode -eq "INOUT" }).Count
-        
+
         $paramInfo = ""
         if ($inCount -gt 0) { $paramInfo += "IN: $inCount " }
         if ($outCount -gt 0) { $paramInfo += "OUT: $outCount " }
         if ($inoutCount -gt 0) { $paramInfo += "INOUT: $inoutCount " }
         if ($paramInfo -eq "") { $paramInfo = "No parameters" }
-        
-        $report += "- **$sp** - $($paramInfo.Trim())"
+
+        $categoryBreakdown += "- **$sp** - $($paramInfo.Trim())"
     }
-    $report += ""
+    $categoryBreakdown += ""
 }
 
-# Execution Order
-$report += "## Execution Order Groups"
-$report += ""
-$report += "| Order | Category | Count | Stored Procedures |"
-$report += "|-------|----------|-------|-------------------|"
-
+# Build execution order table
+$executionOrderTable = @()
 foreach ($group in $executionOrder | Sort-Object order) {
     $spNames = $group.storedProcedures -join ", "
     if ($spNames.Length -gt 100) {
         $spNames = $spNames.Substring(0, 97) + "..."
     }
-    $report += "| $($group.order) | $($group.category) | $($group.storedProcedures.Count) | $spNames |"
+    $executionOrderTable += "| $($group.order) | $($group.category) | $($group.storedProcedures.Count) | $spNames |"
 }
-$report += ""
 
-# Warnings/Notes
-$report += "## Notes"
-$report += ""
-$report += "- **Execution Order:** Lower numbers execute first (10-999)"
-$report += "- **Read Operations:** Offset by +1000 (can run anytime)"
-$report += "- **Delete Operations:** Offset by +2000 (run last)"
-$report += "- **Mock Data:** Review ``01-mock-data.json`` to customize parameter values"
-$report += "- **Dependencies:** Use ``-UseExecutionOrder`` flag when testing to avoid FK constraint errors"
-$report += ""
-
-# SPs with Many Parameters (potential complexity)
-$complexSPs = $spDetails.GetEnumerator() | 
-Where-Object { $_.Value.parameters.Count -ge 8 } | 
+# Build complex SPs section (if any)
+$complexSPsSection = ""
+$complexSPs = $spDetails.GetEnumerator() |
+Where-Object { $_.Value.parameters.Count -ge 8 } |
 Sort-Object { $_.Value.parameters.Count } -Descending
 
 if ($complexSPs) {
-    $report += "## Complex Stored Procedures (8+ parameters)"
-    $report += ""
-    $report += "| SP Name | Total Params | IN | OUT | INOUT |"
-    $report += "|---------|--------------|-----|-----|-------|"
-    
+    $complexSPsLines = @()
+    $complexSPsLines += "## Complex Stored Procedures (8+ parameters)"
+    $complexSPsLines += ""
+    $complexSPsLines += "| SP Name | Total Params | IN | OUT | INOUT |"
+    $complexSPsLines += "|---------|--------------|-----|-----|-------|"
+
     foreach ($sp in $complexSPs) {
         $params = $sp.Value.parameters
         $inCount = ($params | Where-Object { $_.mode -eq "IN" }).Count
         $outCount = ($params | Where-Object { $_.mode -eq "OUT" }).Count
         $inoutCount = ($params | Where-Object { $_.mode -eq "INOUT" }).Count
-        
-        $report += "| $($sp.Key) | $($params.Count) | $inCount | $outCount | $inoutCount |"
+
+        $complexSPsLines += "| $($sp.Key) | $($params.Count) | $inCount | $outCount | $inoutCount |"
     }
-    $report += ""
+    $complexSPsSection = $complexSPsLines -join "`n"
 }
 
-$report | Out-File -FilePath $reportFile -Encoding UTF8
+# Load template and replace placeholders
+$template = Get-Content $templatePath -Raw
+$content = $template `
+    -replace '{{TIMESTAMP}}', (Get-Date -Format 'yyyy-MM-dd HH:mm:ss') `
+    -replace '{{DATABASE}}', $Database `
+    -replace '{{SERVER}}', "$Server`:$Port" `
+    -replace '{{TOTAL_SPS}}', $spList.Count `
+    -replace '{{EXECUTION_GROUPS}}', $executionOrder.Count `
+    -replace '{{CATEGORY_COUNT}}', (($mockData.Values | Select-Object -ExpandProperty category -Unique | Measure-Object).Count) `
+    -replace '{{TOTAL_PARAMS}}', $totalParams `
+    -replace '{{IN_PARAMS}}', $inParams `
+    -replace '{{OUT_PARAMS}}', $outParams `
+    -replace '{{INOUT_PARAMS}}', $inoutParams `
+    -replace '{{NO_PARAMS}}', $withoutParams `
+    -replace '{{CATEGORY_BREAKDOWN}}', ($categoryBreakdown -join "`n") `
+    -replace '{{EXECUTION_ORDER_TABLE}}', ($executionOrderTable -join "`n") `
+    -replace '{{COMPLEX_SPS_SECTION}}', $complexSPsSection
+
+$content | Out-File -FilePath $reportFile -Encoding UTF8
 
 Write-Host "✓ Generated analysis report: $reportFile" -ForegroundColor Green
 Write-Host "`nTotal SPs analyzed: $($spList.Count)" -ForegroundColor Cyan

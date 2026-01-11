@@ -38,7 +38,7 @@ if (-not $Password) {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
-    
+
     if ([string]::IsNullOrWhiteSpace($PlainPassword)) {
         $PlainPassword = "root"  # MAMP default
         Write-Host "Using default MAMP password 'root'" -ForegroundColor Cyan
@@ -56,8 +56,8 @@ $databaseDir = Split-Path -Parent $scriptDir
 $projectRoot = Split-Path -Parent $databaseDir
 $binPath = Join-Path $projectRoot "bin"
 
-$mysqlDll = Get-ChildItem -Path $binPath -Filter "MySql.Data.dll" -Recurse -ErrorAction SilentlyContinue | 
-Where-Object { $_.FullName -match "\\bin\\.*\\net8\.0" } | 
+$mysqlDll = Get-ChildItem -Path $binPath -Filter "MySql.Data.dll" -Recurse -ErrorAction SilentlyContinue |
+Where-Object { $_.FullName -match "\\bin\\.*\\net8\.0" } |
 Select-Object -First 1
 
 if (-not $mysqlDll) {
@@ -80,7 +80,7 @@ $onAssemblyResolve = [System.ResolveEventHandler] {
 [System.AppDomain]::CurrentDomain.add_AssemblyResolve($onAssemblyResolve)
 
 try {
-    $dependencyDlls = Get-ChildItem -Path $mysqlDir -Filter "*.dll" -File | 
+    $dependencyDlls = Get-ChildItem -Path $mysqlDir -Filter "*.dll" -File |
     Where-Object { $_.Name -match "^(MySql\.|System\.|ZstdSharp|K4os|BouncyCastle)" }
     foreach ($dll in $dependencyDlls) {
         try {
@@ -183,14 +183,14 @@ foreach ($sp in $spList) {
     # 2. Get Parameters for this SP
     $cmdParams = $conn.CreateCommand()
     $cmdParams.CommandText = @"
-        SELECT PARAMETER_NAME, DATA_TYPE, PARAMETER_MODE 
-        FROM information_schema.PARAMETERS 
-        WHERE SPECIFIC_SCHEMA = '$Database' 
-        AND SPECIFIC_NAME = '$sp' 
+        SELECT PARAMETER_NAME, DATA_TYPE, PARAMETER_MODE
+        FROM information_schema.PARAMETERS
+        WHERE SPECIFIC_SCHEMA = '$Database'
+        AND SPECIFIC_NAME = '$sp'
         ORDER BY ORDINAL_POSITION
 "@
     $reader = $cmdParams.ExecuteReader()
-    
+
     $paramDefs = @()
     $outParams = @()
     while ($reader.Read()) {
@@ -202,7 +202,7 @@ foreach ($sp in $spList) {
                 Type = $reader["DATA_TYPE"].ToString()
                 Mode = $mode
             }
-            
+
             # IN and INOUT parameters need values, OUT does not
             if ($mode -eq "IN" -or $mode -eq "INOUT") {
                 $paramDefs += $param
@@ -217,7 +217,7 @@ foreach ($sp in $spList) {
     # 3. Construct Call with Mock Data (IN and INOUT parameters)
     $testCall = "CALL $sp("
     $paramValues = @()
-    
+
     # All paramDefs are now IN or INOUT mode
     foreach ($p in $paramDefs) {
         # Use mock data if available
@@ -225,7 +225,7 @@ foreach ($sp in $spList) {
         if ($mockData -and $mockData.$sp -and $mockData.$sp.parameters.($p.Name)) {
             $mockValue = $mockData.$sp.parameters.($p.Name)
         }
-            
+
         # Format value based on type
         if ($null -eq $mockValue) {
             # Fallback to type-based defaults
@@ -242,10 +242,10 @@ foreach ($sp in $spList) {
         else {
             # Format based on type
             switch -Regex ($p.Type) {
-                'int|decimal|float|double|bigint|smallint' { 
-                    $paramValues += $mockValue 
+                'int|decimal|float|double|bigint|smallint' {
+                    $paramValues += $mockValue
                 }
-                'bool|bit|tinyint' { 
+                'bool|bit|tinyint' {
                     $paramValues += if ($mockValue) { "1" } else { "0" }
                 }
                 'date' {
@@ -272,13 +272,13 @@ foreach ($sp in $spList) {
             }
         }
     }
-    
+
     $testCall += ($paramValues -join ", ") + ");"
 
     # 4. Execute
     $testCmd = $conn.CreateCommand()
     $testCmd.CommandText = $testCall
-    
+
     $status = "PASS"
     $errorMsg = ""
     $errorCode = 0
@@ -299,8 +299,8 @@ foreach ($sp in $spList) {
 
     # Categorize Error
     $category = "Unknown"
-    if ($status -eq "PASS") { 
-        $category = "Valid" 
+    if ($status -eq "PASS") {
+        $category = "Valid"
     }
     elseif ($errorCode -eq 1054 -or $errorCode -eq 1146) {
         $category = "SchemaBroken"
@@ -325,27 +325,18 @@ foreach ($sp in $spList) {
         InParams  = $paramDefs.Count
         OutParams = $outParams.Count
     }
-    
+
     $color = if ($category -eq "Valid") { "Green" } elseif ($category -eq "SchemaBroken") { "Red" } else { "Gray" }
     Write-Host "[$category] $sp" -ForegroundColor $color
 }
 
 $conn.Close()
 
-# 5. Generate Comprehensive Test Report
+# 5. Generate Comprehensive Test Report using template
 $reportFile = Join-Path $scriptDir "02-report.md"
-$md = @()
+$templatePath = Join-Path $scriptDir "templates\02-report-template.md"
 
-# Header
-$md += "# Stored Procedure Execution Test Report"
-$md += ""
-$md += "**Generated:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-$md += "**Database:** $Database"
-$md += "**Server:** $Server`:$Port"
-$md += "**Execution Mode:** $(if ($UseExecutionOrder) { 'Dependency Order' } else { 'Alphabetical' })"
-$md += ""
-
-# Summary Statistics
+# Calculate statistics
 $totalTests = $results.Count
 $passed = ($results | Where-Object Status -eq 'PASS').Count
 $failed = ($results | Where-Object Status -eq 'FAIL').Count
@@ -355,129 +346,115 @@ $constraints = ($results | Where-Object Category -eq 'Constraint').Count
 $logicCaught = ($results | Where-Object Category -eq 'LogicCaught').Count
 
 $successRate = if ($totalTests -gt 0) { [math]::Round(($passed / $totalTests) * 100, 1) } else { 0 }
+$failRate = if ($totalTests -gt 0) { [math]::Round(($failed / $totalTests) * 100, 1) } else { 0 }
+$schemaRate = if ($totalTests -gt 0) { [math]::Round(($schemaBroken / $totalTests) * 100, 1) } else { 0 }
+$runtimeRate = if ($totalTests -gt 0) { [math]::Round(($runtimeErrors / $totalTests) * 100, 1) } else { 0 }
+$constraintRate = if ($totalTests -gt 0) { [math]::Round(($constraints / $totalTests) * 100, 1) } else { 0 }
+$logicRate = if ($totalTests -gt 0) { [math]::Round(($logicCaught / $totalTests) * 100, 1) } else { 0 }
 
-$md += "## Summary"
-$md += ""
-$md += "| Metric | Count | Percentage |"
-$md += "|--------|-------|------------|"
-$md += "| **Total Tests** | $totalTests | 100% |"
-$md += "| **Passed** | $passed | $successRate% |"
-$md += "| **Failed** | $failed | $([math]::Round(($failed / $totalTests) * 100, 1))% |"
-$md += "| Schema Broken | $schemaBroken | $([math]::Round(($schemaBroken / $totalTests) * 100, 1))% |"
-$md += "| Runtime Errors | $runtimeErrors | $([math]::Round(($runtimeErrors / $totalTests) * 100, 1))% |"
-$md += "| Constraint Violations | $constraints | $([math]::Round(($constraints / $totalTests) * 100, 1))% |"
-$md += "| Business Logic Validations | $logicCaught | $([math]::Round(($logicCaught / $totalTests) * 100, 1))% |"
-$md += ""
-
-# Results by Category (if mock data available)
+# Build Results by Category section
+$resultsByCategory = ""
 if ($mockData) {
-    $md += "## Results by Category"
-    $md += ""
-    
-    $categoryStats = $results | Group-Object { 
-        if ($mockData.($_.SP)) { 
-            $mockData.($_.SP).category 
-        }
-        else { 
-            "Uncategorized" 
-        }
+    $categoryLines = @()
+    $categoryLines += "## Results by Category"
+    $categoryLines += ""
+
+    $categoryStats = $results | Group-Object {
+        if ($mockData.($_.SP)) { $mockData.($_.SP).category }
+        else { "Uncategorized" }
     } | Sort-Object Name
-    
-    $md += "| Category | Total | Passed | Failed | Success Rate |"
-    $md += "|----------|-------|--------|--------|--------------|"
-    
+
+    $categoryLines += "| Category | Total | Passed | Failed | Success Rate |"
+    $categoryLines += "|----------|-------|--------|--------|--------------|"
+
     foreach ($cat in $categoryStats) {
         $catTotal = $cat.Count
         $catPassed = ($cat.Group | Where-Object Status -eq 'PASS').Count
         $catFailed = ($cat.Group | Where-Object Status -eq 'FAIL').Count
         $catRate = if ($catTotal -gt 0) { [math]::Round(($catPassed / $catTotal) * 100, 1) } else { 0 }
-        
-        $md += "| $($cat.Name) | $catTotal | $catPassed | $catFailed | $catRate% |"
+
+        $categoryLines += "| $($cat.Name) | $catTotal | $catPassed | $catFailed | $catRate% |"
     }
-    $md += ""
+    $categoryLines += ""
+    $resultsByCategory = $categoryLines -join "`n"
 }
 
-# Critical Failures (Schema Broken)
-$md += "## 🔴 Critical Failures (Schema Broken)"
-$md += ""
-$md += "These stored procedures reference columns or tables that don't exist in the database."
-$md += ""
-$md += "| SP Name | Error Code | Message | IN Params | OUT Params |"
-$md += "|---------|------------|---------|-----------|------------|"
+# Build schema broken table
+$schemaBrokenTable = ""
 $broken = $results | Where-Object Category -eq 'SchemaBroken'
 if ($broken) {
+    $brokenLines = @()
     foreach ($r in $broken) {
-        $md += "| **$($r.SP)** | $($r.ErrorCode) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
+        $brokenLines += "| **$($r.SP)** | $($r.ErrorCode) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
     }
+    $schemaBrokenTable = $brokenLines -join "`n"
 }
 else {
-    $md += "| - | - | ✓ No schema errors | - | - |"
+    $schemaBrokenTable = "| - | - | ✓ No schema errors | - | - |"
 }
-$md += ""
 
-# Parameter Mismatches
-$md += "## ⚠️ Parameter Mismatches"
-$md += ""
-$paramMismatches = $others | Where-Object { $_.Message -match "Incorrect number of arguments" }
+# Build parameter mismatches table
+$paramMismatchesTable = ""
+$paramMismatches = $results | Where-Object { $_.Status -eq 'FAIL' -and $_.Message -match "Incorrect number of arguments" }
 if ($paramMismatches) {
-    $md += "These stored procedures have parameter count mismatches between the database definition and mock data."
-    $md += ""
-    $md += "| SP Name | Message | IN Params | OUT Params |"
-    $md += "|---------|---------|-----------|------------|"
+    $pmLines = @()
+    $pmLines += "These stored procedures have parameter count mismatches between the database definition and mock data."
+    $pmLines += ""
+    $pmLines += "| SP Name | Message | IN Params | OUT Params |"
+    $pmLines += "|---------|---------|-----------|------------|"
     foreach ($r in $paramMismatches) {
-        $md += "| $($r.SP) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
+        $pmLines += "| $($r.SP) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
     }
+    $paramMismatchesTable = $pmLines -join "`n"
 }
 else {
-    $md += "✓ No parameter mismatches detected"
+    $paramMismatchesTable = "✓ No parameter mismatches detected"
 }
-$md += ""
 
-# Constraint Violations
-$md += "## 🔗 Constraint Violations"
-$md += ""
-$constraintErrors = $others | Where-Object { $_.Message -match "foreign key constraint|Cannot add or update a child row|Cannot delete or update a parent row" }
+# Build constraint violations table
+$constraintViolationsTable = ""
+$constraintErrors = $results | Where-Object { $_.Status -eq 'FAIL' -and $_.Message -match "foreign key constraint|Cannot add or update a child row|Cannot delete or update a parent row" }
 if ($constraintErrors) {
-    $md += "These stored procedures failed due to foreign key constraints (missing prerequisite data)."
-    $md += ""
-    $md += "| SP Name | Message |"
-    $md += "|---------|---------|"
+    $cvLines = @()
+    $cvLines += "These stored procedures failed due to foreign key constraints (missing prerequisite data)."
+    $cvLines += ""
+    $cvLines += "| SP Name | Message |"
+    $cvLines += "|---------|---------|"
     foreach ($r in $constraintErrors) {
-        $md += "| $($r.SP) | $($r.Message) |"
+        $cvLines += "| $($r.SP) | $($r.Message) |"
     }
-    $md += ""
-    $md += "**Recommendation:** Run with ``-UseExecutionOrder`` flag or add prerequisite test data."
+    $cvLines += ""
+    $cvLines += "**Recommendation:** Run with ``-UseExecutionOrder`` flag or add prerequisite test data."
+    $constraintViolationsTable = $cvLines -join "`n"
 }
 else {
-    $md += "✓ No constraint violations"
+    $constraintViolationsTable = "✓ No constraint violations"
 }
-$md += ""
 
-# Data Validation Errors
-$md += "## 📋 Data Validation Errors"
-$md += ""
-$validationErrors = $others | Where-Object { $_.Message -match "Data truncated|already exists|Illegal mix of collations" }
+# Build validation errors table
+$validationErrorsTable = ""
+$validationErrors = $results | Where-Object { $_.Status -eq 'FAIL' -and $_.Message -match "Data truncated|already exists|Illegal mix of collations" }
 if ($validationErrors) {
-    $md += "These stored procedures failed due to data validation issues."
-    $md += ""
-    $md += "| SP Name | Message |"
-    $md += "|---------|---------|"
+    $veLines = @()
+    $veLines += "These stored procedures failed due to data validation issues."
+    $veLines += ""
+    $veLines += "| SP Name | Message |"
+    $veLines += "|---------|---------|"
     foreach ($r in $validationErrors) {
-        $md += "| $($r.SP) | $($r.Message) |"
+        $veLines += "| $($r.SP) | $($r.Message) |"
     }
-    $md += ""
-    $md += "**Recommendation:** Review mock data values in ``01-mock-data.json``."
+    $veLines += ""
+    $veLines += "**Recommendation:** Review mock data values in ``01-mock-data.json``."
+    $validationErrorsTable = $veLines -join "`n"
 }
 else {
-    $md += "✓ No data validation errors"
+    $validationErrorsTable = "✓ No data validation errors"
 }
-$md += ""
 
-# Other Runtime Errors
-$md += "## 🔧 Other Runtime Errors"
-$md += ""
-$otherErrors = $others | Where-Object { 
-    $_.Category -eq 'RuntimeError' -and 
+# Build other errors table
+$otherErrorsTable = ""
+$otherErrors = $results | Where-Object {
+    $_.Status -eq 'FAIL' -and $_.Category -eq 'RuntimeError' -and
     $_.Message -notmatch "Incorrect number of arguments" -and
     $_.Message -notmatch "foreign key constraint" -and
     $_.Message -notmatch "Cannot add or update" -and
@@ -487,82 +464,94 @@ $otherErrors = $others | Where-Object {
     $_.Message -notmatch "Illegal mix of collations"
 }
 if ($otherErrors) {
-    $md += "| SP Name | Category | Message |"
-    $md += "|---------|----------|---------|"
+    $oeLines = @()
+    $oeLines += "| SP Name | Category | Message |"
+    $oeLines += "|---------|----------|---------|"
     foreach ($r in $otherErrors) {
-        $md += "| $($r.SP) | $($r.Category) | $($r.Message) |"
+        $oeLines += "| $($r.SP) | $($r.Category) | $($r.Message) |"
     }
+    $otherErrorsTable = $oeLines -join "`n"
 }
 else {
-    $md += "✓ No other runtime errors"
+    $otherErrorsTable = "✓ No other runtime errors"
 }
-$md += ""
 
-# Recommendations
-$md += "## 💡 Recommendations"
-$md += ""
-
+# Build recommendations section
+$recommendations = @()
 if ($schemaBroken -gt 0) {
-    $md += "### Critical: Fix Schema Issues"
-    $md += "- $schemaBroken stored procedure(s) reference non-existent columns or tables"
-    $md += "- Review and update stored procedure SQL or database schema"
-    $md += ""
+    $recommendations += "### Critical: Fix Schema Issues"
+    $recommendations += "- $schemaBroken stored procedure(s) reference non-existent columns or tables"
+    $recommendations += "- Review and update stored procedure SQL or database schema"
+    $recommendations += ""
 }
 
 if ($paramMismatches.Count -gt 0) {
-    $md += "### High Priority: Fix Parameter Mismatches"
-    $md += "- $($paramMismatches.Count) stored procedure(s) have parameter count issues"
-    $md += "- Regenerate mock data: ``pwsh -File .\Database\00-Test\Generate-SP-TestData.ps1``"
-    $md += ""
+    $recommendations += "### High Priority: Fix Parameter Mismatches"
+    $recommendations += "- $($paramMismatches.Count) stored procedure(s) have parameter count issues"
+    $recommendations += "- Regenerate mock data: ``pwsh -File .\Database\00-Test\01-Generate-SP-TestData.ps1``"
+    $recommendations += ""
 }
 
 if ($constraintErrors.Count -gt 0) {
-    $md += "### Improve Test Data"
-    $md += "- $($constraintErrors.Count) stored procedure(s) failed due to missing FK references"
-    $md += "- Use dependency-aware execution: ``pwsh -File .\Database\00-Test\02-Test-StoredProcedures.ps1 -UseExecutionOrder``"
-    $md += "- Or add prerequisite test data to the database"
-    $md += ""
+    $recommendations += "### Improve Test Data"
+    $recommendations += "- $($constraintErrors.Count) stored procedure(s) failed due to missing FK references"
+    $recommendations += "- Use dependency-aware execution: ``pwsh -File .\Database\00-Test\02-Test-StoredProcedures.ps1 -UseExecutionOrder``"
+    $recommendations += "- Or add prerequisite test data to the database"
+    $recommendations += ""
 }
 
 if ($successRate -eq 100) {
-    $md += "### ✅ All Tests Passed!"
-    $md += "- All $totalTests stored procedures executed successfully"
-    $md += "- Database schema and stored procedures are in sync"
-    $md += ""
+    $recommendations += "### ✅ All Tests Passed!"
+    $recommendations += "- All $totalTests stored procedures executed successfully"
+    $recommendations += "- Database schema and stored procedures are in sync"
+    $recommendations += ""
 }
 elseif ($successRate -ge 80) {
-    $md += "### Good Progress"
-    $md += "- $successRate% success rate"
-    $md += "- Focus on fixing the $failed remaining issues"
-    $md += ""
+    $recommendations += "### Good Progress"
+    $recommendations += "- $successRate% success rate"
+    $recommendations += "- Focus on fixing the $failed remaining issues"
+    $recommendations += ""
 }
 else {
-    $md += "### Needs Attention"
-    $md += "- Only $successRate% success rate"
-    $md += "- Review error categories above and prioritize fixes"
-    $md += ""
+    $recommendations += "### Needs Attention"
+    $recommendations += "- Only $successRate% success rate"
+    $recommendations += "- Review error categories above and prioritize fixes"
+    $recommendations += ""
 }
 
-# Test Configuration
-$md += "## Test Configuration"
-$md += ""
-$md += "- **Mock Data File:** $(if (Test-Path $mockDataPath) { '✓ Loaded' } else { '✗ Not found' })"
-$md += "- **Execution Order File:** $(if (Test-Path $executionOrderPath) { '✓ Loaded' } else { '✗ Not found' })"
-$md += "- **Using Execution Order:** $(if ($UseExecutionOrder) { 'Yes' } else { 'No' })"
-$md += ""
+# Load template and replace placeholders
+$template = Get-Content $templatePath -Raw
+$content = $template `
+    -replace '{{TIMESTAMP}}', (Get-Date -Format 'yyyy-MM-dd HH:mm:ss') `
+    -replace '{{DATABASE}}', $Database `
+    -replace '{{SERVER}}', "$Server`:$Port" `
+    -replace '{{EXECUTION_MODE}}', $(if ($UseExecutionOrder) { 'Dependency Order' } else { 'Alphabetical' }) `
+    -replace '{{TOTAL_TESTS}}', $totalTests `
+    -replace '{{PASSED}}', $passed `
+    -replace '{{SUCCESS_RATE}}', $successRate `
+    -replace '{{FAILED}}', $failed `
+    -replace '{{FAIL_RATE}}', $failRate `
+    -replace '{{SCHEMA_BROKEN}}', $schemaBroken `
+    -replace '{{SCHEMA_RATE}}', $schemaRate `
+    -replace '{{RUNTIME_ERRORS}}', $runtimeErrors `
+    -replace '{{RUNTIME_RATE}}', $runtimeRate `
+    -replace '{{CONSTRAINTS}}', $constraints `
+    -replace '{{CONSTRAINT_RATE}}', $constraintRate `
+    -replace '{{LOGIC_CAUGHT}}', $logicCaught `
+    -replace '{{LOGIC_RATE}}', $logicRate `
+    -replace '{{RESULTS_BY_CATEGORY}}', $resultsByCategory `
+    -replace '{{SCHEMA_BROKEN_TABLE}}', $schemaBrokenTable `
+    -replace '{{PARAM_MISMATCHES_TABLE}}', $paramMismatchesTable `
+    -replace '{{CONSTRAINT_VIOLATIONS_TABLE}}', $constraintViolationsTable `
+    -replace '{{VALIDATION_ERRORS_TABLE}}', $validationErrorsTable `
+    -replace '{{OTHER_ERRORS_TABLE}}', $otherErrorsTable `
+    -replace '{{RECOMMENDATIONS}}', ($recommendations -join "`n") `
+    -replace '{{MOCK_DATA_STATUS}}', $(if (Test-Path $mockDataPath) { '✓ Loaded' } else { '✗ Not found' }) `
+    -replace '{{EXEC_ORDER_STATUS}}', $(if (Test-Path $executionOrderPath) { '✓ Loaded' } else { '✗ Not found' }) `
+    -replace '{{USING_EXEC_ORDER}}', $(if ($UseExecutionOrder) { 'Yes' } else { 'No' })
 
-# Footer
-$md += "---"
-$md += ""
-$md += "**Report Generated By:** 02-Test-StoredProcedures.ps1"
-$md += ""
-$md += "**Next Steps:**"
-$md += "1. Fix critical schema issues first (red flags above)"
-$md += "2. Regenerate mock data if parameter mismatches exist"
-$md += "3. Run with ``-UseExecutionOrder`` flag to reduce FK constraint errors"
-$md += "4. Review and customize mock data values in ``01-mock-data.json``"
+$content | Out-File -FilePath $reportFile -Encoding UTF8
 
-$md | Out-File $reportFile -Encoding utf8
 Write-Host "`n✓ Generated test report: $reportFile" -ForegroundColor Green
 Write-Host "  - Total Tests: $totalTests" -ForegroundColor Cyan
 Write-Host "  - Passed: $passed ($successRate%)" -ForegroundColor $(if ($successRate -ge 80) { 'Green' } elseif ($successRate -ge 50) { 'Yellow' } else { 'Red' })

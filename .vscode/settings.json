@@ -1,47 +1,535 @@
 {
-    "markdown-preview-enhanced.plantumlServer": "https://www.plantuml.com/plantuml",
-    "editor.fontFamily": "'Fluent System Icons'",
-    "editor.fontLigatures": true,
-    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-    "chat.useAgentsMdFile": true,
-    // Prevent Copilot Chat from pulling in nested agent/workflow guidance from subfolders
-    // (e.g., BMAD workflows that explicitly require STOP/WAIT checkpoints).
-    "chat.useNestedAgentsMdFiles": false,
-    "chat.mcp.access": "all",
-    "chat.mcp.discovery.enabled": {
-        "claude-desktop": false,
-        "windsurf": false,
-        "cursor-global": false,
-        "cursor-workspace": false
-    },
-    "sonarlint.connectedMode.project": {
-        "connectionId": "john-koll",
-        "projectKey": "JDKoll1982_MTM_Receiving_Application"
-    },
-    "todo-tree.filtering.excludeGlobs": [
-        "**/*.md",
-        "**/Documentation/**",
-        "**/docs/**",
-        "**/specs/**",
-        "**/_bmad/**",
-        "**/_bmad-output/**",
-        "**/CODE_REVIEW*.md",
-        "**/AGENTS.md",
-        "**/README.md",
-        "**/*.instructions.md",
-        "**/IMPLEMENTATION_SUMMARY.md",
-        "**/VALIDATION_REPORT.md"
-    ],
-    "todo-tree.filtering.includeGlobs": [
-        "**/*.cs",
-        "**/*.xaml",
-        "**/*.csproj",
-        "**/*.sql"
-    ],
-    "files.associations": {
-        "**/.github/workflows/*.{yml,yaml}": "yaml",
-        "**/Taskfile.{yml,yaml}": "yaml",
-        "**/*.instructions.md": "markdown",
-        "**/*.prompt.md": "markdown"
+  // ================================
+  // SECTION 1: C# and .NET Configuration
+  // ================================
+  // Default solution file for the workspace
+  // Values: path to .sln or .slnx file
+  "dotnet.defaultSolution": "MTM_Receiving_Application.slnx",
+  // Enable semantic syntax highlighting for C# code (colors based on code meaning)
+  // Values: true | false
+  "csharp.semanticHighlighting.enabled": true,
+  // Enable C# code formatting
+  // Values: true | false
+  "csharp.format.enable": true,
+  // Suppress build assets notification popup
+  // Values: true | false
+  "csharp.suppressBuildAssetsNotification": true,
+  // ================================
+  // SECTION 2: XML/XAML Configuration
+  // ================================
+  // Enable XML formatting (required for XAML IntelliSense)
+  // Values: true | false
+  "xml.format.enabled": true,
+  // Enable XML validation
+  // Values: true | false
+  "xml.validation.enabled": true,
+  // How to split attributes when formatting
+  // Values: "alignWithFirstAttr" | "newLine" | "preserve"
+  "xml.format.splitAttributes": "alignWithFirstAttr",
+  // Don't join CDATA lines when formatting
+  // Values: true | false
+  "xml.format.joinCDATALines": false,
+  // Preserve manual attribute line breaks
+  // Values: true | false
+  "xml.format.preserveAttributeLineBreaks": true,
+  // Number of newlines to preserve
+  // Values: 0-3
+  "xml.format.preservedNewlines": 1,
+  // ================================
+  // SECTION 3: File Associations
+  // ================================
+  // Map file extensions to language modes
+  "files.associations": {
+    "*.xaml": "xml",
+    "*.md": "markdown",
+    "*.sql": "sql",
+    "*.slnx": "xml"
+  },
+  // Auto-save mode
+  // Values: "off" | "afterDelay" | "onFocusChange" | "onWindowChange"
+  "files.autoSave": "onFocusChange",
+  // Remove trailing whitespace when saving
+  // Values: true | false
+  "files.trimTrailingWhitespace": true,
+  // Insert final newline at end of file
+  // Values: true | false
+  "files.insertFinalNewline": true,
+  // Remove extra newlines at end of file
+  // Values: true | false
+  "files.trimFinalNewlines": true,
+  // ================================
+  // SECTION 4: File Exclusions (Performance)
+  // ================================
+  // Hide these files/folders from Explorer
+  "files.exclude": {
+    "**/.git": true,
+    "**/.vs": true,
+    "**/bin": true,
+    "**/obj": true,
+    "**/.vscode/.ropeproject": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/node_modules": true,
+    "**/*.pyc": true,
+    ".specify/index/**": true,
+    "_bmad-output/**": true
+  },
+  // Exclude these from search results
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/.vs": true,
+    "**/node_modules": true,
+    "**/.git": true,
+    "_bmad-output/**": true,
+    ".specify/index/**": true,
+    "repomix-output.xml": true
+  },
+  // Don't watch these files for changes (performance)
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/bin/**": true,
+    "**/obj/**": true,
+    "**/.vs/**": true,
+    "**/node_modules/**": true,
+    "_bmad-output/**": true
+  },
+  // ================================
+  // SECTION 5: Editor Configuration
+  // ================================
+  // Auto-format code when saving file
+  // Values: true | false
+  "editor.formatOnSave": true,
+  // Auto-format when pasting code
+  // Values: true | false
+  "editor.formatOnPaste": false,
+  // Number of spaces for a tab
+  // Values: any positive integer (commonly 2 or 4)
+  "editor.tabSize": 4,
+  // Insert spaces when pressing Tab
+  // Values: true | false
+  "editor.insertSpaces": true,
+  // Detect indentation from file content
+  // Values: true | false
+  "editor.detectIndentation": false,
+  // Show vertical rulers at column positions
+  // Values: array of numbers
+  "editor.rulers": [
+    120
+  ],
+  // Word wrapping
+  // Values: "off" | "on" | "wordWrapColumn" | "bounded"
+  "editor.wordWrap": "off",
+  // Show minimap (code overview)
+  // Values: true | false
+  "editor.minimap.enabled": true,
+  // Colorize matching brackets
+  // Values: true | false
+  "editor.bracketPairColorization.enabled": true,
+  // Show bracket pair guides
+  // Values: true | false
+  "editor.guides.bracketPairs": true,
+  // Control snippet suggestions
+  // Values: true | false
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  // Which suggestion to pre-select
+  // Values: "first" | "recentlyUsed" | "recentlyUsedByPrefix"
+  "editor.suggestSelection": "first",
+  // Enable suggestions while typing
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  // Show syntax highlighting in inline suggestions
+  // Values: true | false
+  "editor.inlineSuggest.syntaxHighlightingEnabled": true,
+  // Delay before showing inline suggestions (milliseconds)
+  // Values: 0-1000
+  "editor.inlineSuggest.minShowDelay": 0,
+  // Allow inline suggestions to shift code
+  // Values: "always" | "never" | "auto"
+  "editor.inlineSuggest.edits.allowCodeShifting": "always",
+  // Render large inline suggestions side-by-side
+  // Values: "auto" | "on" | "off"
+  "editor.inlineSuggest.edits.renderSideBySide": "auto",
+  // ================================
+  // SECTION 6: Language-Specific Settings
+  // ================================
+  // C# specific settings
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+      // Organize imports when saving
+      // Values: "explicit" | "never" | "always"
+      "source.organizeImports": "explicit"
     }
+  },
+  // XML (XAML) specific settings
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.autoIndent": "full"
+  },
+  // Markdown specific settings
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  // JSON specific settings
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  // JSONC (JSON with Comments) specific settings
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  // SQL specific settings
+  "[sql]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": false
+  },
+  // PowerShell specific settings
+  "[powershell]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  // PowerShell code formatting preset
+  // Values: "Allman" | "OTBS" | "Stroustrup" | "Custom"
+  "powershell.codeFormatting.preset": "OTBS",
+  // Don't show PowerShell console on startup
+  // Values: true | false
+  "powershell.integratedConsole.showOnStartup": false,
+  // ================================
+  // SECTION 7: Git Configuration
+  // ================================
+  // Enable Git source control
+  // Values: true | false
+  "git.enabled": true,
+  // Automatically stash changes before pull/rebase
+  // Values: true | false
+  "git.autoStash": true,
+  // Don't confirm before sync
+  // Values: true | false
+  "git.confirmSync": false,
+  // Enable smart commit (commit all changes when no staged changes)
+  // Values: true | false
+  "git.enableSmartCommit": true,
+  // Don't show rebase warnings
+  // Values: true | false
+  "git.ignoreRebaseWarning": true,
+  // ================================
+  // SECTION 8: GitHub Copilot - Code Editing
+  // ================================
+  // Show Copilot commands in Quick Fix menu
+  // Values: true | false
+  "github.copilot.editor.enableCodeActions": true,
+  // Auto-generate better symbol names when renaming
+  // Values: true | false
+  "github.copilot.renameSuggestions.triggerAutomatically": true,
+  // Enable/disable inline suggestions per language
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
+  // Enable Next Edit Suggestions (predicts next code change)
+  // Values: true | false
+  "github.copilot.nextEditSuggestions.enabled": true,
+  // Enable NES to suggest fixes for diagnostics (missing imports, etc.)
+  // Values: true | false
+  "github.copilot.nextEditSuggestions.fixes": true,
+  // ================================
+  // SECTION 9: GitHub Copilot - Chat & UI
+  // ================================
+  // Show Chat menu in title bar
+  // Values: true | false
+  "chat.commandCenter.enabled": true,
+  // Locale for chat responses
+  // Values: "auto" | "en" | "fr" | "de" | "es" | "it" | "ja" | "ko" | "pt" | "ru" | "zh-CN" | "zh-TW"
+  "github.copilot.chat.localeOverride": "auto",
+  // Use GitHub projects as templates with /new
+  // Values: true | false
+  "github.copilot.chat.useProjectTemplates": true,
+  // Where to open terminal chat queries
+  // Values: "chatView" | "quickChat"
+  "github.copilot.chat.terminalChatLocation": "chatView",
+  // Auto-detect chat participant (@workspace, @terminal)
+  // Values: true | false
+  "chat.detectParticipant.enabled": true,
+  // Enable chat checkpoints
+  // Values: true | false
+  "chat.checkpoints.enabled": true,
+  // Edit previous chat requests inline
+  // Values: "inline" | "chatView"
+  "chat.editRequests": "inline",
+  // Font size for code in chat
+  // Values: any positive integer
+  "chat.editor.fontSize": 14,
+  // Font size for text in chat
+  // Values: any positive integer
+  "chat.fontSize": 13,
+  // Show OS notification when user input needed
+  // Values: true | false
+  "chat.notifyWindowOnConfirmation": true,
+  // Use AGENTS.md files as context (CRITICAL for this project)
+  // Values: true | false
+  "chat.useAgentsMdFile": true,
+  // Show current chat session title
+  // Values: true | false
+  "chat.viewTitle.enabled": true,
+  // Suggest related files from git history
+  // Values: true | false
+  "github.copilot.chat.edits.suggestRelatedFilesFromGitHistory": true,
+  // ================================
+  // SECTION 10: GitHub Copilot - Agents & Tools (SECURITY CRITICAL)
+  // ================================
+  // Enable agents for multi-step autonomous tasks
+  // Values: true | false
+  "chat.agent.enabled": true,
+  // Maximum tool calls per agent session
+  // Values: 1-100 (default: 25)
+  "chat.agent.maxRequests": 25,
+  // Auto-fix issues in generated code
+  // Values: true | false
+  "github.copilot.chat.agent.autoFix": true,
+  // ⚠️ SECURITY: Allow MCP servers (filesystem, GitHub, Serena)
+  // Values: "all" | "approved" | "none"
+  "chat.mcp.access": "all",
+  // ⚠️ SECURITY: Auto-discover MCP configs from other apps
+  // RECOMMENDATION: Keep all false - use manual .vscode/mcp.json only
+  "chat.mcp.discovery.enabled": {
+    "claude-desktop": false,
+    "windsurf": false,
+    "cursor-global": false,
+    "cursor-workspace": false
+  },
+  // ⚠️ SECURITY: Terminal command auto-approval rules
+  // RECOMMENDATION: Keep dangerous commands as false
+  "chat.tools.terminal.autoApprove": {
+    "rm": false,
+    "rmdir": false,
+    "del": false,
+    "kill": false,
+    "curl": false,
+    "wget": false,
+    "eval": false,
+    "chmod": false,
+    "chown": false,
+    "/^Remove-Item\\b/i": false
+  },
+  // Enable auto-approve for safe commands (dotnet build, etc.)
+  // Values: true | false
+  "chat.tools.terminal.enableAutoApprove": true,
+  // Use default safety rules
+  // Values: true | false
+  "chat.tools.terminal.ignoreDefaultAutoApproveRules": false,
+  // ⚠️ SECURITY: Block file writes outside workspace
+  // Values: "always" | "outsideWorkspace" | "never"
+  "chat.tools.terminal.blockDetectedFileWrites": "outsideWorkspace",
+  // Collapse tool call details in chat
+  // Values: "always" | "never" | "auto"
+  "chat.agent.thinking.collapsedTools": "always",
+  // Auto-summarize long agent conversations
+  // Values: true | false
+  "github.copilot.chat.summarizeAgentConversationHistory.enabled": true,
+  // ================================
+  // SECTION 11: GitHub Copilot - Inline Chat
+  // ================================
+  // Finish inline chat when typing outside changed regions
+  // Values: true | false
+  "inlineChat.finishOnType": false,
+  // Hold Ctrl+I to enable speech recognition
+  // Values: true | false
+  "inlineChat.holdToSpeech": true,
+  // ================================
+  // SECTION 12: GitHub Copilot - Custom Instructions & Prompts
+  // ================================
+  // Search locations for *.instructions.md files
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  // Use custom instructions from .github/copilot-instructions.md
+  // Values: true | false
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  // Search locations for *.prompt.md files
+  "chat.promptFilesLocations": {
+    ".github/prompts": true
+  },
+  // ================================
+  // SECTION 13: GitHub Copilot - Code Review & Testing
+  // ================================
+  // Enable AI code review for selected text
+  // Values: true | false
+  "github.copilot.chat.reviewSelection.enabled": true,
+  // Enable copilot-debug terminal command
+  // Values: true | false
+  "github.copilot.chat.copilotDebugCommand.enabled": true,
+  // Enable /setupTests command
+  // Values: true | false
+  "github.copilot.chat.setupTests.enabled": true,
+  // ================================
+  // SECTION 14: Search & Navigation
+  // ================================
+  // Enable AI-powered search in Settings editor
+  // Values: true | false
+  "workbench.settings.showAISearchToggle": true,
+  // When to run semantic search
+  // Values: "manual" | "whenNoTextResults" | "always"
+  "search.searchView.semanticSearchBehavior": "manual",
+  // ================================
+  // SECTION 15: Terminal Configuration
+  // ================================
+  // Default terminal profile for Windows
+  // Values: "PowerShell" | "Command Prompt" | "Git Bash" | etc.
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  // Working directory when opening terminal
+  // Values: any path or "${workspaceFolder}"
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  // Terminal font size
+  // Values: any positive integer
+  "terminal.integrated.fontSize": 13,
+  // Terminal font family
+  // Values: any font name or comma-separated list
+  "terminal.integrated.fontFamily": "Cascadia Code, Consolas, monospace",
+  // ================================
+  // SECTION 16: Explorer & Navigation
+  // ================================
+  // Don't compact single-child folders
+  // Values: true | false
+  "explorer.compactFolders": false,
+  // Confirm before deleting files
+  // Values: true | false
+  "explorer.confirmDelete": true,
+  // Confirm before drag and drop
+  // Values: true | false
+  "explorer.confirmDragAndDrop": true,
+  // Sort order in Explorer
+  // Values: "default" | "mixed" | "filesFirst" | "type" | "modified"
+  "explorer.sortOrder": "type",
+  // Enable file nesting
+  // Values: true | false
+  "explorer.fileNesting.enabled": true,
+  // File nesting patterns
+  "explorer.fileNesting.patterns": {
+    "*.xaml": "${capture}.xaml.cs",
+    "*.cs": "${capture}.Designer.cs, ${capture}.g.cs, ${capture}.g.i.cs",
+    "App.xaml": "App.xaml.cs, appsettings.json, app.manifest",
+    "*.csproj": "*.csproj.user, *.csproj.filters",
+    "README.md": "CHANGELOG.md, LICENSE, CONTRIBUTING.md"
+  },
+  // Enable breadcrumbs navigation
+  // Values: true | false
+  "breadcrumbs.enabled": true,
+  // Show file path in breadcrumbs
+  // Values: "on" | "off" | "last"
+  "breadcrumbs.filePath": "on",
+  // Show symbols in breadcrumbs
+  // Values: "on" | "off" | "last"
+  "breadcrumbs.symbolPath": "on",
+  // ================================
+  // SECTION 17: Tasks & Problem Matchers
+  // ================================
+  // Don't prompt before running tasks
+  // Values: true | false
+  "task.problemMatchers.neverPrompt": true,
+  // Auto-detect tasks (npm, gulp, etc.)
+  // Values: "on" | "off"
+  "task.autoDetect": "on",
+  // ================================
+  // SECTION 18: Spell Checking (cSpell Extension)
+  // ================================
+  // Enable spell checking
+  // Values: true | false
+  "cSpell.enabled": true,
+  // Language for spell checking
+  // Values: "en" | "en-US" | "en-GB" | etc.
+  "cSpell.language": "en-US",
+  // Custom words to add to dictionary
+  "cSpell.words": [
+    "MTMFG",
+    "Infor",
+    "WinUI",
+    "MVVM",
+    "XAML",
+    "Dunnage",
+    "Volvo",
+    "MySql",
+    "appsettings",
+    "Copilot",
+    "Dao",
+    "ViewModel",
+    "ObservableProperty",
+    "RelayCommand",
+    "appxmanifest",
+    "slnx",
+    "CommunityToolkit",
+    "xunit",
+    "FluentAssertions"
+  ],
+  // Paths to ignore for spell checking
+  "cSpell.ignorePaths": [
+    "**/bin/**",
+    "**/obj/**",
+    "**/.vs/**",
+    "**/node_modules/**",
+    "repomix-output.xml",
+    "_bmad-output/**"
+  ],
+  // ================================
+  // SECTION 19: Markdown Configuration
+  // ================================
+  // Font size for markdown preview
+  // Values: any positive integer
+  "markdown.preview.fontSize": 14,
+  // Line height for markdown preview
+  // Values: any positive number
+  "markdown.preview.lineHeight": 1.6,
+  // TOC heading levels to include
+  // Values: "1..6" format (e.g., "2..4")
+  "markdown.extension.toc.levels": "2..6",
+  // ================================
+  // SECTION 20: TODO Tree Extension
+  // ================================
+  // Tags to highlight in code
+  "todo-tree.general.tags": [
+    "TODO",
+    "FIXME",
+    "HACK",
+    "NOTE",
+    "BUG",
+    "[ ]",
+    "[x]"
+  ],
+  // Regex pattern to find tags
+  "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^[ \\t]*(-|\\d+.))\\s*($TAGS)",
+  // ================================
+  // SECTION 21: Performance & Privacy
+  // ================================
+  // Show extension recommendations
+  // Values: true | false
+  "extensions.ignoreRecommendations": true,
+  // ================================
+  // SECTION 22: Testing (.NET Test Explorer)
+  // ================================
+  // Path pattern for test projects
+  // Values: glob pattern
+  "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+  // Disable telemetry for test explorer
+  // Values: true | false
+  "dotnet-test-explorer.enableTelemetry": false
 }
