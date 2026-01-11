@@ -206,11 +206,11 @@ Complete MySQL schema with:
 
 **Package Mappings:**
 
-- `sp_PackageTypeMappings_GetAll` - All active mappings
-- `sp_PackageTypeMappings_GetByPrefix` - Lookup with default fallback
-- `sp_PackageTypeMappings_Insert` - Add new mapping
-- `sp_PackageTypeMappings_Update` - Modify mapping
-- `sp_PackageTypeMappings_Delete` - Soft delete
+- `sp_Receiving_PackageTypeMappings_GetAll` - All active mappings
+- `sp_Receiving_PackageTypeMappings_GetByPrefix` - Lookup with default fallback
+- `sp_Receiving_PackageTypeMappings_Insert` - Add new mapping
+- `sp_Receiving_PackageTypeMappings_Update` - Modify mapping
+- `sp_Receiving_PackageTypeMappings_Delete` - Soft delete
 
 **Audit:**
 
@@ -218,11 +218,11 @@ Complete MySQL schema with:
 
 **Additional Procedures (from UI/Modal Requirements):**
 
-- `sp_PackageType_GetAll` - List all package types
-- `sp_PackageType_Insert` - Add new package type
-- `sp_PackageType_Update` - Modify package type
-- `sp_PackageType_Delete` - Delete package type
-- `sp_PackageType_UsageCount` - Check if type is in use (for delete validation)
+- `sp_dunnage_type_GetAll` - List all package types
+- `sp_dunnage_type_Insert` - Add new package type
+- `sp_dunnage_type_Update` - Modify package type
+- `sp_dunnage_type_Delete` - Delete package type
+- `sp_dunnage_type_UsageCount` - Check if type is in use (for delete validation)
 - `sp_RoutingRule_GetAll` - List all routing rules
 - `sp_RoutingRule_Insert` - Add routing rule with pattern and priority
 - `sp_RoutingRule_Update` - Modify routing rule
@@ -234,10 +234,10 @@ Complete MySQL schema with:
 
 **Additional Procedures (from UI Requirements):**
 
-- `sp_PackageType_Insert` - Add new package type
-- `sp_PackageType_Update` - Modify package type
-- `sp_PackageType_Delete` - Delete package type
-- `sp_PackageType_UsageCount` - Check if type is in use
+- `sp_dunnage_type_Insert` - Add new package type
+- `sp_dunnage_type_Update` - Modify package type
+- `sp_dunnage_type_Delete` - Delete package type
+- `sp_dunnage_type_UsageCount` - Check if type is in use
 - `sp_RoutingRule_Insert` - Add routing rule
 - `sp_RoutingRule_Update` - Modify routing rule
 - `sp_RoutingRule_Delete` - Delete routing rule

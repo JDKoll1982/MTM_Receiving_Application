@@ -7,26 +7,26 @@ DELIMITER $$
 -- =============================================
 -- SP: Find Matching Routing Rule
 -- =============================================
-DROP PROCEDURE IF EXISTS sp_RoutingRule_FindMatch$$
-CREATE PROCEDURE sp_RoutingRule_FindMatch(
+DROP PROCEDURE IF EXISTS `sp_RoutingRule_FindMatch`$$
+CREATE PROCEDURE `sp_RoutingRule_FindMatch`(
     IN p_match_type VARCHAR(50),
     IN p_value VARCHAR(100)
 )
 BEGIN
     SELECT
-        id,
-        match_type,
-        pattern,
-        destination_location,
-        priority
-    FROM routing_home_locations
-    WHERE match_type = p_match_type
-      AND is_active = TRUE
+        r.id,
+        r.match_type,
+        r.`pattern`,
+        r.destination_location,
+        r.priority
+    FROM routing_home_locations AS r
+    WHERE r.match_type = p_match_type
+      AND r.is_active = 1
       AND (
-          p_value LIKE REPLACE(REPLACE(pattern, '*', '%'), '?', '_')
-          OR pattern = p_value
+          p_value LIKE REPLACE(REPLACE(r.`pattern`, '*', '%'), '?', '_')
+          OR r.`pattern` = p_value
       )
-    ORDER BY priority ASC
+    ORDER BY r.priority ASC
     LIMIT 1;
 END$$
 

@@ -1,6 +1,19 @@
-DELIMITER $$
+-- ============================================================================
+-- Stored Procedure: sp_routing_label_get_all
+-- Description: Retrieve all active routing labels with pagination
+-- Parameters:
+--   @p_limit: Maximum number of records to return (default 100)
+--   @p_offset: Number of records to skip for pagination (default 0)
+-- Returns: Paginated list of routing labels with recipient and reason details
+-- Feature: Routing Module
+-- MySQL Version: 5.7 compatible
+-- ============================================================================
 
-DROP PROCEDURE IF EXISTS `sp_routing_label_get_all` $$
+USE mtm_receiving_application;
+
+DROP PROCEDURE IF EXISTS `sp_routing_label_get_all`;
+
+DELIMITER $$
 
 CREATE PROCEDURE `sp_routing_label_get_all`(
     IN p_limit INT,
@@ -9,11 +22,20 @@ CREATE PROCEDURE `sp_routing_label_get_all`(
     OUT p_error_msg VARCHAR(500)
 )
 BEGIN
+    -- local diagnostic message variable
+    DECLARE v_error_msg VARCHAR(500) DEFAULT '';
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
+        -- populate local variable from diagnostics and propagate to OUT params
+        GET DIAGNOSTICS CONDITION 1 v_error_msg = MESSAGE_TEXT;
+        SET p_error_msg = v_error_msg;
         SET p_status = -1;
     END;
+
+    -- initialize OUT params
+    SET p_status = 0;
+    SET p_error_msg = '';
 
     IF p_limit IS NULL OR p_limit <= 0 THEN
         SET p_limit = 100;

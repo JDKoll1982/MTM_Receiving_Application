@@ -17,12 +17,20 @@ BEGIN
     DECLARE v_existing_id INT DEFAULT NULL;
     DECLARE v_old_value TEXT DEFAULT NULL;
 
+    -- Avoid "SELECT ... INTO returned no rows" error when no override exists
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+    BEGIN
+        SET v_existing_id = NULL;
+        SET v_old_value = NULL;
+    END;
+
     -- Check if override already exists
     SELECT id, setting_value
     INTO v_existing_id, v_old_value
     FROM settings_personal
     WHERE user_id = p_user_id
-      AND setting_id = p_setting_id;
+      AND setting_id = p_setting_id
+    LIMIT 1;
 
     IF v_existing_id IS NULL THEN
         -- Insert new override

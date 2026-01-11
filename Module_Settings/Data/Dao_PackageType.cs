@@ -28,7 +28,7 @@ public class Dao_PackageType
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_PackageType_GetAll",
+            "sp_dunnage_type_GetAll",
             MapFromReader
         );
     }
@@ -46,7 +46,7 @@ public class Dao_PackageType
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_PackageType_GetById",
+            "sp_dunnage_type_GetById",
             MapFromReader,
             parameters
         );
@@ -68,7 +68,7 @@ public class Dao_PackageType
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_PackageType_Insert",
+            "sp_dunnage_type_Insert",
             reader => reader.GetInt32(reader.GetOrdinal("id")),
             parameters
         );
@@ -89,7 +89,7 @@ public class Dao_PackageType
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_PackageType_Update",
+            "sp_dunnage_type_Update",
             parameters
         );
     }
@@ -107,7 +107,7 @@ public class Dao_PackageType
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_PackageType_Delete",
+            "sp_dunnage_type_Delete",
             parameters
         );
     }
@@ -125,7 +125,7 @@ public class Dao_PackageType
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_PackageType_UsageCount",
+            "sp_dunnage_type_UsageCount",
             reader => reader.GetInt32(reader.GetOrdinal("usage_count")),
             parameters
         );

@@ -1,5 +1,5 @@
 {
-  "generatedDate": "2026-01-11 14:12:36",
+  "generatedDate": "2026-01-11 16:28:50",
   "executionGroups": [
     {
       "order": 10,
@@ -42,10 +42,10 @@
         "sp_PackageType_Insert",
         "sp_PackageType_Update",
         "sp_PackageType_UsageCount",
-        "sp_PackageTypeMappings_GetAll",
-        "sp_PackageTypeMappings_GetByPrefix",
-        "sp_PackageTypeMappings_Insert",
-        "sp_PackageTypeMappings_Update",
+        "sp_Receiving_PackageTypeMappings_GetAll",
+        "sp_Receiving_PackageTypeMappings_GetByPrefix",
+        "sp_Receiving_PackageTypeMappings_Insert",
+        "sp_Receiving_PackageTypeMappings_Update",
         "sp_SavePackageTypePreference"
       ],
       "category": "PackageTypes"
@@ -173,14 +173,14 @@
     {
       "order": 1210,
       "storedProcedures": [
+        "sp_settings_module_volvo_get",
+        "sp_settings_module_volvo_get_all",
         "sp_SettingsAuditLog_Get",
         "sp_SettingsAuditLog_GetBySetting",
         "sp_SettingsAuditLog_GetByUser",
         "sp_SystemSettings_GetAll",
         "sp_SystemSettings_GetByCategory",
-        "sp_SystemSettings_GetByKey",
-        "sp_settings_module_volvo_get",
-        "sp_settings_module_volvo_get_all"
+        "sp_SystemSettings_GetByKey"
       ],
       "category": "Settings"
     },
@@ -251,7 +251,7 @@
     {
       "order": 1999,
       "storedProcedures": [
-        "sp_custom_fields_get_by_type",
+        "sp_dunnage_custom_fields_get_by_type",
         "sp_get_user_default_mode",
         "sp_GetReceivingHistory",
         "sp_GetSharedTerminalNames",
@@ -291,11 +291,11 @@
     {
       "order": 210,
       "storedProcedures": [
+        "sp_settings_module_volvo_reset",
+        "sp_settings_module_volvo_upsert",
         "sp_SystemSettings_ResetToDefault",
         "sp_SystemSettings_SetLocked",
-        "sp_SystemSettings_UpdateValue",
-        "sp_settings_module_volvo_reset",
-        "sp_settings_module_volvo_upsert"
+        "sp_SystemSettings_UpdateValue"
       ],
       "category": "Settings"
     },
@@ -375,7 +375,7 @@
       "storedProcedures": [
         "sp_DeletePackageTypePreference",
         "sp_PackageType_Delete",
-        "sp_PackageTypeMappings_Delete"
+        "sp_Receiving_PackageTypeMappings_Delete"
       ],
       "category": "PackageTypes"
     },
@@ -407,7 +407,6 @@
     {
       "order": 999,
       "storedProcedures": [
-        "carrier_delivery_label_Insert",
         "dunnage_line_Insert",
         "sp_CreateNewUser",
         "sp_custom_fields_insert",

@@ -15,17 +15,28 @@ CREATE PROCEDURE sp_SystemSettings_ResetToDefault(
     IN p_workstation_name VARCHAR(100)
 )
 BEGIN
-    DECLARE v_old_value TEXT;
-    DECLARE v_default_value TEXT;
-    DECLARE v_is_locked BOOLEAN;
+    -- Use VARCHAR for routine variables (TEXT/BLOB types are not allowed for DECLARE in some MySQL versions)
+    DECLARE v_old_value VARCHAR(4000);
+    DECLARE v_default_value VARCHAR(4000);
+    DECLARE v_is_locked TINYINT(1);
+    DECLARE v_exists INT DEFAULT 0;
+
+    -- Ensure the setting exists to avoid "SELECT ... INTO" returning no rows
+    SELECT COUNT(*) INTO v_exists FROM settings_universal WHERE id = p_setting_id;
+    IF v_exists = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Setting not found';
+    END IF;
 
     -- Get current and default values
     SELECT setting_value, default_value, is_locked
     INTO v_old_value, v_default_value, v_is_locked
     FROM settings_universal
-    WHERE id = p_setting_id;
+    WHERE id = p_setting_id
+    LIMIT 1;
 
-    IF v_is_locked THEN
+    -- Treat NULL as unlocked; use COALESCE to be explicit
+    IF COALESCE(v_is_locked, 0) = 1 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Setting is locked and cannot be reset';
     END IF;

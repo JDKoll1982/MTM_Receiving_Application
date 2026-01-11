@@ -5,24 +5,25 @@
 -- Created: January 4, 2026
 -- ============================================================================
 
-USE mtm_receiving_application;
-
-DROP PROCEDURE IF EXISTS sp_routing_recipient_get_all;
+-- Avoid changing connection default; qualify object names to be explicit and use identifier quoting for MySQL 5.7 compatibility
+DROP PROCEDURE IF EXISTS `sp_routing_recipient_get_all`;
 
 DELIMITER $$
 
-CREATE PROCEDURE sp_routing_recipient_get_all()
+CREATE PROCEDURE `sp_routing_recipient_get_all`()
 BEGIN
     -- Return all active recipients sorted by name
-    SELECT 
-        id,
-        name,
-        default_department,
-        is_active,
-        created_date
-    FROM routing_recipients
-    WHERE is_active = 1
-    ORDER BY name;
+    SELECT
+        `id`,
+        `name`,
+        `location`,
+        `department`,
+        `is_active`,
+        `created_date`,
+        `updated_date`
+    FROM `routing_recipients`
+    WHERE `is_active` = 1
+    ORDER BY `name` ASC;
 END$$
 
 DELIMITER ;

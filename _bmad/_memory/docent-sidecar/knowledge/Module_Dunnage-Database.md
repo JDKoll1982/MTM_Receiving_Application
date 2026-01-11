@@ -71,7 +71,7 @@ All procedures below are referenced by Module_Dunnage DAOs via `Helper_Database_
 | DAO | Stored Procedure | Script Path |
 |-----|------------------|-------------|
 | Dao_DunnageCustomField | sp_custom_fields_insert | Database/StoredProcedures/Dunnage/sp_custom_fields_insert.sql |
-| Dao_DunnageCustomField | sp_custom_fields_get_by_type | Database/StoredProcedures/Dunnage/sp_custom_fields_get_by_type.sql |
+| Dao_DunnageCustomField | sp_dunnage_custom_fields_get_by_type | Database/StoredProcedures/Dunnage/sp_dunnage_custom_fields_get_by_type.sql |
 | Dao_DunnageCustomField | sp_custom_fields_delete | (missing in repo) |
 
 ### Inventoried Dunnage

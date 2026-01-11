@@ -157,17 +157,17 @@
 
 **Goal**: Create package type and mapping CRUD operations
 
-- [x] **DB041** [P] Create `sp_PackageTypeMappings_GetAll` - All active mappings
-- [x] **DB042** [P] Create `sp_PackageTypeMappings_GetByPrefix` - Lookup with default fallback
-- [x] **DB043** Create `sp_PackageTypeMappings_Insert` - Add new mapping
-- [x] **DB044** Create `sp_PackageTypeMappings_Update` - Modify mapping
-- [x] **DB045** Create `sp_PackageTypeMappings_Delete` - Soft delete
-- [x] **DB046** [P] Create `sp_PackageType_GetAll` - List all package types
-- [x] **DB047** [P] Create `sp_PackageType_GetById` - Get single package type
-- [x] **DB048** Create `sp_PackageType_Insert` - Add new type with validation
-- [x] **DB049** Create `sp_PackageType_Update` - Modify type
-- [x] **DB050** Create `sp_PackageType_Delete` - Delete with usage validation
-- [x] **DB051** Create `sp_PackageType_UsageCount` - Count packages using this type
+- [x] **DB041** [P] Create `sp_Receiving_PackageTypeMappings_GetAll` - All active mappings
+- [x] **DB042** [P] Create `sp_Receiving_PackageTypeMappings_GetByPrefix` - Lookup with default fallback
+- [x] **DB043** Create `sp_Receiving_PackageTypeMappings_Insert` - Add new mapping
+- [x] **DB044** Create `sp_Receiving_PackageTypeMappings_Update` - Modify mapping
+- [x] **DB045** Create `sp_Receiving_PackageTypeMappings_Delete` - Soft delete
+- [x] **DB046** [P] Create `sp_dunnage_type_GetAll` - List all package types
+- [x] **DB047** [P] Create `sp_dunnage_type_GetById` - Get single package type
+- [x] **DB048** Create `sp_dunnage_type_Insert` - Add new type with validation
+- [x] **DB049** Create `sp_dunnage_type_Update` - Modify type
+- [x] **DB050** Create `sp_dunnage_type_Delete` - Delete with usage validation
+- [x] **DB051** Create `sp_dunnage_type_UsageCount` - Count packages using this type
 - [x] **DB052** Test all package procedures with sample data
 
 **Checkpoint**: Package type system operational
@@ -275,12 +275,12 @@
 ### Package Type DAO
 
 - [x] **DB103** Create `Module_Settings/Data/Dao_PackageType.cs` skeleton
-- [x] **DB104** Implement `GetAllAsync()` calling `sp_PackageType_GetAll`
-- [x] **DB105** Implement `GetByIdAsync(int id)` calling `sp_PackageType_GetById`
+- [x] **DB104** Implement `GetAllAsync()` calling `sp_dunnage_type_GetAll`
+- [x] **DB105** Implement `GetByIdAsync(int id)` calling `sp_dunnage_type_GetById`
 - [x] **DB106** Implement `InsertAsync(Model_PackageType packageType)` with validation
 - [x] **DB107** Implement `UpdateAsync(Model_PackageType packageType)`
 - [x] **DB108** Implement `DeleteAsync(int id)` with usage validation
-- [x] **DB109** Implement `GetUsageCountAsync(int id)` calling `sp_PackageType_UsageCount`
+- [x] **DB109** Implement `GetUsageCountAsync(int id)` calling `sp_dunnage_type_UsageCount`
 - [ ] **DB110** Test Dao_PackageType CRUD operations
 
 ### Package Type Mapping DAO

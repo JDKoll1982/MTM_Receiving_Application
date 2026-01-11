@@ -14,6 +14,12 @@ CREATE PROCEDURE sp_SettingsAuditLog_GetBySetting(
     IN p_limit INT
 )
 BEGIN
+    -- Normalize limit parameter to a safe positive integer for MySQL 5.7
+    DECLARE l_limit INT DEFAULT 100;
+    IF p_limit IS NOT NULL AND p_limit > 0 THEN
+        SET l_limit = p_limit;
+    END IF;
+
     SELECT
         sal.id,
         sal.setting_id,
@@ -32,7 +38,7 @@ BEGIN
     INNER JOIN settings_universal ss ON sal.setting_id = ss.id
     WHERE sal.setting_id = p_setting_id
     ORDER BY sal.changed_at DESC
-    LIMIT p_limit;
+    LIMIT l_limit;
 END$$
 
 

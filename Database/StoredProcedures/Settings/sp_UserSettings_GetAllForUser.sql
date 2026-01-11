@@ -6,6 +6,7 @@ DELIMITER $$
 
 -- =============================================
 -- SP: Get All User Settings for User
+-- MySQL 5.7 compatible: use IFNULL, cast JSON to CHAR, and explicit numeric flag
 -- =============================================
 DROP PROCEDURE IF EXISTS sp_UserSettings_GetAllForUser$$
 CREATE PROCEDURE sp_UserSettings_GetAllForUser(
@@ -18,14 +19,14 @@ BEGIN
         ss.setting_key,
         ss.setting_name,
         ss.description,
-        COALESCE(us.setting_value, ss.setting_value) AS effective_value,
+        IFNULL(us.setting_value, ss.setting_value) AS effective_value,
         ss.setting_value AS system_default,
         us.setting_value AS user_override,
         ss.data_type,
-        ss.validation_rules,
+        CAST(ss.validation_rules AS CHAR) AS validation_rules,
         ss.ui_control_type,
         ss.ui_order,
-        (us.id IS NOT NULL) AS has_override
+        IF(us.id IS NOT NULL, 1, 0) AS has_override
     FROM settings_universal ss
     LEFT JOIN settings_personal us ON ss.id = us.setting_id AND us.user_id = p_user_id
     WHERE ss.scope = 'user'

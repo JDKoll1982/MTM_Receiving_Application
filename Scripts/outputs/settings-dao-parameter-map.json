@@ -10,8 +10,8 @@
   },
   "procedures": [
     {
-      "storedProcedure": "sp_PackageType_Delete",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_Delete.sql",
+      "storedProcedure": "sp_dunnage_type_Delete",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_Delete.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -42,8 +42,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_PackageType_GetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_GetAll.sql",
+      "storedProcedure": "sp_dunnage_type_GetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_GetAll.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -55,8 +55,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_PackageType_GetById",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_GetById.sql",
+      "storedProcedure": "sp_dunnage_type_GetById",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_GetById.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -75,8 +75,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_PackageType_Insert",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_Insert.sql",
+      "storedProcedure": "sp_dunnage_type_Insert",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_Insert.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -123,8 +123,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_PackageType_Update",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_Update.sql",
+      "storedProcedure": "sp_dunnage_type_Update",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_Update.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -169,8 +169,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_PackageType_UsageCount",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_UsageCount.sql",
+      "storedProcedure": "sp_dunnage_type_UsageCount",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_UsageCount.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -189,8 +189,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_PackageTypeMappings_Delete",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_Delete.sql",
+      "storedProcedure": "sp_Receiving_PackageTypeMappings_Delete",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_Delete.sql",
       "suggestedDao": "Dao_PackageTypeMappings",
       "missingDao": false,
       "referencedInDaos": [
@@ -221,8 +221,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_PackageTypeMappings_GetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_GetAll.sql",
+      "storedProcedure": "sp_Receiving_PackageTypeMappings_GetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_GetAll.sql",
       "suggestedDao": "Dao_PackageTypeMappings",
       "missingDao": false,
       "referencedInDaos": [
@@ -234,8 +234,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_PackageTypeMappings_GetByPrefix",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_GetByPrefix.sql",
+      "storedProcedure": "sp_Receiving_PackageTypeMappings_GetByPrefix",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_GetByPrefix.sql",
       "suggestedDao": "Dao_PackageTypeMappings",
       "missingDao": false,
       "referencedInDaos": [
@@ -254,8 +254,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_PackageTypeMappings_Insert",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_Insert.sql",
+      "storedProcedure": "sp_Receiving_PackageTypeMappings_Insert",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_Insert.sql",
       "suggestedDao": "Dao_PackageTypeMappings",
       "missingDao": false,
       "referencedInDaos": [
@@ -318,8 +318,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_PackageTypeMappings_Update",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_Update.sql",
+      "storedProcedure": "sp_Receiving_PackageTypeMappings_Update",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_Update.sql",
       "suggestedDao": "Dao_PackageTypeMappings",
       "missingDao": false,
       "referencedInDaos": [

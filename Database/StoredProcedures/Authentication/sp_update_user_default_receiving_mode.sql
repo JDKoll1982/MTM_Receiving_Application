@@ -15,7 +15,7 @@ CREATE PROCEDURE sp_update_user_default_receiving_mode(
     IN p_default_mode VARCHAR(20)
 )
 BEGIN
-    FROM auth_users
+    UPDATE auth_users
     SET default_receiving_mode = p_default_mode,
         modified_date = NOW()
     WHERE employee_number = p_user_id;

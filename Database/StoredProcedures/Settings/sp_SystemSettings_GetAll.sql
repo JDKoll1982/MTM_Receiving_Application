@@ -24,7 +24,7 @@ BEGIN
         permission_level,
         is_locked,
         is_sensitive,
-        validation_rules,
+        CAST(validation_rules AS CHAR) AS validation_rules,
         ui_control_type,
         ui_order,
         created_at,
@@ -33,7 +33,5 @@ BEGIN
     FROM settings_universal
     ORDER BY category, ui_order, setting_name;
 END$$
-
-
 
 DELIMITER ;

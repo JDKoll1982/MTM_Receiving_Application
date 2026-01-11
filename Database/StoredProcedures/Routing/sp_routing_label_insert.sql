@@ -12,24 +12,27 @@ DROP PROCEDURE IF EXISTS sp_routing_label_insert;
 DELIMITER $$
 
 CREATE PROCEDURE sp_routing_label_insert(
-    IN p_label_number INT,
-    IN p_deliver_to VARCHAR(100),
-    IN p_department VARCHAR(100),
-    IN p_package_description TEXT,
     IN p_po_number VARCHAR(20),
-    IN p_work_order VARCHAR(50),
-    IN p_employee_number VARCHAR(20),
-    IN p_created_date DATE,
+    IN p_line_number VARCHAR(10),
+    IN p_description VARCHAR(200),
+    IN p_recipient_id INT,
+    IN p_quantity INT,
+    IN p_created_by INT,
+    IN p_other_reason_id INT,
     OUT p_new_label_id INT,
     OUT p_error_message VARCHAR(500)
 )
 proc: BEGIN
-    -- Handler must be declared first
+    -- Local variables must be declared at the top of the block (MySQL requirement)
+    DECLARE v_error_message VARCHAR(500);
+
+    -- Handler must be declared after local DECLAREs
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        -- Get error details (Compatible with MySQL 5.6+)
+        -- Capture error details into a local variable, then assign to OUT param
         GET DIAGNOSTICS CONDITION 1
-            p_error_message = MESSAGE_TEXT;
+            v_error_message = MESSAGE_TEXT;
+        SET p_error_message = v_error_message;
         ROLLBACK;
     END;
 
@@ -41,57 +44,63 @@ proc: BEGIN
     START TRANSACTION;
 
     -- Validate required fields
-    IF p_label_number IS NULL OR p_label_number <= 0 THEN
-        SET p_error_message = 'Label number is required and must be positive';
+    IF p_po_number IS NULL OR TRIM(p_po_number) = '' THEN
+        SET p_error_message = 'PO number is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
 
-    IF p_deliver_to IS NULL OR TRIM(p_deliver_to) = '' THEN
-        SET p_error_message = 'Deliver To recipient is required';
+    IF p_line_number IS NULL OR TRIM(p_line_number) = '' THEN
+        SET p_error_message = 'Line number is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
 
-    IF p_department IS NULL OR TRIM(p_department) = '' THEN
-        SET p_error_message = 'Department is required';
+    IF p_description IS NULL OR TRIM(p_description) = '' THEN
+        SET p_error_message = 'Description is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
 
-    IF p_employee_number IS NULL OR TRIM(p_employee_number) = '' THEN
-        SET p_error_message = 'Employee number is required';
+    IF p_recipient_id IS NULL THEN
+        SET p_error_message = 'Recipient ID is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
 
-    IF p_created_date IS NULL THEN
-        SET p_error_message = 'Created date is required';
+    IF p_quantity IS NULL OR p_quantity <= 0 THEN
+        SET p_error_message = 'Quantity is required and must be positive';
+        ROLLBACK;
+        LEAVE proc;
+    END IF;
+
+    IF p_created_by IS NULL THEN
+        SET p_error_message = 'Created by user is required';
         ROLLBACK;
         LEAVE proc;
     END IF;
 
     -- Insert routing label
     INSERT INTO routing_label_data (
-        label_number,
-        deliver_to,
-        department,
-        package_description,
         po_number,
-        work_order,
-        employee_number,
-        created_date,
-        is_archived
+        line_number,
+        description,
+        recipient_id,
+        quantity,
+        created_by,
+        other_reason_id,
+        is_active,
+        csv_exported
     ) VALUES (
-        p_label_number,
-        p_deliver_to,
-        p_department,
-        p_package_description,
         p_po_number,
-        p_work_order,
-        p_employee_number,
-        p_created_date,
-        0  -- Default: not archived
+        p_line_number,
+        p_description,
+        p_recipient_id,
+        p_quantity,
+        p_created_by,
+        p_other_reason_id,
+        1,  -- Default: active
+        0   -- Default: not exported
     );
 
     -- Get the newly created ID

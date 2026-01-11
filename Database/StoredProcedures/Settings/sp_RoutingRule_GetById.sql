@@ -7,25 +7,23 @@ DELIMITER $$
 -- =============================================
 -- SP: Get Routing Rule by ID
 -- =============================================
-DROP PROCEDURE IF EXISTS sp_RoutingRule_GetById$$
-CREATE PROCEDURE sp_RoutingRule_GetById(
+DROP PROCEDURE IF EXISTS `sp_RoutingRule_GetById`$$
+CREATE PROCEDURE `sp_RoutingRule_GetById`(
     IN p_id INT
 )
 BEGIN
     SELECT
-        id,
-        match_type,
-        pattern,
-        destination_location,
-        priority,
-        is_active,
-        created_at,
-        updated_at,
-        created_by
-    FROM routing_home_locations
-    WHERE id = p_id;
+        `id`,
+        `match_type`,
+        `pattern`,
+        `destination_location`,
+        `priority`,
+        `is_active`,
+        `created_at`,
+        `updated_at`,
+        `created_by`
+    FROM `routing_home_locations`
+    WHERE `id` = p_id;
 END$$
-
-
 
 DELIMITER ;

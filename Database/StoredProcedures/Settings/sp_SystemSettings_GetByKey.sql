@@ -27,7 +27,7 @@ BEGIN
         permission_level,
         is_locked,
         is_sensitive,
-        validation_rules,
+        CAST(validation_rules AS CHAR) AS validation_rules,
         ui_control_type,
         ui_order,
         created_at,
@@ -35,7 +35,8 @@ BEGIN
         updated_by
     FROM settings_universal
     WHERE category = p_category
-      AND setting_key = p_setting_key;
+      AND setting_key = p_setting_key
+    LIMIT 1;
 END$$
 
 

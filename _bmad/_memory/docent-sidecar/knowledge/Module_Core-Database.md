@@ -74,7 +74,7 @@ Representative set (see `Database/StoredProcedures/Dunnage/`):
 - Parts: `sp_dunnage_parts_get_all`, `sp_dunnage_parts_get_by_id`, `sp_dunnage_parts_get_by_type`, `sp_dunnage_parts_insert`, `sp_dunnage_parts_update`, `sp_dunnage_parts_delete`, `sp_dunnage_parts_search`
 - Loads: `sp_dunnage_history_insert`, `sp_dunnage_history_insert_batch`, `sp_dunnage_history_get_all`, `sp_dunnage_history_get_by_id`, `sp_dunnage_history_get_by_date_range`, `sp_dunnage_history_update`, `sp_dunnage_history_delete`
 - Inventory: `sp_dunnage_requires_inventory_check`, `sp_dunnage_requires_inventory_get_by_part`, `sp_dunnage_requires_inventory_get_all`, `sp_dunnage_requires_inventory_insert`, `sp_dunnage_requires_inventory_update`, `sp_dunnage_requires_inventory_delete`
-- Custom fields: `sp_custom_fields_get_by_type`, `sp_custom_fields_insert`
+- Custom fields: `sp_dunnage_custom_fields_get_by_type`, `sp_custom_fields_insert`
 - User prefs: `sp_user_preferences_upsert`, `sp_user_preferences_get_recent_icons`
 
 ## SQL Server (Infor Visual): Query Files

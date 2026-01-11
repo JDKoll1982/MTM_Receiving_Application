@@ -631,7 +631,7 @@ private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelec
 1. Execute sp_SystemSettings_GetAll
 2. Test sp_SystemSettings_UpdateValue with audit logging
 3. Test sp_UserSettings_Get with fallback
-4. Test sp_PackageType_UsageCount validation
+4. Test sp_dunnage_type_UsageCount validation
 5. Test sp_RoutingRule pattern matching
 6. Verify all SPs return expected result sets
 

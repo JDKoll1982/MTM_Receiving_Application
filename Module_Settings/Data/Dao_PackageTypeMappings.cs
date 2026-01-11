@@ -28,7 +28,7 @@ public class Dao_PackageTypeMappings
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_PackageTypeMappings_GetAll",
+            "sp_Receiving_PackageTypeMappings_GetAll",
             MapFromReader
         );
     }
@@ -46,7 +46,7 @@ public class Dao_PackageTypeMappings
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_PackageTypeMappings_GetByPrefix",
+            "sp_Receiving_PackageTypeMappings_GetByPrefix",
             reader => reader.IsDBNull(reader.GetOrdinal("package_type"))
                 ? "Skids"
                 : reader.GetString(reader.GetOrdinal("package_type")),
@@ -72,7 +72,7 @@ public class Dao_PackageTypeMappings
 
         var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_PackageTypeMappings_Insert",
+            "sp_Receiving_PackageTypeMappings_Insert",
             reader => reader.GetInt32(reader.GetOrdinal("id")),
             parameters
         );
@@ -96,7 +96,7 @@ public class Dao_PackageTypeMappings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_PackageTypeMappings_Update",
+            "sp_Receiving_PackageTypeMappings_Update",
             parameters
         );
     }
@@ -114,7 +114,7 @@ public class Dao_PackageTypeMappings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_PackageTypeMappings_Delete",
+            "sp_Receiving_PackageTypeMappings_Delete",
             parameters
         );
     }

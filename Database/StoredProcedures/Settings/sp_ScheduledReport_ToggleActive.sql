@@ -10,7 +10,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ScheduledReport_ToggleActive$$
 CREATE PROCEDURE sp_ScheduledReport_ToggleActive(
     IN p_id INT,
-    IN p_is_active BOOLEAN
+    IN p_is_active TINYINT(1)
 )
 BEGIN
     UPDATE reporting_scheduled_reports
@@ -20,8 +20,5 @@ BEGIN
 
     SELECT ROW_COUNT() AS affected_rows;
 END$$
-
-DELIMITER ;
-
 
 DELIMITER ;

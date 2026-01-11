@@ -1,8 +1,8 @@
-# sp_settings_module_volvo_get_all
+# sp_settings_module_volvo_upsert
 
 **Category:** Settings
 **Parameter Types:** IN
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 
 ## Usage Summary
 
@@ -12,18 +12,20 @@
 
 | File | Class | Method | Line | Has Callers | Caller Count |
 |------|-------|--------|------|-------------|--------------|
-| Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetAllSettingsAsync` | 54 | ✓ | 1 |
+| Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `UpsertSettingAsync` | 77 | ✓ | 1 |
 
 ## Code Samples
 
 ```csharp
-// Module_Volvo\Data\Dao_VolvoSettings.cs:54
-"sp_settings_module_volvo_get_all",
+// Module_Volvo\Data\Dao_VolvoSettings.cs:77
+"sp_settings_module_volvo_upsert",
 
 ```
 
 ## Method References
 
-### Dao_VolvoSettings.GetAllSettingsAsync
+### Dao_VolvoSettings.UpsertSettingAsync
 **Called by (1 references):**
 - Same file (1 calls)
+
+

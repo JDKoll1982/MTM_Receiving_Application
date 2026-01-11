@@ -1,16 +1,16 @@
 # Stored Procedure Usage Analysis
 
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 **Database:** mtm_receiving_application
-**Total Stored Procedures:** 154
+**Total Stored Procedures:** 153
 
 ## Summary
 
 | Metric | Count | Percentage |
 |--------|-------|------------|
-| **Used Stored Procedures** | 142 | 92.2% |
-| **Unused Stored Procedures** | 12 | 7.8% |
-| **Total Usage Locations** | 199 | - |
+| **Used Stored Procedures** | 136 | 88.9% |
+| **Unused Stored Procedures** | 17 | 11.1% |
+| **Total Usage Locations** | 187 | - |
 
 ## Stored Procedures in Use
 
@@ -20,7 +20,7 @@
 | [`receiving_line_Insert`](sp-reports/Receiving/IN/receiving_line_Insert.md) | Module_Receiving\Data\Dao_ReceivingLine.cs | Dao_ReceivingLine | `InsertReceivingLineAsync` | 64 | ✓ Yes | 3 |
 | [`sp_CreateNewUser`](sp-reports/Authentication/IN/sp_CreateNewUser.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `CreateNewUserAsync` | 94 | ✓ Yes | 4 |
 | [`sp_CreateNewUser`](sp-reports/Authentication/IN/sp_CreateNewUser.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `CreateNewUserAsync` | 127 | ✓ Yes | 4 |
-| [`sp_custom_fields_get_by_type`](sp-reports/Dunnage/IN/sp_custom_fields_get_by_type.md) | Module_Dunnage\Data\Dao_DunnageCustomField.cs | Dao_DunnageCustomField | `GetByTypeAsync` | 66 | ✓ Yes | 4 |
+| [`sp_dunnage_custom_fields_get_by_type`](sp-reports/Dunnage/IN/sp_dunnage_custom_fields_get_by_type.md) | Module_Dunnage\Data\Dao_DunnageCustomField.cs | Dao_DunnageCustomField | `GetByTypeAsync` | 66 | ✓ Yes | 4 |
 | [`sp_custom_fields_insert`](sp-reports/Dunnage/IN/sp_custom_fields_insert.md) | Module_Dunnage\Data\Dao_DunnageCustomField.cs | Dao_DunnageCustomField | `InsertAsync` | 40 | ✓ Yes | 21 |
 | [`sp_DeletePackageTypePreference`](sp-reports/Other/IN/sp_DeletePackageTypePreference.md) | Module_Receiving\Data\Dao_PackageTypePreference.cs | Dao_PackageTypePreference | `DeletePreferenceAsync` | 162 | ✓ Yes | 4 |
 | [`sp_DeleteReceivingLoad`](sp-reports/Receiving/IN/sp_DeleteReceivingLoad.md) | Module_Receiving\Data\Dao_ReceivingLoad.cs | Dao_ReceivingLoad | `DeleteLoadsAsync` | 174 | ✓ Yes | 2 |
@@ -40,6 +40,12 @@
 | [`sp_dunnage_parts_insert`](sp-reports/Dunnage/IN/sp_dunnage_parts_insert.md) | Module_Dunnage\Data\Dao_DunnagePart.cs | Dao_DunnagePart | `InsertAsync` | 83 | ✓ Yes | 21 |
 | [`sp_dunnage_parts_search`](sp-reports/Dunnage/IN/sp_dunnage_parts_search.md) | Module_Dunnage\Data\Dao_DunnagePart.cs | Dao_DunnagePart | `SearchAsync` | 156 | ✓ Yes | 1 |
 | [`sp_dunnage_parts_update`](sp-reports/Dunnage/IN/sp_dunnage_parts_update.md) | Module_Dunnage\Data\Dao_DunnagePart.cs | Dao_DunnagePart | `UpdateAsync` | 112 | ✓ Yes | 19 |
+| [`sp_dunnage_requires_inventory_check`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_check.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `CheckAsync` | 40 | ✓ Yes | 2 |
+| [`sp_dunnage_requires_inventory_delete`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_delete.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `DeleteAsync` | 121 | ✓ Yes | 15 |
+| [`sp_dunnage_requires_inventory_get_all`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_get_all.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `GetAllAsync` | 26 | ✓ Yes | 21 |
+| [`sp_dunnage_requires_inventory_get_by_part`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_get_by_part.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `GetByPartAsync` | 55 | ✓ Yes | 3 |
+| [`sp_dunnage_requires_inventory_insert`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_insert.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `InsertAsync` | 78 | ✓ Yes | 21 |
+| [`sp_dunnage_requires_inventory_update`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_update.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `UpdateAsync` | 107 | ✓ Yes | 19 |
 | [`sp_dunnage_specs_count_parts_using_spec`](sp-reports/Dunnage/IN/sp_dunnage_specs_count_parts_using_spec.md) | Module_Dunnage\Data\Dao_DunnageSpec.cs | Dao_DunnageSpec | `CountPartsUsingSpecAsync` | 149 | ✓ Yes | 2 |
 | [`sp_dunnage_specs_delete_by_id`](sp-reports/Dunnage/IN/sp_dunnage_specs_delete_by_id.md) | Module_Dunnage\Data\Dao_DunnageSpec.cs | Dao_DunnageSpec | `DeleteByIdAsync` | 120 | ✓ Yes | 2 |
 | [`sp_dunnage_specs_delete_by_type`](sp-reports/Dunnage/IN/sp_dunnage_specs_delete_by_type.md) | Module_Dunnage\Data\Dao_DunnageSpec.cs | Dao_DunnageSpec | `DeleteByTypeAsync` | 134 | ✓ Yes | 1 |
@@ -65,40 +71,22 @@
 | [`sp_GetSharedTerminalNames`](sp-reports/Authentication/IN/sp_GetSharedTerminalNames.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `GetSharedTerminalNamesAsync` | 256 | ✓ Yes | 2 |
 | [`sp_GetUserByWindowsUsername`](sp-reports/Authentication/IN/sp_GetUserByWindowsUsername.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `GetUserByWindowsUsernameAsync` | 49 | ✓ Yes | 3 |
 | [`sp_InsertReceivingLoad`](sp-reports/Receiving/IN/sp_InsertReceivingLoad.md) | Module_Receiving\Data\Dao_ReceivingLoad.cs | Dao_ReceivingLoad | `SaveLoadsAsync` | 68 | ✓ Yes | 8 |
-| [`sp_dunnage_requires_inventory_check`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_check.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `CheckAsync` | 40 | ✓ Yes | 2 |
-| [`sp_dunnage_requires_inventory_delete`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_delete.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `DeleteAsync` | 121 | ✓ Yes | 15 |
-| [`sp_dunnage_requires_inventory_get_all`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_get_all.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `GetAllAsync` | 26 | ✓ Yes | 21 |
-| [`sp_dunnage_requires_inventory_get_by_part`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_get_by_part.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `GetByPartAsync` | 55 | ✓ Yes | 3 |
-| [`sp_dunnage_requires_inventory_insert`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_insert.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `InsertAsync` | 78 | ✓ Yes | 21 |
-| [`sp_dunnage_requires_inventory_update`](sp-reports/Dunnage/IN/sp_dunnage_requires_inventory_update.md) | Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `UpdateAsync` | 107 | ✓ Yes | 19 |
 | [`sp_LogUserActivity`](sp-reports/Authentication/IN/sp_LogUserActivity.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `LogUserActivityAsync` | 230 | ✓ Yes | 4 |
-| [`sp_PackageType_Delete`](sp-reports/Settings/IN/sp_PackageType_Delete.md) | Module_Settings\Data\Dao_PackageType.cs | Dao_PackageType | `DeleteAsync` | 110 | ✓ Yes | 15 |
-| [`sp_PackageType_Delete`](sp-reports/Settings/IN/sp_PackageType_Delete.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 520 | ✓ Yes | 1 |
-| [`sp_PackageType_GetAll`](sp-reports/Settings/IN/sp_PackageType_GetAll.md) | Module_Settings\Data\Dao_PackageType.cs | Dao_PackageType | `GetAllAsync` | 31 | ✓ Yes | 21 |
-| [`sp_PackageType_GetAll`](sp-reports/Settings/IN/sp_PackageType_GetAll.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 516 | ✓ Yes | 1 |
-| [`sp_PackageType_GetById`](sp-reports/Settings/IN/sp_PackageType_GetById.md) | Module_Settings\Data\Dao_PackageType.cs | Dao_PackageType | `GetByIdAsync` | 49 | ✓ Yes | 13 |
-| [`sp_PackageType_GetById`](sp-reports/Settings/IN/sp_PackageType_GetById.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 517 | ✓ Yes | 1 |
-| [`sp_PackageType_Insert`](sp-reports/Settings/IN/sp_PackageType_Insert.md) | Module_Settings\Data\Dao_PackageType.cs | Dao_PackageType | `InsertAsync` | 71 | ✓ Yes | 21 |
-| [`sp_PackageType_Insert`](sp-reports/Settings/IN/sp_PackageType_Insert.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 518 | ✓ Yes | 1 |
-| [`sp_PackageType_Update`](sp-reports/Settings/IN/sp_PackageType_Update.md) | Module_Settings\Data\Dao_PackageType.cs | Dao_PackageType | `UpdateAsync` | 92 | ✓ Yes | 19 |
-| [`sp_PackageType_Update`](sp-reports/Settings/IN/sp_PackageType_Update.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 519 | ✓ Yes | 1 |
-| [`sp_PackageType_UsageCount`](sp-reports/Settings/IN/sp_PackageType_UsageCount.md) | Module_Settings\Data\Dao_PackageType.cs | Dao_PackageType | `GetUsageCountAsync` | 128 | ✓ Yes | 3 |
-| [`sp_PackageType_UsageCount`](sp-reports/Settings/IN/sp_PackageType_UsageCount.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 521 | ✓ Yes | 1 |
-| [`sp_PackageTypeMappings_Delete`](sp-reports/Settings/IN/sp_PackageTypeMappings_Delete.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `DeleteAsync` | 117 | ✓ Yes | 15 |
-| [`sp_PackageTypeMappings_Delete`](sp-reports/Settings/IN/sp_PackageTypeMappings_Delete.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 527 | ✓ Yes | 1 |
-| [`sp_PackageTypeMappings_GetAll`](sp-reports/Settings/IN/sp_PackageTypeMappings_GetAll.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `GetAllAsync` | 31 | ✓ Yes | 21 |
-| [`sp_PackageTypeMappings_GetAll`](sp-reports/Settings/IN/sp_PackageTypeMappings_GetAll.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 523 | ✓ Yes | 1 |
-| [`sp_PackageTypeMappings_GetByPrefix`](sp-reports/Settings/IN/sp_PackageTypeMappings_GetByPrefix.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `GetByPrefixAsync` | 49 | ✓ Yes | 1 |
-| [`sp_PackageTypeMappings_GetByPrefix`](sp-reports/Settings/IN/sp_PackageTypeMappings_GetByPrefix.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 524 | ✓ Yes | 1 |
-| [`sp_PackageTypeMappings_Insert`](sp-reports/Settings/IN/sp_PackageTypeMappings_Insert.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `InsertAsync` | 75 | ✓ Yes | 21 |
-| [`sp_PackageTypeMappings_Insert`](sp-reports/Settings/IN/sp_PackageTypeMappings_Insert.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 525 | ✓ Yes | 1 |
-| [`sp_PackageTypeMappings_Update`](sp-reports/Settings/IN/sp_PackageTypeMappings_Update.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `UpdateAsync` | 99 | ✓ Yes | 19 |
-| [`sp_PackageTypeMappings_Update`](sp-reports/Settings/IN/sp_PackageTypeMappings_Update.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 526 | ✓ Yes | 1 |
+| [`sp_Receiving_PackageTypeMappings_Delete`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_Delete.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `DeleteAsync` | 117 | ✓ Yes | 15 |
+| [`sp_Receiving_PackageTypeMappings_Delete`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_Delete.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 527 | ✓ Yes | 1 |
+| [`sp_Receiving_PackageTypeMappings_GetAll`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_GetAll.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `GetAllAsync` | 31 | ✓ Yes | 21 |
+| [`sp_Receiving_PackageTypeMappings_GetAll`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_GetAll.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 523 | ✓ Yes | 1 |
+| [`sp_Receiving_PackageTypeMappings_GetByPrefix`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_GetByPrefix.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `GetByPrefixAsync` | 49 | ✓ Yes | 1 |
+| [`sp_Receiving_PackageTypeMappings_GetByPrefix`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_GetByPrefix.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 524 | ✓ Yes | 1 |
+| [`sp_Receiving_PackageTypeMappings_Insert`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_Insert.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `InsertAsync` | 75 | ✓ Yes | 21 |
+| [`sp_Receiving_PackageTypeMappings_Insert`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_Insert.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 525 | ✓ Yes | 1 |
+| [`sp_Receiving_PackageTypeMappings_Update`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_Update.md) | Module_Settings\Data\Dao_PackageTypeMappings.cs | Dao_PackageTypeMappings | `UpdateAsync` | 99 | ✓ Yes | 19 |
+| [`sp_Receiving_PackageTypeMappings_Update`](sp-reports/Settings/IN/sp_Receiving_PackageTypeMappings_Update.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 526 | ✓ Yes | 1 |
+| [`sp_routing_history_insert`](sp-reports/Routing/IN/sp_routing_history_insert.md) | Module_Routing\Data\Dao_RoutingLabelHistory.cs | Dao_RoutingLabelHistory | `InsertHistoryAsync` | 44 | ✓ Yes | 2 |
 | [`sp_routing_label_check_duplicate`](sp-reports/Routing/IN/sp_routing_label_check_duplicate.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `CheckDuplicateLabelAsync` | 265 | ✓ Yes | 5 |
 | [`sp_routing_label_delete`](sp-reports/Routing/IN/sp_routing_label_delete.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `DeleteLabelAsync` | 205 | ✓ Yes | 2 |
 | [`sp_routing_label_get_all`](sp-reports/Routing/IN/sp_routing_label_get_all.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `GetAllLabelsAsync` | 178 | ✓ Yes | 5 |
 | [`sp_routing_label_get_by_id`](sp-reports/Routing/IN/sp_routing_label_get_by_id.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `GetLabelByIdAsync` | 150 | ✓ Yes | 4 |
-| [`sp_routing_history_insert`](sp-reports/Routing/IN/sp_routing_history_insert.md) | Module_Routing\Data\Dao_RoutingLabelHistory.cs | Dao_RoutingLabelHistory | `InsertHistoryAsync` | 44 | ✓ Yes | 2 |
 | [`sp_routing_label_insert`](sp-reports/Routing/IN/sp_routing_label_insert.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `InsertLabelAsync` | 52 | ✓ Yes | 3 |
 | [`sp_routing_label_mark_exported`](sp-reports/Routing/IN/sp_routing_label_mark_exported.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `MarkLabelExportedAsync` | 232 | ✓ Yes | 2 |
 | [`sp_routing_label_update`](sp-reports/Routing/IN/sp_routing_label_update.md) | Module_Routing\Data\Dao_RoutingLabel.cs | Dao_RoutingLabel | `UpdateLabelAsync` | 124 | ✓ Yes | 5 |
@@ -146,6 +134,11 @@
 | [`sp_ScheduledReport_UpdateLastRun`](sp-reports/Settings/IN/sp_ScheduledReport_UpdateLastRun.md) | Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs | ViewModel_Settings_DatabaseTest | `TestStoredProceduresAsync` | 543 | ✓ Yes | 1 |
 | [`sp_seed_user_default_modes`](sp-reports/Authentication/IN/sp_seed_user_default_modes.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `CreateNewUserAsync` | 127 | ✓ Yes | 4 |
 | [`sp_seed_user_default_modes`](sp-reports/Authentication/IN/sp_seed_user_default_modes.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `CreateNewUserAsync` | 133 | ✓ Yes | 4 |
+| [`sp_settings_module_volvo_get`](sp-reports/Settings/IN/sp_settings_module_volvo_get.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetSettingAsync` | 35 | ✓ Yes | 2 |
+| [`sp_settings_module_volvo_get`](sp-reports/Settings/IN/sp_settings_module_volvo_get.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetAllSettingsAsync` | 54 | ✓ Yes | 1 |
+| [`sp_settings_module_volvo_get_all`](sp-reports/Settings/IN/sp_settings_module_volvo_get_all.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetAllSettingsAsync` | 54 | ✓ Yes | 1 |
+| [`sp_settings_module_volvo_reset`](sp-reports/Settings/IN/sp_settings_module_volvo_reset.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `ResetSettingAsync` | 97 | ✓ Yes | 1 |
+| [`sp_settings_module_volvo_upsert`](sp-reports/Settings/IN/sp_settings_module_volvo_upsert.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `UpsertSettingAsync` | 77 | ✓ Yes | 1 |
 | [`sp_SettingsAuditLog_Get`](sp-reports/Settings/IN/sp_SettingsAuditLog_Get.md) | Module_Settings\Data\Dao_SettingsAuditLog.cs | Dao_SettingsAuditLog | `GetAsync` | 39 | ✓ Yes | 3 |
 | [`sp_SettingsAuditLog_Get`](sp-reports/Settings/IN/sp_SettingsAuditLog_Get.md) | Module_Settings\Data\Dao_SettingsAuditLog.cs | Dao_SettingsAuditLog | `GetBySettingAsync` | 58 | ✓ Yes | 1 |
 | [`sp_SettingsAuditLog_Get`](sp-reports/Settings/IN/sp_SettingsAuditLog_Get.md) | Module_Settings\Data\Dao_SettingsAuditLog.cs | Dao_SettingsAuditLog | `GetByUserAsync` | 77 | ✓ Yes | 2 |
@@ -199,11 +192,6 @@
 | [`sp_volvo_part_master_insert`](sp-reports/Volvo/IN/sp_volvo_part_master_insert.md) | Module_Volvo\Data\Dao_VolvoPart.cs | Dao_VolvoPart | `InsertAsync` | 78 | ✓ Yes | 21 |
 | [`sp_volvo_part_master_set_active`](sp-reports/Volvo/IN/sp_volvo_part_master_set_active.md) | Module_Volvo\Data\Dao_VolvoPart.cs | Dao_VolvoPart | `DeactivateAsync` | 135 | ✓ Yes | 3 |
 | [`sp_volvo_part_master_update`](sp-reports/Volvo/IN/sp_volvo_part_master_update.md) | Module_Volvo\Data\Dao_VolvoPart.cs | Dao_VolvoPart | `UpdateAsync` | 97 | ✓ Yes | 19 |
-| [`sp_settings_module_volvo_get`](sp-reports/Settings/IN/sp_settings_module_volvo_get.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetSettingAsync` | 35 | ✓ Yes | 2 |
-| [`sp_settings_module_volvo_get`](sp-reports/Settings/IN/sp_settings_module_volvo_get.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetAllSettingsAsync` | 54 | ✓ Yes | 1 |
-| [`sp_settings_module_volvo_get_all`](sp-reports/Settings/IN/sp_settings_module_volvo_get_all.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `GetAllSettingsAsync` | 54 | ✓ Yes | 1 |
-| [`sp_settings_module_volvo_reset`](sp-reports/Settings/IN/sp_settings_module_volvo_reset.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `ResetSettingAsync` | 97 | ✓ Yes | 1 |
-| [`sp_settings_module_volvo_upsert`](sp-reports/Settings/IN/sp_settings_module_volvo_upsert.md) | Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `UpsertSettingAsync` | 77 | ✓ Yes | 1 |
 | [`sp_volvo_shipment_complete`](sp-reports/Volvo/IN/sp_volvo_shipment_complete.md) | Module_Volvo\Data\Dao_VolvoShipment.cs | Dao_VolvoShipment | `CompleteAsync` | 137 | ✓ Yes | 2 |
 | [`sp_volvo_shipment_delete`](sp-reports/Volvo/IN/sp_volvo_shipment_delete.md) | Module_Volvo\Data\Dao_VolvoShipment.cs | Dao_VolvoShipment | `DeleteAsync` | 156 | ✓ Yes | 15 |
 | [`sp_volvo_shipment_get_pending`](sp-reports/Volvo/IN/sp_volvo_shipment_get_pending.md) | Module_Volvo\Data\Dao_VolvoShipment.cs | Dao_VolvoShipment | `GetPendingAsync` | 169 | ✓ Yes | 3 |
@@ -220,11 +208,16 @@
 
 | SP Name | Category | Recommendation |
 |---------|----------|----------------|
-| [`carrier_delivery_label_Insert`](sp-reports/Settings/IN/carrier_delivery_label_Insert.md) | Settings | Review for removal |
 | [`sp_dunnage_parts_get_transaction_count`](sp-reports/Dunnage/IN/sp_dunnage_parts_get_transaction_count.md) | Dunnage | Check if used externally |
 | [`sp_dunnage_types_get_part_count`](sp-reports/Dunnage/IN/sp_dunnage_types_get_part_count.md) | Dunnage | Check if used externally |
 | [`sp_dunnage_types_get_transaction_count`](sp-reports/Dunnage/IN/sp_dunnage_types_get_transaction_count.md) | Dunnage | Check if used externally |
 | [`sp_get_user_default_mode`](sp-reports/Authentication/IN/sp_get_user_default_mode.md) | Authentication | Check if used externally |
+| [`sp_PackageType_Delete`](sp-reports/Settings/IN/sp_PackageType_Delete.md) | Settings | May be utility function |
+| [`sp_PackageType_GetAll`](sp-reports/Settings/IN/sp_PackageType_GetAll.md) | Settings | Review for removal |
+| [`sp_PackageType_GetById`](sp-reports/Settings/IN/sp_PackageType_GetById.md) | Settings | Review for removal |
+| [`sp_PackageType_Insert`](sp-reports/Settings/IN/sp_PackageType_Insert.md) | Settings | Review for removal |
+| [`sp_PackageType_Update`](sp-reports/Settings/IN/sp_PackageType_Update.md) | Settings | Review for removal |
+| [`sp_PackageType_UsageCount`](sp-reports/Settings/IN/sp_PackageType_UsageCount.md) | Settings | Review for removal |
 | [`sp_routing_label_archive`](sp-reports/Routing/IN/sp_routing_label_archive.md) | Routing | Review for removal |
 | [`sp_routing_label_get_history`](sp-reports/Routing/IN/sp_routing_label_get_history.md) | Routing | Check if used externally |
 | [`sp_routing_label_get_today`](sp-reports/Routing/IN/sp_routing_label_get_today.md) | Routing | Check if used externally |

@@ -1,8 +1,8 @@
-# sp_custom_fields_get_by_type
+# sp_dunnage_custom_fields_get_by_type
 
 **Category:** Dunnage
 **Parameter Types:** IN
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 
 ## Usage Summary
 
@@ -18,7 +18,7 @@
 
 ```csharp
 // Module_Dunnage\Data\Dao_DunnageCustomField.cs:66
-"sp_custom_fields_get_by_type",
+"sp_dunnage_custom_fields_get_by_type",
 
 ```
 
@@ -30,5 +30,3 @@
 - Same file (1 calls)
 - Module_Dunnage\Data\Dao_DunnagePart.cs
 - Module_Dunnage\Data\Dao_DunnageSpec.cs
-
-

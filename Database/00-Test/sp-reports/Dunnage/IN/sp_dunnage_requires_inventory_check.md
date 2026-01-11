@@ -1,8 +1,8 @@
-# sp_dunnage_history_get_by_date_range
+# sp_dunnage_requires_inventory_check
 
 **Category:** Dunnage
 **Parameter Types:** IN
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 
 ## Usage Summary
 
@@ -12,19 +12,21 @@
 
 | File | Class | Method | Line | Has Callers | Caller Count |
 |------|-------|--------|------|-------------|--------------|
-| Module_Dunnage\Data\Dao_DunnageLoad.cs | Dao_DunnageLoad | `GetByDateRangeAsync` | 44 | ✓ | 2 |
+| Module_Dunnage\Data\Dao_InventoriedDunnage.cs | Dao_InventoriedDunnage | `CheckAsync` | 40 | ✓ | 2 |
 
 ## Code Samples
 
 ```csharp
-// Module_Dunnage\Data\Dao_DunnageLoad.cs:44
-"sp_dunnage_history_get_by_date_range",
+// Module_Dunnage\Data\Dao_InventoriedDunnage.cs:40
+"sp_dunnage_requires_inventory_check",
 
 ```
 
 ## Method References
 
-### Dao_DunnageLoad.GetByDateRangeAsync
+### Dao_InventoriedDunnage.CheckAsync
 **Called by (2 references):**
 - Module_Core\Services\Database\Service_MySQL_Dunnage.cs
 - Same file (1 calls)
+
+

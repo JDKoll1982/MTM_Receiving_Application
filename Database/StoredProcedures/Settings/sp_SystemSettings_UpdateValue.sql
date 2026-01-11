@@ -17,15 +17,21 @@ CREATE PROCEDURE sp_SystemSettings_UpdateValue(
 )
 BEGIN
     DECLARE v_old_value TEXT;
-    DECLARE v_is_locked BOOLEAN;
+    DECLARE v_is_locked TINYINT(1) DEFAULT 0;
 
-    -- Check if setting is locked
+    -- Retrieve current value and lock state; signal if the setting does not exist
     SELECT setting_value, is_locked
     INTO v_old_value, v_is_locked
     FROM settings_universal
     WHERE id = p_setting_id;
 
-    IF v_is_locked THEN
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Setting not found';
+    END IF;
+
+    -- Respect lock (treat NULL as unlocked)
+    IF COALESCE(v_is_locked, 0) = 1 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Setting is locked and cannot be modified';
     END IF;

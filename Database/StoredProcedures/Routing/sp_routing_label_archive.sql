@@ -17,10 +17,15 @@ CREATE PROCEDURE sp_routing_label_archive(
     OUT p_error_message VARCHAR(500)
 )
 BEGIN
+    -- local variable to capture diagnostic message (MySQL 5.7 compatible)
+    DECLARE v_error_message VARCHAR(500) DEFAULT NULL;
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        -- capture the diagnostic message into a local variable, then expose via OUT param
         GET DIAGNOSTICS CONDITION 1
-            p_error_message = MESSAGE_TEXT;
+            v_error_message = MESSAGE_TEXT;
+        SET p_error_message = v_error_message;
         SET p_archived_count = 0;
         ROLLBACK;
     END;

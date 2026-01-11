@@ -2,12 +2,14 @@
 -- Stored Procedure: sp_UserSettings_ResetAll
 -- =============================================
 
+-- Ensure DROP uses the standard delimiter so clients (MySQL 5.7) parse correctly
+DROP PROCEDURE IF EXISTS sp_UserSettings_ResetAll;
+
 DELIMITER $$
 
 -- =============================================
 -- SP: Reset All User Settings for User
 -- =============================================
-DROP PROCEDURE IF EXISTS sp_UserSettings_ResetAll$$
 CREATE PROCEDURE sp_UserSettings_ResetAll(
     IN p_user_id INT,
     IN p_changed_by INT
@@ -40,7 +42,5 @@ BEGIN
 
     SELECT ROW_COUNT() AS reset_count;
 END$$
-
-
 
 DELIMITER ;

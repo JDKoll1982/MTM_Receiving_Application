@@ -16,12 +16,13 @@ BEGIN
     DECLARE v_user_setting_id INT DEFAULT NULL;
     DECLARE v_old_value TEXT DEFAULT NULL;
 
-    -- Get the user override if it exists
+    -- Get the user override if it exists (limit to one row to avoid multiple-row errors)
     SELECT id, setting_value
     INTO v_user_setting_id, v_old_value
     FROM settings_personal
     WHERE user_id = p_user_id
-      AND setting_id = p_setting_id;
+      AND setting_id = p_setting_id
+    LIMIT 1;
 
     IF v_user_setting_id IS NOT NULL THEN
         -- Delete the override

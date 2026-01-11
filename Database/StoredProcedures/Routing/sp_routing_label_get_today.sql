@@ -15,22 +15,25 @@ CREATE PROCEDURE sp_routing_label_get_today(
     IN p_today_date DATE
 )
 BEGIN
-    -- Return all labels created today that haven't been archived yet
+    -- Return all labels created today that are active
     SELECT
         id,
-        label_number,
-        deliver_to,
-        department,
-        package_description,
         po_number,
-        work_order,
-        employee_number,
-        created_date,
-        created_at
+        line_number,
+        description,
+        recipient_id,
+        quantity,
+        created_by,
+        DATE(created_date) AS created_date,
+        created_date AS created_datetime,
+        other_reason_id,
+        is_active,
+        csv_exported,
+        csv_export_date
     FROM routing_label_data
-    WHERE created_date = p_today_date
-        AND is_archived = 0
-    ORDER BY label_number ASC;
+    WHERE DATE(created_date) = p_today_date
+        AND is_active = 1
+    ORDER BY id ASC;
 END$$
 
 DELIMITER ;

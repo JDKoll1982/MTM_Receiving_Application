@@ -1,6 +1,21 @@
-DELIMITER $$
+-- ============================================================================
+-- Stored Procedure: sp_routing_label_check_duplicate
+-- Description: Check for duplicate routing labels within a time window
+-- Parameters:
+--   @p_po_number: Purchase order number
+--   @p_line_number: PO line number
+--   @p_recipient_id: Recipient ID
+--   @p_hours_window: Time window in hours (default 24)
+-- Returns: Duplicate label record if found (status=0) or no duplicates (status=1)
+-- Feature: Routing Module
+-- MySQL Version: 5.7 compatible
+-- ============================================================================
 
-DROP PROCEDURE IF EXISTS `sp_routing_label_check_duplicate` $$
+USE mtm_receiving_application;
+
+DROP PROCEDURE IF EXISTS `sp_routing_label_check_duplicate`;
+
+DELIMITER $$
 
 CREATE PROCEDURE `sp_routing_label_check_duplicate`(
     IN p_po_number VARCHAR(20),
@@ -13,10 +28,13 @@ CREATE PROCEDURE `sp_routing_label_check_duplicate`(
 BEGIN
     DECLARE v_count INT DEFAULT 0;
     DECLARE v_latest_date DATETIME;
+    DECLARE v_error_msg VARCHAR(500);
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
+        -- capture diagnostic message into a local variable and then assign to OUT param
+        GET DIAGNOSTICS CONDITION 1 v_error_msg = MESSAGE_TEXT;
+        SET p_error_msg = v_error_msg;
         SET p_status = -1;
     END;
 

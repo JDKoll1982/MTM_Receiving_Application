@@ -1,8 +1,8 @@
-# sp_settings_module_volvo_upsert
+# sp_settings_module_volvo_reset
 
 **Category:** Settings
 **Parameter Types:** IN
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 
 ## Usage Summary
 
@@ -12,18 +12,20 @@
 
 | File | Class | Method | Line | Has Callers | Caller Count |
 |------|-------|--------|------|-------------|--------------|
-| Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `UpsertSettingAsync` | 77 | ✓ | 1 |
+| Module_Volvo\Data\Dao_VolvoSettings.cs | Dao_VolvoSettings | `ResetSettingAsync` | 97 | ✓ | 1 |
 
 ## Code Samples
 
 ```csharp
-// Module_Volvo\Data\Dao_VolvoSettings.cs:77
-"sp_settings_module_volvo_upsert",
+// Module_Volvo\Data\Dao_VolvoSettings.cs:97
+"sp_settings_module_volvo_reset",
 
 ```
 
 ## Method References
 
-### Dao_VolvoSettings.UpsertSettingAsync
+### Dao_VolvoSettings.ResetSettingAsync
 **Called by (1 references):**
 - Same file (1 calls)
+
+

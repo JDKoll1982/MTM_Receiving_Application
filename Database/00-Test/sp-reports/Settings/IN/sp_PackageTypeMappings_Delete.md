@@ -1,8 +1,8 @@
-# sp_PackageTypeMappings_Delete
+# sp_Receiving_PackageTypeMappings_Delete
 
 **Category:** Settings
 **Parameter Types:** IN
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 
 ## Usage Summary
 
@@ -19,10 +19,10 @@
 
 ```csharp
 // Module_Settings\Data\Dao_PackageTypeMappings.cs:117
-"sp_PackageTypeMappings_Delete",
+"sp_Receiving_PackageTypeMappings_Delete",
 
 // Module_Settings\ViewModels\ViewModel_Settings_DatabaseTest.cs:527
-"sp_PackageTypeMappings_Delete",
+"sp_Receiving_PackageTypeMappings_Delete",
 
 ```
 
@@ -49,5 +49,3 @@
 ### ViewModel_Settings_DatabaseTest.TestStoredProceduresAsync
 **Called by (1 references):**
 - Same file (2 calls)
-
-

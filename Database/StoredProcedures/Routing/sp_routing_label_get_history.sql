@@ -17,22 +17,25 @@ CREATE PROCEDURE sp_routing_label_get_history(
 )
 BEGIN
     -- Return archived routing labels within date range
-    -- Ordered by date (descending) and label number (ascending)
+    -- Use created_date (DATETIME) range to include full days
     SELECT
         id,
-        label_number,
-        deliver_to,
-        department,
-        package_description,
         po_number,
-        work_order,
-        employee_number,
+        line_number,
+        description,
+        recipient_id,
+        quantity,
+        created_by,
         created_date,
-        created_at
+        other_reason_id,
+        is_active,
+        csv_exported,
+        csv_export_date
     FROM routing_label_data
-    WHERE created_date BETWEEN p_start_date AND p_end_date
-        AND is_archived = 1
-    ORDER BY created_date DESC, label_number ASC;
+    WHERE created_date >= CAST(p_start_date AS DATETIME)
+        AND created_date < DATE_ADD(CAST(p_end_date AS DATETIME), INTERVAL 1 DAY)
+        AND is_active = 0  -- Inactive labels are considered archived
+    ORDER BY created_date DESC, id ASC;
 END$$
 
 DELIMITER ;

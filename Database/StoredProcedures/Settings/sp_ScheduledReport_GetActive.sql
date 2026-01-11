@@ -19,7 +19,7 @@ BEGIN
         next_run_date,
         last_run_date
     FROM reporting_scheduled_reports
-    WHERE is_active = TRUE
+    WHERE is_active = 1
       AND next_run_date IS NOT NULL
     ORDER BY next_run_date ASC;
 END$$

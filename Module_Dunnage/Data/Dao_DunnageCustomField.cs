@@ -63,7 +63,7 @@ public class Dao_DunnageCustomField
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_CustomFieldDefinition>(
             _connectionString,
-            "sp_custom_fields_get_by_type",
+            "sp_dunnage_custom_fields_get_by_type",
             MapFromReader,
             parameters
         );
@@ -95,4 +95,3 @@ public class Dao_DunnageCustomField
         };
     }
 }
-

@@ -9,7 +9,7 @@ USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS sp_seed_user_default_modes;
 
-DELIMITER //
+DELIMITER $$
 
 CREATE PROCEDURE sp_seed_user_default_modes(
     IN p_user_id INT
@@ -23,11 +23,11 @@ BEGIN
     INTO v_has_default_receiving_mode
     FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = 'users'
+      AND TABLE_NAME = 'auth_users'
       AND COLUMN_NAME = 'default_receiving_mode';
 
     IF v_has_default_receiving_mode > 0 THEN
-        FROM auth_users
+        UPDATE auth_users
         SET default_receiving_mode = COALESCE(default_receiving_mode, 'guided'),
             modified_date = NOW()
         WHERE employee_number = p_user_id;
@@ -38,17 +38,17 @@ BEGIN
     INTO v_has_default_dunnage_mode
     FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = DATABASE()
-      AND TABLE_NAME = 'users'
+      AND TABLE_NAME = 'auth_users'
       AND COLUMN_NAME = 'default_dunnage_mode';
 
     IF v_has_default_dunnage_mode > 0 THEN
-        FROM auth_users
+        UPDATE auth_users
         SET default_dunnage_mode = COALESCE(default_dunnage_mode, 'guided'),
             modified_date = NOW()
         WHERE employee_number = p_user_id;
     END IF;
 
     SELECT 1 AS success;
-END //
+END $$
 
 DELIMITER ;

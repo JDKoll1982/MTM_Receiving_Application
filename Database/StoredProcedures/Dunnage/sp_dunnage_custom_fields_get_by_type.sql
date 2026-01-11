@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_custom_fields_get_by_type` $$
+DROP PROCEDURE IF EXISTS `sp_dunnage_custom_fields_get_by_type` $$
 
-CREATE PROCEDURE `sp_custom_fields_get_by_type`(
+CREATE PROCEDURE `sp_dunnage_custom_fields_get_by_type`(
     IN p_dunnage_type_id INT
 )
 BEGIN

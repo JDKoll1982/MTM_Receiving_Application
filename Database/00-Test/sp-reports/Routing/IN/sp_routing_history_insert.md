@@ -2,7 +2,7 @@
 
 **Category:** Routing
 **Parameter Types:** IN,OUT
-**Generated:** 2026-01-11 14:13:05
+**Generated:** 2026-01-11 16:28:36
 
 ## Usage Summary
 
@@ -28,3 +28,5 @@
 **Called by (2 references):**
 - Same file (2 calls)
 - Module_Routing\Interfaces\IDao_RoutingLabelHistory.cs
+
+

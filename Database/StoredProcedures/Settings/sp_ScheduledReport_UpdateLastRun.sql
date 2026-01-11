@@ -11,7 +11,8 @@ DROP PROCEDURE IF EXISTS sp_ScheduledReport_UpdateLastRun$$
 CREATE PROCEDURE sp_ScheduledReport_UpdateLastRun(
     IN p_id INT,
     IN p_last_run_date DATETIME,
-    IN p_next_run_date DATETIME
+    IN p_next_run_date DATETIME,
+    OUT p_affected_rows INT
 )
 BEGIN
     UPDATE reporting_scheduled_reports
@@ -20,7 +21,8 @@ BEGIN
         updated_at = CURRENT_TIMESTAMP
     WHERE id = p_id;
 
-    SELECT ROW_COUNT() AS affected_rows;
+    -- assign the number of affected rows to the OUT parameter
+    SET p_affected_rows = ROW_COUNT();
 END$$
 
 
