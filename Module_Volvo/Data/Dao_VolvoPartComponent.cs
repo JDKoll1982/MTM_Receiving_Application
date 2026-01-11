@@ -35,7 +35,7 @@ public class Dao_VolvoPartComponent
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_volvo_part_component_get",
+            "sp_Volvo_PartComponent_Get",
             MapFromReader,
             parameters
         );
@@ -56,7 +56,7 @@ public class Dao_VolvoPartComponent
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_part_component_insert",
+            "sp_Volvo_PartComponent_Insert",
             parameters
         );
     }
@@ -74,7 +74,7 @@ public class Dao_VolvoPartComponent
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_part_component_delete_by_parent",
+            "sp_Volvo_PartComponent_DeleteByParent",
             parameters
         );
     }

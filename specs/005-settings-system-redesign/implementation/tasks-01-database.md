@@ -124,12 +124,12 @@
 
 **Goal**: Create all CRUD operations for system settings
 
-- [x] **DB026** [P] Create `sp_SystemSettings_GetAll` - Return all settings
-- [x] **DB027** [P] Create `sp_SystemSettings_GetByCategory` - Filter by category with optional sub_category
-- [x] **DB028** [P] Create `sp_SystemSettings_GetByKey` - Get single setting by category + key
-- [x] **DB029** Create `sp_SystemSettings_UpdateValue` - Update with audit logging
-- [x] **DB030** Create `sp_SystemSettings_ResetToDefault` - Reset with audit logging
-- [x] **DB031** Create `sp_SystemSettings_SetLocked` - Lock/unlock with audit logging
+- [x] **DB026** [P] Create `sp_Settings_System_GetAll` - Return all settings
+- [x] **DB027** [P] Create `sp_Settings_System_GetByCategory` - Filter by category with optional sub_category
+- [x] **DB028** [P] Create `sp_Settings_System_GetByKey` - Get single setting by category + key
+- [x] **DB029** Create `sp_Settings_System_UpdateValue` - Update with audit logging
+- [x] **DB030** Create `sp_Settings_System_ResetToDefault` - Reset with audit logging
+- [x] **DB031** Create `sp_Settings_System_SetLocked` - Lock/unlock with audit logging
 - [x] **DB032** Test all system settings procedures with sample data
 - [x] **DB033** Verify audit log entries created for all update operations
 
@@ -141,11 +141,11 @@
 
 **Goal**: Create user preference override operations
 
-- [x] **DB034** [P] Create `sp_UserSettings_Get` - Get with fallback to system default
-- [x] **DB035** [P] Create `sp_UserSettings_GetAllForUser` - All preferences for user
-- [x] **DB036** Create `sp_UserSettings_Set` - Create/update override with audit
-- [x] **DB037** Create `sp_UserSettings_Reset` - Remove single override
-- [x] **DB038** Create `sp_UserSettings_ResetAll` - Clear all user overrides
+- [x] **DB034** [P] Create `sp_Settings_User_Get` - Get with fallback to system default
+- [x] **DB035** [P] Create `sp_Settings_User_GetAllForUser` - All preferences for user
+- [x] **DB036** Create `sp_Settings_User_Set` - Create/update override with audit
+- [x] **DB037** Create `sp_Settings_User_Reset` - Remove single override
+- [x] **DB038** Create `sp_Settings_User_ResetAll` - Clear all user overrides
 - [x] **DB039** Test user settings procedures with sample user data
 - [x] **DB040** Verify cascade behavior when system setting is updated/deleted
 
@@ -162,12 +162,12 @@
 - [x] **DB043** Create `sp_Receiving_PackageTypeMappings_Insert` - Add new mapping
 - [x] **DB044** Create `sp_Receiving_PackageTypeMappings_Update` - Modify mapping
 - [x] **DB045** Create `sp_Receiving_PackageTypeMappings_Delete` - Soft delete
-- [x] **DB046** [P] Create `sp_dunnage_type_GetAll` - List all package types
-- [x] **DB047** [P] Create `sp_dunnage_type_GetById` - Get single package type
-- [x] **DB048** Create `sp_dunnage_type_Insert` - Add new type with validation
-- [x] **DB049** Create `sp_dunnage_type_Update` - Modify type
-- [x] **DB050** Create `sp_dunnage_type_Delete` - Delete with usage validation
-- [x] **DB051** Create `sp_dunnage_type_UsageCount` - Count packages using this type
+- [x] **DB046** [P] Create `sp_Dunnage_Types_GetAll` - List all package types
+- [x] **DB047** [P] Create `sp_Dunnage_Types_GetById` - Get single package type
+- [x] **DB048** Create `sp_Dunnage_Types_Insert` - Add new type with validation
+- [x] **DB049** Create `sp_Dunnage_Types_Update` - Modify type
+- [x] **DB050** Create `sp_Dunnage_Types_Delete` - Delete with usage validation
+- [x] **DB051** Create `sp_Dunnage_Types_GetUsageCount` - Count packages using this type
 - [x] **DB052** Test all package procedures with sample data
 
 **Checkpoint**: Package type system operational
@@ -178,14 +178,14 @@
 
 **Goal**: Create routing rule CRUD with pattern matching
 
-- [x] **DB053** [P] Create `sp_RoutingRule_GetAll` - List all active rules ordered by priority
-- [x] **DB054** [P] Create `sp_RoutingRule_GetById` - Get single rule
-- [x] **DB055** Create `sp_RoutingRule_Insert` - Add rule with pattern and priority
-- [x] **DB056** Create `sp_RoutingRule_Update` - Modify rule
-- [x] **DB057** Create `sp_RoutingRule_Delete` - Delete rule
+- [x] **DB053** [P] Create `sp_Settings_RoutingRule_GetAll` - List all active rules ordered by priority
+- [x] **DB054** [P] Create `sp_Settings_RoutingRule_GetById` - Get single rule
+- [x] **DB055** Create `sp_Settings_RoutingRule_Insert` - Add rule with pattern and priority
+- [x] **DB056** Create `sp_Settings_RoutingRule_Update` - Modify rule
+- [x] **DB057** Create `sp_Settings_RoutingRule_Delete` - Delete rule
 
-- [x] **DB058** Create `sp_RoutingRule_FindMatch` - Find matching rule (for testing)
-- [x] **DB058** Create `sp_RoutingRule_GetByPartNumber` - Find matching rule (Part Number wrapper for spec)
+- [x] **DB058** Create `sp_Settings_RoutingRule_FindMatch` - Find matching rule (for testing)
+- [x] **DB058** Create `sp_Settings_RoutingRule_GetByPartNumber` - Find matching rule (Part Number wrapper for spec)
 - [ ] **DB059** Test wildcard pattern matching (* support)
 - [ ] **DB060** Test priority ordering (lower numbers first)
 
@@ -197,13 +197,13 @@
 
 **Goal**: Create scheduled report CRUD operations
 
-- [x] **DB061** [P] Create `sp_ScheduledReport_GetAll` - List all reports
-- [x] **DB062** [P] Create `sp_ScheduledReport_GetActive` - Only active reports with next_run_date
-- [x] **DB063** [P] Create `sp_ScheduledReport_GetById` - Get single report
-- [x] **DB064** Create `sp_ScheduledReport_Insert` - Add report with schedule parsing
-- [x] **DB065** Create `sp_ScheduledReport_Update` - Modify report and recalculate next_run_date
-- [x] **DB066** Create `sp_ScheduledReport_Delete` - Delete report
-- [x] **DB067** Create `sp_ScheduledReport_UpdateLastRun` - Mark as executed
+- [x] **DB061** [P] Create `sp_Settings_ScheduledReport_GetAll` - List all reports
+- [x] **DB062** [P] Create `sp_Settings_ScheduledReport_GetActive` - Only active reports with next_run_date
+- [x] **DB063** [P] Create `sp_Settings_ScheduledReport_GetById` - Get single report
+- [x] **DB064** Create `sp_Settings_ScheduledReport_Insert` - Add report with schedule parsing
+- [x] **DB065** Create `sp_Settings_ScheduledReport_Update` - Modify report and recalculate next_run_date
+- [x] **DB066** Create `sp_Settings_ScheduledReport_Delete` - Delete report
+- [x] **DB067** Create `sp_Settings_ScheduledReport_UpdateLastRun` - Mark as executed
 - [ ] **DB068** Test schedule string parsing (Daily, Weekly, Monthly)
 
 **Checkpoint**: Scheduled reports system operational
@@ -214,9 +214,9 @@
 
 **Goal**: Create audit trail query operations
 
-- [x] **DB069** [P] Create `sp_SettingsAuditLog_Get` - Get history with filters
-- [x] **DB070** [P] Create `sp_SettingsAuditLog_GetBySetting` - History for specific setting
-- [x] **DB071** [P] Create `sp_SettingsAuditLog_GetByUser` - Changes by specific user
+- [x] **DB069** [P] Create `sp_Settings_AuditLog_Get` - Get history with filters
+- [x] **DB070** [P] Create `sp_Settings_AuditLog_GetBySetting` - History for specific setting
+- [x] **DB071** [P] Create `sp_Settings_AuditLog_GetByUser` - Changes by specific user
 - [ ] **DB072** Test audit log queries with various date ranges
 
 **Checkpoint**: Audit trail queries operational
@@ -253,9 +253,9 @@
 ### System Settings DAO
 
 - [x] **DB087** Create `Module_Settings/Data/Dao_SystemSettings.cs` skeleton with constructor
-- [x] **DB088** Implement `GetAllAsync()` calling `sp_SystemSettings_GetAll`
-- [x] **DB089** Implement `GetByCategoryAsync(string category)` calling `sp_SystemSettings_GetByCategory`
-- [x] **DB090** Implement `GetByKeyAsync(string category, string key)` calling `sp_SystemSettings_GetByKey`
+- [x] **DB088** Implement `GetAllAsync()` calling `sp_Settings_System_GetAll`
+- [x] **DB089** Implement `GetByCategoryAsync(string category)` calling `sp_Settings_System_GetByCategory`
+- [x] **DB090** Implement `GetByKeyAsync(string category, string key)` calling `sp_Settings_System_GetByKey`
 - [x] **DB091** Implement `UpdateValueAsync(int id, string newValue, int userId)` with audit
 - [x] **DB092** Implement `ResetToDefaultAsync(int id, int userId)` with audit
 - [x] **DB093** Implement `SetLockedAsync(int id, bool locked, int userId)` with audit
@@ -275,12 +275,12 @@
 ### Package Type DAO
 
 - [x] **DB103** Create `Module_Settings/Data/Dao_PackageType.cs` skeleton
-- [x] **DB104** Implement `GetAllAsync()` calling `sp_dunnage_type_GetAll`
-- [x] **DB105** Implement `GetByIdAsync(int id)` calling `sp_dunnage_type_GetById`
+- [x] **DB104** Implement `GetAllAsync()` calling `sp_Dunnage_Types_GetAll`
+- [x] **DB105** Implement `GetByIdAsync(int id)` calling `sp_Dunnage_Types_GetById`
 - [x] **DB106** Implement `InsertAsync(Model_PackageType packageType)` with validation
 - [x] **DB107** Implement `UpdateAsync(Model_PackageType packageType)`
 - [x] **DB108** Implement `DeleteAsync(int id)` with usage validation
-- [x] **DB109** Implement `GetUsageCountAsync(int id)` calling `sp_dunnage_type_UsageCount`
+- [x] **DB109** Implement `GetUsageCountAsync(int id)` calling `sp_Dunnage_Types_GetUsageCount`
 - [ ] **DB110** Test Dao_PackageType CRUD operations
 
 ### Package Type Mapping DAO

@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_history_delete$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Loads_Delete`$$
 
-CREATE PROCEDURE sp_dunnage_history_delete(
+CREATE PROCEDURE `sp_Dunnage_Loads_Delete`(
     IN p_load_uuid CHAR(36)
 )
 BEGIN

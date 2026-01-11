@@ -75,14 +75,14 @@ Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
 ```csharp
 var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
     _connectionString,
-    "sp_volvo_shipment_line_insert",  // ← SP Name
+    "sp_Volvo_ShipmentLine_Insert",  // ← SP Name
     parameters);
 ```
 
 ### Step 2: Extract Parameter Lists from DAOs
 
 **For each SP call, document:**
-1. **SP Name**: `sp_volvo_shipment_line_insert`
+1. **SP Name**: `sp_Volvo_ShipmentLine_Insert`
 2. **Parameters Passed**: `shipment_id`, `part_number`, `received_skid_count`, etc.
 3. **Parameter Types**: `int`, `string`, `DateTime`, etc.
 
@@ -100,7 +100,7 @@ new Dictionary<string, object>
 
 **Read SP file:**
 ```sql
-CREATE PROCEDURE sp_volvo_shipment_line_insert(
+CREATE PROCEDURE sp_Volvo_ShipmentLine_Insert(
   IN p_shipment_id INT,
   IN p_part_number VARCHAR(20),
   IN p_received_skid_count INT
@@ -189,7 +189,7 @@ USE mtm_receiving_application;
 **Test SP with dummy data:**
 ```sql
 -- Test INSERT
-CALL sp_volvo_shipment_line_insert(
+CALL sp_Volvo_ShipmentLine_Insert(
     1,              -- shipment_id
     'V-EMB-500',    -- part_number
     5,              -- received_skid_count
@@ -227,7 +227,7 @@ Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" |
 **Output:**
 - `sp_volvo_shipment_insert.sql`
 - `sp_volvo_shipment_update.sql`
-- `sp_volvo_part_master_get_all.sql`
+- `sp_Volvo_PartMaster_GetAll.sql`
 - ... (18 total)
 
 **Step 2: Inventory All DAO SP Calls**
@@ -247,7 +247,7 @@ Compare-Object -ReferenceObject $allSpFiles -DifferenceObject $usedSps
 
 For each SP found in DAOs:
 
-1. **Open SP file**: `Database/StoredProcedures/Volvo/sp_volvo_part_master_get_all.sql`
+1. **Open SP file**: `Database/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetAll.sql`
 2. **Read DAO call**: `Module_Volvo/Data/Dao_VolvoPart.cs`
 3. **Read Model mapper**: `Dao_VolvoPart.MapFromReader()`
 4. **Check schema**: `Database/Schemas/11_schema_volvo.sql`
@@ -256,8 +256,8 @@ For each SP found in DAOs:
 
 | SP Name | Parameters Match | Columns Match | Model Maps | Status |
 |---------|------------------|---------------|------------|--------|
-| `sp_volvo_part_master_get_all` | ✅ | ❌ (description) | ✅ | **FIXED** |
-| `sp_volvo_shipment_line_insert` | ❌ (quantity_per_skid) | ✅ | ✅ | **FIXED** |
+| `sp_Volvo_PartMaster_GetAll` | ✅ | ❌ (description) | ✅ | **FIXED** |
+| `sp_Volvo_ShipmentLine_Insert` | ❌ (quantity_per_skid) | ✅ | ✅ | **FIXED** |
 
 **Step 5: Fix Issues**
 
@@ -357,13 +357,13 @@ Move-Item -Path "Database\StoredProcedures\Volvo\sp_unused_procedure.sql" `
 .\Database\Deploy\Deploy-Database-GUI-Fixed.ps1
 
 # OR manually deploy single SP
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database\StoredProcedures\Volvo\sp_volvo_part_master_get_by_id.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database\StoredProcedures\Volvo\sp_Volvo_PartMaster_GetById.sql
 ```
 
 ### Verify Deployment:
 ```sql
 USE mtm_receiving_application;
-SHOW CREATE PROCEDURE sp_volvo_part_master_get_by_id;
+SHOW CREATE PROCEDURE sp_Volvo_PartMaster_GetById;
 -- Check that SELECT statement does NOT include 'description' column
 ```
 
@@ -441,7 +441,7 @@ dotnet build
 ---
 
 ### Issue 2: `quantity_per_skid` Parameter Mismatch
-**Problem**: `Service_Volvo.cs` passed `quantity_per_skid` to `sp_volvo_shipment_line_insert`, causing MySQL error 1318.
+**Problem**: `Service_Volvo.cs` passed `quantity_per_skid` to `sp_Volvo_ShipmentLine_Insert`, causing MySQL error 1318.
 
 **Root Cause**: `QuantityPerSkid` is a cached UI property in `Model_VolvoShipmentLine`, but NOT a database column in `volvo_line_data`.
 

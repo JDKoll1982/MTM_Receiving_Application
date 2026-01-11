@@ -189,20 +189,20 @@ Complete MySQL schema with:
 
 **System Settings:**
 
-- `sp_SystemSettings_GetAll` - Get all settings
-- `sp_SystemSettings_GetByCategory` - Filter by category
-- `sp_SystemSettings_GetByKey` - Get single setting
-- `sp_SystemSettings_UpdateValue` - Update with audit logging
-- `sp_SystemSettings_ResetToDefault` - Reset with audit logging
-- `sp_SystemSettings_SetLocked` - Lock/unlock with audit logging
+- `sp_Settings_System_GetAll` - Get all settings
+- `sp_Settings_System_GetByCategory` - Filter by category
+- `sp_Settings_System_GetByKey` - Get single setting
+- `sp_Settings_System_UpdateValue` - Update with audit logging
+- `sp_Settings_System_ResetToDefault` - Reset with audit logging
+- `sp_Settings_System_SetLocked` - Lock/unlock with audit logging
 
 **User Settings:**
 
-- `sp_UserSettings_Get` - Get with fallback to system default
-- `sp_UserSettings_GetAllForUser` - All user preferences
-- `sp_UserSettings_Set` - Create/update override with audit
-- `sp_UserSettings_Reset` - Remove override
-- `sp_UserSettings_ResetAll` - Clear all user overrides
+- `sp_Settings_User_Get` - Get with fallback to system default
+- `sp_Settings_User_GetAllForUser` - All user preferences
+- `sp_Settings_User_Set` - Create/update override with audit
+- `sp_Settings_User_Reset` - Remove override
+- `sp_Settings_User_ResetAll` - Clear all user overrides
 
 **Package Mappings:**
 
@@ -214,35 +214,35 @@ Complete MySQL schema with:
 
 **Audit:**
 
-- `sp_SettingsAuditLog_Get` - Change history
+- `sp_Settings_AuditLog_Get` - Change history
 
 **Additional Procedures (from UI/Modal Requirements):**
 
-- `sp_dunnage_type_GetAll` - List all package types
-- `sp_dunnage_type_Insert` - Add new package type
-- `sp_dunnage_type_Update` - Modify package type
-- `sp_dunnage_type_Delete` - Delete package type
-- `sp_dunnage_type_UsageCount` - Check if type is in use (for delete validation)
-- `sp_RoutingRule_GetAll` - List all routing rules
-- `sp_RoutingRule_Insert` - Add routing rule with pattern and priority
-- `sp_RoutingRule_Update` - Modify routing rule
-- `sp_RoutingRule_Delete` - Delete routing rule
-- `sp_ScheduledReport_GetAll` - List all scheduled reports
-- `sp_ScheduledReport_Insert` - Add scheduled report with cron-like schedule
-- `sp_ScheduledReport_Update` - Modify scheduled report
-- `sp_ScheduledReport_Delete` - Delete scheduled report
+- `sp_Dunnage_Types_GetAll` - List all package types
+- `sp_Dunnage_Types_Insert` - Add new package type
+- `sp_Dunnage_Types_Update` - Modify package type
+- `sp_Dunnage_Types_Delete` - Delete package type
+- `sp_Dunnage_Types_GetUsageCount` - Check if type is in use (for delete validation)
+- `sp_Settings_RoutingRule_GetAll` - List all routing rules
+- `sp_Settings_RoutingRule_Insert` - Add routing rule with pattern and priority
+- `sp_Settings_RoutingRule_Update` - Modify routing rule
+- `sp_Settings_RoutingRule_Delete` - Delete routing rule
+- `sp_Settings_ScheduledReport_GetAll` - List all scheduled reports
+- `sp_Settings_ScheduledReport_Insert` - Add scheduled report with cron-like schedule
+- `sp_Settings_ScheduledReport_Update` - Modify scheduled report
+- `sp_Settings_ScheduledReport_Delete` - Delete scheduled report
 
 **Additional Procedures (from UI Requirements):**
 
-- `sp_dunnage_type_Insert` - Add new package type
-- `sp_dunnage_type_Update` - Modify package type
-- `sp_dunnage_type_Delete` - Delete package type
-- `sp_dunnage_type_UsageCount` - Check if type is in use
-- `sp_RoutingRule_Insert` - Add routing rule
-- `sp_RoutingRule_Update` - Modify routing rule
-- `sp_RoutingRule_Delete` - Delete routing rule
-- `sp_ScheduledReport_Insert` - Add scheduled report
-- `sp_ScheduledReport_Update` - Modify scheduled report
+- `sp_Dunnage_Types_Insert` - Add new package type
+- `sp_Dunnage_Types_Update` - Modify package type
+- `sp_Dunnage_Types_Delete` - Delete package type
+- `sp_Dunnage_Types_GetUsageCount` - Check if type is in use
+- `sp_Settings_RoutingRule_Insert` - Add routing rule
+- `sp_Settings_RoutingRule_Update` - Modify routing rule
+- `sp_Settings_RoutingRule_Delete` - Delete routing rule
+- `sp_Settings_ScheduledReport_Insert` - Add scheduled report
+- `sp_Settings_ScheduledReport_Update` - Modify scheduled report
 
 ---
 

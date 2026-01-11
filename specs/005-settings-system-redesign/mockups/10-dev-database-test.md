@@ -628,10 +628,10 @@ private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelec
 
 ### Stored Procedure Tests
 
-1. Execute sp_SystemSettings_GetAll
-2. Test sp_SystemSettings_UpdateValue with audit logging
-3. Test sp_UserSettings_Get with fallback
-4. Test sp_dunnage_type_UsageCount validation
+1. Execute sp_Settings_System_GetAll
+2. Test sp_Settings_System_UpdateValue with audit logging
+3. Test sp_Settings_User_Get with fallback
+4. Test sp_Dunnage_Types_GetUsageCount validation
 5. Test sp_RoutingRule pattern matching
 6. Verify all SPs return expected result sets
 

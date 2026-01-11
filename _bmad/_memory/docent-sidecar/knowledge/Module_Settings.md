@@ -304,7 +304,7 @@ Module_Settings does not define its own DAOs or stored procedures.
 However, `Service_UserPreferences` currently depends on:
 
 - `Dao_User.GetUserByWindowsUsernameAsync(...)` (Module_Core)
-  - Stored procedure: `sp_GetUserByWindowsUsername`
+  - Stored procedure: `sp_Auth_User_GetByWindowsUsername`
 
 ### Notes / gaps
 

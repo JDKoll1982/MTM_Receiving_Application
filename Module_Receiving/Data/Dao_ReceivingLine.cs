@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -61,7 +61,7 @@ public class Dao_ReceivingLine
 
             // Execute stored procedure
             var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-                "receiving_line_Insert",
+                "sp_Receiving_Line_Insert",
                 parameters,
                 _connectionString
             );

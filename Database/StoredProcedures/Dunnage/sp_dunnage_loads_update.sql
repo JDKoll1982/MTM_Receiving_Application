@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_history_update$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Loads_Update`$$
 
-CREATE PROCEDURE sp_dunnage_history_update(
+CREATE PROCEDURE `sp_Dunnage_Loads_Update`(
     IN p_load_uuid CHAR(36),
     IN p_quantity DECIMAL(10,2),
     IN p_user VARCHAR(50)

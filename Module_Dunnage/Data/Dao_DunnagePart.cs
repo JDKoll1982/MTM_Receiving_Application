@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ public class Dao_DunnagePart
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePart>(
             _connectionString,
-            "sp_dunnage_parts_get_all",
+            "sp_Dunnage_Parts_GetAll",
             MapFromReader
         );
     }
@@ -38,7 +38,7 @@ public class Dao_DunnagePart
 
         var result = await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePart>(
             _connectionString,
-            "sp_dunnage_parts_get_by_type",
+            "sp_Dunnage_Parts_GetByType",
             MapFromReader,
             parameters
         );
@@ -56,7 +56,7 @@ public class Dao_DunnagePart
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnagePart>(
             _connectionString,
-            "sp_dunnage_parts_get_by_id",
+            "sp_Dunnage_Parts_GetById",
             MapFromReader,
             parameters
         );
@@ -137,7 +137,7 @@ public class Dao_DunnagePart
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
             _connectionString,
-            "sp_dunnage_parts_count_transactions",
+            "sp_Dunnage_Parts_CountTransactions",
             reader => reader.GetInt32(reader.GetOrdinal("transaction_count")),
             parameters
         );

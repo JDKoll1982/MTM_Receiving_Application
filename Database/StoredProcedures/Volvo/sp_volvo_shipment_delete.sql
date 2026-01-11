@@ -7,9 +7,9 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_volvo_shipment_delete$$
+DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Delete`$$
 
-CREATE PROCEDURE sp_volvo_shipment_delete(
+CREATE PROCEDURE `sp_Volvo_Shipment_Delete`(
   IN p_shipment_id INT
 )
 BEGIN

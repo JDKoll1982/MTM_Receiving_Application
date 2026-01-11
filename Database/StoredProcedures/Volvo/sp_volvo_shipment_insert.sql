@@ -7,9 +7,9 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_volvo_shipment_insert$$
+DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Insert`$$
 
-CREATE PROCEDURE sp_volvo_shipment_insert(
+CREATE PROCEDURE `sp_Volvo_Shipment_Insert`(
   IN p_shipment_date DATE,
   IN p_employee_number VARCHAR(20),
   IN p_notes TEXT,

@@ -166,7 +166,7 @@ public class Dao_VolvoShipment
     {
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_volvo_shipment_get_pending",
+            "sp_Volvo_Shipment_GetPending",
             MapFromReader,
             null
         );
@@ -250,7 +250,7 @@ public class Dao_VolvoShipment
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_volvo_shipment_history_get",
+            "sp_Volvo_Shipment_GetHistory",
             MapFromReader,
             parameters
         );

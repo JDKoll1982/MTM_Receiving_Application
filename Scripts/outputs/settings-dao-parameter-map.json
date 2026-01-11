@@ -1,4 +1,4 @@
-﻿{
+{
   "summary": {
     "generatedAt": "2026-01-11T00:42:24.2428359-06:00",
     "storedProcedureRoot": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings",
@@ -10,8 +10,8 @@
   },
   "procedures": [
     {
-      "storedProcedure": "sp_dunnage_type_Delete",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_Delete.sql",
+      "storedProcedure": "sp_Dunnage_Types_Delete",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_Delete.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -42,8 +42,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_dunnage_type_GetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_GetAll.sql",
+      "storedProcedure": "sp_Dunnage_Types_GetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_GetAll.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -55,8 +55,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_dunnage_type_GetById",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_GetById.sql",
+      "storedProcedure": "sp_Dunnage_Types_GetById",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_GetById.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -75,8 +75,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_dunnage_type_Insert",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_Insert.sql",
+      "storedProcedure": "sp_Dunnage_Types_Insert",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_Insert.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -123,8 +123,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_dunnage_type_Update",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_Update.sql",
+      "storedProcedure": "sp_Dunnage_Types_Update",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_Update.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -169,8 +169,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_dunnage_type_UsageCount",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_dunnage_type_UsageCount.sql",
+      "storedProcedure": "sp_Dunnage_Types_GetUsageCount",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_GetUsageCount.sql",
       "suggestedDao": "Dao_PackageType",
       "missingDao": false,
       "referencedInDaos": [
@@ -372,8 +372,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_RoutingRule_Delete",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_Delete.sql",
+      "storedProcedure": "sp_Settings_RoutingRule_Delete",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_Delete.sql",
       "suggestedDao": "Dao_RoutingRule",
       "missingDao": false,
       "referencedInDaos": [
@@ -404,8 +404,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_RoutingRule_FindMatch",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_FindMatch.sql",
+      "storedProcedure": "sp_Settings_RoutingRule_FindMatch",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_FindMatch.sql",
       "suggestedDao": "Dao_RoutingRule",
       "missingDao": false,
       "referencedInDaos": [
@@ -430,8 +430,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_RoutingRule_GetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_GetAll.sql",
+      "storedProcedure": "sp_Settings_RoutingRule_GetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_GetAll.sql",
       "suggestedDao": "Dao_RoutingRule",
       "missingDao": false,
       "referencedInDaos": [
@@ -443,8 +443,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_RoutingRule_GetById",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_GetById.sql",
+      "storedProcedure": "sp_Settings_RoutingRule_GetById",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_GetById.sql",
       "suggestedDao": "Dao_RoutingRule",
       "missingDao": false,
       "referencedInDaos": [
@@ -463,8 +463,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_RoutingRule_Insert",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_Insert.sql",
+      "storedProcedure": "sp_Settings_RoutingRule_Insert",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_Insert.sql",
       "suggestedDao": "Dao_RoutingRule",
       "missingDao": false,
       "referencedInDaos": [
@@ -527,8 +527,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_RoutingRule_Update",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_Update.sql",
+      "storedProcedure": "sp_Settings_RoutingRule_Update",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_Update.sql",
       "suggestedDao": "Dao_RoutingRule",
       "missingDao": false,
       "referencedInDaos": [
@@ -589,8 +589,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_ScheduledReport_Delete",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_Delete.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_Delete",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_Delete.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -621,8 +621,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_ScheduledReport_GetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_GetAll.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_GetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetAll.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -634,8 +634,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_ScheduledReport_GetById",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_GetById.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_GetById",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetById.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -654,8 +654,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_ScheduledReport_GetDue",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_GetDue.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_GetDue",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetDue.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -667,8 +667,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_ScheduledReport_Insert",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_Insert.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_Insert",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_Insert.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -731,8 +731,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_ScheduledReport_ToggleActive",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_ToggleActive.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_ToggleActive",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_ToggleActive.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -769,8 +769,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_ScheduledReport_Update",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_Update.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_Update",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_Update.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -831,8 +831,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_ScheduledReport_UpdateLastRun",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_UpdateLastRun.sql",
+      "storedProcedure": "sp_Settings_ScheduledReport_UpdateLastRun",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_UpdateLastRun.sql",
       "suggestedDao": "Dao_ScheduledReport",
       "missingDao": false,
       "referencedInDaos": [
@@ -877,8 +877,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_SettingsAuditLog_Get",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SettingsAuditLog_Get.sql",
+      "storedProcedure": "sp_Settings_AuditLog_Get",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_AuditLog_Get.sql",
       "suggestedDao": "Dao_SettingsAuditLog",
       "missingDao": false,
       "referencedInDaos": [
@@ -945,8 +945,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_SystemSettings_GetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_GetAll.sql",
+      "storedProcedure": "sp_Settings_System_GetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_GetAll.sql",
       "suggestedDao": "Dao_SystemSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -958,8 +958,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_SystemSettings_GetByCategory",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_GetByCategory.sql",
+      "storedProcedure": "sp_Settings_System_GetByCategory",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_GetByCategory.sql",
       "suggestedDao": "Dao_SystemSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -978,8 +978,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_SystemSettings_GetByKey",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_GetByKey.sql",
+      "storedProcedure": "sp_Settings_System_GetByKey",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_GetByKey.sql",
       "suggestedDao": "Dao_SystemSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1004,8 +1004,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_SystemSettings_ResetToDefault",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_ResetToDefault.sql",
+      "storedProcedure": "sp_Settings_System_ResetToDefault",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_ResetToDefault.sql",
       "suggestedDao": "Dao_SystemSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1076,8 +1076,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_SystemSettings_SetLocked",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_SetLocked.sql",
+      "storedProcedure": "sp_Settings_System_SetLocked",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_SetLocked.sql",
       "suggestedDao": "Dao_SystemSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1154,8 +1154,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_SystemSettings_UpdateValue",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_UpdateValue.sql",
+      "storedProcedure": "sp_Settings_System_UpdateValue",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_UpdateValue.sql",
       "suggestedDao": "Dao_SystemSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1232,8 +1232,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_UserSettings_Get",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_Get.sql",
+      "storedProcedure": "sp_Settings_User_Get",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_Get.sql",
       "suggestedDao": "Dao_UserSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1306,8 +1306,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_UserSettings_GetAllForUser",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_GetAllForUser.sql",
+      "storedProcedure": "sp_Settings_User_GetAllForUser",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_GetAllForUser.sql",
       "suggestedDao": "Dao_UserSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1370,8 +1370,8 @@
       "writeColumns": []
     },
     {
-      "storedProcedure": "sp_UserSettings_Reset",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_Reset.sql",
+      "storedProcedure": "sp_Settings_User_Reset",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_Reset.sql",
       "suggestedDao": "Dao_UserSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1418,8 +1418,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_UserSettings_ResetAll",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_ResetAll.sql",
+      "storedProcedure": "sp_Settings_User_ResetAll",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_ResetAll.sql",
       "suggestedDao": "Dao_UserSettings",
       "missingDao": false,
       "referencedInDaos": [
@@ -1481,8 +1481,8 @@
       ]
     },
     {
-      "storedProcedure": "sp_UserSettings_Set",
-      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_Set.sql",
+      "storedProcedure": "sp_Settings_User_Set",
+      "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_Set.sql",
       "suggestedDao": "Dao_UserSettings",
       "missingDao": false,
       "referencedInDaos": [

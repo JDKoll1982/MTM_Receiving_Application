@@ -117,7 +117,7 @@ Authenticates users on shared terminals using username + 4-digit PIN.
 
 **Requirements**:
 - Validate PIN format (4 digits, not all same)
-- Query database using `sp_ValidateUserPin`
+- Query database using `sp_Auth_User_ValidatePin`
 - Verify user is active
 - Log successful authentication
 - Track failed attempts (service does NOT implement lockout - handled by UI)
@@ -130,7 +130,7 @@ Creates new user accounts (used during first-time setup).
 - Validate all required fields
 - Check PIN uniqueness before creation
 - Check Windows username uniqueness
-- Call `sp_CreateNewUser` stored procedure
+- Call `sp_Auth_User_Create` stored procedure
 - Log user creation event
 - Return new employee number on success
 

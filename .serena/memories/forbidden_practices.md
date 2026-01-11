@@ -50,7 +50,7 @@ string query = "SELECT * FROM PURCHASE_ORDER WHERE ID = @PoNumber";
 string sql = "INSERT INTO receiving_line ...";
 
 // REQUIRED - Stored procedures only
-await Helper_Database_StoredProcedure.ExecuteAsync("sp_receiving_line_insert", parameters);
+await Helper_Database_StoredProcedure.ExecuteAsync("sp_sp_Receiving_Line_Insert", parameters);
 ```
 
 ## High-Priority Violations

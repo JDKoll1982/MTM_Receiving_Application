@@ -1,169 +1,151 @@
 # Stored Procedure Analysis Report
 
-**Generated:** 2026-01-11 16:28:50
+**Generated:** 2026-01-11 17:29:41
 **Database:** mtm_receiving_application
 **Server:** localhost:3306
 
 ## Summary
 
-- **Total Stored Procedures:** 153
-- **Execution Groups:** 52
-- **Categories:** 22
+- **Total Stored Procedures:** 149
+- **Execution Groups:** 33
+- **Categories:** 14
 
 ## Parameter Statistics
 
 | Type                   | Count            |
 | ---------------------- | ---------------- |
 | Total Parameters       | 407 |
-| IN Parameters          | 359    |
-| OUT Parameters         | 48   |
+| IN Parameters          | 357    |
+| OUT Parameters         | 50   |
 | INOUT Parameters       | 0 |
-| SPs without Parameters | 18    |
+| SPs without Parameters | 16    |
 
 ## Stored Procedures by Category
 
 ### Departments (1 procedures)
 
-- **sp_GetDepartments** - No parameters
-
-### DunnageLoads (7 procedures)
-
-- **sp_dunnage_history_insert** - IN: 4
-- **sp_dunnage_history_insert_batch** - IN: 2
-- **sp_dunnage_history_update** - IN: 3
-- **sp_dunnage_history_get_all** - No parameters
-- **sp_dunnage_history_get_by_date_range** - IN: 2
-- **sp_dunnage_history_get_by_id** - IN: 4
-- **sp_dunnage_history_delete** - IN: 4
+- **sp_Auth_Department_GetAll** - No parameters
 
 ### DunnageParts (9 procedures)
 
-- **sp_dunnage_parts_insert** - IN: 5 OUT: 4
-- **sp_dunnage_parts_update** - IN: 4
-- **sp_dunnage_parts_count_transactions** - IN: 4
-- **sp_dunnage_parts_get_all** - No parameters
-- **sp_dunnage_parts_get_by_id** - IN: 4
-- **sp_dunnage_parts_get_by_type** - IN: 4
-- **sp_dunnage_parts_get_transaction_count** - IN: 4 OUT: 4
-- **sp_dunnage_parts_search** - IN: 2
-- **sp_dunnage_parts_delete** - IN: 4
+- **sp_Dunnage_Parts_Insert** - IN: 5 OUT: 4
+- **sp_Dunnage_Parts_Update** - IN: 4
+- **sp_Dunnage_Parts_CountTransactions** - IN: 4
+- **sp_Dunnage_Parts_GetAll** - No parameters
+- **sp_Dunnage_Parts_GetById** - IN: 4
+- **sp_Dunnage_Parts_GetByType** - IN: 4
+- **sp_Dunnage_Parts_GetTransactionCount** - IN: 4 OUT: 4
+- **sp_Dunnage_Parts_Search** - IN: 2
+- **sp_Dunnage_Parts_Delete** - IN: 4
 
 ### DunnageSpecs (9 procedures)
 
-- **sp_dunnage_specs_insert** - IN: 4 OUT: 4
-- **sp_dunnage_specs_update** - IN: 3
-- **sp_dunnage_specs_count_parts_using_spec** - IN: 2
-- **sp_dunnage_specs_get_all** - No parameters
-- **sp_dunnage_specs_get_all_keys** - No parameters
-- **sp_dunnage_specs_get_by_id** - IN: 4
-- **sp_dunnage_specs_get_by_type** - IN: 4
-- **sp_dunnage_specs_delete_by_id** - IN: 4
-- **sp_dunnage_specs_delete_by_type** - IN: 4
+- **sp_Dunnage_Specs_Insert** - IN: 4 OUT: 4
+- **sp_Dunnage_Specs_Update** - IN: 3
+- **sp_Dunnage_Specs_CountPartsUsingSpec** - IN: 2
+- **sp_Dunnage_Specs_GetAll** - No parameters
+- **sp_Dunnage_Specs_GetAllKeys** - No parameters
+- **sp_Dunnage_Specs_GetById** - IN: 4
+- **sp_Dunnage_Specs_GetByType** - IN: 4
+- **sp_Dunnage_Specs_DeleteById** - IN: 4
+- **sp_Dunnage_Specs_DeleteByType** - IN: 4
 
-### DunnageTypes (10 procedures)
+### DunnageTypes (11 procedures)
 
-- **sp_dunnage_types_insert** - IN: 3 OUT: 4
-- **sp_dunnage_types_update** - IN: 4
-- **sp_dunnage_types_check_duplicate** - IN: 2 OUT: 4
-- **sp_dunnage_types_count_parts** - IN: 4
-- **sp_dunnage_types_count_transactions** - IN: 4
-- **sp_dunnage_types_get_all** - No parameters
-- **sp_dunnage_types_get_by_id** - IN: 4
-- **sp_dunnage_types_get_part_count** - IN: 4 OUT: 4
-- **sp_dunnage_types_get_transaction_count** - IN: 4 OUT: 4
-- **sp_dunnage_types_delete** - IN: 4
+- **sp_Dunnage_Types_Insert** - IN: 3
+- **sp_Dunnage_Types_Update** - IN: 4
+- **sp_Dunnage_Types_CheckDuplicate** - IN: 2 OUT: 4
+- **sp_Dunnage_Types_CountParts** - IN: 4
+- **sp_Dunnage_Types_CountTransactions** - IN: 4
+- **sp_Dunnage_Types_GetAll** - No parameters
+- **sp_Dunnage_Types_GetById** - IN: 4
+- **sp_Dunnage_Types_GetPartCount** - IN: 4 OUT: 4
+- **sp_Dunnage_Types_GetTransactionCount** - IN: 4 OUT: 4
+- **sp_Dunnage_Types_GetUsageCount** - IN: 4
+- **sp_Dunnage_Types_Delete** - IN: 2 OUT: 2
 
-### InventoriedDunnage (6 procedures)
+### Other (45 procedures)
 
-- **sp_dunnage_requires_inventory_insert** - IN: 4 OUT: 4
-- **sp_dunnage_requires_inventory_update** - IN: 4
-- **sp_dunnage_requires_inventory_check** - IN: 4
-- **sp_dunnage_requires_inventory_get_all** - No parameters
-- **sp_dunnage_requires_inventory_get_by_part** - IN: 4
-- **sp_dunnage_requires_inventory_delete** - IN: 4
-
-### Other (26 procedures)
-
-- **dunnage_line_Insert** - IN: 7 OUT: 2
-- **sp_CreateNewUser** - IN: 9 OUT: 4
-- **sp_custom_fields_insert** - IN: 8 OUT: 3
-- **sp_LogUserActivity** - IN: 4
+- **sp_Auth_Activity_Log** - IN: 4
+- **sp_Auth_User_Create** - IN: 9 OUT: 4
+- **sp_Auth_User_SeedDefaultModes** - IN: 4
+- **sp_Auth_User_UpdateDefaultDunnageMode** - IN: 2
+- **sp_Auth_User_UpdateDefaultMode** - IN: 2
+- **sp_Auth_User_UpdateDefaultReceivingMode** - IN: 2
+- **sp_Auth_User_Upsert** - IN: 10
+- **sp_Auth_User_ValidatePin** - IN: 2
+- **sp_Auth_Workstation_Upsert** - IN: 4
+- **sp_Dunnage_CustomFields_Insert** - IN: 8 OUT: 3
+- **sp_Dunnage_Inventory_Insert** - IN: 4 OUT: 4
+- **sp_Dunnage_Inventory_Update** - IN: 4
+- **sp_Dunnage_Line_Insert** - IN: 7 OUT: 2
+- **sp_Dunnage_Loads_Insert** - IN: 4
+- **sp_Dunnage_Loads_InsertBatch** - IN: 2
+- **sp_Dunnage_Loads_Update** - IN: 3
+- **sp_routing_label_history_insert** - IN: 5 OUT: 2
 - **sp_routing_usage_increment** - IN: 2 OUT: 2
-- **sp_RoutingRule_Insert** - IN: 5
-- **sp_RoutingRule_Update** - IN: 5
-- **sp_seed_user_default_modes** - IN: 4
-- **sp_update_user_default_dunnage_mode** - IN: 2
-- **sp_update_user_default_mode** - IN: 2
-- **sp_update_user_default_receiving_mode** - IN: 2
-- **sp_UpsertUser** - IN: 10
-- **sp_UpsertWorkstationConfig** - IN: 4
-- **sp_ValidateUserPin** - IN: 2
-- **sp_dunnage_custom_fields_get_by_type** - IN: 4
-- **sp_get_user_default_mode** - IN: 4
-- **sp_GetReceivingHistory** - IN: 3
-- **sp_GetSharedTerminalNames** - No parameters
-- **sp_GetUserByWindowsUsername** - IN: 4
+- **sp_Volvo_PartComponent_Insert** - IN: 3
+- **sp_Volvo_PartMaster_Insert** - IN: 3
+- **sp_Volvo_PartMaster_SetActive** - IN: 2
+- **sp_Volvo_PartMaster_Update** - IN: 2
+- **sp_Volvo_ShipmentLine_Insert** - IN: 8
+- **sp_Volvo_ShipmentLine_Update** - IN: 6
+- **sp_Auth_Terminal_GetShared** - No parameters
+- **sp_Auth_User_GetByWindowsUsername** - IN: 4
+- **sp_Auth_User_GetDefaultMode** - IN: 4
+- **sp_Dunnage_CustomFields_GetByType** - IN: 4
+- **sp_Dunnage_Inventory_Check** - IN: 4
+- **sp_Dunnage_Inventory_GetAll** - No parameters
+- **sp_Dunnage_Inventory_GetByPart** - IN: 4
+- **sp_Dunnage_Loads_GetAll** - No parameters
+- **sp_Dunnage_Loads_GetByDateRange** - IN: 2
+- **sp_Dunnage_Loads_GetById** - IN: 4
+- **sp_Receiving_History_Get** - IN: 3
 - **sp_routing_label_get_history** - IN: 2
-- **sp_RoutingRule_FindMatch** - IN: 2
-- **sp_RoutingRule_GetAll** - No parameters
-- **sp_RoutingRule_GetById** - IN: 4
-- **sp_RoutingRule_GetByPartNumber** - IN: 4
 - **sp_volvo_part_check_references** - IN: 4 OUT: 4
-- **sp_RoutingRule_Delete** - IN: 4
+- **sp_Volvo_PartComponent_Get** - IN: 4
+- **sp_Volvo_PartMaster_GetAll** - IN: 4
+- **sp_Volvo_PartMaster_GetById** - IN: 4
+- **sp_Volvo_ShipmentLine_GetByShipment** - IN: 4
+- **sp_Dunnage_Inventory_Delete** - IN: 4
+- **sp_Dunnage_Loads_Delete** - IN: 4
+- **sp_Volvo_PartComponent_DeleteByParent** - IN: 4
+- **sp_Volvo_ShipmentLine_Delete** - IN: 4
 
-### PackageTypes (14 procedures)
+### PackageTypes (9 procedures)
 
-- **sp_GetPackageTypePreference** - IN: 4
-- **sp_PackageType_GetAll** - No parameters
-- **sp_PackageType_GetById** - IN: 4
-- **sp_PackageType_Insert** - IN: 3
-- **sp_PackageType_Update** - IN: 3
-- **sp_PackageType_UsageCount** - IN: 4
-- **sp_Receiving_PackageTypeMappings_GetAll** - No parameters
+- **sp_Receiving_PackageTypeMappings_GetAll** - IN: 4
 - **sp_Receiving_PackageTypeMappings_GetByPrefix** - IN: 4
 - **sp_Receiving_PackageTypeMappings_Insert** - IN: 5
-- **sp_Receiving_PackageTypeMappings_Update** - IN: 4
-- **sp_SavePackageTypePreference** - IN: 4
-- **sp_DeletePackageTypePreference** - IN: 4
-- **sp_PackageType_Delete** - IN: 4
+- **sp_Receiving_PackageTypeMappings_Update** - IN: 6
+- **sp_Receiving_PackageTypePreference_Get** - IN: 4
+- **sp_Receiving_PackageTypePreference_Save** - IN: 4
 - **sp_Receiving_PackageTypeMappings_Delete** - IN: 4
+- **sp_Receiving_PackageTypePreference_Delete** - IN: 4
+- **sp_Receiving_PackageTypes_Delete** - IN: 4
 
-### Preferences (2 procedures)
+### Preferences (4 procedures)
 
+- **sp_Dunnage_UserPreferences_Upsert** - IN: 3 OUT: 2
 - **sp_routing_user_preference_save** - IN: 3 OUT: 2
+- **sp_Dunnage_UserPreferences_GetRecentIcons** - IN: 2
 - **sp_routing_user_preference_get** - IN: 4 OUT: 2
 
 ### ReceivingLines (1 procedures)
 
-- **receiving_line_Insert** - IN: 10 OUT: 2
+- **sp_sp_Receiving_Line_Insert** - IN: 10 OUT: 2
 
 ### ReceivingLoads (4 procedures)
 
-- **sp_InsertReceivingLoad** - IN: 13
-- **sp_UpdateReceivingLoad** - IN: 13
-- **sp_GetAllReceivingLoads** - IN: 2
-- **sp_DeleteReceivingLoad** - IN: 4
-
-### Reports (9 procedures)
-
-- **sp_ScheduledReport_Insert** - IN: 5
-- **sp_ScheduledReport_ToggleActive** - IN: 2
-- **sp_ScheduledReport_Update** - IN: 5
-- **sp_ScheduledReport_UpdateLastRun** - IN: 3
-- **sp_ScheduledReport_GetActive** - No parameters
-- **sp_ScheduledReport_GetAll** - No parameters
-- **sp_ScheduledReport_GetById** - IN: 4
-- **sp_ScheduledReport_GetDue** - No parameters
-- **sp_ScheduledReport_Delete** - IN: 4
-
-### RoutingHistory (1 procedures)
-
-- **sp_routing_history_insert** - IN: 5 OUT: 2
+- **sp_Receiving_Load_Insert** - IN: 13
+- **sp_Receiving_Load_Update** - IN: 13
+- **sp_Receiving_Load_GetAll** - IN: 2
+- **sp_Receiving_Load_Delete** - IN: 4
 
 ### RoutingLabels (9 procedures)
 
 - **sp_routing_label_archive** - IN: 4 OUT: 2
-- **sp_routing_label_insert** - IN: 8 OUT: 2
+- **sp_routing_label_insert** - IN: 7 OUT: 2
 - **sp_routing_label_mark_exported** - IN: 4 OUT: 2
 - **sp_routing_label_update** - IN: 7 OUT: 4
 - **sp_routing_label_check_duplicate** - IN: 4 OUT: 2
@@ -178,126 +160,97 @@
 
 ### RoutingRecipients (6 procedures)
 
-- **sp_routing_recipient_insert** - IN: 2 OUT: 2
-- **sp_routing_recipient_update** - IN: 4 OUT: 4
+- **sp_routing_recipient_insert** - IN: 3 OUT: 2
+- **sp_routing_recipient_update** - IN: 5 OUT: 4
 - **sp_routing_recipient_get_all** - No parameters
 - **sp_routing_recipient_get_all_active** - No parameters
 - **sp_routing_recipient_get_by_name** - IN: 4
 - **sp_routing_recipient_get_top_by_usage** - IN: 2
 
-### Settings (13 procedures)
+### Settings (34 procedures)
 
-- **sp_settings_module_volvo_reset** - IN: 2
-- **sp_settings_module_volvo_upsert** - IN: 3
-- **sp_SystemSettings_ResetToDefault** - IN: 4
-- **sp_SystemSettings_SetLocked** - IN: 5
-- **sp_SystemSettings_UpdateValue** - IN: 5
-- **sp_settings_module_volvo_get** - IN: 4
-- **sp_settings_module_volvo_get_all** - IN: 4
-- **sp_SettingsAuditLog_Get** - IN: 2
-- **sp_SettingsAuditLog_GetBySetting** - IN: 2
-- **sp_SettingsAuditLog_GetByUser** - IN: 2
-- **sp_SystemSettings_GetAll** - No parameters
-- **sp_SystemSettings_GetByCategory** - IN: 4
-- **sp_SystemSettings_GetByKey** - IN: 2
-
-### Users (7 procedures)
-
-- **sp_user_preferences_upsert** - IN: 3 OUT: 2
-- **sp_UserSettings_Reset** - IN: 2
-- **sp_UserSettings_ResetAll** - IN: 2
-- **sp_UserSettings_Set** - IN: 3
-- **sp_user_preferences_get_recent_icons** - IN: 2
-- **sp_UserSettings_Get** - IN: 3
-- **sp_UserSettings_GetAllForUser** - IN: 4
-
-### VolvoComponents (3 procedures)
-
-- **sp_volvo_part_component_insert** - IN: 3
-- **sp_volvo_part_component_get** - IN: 4
-- **sp_volvo_part_component_delete_by_parent** - IN: 4
-
-### VolvoParts (5 procedures)
-
-- **sp_volvo_part_master_insert** - IN: 3
-- **sp_volvo_part_master_set_active** - IN: 2
-- **sp_volvo_part_master_update** - IN: 2
-- **sp_volvo_part_master_get_all** - IN: 4
-- **sp_volvo_part_master_get_by_id** - IN: 4
-
-### VolvoShipmentLines (4 procedures)
-
-- **sp_volvo_shipment_line_insert** - IN: 8
-- **sp_volvo_shipment_line_update** - IN: 6
-- **sp_volvo_shipment_line_get_by_shipment** - IN: 4
-- **sp_volvo_shipment_line_delete** - IN: 4
+- **sp_Settings_RoutingRule_Insert** - IN: 5
+- **sp_Settings_RoutingRule_Update** - IN: 5
+- **sp_Settings_ScheduledReport_Insert** - IN: 5
+- **sp_Settings_ScheduledReport_ToggleActive** - IN: 2
+- **sp_Settings_ScheduledReport_Update** - IN: 5
+- **sp_Settings_ScheduledReport_UpdateLastRun** - IN: 3 OUT: 4
+- **sp_Settings_System_ResetToDefault** - IN: 4
+- **sp_Settings_System_SetLocked** - IN: 5
+- **sp_Settings_System_UpdateValue** - IN: 5
+- **sp_Settings_User_Reset** - IN: 2
+- **sp_Settings_User_ResetAll** - IN: 2
+- **sp_Settings_User_Set** - IN: 3
+- **sp_Volvo_Settings_Reset** - IN: 2
+- **sp_Volvo_Settings_Upsert** - IN: 3
+- **sp_Settings_AuditLog_Get** - IN: 2
+- **sp_Settings_AuditLog_GetBySetting** - IN: 2
+- **sp_Settings_AuditLog_GetByUser** - IN: 2
+- **sp_Settings_RoutingRule_FindMatch** - IN: 2
+- **sp_Settings_RoutingRule_GetAll** - No parameters
+- **sp_Settings_RoutingRule_GetById** - IN: 4
+- **sp_Settings_RoutingRule_GetByPartNumber** - IN: 4
+- **sp_Settings_ScheduledReport_GetActive** - No parameters
+- **sp_Settings_ScheduledReport_GetAll** - No parameters
+- **sp_Settings_ScheduledReport_GetById** - IN: 4
+- **sp_Settings_ScheduledReport_GetDue** - No parameters
+- **sp_Settings_System_GetAll** - No parameters
+- **sp_Settings_System_GetByCategory** - IN: 4
+- **sp_Settings_System_GetByKey** - IN: 2
+- **sp_Settings_User_Get** - IN: 3
+- **sp_Settings_User_GetAllForUser** - IN: 4
+- **sp_Volvo_Settings_Get** - IN: 4
+- **sp_Volvo_Settings_GetAll** - IN: 4
+- **sp_Settings_RoutingRule_Delete** - IN: 4
+- **sp_Settings_ScheduledReport_Delete** - IN: 4
 
 ### VolvoShipments (6 procedures)
 
-- **sp_volvo_shipment_complete** - IN: 3
-- **sp_volvo_shipment_insert** - IN: 3 OUT: 2
-- **sp_volvo_shipment_update** - IN: 2
-- **sp_volvo_shipment_get_pending** - No parameters
-- **sp_volvo_shipment_history_get** - IN: 3
-- **sp_volvo_shipment_delete** - IN: 4
+- **sp_Volvo_Shipment_Complete** - IN: 3
+- **sp_Volvo_Shipment_Insert** - IN: 3 OUT: 2
+- **sp_Volvo_Shipment_Update** - IN: 2
+- **sp_Volvo_Shipment_GetHistory** - IN: 3
+- **sp_Volvo_Shipment_GetPending** - No parameters
+- **sp_Volvo_Shipment_Delete** - IN: 4
 
 
 ## Execution Order Groups
 
 | Order | Category | Count | Stored Procedures |
 | ----- | -------- | ----- | ----------------- |
-| 10 | Users | 4 | sp_user_preferences_upsert, sp_UserSettings_Reset, sp_UserSettings_ResetAll, sp_UserSettings_Set |
-| 25 | DunnageTypes | 2 | sp_dunnage_types_insert, sp_dunnage_types_update |
-| 30 | DunnageSpecs | 2 | sp_dunnage_specs_insert, sp_dunnage_specs_update |
-| 35 | DunnageParts | 2 | sp_dunnage_parts_insert, sp_dunnage_parts_update |
-| 40 | VolvoParts | 3 | sp_volvo_part_master_insert, sp_volvo_part_master_set_active, sp_volvo_part_master_update |
+| 25 | DunnageTypes | 2 | sp_Dunnage_Types_Insert, sp_Dunnage_Types_Update |
+| 30 | DunnageSpecs | 2 | sp_Dunnage_Specs_Insert, sp_Dunnage_Specs_Update |
+| 35 | DunnageParts | 2 | sp_Dunnage_Parts_Insert, sp_Dunnage_Parts_Update |
 | 45 | RoutingRecipients | 2 | sp_routing_recipient_insert, sp_routing_recipient_update |
-| 100 | ReceivingLoads | 2 | sp_InsertReceivingLoad, sp_UpdateReceivingLoad |
-| 120 | ReceivingLines | 1 | receiving_line_Insert |
-| 130 | DunnageLoads | 3 | sp_dunnage_history_insert, sp_dunnage_history_insert_batch, sp_dunnage_history_update |
-| 140 | InventoriedDunnage | 2 | sp_dunnage_requires_inventory_insert, sp_dunnage_requires_inventory_update |
+| 100 | ReceivingLoads | 2 | sp_Receiving_Load_Insert, sp_Receiving_Load_Update |
+| 120 | ReceivingLines | 1 | sp_sp_Receiving_Line_Insert |
 | 150 | RoutingLabels | 4 | sp_routing_label_archive, sp_routing_label_insert, sp_routing_label_mark_exported, sp_routing_lab... |
-| 160 | RoutingHistory | 1 | sp_routing_history_insert |
-| 170 | VolvoShipments | 3 | sp_volvo_shipment_complete, sp_volvo_shipment_insert, sp_volvo_shipment_update |
-| 180 | VolvoShipmentLines | 2 | sp_volvo_shipment_line_insert, sp_volvo_shipment_line_update |
-| 190 | VolvoComponents | 1 | sp_volvo_part_component_insert |
-| 200 | Preferences | 1 | sp_routing_user_preference_save |
-| 210 | Settings | 5 | sp_settings_module_volvo_reset, sp_settings_module_volvo_upsert, sp_SystemSettings_ResetToDefault... |
-| 220 | Reports | 4 | sp_ScheduledReport_Insert, sp_ScheduledReport_ToggleActive, sp_ScheduledReport_Update, sp_Schedul... |
-| 999 | Other | 14 | dunnage_line_Insert, sp_CreateNewUser, sp_custom_fields_insert, sp_LogUserActivity, sp_routing_us... |
-| 1010 | Users | 3 | sp_user_preferences_get_recent_icons, sp_UserSettings_Get, sp_UserSettings_GetAllForUser |
-| 1015 | Departments | 1 | sp_GetDepartments |
-| 1020 | PackageTypes | 11 | sp_GetPackageTypePreference, sp_PackageType_GetAll, sp_PackageType_GetById, sp_PackageType_Insert... |
-| 1025 | DunnageTypes | 7 | sp_dunnage_types_check_duplicate, sp_dunnage_types_count_parts, sp_dunnage_types_count_transactio... |
-| 1030 | DunnageSpecs | 5 | sp_dunnage_specs_count_parts_using_spec, sp_dunnage_specs_get_all, sp_dunnage_specs_get_all_keys,... |
-| 1035 | DunnageParts | 6 | sp_dunnage_parts_count_transactions, sp_dunnage_parts_get_all, sp_dunnage_parts_get_by_id, sp_dun... |
-| 1040 | VolvoParts | 2 | sp_volvo_part_master_get_all, sp_volvo_part_master_get_by_id |
+| 170 | VolvoShipments | 3 | sp_Volvo_Shipment_Complete, sp_Volvo_Shipment_Insert, sp_Volvo_Shipment_Update |
+| 200 | Preferences | 2 | sp_Dunnage_UserPreferences_Upsert, sp_routing_user_preference_save |
+| 210 | Settings | 14 | sp_Settings_RoutingRule_Insert, sp_Settings_RoutingRule_Update, sp_Settings_ScheduledReport_Inser... |
+| 999 | Other | 24 | sp_Auth_Activity_Log, sp_Auth_User_Create, sp_Auth_User_SeedDefaultModes, sp_Auth_User_UpdateDefa... |
+| 1015 | Departments | 1 | sp_Auth_Department_GetAll |
+| 1020 | PackageTypes | 6 | sp_Receiving_PackageTypeMappings_GetAll, sp_Receiving_PackageTypeMappings_GetByPrefix, sp_Receivi... |
+| 1025 | DunnageTypes | 8 | sp_Dunnage_Types_CheckDuplicate, sp_Dunnage_Types_CountParts, sp_Dunnage_Types_CountTransactions,... |
+| 1030 | DunnageSpecs | 5 | sp_Dunnage_Specs_CountPartsUsingSpec, sp_Dunnage_Specs_GetAll, sp_Dunnage_Specs_GetAllKeys, sp_Du... |
+| 1035 | DunnageParts | 6 | sp_Dunnage_Parts_CountTransactions, sp_Dunnage_Parts_GetAll, sp_Dunnage_Parts_GetById, sp_Dunnage... |
 | 1045 | RoutingRecipients | 4 | sp_routing_recipient_get_all, sp_routing_recipient_get_all_active, sp_routing_recipient_get_by_na... |
 | 1050 | RoutingReasons | 1 | sp_routing_other_reason_get_all_active |
-| 1100 | ReceivingLoads | 1 | sp_GetAllReceivingLoads |
-| 1130 | DunnageLoads | 3 | sp_dunnage_history_get_all, sp_dunnage_history_get_by_date_range, sp_dunnage_history_get_by_id |
-| 1140 | InventoriedDunnage | 3 | sp_dunnage_requires_inventory_check, sp_dunnage_requires_inventory_get_all, sp_dunnage_requires_i... |
+| 1100 | ReceivingLoads | 1 | sp_Receiving_Load_GetAll |
 | 1150 | RoutingLabels | 4 | sp_routing_label_check_duplicate, sp_routing_label_get_all, sp_routing_label_get_by_id, sp_routin... |
-| 1170 | VolvoShipments | 2 | sp_volvo_shipment_get_pending, sp_volvo_shipment_history_get |
-| 1180 | VolvoShipmentLines | 1 | sp_volvo_shipment_line_get_by_shipment |
-| 1190 | VolvoComponents | 1 | sp_volvo_part_component_get |
-| 1200 | Preferences | 1 | sp_routing_user_preference_get |
-| 1210 | Settings | 8 | sp_settings_module_volvo_get, sp_settings_module_volvo_get_all, sp_SettingsAuditLog_Get, sp_Setti... |
-| 1220 | Reports | 4 | sp_ScheduledReport_GetActive, sp_ScheduledReport_GetAll, sp_ScheduledReport_GetById, sp_Scheduled... |
-| 1999 | Other | 11 | sp_dunnage_custom_fields_get_by_type, sp_get_user_default_mode, sp_GetReceivingHistory, sp_GetSharedTermi... |
-| 2025 | DunnageTypes | 1 | sp_dunnage_types_delete |
-| 2030 | DunnageSpecs | 2 | sp_dunnage_specs_delete_by_id, sp_dunnage_specs_delete_by_type |
-| 2035 | DunnageParts | 1 | sp_dunnage_parts_delete |
-| 2100 | ReceivingLoads | 1 | sp_DeleteReceivingLoad |
-| 2130 | DunnageLoads | 1 | sp_dunnage_history_delete |
-| 2140 | InventoriedDunnage | 1 | sp_dunnage_requires_inventory_delete |
+| 1170 | VolvoShipments | 2 | sp_Volvo_Shipment_GetHistory, sp_Volvo_Shipment_GetPending |
+| 1200 | Preferences | 2 | sp_Dunnage_UserPreferences_GetRecentIcons, sp_routing_user_preference_get |
+| 1210 | Settings | 18 | sp_Settings_AuditLog_Get, sp_Settings_AuditLog_GetBySetting, sp_Settings_AuditLog_GetByUser, sp_S... |
+| 1999 | Other | 17 | sp_Auth_Terminal_GetShared, sp_Auth_User_GetByWindowsUsername, sp_Auth_User_GetDefaultMode, sp_Du... |
+| 2025 | DunnageTypes | 1 | sp_Dunnage_Types_Delete |
+| 2030 | DunnageSpecs | 2 | sp_Dunnage_Specs_DeleteById, sp_Dunnage_Specs_DeleteByType |
+| 2035 | DunnageParts | 1 | sp_Dunnage_Parts_Delete |
+| 2100 | ReceivingLoads | 1 | sp_Receiving_Load_Delete |
 | 2150 | RoutingLabels | 1 | sp_routing_label_delete |
-| 2170 | VolvoShipments | 1 | sp_volvo_shipment_delete |
-| 2180 | VolvoShipmentLines | 1 | sp_volvo_shipment_line_delete |
-| 2190 | VolvoComponents | 1 | sp_volvo_part_component_delete_by_parent |
-| 2220 | Reports | 1 | sp_ScheduledReport_Delete |
-| 2999 | Other | 1 | sp_RoutingRule_Delete |
-| 3020 | PackageTypes | 3 | sp_DeletePackageTypePreference, sp_PackageType_Delete, sp_Receiving_PackageTypeMappings_Delete |
+| 2170 | VolvoShipments | 1 | sp_Volvo_Shipment_Delete |
+| 2210 | Settings | 2 | sp_Settings_RoutingRule_Delete, sp_Settings_ScheduledReport_Delete |
+| 2999 | Other | 4 | sp_Dunnage_Inventory_Delete, sp_Dunnage_Loads_Delete, sp_Volvo_PartComponent_DeleteByParent, sp_V... |
+| 3020 | PackageTypes | 3 | sp_Receiving_PackageTypeMappings_Delete, sp_Receiving_PackageTypePreference_Delete, sp_Receiving_... |
 
 ## Notes
 
@@ -311,16 +264,16 @@
 
 | SP Name | Total Params | IN | OUT | INOUT |
 |---------|--------------|-----|-----|-------|
-| sp_UpdateReceivingLoad | 13 | 13 | 0 | 0 |
-| sp_InsertReceivingLoad | 13 | 13 | 0 | 0 |
-| receiving_line_Insert | 12 | 10 | 2 | 0 |
-| sp_custom_fields_insert | 11 | 8 | 3 | 0 |
-| sp_routing_label_insert | 10 | 8 | 2 | 0 |
-| sp_UpsertUser | 10 | 10 | 0 | 0 |
-| sp_CreateNewUser | 10 | 9 | 4 | 0 |
-| dunnage_line_Insert | 9 | 7 | 2 | 0 |
-| sp_volvo_shipment_line_insert | 8 | 8 | 0 | 0 |
+| sp_Receiving_Load_Update | 13 | 13 | 0 | 0 |
+| sp_Receiving_Load_Insert | 13 | 13 | 0 | 0 |
+| sp_sp_Receiving_Line_Insert | 12 | 10 | 2 | 0 |
+| sp_Dunnage_CustomFields_Insert | 11 | 8 | 3 | 0 |
+| sp_Auth_User_Create | 10 | 9 | 4 | 0 |
+| sp_Auth_User_Upsert | 10 | 10 | 0 | 0 |
+| sp_routing_label_insert | 9 | 7 | 2 | 0 |
+| sp_Dunnage_Line_Insert | 9 | 7 | 2 | 0 |
 | sp_routing_label_update | 8 | 7 | 4 | 0 |
+| sp_Volvo_ShipmentLine_Insert | 8 | 8 | 0 | 0 |
 
 ## 🔧 Fix Checklist
 
@@ -328,71 +281,61 @@
 
 | Fixed | SP Name | Current Params | Expected Params | Missing Params | File Path | DAO Class | Issue Type | Priority | Fix Notes |
 |-------|---------|----------------|-----------------|----------------|-----------|-----------|------------|----------|-----------|
-| [ ] | dunnage_line_Insert | 7 IN | 9 total | 2 OUT/INOUT | Database/StoredProcedures/dunnage_line_Insert.sql | Dao_Dunnage Line | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
-| [ ] | receiving_line_Insert | 10 IN | 12 total | 2 OUT/INOUT | Database/StoredProcedures/receiving_line_Insert.sql | Dao_Receiving Line | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
-| [ ] | sp_CreateNewUser | 9 IN | 10 total | 4 OUT/INOUT | Database/StoredProcedures/sp_CreateNewUser.sql |  | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_custom_fields_insert | 8 IN | 11 total | 3 OUT/INOUT | Database/StoredProcedures/sp_custom_fields_insert.sql | Dao_Custom Fields | OUT Parameters | High | Update DAO to handle 3 OUT params |
-| [ ] | sp_dunnage_parts_get_transaction_count | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_parts_get_transaction_count.sql | Dao_Dunnage Parts | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_parts_insert | 5 IN | 6 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_parts_insert.sql | Dao_Dunnage Parts | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_requires_inventory_insert | 4 IN | 5 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_requires_inventory_insert.sql | Dao_Dunnage Requires Inventory | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_specs_insert | 4 IN | 5 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_specs_insert.sql | Dao_Dunnage Specs | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_types_check_duplicate | 2 IN | 3 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_types_check_duplicate.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_types_get_part_count | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_types_get_part_count.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_types_get_transaction_count | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_types_get_transaction_count.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_dunnage_types_insert | 3 IN | 4 total | 4 OUT/INOUT | Database/StoredProcedures/sp_dunnage_types_insert.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_routing_history_insert | 5 IN | 7 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_history_insert.sql | Dao_Routing History | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_Auth_User_Create | 9 IN | 10 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Auth_User_Create.sql |  | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_CustomFields_Insert | 8 IN | 11 total | 3 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_CustomFields_Insert.sql | Dao_Dunnage Customfields | OUT Parameters | High | Update DAO to handle 3 OUT params |
+| [ ] | sp_Dunnage_Inventory_Insert | 4 IN | 5 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Inventory_Insert.sql | Dao_Dunnage Inventory | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_Line_Insert | 7 IN | 9 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Line_Insert.sql | Dao_Dunnage Line | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_Dunnage_Parts_GetTransactionCount | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Parts_GetTransactionCount.sql | Dao_Dunnage Parts | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_Parts_Insert | 5 IN | 6 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Parts_Insert.sql | Dao_Dunnage Parts | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_Specs_Insert | 4 IN | 5 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Specs_Insert.sql | Dao_Dunnage Specs | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_Types_CheckDuplicate | 2 IN | 3 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Types_CheckDuplicate.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_Types_Delete | 2 IN | 4 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Types_Delete.sql | Dao_Dunnage Types | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_Dunnage_Types_GetPartCount | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Types_GetPartCount.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_Types_GetTransactionCount | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Types_GetTransactionCount.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_Dunnage_UserPreferences_Upsert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_UserPreferences_Upsert.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_archive | 4 IN | 3 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_archive.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_check_duplicate | 4 IN | 6 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_check_duplicate.sql | Dao_Routing Label | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_delete | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_routing_label_delete.sql | Dao_Routing Label | OUT Parameters | High | Update DAO to handle 4 OUT params |
 | [ ] | sp_routing_label_get_all | 2 IN | 4 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_get_all.sql | Dao_Routing Label | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_get_by_id | 4 IN | 3 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_get_by_id.sql | Dao_Routing Label | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
-| [ ] | sp_routing_label_insert | 8 IN | 10 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_insert.sql | Dao_Routing Label | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_routing_label_history_insert | 5 IN | 7 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_history_insert.sql | Dao_Routing Label History | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_routing_label_insert | 7 IN | 9 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_insert.sql | Dao_Routing Label | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_mark_exported | 4 IN | 3 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_mark_exported.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_update | 7 IN | 8 total | 4 OUT/INOUT | Database/StoredProcedures/sp_routing_label_update.sql | Dao_Routing Label | OUT Parameters | High | Update DAO to handle 4 OUT params |
 | [ ] | sp_routing_other_reason_get_all_active | 0 IN | 2 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_other_reason_get_all_active.sql | Dao_Routing Other Reason | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
-| [ ] | sp_routing_recipient_insert | 2 IN | 4 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_recipient_insert.sql | Dao_Routing Recipient | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
-| [ ] | sp_routing_recipient_update | 4 IN | 5 total | 4 OUT/INOUT | Database/StoredProcedures/sp_routing_recipient_update.sql | Dao_Routing Recipient | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_routing_recipient_insert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_recipient_insert.sql | Dao_Routing Recipient | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_routing_recipient_update | 5 IN | 6 total | 4 OUT/INOUT | Database/StoredProcedures/sp_routing_recipient_update.sql | Dao_Routing Recipient | OUT Parameters | High | Update DAO to handle 4 OUT params |
 | [ ] | sp_routing_usage_increment | 2 IN | 4 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_usage_increment.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_user_preference_get | 4 IN | 3 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_user_preference_get.sql | Dao_Routing User Preference | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_user_preference_save | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_user_preference_save.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
-| [ ] | sp_user_preferences_upsert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_user_preferences_upsert.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_Settings_ScheduledReport_UpdateLastRun | 3 IN | 4 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Settings_ScheduledReport_UpdateLastRun.sql | Dao_Settings Scheduledreport | OUT Parameters | High | Update DAO to handle 4 OUT params |
+| [ ] | sp_sp_Receiving_Line_Insert | 10 IN | 12 total | 2 OUT/INOUT | Database/StoredProcedures/sp_sp_Receiving_Line_Insert.sql | Dao_Sp Receiving Line | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_volvo_part_check_references | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_volvo_part_check_references.sql | Dao_Volvo Part | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_volvo_shipment_insert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_volvo_shipment_insert.sql | Dao_Volvo Shipment | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_Volvo_Shipment_Insert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Volvo_Shipment_Insert.sql | Dao_Volvo Shipment | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 
 ### DAO Files Requiring Updates
 
 | Fixed | DAO Class | File Path | Related SPs | Param Mismatches | Methods to Update | Issue Summary | Priority |
 |-------|-----------|-----------|-------------|------------------|-------------------|---------------|----------|
-| [ ] | Dao_Custom Fields | **/Dao_Custom Fields.cs (search required) | sp_custom_fields_insert | 3 | Insert*Async | 3 OUT/INOUT params across 1 SP(s) | Medium |
-| [ ] | Dao_Dunnage Line | **/Dao_Dunnage Line.cs (search required) | dunnage_line_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
-| [ ] | Dao_Dunnage Parts | **/Dao_Dunnage Parts.cs (search required) | sp_dunnage_parts_get_transaction_count, sp_dunnage_parts_... | 8 | Get*Async, Insert*Async | 8 OUT/INOUT params across 2 SP(s) | High |
-| [ ] | Dao_Dunnage Requires Inventory | **/Dao_Dunnage Requires Inventory.cs (search required) | sp_dunnage_requires_inventory_insert | 4 | Insert*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
-| [ ] | Dao_Dunnage Specs | **/Dao_Dunnage Specs.cs (search required) | sp_dunnage_specs_insert | 4 | Insert*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
-| [ ] | Dao_Dunnage Types | **/Dao_Dunnage Types.cs (search required) | sp_dunnage_types_check_duplicate, sp_dunnage_types_get_pa... | 16 | Get*Async, Insert*Async | 16 OUT/INOUT params across 4 SP(s) | High |
-| [ ] | Dao_Receiving Line | **/Dao_Receiving Line.cs (search required) | receiving_line_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
-| [ ] | Dao_Routing History | **/Dao_Routing History.cs (search required) | sp_routing_history_insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
+| [ ] | Dao_Dunnage Customfields | **/Dao_Dunnage Customfields.cs (search required) | sp_Dunnage_CustomFields_Insert | 3 | Insert*Async | 3 OUT/INOUT params across 1 SP(s) | Medium |
+| [ ] | Dao_Dunnage Inventory | **/Dao_Dunnage Inventory.cs (search required) | sp_Dunnage_Inventory_Insert | 4 | Insert*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
+| [ ] | Dao_Dunnage Line | **/Dao_Dunnage Line.cs (search required) | sp_Dunnage_Line_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
+| [ ] | Dao_Dunnage Parts | **/Dao_Dunnage Parts.cs (search required) | sp_Dunnage_Parts_GetTransactionCount, sp_Dunnage_Parts_In... | 8 | Get*Async, Insert*Async | 8 OUT/INOUT params across 2 SP(s) | High |
+| [ ] | Dao_Dunnage Specs | **/Dao_Dunnage Specs.cs (search required) | sp_Dunnage_Specs_Insert | 4 | Insert*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
+| [ ] | Dao_Dunnage Types | **/Dao_Dunnage Types.cs (search required) | sp_Dunnage_Types_CheckDuplicate, sp_Dunnage_Types_Delete,... | 14 | Delete*Async, Get*Async | 14 OUT/INOUT params across 4 SP(s) | High |
 | [ ] | Dao_Routing Label | **/Dao_Routing Label.cs (search required) | sp_routing_label_check_duplicate, sp_routing_label_delete... | 16 | Delete*Async, Get*Async, Insert*Async, Update*Async | 16 OUT/INOUT params across 6 SP(s) | High |
+| [ ] | Dao_Routing Label History | **/Dao_Routing Label History.cs (search required) | sp_routing_label_history_insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Routing Other Reason | **/Dao_Routing Other Reason.cs (search required) | sp_routing_other_reason_get_all_active | 2 | Get*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Routing Recipient | **/Dao_Routing Recipient.cs (search required) | sp_routing_recipient_insert, sp_routing_recipient_update | 6 | Insert*Async, Update*Async | 6 OUT/INOUT params across 2 SP(s) | High |
 | [ ] | Dao_Routing User Preference | **/Dao_Routing User Preference.cs (search required) | sp_routing_user_preference_get | 2 | Get*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
+| [ ] | Dao_Settings Scheduledreport | **/Dao_Settings Scheduledreport.cs (search required) | sp_Settings_ScheduledReport_UpdateLastRun | 4 | Update*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
+| [ ] | Dao_Sp Receiving Line | **/Dao_Sp Receiving Line.cs (search required) | sp_sp_Receiving_Line_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Volvo Part | **/Dao_Volvo Part.cs (search required) | sp_volvo_part_check_references | 4 |  | 4 OUT/INOUT params across 1 SP(s) | Medium |
-| [ ] | Dao_Volvo Shipment | **/Dao_Volvo Shipment.cs (search required) | sp_volvo_shipment_insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
+| [ ] | Dao_Volvo Shipment | **/Dao_Volvo Shipment.cs (search required) | sp_Volvo_Shipment_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 
 ### Database Schema Issues
 
 | Fixed | SP Name | Missing Column/Table | Schema File | Table Name | Expected Column | Current Status | SQL Fix Required | Priority | Fix Notes |
 |-------|---------|----------------------|-------------|------------|-----------------|----------------|------------------|----------|-----------|
-| [ ] | sp_dunnage_specs_get_all_keys |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_dunnage_type_Delete |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_dunnage_type_GetAll |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_dunnage_type_GetById |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_dunnage_type_Insert |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_dunnage_type_Update |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_dunnage_type_UsageCount |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_routing_label_get_history |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_routing_label_get_today |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_routing_recipient_get_all |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_routing_recipient_get_by_name |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_update_user_default_dunnage_mode |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_update_user_default_mode |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_update_user_default_receiving_mode |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
+| - | *No schema issues detected - run 02-Test-StoredProcedures.ps1 first* | - | - | - | - | - | - | - | - |
+

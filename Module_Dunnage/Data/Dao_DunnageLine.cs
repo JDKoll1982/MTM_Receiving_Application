@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -64,7 +64,7 @@ public static class Dao_DunnageLine
 
             // Execute stored procedure
             var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-                "dunnage_line_Insert",
+                "sp_Dunnage_Line_Insert",
                 parameters,
                 connectionString
             );

@@ -19,11 +19,11 @@ Used for Guided, Manual, and Edit workflows (save + history queries).
 
 | DAO / Service Path | Stored Procedure | Script Path | Notes |
 |--------------------|------------------|-------------|------|
-| Dao_ReceivingLoad.SaveLoadsAsync | sp_InsertReceivingLoad | Database/StoredProcedures/Receiving/sp_InsertReceivingLoad.sql | Inserts one row per load within a MySQL transaction. |
-| Dao_ReceivingLoad.UpdateLoadsAsync | sp_UpdateReceivingLoad | Database/StoredProcedures/Receiving/sp_UpdateReceivingLoad.sql | Updates one row per load within a MySQL transaction. |
-| Dao_ReceivingLoad.DeleteLoadsAsync | sp_DeleteReceivingLoad | Database/StoredProcedures/Receiving/sp_DeleteReceivingLoad.sql | Deletes rows by LoadID within a MySQL transaction. |
-| Dao_ReceivingLoad.GetHistoryAsync | sp_GetReceivingHistory | Database/StoredProcedures/Receiving/sp_GetReceivingHistory.sql | Returns rows by PartID and date range. |
-| Dao_ReceivingLoad.GetAllAsync | sp_GetAllReceivingLoads | Database/StoredProcedures/Receiving/sp_GetAllReceivingLoads.sql | Returns rows by date range (Edit Mode history). |
+| Dao_ReceivingLoad.SaveLoadsAsync | sp_Receiving_Load_Insert | Database/StoredProcedures/Receiving/sp_Receiving_Load_Insert.sql | Inserts one row per load within a MySQL transaction. |
+| Dao_ReceivingLoad.UpdateLoadsAsync | sp_Receiving_Load_Update | Database/StoredProcedures/Receiving/sp_Receiving_Load_Update.sql | Updates one row per load within a MySQL transaction. |
+| Dao_ReceivingLoad.DeleteLoadsAsync | sp_Receiving_Load_Delete | Database/StoredProcedures/Receiving/sp_Receiving_Load_Delete.sql | Deletes rows by LoadID within a MySQL transaction. |
+| Dao_ReceivingLoad.GetHistoryAsync | sp_Receiving_History_Get | Database/StoredProcedures/Receiving/sp_Receiving_History_Get.sql | Returns rows by PartID and date range. |
+| Dao_ReceivingLoad.GetAllAsync | sp_Receiving_Load_GetAll | Database/StoredProcedures/Receiving/sp_Receiving_Load_GetAll.sql | Returns rows by date range (Edit Mode history). |
 
 ### receiving_package_types
 
@@ -31,9 +31,9 @@ Used for storing a default package type per part.
 
 | DAO | Stored Procedure | Script Path | Notes |
 |-----|------------------|-------------|------|
-| Dao_PackageTypePreference.GetPreferenceAsync | sp_GetPackageTypePreference | Database/StoredProcedures/Receiving/sp_GetPackageTypePreference.sql | Select by PartID. |
-| Dao_PackageTypePreference.SavePreferenceAsync | sp_SavePackageTypePreference | Database/StoredProcedures/Receiving/sp_SavePackageTypePreference.sql | Upsert by PartID (ON DUPLICATE KEY). |
-| Dao_PackageTypePreference.DeletePreferenceAsync | sp_DeletePackageTypePreference | Database/StoredProcedures/Receiving/sp_DeletePackageTypePreference.sql | Delete by PartID. |
+| Dao_PackageTypePreference.GetPreferenceAsync | sp_Receiving_PackageTypePreference_Get | Database/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Get.sql | Select by PartID. |
+| Dao_PackageTypePreference.SavePreferenceAsync | sp_Receiving_PackageTypePreference_Save | Database/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Save.sql | Upsert by PartID (ON DUPLICATE KEY). |
+| Dao_PackageTypePreference.DeletePreferenceAsync | sp_Receiving_PackageTypePreference_Delete | Database/StoredProcedures/Receiving/sp_Receiving_PackageTypePreference_Delete.sql | Delete by PartID. |
 
 ### receiving_label_data
 
@@ -41,7 +41,7 @@ Used for receiving label line inserts.
 
 | DAO | Stored Procedure | Script Path | Notes |
 |-----|------------------|-------------|------|
-| Dao_ReceivingLine.InsertReceivingLineAsync | receiving_line_Insert | Database/StoredProcedures/Receiving/receiving_line_Insert.sql | Uses output params p_Status and p_ErrorMsg. |
+| Dao_ReceivingLine.InsertReceivingLineAsync | sp_Receiving_Line_Insert | Database/StoredProcedures/Receiving/sp_Receiving_Line_Insert.sql | Uses output params p_Status and p_ErrorMsg. |
 
 ## Stored Procedures Referenced but Script Not Found
 

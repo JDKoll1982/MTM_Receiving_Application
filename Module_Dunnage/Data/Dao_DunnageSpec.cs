@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -28,7 +28,7 @@ public class Dao_DunnageSpec
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageSpec>(
             _connectionString,
-            "sp_dunnage_specs_get_by_type",
+            "sp_Dunnage_Specs_GetByType",
             MapFromReader,
             parameters
         );
@@ -38,7 +38,7 @@ public class Dao_DunnageSpec
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageSpec>(
             _connectionString,
-            "sp_dunnage_specs_get_all",
+            "sp_Dunnage_Specs_GetAll",
             MapFromReader
         );
     }
@@ -52,7 +52,7 @@ public class Dao_DunnageSpec
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageSpec>(
             _connectionString,
-            "sp_dunnage_specs_get_by_id",
+            "sp_Dunnage_Specs_GetById",
             MapFromReader,
             parameters
         );
@@ -117,7 +117,7 @@ public class Dao_DunnageSpec
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_specs_delete_by_id",
+            "sp_Dunnage_Specs_DeleteById",
             parameters
         );
     }
@@ -131,7 +131,7 @@ public class Dao_DunnageSpec
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_specs_delete_by_type",
+            "sp_Dunnage_Specs_DeleteByType",
             parameters
         );
     }
@@ -146,7 +146,7 @@ public class Dao_DunnageSpec
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
             _connectionString,
-            "sp_dunnage_specs_count_parts_using_spec",
+            "sp_Dunnage_Specs_CountPartsUsingSpec",
             reader => reader.GetInt32(reader.GetOrdinal("part_count")),
             parameters
         );
@@ -160,7 +160,7 @@ public class Dao_DunnageSpec
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<string>(
             _connectionString,
-            "sp_dunnage_specs_get_all_keys",
+            "sp_Dunnage_Specs_GetAllKeys",
             reader => reader.GetString(reader.GetOrdinal("SpecKey"))
         );
     }

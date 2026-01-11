@@ -1015,7 +1015,7 @@ User -> VM: Select Type "Pallet"
 activate VM
 VM -> SVC: GetPartsByTypeAsync(1)
 activate SVC
-SVC -> DB:  sp_dunnage_parts_get_by_type
+SVC -> DB:  sp_Dunnage_Parts_GetByType
 DB --> SVC: Parts List
 deactivate SVC
 VM --> User: Display Parts
@@ -1204,7 +1204,7 @@ loop For each load
     activate SQL
     SQL -> DAO:  Dao_DunnageLoad. InsertLoadAsync()
     activate DAO
-    DAO -> DB: sp_dunnage_history_insert
+    DAO -> DB: sp_Dunnage_Loads_Insert
     DB --> DAO: Success
     deactivate DAO
     SQL --> WF: Model_Dao_Result

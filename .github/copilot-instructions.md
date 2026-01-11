@@ -115,7 +115,7 @@ public class Dao_ReceivingLine
             };
 
             return await Helper_Database_StoredProcedure.ExecuteAsync(
-                "receiving_line_Insert",
+                "sp_Receiving_Line_Insert",
                 parameters,
                 _connectionString
             );

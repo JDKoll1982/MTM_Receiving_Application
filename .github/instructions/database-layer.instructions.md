@@ -47,7 +47,7 @@ public static async Task<Model_Dao_Result<int>> InsertReceivingLineAsync(Model_R
         // 2. Execute stored procedure via Helper
         var result = await Helper_Database_StoredProcedure.ExecuteNonQueryWithStatusAsync(
             Model_Application_Variables.ConnectionString,
-            "receiving_line_Insert",  // Stored procedure name
+            "sp_Receiving_Line_Insert",  // Stored procedure name
             parameters
         );
 
@@ -77,9 +77,9 @@ public static async Task<Model_Dao_Result<int>> InsertReceivingLineAsync(Model_R
 ```sql
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `receiving_line_Insert` $$
+DROP PROCEDURE IF EXISTS `sp_Receiving_Line_Insert` $$
 
-CREATE PROCEDURE `receiving_line_Insert`(
+CREATE PROCEDURE `sp_Receiving_Line_Insert`(
     IN p_Quantity INT,
     IN p_PartID VARCHAR(50),
     IN p_PONumber INT,

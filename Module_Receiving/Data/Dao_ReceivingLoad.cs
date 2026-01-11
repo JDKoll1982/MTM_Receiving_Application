@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -65,7 +65,7 @@ public class Dao_ReceivingLoad
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
                     connection,
                     transaction,
-                    "sp_InsertReceivingLoad",
+                    "sp_Receiving_Load_Insert",
                     parameters
                 );
 
@@ -124,7 +124,7 @@ public class Dao_ReceivingLoad
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
                     connection,
                     transaction,
-                    "sp_UpdateReceivingLoad",
+                    "sp_Receiving_Load_Update",
                     parameters
                 );
 
@@ -171,7 +171,7 @@ public class Dao_ReceivingLoad
                 var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
                     connection,
                     transaction,
-                    "sp_DeleteReceivingLoad",
+                    "sp_Receiving_Load_Delete",
                     parameters
                 );
 
@@ -207,7 +207,7 @@ public class Dao_ReceivingLoad
 
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableAsync(
                 _connectionString,
-                "sp_GetReceivingHistory",
+                "sp_Receiving_History_Get",
                 parameters
             );
 
@@ -240,7 +240,7 @@ public class Dao_ReceivingLoad
 
             var result = await Helper_Database_StoredProcedure.ExecuteDataTableAsync(
                 _connectionString,
-                "sp_GetAllReceivingLoads",
+                "sp_Receiving_Load_GetAll",
                 parameters
             );
 

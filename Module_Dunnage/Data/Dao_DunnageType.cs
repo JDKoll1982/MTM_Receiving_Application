@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ public class Dao_DunnageType
 
         var result = await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageType>(
             _connectionString,
-            "sp_dunnage_types_get_all",
+            "sp_Dunnage_Types_GetAll",
             MapFromReader
         );
 
@@ -44,7 +44,7 @@ public class Dao_DunnageType
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageType>(
             _connectionString,
-            "sp_dunnage_types_get_by_id",
+            "sp_Dunnage_Types_GetById",
             MapFromReader,
             parameters
         );
@@ -123,7 +123,7 @@ public class Dao_DunnageType
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
             _connectionString,
-            "sp_dunnage_types_count_parts",
+            "sp_Dunnage_Types_CountParts",
             reader => reader.GetInt32(reader.GetOrdinal("part_count")),
             parameters
         );
@@ -138,7 +138,7 @@ public class Dao_DunnageType
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<int>(
             _connectionString,
-            "sp_dunnage_types_count_transactions",
+            "sp_Dunnage_Types_CountTransactions",
             reader => reader.GetInt32(reader.GetOrdinal("transaction_count")),
             parameters
         );
@@ -165,7 +165,7 @@ public class Dao_DunnageType
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-            "sp_dunnage_types_check_duplicate",
+            "sp_Dunnage_Types_CheckDuplicate",
             parameters,
             _connectionString
         );

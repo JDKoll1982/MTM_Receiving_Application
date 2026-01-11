@@ -79,7 +79,7 @@ Module_Core is the shared foundation layer for the MTM Receiving Application. It
   - `Service_Authentication` (Windows username + PIN login, workstation detection)
   - `Service_UserSessionManager` (timeout monitoring)
 - Primary DAO and stored procedures:
-  - `Dao_User` → `sp_GetUserByWindowsUsername`, `sp_ValidateUserPin`, `sp_GetSharedTerminalNames`, `sp_LogUserActivity`
+  - `Dao_User` → `sp_Auth_User_GetByWindowsUsername`, `sp_Auth_User_ValidatePin`, `sp_Auth_Terminal_GetShared`, `sp_Auth_Activity_Log`
 
 1) **Infor Visual PO and part lookup (read-only)**
 
@@ -146,10 +146,10 @@ flowchart LR
   end
 
   subgraph DB[MySQL]
-    SP_Shared[sp_GetSharedTerminalNames]
-    SP_GetUser[sp_GetUserByWindowsUsername]
-    SP_ValidatePin[sp_ValidateUserPin]
-    SP_Log[sp_LogUserActivity]
+    SP_Shared[sp_Auth_Terminal_GetShared]
+    SP_GetUser[sp_Auth_User_GetByWindowsUsername]
+    SP_ValidatePin[sp_Auth_User_ValidatePin]
+    SP_Log[sp_Auth_Activity_Log]
   end
 
   Splash --> AuthSVC
@@ -197,9 +197,9 @@ flowchart LR
 1. **User Action:** Application starts; splash/login UI needs to determine whether to prompt for PIN.
 2. **Workstation classification:** `IService_Authentication.DetectWorkstationTypeAsync()` calls `Dao_User.GetSharedTerminalNamesAsync()` to determine shared vs personal terminal.
 3. **Authentication method:**
-   - Personal workstation: `AuthenticateByWindowsUsernameAsync(windowsUsername)` → `sp_GetUserByWindowsUsername`
-   - Shared terminal: `AuthenticateByPinAsync(username, pin)` → `sp_ValidateUserPin`
-4. **Audit trail:** success/failure events are logged via `LogUserActivityAsync(...)` → `sp_LogUserActivity`.
+   - Personal workstation: `AuthenticateByWindowsUsernameAsync(windowsUsername)` → `sp_Auth_User_GetByWindowsUsername`
+   - Shared terminal: `AuthenticateByPinAsync(username, pin)` → `sp_Auth_User_ValidatePin`
+4. **Audit trail:** success/failure events are logged via `LogUserActivityAsync(...)` → `sp_Auth_Activity_Log`.
 5. **Session:** `IService_UserSessionManager.CreateSession(...)` creates the session and begins timeout monitoring.
 
 **Return Flow (Database → UI):**

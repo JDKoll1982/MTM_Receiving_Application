@@ -28,7 +28,7 @@ public class Dao_RoutingRule
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_RoutingRule_GetAll",
+            "sp_Settings_RoutingRule_GetAll",
             MapFromReader
         );
     }
@@ -46,7 +46,7 @@ public class Dao_RoutingRule
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_RoutingRule_GetById",
+            "sp_Settings_RoutingRule_GetById",
             MapFromReader,
             parameters
         );
@@ -70,7 +70,7 @@ public class Dao_RoutingRule
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_RoutingRule_Insert",
+            "sp_Settings_RoutingRule_Insert",
             reader => reader.GetInt32(reader.GetOrdinal("id")),
             parameters
         );
@@ -93,7 +93,7 @@ public class Dao_RoutingRule
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_RoutingRule_Update",
+            "sp_Settings_RoutingRule_Update",
             parameters
         );
     }
@@ -111,7 +111,7 @@ public class Dao_RoutingRule
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_RoutingRule_Delete",
+            "sp_Settings_RoutingRule_Delete",
             parameters
         );
     }
@@ -131,7 +131,7 @@ public class Dao_RoutingRule
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_RoutingRule_FindMatch",
+            "sp_Settings_RoutingRule_FindMatch",
             MapFromReader,
             parameters
         );
@@ -149,7 +149,7 @@ public class Dao_RoutingRule
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_RoutingRule_GetByPartNumber",
+            "sp_Settings_RoutingRule_GetByPartNumber",
             MapFromReader,
             parameters
         );

@@ -1,0 +1,44 @@
+-- =============================================
+-- Stored Procedure: sp_Settings_System_GetByKey
+-- =============================================
+
+DELIMITER $$
+
+-- =============================================
+-- SP: Get Single System Setting
+-- =============================================
+DROP PROCEDURE IF EXISTS `sp_Settings_System_GetByKey`$$
+CREATE PROCEDURE `sp_Settings_System_GetByKey`(
+    IN p_category VARCHAR(50),
+    IN p_setting_key VARCHAR(100)
+)
+BEGIN
+    SELECT
+        id,
+        category,
+        sub_category,
+        setting_key,
+        setting_name,
+        description,
+        setting_value,
+        default_value,
+        data_type,
+        scope,
+        permission_level,
+        is_locked,
+        is_sensitive,
+        CAST(validation_rules AS CHAR) AS validation_rules,
+        ui_control_type,
+        ui_order,
+        created_at,
+        updated_at,
+        updated_by
+    FROM settings_universal
+    WHERE category = p_category
+      AND setting_key = p_setting_key
+    LIMIT 1;
+END$$
+
+
+
+DELIMITER ;

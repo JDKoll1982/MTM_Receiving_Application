@@ -36,7 +36,7 @@ public class Dao_SettingsAuditLog
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_SettingsAuditLog_Get",
+            "sp_Settings_AuditLog_Get",
             MapFromReader,
             parameters
         );
@@ -55,7 +55,7 @@ public class Dao_SettingsAuditLog
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_SettingsAuditLog_GetBySetting",
+            "sp_Settings_AuditLog_GetBySetting",
             MapFromReader,
             parameters
         );
@@ -74,7 +74,7 @@ public class Dao_SettingsAuditLog
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_SettingsAuditLog_GetByUser",
+            "sp_Settings_AuditLog_GetByUser",
             MapFromReader,
             parameters
         );

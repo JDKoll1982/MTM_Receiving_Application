@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ public class Dao_DunnageUserPreference
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_user_preferences_upsert",
+            "sp_Dunnage_UserPreferences_Upsert",
             parameters
         );
     }
@@ -44,7 +44,7 @@ public class Dao_DunnageUserPreference
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_IconDefinition>(
             _connectionString,
-            "sp_user_preferences_get_recent_icons",
+            "sp_Dunnage_UserPreferences_GetRecentIcons",
             reader => new Model_IconDefinition
             {
                 IconName = reader.GetString(reader.GetOrdinal("icon_name"))

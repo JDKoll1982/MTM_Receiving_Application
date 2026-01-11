@@ -7,9 +7,9 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_volvo_shipment_complete$$
+DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Complete`$$
 
-CREATE PROCEDURE sp_volvo_shipment_complete(
+CREATE PROCEDURE `sp_Volvo_Shipment_Complete`(
   IN p_shipment_id INT,
   IN p_po_number VARCHAR(50),
   IN p_receiver_number VARCHAR(50)

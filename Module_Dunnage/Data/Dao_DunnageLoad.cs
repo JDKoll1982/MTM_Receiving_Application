@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -26,7 +26,7 @@ public class Dao_DunnageLoad
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
             _connectionString,
-            "sp_dunnage_history_get_all",
+            "sp_Dunnage_Loads_GetAll",
             MapFromReader
         );
     }
@@ -41,7 +41,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageLoad>(
             _connectionString,
-            "sp_dunnage_history_get_by_date_range",
+            "sp_Dunnage_Loads_GetByDateRange",
             MapFromReader,
             parameters
         );
@@ -56,7 +56,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_DunnageLoad>(
             _connectionString,
-            "sp_dunnage_history_get_by_id",
+            "sp_Dunnage_Loads_GetById",
             MapFromReader,
             parameters
         );
@@ -74,7 +74,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_history_insert",
+            "sp_Dunnage_Loads_Insert",
             parameters
         );
     }
@@ -129,7 +129,7 @@ public class Dao_DunnageLoad
 
         var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_history_insert_batch",
+            "sp_Dunnage_Loads_InsertBatch",
             parameters
         );
 
@@ -159,7 +159,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_history_update",
+            "sp_Dunnage_Loads_Update",
             parameters
         );
     }
@@ -173,7 +173,7 @@ public class Dao_DunnageLoad
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_history_delete",
+            "sp_Dunnage_Loads_Delete",
             parameters
         );
     }

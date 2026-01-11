@@ -225,9 +225,9 @@ MTM_Receiving_Application/
 │   │   └── 09_fix_bad_icon_data.sql
 │   ├── StoredProcedures/                # MySQL stored procedures
 │   │   ├── Authentication/              # User auth procedures
-│   │   │   ├── sp_GetUserByWindowsUsername.sql
-│   │   │   ├── sp_ValidateUserPin.sql
-│   │   │   ├── sp_CreateNewUser.sql
+│   │   │   ├── sp_Auth_User_GetByWindowsUsername.sql
+│   │   │   ├── sp_Auth_User_ValidatePin.sql
+│   │   │   ├── sp_Auth_User_Create.sql
 │   │   │   └── sp_update_user_default_*.sql
 │   │   ├── Receiving/                   # Receiving procedures
 │   │   │   ├── sp_receiving_history_*.sql

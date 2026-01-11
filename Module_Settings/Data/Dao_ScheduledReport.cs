@@ -28,7 +28,7 @@ public class Dao_ScheduledReport
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_ScheduledReport_GetAll",
+            "sp_Settings_ScheduledReport_GetAll",
             MapFromReader
         );
     }
@@ -46,7 +46,7 @@ public class Dao_ScheduledReport
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_ScheduledReport_GetById",
+            "sp_Settings_ScheduledReport_GetById",
             MapFromReader,
             parameters
         );
@@ -59,7 +59,7 @@ public class Dao_ScheduledReport
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_ScheduledReport_GetDue",
+            "sp_Settings_ScheduledReport_GetDue",
             MapFromReader
         );
     }
@@ -71,7 +71,7 @@ public class Dao_ScheduledReport
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_ScheduledReport_GetActive",
+            "sp_Settings_ScheduledReport_GetActive",
             MapFromReader
         );
     }
@@ -94,7 +94,7 @@ public class Dao_ScheduledReport
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_ScheduledReport_Insert",
+            "sp_Settings_ScheduledReport_Insert",
             reader => reader.GetInt32(reader.GetOrdinal("id")),
             parameters
         );
@@ -117,7 +117,7 @@ public class Dao_ScheduledReport
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_ScheduledReport_Update",
+            "sp_Settings_ScheduledReport_Update",
             parameters
         );
     }
@@ -139,7 +139,7 @@ public class Dao_ScheduledReport
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_ScheduledReport_UpdateLastRun",
+            "sp_Settings_ScheduledReport_UpdateLastRun",
             parameters
         );
     }
@@ -157,7 +157,7 @@ public class Dao_ScheduledReport
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_ScheduledReport_Delete",
+            "sp_Settings_ScheduledReport_Delete",
             parameters
         );
     }
@@ -177,7 +177,7 @@ public class Dao_ScheduledReport
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_ScheduledReport_ToggleActive",
+            "sp_Settings_ScheduledReport_ToggleActive",
             parameters
         );
     }

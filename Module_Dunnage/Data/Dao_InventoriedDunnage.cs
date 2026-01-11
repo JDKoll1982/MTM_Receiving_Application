@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ public class Dao_InventoriedDunnage
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_InventoriedDunnage>(
             _connectionString,
-            "sp_dunnage_requires_inventory_get_all",
+            "sp_Dunnage_Inventory_GetAll",
             MapFromReader
         );
     }
@@ -37,7 +37,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<bool>(
             _connectionString,
-            "sp_dunnage_requires_inventory_check",
+            "sp_Dunnage_Inventory_Check",
             reader => reader.GetBoolean(reader.GetOrdinal("requires_inventory")),
             parameters
         );
@@ -52,7 +52,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_InventoriedDunnage>(
             _connectionString,
-            "sp_dunnage_requires_inventory_get_by_part",
+            "sp_Dunnage_Inventory_GetByPart",
             MapFromReader,
             parameters
         );
@@ -75,7 +75,7 @@ public class Dao_InventoriedDunnage
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-            "sp_dunnage_requires_inventory_insert",
+            "sp_Dunnage_Inventory_Insert",
             parameters,
             _connectionString
         );
@@ -104,7 +104,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_requires_inventory_update",
+            "sp_Dunnage_Inventory_Update",
             parameters
         );
     }
@@ -118,7 +118,7 @@ public class Dao_InventoriedDunnage
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_dunnage_requires_inventory_delete",
+            "sp_Dunnage_Inventory_Delete",
             parameters
         );
     }

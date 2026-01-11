@@ -65,7 +65,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
         
         return await Helper_Database_StoredProcedure.ExecuteScalarAsync<int>(
             _connectionString,
-            "sp_receiving_line_insert",
+            "sp_sp_Receiving_Line_Insert",
             parameters
         );
     }

@@ -29,7 +29,7 @@ flowchart TD
     services --> checkuser[Check Windows user exists]
     checkuser --> exists{User exists in DB}
     exists -- No --> newusersetup[Show New User Setup Dialog]
-    newusersetup --> createuser[Create via sp_CreateNewUser]
+    newusersetup --> createuser[Create via sp_Auth_User_Create]
     createuser --> reauth[Re-authenticate new user]
     reauth --> applydefaults
     exists -- Yes --> applydefaults[Apply safe user defaults]
@@ -113,11 +113,11 @@ The startup workflow consists of **9 major phases**:
 
 | Stored Procedure | Called When | Purpose |
 |------------------|-------------|---------|
-| `sp_GetUserByWindowsUsername` | Step 4 (User Check) | Check if Windows user exists |
-| `sp_CreateNewUser` | New User Setup | Create first-time user account |
-| `sp_GetSharedTerminalNames` | Step 5 (Workstation Detection) | Get list of shared terminals |
-| `sp_ValidateUserPin` | Shared Terminal Auth | Validate PIN login |
-| `sp_LogUserActivity` | Post-Authentication | Audit trail for login events |
+| `sp_Auth_User_GetByWindowsUsername` | Step 4 (User Check) | Check if Windows user exists |
+| `sp_Auth_User_Create` | New User Setup | Create first-time user account |
+| `sp_Auth_Terminal_GetShared` | Step 5 (Workstation Detection) | Get list of shared terminals |
+| `sp_Auth_User_ValidatePin` | Shared Terminal Auth | Validate PIN login |
+| `sp_Auth_Activity_Log` | Post-Authentication | Audit trail for login events |
 
 ### Critical Services
 

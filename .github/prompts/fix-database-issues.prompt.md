@@ -130,7 +130,7 @@ For each SP in the "Stored Procedures Requiring Updates" table:
 
 ### Step 3.1: Understand Current vs Expected
 
-Example for `receiving_line_Insert`:
+Example for `sp_Receiving_Line_Insert`:
 
 - Current: 10 IN parameters
 - Expected: 12 total (10 IN + 2 OUT)

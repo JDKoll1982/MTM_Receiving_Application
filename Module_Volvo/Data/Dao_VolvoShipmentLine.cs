@@ -42,7 +42,7 @@ public class Dao_VolvoShipmentLine
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_shipment_line_insert",
+            "sp_Volvo_ShipmentLine_Insert",
             parameters
         );
     }
@@ -60,7 +60,7 @@ public class Dao_VolvoShipmentLine
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_volvo_shipment_line_get_by_shipment",
+            "sp_Volvo_ShipmentLine_GetByShipment",
             MapFromReader,
             parameters
         );
@@ -84,7 +84,7 @@ public class Dao_VolvoShipmentLine
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_shipment_line_update",
+            "sp_Volvo_ShipmentLine_Update",
             parameters
         );
     }
@@ -102,7 +102,7 @@ public class Dao_VolvoShipmentLine
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_shipment_line_delete",
+            "sp_Volvo_ShipmentLine_Delete",
             parameters
         );
     }

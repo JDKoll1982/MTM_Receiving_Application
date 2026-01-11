@@ -2,11 +2,11 @@
 -- Purpose: Update Volvo shipment notes
 -- Created for Issue #2 (Code Review - SQL Injection Protection)
 
-DROP PROCEDURE IF EXISTS sp_volvo_shipment_update;
+DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Update`;
 
 DELIMITER $$
 
-CREATE PROCEDURE sp_volvo_shipment_update(
+CREATE PROCEDURE `sp_Volvo_Shipment_Update`(
     IN p_id INT,
     IN p_notes TEXT
 )

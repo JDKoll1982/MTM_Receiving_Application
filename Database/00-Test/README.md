@@ -182,7 +182,7 @@ Edit `01-mock-data.json` to customize test values:
 
 ```json
 {
-  "sp_UpsertUser": {
+  "sp_Auth_User_Upsert": {
     "category": "Users",
     "executionOrder": 10,
     "enabled": true,

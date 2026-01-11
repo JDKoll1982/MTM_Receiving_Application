@@ -32,7 +32,7 @@ public class Dao_VolvoSettings
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_settings_module_volvo_get",
+            "sp_Volvo_Settings_Get",
             MapFromReader,
             parameters
         );
@@ -51,7 +51,7 @@ public class Dao_VolvoSettings
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_settings_module_volvo_get_all",
+            "sp_Volvo_Settings_GetAll",
             MapFromReader,
             parameters
         );
@@ -74,7 +74,7 @@ public class Dao_VolvoSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_settings_module_volvo_upsert",
+            "sp_Volvo_Settings_Upsert",
             parameters
         );
     }
@@ -94,7 +94,7 @@ public class Dao_VolvoSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_settings_module_volvo_reset",
+            "sp_Volvo_Settings_Reset",
             parameters
         );
     }

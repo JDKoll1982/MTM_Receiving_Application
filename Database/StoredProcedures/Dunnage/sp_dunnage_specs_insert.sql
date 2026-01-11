@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_specs_insert$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Specs_Insert`$$
 
-CREATE PROCEDURE sp_dunnage_specs_insert(
+CREATE PROCEDURE `sp_Dunnage_Specs_Insert`(
     IN p_type_id INT,
     IN p_spec_key VARCHAR(100),
     IN p_spec_value JSON,

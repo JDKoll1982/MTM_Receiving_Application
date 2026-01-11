@@ -25,57 +25,57 @@ This file contains the detail DB mapping for Section 5 of the AM workflow.
 
 These stored procedures are used by `Dao_User` (auth / session) and `Service_Authentication`.
 
-- `sp_GetUserByWindowsUsername(p_windows_username)`
+- `sp_Auth_User_GetByWindowsUsername(p_windows_username)`
   - Table: `users`
   - Returns: user record fields including `employee_number`, `windows_username`, `full_name`, `pin`, `department`, `shift`, `default_receiving_mode`, `default_dunnage_mode`, etc.
 
-- `sp_ValidateUserPin(p_username, p_pin)`
+- `sp_Auth_User_ValidatePin(p_username, p_pin)`
   - Table: `users`
   - Accepts either `windows_username` or `full_name` as the username selector.
 
-- `sp_CreateNewUser(p_employee_number, p_windows_username, p_full_name, p_pin, p_department, p_shift, p_created_by, p_visual_username, p_visual_password, OUT p_error_message)`
+- `sp_Auth_User_Create(p_employee_number, p_windows_username, p_full_name, p_pin, p_department, p_shift, p_created_by, p_visual_username, p_visual_password, OUT p_error_message)`
   - Table: `users`
   - Performs validation and inserts a new user within a transaction.
 
-- `sp_LogUserActivity(p_event_type, p_username, p_workstation_name, p_details)`
+- `sp_Auth_Activity_Log(p_event_type, p_username, p_workstation_name, p_details)`
   - Table: `settings_personal_activity_log`
   - Inserts audit entries and returns `ROW_COUNT()`.
 
-- `sp_GetSharedTerminalNames()`
+- `sp_Auth_Terminal_GetShared()`
   - Purpose: enumerates shared terminal workstation names (used by `DetectWorkstationTypeAsync`).
 
-- `sp_GetDepartments()`
+- `sp_Auth_Department_GetAll()`
   - Purpose: provides department list for UI dropdowns.
 
 ## MySQL: Receiving Stored Procedures (used by Core-facing services)
 
-- `sp_InsertReceivingLoad`
-- `sp_UpdateReceivingLoad`
-- `sp_DeleteReceivingLoad`
-- `sp_GetAllReceivingLoads`
-- `sp_GetReceivingHistory`
+- `sp_Receiving_Load_Insert`
+- `sp_Receiving_Load_Update`
+- `sp_Receiving_Load_Delete`
+- `sp_Receiving_Load_GetAll`
+- `sp_Receiving_History_Get`
 
 Package preferences:
 
-- `sp_GetPackageTypePreference`
-- `sp_SavePackageTypePreference`
-- `sp_DeletePackageTypePreference`
+- `sp_Receiving_PackageTypePreference_Get`
+- `sp_Receiving_PackageTypePreference_Save`
+- `sp_Receiving_PackageTypePreference_Delete`
 
 Receiving label insert:
 
-- `receiving_line_Insert.sql` (stored procedure script name; implementation used via `IService_MySQL_ReceivingLine`)
+- `sp_Receiving_Line_Insert.sql` (stored procedure script name; implementation used via `IService_MySQL_ReceivingLine`)
 
 ## MySQL: Dunnage Stored Procedures (orchestrated by Service_MySQL_Dunnage)
 
 Representative set (see `Database/StoredProcedures/Dunnage/`):
 
-- Types: `sp_dunnage_types_get_all`, `sp_dunnage_types_insert`, `sp_dunnage_types_update`, `sp_dunnage_types_delete`, `sp_dunnage_types_check_duplicate`
-- Specs: `sp_dunnage_specs_get_by_type`, `sp_dunnage_specs_insert`, `sp_dunnage_specs_update`, `sp_dunnage_specs_delete_by_id`, `sp_dunnage_specs_delete_by_type`
-- Parts: `sp_dunnage_parts_get_all`, `sp_dunnage_parts_get_by_id`, `sp_dunnage_parts_get_by_type`, `sp_dunnage_parts_insert`, `sp_dunnage_parts_update`, `sp_dunnage_parts_delete`, `sp_dunnage_parts_search`
-- Loads: `sp_dunnage_history_insert`, `sp_dunnage_history_insert_batch`, `sp_dunnage_history_get_all`, `sp_dunnage_history_get_by_id`, `sp_dunnage_history_get_by_date_range`, `sp_dunnage_history_update`, `sp_dunnage_history_delete`
-- Inventory: `sp_dunnage_requires_inventory_check`, `sp_dunnage_requires_inventory_get_by_part`, `sp_dunnage_requires_inventory_get_all`, `sp_dunnage_requires_inventory_insert`, `sp_dunnage_requires_inventory_update`, `sp_dunnage_requires_inventory_delete`
-- Custom fields: `sp_dunnage_custom_fields_get_by_type`, `sp_custom_fields_insert`
-- User prefs: `sp_user_preferences_upsert`, `sp_user_preferences_get_recent_icons`
+- Types: `sp_Dunnage_Types_GetAll`, `sp_dunnage_types_insert`, `sp_dunnage_types_update`, `sp_dunnage_types_delete`, `sp_Dunnage_Types_CheckDuplicate`
+- Specs: `sp_Dunnage_Specs_GetByType`, `sp_dunnage_specs_insert`, `sp_dunnage_specs_update`, `sp_Dunnage_Specs_DeleteById`, `sp_Dunnage_Specs_DeleteByType`
+- Parts: `sp_Dunnage_Parts_GetAll`, `sp_Dunnage_Parts_GetById`, `sp_Dunnage_Parts_GetByType`, `sp_dunnage_parts_insert`, `sp_dunnage_parts_update`, `sp_dunnage_parts_delete`, `sp_dunnage_parts_search`
+- Loads: `sp_Dunnage_Loads_Insert`, `sp_Dunnage_Loads_InsertBatch`, `sp_Dunnage_Loads_GetAll`, `sp_Dunnage_Loads_GetById`, `sp_Dunnage_Loads_GetByDateRange`, `sp_Dunnage_Loads_Update`, `sp_Dunnage_Loads_Delete`
+- Inventory: `sp_Dunnage_Inventory_Check`, `sp_Dunnage_Inventory_GetByPart`, `sp_Dunnage_Inventory_GetAll`, `sp_Dunnage_Inventory_Insert`, `sp_Dunnage_Inventory_Update`, `sp_Dunnage_Inventory_Delete`
+- Custom fields: `sp_Dunnage_CustomFields_GetByType`, `sp_Dunnage_CustomFields_Insert`
+- User prefs: `sp_Dunnage_UserPreferences_Upsert`, `sp_Dunnage_UserPreferences_GetRecentIcons`
 
 ## SQL Server (Infor Visual): Query Files
 

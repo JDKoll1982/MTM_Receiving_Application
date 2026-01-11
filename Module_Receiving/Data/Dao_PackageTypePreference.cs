@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
@@ -90,7 +90,7 @@ public class Dao_PackageTypePreference
             // Using custom mapper as in original service
             var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_PackageTypePreference?>(
                 _connectionString,
-                "sp_GetPackageTypePreference",
+                "sp_Receiving_PackageTypePreference_Get",
                 reader => new Model_PackageTypePreference
                 {
                     PreferenceID = Convert.ToInt32(reader["PreferenceID"]),
@@ -130,7 +130,7 @@ public class Dao_PackageTypePreference
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_SavePackageTypePreference",
+                "sp_Receiving_PackageTypePreference_Save",
                 parameters
             );
 
@@ -159,7 +159,7 @@ public class Dao_PackageTypePreference
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_DeletePackageTypePreference",
+                "sp_Receiving_PackageTypePreference_Delete",
                 parameters
             );
 

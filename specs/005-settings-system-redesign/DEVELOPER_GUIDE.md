@@ -89,7 +89,7 @@ public class Dao_SystemSettings
             var result = await Helper_Database_StoredProcedure
                 .ExecuteStoredProcedureAsync(
                     _connectionString,
-                    "sp_SystemSettings_GetAll",
+                    "sp_Settings_System_GetAll",
                     parameters
                 );
 
@@ -533,7 +533,7 @@ Assert.IsTrue(saveResult.IsSuccess);
 
 - Check `is_locked` flag in database
 - Only Super Admin can unlock settings
-- Use `sp_SystemSettings_SetLocked` to unlock
+- Use `sp_Settings_System_SetLocked` to unlock
 
 ### Encryption errors
 

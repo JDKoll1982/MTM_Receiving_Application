@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -46,7 +46,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
                 _connectionString,
-                "sp_GetUserByWindowsUsername",
+                "sp_Auth_User_GetByWindowsUsername",
                 MapReaderToUser,
                 parameters
             );
@@ -68,7 +68,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
                 _connectionString,
-                "sp_ValidateUserPin",
+                "sp_Auth_User_ValidatePin",
                 MapReaderToUser,
                 parameters
             );
@@ -91,7 +91,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 await using var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                await using var command = new MySqlCommand("sp_CreateNewUser", connection)
+                await using var command = new MySqlCommand("sp_Auth_User_Create", connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -124,13 +124,13 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 }
 
                 // Return the employee number that was provided
-                // Defaults are seeded server-side by sp_CreateNewUser -> sp_seed_user_default_modes.
+                // Defaults are seeded server-side by sp_Auth_User_Create -> sp_Auth_User_SeedDefaultModes.
                 // Extra safety: best-effort call in case the DB procedure set isn't deployed yet.
                 try
                 {
                     await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                         _connectionString,
-                        "sp_seed_user_default_modes",
+                        "sp_Auth_User_SeedDefaultModes",
                         new Dictionary<string, object>
                         {
                             { "user_id", user.EmployeeNumber }
@@ -227,7 +227,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_LogUserActivity",
+                "sp_Auth_Activity_Log",
                 parameters
             );
 
@@ -253,7 +253,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
-                "sp_GetSharedTerminalNames",
+                "sp_Auth_Terminal_GetShared",
                 reader => reader.GetString(reader.GetOrdinal("workstation_name"))
             );
         }
@@ -278,7 +278,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_UpsertWorkstationConfig",
+                "sp_Auth_Workstation_Upsert",
                 parameters
             );
         }
@@ -291,7 +291,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
-                "sp_GetDepartments",
+                "sp_Auth_Department_GetAll",
                 reader => reader.GetString(reader.GetOrdinal("department_name"))
             );
         }
@@ -346,7 +346,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_update_user_default_mode",
+                "sp_Auth_User_UpdateDefaultMode",
                 parameters
             );
         }
@@ -366,7 +366,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_update_user_default_receiving_mode",
+                "sp_Auth_User_UpdateDefaultReceivingMode",
                 parameters
             );
         }
@@ -386,7 +386,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 
             return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
                 _connectionString,
-                "sp_update_user_default_dunnage_mode",
+                "sp_Auth_User_UpdateDefaultDunnageMode",
                 parameters
             );
         }

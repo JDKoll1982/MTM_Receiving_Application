@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -37,7 +37,7 @@ public class Dao_DunnageCustomField
         };
 
         var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-            "sp_custom_fields_insert",
+            "sp_Dunnage_CustomFields_Insert",
             parameters,
             _connectionString
         );
@@ -63,7 +63,7 @@ public class Dao_DunnageCustomField
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_CustomFieldDefinition>(
             _connectionString,
-            "sp_dunnage_custom_fields_get_by_type",
+            "sp_Dunnage_CustomFields_GetByType",
             MapFromReader,
             parameters
         );

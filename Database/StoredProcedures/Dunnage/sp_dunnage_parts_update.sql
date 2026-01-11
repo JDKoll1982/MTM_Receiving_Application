@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_parts_update$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_Update`$$
 
-CREATE PROCEDURE sp_dunnage_parts_update(
+CREATE PROCEDURE `sp_Dunnage_Parts_Update`(
     IN p_id INT,
     IN p_spec_values JSON,
     IN p_home_location VARCHAR(100),

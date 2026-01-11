@@ -498,27 +498,27 @@ public partial class ViewModel_Settings_DatabaseTest : ViewModel_Shared_Base
 
         var procedures = new[]
         {
-            "sp_SystemSettings_GetAll",
-            "sp_SystemSettings_GetByCategory",
-            "sp_SystemSettings_GetByKey",
-            "sp_SystemSettings_UpdateValue",
+            "sp_Settings_System_GetAll",
+            "sp_Settings_System_GetByCategory",
+            "sp_Settings_System_GetByKey",
+            "sp_Settings_System_UpdateValue",
 
-            "sp_SystemSettings_ResetToDefault",
-            "sp_SystemSettings_SetLocked",
+            "sp_Settings_System_ResetToDefault",
+            "sp_Settings_System_SetLocked",
 
-            "sp_UserSettings_Get",
-            "sp_UserSettings_Set",
+            "sp_Settings_User_Get",
+            "sp_Settings_User_Set",
 
-            "sp_UserSettings_GetAllForUser",
-            "sp_UserSettings_Reset",
-            "sp_UserSettings_ResetAll",
+            "sp_Settings_User_GetAllForUser",
+            "sp_Settings_User_Reset",
+            "sp_Settings_User_ResetAll",
 
-            "sp_dunnage_type_GetAll",
-            "sp_dunnage_type_GetById",
-            "sp_dunnage_type_Insert",
-            "sp_dunnage_type_Update",
-            "sp_dunnage_type_Delete",
-            "sp_dunnage_type_UsageCount",
+            "sp_Dunnage_Types_GetAll",
+            "sp_Dunnage_Types_GetById",
+            "sp_Dunnage_Types_Insert",
+            "sp_Dunnage_Types_Update",
+            "sp_Dunnage_Types_Delete",
+            "sp_Dunnage_Types_GetUsageCount",
 
             "sp_Receiving_PackageTypeMappings_GetAll",
             "sp_Receiving_PackageTypeMappings_GetByPrefix",
@@ -526,27 +526,27 @@ public partial class ViewModel_Settings_DatabaseTest : ViewModel_Shared_Base
             "sp_Receiving_PackageTypeMappings_Update",
             "sp_Receiving_PackageTypeMappings_Delete",
 
-            "sp_RoutingRule_GetAll",
-            "sp_RoutingRule_GetById",
-            "sp_RoutingRule_FindMatch",
-            "sp_RoutingRule_GetByPartNumber",
-            "sp_RoutingRule_Insert",
-            "sp_RoutingRule_Update",
-            "sp_RoutingRule_Delete",
+            "sp_Settings_RoutingRule_GetAll",
+            "sp_Settings_RoutingRule_GetById",
+            "sp_Settings_RoutingRule_FindMatch",
+            "sp_Settings_RoutingRule_GetByPartNumber",
+            "sp_Settings_RoutingRule_Insert",
+            "sp_Settings_RoutingRule_Update",
+            "sp_Settings_RoutingRule_Delete",
 
-            "sp_ScheduledReport_GetAll",
-            "sp_ScheduledReport_GetActive",
-            "sp_ScheduledReport_GetById",
-            "sp_ScheduledReport_GetDue",
-            "sp_ScheduledReport_Insert",
-            "sp_ScheduledReport_Update",
-            "sp_ScheduledReport_UpdateLastRun",
-            "sp_ScheduledReport_ToggleActive",
-            "sp_ScheduledReport_Delete",
+            "sp_Settings_ScheduledReport_GetAll",
+            "sp_Settings_ScheduledReport_GetActive",
+            "sp_Settings_ScheduledReport_GetById",
+            "sp_Settings_ScheduledReport_GetDue",
+            "sp_Settings_ScheduledReport_Insert",
+            "sp_Settings_ScheduledReport_Update",
+            "sp_Settings_ScheduledReport_UpdateLastRun",
+            "sp_Settings_ScheduledReport_ToggleActive",
+            "sp_Settings_ScheduledReport_Delete",
 
-            "sp_SettingsAuditLog_Get",
-            "sp_SettingsAuditLog_GetBySetting",
-            "sp_SettingsAuditLog_GetByUser"
+            "sp_Settings_AuditLog_Get",
+            "sp_Settings_AuditLog_GetBySetting",
+            "sp_Settings_AuditLog_GetByUser"
         };
 
         var testedCount = 0;

@@ -35,7 +35,7 @@ public class Dao_VolvoPart
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_volvo_part_master_get_all",
+            "sp_Volvo_PartMaster_GetAll",
             MapFromReader,
             parameters
         );
@@ -54,7 +54,7 @@ public class Dao_VolvoPart
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_volvo_part_master_get_by_id",
+            "sp_Volvo_PartMaster_GetById",
             MapFromReader,
             parameters
         );
@@ -75,7 +75,7 @@ public class Dao_VolvoPart
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_part_master_insert",
+            "sp_Volvo_PartMaster_Insert",
             parameters
         );
     }
@@ -94,7 +94,7 @@ public class Dao_VolvoPart
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_part_master_update",
+            "sp_Volvo_PartMaster_Update",
             parameters
         );
     }
@@ -132,7 +132,7 @@ public class Dao_VolvoPart
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_volvo_part_master_set_active",
+            "sp_Volvo_PartMaster_SetActive",
             parameters
         );
     }

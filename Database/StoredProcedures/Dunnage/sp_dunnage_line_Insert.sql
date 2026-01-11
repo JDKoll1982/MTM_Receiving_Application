@@ -1,12 +1,12 @@
 -- Phase 1 Infrastructure: Stored Procedure
--- Procedure: dunnage_line_Insert
+-- Procedure: sp_Dunnage_Line_Insert
 -- Purpose: Insert a new dunnage line record with error handling
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS dunnage_line_Insert $$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Line_Insert` $$
 
-CREATE PROCEDURE dunnage_line_Insert(
+CREATE PROCEDURE `sp_Dunnage_Line_Insert`(
     IN p_Line1 VARCHAR(255),
     IN p_Line2 VARCHAR(255),
     IN p_PONumber INT,

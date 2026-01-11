@@ -1,8 +1,8 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS sp_dunnage_parts_search$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_Search`$$
 
-CREATE PROCEDURE sp_dunnage_parts_search(
+CREATE PROCEDURE `sp_Dunnage_Parts_Search`(
     IN p_search_text VARCHAR(100),
     IN p_type_id INT
 )

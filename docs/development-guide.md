@@ -83,8 +83,8 @@ mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/06_cre
 mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/07_create_dunnage_tables_v2.sql
 
 # Deploy stored procedures
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_GetUserByWindowsUsername.sql
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_ValidateUserPin.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_Auth_User_GetByWindowsUsername.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_Auth_User_ValidatePin.sql
 # ... (deploy all stored procedures)
 
 # Load test data (optional)

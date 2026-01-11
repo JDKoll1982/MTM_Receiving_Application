@@ -38,7 +38,7 @@ public class Dao_UserSettings
 
         var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_UserSettings_Get",
+            "sp_Settings_User_Get",
             MapToSettingValue,
             parameters
         );
@@ -59,7 +59,7 @@ public class Dao_UserSettings
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_UserSettings_GetAllForUser",
+            "sp_Settings_User_GetAllForUser",
             MapFromReader,
             parameters
         );
@@ -82,7 +82,7 @@ public class Dao_UserSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_UserSettings_Set",
+            "sp_Settings_User_Set",
             parameters
         );
     }
@@ -102,7 +102,7 @@ public class Dao_UserSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_UserSettings_Reset",
+            "sp_Settings_User_Reset",
             parameters
         );
     }
@@ -123,7 +123,7 @@ public class Dao_UserSettings
         // Execute and return count of reset settings
         var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_UserSettings_ResetAll",
+            "sp_Settings_User_ResetAll",
             reader => reader.GetInt32(reader.GetOrdinal("reset_count")),
             parameters
         );

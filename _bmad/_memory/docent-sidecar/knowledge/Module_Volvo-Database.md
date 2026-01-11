@@ -20,45 +20,45 @@ Companion to:
 | Dao_VolvoShipment | sp_volvo_shipment_update | Database/StoredProcedures/Volvo/sp_volvo_shipment_update.sql |
 | Dao_VolvoShipment | sp_volvo_shipment_complete | Database/StoredProcedures/Volvo/sp_volvo_shipment_complete.sql |
 | Dao_VolvoShipment | sp_volvo_shipment_delete | Database/StoredProcedures/Volvo/sp_volvo_shipment_delete.sql |
-| Dao_VolvoShipment | sp_volvo_shipment_get_pending | Database/StoredProcedures/Volvo/sp_volvo_shipment_get_pending.sql |
-| Dao_VolvoShipment | sp_volvo_shipment_history_get | Database/StoredProcedures/Volvo/sp_volvo_shipment_history_get.sql |
+| Dao_VolvoShipment | sp_Volvo_Shipment_GetPending | Database/StoredProcedures/Volvo/sp_Volvo_Shipment_GetPending.sql |
+| Dao_VolvoShipment | sp_Volvo_Shipment_GetHistory | Database/StoredProcedures/Volvo/sp_Volvo_Shipment_GetHistory.sql |
 
 ### Volvo Shipment Lines
 
 | DAO | Stored Procedure | Script Path |
 |-----|------------------|-------------|
-| Dao_VolvoShipmentLine | sp_volvo_shipment_line_insert | Database/StoredProcedures/Volvo/sp_volvo_shipment_line_insert.sql |
-| Dao_VolvoShipmentLine | sp_volvo_shipment_line_get_by_shipment | Database/StoredProcedures/Volvo/sp_volvo_shipment_line_get_by_shipment.sql |
-| Dao_VolvoShipmentLine | sp_volvo_shipment_line_update | Database/StoredProcedures/Volvo/sp_volvo_shipment_line_update.sql |
-| Dao_VolvoShipmentLine | sp_volvo_shipment_line_delete | Database/StoredProcedures/Volvo/sp_volvo_shipment_line_delete.sql |
+| Dao_VolvoShipmentLine | sp_Volvo_ShipmentLine_Insert | Database/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Insert.sql |
+| Dao_VolvoShipmentLine | sp_Volvo_ShipmentLine_GetByShipment | Database/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_GetByShipment.sql |
+| Dao_VolvoShipmentLine | sp_Volvo_ShipmentLine_Update | Database/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Update.sql |
+| Dao_VolvoShipmentLine | sp_Volvo_ShipmentLine_Delete | Database/StoredProcedures/Volvo/sp_Volvo_ShipmentLine_Delete.sql |
 
 ### Volvo Parts Master
 
 | DAO | Stored Procedure | Script Path |
 |-----|------------------|-------------|
-| Dao_VolvoPart | sp_volvo_part_master_get_all | Database/StoredProcedures/Volvo/sp_volvo_part_master_get_all.sql |
-| Dao_VolvoPart | sp_volvo_part_master_get_by_id | Database/StoredProcedures/Volvo/sp_volvo_part_master_get_by_id.sql |
-| Dao_VolvoPart | sp_volvo_part_master_insert | Database/StoredProcedures/Volvo/sp_volvo_part_master_insert.sql |
-| Dao_VolvoPart | sp_volvo_part_master_update | Database/StoredProcedures/Volvo/sp_volvo_part_master_update.sql |
-| Dao_VolvoPart | sp_volvo_part_master_set_active | Database/StoredProcedures/Volvo/sp_volvo_part_master_set_active.sql |
+| Dao_VolvoPart | sp_Volvo_PartMaster_GetAll | Database/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetAll.sql |
+| Dao_VolvoPart | sp_Volvo_PartMaster_GetById | Database/StoredProcedures/Volvo/sp_Volvo_PartMaster_GetById.sql |
+| Dao_VolvoPart | sp_Volvo_PartMaster_Insert | Database/StoredProcedures/Volvo/sp_Volvo_PartMaster_Insert.sql |
+| Dao_VolvoPart | sp_Volvo_PartMaster_Update | Database/StoredProcedures/Volvo/sp_Volvo_PartMaster_Update.sql |
+| Dao_VolvoPart | sp_Volvo_PartMaster_SetActive | Database/StoredProcedures/Volvo/sp_Volvo_PartMaster_SetActive.sql |
 | Dao_VolvoPart | sp_volvo_part_check_references | Database/StoredProcedures/Module_Volvo/sp_volvo_part_check_references.sql |
 
 ### Volvo Part Components
 
 | DAO | Stored Procedure | Script Path |
 |-----|------------------|-------------|
-| Dao_VolvoPartComponent | sp_volvo_part_component_get | Database/StoredProcedures/Volvo/sp_volvo_part_component_get.sql |
-| Dao_VolvoPartComponent | sp_volvo_part_component_insert | Database/StoredProcedures/Volvo/sp_volvo_part_component_insert.sql |
-| Dao_VolvoPartComponent | sp_volvo_part_component_delete_by_parent | Database/StoredProcedures/Volvo/sp_volvo_part_component_delete_by_parent.sql |
+| Dao_VolvoPartComponent | sp_Volvo_PartComponent_Get | Database/StoredProcedures/Volvo/sp_Volvo_PartComponent_Get.sql |
+| Dao_VolvoPartComponent | sp_Volvo_PartComponent_Insert | Database/StoredProcedures/Volvo/sp_Volvo_PartComponent_Insert.sql |
+| Dao_VolvoPartComponent | sp_Volvo_PartComponent_DeleteByParent | Database/StoredProcedures/Volvo/sp_Volvo_PartComponent_DeleteByParent.sql |
 
 ### Volvo Settings
 
 | DAO | Stored Procedure | Script Path |
 |-----|------------------|-------------|
-| Dao_VolvoSettings | sp_settings_module_volvo_get | Database/StoredProcedures/Volvo/sp_settings_module_volvo_get.sql |
-| Dao_VolvoSettings | sp_settings_module_volvo_get_all | Database/StoredProcedures/Volvo/sp_settings_module_volvo_get_all.sql |
-| Dao_VolvoSettings | sp_settings_module_volvo_upsert | Database/StoredProcedures/Volvo/sp_settings_module_volvo_upsert.sql |
-| Dao_VolvoSettings | sp_settings_module_volvo_reset | Database/StoredProcedures/Volvo/sp_settings_module_volvo_reset.sql |
+| Dao_VolvoSettings | sp_Volvo_Settings_Get | Database/StoredProcedures/Volvo/sp_Volvo_Settings_Get.sql |
+| Dao_VolvoSettings | sp_Volvo_Settings_GetAll | Database/StoredProcedures/Volvo/sp_Volvo_Settings_GetAll.sql |
+| Dao_VolvoSettings | sp_Volvo_Settings_Upsert | Database/StoredProcedures/Volvo/sp_Volvo_Settings_Upsert.sql |
+| Dao_VolvoSettings | sp_Volvo_Settings_Reset | Database/StoredProcedures/Volvo/sp_Volvo_Settings_Reset.sql |
 
 ## Notes / Gaps
 

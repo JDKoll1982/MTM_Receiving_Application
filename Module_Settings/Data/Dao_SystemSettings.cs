@@ -28,7 +28,7 @@ public class Dao_SystemSettings
     {
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_SystemSettings_GetAll",
+            "sp_Settings_System_GetAll",
             MapFromReader
         );
     }
@@ -46,7 +46,7 @@ public class Dao_SystemSettings
 
         return await Helper_Database_StoredProcedure.ExecuteListAsync(
             _connectionString,
-            "sp_SystemSettings_GetByCategory",
+            "sp_Settings_System_GetByCategory",
             MapFromReader,
             parameters
         );
@@ -67,7 +67,7 @@ public class Dao_SystemSettings
 
         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
             _connectionString,
-            "sp_SystemSettings_GetByKey",
+            "sp_Settings_System_GetByKey",
             MapFromReader,
             parameters
         );
@@ -99,7 +99,7 @@ public class Dao_SystemSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_SystemSettings_UpdateValue",
+            "sp_Settings_System_UpdateValue",
             parameters
         );
     }
@@ -127,7 +127,7 @@ public class Dao_SystemSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_SystemSettings_ResetToDefault",
+            "sp_Settings_System_ResetToDefault",
             parameters
         );
     }
@@ -158,7 +158,7 @@ public class Dao_SystemSettings
 
         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
             _connectionString,
-            "sp_SystemSettings_SetLocked",
+            "sp_Settings_System_SetLocked",
             parameters
         );
     }
