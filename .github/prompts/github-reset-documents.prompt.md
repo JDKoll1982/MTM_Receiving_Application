@@ -33,7 +33,7 @@ This workspace has **Serena MCP** and **Filesystem MCP** servers configured. Use
 
 **When to Use:**
 
-- Before creating `.instructions.md` - explore ViewModel patterns, DAO implementations
+- Before creating `.github\copilot-instructions.md` - explore ViewModel patterns, DAO implementations
 - Before creating `ARCHITECTURE.md` - map module dependencies, understand service layers
 - Before creating `PROMPT_LIBRARY.md` - find real examples of patterns to document
 - Before creating `COPILOT_TROUBLESHOOTING.md` - understand common code structures
@@ -166,11 +166,11 @@ The constitution is the foundation document that drives all instruction files, t
 
 **After Creation:**
 
-Once the constitution is created via the agent, review it and confirm before proceeding to `.instructions.md`.
+Once the constitution is created via the agent, review it and confirm before proceeding to `.github\copilot-instructions.md`.
 
 ---
 
-### 1. `.instructions.md` (ROOT DIRECTORY - HIGHEST PRIORITY)
+### 1. `.github\copilot-instructions.md` (ROOT DIRECTORY - HIGHEST PRIORITY)
 
 **Location:** `./. instructions.md`
 
@@ -643,7 +643,7 @@ Recommended Initial Exploration:
 
 **STEP 3:** Create the constitution using the spec-constitution.agent (File #0).
 
-**STEP 4:** Start with File #1 (`.instructions.md`) and work through the list in order.
+**STEP 4:** Start with File #1 (`.github\copilot-instructions.md`) and work through the list in order.
 
 For each file:
 
@@ -674,4 +674,4 @@ For each file:
 
 1. First, confirm you will delete the listed files
 2. Then guide me through using the spec-constitution.agent to create the constitution
-3. Finally, start with File #1: `.instructions.md`
+3. Finally, start with File #1: `.github\copilot-instructions.md`

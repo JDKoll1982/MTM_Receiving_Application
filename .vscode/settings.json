@@ -178,6 +178,7 @@
   // Markdown specific settings
   "[markdown]": {
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.formatOnSave": false, // ← Change this from true to false
     "editor.wordWrap": "on",
     "editor.quickSuggestions": {
       "comments": "off",

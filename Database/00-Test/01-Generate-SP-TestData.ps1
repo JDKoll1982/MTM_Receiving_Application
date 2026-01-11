@@ -36,8 +36,7 @@ if (-not $Password) {
         $PlainPassword = "root"
         Write-Host "Using default password 'root'" -ForegroundColor Cyan
     }
-}
-else {
+} else {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
@@ -80,8 +79,7 @@ try {
         catch { }
     }
     Write-Host "Loaded MySql.Data.dll" -ForegroundColor Green
-}
-catch {
+} catch {
     Write-Error "Failed to load MySql.Data.dll: $_"
     exit 1
 }
@@ -93,8 +91,7 @@ try {
     $conn = New-Object MySql.Data.MySqlClient.MySqlConnection($connStr)
     $conn.Open()
     Write-Host "Connected to $Database on $Server`:$Port" -ForegroundColor Green
-}
-catch {
+} catch {
     Write-Error "Failed to connect: $_"
     exit 1
 }
@@ -137,8 +134,8 @@ foreach ($sp in $spList) {
         $paramName = if ($reader["PARAMETER_NAME"] -is [DBNull]) { $null } else { $reader["PARAMETER_NAME"].ToString() }
         $paramMode = if ($reader["PARAMETER_MODE"] -is [DBNull]) { "IN" } else { $reader["PARAMETER_MODE"].ToString() }
 
-        # Include IN and INOUT parameters (INOUT requires values, OUT does not)
-        if ($paramName -and ($paramMode -eq "IN" -or $paramMode -eq "INOUT")) {
+        # Include ALL parameters for accurate tracking (IN, OUT, INOUT)
+        if ($paramName) {
             $params += @{
                 name = $paramName
                 type = $reader["DATA_TYPE"].ToString()
@@ -178,88 +175,67 @@ foreach ($sp in $spDetails.Keys) {
     if ($sp -match "^(sp_)?user") {
         $category = "Users"
         $order = 10
-    }
-    elseif ($sp -match "department") {
+    } elseif ($sp -match "department") {
         $category = "Departments"
         $order = 15
-    }
-    elseif ($sp -match "package_type|PackageType") {
+    } elseif ($sp -match "package_type|PackageType") {
         $category = "PackageTypes"
         $order = 20
-    }
-    elseif ($sp -match "dunnage_types") {
+    } elseif ($sp -match "dunnage_types") {
         $category = "DunnageTypes"
         $order = 25
-    }
-    elseif ($sp -match "dunnage_specs") {
+    } elseif ($sp -match "dunnage_specs") {
         $category = "DunnageSpecs"
         $order = 30
-    }
-    elseif ($sp -match "dunnage_parts") {
+    } elseif ($sp -match "dunnage_parts") {
         $category = "DunnageParts"
         $order = 35
-    }
-    elseif ($sp -match "volvo_part_master") {
+    } elseif ($sp -match "volvo_part_master") {
         $category = "VolvoParts"
         $order = 40
-    }
-    elseif ($sp -match "routing_recipient") {
+    } elseif ($sp -match "routing_recipient") {
         $category = "RoutingRecipients"
         $order = 45
-    }
-    elseif ($sp -match "routing_other_reason") {
+    } elseif ($sp -match "routing_other_reason") {
         $category = "RoutingReasons"
         $order = 50
-    }
-    elseif ($sp -match "receiving.*load|ReceivingLoad") {
+    } elseif ($sp -match "receiving.*load|ReceivingLoad") {
         $category = "ReceivingLoads"
         $order = 100
-    }
-    elseif ($sp -match "receiving.*package") {
+    } elseif ($sp -match "receiving.*package") {
         $category = "ReceivingPackages"
         $order = 110
-    }
-    elseif ($sp -match "receiving.*line|receiving_line") {
+    } elseif ($sp -match "receiving.*line|receiving_line") {
         $category = "ReceivingLines"
         $order = 120
-    }
-    elseif ($sp -match "dunnage_loads") {
+    } elseif ($sp -match "dunnage_loads") {
         $category = "DunnageLoads"
         $order = 130
-    }
-    elseif ($sp -match "inventoried_dunnage") {
+    } elseif ($sp -match "inventoried_dunnage") {
         $category = "InventoriedDunnage"
         $order = 140
-    }
-    elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
+    } elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
         $category = "RoutingLabels"
         $order = 150
-    }
-    elseif ($sp -match "routing_label_history") {
+    } elseif ($sp -match "routing_label_history") {
         $category = "RoutingHistory"
         $order = 160
-    }
-    elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {
+    } elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {
         $category = "VolvoShipments"
         $order = 170
-    }
-    elseif ($sp -match "volvo_shipment_line") {
+    } elseif ($sp -match "volvo_shipment_line") {
         $category = "VolvoShipmentLines"
         $order = 180
-    }
-    elseif ($sp -match "volvo_part_component") {
+    } elseif ($sp -match "volvo_part_component") {
         $category = "VolvoComponents"
         $order = 190
-    }
-    elseif ($sp -match "preference") {
+    } elseif ($sp -match "preference") {
         $category = "Preferences"
         $order = 200
-    }
-    elseif ($sp -match "settings|Settings") {
+    } elseif ($sp -match "settings|Settings") {
         $category = "Settings"
         $order = 210
-    }
-    elseif ($sp -match "report") {
+    } elseif ($sp -match "report") {
         $category = "Reports"
         $order = 220
     }
@@ -330,10 +306,12 @@ foreach ($sp in $spDetails.Keys) {
     $params = $spDetails[$sp].parameters
     $mockParams = @{}
 
-    # All stored parameters are now IN mode only
+    # Only generate mock values for IN and INOUT parameters (OUT parameters don't need input values)
     foreach ($param in $params) {
-        $mockValue = Get-MockValue -type $param.type -paramName $param.name -spName $sp -dtd $param.dtd
-        $mockParams[$param.name] = $mockValue
+        if ($param.mode -eq "IN" -or $param.mode -eq "INOUT") {
+            $mockValue = Get-MockValue -type $param.type -paramName $param.name -spName $sp -dtd $param.dtd
+            $mockParams[$param.name] = $mockValue
+        }
     }
 
     $mockData[$sp] = @{
@@ -393,8 +371,7 @@ foreach ($sp in $spDetails.Keys) {
     $params = $spDetails[$sp].parameters
     if ($params.Count -eq 0) {
         $withoutParams++
-    }
-    else {
+    } else {
         $totalParams += $params.Count
         foreach ($p in $params) {
             switch ($p.mode) {
@@ -467,6 +444,167 @@ if ($complexSPs) {
     $complexSPsSection = $complexSPsLines -join "`n"
 }
 
+# Build Fix Checklists
+# 1. SP Fix Checklist - SPs with OUT parameters that need proper handling
+$spFixChecklistLines = @()
+$daoIssues = @{}
+$projectRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
+
+foreach ($sp in ($spDetails.GetEnumerator() | Sort-Object Key)) {
+    $params = $sp.Value.parameters
+    $outCount = ($params | Where-Object { $_.mode -eq "OUT" }).Count
+    $inCount = ($params | Where-Object { $_.mode -eq "IN" }).Count
+    $inoutCount = ($params | Where-Object { $_.mode -eq "INOUT" }).Count
+
+    if ($outCount -gt 0 -or $inoutCount -gt 0) {
+        $spName = $sp.Key
+        $currentParams = $inCount
+        $expectedParams = $params.Count
+        $missingParams = $outCount + $inoutCount
+
+        # Determine SP file path
+        $spFile = "Database/StoredProcedures/$spName.sql"
+
+        # Map SP to DAO class based on naming patterns
+        $daoClass = ""
+        $priority = "Medium"
+
+        if ($spName -match "^sp_(.+?)_(insert|update|delete|get|check|count|find|search)") {
+            $entity = $matches[1]
+            $daoClass = "Dao_" + ($entity -split '_' | ForEach-Object { (Get-Culture).TextInfo.ToTitleCase($_) }) -join ''
+        } elseif ($spName -match "^(.+?)_(Insert|Update|Delete|Get)") {
+            $entity = $matches[1]
+            $daoClass = "Dao_" + ($entity -split '_' | ForEach-Object { (Get-Culture).TextInfo.ToTitleCase($_) }) -join ''
+        }
+
+        if ($outCount -gt 2) { $priority = "High" }
+        elseif ($outCount -eq 0 -and $inoutCount -gt 0) { $priority = "High" }
+
+        $issueType = if ($outCount -gt 0) { "OUT Parameters" } else { "INOUT Parameters" }
+        $fixNotes = "Update DAO to handle $outCount OUT params"
+        if ($inoutCount -gt 0) { $fixNotes += " and $inoutCount INOUT params" }
+
+        $spFixChecklistLines += "| [ ] | $spName | $currentParams IN | $expectedParams total | $missingParams OUT/INOUT | $spFile | $daoClass | $issueType | $priority | $fixNotes |"
+
+        # Track for DAO checklist
+        if ($daoClass -ne "") {
+            if (-not $daoIssues.ContainsKey($daoClass)) {
+                $daoIssues[$daoClass] = @{
+                    SPs             = @()
+                    ParamMismatches = 0
+                    Methods         = @()
+                }
+            }
+            $daoIssues[$daoClass].SPs += $spName
+            $daoIssues[$daoClass].ParamMismatches += $missingParams
+
+            # Determine method name from SP name
+            if ($spName -match "insert|Insert") { $daoIssues[$daoClass].Methods += "Insert*Async" }
+            elseif ($spName -match "update|Update") { $daoIssues[$daoClass].Methods += "Update*Async" }
+            elseif ($spName -match "delete|Delete") { $daoIssues[$daoClass].Methods += "Delete*Async" }
+            elseif ($spName -match "get|Get") { $daoIssues[$daoClass].Methods += "Get*Async" }
+        }
+    }
+}
+
+if ($spFixChecklistLines.Count -eq 0) {
+    $spFixChecklistLines += "| - | *No issues found* | - | - | - | - | - | - | - | - |"
+}
+$spFixChecklist = $spFixChecklistLines -join "`n"
+
+# 2. DAO Fix Checklist
+$daoFixChecklistLines = @()
+foreach ($dao in ($daoIssues.GetEnumerator() | Sort-Object Key)) {
+    $daoName = $dao.Key
+    $relatedSPs = ($dao.Value.SPs | Select-Object -Unique) -join ", "
+    if ($relatedSPs.Length -gt 60) { $relatedSPs = $relatedSPs.Substring(0, 57) + "..." }
+
+    $paramMismatches = $dao.Value.ParamMismatches
+    $methods = ($dao.Value.Methods | Select-Object -Unique) -join ", "
+
+    # Find DAO file path
+    $daoFile = ""
+    $daoSearchPattern = "**/Data/**/$daoName.cs"
+    $possiblePaths = @(
+        "Module_Core/Data/$daoName.cs",
+        "Module_Receiving/Data/$daoName.cs",
+        "Module_Dunnage/Data/$daoName.cs",
+        "Module_Routing/Data/$daoName.cs",
+        "Module_Settings/Data/$daoName.cs",
+        "Module_Volvo/Data/$daoName.cs"
+    )
+
+    foreach ($path in $possiblePaths) {
+        $fullPath = Join-Path $projectRoot $path
+        if (Test-Path $fullPath) {
+            $daoFile = $path
+            break
+        }
+    }
+
+    if ($daoFile -eq "") { $daoFile = "**/$daoName.cs (search required)" }
+
+    $issueSummary = "$paramMismatches OUT/INOUT params across $($dao.Value.SPs.Count) SP(s)"
+    $priority = if ($paramMismatches -gt 5) { "High" } elseif ($paramMismatches -gt 2) { "Medium" } else { "Low" }
+
+    $daoFixChecklistLines += "| [ ] | $daoName | $daoFile | $relatedSPs | $paramMismatches | $methods | $issueSummary | $priority |"
+}
+
+if ($daoFixChecklistLines.Count -eq 0) {
+    $daoFixChecklistLines += "| - | *No issues found* | - | - | - | - | - | - |"
+}
+$daoFixChecklist = $daoFixChecklistLines -join "`n"
+
+# 3. Schema Fix Checklist (requires loading 02-report.md if it exists to detect schema issues)
+$schemaFixChecklistLines = @()
+$testReportPath = Join-Path $scriptDir "02-report.md"
+
+if (Test-Path $testReportPath) {
+    $testReport = Get-Content $testReportPath -Raw
+
+    # Parse schema broken section
+    if ($testReport -match "(?s)## 🔴 Critical Failures \(Schema Broken\).*?\n\|.*?\n\|.*?\n(.*?)\n\n") {
+        $schemaIssues = $matches[1] -split "`n"
+
+        foreach ($line in $schemaIssues) {
+            if ($line -match '^\|\s*\*\*(.+?)\*\*\s*\|\s*\d+\s*\|\s*.*?"(.+?)"\s*') {
+                $spName = $matches[1].Trim()
+                $errorMsg = $matches[2].Trim()
+
+                $missingItem = ""
+                $tableName = ""
+                $expectedColumn = ""
+
+                if ($errorMsg -match "Unknown column '(.+?)' in 'field list'") {
+                    $missingItem = $matches[1]
+                    $expectedColumn = $missingItem
+                    $tableName = "Unknown (query inspection needed)"
+                } elseif ($errorMsg -match "Table '.*?\.(.+?)' doesn't exist") {
+                    $tableName = $matches[1]
+                    $missingItem = "Table: $tableName"
+                }
+
+                $schemaFile = "Database/Schemas/* (search for table)"
+                $currentStatus = "Missing in DB"
+                $sqlFix = if ($expectedColumn -ne "") {
+                    "ALTER TABLE ADD COLUMN"
+                } else {
+                    "CREATE TABLE"
+                }
+                $priority = "Critical"
+                $fixNotes = "Review SP definition and update schema or SP code"
+
+                $schemaFixChecklistLines += "| [ ] | $spName | $missingItem | $schemaFile | $tableName | $expectedColumn | $currentStatus | $sqlFix | $priority | $fixNotes |"
+            }
+        }
+    }
+}
+
+if ($schemaFixChecklistLines.Count -eq 0) {
+    $schemaFixChecklistLines += "| - | *No schema issues detected - run 02-Test-StoredProcedures.ps1 first* | - | - | - | - | - | - | - | - |"
+}
+$schemaFixChecklist = $schemaFixChecklistLines -join "`n"
+
 # Load template and replace placeholders
 $template = Get-Content $templatePath -Raw
 $content = $template `
@@ -483,7 +621,10 @@ $content = $template `
     -replace '{{NO_PARAMS}}', $withoutParams `
     -replace '{{CATEGORY_BREAKDOWN}}', ($categoryBreakdown -join "`n") `
     -replace '{{EXECUTION_ORDER_TABLE}}', ($executionOrderTable -join "`n") `
-    -replace '{{COMPLEX_SPS_SECTION}}', $complexSPsSection
+    -replace '{{COMPLEX_SPS_SECTION}}', $complexSPsSection `
+    -replace '{{SP_FIX_CHECKLIST}}', $spFixChecklist `
+    -replace '{{DAO_FIX_CHECKLIST}}', $daoFixChecklist `
+    -replace '{{SCHEMA_FIX_CHECKLIST}}', $schemaFixChecklist
 
 $content | Out-File -FilePath $reportFile -Encoding UTF8
 

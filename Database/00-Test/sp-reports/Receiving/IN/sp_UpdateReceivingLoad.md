@@ -1,0 +1,32 @@
+# sp_UpdateReceivingLoad
+
+**Category:** Receiving
+**Parameter Types:** IN
+**Generated:** 2026-01-11 13:34:59
+
+## Usage Summary
+
+**Total Usages:** 1
+
+## Usage Details
+
+| File | Class | Method | Line | Has Callers | Caller Count |
+|------|-------|--------|------|-------------|--------------|
+| Module_Receiving\Data\Dao_ReceivingLoad.cs | Dao_ReceivingLoad | `UpdateLoadsAsync` | 127 | ✓ | 2 |
+
+## Code Samples
+
+```csharp
+// Module_Receiving\Data\Dao_ReceivingLoad.cs:127
+"sp_UpdateReceivingLoad",
+
+```
+
+## Method References
+
+### Dao_ReceivingLoad.UpdateLoadsAsync
+**Called by (2 references):**
+- Module_Core\Services\Database\Service_MySQL_Receiving.cs
+- Same file (1 calls)
+
+

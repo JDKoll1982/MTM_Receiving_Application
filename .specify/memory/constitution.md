@@ -1,53 +1,31 @@
 <!--
-CONSTITUTION SYNC IMPACT REPORT
-Generated: 2025-12-28
-
-VERSION CHANGE: 1.2.1 → 1.2.2 (PATCH - .editorconfig Compliance)
-
-PRINCIPLES MODIFIED IN v1.2.2:
-✅ IX. Code Quality & Maintainability - Updated with .editorconfig enforcement
-
-CHANGES IN v1.2.2:
-- Added explicit .editorconfig compliance requirement
-- Clarified bracing rules (ALL if statements MUST have braces per csharp_prefer_braces)
-- Updated naming conventions to match .editorconfig rules exactly
-- Added enforcement for accessibility modifiers (ALL members MUST have explicit modifiers)
-- Added null handling conventions (nullable annotations REQUIRED)
-- Added LINQ optimization requirements (prefer Order() over OrderBy(k => k))
-- Updated code formatting rules to match .editorconfig spacing and indentation
-- Added specific rules for async method naming (MUST end with Async)
-- Added file header policy (currently unset, reserved for future use)
-
-FILES REQUIRING UPDATES:
-✅ .github/instructions/mvvm-pattern.instructions.md - Ensure bracing examples match
-✅ .github/instructions/dao-pattern.instructions.md - Ensure async naming matches
-✅ All example code in constitution now shows braces on if statements
-
-ARCHITECTURE COMPLIANCE VERIFIED:
-✅ All code examples in constitution follow .editorconfig rules
-✅ Naming conventions match .editorconfig exactly
-✅ Bracing policy explicit and enforced
-✅ Accessibility modifiers required everywhere
-✅ Null annotations encouraged per dotnet_style_null_propagation
-
-TEMPLATES UPDATED:
-✅ Constitution code examples updated with braces
-✅ LINQ examples use Order() not OrderBy()
-✅ Async method examples all end with Async
-
-NO FOLLOW-UP ITEMS - Constitution now fully aligned with .editorconfig
-
-BREAKING CHANGE ASSESSMENT: NONE (Clarification only)
-- Existing code already follows these patterns
-- No behavior changes, only documentation alignment
-- Recent build fixes already implemented .editorconfig compliance
-
-RATIONALE FOR VERSION 1.2.2 (2025-12-28):
-- Ensures constitution and .editorconfig are in perfect alignment
-- Eliminates ambiguity about coding standards
-- Provides single source of truth for code formatting rules
-- Recent build issue fixes demonstrate importance of explicit compliance
-- Makes .editorconfig violations a constitutional matter
+  SYNC IMPACT REPORT
+  Version Change: Initial → 1.0.0
+  Rationale: MINOR bump - First formal constitution establishing governance framework
+  
+  Principles Defined:
+  - I. MVVM Architecture (NON-NEGOTIABLE)
+  - II. Database Layer Consistency (NON-NEGOTIABLE)
+  - III. Dependency Injection (NON-NEGOTIABLE)
+  - IV. Error Handling & Logging (REQUIRED)
+  - V. Security & Authentication (REQUIRED)
+  - VI. WinUI 3 Modern Practices (REQUIRED)
+  - VII. Specification-Driven Development (REQUIRED)
+  
+  Sections Added:
+  - Technology Constraints
+  - Development Workflow
+  - Governance
+  
+  Templates Requiring Updates:
+  ✅ plan-template.md - Updated Constitution Check section with all 7 principles
+  ✅ spec-template.md - Aligned with structured requirements approach
+  ✅ tasks-template.md - Will align task categorization with principle domains
+  
+  Follow-up TODOs:
+  - Monitor principle adherence during first 3 implementation cycles
+  - Review DAO migration progress (instance-based pattern adoption)
+  - Evaluate MCP tooling integration effectiveness
 -->
 
 # MTM Receiving Application Constitution
@@ -56,841 +34,217 @@ RATIONALE FOR VERSION 1.2.2 (2025-12-28):
 
 ### I. MVVM Architecture (NON-NEGOTIABLE)
 
-**Separation of Concerns**:
-- ViewModels contain ALL business logic, data binding, and commands
-- Views contain ONLY UI markup (XAML) and minimal UI-specific code-behind
-- Models are pure data classes with INotifyPropertyChanged support
-- Services encapsulate cross-cutting concerns and external dependencies
+**Strict Layer Separation**: View (XAML) → ViewModel → Service → DAO → Database
 
-**Implementation Requirements**:
-- ALL ViewModels MUST inherit from `BaseViewModel` or use `ObservableObject`
+**Mandatory Rules**:
+- ViewModels MUST inherit from `ViewModel_Shared_Base` or `ObservableObject`
+- ViewModels MUST be `partial` classes (required for CommunityToolkit.Mvvm source generators)
+- ViewModels SHALL NOT directly call DAOs (`Dao_*` classes)
+- ViewModels SHALL NOT access `Helper_Database_*` classes directly
+- ViewModels SHALL NOT use connection strings
 - ALL data binding MUST use `x:Bind` (compile-time) over `Binding` (runtime)
-- ALL ViewModels MUST be registered in DI container (`App.xaml.cs`)
-- CommunityToolkit.Mvvm MUST be used: `[ObservableProperty]`, `[RelayCommand]`, `partial` classes
-- NO business logic in `.xaml.cs` code-behind files (UI event handlers only)
+- ALL data access MUST flow through Service layer
+- Business logic in `.xaml.cs` code-behind files is FORBIDDEN
 
-**Layer Separation Rules (NON-NEGOTIABLE)**:
-- ViewModels SHALL NOT directly instantiate or call DAO classes (`Dao_*`)
-- ViewModels SHALL NOT access database helpers (`Helper_Database_*`)
-- ViewModels SHALL NOT use connection strings or database configuration
-- ALL data access MUST flow through Service layer: ViewModel → Service → DAO → Database
-- Services provide business logic and abstract data access details from ViewModels
+**Rationale**: MVVM ensures testability, maintainability, and clear separation between UI presentation and business logic. Compile-time binding (`x:Bind`) provides type safety and performance benefits. The strict layering prevents tight coupling and ensures each layer has a single, well-defined responsibility.
 
-**Examples of VIOLATIONS** (Must be prevented):
-```csharp
-// ❌ FORBIDDEN - ViewModel directly calling DAO
-var result = await Dao_ReceivingLine.InsertReceivingLineAsync(line);
+### II. Database Layer Consistency (NON-NEGOTIABLE)
 
-// ❌ FORBIDDEN - ViewModel instantiating DAO
-var connectionString = Helper_Database_Variables.GetConnectionString();
-var dao = new Dao_User(connectionString);
-var result = await dao.UpdateDefaultModeAsync(...);
+**Instance-Based DAOs**: All Data Access Objects MUST be instance-based classes (NOT static)
 
-// ✅ CORRECT - ViewModel calls Service
-var result = await _receivingLineService.InsertLineAsync(line);
-var result = await _userPreferencesService.UpdateDefaultModeAsync(...);
-```
+**Mandatory Rules**:
+- DAOs MUST accept `connectionString` in constructor
+- DAOs MUST be registered in DI container as Singletons
+- DAOs MUST return `Model_Dao_Result` or `Model_Dao_Result<T>`
+- DAOs MUST NEVER throw exceptions (return failure results instead)
+- MySQL operations MUST use stored procedures ONLY (never raw SQL in C#)
+- SQL Server (Infor Visual) is READ ONLY (ApplicationIntent=ReadOnly required)
+- SQL Server connections MUST use stored procedures or parameterized queries
+- NO INSERT, UPDATE, DELETE operations on Infor Visual database
+- All database operations MUST be async (`Task<T>` return types)
 
-**Enforcement Mechanism**:
-- Code reviews MUST verify no `Dao_*` references in ViewModel files
-- Pre-commit hooks SHOULD warn on ViewModel→DAO dependencies
-- Dependency analysis MUST show zero ViewModel→DAO edges in class-dependency-graph.dot
+**Rationale**: Instance-based DAOs enable dependency injection, testability, and configuration flexibility. Stored procedures provide security (SQL injection protection), performance (query plan caching), and separation of data logic from application code. The Infor Visual READ ONLY constraint protects the ERP system of record from accidental data corruption.
 
-**Rationale**: MVVM ensures testability, maintainability, and clear separation between UI and logic, critical for a production WinUI 3 application. Layer separation prevents tight coupling and enables unit testing of ViewModels without database dependencies.
+### III. Dependency Injection (NON-NEGOTIABLE)
 
----
+**Constructor Injection**: All dependencies MUST be injected via constructor
 
-### II. Database Layer Consistency
+**Mandatory Rules**:
+- ALL services MUST have interface definitions (`IService_*`)
+- ALL services MUST be registered in `App.xaml.cs` ConfigureServices
+- ViewModels MUST be registered as Transient (new instance per navigation)
+- DAOs MUST be registered as Singletons (stateless, reusable)
+- Shared services (logging, error handling) MUST be registered as Singletons
+- Service locator pattern is FORBIDDEN (no direct `App.GetService<T>()` calls in business logic)
+- Static service access is FORBIDDEN (except in App.xaml.cs initialization)
 
-**Model_Dao_Result Pattern (MANDATORY)**:
-- ALL DAO methods MUST return `Model_Dao_Result<T>` or `Model_Dao_Result`
-- NO exceptions thrown from DAO layer - return `Model_Dao_Result.Failure()` instead
-- Check `result.IsSuccess` before accessing `result.Data`
-- Store exceptions in `result.Exception` for logging
+**Rationale**: Dependency injection enables loose coupling, testability (mocking dependencies), and centralized configuration. Proper lifetime management (Transient vs Singleton) prevents memory leaks and ensures correct state management.
 
-**DAO Architecture (MANDATORY)**:
-- ALL DAOs SHALL be instance-based classes (NOT static)
-- ALL DAOs SHALL receive connection string via constructor injection
-- ALL DAOs SHALL be registered in DI container (`App.xaml.cs`)
-- DAOs are the ONLY layer that communicates with `Helper_Database_StoredProcedure`
-- Services SHALL delegate to DAOs - NO direct database access in service classes
+### IV. Error Handling & Logging (REQUIRED)
 
-**DAO Implementation Pattern**:
-```csharp
-// ✅ CORRECT - Instance-based DAO with constructor injection
-public class Dao_ReceivingLoad
-{
-    private readonly string _connectionString;
-    
-    public Dao_ReceivingLoad(string connectionString)
-    {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-    }
-    
-    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync()
-    {
-        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_ReceivingLoad>(
-            _connectionString,
-            "sp_receiving_loads_get_all",
-            MapFromReader
-        );
-    }
-    
-    private static Model_ReceivingLoad MapFromReader(IDataReader reader)
-    {
-        // Mapping logic
-    }
-}
+**Structured Error Management**: All errors MUST be logged and handled consistently
 
-// ❌ FORBIDDEN - Static DAO (legacy pattern)
-public static class Dao_DunnageLoad
-{
-    private static string ConnectionString => Helper_Database_Variables.GetConnectionString();
-    public static async Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetAllAsync() { }
-}
-```
+**Mandatory Rules**:
+- DAOs MUST return `Model_Dao_Result` with `Success`, `ErrorMessage`, and `Severity` properties
+- DAOs MUST catch exceptions and return failure results (never propagate exceptions)
+- ViewModels MUST use `IService_ErrorHandler.HandleException()` for user-facing errors
+- Services MUST use `IService_LoggingUtility` for audit trails and diagnostics
+- Async operations MUST set `IsBusy = true` during execution and `finally` reset to `false`
+- User notifications MUST use `IService_ErrorHandler.ShowUserError()` (not raw MessageBox)
+- All public API methods MUST include XML documentation comments
 
-**Service → DAO Delegation Pattern (MANDATORY)**:
-```csharp
-// ✅ CORRECT - Service delegates to DAO
-public class Service_MySQL_Dunnage : IService_MySQL_Dunnage
-{
-    private readonly Dao_DunnageType _dunnageTypeDao;
-    
-    public Service_MySQL_Dunnage(Dao_DunnageType dunnageTypeDao)
-    {
-        _dunnageTypeDao = dunnageTypeDao;
-    }
-    
-    public async Task<Model_Dao_Result<List<Model_DunnageType>>> GetAllTypesAsync()
-    {
-        try
-        {
-            return await _dunnageTypeDao.GetAllAsync();
-        }
-        catch (Exception ex)
-        {
-            return DaoResultFactory.Failure<List<Model_DunnageType>>($"Error: {ex.Message}");
-        }
-    }
-}
+**Rationale**: Consistent error handling ensures users receive clear, actionable feedback. Structured logging enables troubleshooting and audit compliance. Never throwing from DAOs prevents cascade failures and enables graceful degradation.
 
-// ❌ FORBIDDEN - Service with direct database access
-public class Service_MySQL_Receiving : IService_MySQL_Receiving
-{
-    public async Task<int> SaveReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
-    {
-        using var connection = new MySqlConnection(_connectionString); // ❌ Direct DB access
-        await connection.OpenAsync();
-        var result = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(...);
-    }
-}
-```
+### V. Security & Authentication (REQUIRED)
 
-**Stored Procedures vs Direct SQL**:
-- **MySQL (mtm_receiving_application)**: NO direct SQL in C# code - ALL operations via stored procedures through DAOs.
-- **Infor Visual (SQL Server)**: Direct SQL queries ARE ALLOWED in DAOs for READ ONLY operations.
-- `Helper_Database_StoredProcedure` SHALL ONLY be called from DAO layer.
-- Services SHALL NOT call `Helper_Database_StoredProcedure` directly.
-- Parameter names in C# match stored procedure parameters (WITHOUT `p_` prefix - added automatically)
-- ALL DAO methods MUST be async (`Task<Model_Dao_Result<T>>`)
+**Tiered Access Control**: Authentication adapts to workstation type
 
-**Circular Dependency Prevention**:
-- Result types (Model_Dao_Result, Model_Dao_Result<T>) SHALL NOT contain static factory methods
-- Use dedicated factory class `DaoResultFactory` for creating result instances
-- Dependency analyzers MUST NOT show any cycles in class-dependency-graph.dot
-- Static factory pattern is FORBIDDEN in model/data classes
+**Mandatory Rules**:
+- Personal workstations: Auto-login with Windows username (30-minute timeout)
+- Shared terminals: Username + 4-digit PIN authentication (15-minute timeout)
+- Session management MUST track user activity (mouse, keyboard, window activation)
+- New user creation MUST validate PIN uniqueness
+- All authentication events MUST be logged to audit trail
+- Credentials MUST NEVER be stored in plaintext (appsettings.json exceptions documented)
+- Connection strings MUST use `Helper_Database_Variables.GetConnectionString()` (centralized)
 
-**Factory Pattern for Result Objects**:
-```csharp
-// ✅ CORRECT - Factory class creates result instances
-public static class DaoResultFactory
-{
-    public static Model_Dao_Result Failure(string message, Exception? ex = null)
-    {
-        return new Model_Dao_Result
-        {
-            Success = false,
-            ErrorMessage = message,
-            Exception = ex,
-            Severity = Enum_ErrorSeverity.Error
-        };
-    }
-    
-    public static Model_Dao_Result<T> Success<T>(T data, int affectedRows = 0)
-    {
-        return new Model_Dao_Result<T>
-        {
-            Success = true,
-            Data = data,
-            AffectedRows = affectedRows
-        };
-    }
-}
+**Rationale**: Tiered authentication balances security with usability. Shorter timeouts for shared terminals reduce unauthorized access risk. Comprehensive activity logging supports security auditing and compliance.
 
-// ❌ FORBIDDEN - Self-referencing static methods in model
-public class Model_Dao_Result
-{
-    public static Model_Dao_Result Failure(string message) // ❌ Creates circular dependency
-    {
-        return new Model_Dao_Result { ... };
-    }
-}
-```
+### VI. WinUI 3 Modern Practices (REQUIRED)
 
-**Enforcement**:
-- Dependency analysis extension MUST NOT report cycles
-- Code reviews MUST verify factory separation from models
-- Result creation ALWAYS uses `DaoResultFactory.Failure()` or `DaoResultFactory.Success()`
+**Platform-Specific Patterns**: Leverage WinUI 3 and .NET 8 modern capabilities
 
-**Multi-Database Support**:
-- MySQL for application database (MTM_Receiving_Database)
-- **SQL Server for Infor Visual database (STRICTLY READ ONLY - NO WRITES EVER)**
-- Separate helpers: `Helper_Database_StoredProcedure` (MySQL)
-- Connection details:
-  - Infor Visual: Server=VISUAL, Database=MTMFG, Warehouse=002, User=SHOP2, Password=SHOP
-  - `ApplicationIntent=ReadOnly` REQUIRED for Infor Visual connections
+**Mandatory Rules**:
+- Use `[ObservableProperty]` attribute on private fields (not manual PropertyChanged)
+- Use `[RelayCommand]` attribute for command methods (not manual ICommand implementation)
+- Use `async/await` for all I/O operations (database, file, network)
+- Use `ObservableCollection<T>` for data-bound collections
+- Window sizing MUST use `WindowHelper_WindowSizeAndStartupLocation.SetWindowSize()`
+- Converters MUST be defined in `Module_Core/Converters/` and reused
+- XAML `UpdateSourceTrigger=PropertyChanged` required for TwoWay TextBox bindings
+- Braces MUST be used for all control flow statements (if, for, while)
+- Accessibility modifiers MUST be explicit (no implicit `private`)
 
-**Rationale**: Standardizing on instance-based DAOs enables DI, improves testability (can mock DAOs), and ensures consistent architecture. Service→DAO delegation provides clear separation of concerns. Circular dependency prevention ensures clean dependency graphs and tooling compatibility.
+**Rationale**: CommunityToolkit.Mvvm source generators reduce boilerplate and eliminate errors. Async/await prevents UI freezing. Standardized window sizing and converters ensure consistent UX. Explicit coding standards (.editorconfig compliance) improve code clarity and reduce bugs.
 
----
+### VII. Specification-Driven Development (REQUIRED)
 
-### III. Dependency Injection Everywhere
+**Speckit Workflow**: All features MUST follow structured specification process
 
-**Service Registration**:
-- ALL services MUST be registered in `App.xaml.cs` `ConfigureServices()` method
-- Core services as Singletons: `ILoggingService`, `IService_ErrorHandler`
-- ViewModels as Transient (new instance per navigation)
-- Views resolve ViewModels via constructor injection
+**Mandatory Rules**:
+- Features MUST have specification in `specs/[###-feature-name]/` directory
+- Specifications MUST include: User scenarios, requirements, constitution check
+- Implementation plans MUST verify constitutional compliance before Phase 0
+- Tasks MUST be tracked in `tasks.md` with status updates
+- Database schema changes MUST be documented in `data-model.md` with PlantUML diagrams
+- Stored procedures MUST be idempotent (use `INSERT IGNORE`, `IF NOT EXISTS`)
+- All diagrams MUST use PlantUML (NOT ASCII art)
+- Feature branches MUST follow naming convention: `[###-feature-name]`
 
-**Constructor Injection Only**:
-- NO service locator pattern
-- NO static service access (except backward-compatible wrappers)
-- Services receive dependencies via constructor parameters
-- Private fields for injected services: `private readonly IService _service;`
-
-**Service Interfaces**:
-- ALL services MUST have an interface (e.g., `IService_Authentication`, `ILoggingService`)
-- Interface defines contract, implementation provides behavior
-- Enables testing with mocks and future implementations
-
-**DAO Registration (MANDATORY)**:
-- ALL DAOs MUST be registered in DI container as Singletons or Transient
-- DAOs receive connection string via constructor parameter
-- Connection string provided by `Helper_Database_Variables.GetConnectionString()`
-- Services inject DAOs via constructor
-
-**DI Container Registration Pattern**:
-```csharp
-// App.xaml.cs - ConfigureServices method
-private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
-{
-    // Connection string helper (static - acceptable for configuration)
-    var connectionString = Helper_Database_Variables.GetConnectionString();
-    
-    // Register DAOs (Singletons for stateless data access)
-    services.AddSingleton<Dao_User>(sp => new Dao_User(connectionString));
-    services.AddSingleton<Dao_DunnageType>(sp => new Dao_DunnageType(connectionString));
-    services.AddSingleton<Dao_DunnageLoad>(sp => new Dao_DunnageLoad(connectionString));
-    services.AddSingleton<Dao_ReceivingLoad>(sp => new Dao_ReceivingLoad(connectionString));
-    services.AddSingleton<Dao_InforVisualPO>(sp => new Dao_InforVisualPO(inforConnectionString));
-    
-    // Register Services (inject DAOs)
-    services.AddSingleton<IService_MySQL_Dunnage>(sp => new Service_MySQL_Dunnage(
-        sp.GetRequiredService<Dao_DunnageType>(),
-        sp.GetRequiredService<Dao_DunnageLoad>(),
-        sp.GetRequiredService<ILoggingService>(),
-        sp.GetRequiredService<IService_ErrorHandler>()
-    ));
-    
-    // Register ViewModels (inject Services)
-    services.AddTransient<ReceivingModeSelectionViewModel>();
-}
-```
-
-**Rationale**: DI enables loose coupling, testability, and runtime service replacement without code changes. DAO registration ensures consistent lifecycle management and mockability for testing.
-
----
-
-### IV. Error Handling & Logging
-
-**Centralized Error Handler**:
-- `IService_ErrorHandler` MUST be used for ALL error displays and exception handling
-- Method signature: `HandleException(Exception ex, Enum_ErrorSeverity severity, string callerName, string controlName)`
-- Severity levels: Low, Medium, High, Critical, Fatal
-- User-friendly error dialogs (WinUI 3 ContentDialog)
-- Automatic logging of all errors
-
-**Logging Service**:
-- `ILoggingService` MUST be used for ALL logging
-- CSV-based logging with separate files:
-  - `ApplicationLog.csv` - Normal application events
-  - `DatabaseErrorLog.csv` - Database errors only
-  - `ApplicationErrorLog.csv` - Application exceptions
-- Async initialization with background queue processing
-- Log rotation and archive management
-
-**No Silent Failures**:
-- ALL errors MUST be logged (even if not shown to user)
-- Database failures MUST return `Model_Dao_Result.Failure()` with error message
-- UI operations MUST show user feedback (success or error)
-
-**Rationale**: Comprehensive error tracking and user experience. CSV logs enable easy troubleshooting without database dependencies.
-
----
-
-### V. Security & Authentication
-
-**Multi-Tier Authentication**:
-- Personal workstations: Automatic Windows username login (Environment.UserName)
-- Shared terminals: Username + 4-digit PIN authentication
-- Session timeouts: 30 minutes (personal), 15 minutes (shared)
-- Activity tracking: Mouse, keyboard, window activation
-
-**Security Requirements**:
-- Failed login attempts logged to `user_activity_log` table
-- 3-attempt lockout on shared terminals (5-second delay)
-- PIN uniqueness enforced in database
-- Infor Visual database: **READ ONLY ACCESS ONLY** - enforced at connection level
-
-**Audit Trail**:
-- ALL user actions logged with employee number and timestamp
-- Session start/end events tracked
-- Automatic session termination on timeout
-- Graceful logout with audit entry
-
-**Rationale**: Protects sensitive manufacturing data while enabling convenient access based on workstation type. Audit trail ensures accountability.
-
----
-
-### VI. WinUI 3 Modern Practices
-
-**UI Framework**:
-- Windows App SDK 1.8+ (WinUI 3)
-- .NET 8.0 target framework
-- CommunityToolkit.WinUI.UI.Controls for enhanced controls (DataGrid, etc.)
-- NavigationView for main application navigation
-
-**Data Binding**:
-- `x:Bind` over `{Binding}` - compile-time validation and performance
-- ObservableCollection for dynamic lists
-- INotifyPropertyChanged via CommunityToolkit.Mvvm attributes
-- Two-way binding where user input is required
-
-**Async/Await Everywhere**:
-- ALL I/O operations MUST be async (database, file, network)
-- Use `ConfigureAwait(false)` in library code
-- UI operations on Dispatcher thread when needed
-- `IsBusy` property pattern for loading states
-
-**Rationale**: Modern WinUI 3 best practices for performance, maintainability, and user experience.
-
----
-
-### VII. Specification-Driven Development
-
-**Speckit Workflow**:
-- Features start with specification (`/speckit.specify`)
-- Planning phase defines technical approach (`/speckit.plan`)
-- Tasks generated with dependencies (`/speckit.tasks`)
-- Implementation follows tasks sequentially
-- Checklists validate completeness (`/speckit.checklist`)
-
-**Documentation Requirements**:
-- Specification must be technology-agnostic (no implementation details)
-- Plan must include research decisions with rationale
-- Tasks must be specific, testable, and include file paths
-- Contracts define service interfaces before implementation
-- Data models documented with relationships
-- **All diagrams MUST use PlantUML** (no ASCII art)
-- Database schemas use PlantUML ERD with legends
-- File structures use PlantUML WBS or component diagrams
-- See [markdown-documentation.instructions.md](../../.github/instructions/markdown-documentation.instructions.md)
-
-**Feature Structure**:
-```
-specs/
-  001-feature-name/
-    spec.md               # User-facing requirements
-    plan.md               # Technical approach
-    tasks.md              # Implementation tasks
-    research.md           # Technical decisions
-    data-model.md         # Database schema (PlantUML ERD)
-    contracts/            # Service interfaces
-    checklists/           # Validation
-```
-
-**Architecture Enforcement Documentation**:
-- `.github/instructions/architecture-refactoring-guide.instructions.md` - How to fix ViewModel→DAO violations
-- `.github/instructions/service-dao-pattern.instructions.md` - Why Service→DAO delegation is mandatory
-- `.github/instructions/dependency-analysis.instructions.md` - How to use dependency graph tool
-- `.github/instructions/dao-instance-pattern.instructions.md` - Converting static DAOs to instance-based
-
-**Required Documentation Updates**:
-- When creating new DAOs: Document in REUSABLE_SERVICES.md
-- When adding services: Update service layer documentation
-- When fixing violations: Add example to refactoring guide
-- When discovering new anti-patterns: Update forbidden practices list
-
-**Rationale**: Structured approach prevents scope creep, ensures stakeholder alignment, and provides clear implementation roadmap. PlantUML diagrams are easier for AI agents to parse and produce professional visualizations for human readers. Architecture documentation prevents violation recurrence.
-
----
-
-### VIII. Testing & Quality Assurance
-
-**Manual Testing Requirements**:
-- UI testing for all user-facing features
-- Acceptance criteria validation from spec.md
-- Cross-platform testing (x64, ARM64 when applicable)
-- Accessibility testing (keyboard navigation, screen readers)
-- Performance testing for database-heavy operations (<500ms target)
-
-**Rationale**: Comprehensive testing prevents regressions, validates requirements, and enables confident refactoring. Test-first approach ensures code is inherently testable and meets specifications.
-
----
-
-### IX. Code Quality & Maintainability
-
-**EditorConfig Compliance (MANDATORY)**:
-- ALL code MUST comply with `.editorconfig` rules in repository root
-- EditorConfig is enforced at ERROR or WARNING level for all applicable rules
-- Build SHOULD fail on style violations that are marked as errors
-- Code reviews MUST verify .editorconfig compliance
-
-**Key .editorconfig Rules**:
-- **Indentation**: 4 spaces (NEVER tabs) - `indent_size = 4`
-- **Line Endings**: CRLF (Windows standard) - `end_of_line = crlf`
-- **File Encoding**: UTF-8 - `charset = utf-8`
-- **Final Newline**: Required - `insert_final_newline = true`
-- **Trailing Whitespace**: Forbidden - `trim_trailing_whitespace = true`
-
-**Bracing Rules (NON-NEGOTIABLE)**:
-- ALL if statements MUST have braces (even single-line bodies) - `csharp_prefer_braces = true:warning`
-- Opening braces on new line - `csharp_new_line_before_open_brace = all`
-- else, catch, finally on new line after closing brace
-
-```csharp
-// ✅ CORRECT - Braces required
-if (condition)
-{
-    DoSomething();
-}
-
-if (MinValue.HasValue)
-{
-    parts.Add($"Min: {MinValue.Value}");
-}
-
-// ❌ FORBIDDEN - No braces
-if (condition)
-    DoSomething();
-
-if (MinValue.HasValue)
-    parts.Add($"Min: {MinValue.Value}");
-```
-
-**Naming Conventions (MANDATORY - FROM .EDITORCONFIG)**:
-- **Interfaces**: MUST begin with 'I' - `IService_Authentication`, `ILoggingService`
-- **Classes**: PascalCase with prefixes
-  - ViewModels: `{Feature}ViewModel` (e.g., `ReceivingWorkflowViewModel`)
-  - Services: `Service_{Feature}` with interface `IService_{Feature}`
-  - DAOs: `Dao_{EntityName}` (instance-based pattern)
-  - Models: `Model_{EntityName}`
-  - Enums: `Enum_{Name}`
-- **Methods**: PascalCase, async methods MUST end with `Async`
-- **Properties**: PascalCase for public
-- **Fields**: 
-  - Private/internal: `_camelCase` (underscore prefix REQUIRED)
-  - Constant: PascalCase (NOT UPPER_SNAKE_CASE)
-- **Parameters**: camelCase
-- **Async Methods**: MUST end with `Async` suffix - enforced at ERROR level
-
-**Accessibility Modifiers (MANDATORY)**:
-- ALL type members MUST have explicit accessibility modifiers - `dotnet_style_require_accessibility_modifiers = always:error`
-- NO implicit modifiers allowed (e.g., must write `private` explicitly)
-
-```csharp
-// ✅ CORRECT - Explicit modifiers
-private readonly string _connectionString;
-public async Task<Model_Dao_Result> GetDataAsync() { }
-
-// ❌ FORBIDDEN - Implicit modifiers
-readonly string _connectionString;  // Missing 'private'
-async Task<Model_Dao_Result> GetData() { }  // Missing 'public/private' AND 'Async' suffix
-```
-
-**Null Handling (REQUIRED)**:
-- Use nullable reference types (`?`) where appropriate
-- Prefer null-conditional operators - `dotnet_style_null_propagation = true:warning`
-- Use null-coalescing for default values - `dotnet_style_coalesce_expression = true:suggestion`
-
-```csharp
-// ✅ CORRECT - Nullable annotations
-SpecDefinition? def = null;
-Control? inputControl = null;
-Style? style = (Style?)Application.Current.Resources["Key"];
-
-// ✅ CORRECT - Null propagation
-var result = collection?.Select(x => x.Value);
-
-// ❌ AVOID - Null checks without propagation
-var result = collection != null ? collection.Select(x => x.Value) : null;
-```
-
-**LINQ Optimization (REQUIRED)**:
-- Use `Order()` instead of `OrderBy(x => x)` - `RCS1077` enforced
-- Avoid unnecessary enumeration with proper null checks before LINQ
-
-```csharp
-// ✅ CORRECT - Optimized LINQ
-if (result.IsSuccess && result.Data != null)
-{
-    return result.Data
-        .Select(s => s.SpecKey)
-        .Distinct()
-        .Order()  // NOT OrderBy(k => k)
-        .ToList();
-}
-
-// ❌ FORBIDDEN - Unoptimized LINQ
-return result.Data.Select(s => s.SpecKey).OrderBy(k => k).ToList();  // Missing null check AND wrong method
-```
-
-**var Keyword Usage**:
-- Do NOT use `var` for built-in types - `csharp_style_var_for_built_in_types = false:suggestion`
-- USE `var` when type is apparent - `csharp_style_var_when_type_is_apparent = true:suggestion`
-- Do NOT use `var` elsewhere - `csharp_style_var_elsewhere = false:suggestion`
-
-```csharp
-// ✅ CORRECT
-int count = 0;
-string name = "test";
-var customer = new Customer();  // Type is apparent
-var result = await GetDataAsync();  // Return type obvious
-
-// ❌ AVOID
-var count = 0;  // Built-in type - use explicit 'int'
-```
-
-**File Organization**:
-- One public class per file (RCS1060 enforced)
-- Nested/helper classes in separate files or explicitly justified
-- Match namespace to folder structure
-- File name matches primary class name
-- Use file-scoped namespaces (preferred)
-- Group related classes in feature folders
-
-**Performance & UI Responsiveness (NON-NEGOTIABLE)**:
-- **Never block the UI thread** - all I/O operations MUST be async
-- File operations: `await File.WriteAllTextAsync()`, NOT `File.WriteAllText()`
-- Network operations: Wrap in `Task.Run()` or use native async APIs
-- Database operations: ALL DAO methods MUST be async
-- Immediate UI feedback: Update status BEFORE awaiting long operations
-- Use `DispatcherQueue.TryEnqueue()` for UI updates from background threads
-- Target: Database operations <500ms, UI interactions <100ms response
-
-**Logging Standards**:
-- Non-blocking logging with background queue processing
-- Logging failures MUST NOT crash the application
-- Use try-catch around logging operations
-- Structured log entries with timestamp, severity, context
-- CSV format for easy troubleshooting without database dependencies
-
-**Code Documentation**:
-- XML comments for ALL public APIs (classes, methods, properties)
-- Inline comments for complex logic or non-obvious decisions
-- README.md updates for user-facing feature changes
-- Update REUSABLE_SERVICES.md when adding new service patterns
-- Document breaking changes in CHANGELOG.md
-
-**Build Optimization**:
-- Disable expensive build steps in Debug configuration
-- Use `EnableMsixTooling=false` for Debug builds during development
-- Fast iteration: Debug builds should complete in <30 seconds
-- Release builds may include full packaging and signing
-
-**Data Integrity**:
-- Validate data lengths against database schema BEFORE insert
-- Sanitize input in service layer (ViewModel → Service → DAO)
-- Match C# model properties to database column types
-- Default values in models MUST match database defaults
-- Truncate or reject data exceeding VARCHAR limits with clear error messages
-
-**Rationale**: Consistent code quality enables team productivity, reduces bugs, and ensures maintainability. EditorConfig enforcement prevents style inconsistencies and reduces code review friction. Performance standards prevent UI freezing and poor user experience. Naming conventions reduce cognitive load and enable predictable code navigation.
-
----
-
-### X. Infor Visual DAO Architecture (READ-ONLY OPERATIONS)
-
-**Infor Visual DAO Requirements**:
-- ALL Infor Visual operations MUST be encapsulated in DAOs
-- DAOs for Infor Visual: `Dao_InforVisualPO`, `Dao_InforVisualPart`
-- Connection string MUST include `ApplicationIntent=ReadOnly`
-- ONLY SELECT queries allowed - NO INSERT, UPDATE, DELETE, MERGE
-- Graceful handling of connection failures (Infor Visual may be offline)
-
-**Implementation Pattern**:
-```csharp
-public class Dao_InforVisualPO
-{
-    private readonly string _connectionString;
-    
-    public Dao_InforVisualPO(string connectionString)
-    {
-        if (!connectionString.Contains("ApplicationIntent=ReadOnly"))
-            throw new InvalidOperationException("Infor Visual connection MUST be read-only");
-        
-        _connectionString = connectionString;
-    }
-    
-    // ✅ ALLOWED - SELECT query for PO data
-    public async Task<Model_Dao_Result<Model_InforVisualPO>> GetPOByNumberAsync(string poNumber)
-    {
-        string query = @"
-            SELECT po.ID, po.VENDOR_ID, po.STATUS, po.ORDER_DATE
-            FROM PURCHASE_ORDER po
-            WHERE po.ID = @PoNumber";
-        
-        // Direct SQL execution for Infor Visual (READ ONLY exception)
-        using var connection = new SqlConnection(_connectionString);
-        using var command = new SqlCommand(query, connection);
-        command.Parameters.AddWithValue("@PoNumber", poNumber);
-        
-        // Execute query and map results
-    }
-    
-    // ❌ FORBIDDEN - Any write operation
-    public async Task UpdatePOStatusAsync(string poNumber, string status)
-    {
-        throw new InvalidOperationException("Writes to Infor Visual are STRICTLY FORBIDDEN");
-    }
-}
-```
-
-**Allowed Operations**:
-- Query PURCHASE_ORDER, PURC_ORDER_LINE, PART, INVENTORY_TRANS tables
-- SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED (performance optimization)
-- Graceful fallback when Infor Visual is unavailable
-
-**Forbidden Operations**:
-- Any INSERT, UPDATE, DELETE, MERGE, or DDL statements
-- Transactions that acquire locks (SERIALIZABLE, REPEATABLE READ)
-- Stored procedures that modify data
-
-**Rationale**: Infor Visual is a production ERP system. Accidental writes could corrupt critical manufacturing data. This principle elevates the existing "READ ONLY" constraint to constitutional status with explicit enforcement mechanisms.
-
----
-
-### XI. Architecture Validation & Pre-Commit Checks
-
-**Automated Dependency Analysis**:
-- Dependency graph analysis MUST be run before commits
-- Tool: `vscode-csharp-dependency-graph` extension (magic5644.vscode-csharp-dependency-graph)
-- Generated graph: `class-dependency-graph.dot`
-- ZERO circular dependencies allowed
-- ZERO ViewModel→DAO dependencies allowed
-
-**Pre-Commit Checklist**:
-- [ ] No compilation errors or warnings
-- [ ] Dependency graph shows no cycles
-- [ ] No ViewModel files reference `Dao_*` classes
-- [ ] No Service files call `Helper_Database_StoredProcedure` directly (must delegate to DAOs)
-- [ ] All new DAOs are instance-based and registered in DI
-- [ ] All new services have interfaces and are registered in DI
-- [ ] MVVM pattern adhered to (no business logic in code-behind)
-- [ ] All database operations use `Model_Dao_Result` pattern
-- [ ] No writes attempted to Infor Visual database- [ ] **All code follows .editorconfig rules** (indentation, braces, naming, etc.)
-- [ ] **All if statements have braces** (csharp_prefer_braces enforced)
-- [ ] **All async methods end with 'Async' suffix** (naming convention ERROR)
-- [ ] **All type members have explicit accessibility modifiers** (no implicit modifiers)
-- [ ] **No multiple public classes per file** (RCS1060 enforced)
-- [ ] **No var for built-in types** (int, string, bool must be explicit)
-- [ ] **Nullable annotations used where appropriate** (null safety)
-- [ ] **LINQ queries optimized** (Order() not OrderBy(x => x))
-**Violation Detection**:
-```bash
-# PowerShell script to detect ViewModel→DAO violations
-Get-ChildItem -Path "ViewModels" -Recurse -Filter "*.cs" | 
-  Select-String -Pattern "Dao_" | 
-  ForEach-Object { Write-Warning "VIOLATION: $($_.Filename):$($_.LineNumber) - ViewModel references DAO" }
-```
-
-**Enforcement**:
-- Pull requests MUST include dependency graph screenshot showing no violations
-- Code reviews MUST verify checklist completion
-- CI/CD pipeline SHOULD fail builds with architecture violations
-
-**Rationale**: Proactive detection prevents architecture violations from entering the codebase. Automated checks reduce cognitive load on reviewers and catch violations early.
-
----
+**Rationale**: Structured specifications ensure requirements are understood before implementation, reducing rework. Constitutional compliance checks prevent architectural drift. PlantUML diagrams provide parseable, version-controllable documentation that both AI agents and humans can process effectively.
 
 ## Technology Constraints
 
-### Platform & Framework
-- **OS**: Windows 10 1809+ / Windows 11
-- **Framework**: .NET 8.0
-- **UI**: WinUI 3 (Windows App SDK 1.8+)
-- **Architecture**: MVVM with CommunityToolkit.Mvvm
+**Platform**: Windows 10/11, .NET 8.0, WinUI 3 (Windows App SDK 1.8+)
 
-### Databases
-- **Application Database**: MySQL 8.0+ (MTM_Receiving_Database)
-- **ERP Database**: SQL Server (Infor Visual MTMFG) - **READ ONLY**
-- **MySQL Version Constraint**: MySQL 5.7.24+ compatibility required
-  - NO JSON functions, CTEs, window functions, or CHECK constraints
-  - Use temporary tables and subqueries instead
+**Databases**:
+- MySQL 5.7.24 (mtm_receiving_application) - Full READ/WRITE access
+- SQL Server (Infor Visual - VISUAL/MTMFG) - READ ONLY (ApplicationIntent=ReadOnly)
 
-### Key NuGet Packages
-- CommunityToolkit.Mvvm (8.2+)
-- CommunityToolkit.WinUI.UI.Controls (7.1+)
-- Microsoft.Extensions.DependencyInjection (8.0+)
-- Microsoft.Extensions.Hosting (8.0+)
-- MySql.Data (9.0+)
-- Microsoft.Data.SqlClient (5.2+)
-- CsvHelper (33.0+)
+**MySQL 5.7.24 Compatibility Constraints**:
+- NO JSON functions (JSON_EXTRACT, JSON_OBJECT)
+- NO Common Table Expressions (WITH clause)
+- NO Window functions (ROW_NUMBER, RANK)
+- NO CHECK constraints (use triggers for validation)
+- NO generated columns (use triggers to populate)
 
-### Forbidden Practices
-- ❌ Direct SQL queries in C# code (MySQL - must use stored procedures)
-- ❌ Exceptions thrown from DAO layer
-- ❌ Business logic in Views or code-behind
-- ❌ Service locator pattern
-- ❌ Static service access (new code)
-- ❌ `{Binding}` over `x:Bind`
-- ❌ **ANY writes to Infor Visual database**
-- ❌ MySQL 8.0+ exclusive features
-- ❌ ViewModels directly calling `Dao_*` classes
-- ❌ ViewModels accessing `Helper_Database_*` helpers
-- ❌ Services with direct database access (must delegate to DAOs)
-- ❌ Static DAO classes (all DAOs must be instance-based with DI)
-- ❌ Static factory methods in result/model classes (use `DaoResultFactory`)
-- ❌ DAO classes NOT registered in DI container
-- ❌ Connection strings hardcoded in DAOs (must use constructor injection)
-- ❌ Infor Visual DAOs without `ApplicationIntent=ReadOnly` validation
-- ❌ Circular dependencies in class dependency graph
-- ❌ **If statements without braces** (csharp_prefer_braces enforced)
-- ❌ **Implicit accessibility modifiers** (dotnet_style_require_accessibility_modifiers enforced)
-- ❌ **Async methods without 'Async' suffix** (naming convention enforced at ERROR level)
-- ❌ **Multiple public classes per file** (RCS1060 enforced)
-- ❌ **Use of `var` for built-in types** (int, string, bool, etc.)
-- ❌ **Tabs for indentation** (spaces only, 4-space indent)
-- ❌ **Trailing whitespace** (trimmed automatically)
-- ❌ **Missing final newline** (required by editorconfig)
-- ❌ **CRLF violations** (Windows line endings required)
+**Required NuGet Packages**:
+- CommunityToolkit.Mvvm (MVVM source generators)
+- MySql.Data (MySQL connector)
+- Microsoft.Data.SqlClient (SQL Server connector)
+- xUnit + FluentAssertions (testing)
 
----
+**Modules** (logical separation within monolith):
+- `Module_Core` - Shared infrastructure, helpers, base classes
+- `Module_Shared` - Shared ViewModels, Views, models
+- `Module_Receiving` - Receiving workflow, label generation
+- `Module_Dunnage` - Dunnage management
+- `Module_Routing` - Routing rules, location management
+- `Module_Reporting` - Report generation, scheduling
+- `Module_Settings` - Application configuration, user preferences
+- `Module_Volvo` - Volvo-specific integration
 
 ## Development Workflow
 
-### Before Starting Work
-1. Read `.github/instructions/` files relevant to your work area
-2. Review specification and plan documents
-3. Check feature tasks.md for dependencies
-4. Ensure database schema is up to date
-5. Verify all required services are registered in DI container
+**Feature Implementation Sequence**:
+1. Read specification from `specs/[###-feature-name]/spec.md`
+2. Run constitution compliance check (verify MVVM, database, DI principles)
+3. Create Models (`Models/[Module]/Model_*.cs`)
+4. Create DAOs (instance-based in `Data/[Module]/Dao_*.cs`)
+5. Create Service Interfaces (`Contracts/Services/IService_*.cs`)
+6. Implement Services (`Services/[Module]/Service_*.cs`)
+7. Create ViewModels (partial, inherits `ViewModel_Shared_Base`)
+8. Create Views (XAML with `x:Bind`)
+9. Register all components in DI (`App.xaml.cs`)
+10. Write unit tests (`Tests/Unit/[Module]/`)
+11. Update documentation if architecture changed
+12. Run `dotnet build && dotnet test` before commit
 
-### During Implementation
-1. Follow task checklist sequentially
-2. Mark tasks complete in tasks.md as finished
-3. Use existing service patterns (refer to REUSABLE_SERVICES.md)
-4. Test locally with development database
-5. Update documentation if behavior changes
+**MCP Tools (Preferred)**:
+- Filesystem I/O: `mcp_filesystem_*` for reading/writing/listing files
+- Symbol navigation: `mcp_oraios_serena_*` for code exploration
+- GitHub: `githubRemote` MCP tools (use `githubLocal` Docker-based when remote unavailable)
+- UI/Web testing: `mcp_playwright_browser_*` for smoke tests
 
-### Quality Gates
-- ✅ All compilation errors resolved
-- ✅ MVVM pattern adhered to (no logic in code-behind)
-- ✅ Services registered in DI container
-- ✅ Error handling uses IService_ErrorHandler
-- ✅ Database operations use Model_Dao_Result pattern
-- ✅ Async/await used for I/O operations
-- ✅ No writes attempted to Infor Visual database
-- ✅ Code follows existing patterns and styles
-- ✅ User-facing changes tested in UI
+**Naming Conventions**:
+- ViewModels: `ViewModel_[Module]_[Feature]`
+- Views: `View_[Module]_[Feature]` or `[Feature]View`
+- Services: `Service_[Purpose]` with `IService_[Purpose]`
+- DAOs: `Dao_[EntityName]`
+- Models: `Model_[EntityName]`
+- Enums: `Enum_[Category]`
+- Helpers: `Helper_[Category]_[Function]`
+- Methods: PascalCase, async methods end with `Async`
+- Properties: PascalCase (public), `_camelCase` (private fields)
+- Constants: PascalCase in static classes (NOT UPPER_SNAKE_CASE)
 
-### Testing Requirements
-- Unit tests for service logic (ViewModels, business services)
-- Integration tests for database operations (DAO layer)
-- Manual UI testing for Views
-- Test data must not affect production Infor Visual database
-
----
-
-## Infor Visual Integration Rules
-
-### Critical Constraint
-**⚠️ INFOR VISUAL DATABASE IS STRICTLY READ ONLY - NO WRITES ALLOWED AT ANY TIME ⚠️**
-
-### Connection Details
-- **Server**: VISUAL
-- **Database**: MTMFG
-- **Warehouse ID**: 002 (fixed, always)
-- **Default Credentials**: Username=SHOP2, Password=SHOP
-- **Connection String MUST Include**: `ApplicationIntent=ReadOnly`
-
-### Allowed Operations
-- ✅ SELECT queries via stored procedures only
-- ✅ SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED (performance)
-- ✅ Query PURCHASE_ORDER, PURC_ORDER_LINE, PART, INVENTORY_TRANS tables
-- ✅ Graceful handling of connection failures (Infor Visual may be offline)
-
-### Forbidden Operations
-- ❌ INSERT, UPDATE, DELETE, MERGE statements
-- ❌ CREATE, ALTER, DROP any database objects
-- ❌ Transactions that lock tables (SERIALIZABLE, REPEATABLE READ)
-- ❌ Assuming Infor Visual is always available
-
-### Schema Reference
-- `PURCHASE_ORDER` → ID, VENDOR_ID, STATUS, ORDER_DATE
-- `PURC_ORDER_LINE` → PURC_ORDER_ID, LINE_NO, PART_ID, ORDER_QTY
-- `PART` → ID, DESCRIPTION, PRODUCT_CODE, STOCK_UM
-- `INVENTORY_TRANS` → Transaction history (TYPE='R', CLASS='1' for PO receipts)
-
----
+**Testing Requirements**:
+- Framework: xUnit with FluentAssertions
+- Pattern: Arrange-Act-Assert (AAA)
+- Coverage: Unit tests for all Services and DAOs
+- Integration tests for database operations
+- UI tests via Playwright MCP for critical workflows
 
 ## Governance
 
-### Constitution Authority
-- This constitution supersedes all other development practices
-- Exceptions require explicit documentation and approval
-- Amendments follow semantic versioning (MAJOR.MINOR.PATCH)
-- All team members must be familiar with core principles
+**Constitutional Authority**: This constitution supersedes all other development practices, coding guidelines, and architectural preferences. When conflicts arise between this document and other guidance (READMEs, inline comments, historical patterns), this constitution MUST take precedence.
 
-### Amendment Process
-1. Propose change with rationale and impact analysis
-2. Document affected code areas
-3. Update version number appropriately
-4. Create migration plan if breaking change
-5. Update all related instruction files
+**Amendment Process**:
+1. Proposed changes MUST be documented in specification format
+2. Impact analysis MUST assess affected code, templates, and workflows
+3. Migration plan MUST be created for existing code violating new principles
+4. Version MUST be incremented according to semantic versioning:
+   - **MAJOR**: Backward-incompatible governance or principle removal/redefinition
+   - **MINOR**: New principle/section added or materially expanded guidance
+   - **PATCH**: Clarifications, wording, typo fixes, non-semantic refinements
+5. Sync Impact Report MUST be updated as HTML comment at top of this file
 
-### Compliance
-- Code reviews MUST verify adherence to core principles
-- Pull requests MUST reference relevant principles in description
-- Violations MUST be justified or corrected before merge
-- Regular constitution review (quarterly)
+**Compliance Review**:
+- All PRs MUST verify constitutional compliance before merge
+- Speckit `/speckit.plan` command MUST run Constitution Check during Phase 0
+- Feature specifications MUST include "Constitution Check" section
+- Architectural decisions MUST be justified against constitutional principles
+- Complexity MUST be justified with rationale (avoid premature optimization)
 
-**Architecture Violation Response Protocol**:
-1. **Detection**: Automated tools or manual code review identifies violation
-2. **Assessment**: Determine severity (Critical, High, Medium, Low)
-3. **Remediation Plan**: Create task list with specific files and changes
-4. **Implementation**: Fix violations following refactoring guides
-5. **Validation**: Re-run dependency analysis to confirm resolution
-6. **Documentation**: Update guides with violation examples
+**Runtime Development Guidance**:
+- Use `AGENTS.md` for AI agent instructions and quick reference patterns
+- Use `.github/copilot-instructions.md` for detailed Copilot coding standards
+- Use `.github/instructions/*.instructions.md` for domain-specific patterns
+- Use `specs/[feature]/` for feature-specific context and requirements
 
-**Severity Levels**:
-- **Critical**: ViewModel→DAO, writes to Infor Visual, circular dependencies
-- **High**: Service→Database direct access, static DAOs
-- **Medium**: Missing DI registration, inconsistent naming
-- **Low**: Documentation gaps, non-critical style violations
+**Enforcement**:
+- Constitutional violations MUST be documented as technical debt if shipping urgently
+- Refactoring tasks MUST be created to resolve violations within 2 release cycles
+- Repeated violations indicate need for tooling/automation (linters, analyzers)
 
-**Critical Violation SLA**:
-- Must be addressed within 1 sprint (2 weeks)
-- Requires comprehensive refactoring plan
-- Blocks new feature work until resolved
-
-### Runtime Guidance
-- Use `.github/agents/copilot-instructions.md` for AI coding assistance
-- Use `.github/instructions/` files for specific domain guidance
-- Use `Documentation/REUSABLE_SERVICES.md` for service patterns
-- Use `specs/` folder for feature specifications
-
----
-
-**Version**: 1.2.2 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-28
+**Version**: 1.0.0 | **Ratified**: 2026-01-11 | **Last Amended**: 2026-01-11

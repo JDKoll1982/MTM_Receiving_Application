@@ -1,0 +1,43 @@
+# sp_volvo_part_master_get_by_id
+
+**Category:** Volvo
+**Parameter Types:** IN
+**Generated:** 2026-01-11 13:34:59
+
+## Usage Summary
+
+**Total Usages:** 1
+
+## Usage Details
+
+| File | Class | Method | Line | Has Callers | Caller Count |
+|------|-------|--------|------|-------------|--------------|
+| Module_Volvo\Data\Dao_VolvoPart.cs | Dao_VolvoPart | `GetByIdAsync` | 57 | ✓ | 13 |
+
+## Code Samples
+
+```csharp
+// Module_Volvo\Data\Dao_VolvoPart.cs:57
+"sp_volvo_part_master_get_by_id",
+
+```
+
+## Method References
+
+### Dao_VolvoPart.GetByIdAsync
+**Called by (13 references):**
+- Module_Core\Services\Database\Service_MySQL_Dunnage.cs
+- Module_Dunnage\Data\Dao_DunnageLoad.cs
+- Module_Dunnage\Data\Dao_DunnagePart.cs
+- Module_Dunnage\Data\Dao_DunnageSpec.cs
+- Module_Dunnage\Data\Dao_DunnageType.cs
+- Module_Settings\Data\Dao_PackageType.cs
+- Module_Settings\Data\Dao_RoutingRule.cs
+- Module_Settings\Data\Dao_ScheduledReport.cs
+- Same file (2 calls)
+- Module_Volvo\Data\Dao_VolvoShipment.cs
+- Module_Volvo\Interfaces\IDao_VolvoShipment.cs
+- Module_Volvo\Services\Service_Volvo.cs
+- Module_Volvo\Services\Service_VolvoMasterData.cs
+
+

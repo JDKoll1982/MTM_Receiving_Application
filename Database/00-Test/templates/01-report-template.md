@@ -39,3 +39,23 @@
 - **Dependencies:** Use `-UseExecutionOrder` flag when testing to avoid FK constraint errors
 
 {{COMPLEX_SPS_SECTION}}
+
+## 🔧 Fix Checklist
+
+### Stored Procedures Requiring Updates
+
+| Fixed | SP Name | Current Params | Expected Params | Missing Params | File Path | DAO Class | Issue Type | Priority | Fix Notes |
+|-------|---------|----------------|-----------------|----------------|-----------|-----------|------------|----------|-----------|
+{{SP_FIX_CHECKLIST}}
+
+### DAO Files Requiring Updates
+
+| Fixed | DAO Class | File Path | Related SPs | Param Mismatches | Methods to Update | Issue Summary | Priority |
+|-------|-----------|-----------|-------------|------------------|-------------------|---------------|----------|
+{{DAO_FIX_CHECKLIST}}
+
+### Database Schema Issues
+
+| Fixed | SP Name | Missing Column/Table | Schema File | Table Name | Expected Column | Current Status | SQL Fix Required | Priority | Fix Notes |
+|-------|---------|----------------------|-------------|------------|-----------------|----------------|------------------|----------|-----------|
+{{SCHEMA_FIX_CHECKLIST}}
