@@ -102,6 +102,15 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_VolvoPart(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_VolvoPartComponent(mySqlConnectionString));
 
+                // Register Settings DAOs (Singleton)
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_SystemSettings(mySqlConnectionString));
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_UserSettings(mySqlConnectionString));
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_PackageType(mySqlConnectionString));
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_PackageTypeMappings(mySqlConnectionString));
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_RoutingRule(mySqlConnectionString));
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_ScheduledReport(mySqlConnectionString));
+                services.AddSingleton(sp => new Module_Settings.Data.Dao_SettingsAuditLog(mySqlConnectionString));
+
 
                 // Register NEW Routing Module Services (Phase 2 implementation)
                 services.AddSingleton<IRoutingService>(sp =>
@@ -253,9 +262,7 @@ public partial class App : Application
                 services.AddTransient<ViewModel_Shared_SharedTerminalLogin>();
                 services.AddTransient<ViewModel_Shared_NewUserSetup>();
                 services.AddTransient<ViewModel_Shared_HelpDialog>();
-                //services.AddTransient<Main_ReceivingLabelViewModel>();
                 services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
-                //services.AddTransient<Main_CarrierDeliveryLabelViewModel>();
 
                 // Receiving Workflow ViewModels
                 services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -289,14 +296,9 @@ public partial class App : Application
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
 
-                // Settings Workflow ViewModels
-                services.AddTransient<ViewModel_Settings_Workflow>();
-                services.AddTransient<ViewModel_Settings_ModeSelection>();
-                services.AddTransient<ViewModel_Settings_DunnageMode>();
-                services.AddTransient<ViewModel_Settings_Placeholder>();
+                services.AddTransient<Module_Settings.ViewModels.ViewModel_Settings_DatabaseTest>();
 
-                // NEW Routing Wizard ViewModels (Phase 3 implementation)
-                // Container must be Singleton so all step VMs share the same instance
+                // Routing Workflow ViewModels
                 services.AddSingleton<RoutingWizardContainerViewModel>();
                 services.AddTransient<RoutingWizardStep1ViewModel>();
                 services.AddTransient<RoutingWizardStep2ViewModel>();
@@ -334,11 +336,13 @@ public partial class App : Application
                 // Routing Mode Selection View (Phase 6 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
 
-                // Settings Views
+                // Settings Views - TODO: Re-add when implemented
+                /*
                 services.AddTransient<View_Settings_Workflow>();
                 services.AddTransient<View_Settings_ModeSelection>();
                 services.AddTransient<View_Settings_DunnageMode>();
                 services.AddTransient<View_Settings_Placeholder>();
+                */
 
                 // Reporting Views (003-reporting-module)
                 services.AddTransient<View_Reporting_Main>();

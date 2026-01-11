@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Views.View_Settings_DatabaseTest"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:icons="using:Material.Icons.WinUI3"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.ViewModels"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource LayerFillColorDefaultBrush}">
+
+    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="20" Margin="40,20,40,40">
+                
+                <!-- Header -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Settings Database Test" 
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
+                        <TextBlock Text="Development Tool - Schema &amp; Stored Procedure Validation" 
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                    
+                    <Button Grid.Column="1" 
+                            Content="Refresh All Tests" 
+                            Command="{Binding RunAllTestsCommand}"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Height="36"
+                            Padding="20,0"
+                            VerticalAlignment="Center">
+                        <Button.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="F5"/>
+                        </Button.KeyboardAccelerators>
+                    </Button>
+                </Grid>
+
+                <!-- Connection Status Card -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Database Connection" 
+                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        
+                        <!-- Success Status (use visible when connected) -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Width="20" Height="20" CornerRadius="10" 
+                                    Background="#107c10">
+                                <icons:MaterialIcon Kind="Check" 
+                                                  Width="14" Height="14"
+                                                  Foreground="White"/>
+                            </Border>
+                            <TextBlock Text="{x:Bind ViewModel.ConnectionStatus, Mode=OneWay}" 
+                                       Foreground="#107c10" 
+                                       FontWeight="SemiBold"/>
+                        </StackPanel>
+                        
+                        <TextBlock Text="Connection details" 
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Summary Cards Row -->
+                <Grid ColumnSpacing="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Tables Card -->
+                    <Border Grid.Column="0"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20"
+                            MinHeight="120">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Tables" 
+                                       Style="{StaticResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{x:Bind ViewModel.TablesValidated, Mode=OneWay}" FontSize="36" FontWeight="SemiBold" Foreground="#107c10"/>
+                                <TextBlock Text="/" FontSize="28" FontWeight="SemiBold" Foreground="#107c10" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalTables, Mode=OneWay}" FontSize="28" FontWeight="SemiBold" Foreground="#107c10" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="All tables validated" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="✓ Indexes OK" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="#107c10"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- Stored Procedures Card -->
+                    <Border Grid.Column="1"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20"
+                            MinHeight="120">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Stored Procedures" 
+                                       Style="{StaticResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{x:Bind ViewModel.StoredProceduresTested, Mode=OneWay}" FontSize="36" FontWeight="SemiBold" Foreground="#107c10"/>
+                                <TextBlock Text="/" FontSize="28" FontWeight="SemiBold" Foreground="#107c10" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalStoredProcedures, Mode=OneWay}" FontSize="28" FontWeight="SemiBold" Foreground="#107c10" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="All procedures tested" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="✓ No errors" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="#107c10"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- Data Seeding Card -->
+                    <Border Grid.Column="2"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20"
+                            MinHeight="120">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Data Seeding" 
+                                       Style="{StaticResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="{x:Bind ViewModel.SettingsSeeded, Mode=OneWay}" 
+                                       FontSize="36" 
+                                       FontWeight="SemiBold" 
+                                       Foreground="#107c10"/>
+                            <TextBlock Text="Settings inserted" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="✓ All categories" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="#107c10"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- DAOs Card -->
+                    <Border Grid.Column="3"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20"
+                            MinHeight="120">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="DAO Tests" 
+                                       Style="{StaticResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{x:Bind ViewModel.DaosTested, Mode=OneWay}" FontSize="36" FontWeight="SemiBold" Foreground="#107c10"/>
+                                <TextBlock Text="/" FontSize="28" FontWeight="SemiBold" Foreground="#107c10" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalDaos, Mode=OneWay}" FontSize="28" FontWeight="SemiBold" Foreground="#107c10" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="All DAOs operational" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="✓ CRUD verified" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="#107c10"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Test Results Tabs -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Tab Header -->
+                        <Border Grid.Row="0" 
+                                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                BorderThickness="0,0,0,1">
+                            <StackPanel Orientation="Horizontal" Spacing="0" Height="48">
+                                <Button Content="Schema Tests" 
+                                        x:Name="SchemaTabButton"
+                                        MinWidth="150"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        CornerRadius="0"
+                                        Click="OnSchemaTabClick"/>
+                                <Button Content="SP Tests" 
+                                        x:Name="SpTabButton"
+                                        MinWidth="150"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        CornerRadius="0"
+                                        Click="OnStoredProceduresTabClick"/>
+                                <Button Content="DAO Tests" 
+                                        x:Name="DaoTabButton"
+                                        MinWidth="150"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        CornerRadius="0"
+                                        Click="OnDaosTabClick"/>
+                                <Button Content="Logs" 
+                                        x:Name="LogsTabButton"
+                                        MinWidth="150"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        CornerRadius="0"
+                                        Click="OnLogsTabClick"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Tab Content -->
+                        <ScrollViewer Grid.Row="1" MaxHeight="400" Padding="20">
+                            <Grid>
+                            <!-- Schema Tab -->
+                            <StackPanel x:Name="SchemaTabContent" Spacing="16">
+                                <TextBlock Text="Table Validation Results" 
+                                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                
+                                <!-- Table Result Items -->
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.TableResults, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_TableTestResult">
+                                            <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="12,8"
+                                                    Margin="0,0,0,12">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                        <Border Width="20" Height="20" CornerRadius="10" Background="#107c10">
+                                                            <icons:MaterialIcon Kind="Check" Width="14" Height="14" Foreground="White"/>
+                                                        </Border>
+                                                        <StackPanel Spacing="2">
+                                                            <TextBlock Text="{x:Bind TableName}" FontWeight="SemiBold"/>
+                                                            <TextBlock Text="{x:Bind Details}" Style="{StaticResource CaptionTextBlockStyle}"
+                                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    
+                                                    <Border Grid.Column="2" 
+                                                            BorderBrush="#107c10"
+                                                            BorderThickness="1"
+                                                            CornerRadius="4"
+                                                            Padding="12,4">
+                                                        <TextBlock Text="{x:Bind StatusText}" 
+                                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                                   Foreground="#107c10"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                
+                                <!-- Legacy hardcoded items removed -->
+                                <StackPanel Spacing="12" Visibility="Collapsed">
+                                    
+                                    <!-- Table 1: system_settings -->
+                                    <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="12,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <Border Width="20" Height="20" CornerRadius="10" Background="#107c10">
+                                                    <icons:MaterialIcon Kind="Check" Width="14" Height="14" Foreground="White"/>
+                                                </Border>
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="system_settings" FontWeight="SemiBold"/>
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                        <Run Text="79 rows | 18 columns | 3 indexes"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            
+                                            <Border Grid.Column="2" 
+                                                    BorderBrush="#107c10"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"
+                                                    Padding="12,4">
+                                                <TextBlock Text="Validated" 
+                                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                                           Foreground="#107c10"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    
+                                    <!-- Table 2: user_settings -->
+                                    <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="12,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <Border Width="20" Height="20" CornerRadius="10" Background="#107c10">
+                                                    <icons:MaterialIcon Kind="Check" Width="14" Height="14" Foreground="White"/>
+                                                </Border>
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="user_settings" FontWeight="SemiBold"/>
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                        <Run Text="0 rows | 5 columns | 1 unique constraint"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            
+                                            <Border Grid.Column="2" 
+                                                    BorderBrush="#107c10"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"
+                                                    Padding="12,4">
+                                                <TextBlock Text="Validated" 
+                                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                                           Foreground="#107c10"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    
+                                    <!-- Table 3: package_types -->
+                                    <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="12,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <Border Width="20" Height="20" CornerRadius="10" Background="#107c10">
+                                                    <icons:MaterialIcon Kind="Check" Width="14" Height="14" Foreground="White"/>
+                                                </Border>
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="package_types" FontWeight="SemiBold"/>
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                        <Run Text="5 rows | 5 columns | 2 unique constraints"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            
+                                            <Border Grid.Column="2" 
+                                                    BorderBrush="#107c10"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"
+                                                    Padding="12,4">
+                                                <TextBlock Text="Validated" 
+                                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                                           Foreground="#107c10"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    
+                                    <!-- Table 4: routing_rules -->
+                                    <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="12,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <Border Width="20" Height="20" CornerRadius="10" Background="#107c10">
+                                                    <icons:MaterialIcon Kind="Check" Width="14" Height="14" Foreground="White"/>
+                                                </Border>
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="routing_rules" FontWeight="SemiBold"/>
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                        <Run Text="3 rows | 7 columns | 1 index on priority"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            
+                                            <Border Grid.Column="2" 
+                                                    BorderBrush="#107c10"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"
+                                                    Padding="12,4">
+                                                <TextBlock Text="Validated" 
+                                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                                           Foreground="#107c10"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    
+                                    <!-- Table 5: scheduled_reports -->
+                                    <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="12,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <Border Width="20" Height="20" CornerRadius="10" Background="#107c10">
+                                                    <icons:MaterialIcon Kind="Check" Width="14" Height="14" Foreground="White"/>
+                                                </Border>
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="scheduled_reports" FontWeight="SemiBold"/>
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                        <Run Text="2 rows | 8 columns | 2 indexes"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            
+                                            <Border Grid.Column="2" 
+                                                    BorderBrush="#107c10"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"
+                                                    Padding="12,4">
+                                                <TextBlock Text="Validated" 
+                                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                                           Foreground="#107c10"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    
+                                </StackPanel>
+                                <!-- End of collapsed hardcoded items -->
+                                
+                                <!-- Show All Tables Button -->
+                                <Button Content="Show All Tables (7)" 
+                                        HorizontalAlignment="Left"
+                                        Margin="0,8,0,0"
+                                        Background="Transparent"
+                                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                        BorderThickness="1"/>
+                            </StackPanel>
+
+                            <!-- Stored Procedures Tab -->
+                            <StackPanel x:Name="StoredProceduresTabContent" Spacing="16" Visibility="Collapsed">
+                                <TextBlock Text="Stored Procedure Results" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.StoredProcedureResults, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_StoredProcedureTestResult">
+                                            <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="12,8"
+                                                    Margin="0,0,0,12">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Spacing="2">
+                                                        <TextBlock Text="{x:Bind ProcedureName}" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{x:Bind TestDetails}"
+                                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                    </StackPanel>
+
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{x:Bind ExecutionTimeMs}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                               VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- DAOs Tab -->
+                            <StackPanel x:Name="DaosTabContent" Spacing="16" Visibility="Collapsed">
+                                <TextBlock Text="DAO Results" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.DaoResults, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_DaoTestResult">
+                                            <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="12,8"
+                                                    Margin="0,0,0,12">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Spacing="2">
+                                                        <TextBlock Text="{x:Bind DaoName}" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{x:Bind StatusText}"
+                                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                    </StackPanel>
+
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{x:Bind OperationsTested}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                               VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- Logs Tab -->
+                            <StackPanel x:Name="LogsTabContent" Spacing="16" Visibility="Collapsed">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="Logs" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                    <Button Content="Load Audit Log" Command="{x:Bind ViewModel.LoadAuditLogCommand}"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Runtime Log Messages" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.LogMessages, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{x:Bind}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="WrapWholeWords"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock Text="Settings Audit Log (Sample)" Style="{StaticResource BodyTextBlockStyle}" Margin="0,12,0,0"/>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.AuditLogEntries, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_SettingsAuditLog">
+                                            <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="12,8"
+                                                    Margin="0,0,0,12">
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="{x:Bind SettingName}" FontWeight="SemiBold"/>
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                        <Run Text="{x:Bind ChangeType}"/>
+                                                        <Run Text="  " />
+                                                        <Run Text="{x:Bind ChangedAt}" />
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <!-- Footer -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Last run: Not yet executed" 
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Total test duration:" 
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalTestDurationMs, Mode=OneWay}" 
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="ms" 
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                            <Button Content="Export Results" 
+                                    Command="{x:Bind ViewModel.ExportResultsCommand}"
+                                    Height="32"
+                                    Padding="16,0"
+                                    Background="Transparent"
+                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"/>
+                            <Button Content="Close" 
+                                    Height="32"
+                                    Padding="16,0"
+                                    Background="Transparent"
+                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

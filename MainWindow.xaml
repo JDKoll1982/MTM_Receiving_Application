@@ -113,6 +113,17 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
+                <!-- Development Tools (visible in debug builds only) -->
+                <NavigationViewItem x:Name="DatabaseTestMenuItem" 
+                                    Content="Settings DB Test" 
+                                    Tag="DatabaseTestView" 
+                                    Margin="0,0,0,4"
+                                    Visibility="Collapsed">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8AB;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" />

@@ -1,0 +1,28 @@
+﻿-- =============================================
+-- Stored Procedure: sp_ScheduledReport_UpdateLastRun
+-- =============================================
+
+DELIMITER $$
+
+-- =============================================
+-- SP: Update Last Run Date
+-- =============================================
+DROP PROCEDURE IF EXISTS sp_ScheduledReport_UpdateLastRun$$
+CREATE PROCEDURE sp_ScheduledReport_UpdateLastRun(
+    IN p_id INT,
+    IN p_last_run_date DATETIME,
+    IN p_next_run_date DATETIME
+)
+BEGIN
+    UPDATE scheduled_reports
+    SET last_run_date = p_last_run_date,
+        next_run_date = p_next_run_date,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = p_id;
+    
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+
+
+DELIMITER ;

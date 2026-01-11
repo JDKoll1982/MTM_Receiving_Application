@@ -1,0 +1,1754 @@
+﻿{
+    "summary":  {
+                    "generatedAt":  "2026-01-11T00:42:24.2428359-06:00",
+                    "storedProcedureRoot":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings",
+                    "daoRoot":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Module_Settings/Data",
+                    "procedureCount":  37,
+                    "referencedProcedureCount":  37,
+                    "unreferencedProcedureCount":  0,
+                    "missingDaoCount":  0
+                },
+    "procedures":  [
+                       {
+                           "storedProcedure":  "sp_PackageType_Delete",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_Delete.sql",
+                           "suggestedDao":  "Dao_PackageType",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageType.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "package_types",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "is_active",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "package_types.is_active",
+                                                "package_types.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageType_GetAll",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_GetAll.sql",
+                           "suggestedDao":  "Dao_PackageType",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageType.cs"
+                                                ],
+                           "parameters":  [
+
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageType_GetById",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_GetById.sql",
+                           "suggestedDao":  "Dao_PackageType",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageType.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageType_Insert",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_Insert.sql",
+                           "suggestedDao":  "Dao_PackageType",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageType.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_name",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_name VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_code",
+                                                  "sqlType":  "VARCHAR(20)",
+                                                  "raw":  "IN p_code VARCHAR(20)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_created_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_created_by INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "package_types",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "code",
+                                                                   "created_by",
+                                                                   "is_active",
+                                                                   "name"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "package_types.code",
+                                                "package_types.created_by",
+                                                "package_types.is_active",
+                                                "package_types.name"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageType_Update",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_Update.sql",
+                           "suggestedDao":  "Dao_PackageType",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageType.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_name",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_name VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_code",
+                                                  "sqlType":  "VARCHAR(20)",
+                                                  "raw":  "IN p_code VARCHAR(20)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "package_types",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "code",
+                                                                   "name",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "package_types.code",
+                                                "package_types.name",
+                                                "package_types.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageType_UsageCount",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageType_UsageCount.sql",
+                           "suggestedDao":  "Dao_PackageType",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageType.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageTypeMappings_Delete",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_Delete.sql",
+                           "suggestedDao":  "Dao_PackageTypeMappings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageTypeMappings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "package_type_mappings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "is_active",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "package_type_mappings.is_active",
+                                                "package_type_mappings.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageTypeMappings_GetAll",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_GetAll.sql",
+                           "suggestedDao":  "Dao_PackageTypeMappings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageTypeMappings.cs"
+                                                ],
+                           "parameters":  [
+
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageTypeMappings_GetByPrefix",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_GetByPrefix.sql",
+                           "suggestedDao":  "Dao_PackageTypeMappings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageTypeMappings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_part_prefix",
+                                                  "sqlType":  "VARCHAR(10)",
+                                                  "raw":  "IN p_part_prefix VARCHAR(10)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageTypeMappings_Insert",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_Insert.sql",
+                           "suggestedDao":  "Dao_PackageTypeMappings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageTypeMappings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_part_prefix",
+                                                  "sqlType":  "VARCHAR(10)",
+                                                  "raw":  "IN p_part_prefix VARCHAR(10)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_package_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_package_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_is_default",
+                                                  "sqlType":  "BOOLEAN",
+                                                  "raw":  "IN p_is_default BOOLEAN"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_display_order",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_display_order INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_created_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_created_by INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "package_type_mappings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "created_by",
+                                                                   "display_order",
+                                                                   "is_active",
+                                                                   "is_default",
+                                                                   "package_type",
+                                                                   "part_prefix"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "package_type_mappings.created_by",
+                                                "package_type_mappings.display_order",
+                                                "package_type_mappings.is_active",
+                                                "package_type_mappings.is_default",
+                                                "package_type_mappings.package_type",
+                                                "package_type_mappings.part_prefix"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_PackageTypeMappings_Update",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_PackageTypeMappings_Update.sql",
+                           "suggestedDao":  "Dao_PackageTypeMappings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_PackageTypeMappings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_package_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_package_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_is_default",
+                                                  "sqlType":  "BOOLEAN",
+                                                  "raw":  "IN p_is_default BOOLEAN"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_display_order",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_display_order INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "package_type_mappings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "display_order",
+                                                                   "is_default",
+                                                                   "package_type",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "package_type_mappings.display_order",
+                                                "package_type_mappings.is_default",
+                                                "package_type_mappings.package_type",
+                                                "package_type_mappings.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_RoutingRule_Delete",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_Delete.sql",
+                           "suggestedDao":  "Dao_RoutingRule",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_RoutingRule.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "routing_rules",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "is_active",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "routing_rules.is_active",
+                                                "routing_rules.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_RoutingRule_FindMatch",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_FindMatch.sql",
+                           "suggestedDao":  "Dao_RoutingRule",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_RoutingRule.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_match_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_match_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_value",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_value VARCHAR(100)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_RoutingRule_GetAll",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_GetAll.sql",
+                           "suggestedDao":  "Dao_RoutingRule",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_RoutingRule.cs"
+                                                ],
+                           "parameters":  [
+
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_RoutingRule_GetById",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_GetById.sql",
+                           "suggestedDao":  "Dao_RoutingRule",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_RoutingRule.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_RoutingRule_Insert",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_Insert.sql",
+                           "suggestedDao":  "Dao_RoutingRule",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_RoutingRule.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_match_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_match_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_pattern",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_pattern VARCHAR(100)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_destination_location",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_destination_location VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_priority",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_priority INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_created_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_created_by INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "routing_rules",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "created_by",
+                                                                   "destination_location",
+                                                                   "is_active",
+                                                                   "match_type",
+                                                                   "pattern",
+                                                                   "priority"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "routing_rules.created_by",
+                                                "routing_rules.destination_location",
+                                                "routing_rules.is_active",
+                                                "routing_rules.match_type",
+                                                "routing_rules.pattern",
+                                                "routing_rules.priority"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_RoutingRule_Update",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_RoutingRule_Update.sql",
+                           "suggestedDao":  "Dao_RoutingRule",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_RoutingRule.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_match_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_match_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_pattern",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_pattern VARCHAR(100)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_destination_location",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_destination_location VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_priority",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_priority INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "routing_rules",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "destination_location",
+                                                                   "match_type",
+                                                                   "pattern",
+                                                                   "priority",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "routing_rules.destination_location",
+                                                "routing_rules.match_type",
+                                                "routing_rules.pattern",
+                                                "routing_rules.priority",
+                                                "routing_rules.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_Delete",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_Delete.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "scheduled_reports",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "is_active",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "scheduled_reports.is_active",
+                                                "scheduled_reports.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_GetAll",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_GetAll.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_GetById",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_GetById.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_GetDue",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_GetDue.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_Insert",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_Insert.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_report_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_report_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_schedule",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_schedule VARCHAR(100)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_email_recipients",
+                                                  "sqlType":  "TEXT",
+                                                  "raw":  "IN p_email_recipients TEXT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_next_run_date",
+                                                  "sqlType":  "DATETIME",
+                                                  "raw":  "IN p_next_run_date DATETIME"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_created_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_created_by INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "scheduled_reports",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "created_by",
+                                                                   "email_recipients",
+                                                                   "is_active",
+                                                                   "next_run_date",
+                                                                   "report_type",
+                                                                   "schedule"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "scheduled_reports.created_by",
+                                                "scheduled_reports.email_recipients",
+                                                "scheduled_reports.is_active",
+                                                "scheduled_reports.next_run_date",
+                                                "scheduled_reports.report_type",
+                                                "scheduled_reports.schedule"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_ToggleActive",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_ToggleActive.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_is_active",
+                                                  "sqlType":  "BOOLEAN",
+                                                  "raw":  "IN p_is_active BOOLEAN"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "scheduled_reports",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "is_active",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "scheduled_reports.is_active",
+                                                "scheduled_reports.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_Update",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_Update.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_report_type",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_report_type VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_schedule",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_schedule VARCHAR(100)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_email_recipients",
+                                                  "sqlType":  "TEXT",
+                                                  "raw":  "IN p_email_recipients TEXT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_next_run_date",
+                                                  "sqlType":  "DATETIME",
+                                                  "raw":  "IN p_next_run_date DATETIME"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "scheduled_reports",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "email_recipients",
+                                                                   "next_run_date",
+                                                                   "report_type",
+                                                                   "schedule",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "scheduled_reports.email_recipients",
+                                                "scheduled_reports.next_run_date",
+                                                "scheduled_reports.report_type",
+                                                "scheduled_reports.schedule",
+                                                "scheduled_reports.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_ScheduledReport_UpdateLastRun",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_ScheduledReport_UpdateLastRun.sql",
+                           "suggestedDao":  "Dao_ScheduledReport",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_ScheduledReport.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_last_run_date",
+                                                  "sqlType":  "DATETIME",
+                                                  "raw":  "IN p_last_run_date DATETIME"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_next_run_date",
+                                                  "sqlType":  "DATETIME",
+                                                  "raw":  "IN p_next_run_date DATETIME"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "scheduled_reports",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "last_run_date",
+                                                                   "next_run_date",
+                                                                   "updated_at"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "scheduled_reports.last_run_date",
+                                                "scheduled_reports.next_run_date",
+                                                "scheduled_reports.updated_at"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SettingsAuditLog_Get",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SettingsAuditLog_Get.sql",
+                           "suggestedDao":  "Dao_SettingsAuditLog",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SettingsAuditLog.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_setting_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_limit",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_limit INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+                                                                  "change_type",
+                                                                  "changed_at",
+                                                                  "changed_by",
+                                                                  "id",
+                                                                  "ip_address",
+                                                                  "new_value",
+                                                                  "old_value",
+                                                                  "setting_id",
+                                                                  "user_setting_id",
+                                                                  "workstation_name"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "system_settings",
+                                                    "reads":  [
+                                                                  "category",
+                                                                  "id",
+                                                                  "setting_key",
+                                                                  "setting_name"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+                                               "settings_audit_log.change_type",
+                                               "settings_audit_log.changed_at",
+                                               "settings_audit_log.changed_by",
+                                               "settings_audit_log.id",
+                                               "settings_audit_log.ip_address",
+                                               "settings_audit_log.new_value",
+                                               "settings_audit_log.old_value",
+                                               "settings_audit_log.setting_id",
+                                               "settings_audit_log.user_setting_id",
+                                               "settings_audit_log.workstation_name",
+                                               "system_settings.category",
+                                               "system_settings.id",
+                                               "system_settings.setting_key",
+                                               "system_settings.setting_name"
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SystemSettings_GetAll",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_GetAll.sql",
+                           "suggestedDao":  "Dao_SystemSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SystemSettings.cs"
+                                                ],
+                           "parameters":  [
+
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SystemSettings_GetByCategory",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_GetByCategory.sql",
+                           "suggestedDao":  "Dao_SystemSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SystemSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_category",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_category VARCHAR(50)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SystemSettings_GetByKey",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_GetByKey.sql",
+                           "suggestedDao":  "Dao_SystemSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SystemSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_category",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_category VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_key",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_setting_key VARCHAR(100)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SystemSettings_ResetToDefault",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_ResetToDefault.sql",
+                           "suggestedDao":  "Dao_SystemSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SystemSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_setting_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_changed_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_changed_by INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_ip_address",
+                                                  "sqlType":  "VARCHAR(45)",
+                                                  "raw":  "IN p_ip_address VARCHAR(45)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_workstation_name",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_workstation_name VARCHAR(100)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "change_type",
+                                                                   "changed_by",
+                                                                   "ip_address",
+                                                                   "new_value",
+                                                                   "old_value",
+                                                                   "setting_id",
+                                                                   "workstation_name"
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "system_settings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "setting_value",
+                                                                   "updated_at",
+                                                                   "updated_by"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "settings_audit_log.change_type",
+                                                "settings_audit_log.changed_by",
+                                                "settings_audit_log.ip_address",
+                                                "settings_audit_log.new_value",
+                                                "settings_audit_log.old_value",
+                                                "settings_audit_log.setting_id",
+                                                "settings_audit_log.workstation_name",
+                                                "system_settings.setting_value",
+                                                "system_settings.updated_at",
+                                                "system_settings.updated_by"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SystemSettings_SetLocked",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_SetLocked.sql",
+                           "suggestedDao":  "Dao_SystemSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SystemSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_setting_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_is_locked",
+                                                  "sqlType":  "BOOLEAN",
+                                                  "raw":  "IN p_is_locked BOOLEAN"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_changed_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_changed_by INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_ip_address",
+                                                  "sqlType":  "VARCHAR(45)",
+                                                  "raw":  "IN p_ip_address VARCHAR(45)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_workstation_name",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_workstation_name VARCHAR(100)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "change_type",
+                                                                   "changed_by",
+                                                                   "ip_address",
+                                                                   "new_value",
+                                                                   "old_value",
+                                                                   "setting_id",
+                                                                   "workstation_name"
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "system_settings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "is_locked",
+                                                                   "updated_at",
+                                                                   "updated_by"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "settings_audit_log.change_type",
+                                                "settings_audit_log.changed_by",
+                                                "settings_audit_log.ip_address",
+                                                "settings_audit_log.new_value",
+                                                "settings_audit_log.old_value",
+                                                "settings_audit_log.setting_id",
+                                                "settings_audit_log.workstation_name",
+                                                "system_settings.is_locked",
+                                                "system_settings.updated_at",
+                                                "system_settings.updated_by"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_SystemSettings_UpdateValue",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_SystemSettings_UpdateValue.sql",
+                           "suggestedDao":  "Dao_SystemSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_SystemSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_setting_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_new_value",
+                                                  "sqlType":  "TEXT",
+                                                  "raw":  "IN p_new_value TEXT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_changed_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_changed_by INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_ip_address",
+                                                  "sqlType":  "VARCHAR(45)",
+                                                  "raw":  "IN p_ip_address VARCHAR(45)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_workstation_name",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_workstation_name VARCHAR(100)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "change_type",
+                                                                   "changed_by",
+                                                                   "ip_address",
+                                                                   "new_value",
+                                                                   "old_value",
+                                                                   "setting_id",
+                                                                   "workstation_name"
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "system_settings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "setting_value",
+                                                                   "updated_at",
+                                                                   "updated_by"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "settings_audit_log.change_type",
+                                                "settings_audit_log.changed_by",
+                                                "settings_audit_log.ip_address",
+                                                "settings_audit_log.new_value",
+                                                "settings_audit_log.old_value",
+                                                "settings_audit_log.setting_id",
+                                                "settings_audit_log.workstation_name",
+                                                "system_settings.setting_value",
+                                                "system_settings.updated_at",
+                                                "system_settings.updated_by"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_UserSettings_Get",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_Get.sql",
+                           "suggestedDao":  "Dao_UserSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_UserSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_user_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_user_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_category",
+                                                  "sqlType":  "VARCHAR(50)",
+                                                  "raw":  "IN p_category VARCHAR(50)"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_key",
+                                                  "sqlType":  "VARCHAR(100)",
+                                                  "raw":  "IN p_setting_key VARCHAR(100)"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "system_settings",
+                                                    "reads":  [
+                                                                  "category",
+                                                                  "data_type",
+                                                                  "description",
+                                                                  "id",
+                                                                  "scope",
+                                                                  "setting_key",
+                                                                  "setting_name",
+                                                                  "setting_value",
+                                                                  "ui_control_type",
+                                                                  "validation_rules"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "user_settings",
+                                                    "reads":  [
+                                                                  "id",
+                                                                  "setting_id",
+                                                                  "setting_value",
+                                                                  "user_id"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+                                               "system_settings.category",
+                                               "system_settings.data_type",
+                                               "system_settings.description",
+                                               "system_settings.id",
+                                               "system_settings.scope",
+                                               "system_settings.setting_key",
+                                               "system_settings.setting_name",
+                                               "system_settings.setting_value",
+                                               "system_settings.ui_control_type",
+                                               "system_settings.validation_rules",
+                                               "user_settings.id",
+                                               "user_settings.setting_id",
+                                               "user_settings.setting_value",
+                                               "user_settings.user_id"
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_UserSettings_GetAllForUser",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_GetAllForUser.sql",
+                           "suggestedDao":  "Dao_UserSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_UserSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_user_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_user_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "system_settings",
+                                                    "reads":  [
+                                                                  "category",
+                                                                  "data_type",
+                                                                  "description",
+                                                                  "id",
+                                                                  "scope",
+                                                                  "setting_key",
+                                                                  "setting_name",
+                                                                  "setting_value",
+                                                                  "ui_control_type",
+                                                                  "ui_order",
+                                                                  "validation_rules"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "user_settings",
+                                                    "reads":  [
+                                                                  "id",
+                                                                  "setting_id",
+                                                                  "setting_value",
+                                                                  "user_id"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+                                               "system_settings.category",
+                                               "system_settings.data_type",
+                                               "system_settings.description",
+                                               "system_settings.id",
+                                               "system_settings.scope",
+                                               "system_settings.setting_key",
+                                               "system_settings.setting_name",
+                                               "system_settings.setting_value",
+                                               "system_settings.ui_control_type",
+                                               "system_settings.ui_order",
+                                               "system_settings.validation_rules",
+                                               "user_settings.id",
+                                               "user_settings.setting_id",
+                                               "user_settings.setting_value",
+                                               "user_settings.user_id"
+                                           ],
+                           "writeColumns":  [
+
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_UserSettings_Reset",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_Reset.sql",
+                           "suggestedDao":  "Dao_UserSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_UserSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_user_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_user_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_setting_id INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "change_type",
+                                                                   "changed_at",
+                                                                   "changed_by",
+                                                                   "new_value",
+                                                                   "old_value",
+                                                                   "setting_id",
+                                                                   "user_setting_id"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "settings_audit_log.change_type",
+                                                "settings_audit_log.changed_at",
+                                                "settings_audit_log.changed_by",
+                                                "settings_audit_log.new_value",
+                                                "settings_audit_log.old_value",
+                                                "settings_audit_log.setting_id",
+                                                "settings_audit_log.user_setting_id"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_UserSettings_ResetAll",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_ResetAll.sql",
+                           "suggestedDao":  "Dao_UserSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_UserSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_user_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_user_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_changed_by",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_changed_by INT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "change_type",
+                                                                   "changed_at",
+                                                                   "changed_by",
+                                                                   "new_value",
+                                                                   "old_value",
+                                                                   "setting_id",
+                                                                   "user_setting_id"
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "user_settings",
+                                                    "reads":  [
+                                                                  "id",
+                                                                  "setting_id",
+                                                                  "setting_value",
+                                                                  "user_id"
+                                                              ],
+                                                    "writes":  [
+
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+                                               "user_settings.id",
+                                               "user_settings.setting_id",
+                                               "user_settings.setting_value",
+                                               "user_settings.user_id"
+                                           ],
+                           "writeColumns":  [
+                                                "settings_audit_log.change_type",
+                                                "settings_audit_log.changed_at",
+                                                "settings_audit_log.changed_by",
+                                                "settings_audit_log.new_value",
+                                                "settings_audit_log.old_value",
+                                                "settings_audit_log.setting_id",
+                                                "settings_audit_log.user_setting_id"
+                                            ]
+                       },
+                       {
+                           "storedProcedure":  "sp_UserSettings_Set",
+                           "sqlFile":  "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_UserSettings_Set.sql",
+                           "suggestedDao":  "Dao_UserSettings",
+                           "missingDao":  false,
+                           "referencedInDaos":  [
+                                                    "Dao_UserSettings.cs"
+                                                ],
+                           "parameters":  [
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_user_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_user_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_id",
+                                                  "sqlType":  "INT",
+                                                  "raw":  "IN p_setting_id INT"
+                                              },
+                                              {
+                                                  "direction":  "IN",
+                                                  "name":  "p_setting_value",
+                                                  "sqlType":  "TEXT",
+                                                  "raw":  "IN p_setting_value TEXT"
+                                              }
+                                          ],
+                           "columnAccess":  [
+                                                {
+                                                    "table":  "settings_audit_log",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "change_type",
+                                                                   "changed_at",
+                                                                   "changed_by",
+                                                                   "new_value",
+                                                                   "old_value",
+                                                                   "setting_id",
+                                                                   "user_setting_id"
+                                                               ]
+                                                },
+                                                {
+                                                    "table":  "user_settings",
+                                                    "reads":  [
+
+                                                              ],
+                                                    "writes":  [
+                                                                   "setting_id",
+                                                                   "setting_value",
+                                                                   "updated_at",
+                                                                   "user_id"
+                                                               ]
+                                                }
+                                            ],
+                           "readColumns":  [
+
+                                           ],
+                           "writeColumns":  [
+                                                "settings_audit_log.change_type",
+                                                "settings_audit_log.changed_at",
+                                                "settings_audit_log.changed_by",
+                                                "settings_audit_log.new_value",
+                                                "settings_audit_log.old_value",
+                                                "settings_audit_log.setting_id",
+                                                "settings_audit_log.user_setting_id",
+                                                "user_settings.setting_id",
+                                                "user_settings.setting_value",
+                                                "user_settings.updated_at",
+                                                "user_settings.user_id"
+                                            ]
+                       }
+                   ]
+}

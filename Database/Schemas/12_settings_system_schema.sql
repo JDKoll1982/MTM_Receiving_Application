@@ -6,6 +6,9 @@
 -- Drop existing tables if they exist (for clean migration)
 DROP TABLE IF EXISTS settings_audit_log;
 DROP TABLE IF EXISTS user_settings;
+DROP TABLE IF EXISTS scheduled_reports;
+DROP TABLE IF EXISTS routing_rules;
+DROP TABLE IF EXISTS package_types;
 DROP TABLE IF EXISTS package_type_mappings;
 DROP TABLE IF EXISTS system_settings;
 
@@ -143,6 +146,87 @@ CREATE TABLE package_type_mappings (
 COMMENT='Part prefix to package type mappings for receiving workflow';
 
 -- =============================================
+-- TABLE: package_types
+-- Master list of package types for CRUD operations
+-- =============================================
+CREATE TABLE IF NOT EXISTS package_types (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Package type definition
+    name VARCHAR(50) NOT NULL COMMENT 'Display name (e.g., Box, Pallet, Crate)',
+    code VARCHAR(20) NOT NULL COMMENT 'Unique code (e.g., BOX, PLT, CRT)',
+    
+    -- Metadata
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by INT NULL COMMENT 'FK to users table',
+    
+    -- Constraints
+    UNIQUE KEY unique_name (name),
+    UNIQUE KEY unique_code (code),
+    INDEX idx_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Master list of package types for receiving operations';
+
+-- =============================================
+-- TABLE: routing_rules
+-- Auto-routing rules with pattern matching
+-- =============================================
+CREATE TABLE IF NOT EXISTS routing_rules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Rule definition
+    match_type ENUM('Part Number', 'Vendor', 'PO Type', 'Part Category') NOT NULL COMMENT 'Type of pattern matching',
+    pattern VARCHAR(100) NOT NULL COMMENT 'Wildcard pattern (e.g., VOL-*, *-BOLT)',
+    destination_location VARCHAR(50) NOT NULL COMMENT 'Target location code',
+    
+    -- Priority (lower = higher priority)
+    priority INT DEFAULT 50 COMMENT 'Priority (1-100, lower executes first)',
+    
+    -- Metadata
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by INT NULL COMMENT 'FK to users table',
+    
+    -- Constraints
+    UNIQUE KEY unique_pattern (match_type, pattern),
+    INDEX idx_priority (priority),
+    INDEX idx_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Auto-routing rules with pattern matching for routing module';
+
+-- =============================================
+-- TABLE: scheduled_reports
+-- Scheduled report configurations
+-- =============================================
+CREATE TABLE IF NOT EXISTS scheduled_reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Report configuration
+    report_type VARCHAR(50) NOT NULL COMMENT 'Report name/type',
+    schedule VARCHAR(100) NOT NULL COMMENT 'Schedule string (e.g., Daily at 8:00 AM)',
+    email_recipients TEXT NULL COMMENT 'Comma-separated email list',
+    
+    -- Execution tracking
+    is_active BOOLEAN DEFAULT TRUE,
+    next_run_date DATETIME NULL COMMENT 'Calculated next run time',
+    last_run_date DATETIME NULL COMMENT 'Last execution timestamp',
+    
+    -- Metadata
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by INT NULL COMMENT 'FK to users table',
+    
+    -- Indexes
+    INDEX idx_next_run (next_run_date),
+    INDEX idx_active (is_active),
+    INDEX idx_report_type (report_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Scheduled report configurations for reporting module';
+
+-- =============================================
 -- Initial Data Migration from appsettings.json
 -- =============================================
 
@@ -213,6 +297,27 @@ INSERT IGNORE INTO package_type_mappings (part_prefix, package_type, is_default,
 ('MCC', 'Coils', FALSE, 1, TRUE),
 ('MMF', 'Sheets', FALSE, 2, TRUE),
 ('DEFAULT', 'Skids', TRUE, 99, TRUE);
+
+-- =============================================
+-- Package Types Initial Data
+-- =============================================
+INSERT IGNORE INTO package_types (name, code, is_active) VALUES
+('Box', 'BOX', TRUE),
+('Pallet', 'PLT', TRUE),
+('Crate', 'CRT', TRUE),
+('Skids', 'SKD', TRUE),
+('Coils', 'COIL', TRUE),
+('Sheets', 'SHT', TRUE),
+('Drums', 'DRM', TRUE),
+('Cartons', 'CTN', TRUE);
+
+-- =============================================
+-- Routing Rules Initial Data (Examples)
+-- =============================================
+INSERT IGNORE INTO routing_rules (match_type, pattern, destination_location, priority, is_active) VALUES
+('Part Number', 'VOL-*', 'VOLVO-AREA', 10, TRUE),
+('Part Number', '*-BOLT', 'HARDWARE', 20, TRUE),
+('Vendor', 'ACME*', 'RECEIVING-1', 30, TRUE);
 
 -- =============================================
 -- Indexes for Performance

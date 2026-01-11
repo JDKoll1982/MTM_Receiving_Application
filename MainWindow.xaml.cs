@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using System;
 
 namespace MTM_Receiving_Application
 {
@@ -12,6 +13,7 @@ namespace MTM_Receiving_Application
     {
         public ViewModel_Shared_MainWindow ViewModel { get; }
         private readonly IService_UserSessionManager _sessionManager;
+        private readonly IService_LoggingUtility _logger;
         private bool _hasNavigatedOnStartup = false;
 
         /// <summary>
@@ -19,11 +21,15 @@ namespace MTM_Receiving_Application
         /// </summary>
         public Frame GetContentFrame() => ContentFrame;
 
-        public MainWindow(ViewModel_Shared_MainWindow viewModel, IService_UserSessionManager sessionManager)
+        public MainWindow(
+            ViewModel_Shared_MainWindow viewModel,
+            IService_UserSessionManager sessionManager,
+            IService_LoggingUtility logger)
         {
             InitializeComponent();
             ViewModel = viewModel;
             _sessionManager = sessionManager;
+            _logger = logger;
 
             // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1450, 900));
@@ -54,6 +60,11 @@ namespace MTM_Receiving_Application
 
             // Subscribe to navigation events once
             ContentFrame.Navigated += ContentFrame_Navigated;
+
+            // Show development tools in debug builds
+#if DEBUG
+            DatabaseTestMenuItem.Visibility = Visibility.Visible;
+#endif
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args)
@@ -86,7 +97,8 @@ namespace MTM_Receiving_Application
             if (args.IsSettingsSelected)
             {
                 PageTitleTextBlock.Text = "Settings";
-                ContentFrame.Navigate(typeof(Module_Settings.Views.View_Settings_Workflow));
+                // TODO: Restore when Settings Views are implemented
+                // ContentFrame.Navigate(typeof(Module_Settings.Views.View_Settings_Workflow));
             }
             else if (args.SelectedItem is NavigationViewItem item)
             {
@@ -116,6 +128,88 @@ namespace MTM_Receiving_Application
                     case "ReportingMainPage":
                         PageTitleTextBlock.Text = "End of Day Reports";
                         ContentFrame.Navigate(typeof(Module_Reporting.Views.View_Reporting_Main));
+                        break;
+                    case "DatabaseTestView":
+                        try
+                        {
+                            _logger.LogInfo("Navigating to Settings Database Test view", "MainWindow");
+
+                            // Defensive checks
+                            if (ContentFrame == null)
+                            {
+                                _logger.LogError("ContentFrame is null - cannot navigate", null, "MainWindow");
+                                throw new InvalidOperationException("ContentFrame is null");
+                            }
+
+                            _logger.LogInfo($"ContentFrame state: IsLoaded={ContentFrame.IsLoaded}, BackStackDepth={ContentFrame.BackStackDepth}", "MainWindow");
+
+                            var viewType = typeof(Module_Settings.Views.View_Settings_DatabaseTest);
+                            _logger.LogInfo($"View type: {viewType.FullName}", "MainWindow");
+
+                            PageTitleTextBlock.Text = "Settings Database Test";
+
+                            // Try navigation with detailed logging
+                            _logger.LogInfo("Calling ContentFrame.Navigate()", "MainWindow");
+                            var navigated = ContentFrame.Navigate(viewType);
+                            _logger.LogInfo($"Navigation result: {navigated}", "MainWindow");
+
+                            if (!navigated)
+                            {
+                                _logger.LogError("Navigation returned false", null, "MainWindow");
+                            }
+                            else
+                            {
+                                _logger.LogInfo("Successfully navigated to Settings Database Test view", "MainWindow");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Failed to navigate to Settings Database Test view: {ex.Message}", ex, "MainWindow");
+
+                            // Build detailed error message
+                            var errorDetails = new System.Text.StringBuilder();
+                            errorDetails.AppendLine("Failed to load Settings Database Test view:");
+                            errorDetails.AppendLine();
+                            errorDetails.AppendLine($"Error Type: {ex.GetType().FullName}");
+                            errorDetails.AppendLine($"Message: {ex.Message}");
+                            errorDetails.AppendLine();
+                            errorDetails.AppendLine("Stack Trace:");
+                            errorDetails.AppendLine(ex.StackTrace ?? "No stack trace available");
+
+                            // Add inner exception details if present
+                            if (ex.InnerException != null)
+                            {
+                                errorDetails.AppendLine();
+                                errorDetails.AppendLine("Inner Exception:");
+                                errorDetails.AppendLine($"Type: {ex.InnerException.GetType().FullName}");
+                                errorDetails.AppendLine($"Message: {ex.InnerException.Message}");
+                                errorDetails.AppendLine($"Stack: {ex.InnerException.StackTrace ?? "No stack trace"}");
+                            }
+
+                            // Show detailed error to user in scrollable view
+                            var scrollViewer = new ScrollViewer
+                            {
+                                Content = new TextBlock
+                                {
+                                    Text = errorDetails.ToString(),
+                                    TextWrapping = TextWrapping.Wrap,
+                                    FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+                                    FontSize = 12,
+                                    IsTextSelectionEnabled = true
+                                },
+                                MaxHeight = 500,
+                                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                            };
+
+                            var errorDialog = new ContentDialog
+                            {
+                                Title = "Navigation Error - Detailed Information",
+                                Content = scrollViewer,
+                                CloseButtonText = "OK",
+                                XamlRoot = this.Content.XamlRoot
+                            };
+                            _ = errorDialog.ShowAsync();
+                        }
                         break;
 
                 }
@@ -184,6 +278,8 @@ namespace MTM_Receiving_Application
                     PageTitleTextBlock.Text = "Internal Routing";
                 });
             }
+            // TODO: Restore when Settings Views are implemented
+            /*
             // If navigated to SettingsWorkflowView, subscribe to ViewModel changes to update header
             else if (ContentFrame.Content is Module_Settings.Views.View_Settings_Workflow settingsView)
             {
@@ -210,6 +306,7 @@ namespace MTM_Receiving_Application
                     };
                 }
             }
+            */
         }
 
         /// <summary>
