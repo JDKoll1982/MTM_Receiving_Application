@@ -247,13 +247,6 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     return Model_ValidationResult.Invalid("PIN must contain only numeric digits");
                 }
 
-                // Check uniqueness
-                var uniqueResult = await _daoUser.IsPinUniqueAsync(pin, excludeEmployeeNumber);
-                if (uniqueResult.Success && uniqueResult.Data == false)
-                {
-                    return Model_ValidationResult.Invalid("This PIN is already in use");
-                }
-
                 return Model_ValidationResult.Valid();
             }
             catch (Exception ex)

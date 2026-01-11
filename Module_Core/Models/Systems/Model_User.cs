@@ -30,7 +30,7 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
 
         /// <summary>
         /// 4-digit numeric PIN for shared terminal login (plain text storage)
-        /// Unique constraint in database
+        /// Not unique across users (shared PINs allowed)
         /// </summary>
         public string Pin { get; set; } = string.Empty;
 

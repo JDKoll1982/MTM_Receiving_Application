@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using MTM_Receiving_Application.Module_Core.Helpers.Database;
+
 
 namespace MTM_Receiving_Application.Module_Core.Data.Authentication
 {
@@ -123,6 +124,23 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 }
 
                 // Return the employee number that was provided
+                // Defaults are seeded server-side by sp_CreateNewUser -> sp_seed_user_default_modes.
+                // Extra safety: best-effort call in case the DB procedure set isn't deployed yet.
+                try
+                {
+                    await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                        _connectionString,
+                        "sp_seed_user_default_modes",
+                        new Dictionary<string, object>
+                        {
+                            { "user_id", user.EmployeeNumber }
+                        });
+                }
+                catch
+                {
+                    // Swallow: defaults are non-critical and must not block first run.
+                }
+
                 return Model_Dao_Result_Factory.Success<int>(user.EmployeeNumber);
             }
             catch (MySqlException ex)
@@ -135,49 +153,11 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
             }
         }
 
+
+
         // ====================================================================
         // Validation Methods
         // ====================================================================
-
-        /// <summary>
-        /// Checks if a PIN is unique across all users.
-        /// </summary>
-        /// <param name="pin">4-digit PIN to check</param>
-        /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
-        /// <returns>Result indicating if PIN is unique</returns>
-        public async Task<Model_Dao_Result<bool>> IsPinUniqueAsync(string pin, int? excludeEmployeeNumber = null)
-        {
-            try
-            {
-                await using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
-
-                var query = excludeEmployeeNumber.HasValue
-                    ? "SELECT COUNT(*) FROM users WHERE pin = @pin AND employee_number != @excludeId"
-                    : "SELECT COUNT(*) FROM users WHERE pin = @pin";
-
-                await using var command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@pin", pin);
-
-                if (excludeEmployeeNumber.HasValue)
-                {
-                    command.Parameters.AddWithValue("@excludeId", excludeEmployeeNumber.Value);
-                }
-
-                var count = Convert.ToInt32(await command.ExecuteScalarAsync());
-                var isUnique = count == 0;
-
-                return Model_Dao_Result_Factory.Success<bool>(isUnique);
-            }
-            catch (MySqlException ex)
-            {
-                return Model_Dao_Result_Factory.Failure<bool>($"Database error: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                return Model_Dao_Result_Factory.Failure<bool>($"Unexpected error: {ex.Message}", ex);
-            }
-        }
 
         /// <summary>
         /// Checks if a Windows username is unique across all users.

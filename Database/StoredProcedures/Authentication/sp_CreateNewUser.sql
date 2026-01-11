@@ -25,7 +25,6 @@ CREATE PROCEDURE sp_CreateNewUser(
 )
 BEGIN
     DECLARE v_existing_count INT DEFAULT 0;
-    DECLARE v_pin_count INT DEFAULT 0;
     DECLARE v_emp_count INT DEFAULT 0;
     
     -- Initialize output parameters
@@ -64,18 +63,6 @@ BEGIN
     IF v_existing_count > 0 THEN
         SET p_error_message = 'Windows username already exists in database';
         ROLLBACK;
-    END IF;
-    
-    -- Check if PIN already in use
-    IF p_error_message IS NULL THEN
-        SELECT COUNT(*) INTO v_pin_count
-        FROM users
-        WHERE pin = p_pin;
-        
-        IF v_pin_count > 0 THEN
-            SET p_error_message = 'This PIN is already in use. Please choose a different PIN';
-            ROLLBACK;
-        END IF;
     END IF;
     
     -- Validate required fields
@@ -123,6 +110,10 @@ BEGIN
         NOW(),
         NOW()
         );
+
+        -- Best-effort seed of default workflow modes.
+        -- Safe even if default_* columns are not yet migrated (procedure checks column existence).
+        CALL sp_seed_user_default_modes(p_employee_number);
         
         -- Commit transaction
         COMMIT;

@@ -122,6 +122,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     authenticatedUser = userCheckResult.User;
                 }
 
+                // Ensure first-run never proceeds with missing defaults.
+                // Database schema may be mid-migration; apply safe app-level defaults.
+                ApplySafeUserDefaults(authenticatedUser);
+
                 // 4. Detect Workstation (50%)
                 UpdateSplash(50, "Detecting workstation configuration...");
                 var workstationConfig = await _authService.DetectWorkstationTypeAsync();
@@ -261,6 +265,24 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private void SetSplashIndeterminate(string message)
         {
             _splashScreen?.ViewModel.SetIndeterminate(message);
+        }
+
+        private static void ApplySafeUserDefaults(Model_User? user)
+        {
+            if (user == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.DefaultReceivingMode))
+            {
+                user.DefaultReceivingMode = "guided";
+            }
+
+            if (string.IsNullOrWhiteSpace(user.DefaultDunnageMode))
+            {
+                user.DefaultDunnageMode = "guided";
+            }
         }
     }
 }

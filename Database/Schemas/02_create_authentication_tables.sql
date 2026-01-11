@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS users (
     employee_number INT AUTO_INCREMENT PRIMARY KEY,
     windows_username VARCHAR(50) UNIQUE NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    pin VARCHAR(4) UNIQUE NOT NULL,
+    pin VARCHAR(4) NOT NULL,
     department VARCHAR(50) NOT NULL,
     shift ENUM('1st Shift', '2nd Shift', '3rd Shift') NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,

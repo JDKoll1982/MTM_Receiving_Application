@@ -46,10 +46,10 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             IProgress<string>? progress = null);
 
         /// <summary>
-        /// Validates PIN format and uniqueness.
+        /// Validates PIN format.
         /// </summary>
         /// <param name="pin">4-digit PIN to validate</param>
-        /// <param name="excludeEmployeeNumber">Optional employee number to exclude from uniqueness check</param>
+        /// <param name="excludeEmployeeNumber">Unused (kept for backward compatibility)</param>
         /// <returns>Validation result with error message if invalid</returns>
         public Task<Model_ValidationResult> ValidatePinAsync(string pin, int? excludeEmployeeNumber = null);
 
