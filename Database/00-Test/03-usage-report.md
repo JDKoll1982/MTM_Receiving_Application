@@ -1,16 +1,16 @@
 # Stored Procedure Usage Analysis
 
-**Generated:** 2026-01-11 13:34:59
+**Generated:** 2026-01-11 14:13:05
 **Database:** mtm_receiving_application
-**Total Stored Procedures:** 153
+**Total Stored Procedures:** 154
 
 ## Summary
 
 | Metric | Count | Percentage |
 |--------|-------|------------|
-| **Used Stored Procedures** | 141 | 92.2% |
+| **Used Stored Procedures** | 142 | 92.2% |
 | **Unused Stored Procedures** | 12 | 7.8% |
-| **Total Usage Locations** | 198 | - |
+| **Total Usage Locations** | 199 | - |
 
 ## Stored Procedures in Use
 
@@ -172,6 +172,7 @@
 | [`sp_update_user_default_mode`](sp-reports/Authentication/IN/sp_update_user_default_mode.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `UpdateDefaultModeAsync` | 349 | ✓ Yes | 3 |
 | [`sp_update_user_default_receiving_mode`](sp-reports/Authentication/IN/sp_update_user_default_receiving_mode.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `UpdateDefaultReceivingModeAsync` | 369 | ✓ Yes | 4 |
 | [`sp_UpdateReceivingLoad`](sp-reports/Receiving/IN/sp_UpdateReceivingLoad.md) | Module_Receiving\Data\Dao_ReceivingLoad.cs | Dao_ReceivingLoad | `UpdateLoadsAsync` | 127 | ✓ Yes | 2 |
+| [`sp_UpsertWorkstationConfig`](sp-reports/Authentication/IN/sp_UpsertWorkstationConfig.md) | Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `UpsertWorkstationConfigAsync` | 281 | ✓ Yes | 2 |
 | [`sp_user_preferences_get_recent_icons`](sp-reports/Dunnage/IN/sp_user_preferences_get_recent_icons.md) | Module_Dunnage\Data\Dao_DunnageUserPreference.cs | Dao_DunnageUserPreference | `GetRecentlyUsedIconsAsync` | 47 | ✓ Yes | 4 |
 | [`sp_user_preferences_upsert`](sp-reports/Dunnage/IN/sp_user_preferences_upsert.md) | Module_Dunnage\Data\Dao_DunnageUserPreference.cs | Dao_DunnageUserPreference | `UpsertAsync` | 32 | ✓ Yes | 3 |
 | [`sp_UserSettings_Get`](sp-reports/Settings/IN/sp_UserSettings_Get.md) | Module_Settings\Data\Dao_UserSettings.cs | Dao_UserSettings | `GetAsync` | 41 | ✓ Yes | 3 |

@@ -1,12 +1,12 @@
 # Stored Procedure Analysis Report
 
-**Generated:** 2026-01-11 13:48:18
+**Generated:** 2026-01-11 14:12:36
 **Database:** mtm_receiving_application
 **Server:** localhost:3306
 
 ## Summary
 
-- **Total Stored Procedures:** 153
+- **Total Stored Procedures:** 154
 - **Execution Groups:** 52
 - **Categories:** 22
 
@@ -14,8 +14,8 @@
 
 | Type                   | Count            |
 | ---------------------- | ---------------- |
-| Total Parameters       | 412 |
-| IN Parameters          | 362    |
+| Total Parameters       | 416 |
+| IN Parameters          | 366    |
 | OUT Parameters         | 50   |
 | INOUT Parameters       | 0 |
 | SPs without Parameters | 18    |
@@ -82,7 +82,7 @@
 - **sp_inventoried_dunnage_get_by_part** - IN: 4
 - **sp_inventoried_dunnage_delete** - IN: 4
 
-### Other (26 procedures)
+### Other (27 procedures)
 
 - **carrier_delivery_label_Insert** - IN: 7 OUT: 2
 - **dunnage_line_Insert** - IN: 7 OUT: 2
@@ -97,6 +97,7 @@
 - **sp_update_user_default_mode** - IN: 2
 - **sp_update_user_default_receiving_mode** - IN: 2
 - **sp_UpsertUser** - IN: 10
+- **sp_UpsertWorkstationConfig** - IN: 4
 - **sp_ValidateUserPin** - IN: 2
 - **sp_custom_fields_get_by_type** - IN: 4
 - **sp_get_user_default_mode** - IN: 4
@@ -264,7 +265,7 @@
 | 200 | Preferences | 1 | sp_routing_user_preference_save |
 | 210 | Settings | 5 | sp_SystemSettings_ResetToDefault, sp_SystemSettings_SetLocked, sp_SystemSettings_UpdateValue, sp_... |
 | 220 | Reports | 4 | sp_ScheduledReport_Insert, sp_ScheduledReport_ToggleActive, sp_ScheduledReport_Update, sp_Schedul... |
-| 999 | Other | 14 | carrier_delivery_label_Insert, dunnage_line_Insert, sp_CreateNewUser, sp_custom_fields_insert, sp... |
+| 999 | Other | 15 | carrier_delivery_label_Insert, dunnage_line_Insert, sp_CreateNewUser, sp_custom_fields_insert, sp... |
 | 1010 | Users | 3 | sp_user_preferences_get_recent_icons, sp_UserSettings_Get, sp_UserSettings_GetAllForUser |
 | 1015 | Departments | 1 | sp_GetDepartments |
 | 1020 | PackageTypes | 11 | sp_GetPackageTypePreference, sp_PackageType_GetAll, sp_PackageType_GetById, sp_PackageType_Insert... |
@@ -311,17 +312,17 @@
 
 | SP Name | Total Params | IN | OUT | INOUT |
 |---------|--------------|-----|-----|-------|
-| sp_InsertReceivingLoad | 13 | 13 | 0 | 0 |
 | sp_UpdateReceivingLoad | 13 | 13 | 0 | 0 |
+| sp_InsertReceivingLoad | 13 | 13 | 0 | 0 |
 | receiving_line_Insert | 12 | 10 | 2 | 0 |
 | sp_custom_fields_insert | 11 | 8 | 3 | 0 |
 | sp_routing_label_insert | 10 | 8 | 2 | 0 |
-| sp_CreateNewUser | 10 | 9 | 4 | 0 |
 | sp_UpsertUser | 10 | 10 | 0 | 0 |
-| carrier_delivery_label_Insert | 9 | 7 | 2 | 0 |
+| sp_CreateNewUser | 10 | 9 | 4 | 0 |
 | dunnage_line_Insert | 9 | 7 | 2 | 0 |
-| sp_routing_label_update | 8 | 7 | 4 | 0 |
+| carrier_delivery_label_Insert | 9 | 7 | 2 | 0 |
 | sp_volvo_shipment_line_insert | 8 | 8 | 0 | 0 |
+| sp_routing_label_update | 8 | 7 | 4 | 0 |
 
 ## 🔧 Fix Checklist
 
@@ -390,3 +391,4 @@
 | [ ] | sp_routing_label_get_today |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
 | [ ] | sp_routing_recipient_get_all |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
 | [ ] | sp_routing_recipient_get_by_name |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
+

@@ -1,41 +1,39 @@
 {
-  "generatedDate": "2026-01-11 13:48:18",
-  "description": "Stored Procedure execution order for testing (avoids FK constraint failures)",
+  "generatedDate": "2026-01-11 14:12:36",
   "executionGroups": [
     {
-      "category": "Users",
       "order": 10,
       "storedProcedures": [
         "sp_user_preferences_upsert",
         "sp_UserSettings_Reset",
         "sp_UserSettings_ResetAll",
         "sp_UserSettings_Set"
-      ]
+      ],
+      "category": "Users"
     },
     {
-      "category": "ReceivingLoads",
       "order": 100,
       "storedProcedures": [
         "sp_InsertReceivingLoad",
         "sp_UpdateReceivingLoad"
-      ]
+      ],
+      "category": "ReceivingLoads"
     },
     {
-      "category": "Users",
       "order": 1010,
       "storedProcedures": [
         "sp_user_preferences_get_recent_icons",
         "sp_UserSettings_Get",
         "sp_UserSettings_GetAllForUser"
-      ]
+      ],
+      "category": "Users"
     },
     {
-      "category": "Departments",
       "order": 1015,
-      "storedProcedures": "sp_GetDepartments"
+      "storedProcedures": "sp_GetDepartments",
+      "category": "Departments"
     },
     {
-      "category": "PackageTypes",
       "order": 1020,
       "storedProcedures": [
         "sp_GetPackageTypePreference",
@@ -49,10 +47,10 @@
         "sp_PackageTypeMappings_Insert",
         "sp_PackageTypeMappings_Update",
         "sp_SavePackageTypePreference"
-      ]
+      ],
+      "category": "PackageTypes"
     },
     {
-      "category": "DunnageTypes",
       "order": 1025,
       "storedProcedures": [
         "sp_dunnage_types_check_duplicate",
@@ -62,10 +60,10 @@
         "sp_dunnage_types_get_by_id",
         "sp_dunnage_types_get_part_count",
         "sp_dunnage_types_get_transaction_count"
-      ]
+      ],
+      "category": "DunnageTypes"
     },
     {
-      "category": "DunnageSpecs",
       "order": 1030,
       "storedProcedures": [
         "sp_dunnage_specs_count_parts_using_spec",
@@ -73,10 +71,10 @@
         "sp_dunnage_specs_get_all_keys",
         "sp_dunnage_specs_get_by_id",
         "sp_dunnage_specs_get_by_type"
-      ]
+      ],
+      "category": "DunnageSpecs"
     },
     {
-      "category": "DunnageParts",
       "order": 1035,
       "storedProcedures": [
         "sp_dunnage_parts_count_transactions",
@@ -85,94 +83,94 @@
         "sp_dunnage_parts_get_by_type",
         "sp_dunnage_parts_get_transaction_count",
         "sp_dunnage_parts_search"
-      ]
+      ],
+      "category": "DunnageParts"
     },
     {
-      "category": "VolvoParts",
       "order": 1040,
       "storedProcedures": [
         "sp_volvo_part_master_get_all",
         "sp_volvo_part_master_get_by_id"
-      ]
+      ],
+      "category": "VolvoParts"
     },
     {
-      "category": "RoutingRecipients",
       "order": 1045,
       "storedProcedures": [
         "sp_routing_recipient_get_all",
         "sp_routing_recipient_get_all_active",
         "sp_routing_recipient_get_by_name",
         "sp_routing_recipient_get_top_by_usage"
-      ]
+      ],
+      "category": "RoutingRecipients"
     },
     {
-      "category": "RoutingReasons",
       "order": 1050,
-      "storedProcedures": "sp_routing_other_reason_get_all_active"
+      "storedProcedures": "sp_routing_other_reason_get_all_active",
+      "category": "RoutingReasons"
     },
     {
-      "category": "ReceivingLoads",
       "order": 1100,
-      "storedProcedures": "sp_GetAllReceivingLoads"
+      "storedProcedures": "sp_GetAllReceivingLoads",
+      "category": "ReceivingLoads"
     },
     {
-      "category": "DunnageLoads",
       "order": 1130,
       "storedProcedures": [
         "sp_dunnage_loads_get_all",
         "sp_dunnage_loads_get_by_date_range",
         "sp_dunnage_loads_get_by_id"
-      ]
+      ],
+      "category": "DunnageLoads"
     },
     {
-      "category": "InventoriedDunnage",
       "order": 1140,
       "storedProcedures": [
         "sp_inventoried_dunnage_check",
         "sp_inventoried_dunnage_get_all",
         "sp_inventoried_dunnage_get_by_part"
-      ]
+      ],
+      "category": "InventoriedDunnage"
     },
     {
-      "category": "RoutingLabels",
       "order": 1150,
       "storedProcedures": [
         "sp_routing_label_check_duplicate",
         "sp_routing_label_get_all",
         "sp_routing_label_get_by_id",
         "sp_routing_label_get_today"
-      ]
+      ],
+      "category": "RoutingLabels"
     },
     {
-      "category": "VolvoShipments",
       "order": 1170,
       "storedProcedures": [
         "sp_volvo_shipment_get_pending",
         "sp_volvo_shipment_history_get"
-      ]
+      ],
+      "category": "VolvoShipments"
     },
     {
-      "category": "VolvoShipmentLines",
       "order": 1180,
-      "storedProcedures": "sp_volvo_shipment_line_get_by_shipment"
+      "storedProcedures": "sp_volvo_shipment_line_get_by_shipment",
+      "category": "VolvoShipmentLines"
     },
     {
-      "category": "VolvoComponents",
       "order": 1190,
-      "storedProcedures": "sp_volvo_part_component_get"
+      "storedProcedures": "sp_volvo_part_component_get",
+      "category": "VolvoComponents"
     },
     {
-      "category": "ReceivingLines",
       "order": 120,
-      "storedProcedures": "receiving_line_Insert"
+      "storedProcedures": "receiving_line_Insert",
+      "category": "ReceivingLines"
     },
     {
-      "category": "Preferences",
       "order": 1200,
-      "storedProcedures": "sp_routing_user_preference_get"
+      "storedProcedures": "sp_routing_user_preference_get",
+      "category": "Preferences"
     },
     {
-      "category": "Settings",
       "order": 1210,
       "storedProcedures": [
         "sp_SettingsAuditLog_Get",
@@ -183,74 +181,74 @@
         "sp_SystemSettings_GetByKey",
         "sp_volvo_settings_get",
         "sp_volvo_settings_get_all"
-      ]
+      ],
+      "category": "Settings"
     },
     {
-      "category": "Reports",
       "order": 1220,
       "storedProcedures": [
         "sp_ScheduledReport_GetActive",
         "sp_ScheduledReport_GetAll",
         "sp_ScheduledReport_GetById",
         "sp_ScheduledReport_GetDue"
-      ]
+      ],
+      "category": "Reports"
     },
     {
-      "category": "DunnageLoads",
       "order": 130,
       "storedProcedures": [
         "sp_dunnage_loads_insert",
         "sp_dunnage_loads_insert_batch",
         "sp_dunnage_loads_update"
-      ]
+      ],
+      "category": "DunnageLoads"
     },
     {
-      "category": "InventoriedDunnage",
       "order": 140,
       "storedProcedures": [
         "sp_inventoried_dunnage_insert",
         "sp_inventoried_dunnage_update"
-      ]
+      ],
+      "category": "InventoriedDunnage"
     },
     {
-      "category": "RoutingLabels",
       "order": 150,
       "storedProcedures": [
         "sp_routing_label_archive",
         "sp_routing_label_insert",
         "sp_routing_label_mark_exported",
         "sp_routing_label_update"
-      ]
+      ],
+      "category": "RoutingLabels"
     },
     {
-      "category": "RoutingHistory",
       "order": 160,
-      "storedProcedures": "sp_routing_label_history_insert"
+      "storedProcedures": "sp_routing_label_history_insert",
+      "category": "RoutingHistory"
     },
     {
-      "category": "VolvoShipments",
       "order": 170,
       "storedProcedures": [
         "sp_volvo_shipment_complete",
         "sp_volvo_shipment_insert",
         "sp_volvo_shipment_update"
-      ]
+      ],
+      "category": "VolvoShipments"
     },
     {
-      "category": "VolvoShipmentLines",
       "order": 180,
       "storedProcedures": [
         "sp_volvo_shipment_line_insert",
         "sp_volvo_shipment_line_update"
-      ]
+      ],
+      "category": "VolvoShipmentLines"
     },
     {
-      "category": "VolvoComponents",
       "order": 190,
-      "storedProcedures": "sp_volvo_part_component_insert"
+      "storedProcedures": "sp_volvo_part_component_insert",
+      "category": "VolvoComponents"
     },
     {
-      "category": "Other",
       "order": 1999,
       "storedProcedures": [
         "sp_custom_fields_get_by_type",
@@ -264,33 +262,33 @@
         "sp_RoutingRule_GetById",
         "sp_RoutingRule_GetByPartNumber",
         "sp_volvo_part_check_references"
-      ]
+      ],
+      "category": "Other"
     },
     {
-      "category": "Preferences",
       "order": 200,
-      "storedProcedures": "sp_routing_user_preference_save"
+      "storedProcedures": "sp_routing_user_preference_save",
+      "category": "Preferences"
     },
     {
-      "category": "DunnageTypes",
       "order": 2025,
-      "storedProcedures": "sp_dunnage_types_delete"
+      "storedProcedures": "sp_dunnage_types_delete",
+      "category": "DunnageTypes"
     },
     {
-      "category": "DunnageSpecs",
       "order": 2030,
       "storedProcedures": [
         "sp_dunnage_specs_delete_by_id",
         "sp_dunnage_specs_delete_by_type"
-      ]
+      ],
+      "category": "DunnageSpecs"
     },
     {
-      "category": "DunnageParts",
       "order": 2035,
-      "storedProcedures": "sp_dunnage_parts_delete"
+      "storedProcedures": "sp_dunnage_parts_delete",
+      "category": "DunnageParts"
     },
     {
-      "category": "Settings",
       "order": 210,
       "storedProcedures": [
         "sp_SystemSettings_ResetToDefault",
@@ -298,115 +296,115 @@
         "sp_SystemSettings_UpdateValue",
         "sp_volvo_settings_reset",
         "sp_volvo_settings_upsert"
-      ]
+      ],
+      "category": "Settings"
     },
     {
-      "category": "ReceivingLoads",
       "order": 2100,
-      "storedProcedures": "sp_DeleteReceivingLoad"
+      "storedProcedures": "sp_DeleteReceivingLoad",
+      "category": "ReceivingLoads"
     },
     {
-      "category": "DunnageLoads",
       "order": 2130,
-      "storedProcedures": "sp_dunnage_loads_delete"
+      "storedProcedures": "sp_dunnage_loads_delete",
+      "category": "DunnageLoads"
     },
     {
-      "category": "InventoriedDunnage",
       "order": 2140,
-      "storedProcedures": "sp_inventoried_dunnage_delete"
+      "storedProcedures": "sp_inventoried_dunnage_delete",
+      "category": "InventoriedDunnage"
     },
     {
-      "category": "RoutingLabels",
       "order": 2150,
-      "storedProcedures": "sp_routing_label_delete"
+      "storedProcedures": "sp_routing_label_delete",
+      "category": "RoutingLabels"
     },
     {
-      "category": "VolvoShipments",
       "order": 2170,
-      "storedProcedures": "sp_volvo_shipment_delete"
+      "storedProcedures": "sp_volvo_shipment_delete",
+      "category": "VolvoShipments"
     },
     {
-      "category": "VolvoShipmentLines",
       "order": 2180,
-      "storedProcedures": "sp_volvo_shipment_line_delete"
+      "storedProcedures": "sp_volvo_shipment_line_delete",
+      "category": "VolvoShipmentLines"
     },
     {
-      "category": "VolvoComponents",
       "order": 2190,
-      "storedProcedures": "sp_volvo_part_component_delete_by_parent"
+      "storedProcedures": "sp_volvo_part_component_delete_by_parent",
+      "category": "VolvoComponents"
     },
     {
-      "category": "Reports",
       "order": 220,
       "storedProcedures": [
         "sp_ScheduledReport_Insert",
         "sp_ScheduledReport_ToggleActive",
         "sp_ScheduledReport_Update",
         "sp_ScheduledReport_UpdateLastRun"
-      ]
+      ],
+      "category": "Reports"
     },
     {
-      "category": "Reports",
       "order": 2220,
-      "storedProcedures": "sp_ScheduledReport_Delete"
+      "storedProcedures": "sp_ScheduledReport_Delete",
+      "category": "Reports"
     },
     {
-      "category": "DunnageTypes",
       "order": 25,
       "storedProcedures": [
         "sp_dunnage_types_insert",
         "sp_dunnage_types_update"
-      ]
+      ],
+      "category": "DunnageTypes"
     },
     {
-      "category": "Other",
       "order": 2999,
-      "storedProcedures": "sp_RoutingRule_Delete"
+      "storedProcedures": "sp_RoutingRule_Delete",
+      "category": "Other"
     },
     {
-      "category": "DunnageSpecs",
       "order": 30,
       "storedProcedures": [
         "sp_dunnage_specs_insert",
         "sp_dunnage_specs_update"
-      ]
+      ],
+      "category": "DunnageSpecs"
     },
     {
-      "category": "PackageTypes",
       "order": 3020,
       "storedProcedures": [
         "sp_DeletePackageTypePreference",
         "sp_PackageType_Delete",
         "sp_PackageTypeMappings_Delete"
-      ]
+      ],
+      "category": "PackageTypes"
     },
     {
-      "category": "DunnageParts",
       "order": 35,
       "storedProcedures": [
         "sp_dunnage_parts_insert",
         "sp_dunnage_parts_update"
-      ]
+      ],
+      "category": "DunnageParts"
     },
     {
-      "category": "VolvoParts",
       "order": 40,
       "storedProcedures": [
         "sp_volvo_part_master_insert",
         "sp_volvo_part_master_set_active",
         "sp_volvo_part_master_update"
-      ]
+      ],
+      "category": "VolvoParts"
     },
     {
-      "category": "RoutingRecipients",
       "order": 45,
       "storedProcedures": [
         "sp_routing_recipient_insert",
         "sp_routing_recipient_update"
-      ]
+      ],
+      "category": "RoutingRecipients"
     },
     {
-      "category": "Other",
       "order": 999,
       "storedProcedures": [
         "carrier_delivery_label_Insert",
@@ -422,8 +420,11 @@
         "sp_update_user_default_mode",
         "sp_update_user_default_receiving_mode",
         "sp_UpsertUser",
+        "sp_UpsertWorkstationConfig",
         "sp_ValidateUserPin"
-      ]
+      ],
+      "category": "Other"
     }
-  ]
+  ],
+  "description": "Stored Procedure execution order for testing (avoids FK constraint failures)"
 }

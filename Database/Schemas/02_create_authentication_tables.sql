@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS departments (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     sort_order INT NOT NULL DEFAULT 999,
     created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    
+
     INDEX idx_departments_active (is_active),
     INDEX idx_departments_sort (sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
@@ -43,14 +43,16 @@ CREATE TABLE IF NOT EXISTS users (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     visual_username VARCHAR(50) NULL,
     visual_password VARCHAR(100) NULL,
+    default_receiving_mode VARCHAR(20) NULL COMMENT 'Default receiving workflow mode: "guided", "manual", or NULL for always showing selection',
+    default_dunnage_mode VARCHAR(20) NULL COMMENT 'Default dunnage workflow mode: "guided", "manual", "edit", or NULL for always showing selection',
     created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(50) NULL,
     modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_users_windows_username (windows_username),
     INDEX idx_users_pin (pin),
     INDEX idx_users_active (is_active),
-    
+
     CONSTRAINT chk_pin_format CHECK (pin REGEXP '^[0-9]{4}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Employee authentication and profile data';
@@ -67,7 +69,7 @@ CREATE TABLE IF NOT EXISTS workstation_config (
     description VARCHAR(200) NULL,
     created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_workstation_name (workstation_name),
     INDEX idx_workstation_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
@@ -84,7 +86,7 @@ CREATE TABLE IF NOT EXISTS user_activity_log (
     workstation_name VARCHAR(50) NULL,
     event_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     details TEXT NULL,
-    
+
     INDEX idx_log_timestamp (event_timestamp),
     INDEX idx_log_username (username),
     INDEX idx_log_event_type (event_type)
@@ -103,7 +105,7 @@ INSERT INTO departments (department_name, is_active, sort_order) VALUES
 ('Maintenance', TRUE, 5),
 ('Administration', TRUE, 6),
 ('Management', TRUE, 7)
-ON DUPLICATE KEY UPDATE 
+ON DUPLICATE KEY UPDATE
     sort_order = VALUES(sort_order),
     is_active = VALUES(is_active);
 
@@ -116,7 +118,7 @@ INSERT INTO workstation_config (workstation_name, workstation_type, is_active, d
 ('MTMDC', 'shared_terminal', TRUE, 'Main shop floor data collection terminal'),
 ('SHOP-FLOOR-01', 'shared_terminal', TRUE, 'Production floor terminal 1'),
 ('SHOP-FLOOR-02', 'shared_terminal', TRUE, 'Production floor terminal 2')
-ON DUPLICATE KEY UPDATE 
+ON DUPLICATE KEY UPDATE
     workstation_type = VALUES(workstation_type),
     is_active = VALUES(is_active),
     description = VALUES(description);
@@ -131,7 +133,7 @@ INSERT INTO users (windows_username, full_name, pin, department, shift, is_activ
 ('MJONES', 'Mary Jones', '5678', 'Shipping', '2nd Shift', TRUE, 'SYSTEM'),
 ('RBROWN', 'Robert Brown', '9012', 'Production', '1st Shift', TRUE, 'SYSTEM'),
 ('ADMIN', 'System Administrator', '0000', 'Administration', '1st Shift', TRUE, 'SYSTEM')
-ON DUPLICATE KEY UPDATE 
+ON DUPLICATE KEY UPDATE
     full_name = VALUES(full_name),
     department = VALUES(department),
     shift = VALUES(shift);

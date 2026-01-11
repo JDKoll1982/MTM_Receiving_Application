@@ -1,6 +1,6 @@
 # Stored Procedure Execution Test Report
 
-**Generated:** 2026-01-11 13:34:36
+**Generated:** 2026-01-11 14:12:43
 **Database:** mtm_receiving_application
 **Server:** localhost:3306
 **Execution Mode:** Alphabetical
@@ -9,11 +9,11 @@
 
 | Metric                     | Count              | Percentage           |
 | -------------------------- | ------------------ | -------------------- |
-| **Total Tests**            | 153    | 100%                 |
-| **Passed**                 | 91         | 59.5%    |
-| **Failed**                 | 62         | 40.5%       |
-| Schema Broken              | 5  | 3.3%     |
-| Runtime Errors             | 57 | 37.3%    |
+| **Total Tests**            | 154    | 100%                 |
+| **Passed**                 | 92         | 59.7%    |
+| **Failed**                 | 62         | 40.3%       |
+| Schema Broken              | 5  | 3.2%     |
+| Runtime Errors             | 57 | 37%    |
 | Constraint Violations      | 0    | 0% |
 | Business Logic Validations | 0   | 0%      |
 
@@ -27,8 +27,8 @@
 | DunnageSpecs | 9 | 7 | 2 | 77.8% |
 | DunnageTypes | 10 | 5 | 5 | 50% |
 | InventoriedDunnage | 6 | 5 | 1 | 83.3% |
-| Other | 26 | 15 | 11 | 57.7% |
-| PackageTypes | 14 | 9 | 5 | 64.3% |
+| Other | 27 | 15 | 12 | 55.6% |
+| PackageTypes | 14 | 10 | 4 | 71.4% |
 | Preferences | 2 | 0 | 2 | 0% |
 | ReceivingLines | 1 | 0 | 1 | 0% |
 | ReceivingLoads | 4 | 2 | 2 | 50% |
@@ -103,6 +103,7 @@ These stored procedures have parameter count mismatches between the database def
 | sp_SystemSettings_SetLocked | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_SystemSettings_SetLocked; expected 5, got 6" | 5 | 0 |
 | sp_UpdateReceivingLoad | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_UpdateReceivingLoad; expected 13, got 14" | 13 | 0 |
 | sp_UpsertUser | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_UpsertUser; expected 10, got 11" | 10 | 0 |
+| sp_UpsertWorkstationConfig | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_UpsertWorkstationConfig; expected 4, got 5" | 4 | 0 |
 | sp_user_preferences_upsert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_user_preferences_upsert; expected 5, got 3" | 3 | 2 |
 | sp_volvo_part_check_references | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_volvo_part_check_references; expected 2, got 1" | 1 | 1 |
 | sp_volvo_part_master_get_all | Exception calling "ExecuteNonQuery" with "0" argument(s): "Incorrect number of arguments for PROCEDURE mtm_receiving_application.sp_volvo_part_master_get_all; expected 1, got 2" | 1 | 0 |
@@ -130,7 +131,6 @@ These stored procedures failed due to data validation issues.
 
 | SP Name | Message |
 |---------|---------|
-| sp_PackageType_Insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Package type name already exists" |
 | sp_PackageType_Update | Exception calling "ExecuteNonQuery" with "0" argument(s): "Package type name already exists" |
 | sp_RoutingRule_Insert | Exception calling "ExecuteNonQuery" with "0" argument(s): "Data truncated for column 'match_type' at row 1" |
 | sp_RoutingRule_Update | Exception calling "ExecuteNonQuery" with "0" argument(s): "Data truncated for column 'match_type' at row 1" |
@@ -151,7 +151,7 @@ These stored procedures failed due to data validation issues.
 - Review and update stored procedure SQL or database schema
 
 ### High Priority: Fix Parameter Mismatches
-- 48 stored procedure(s) have parameter count issues
+- 49 stored procedure(s) have parameter count issues
 - Regenerate mock data: `pwsh -File .\Database\00-Test\01-Generate-SP-TestData.ps1`
 
 ### Improve Test Data
@@ -160,7 +160,7 @@ These stored procedures failed due to data validation issues.
 - Or add prerequisite test data to the database
 
 ### Needs Attention
-- Only 59.5% success rate
+- Only 59.7% success rate
 - Review error categories above and prioritize fixes
 
 

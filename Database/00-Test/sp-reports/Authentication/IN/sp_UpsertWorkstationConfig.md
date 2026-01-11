@@ -1,4 +1,4 @@
-# sp_GetUserByWindowsUsername
+# sp_UpsertWorkstationConfig
 
 **Category:** Authentication
 **Parameter Types:** IN
@@ -12,22 +12,21 @@
 
 | File | Class | Method | Line | Has Callers | Caller Count |
 |------|-------|--------|------|-------------|--------------|
-| Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `GetUserByWindowsUsernameAsync` | 49 | ✓ | 3 |
+| Module_Core\Data\Authentication\Dao_User.cs | Dao_User | `UpsertWorkstationConfigAsync` | 281 | ✓ | 2 |
 
 ## Code Samples
 
 ```csharp
-// Module_Core\Data\Authentication\Dao_User.cs:49
-"sp_GetUserByWindowsUsername",
+// Module_Core\Data\Authentication\Dao_User.cs:281
+"sp_UpsertWorkstationConfig",
 
 ```
 
 ## Method References
 
-### Dao_User.GetUserByWindowsUsernameAsync
-**Called by (3 references):**
+### Dao_User.UpsertWorkstationConfigAsync
+**Called by (2 references):**
 - Same file (1 calls)
 - Module_Core\Services\Authentication\Service_Authentication.cs
-- Module_Settings\Services\Service_UserPreferences.cs
 
 

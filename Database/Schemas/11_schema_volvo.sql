@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS volvo_shipments (
   created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   is_archived TINYINT(1) NOT NULL DEFAULT 0,
-  
+
   PRIMARY KEY (id),
   UNIQUE KEY unique_shipment_per_day (shipment_date, shipment_number),
   INDEX idx_status (status),
@@ -35,16 +35,17 @@ CREATE TABLE IF NOT EXISTS volvo_shipment_lines (
   id INT NOT NULL AUTO_INCREMENT,
   shipment_id INT NOT NULL,
   part_number VARCHAR(20) NOT NULL COMMENT 'From volvo_parts_master',
+  quantity_per_skid INT NOT NULL DEFAULT 0 COMMENT 'Cached quantity per skid from master data at time of shipment',
   received_skid_count INT NOT NULL COMMENT 'User-entered actual count',
   calculated_piece_count INT NOT NULL COMMENT 'Stored snapshot from component explosion',
   has_discrepancy TINYINT(1) NOT NULL DEFAULT 0,
   expected_skid_count INT NULL COMMENT 'Volvo packlist quantity if discrepancy exists',
   discrepancy_note TEXT NULL,
-  
+
   PRIMARY KEY (id),
   INDEX idx_shipment_id (shipment_id),
   INDEX idx_part_number (part_number),
-  
+
   FOREIGN KEY (shipment_id) REFERENCES volvo_shipments(id) ON DELETE CASCADE,
   FOREIGN KEY (part_number) REFERENCES volvo_parts_master(part_number) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo shipment line items';
@@ -57,7 +58,7 @@ CREATE TABLE IF NOT EXISTS volvo_parts_master (
   is_active TINYINT(1) NOT NULL DEFAULT 1 COMMENT '0=deactivated, hidden from dropdowns',
   created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
   PRIMARY KEY (part_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo parts catalog (from DataSheet.csv)';
 
@@ -68,12 +69,12 @@ CREATE TABLE IF NOT EXISTS volvo_part_components (
   parent_part_number VARCHAR(20) NOT NULL,
   component_part_number VARCHAR(20) NOT NULL,
   quantity INT NOT NULL COMMENT 'How many of this component per parent skid',
-  
+
   PRIMARY KEY (id),
   UNIQUE KEY unique_parent_component (parent_part_number, component_part_number),
   INDEX idx_parent (parent_part_number),
   INDEX idx_component (component_part_number),
-  
+
   FOREIGN KEY (parent_part_number) REFERENCES volvo_parts_master(part_number) ON DELETE CASCADE,
   FOREIGN KEY (component_part_number) REFERENCES volvo_parts_master(part_number) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Component explosion for Volvo parts';
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS volvo_part_components (
 -- View: vw_volvo_shipments_history
 -- Purpose: Flattened view for reporting with part details
 CREATE OR REPLACE VIEW vw_volvo_shipments_history AS
-SELECT 
+SELECT
   s.id as shipment_id,
   s.shipment_date,
   s.shipment_number,
@@ -97,3 +98,66 @@ SELECT
 FROM volvo_shipments s
 LEFT JOIN volvo_shipment_lines l ON s.id = l.shipment_id
 ORDER BY s.shipment_date DESC, s.shipment_number DESC;
+
+-- =====================================================
+-- Triggers: Prevent duplicate pending shipments
+-- =====================================================
+DROP TRIGGER IF EXISTS trg_volvo_shipment_prevent_duplicate_pending;
+
+DELIMITER //
+
+CREATE TRIGGER trg_volvo_shipment_prevent_duplicate_pending
+BEFORE INSERT ON volvo_shipments
+FOR EACH ROW
+BEGIN
+    DECLARE pending_count INT;
+
+    -- Only check if new shipment is pending and not archived
+    IF NEW.status = 'pending_po' AND NEW.is_archived = 0 THEN
+        -- Count existing pending, non-archived shipments
+        SELECT COUNT(*) INTO pending_count
+        FROM volvo_shipments
+        WHERE status = 'pending_po'
+          AND is_archived = 0;
+
+        -- If one already exists, prevent insert
+        IF pending_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Only one pending shipment allowed at a time. Complete existing pending shipment first.';
+        END IF;
+    END IF;
+END//
+
+DELIMITER ;
+
+-- Also create trigger for UPDATE to prevent changing status to pending when one exists
+DROP TRIGGER IF EXISTS trg_volvo_shipment_prevent_duplicate_pending_update;
+
+DELIMITER //
+
+CREATE TRIGGER trg_volvo_shipment_prevent_duplicate_pending_update
+BEFORE UPDATE ON volvo_shipments
+FOR EACH ROW
+BEGIN
+    DECLARE pending_count INT;
+
+    -- Only check if updating TO pending status (and not archived)
+    IF NEW.status = 'pending_po' AND NEW.is_archived = 0
+       AND (OLD.status != 'pending_po' OR OLD.is_archived = 1) THEN
+
+        -- Count existing pending, non-archived shipments (excluding current row)
+        SELECT COUNT(*) INTO pending_count
+        FROM volvo_shipments
+        WHERE status = 'pending_po'
+          AND is_archived = 0
+          AND id != NEW.id;
+
+        -- If one already exists, prevent update
+        IF pending_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Only one pending shipment allowed at a time. Complete existing pending shipment first.';
+        END IF;
+    END IF;
+END//
+
+DELIMITER ;

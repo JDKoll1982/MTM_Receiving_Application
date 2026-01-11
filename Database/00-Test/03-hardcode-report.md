@@ -1,6 +1,6 @@
 # Hardcoded SQL Query Analysis
 
-**Generated:** 2026-01-11 13:34:59
+**Generated:** 2026-01-11 14:13:05
 **Total Queries Found:** 3
 
 ## Summary

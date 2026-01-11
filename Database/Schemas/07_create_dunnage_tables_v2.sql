@@ -32,6 +32,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE dunnage_types (
     id INT AUTO_INCREMENT PRIMARY KEY,
     type_name VARCHAR(100) NOT NULL UNIQUE,
+    icon VARCHAR(50) NOT NULL DEFAULT 'PackageVariantClosed' COMMENT 'MaterialIconKind name (e.g., PackageVariantClosed, Folder)',
     created_by VARCHAR(50) NOT NULL,
     created_date DATETIME NOT NULL,
     modified_by VARCHAR(50),
@@ -51,9 +52,9 @@ CREATE TABLE dunnage_specs (
     created_date DATETIME NOT NULL,
     modified_by VARCHAR(50),
     modified_date DATETIME,
-    CONSTRAINT FK_dunnage_specs_type_id 
-        FOREIGN KEY (type_id) 
-        REFERENCES dunnage_types(id) 
+    CONSTRAINT FK_dunnage_specs_type_id
+        FOREIGN KEY (type_id)
+        REFERENCES dunnage_types(id)
         ON DELETE CASCADE,
     UNIQUE KEY UK_dunnage_specs_type_key (type_id, spec_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -67,13 +68,14 @@ CREATE TABLE dunnage_parts (
     part_id VARCHAR(50) NOT NULL UNIQUE,
     type_id INT NOT NULL,
     spec_values JSON,
+    home_location VARCHAR(100) NULL COMMENT 'Default storage location for this dunnage part',
     created_by VARCHAR(50) NOT NULL,
     created_date DATETIME NOT NULL,
     modified_by VARCHAR(50),
     modified_date DATETIME,
-    CONSTRAINT FK_dunnage_parts_type_id 
-        FOREIGN KEY (type_id) 
-        REFERENCES dunnage_types(id) 
+    CONSTRAINT FK_dunnage_parts_type_id
+        FOREIGN KEY (type_id)
+        REFERENCES dunnage_types(id)
         ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -90,9 +92,11 @@ CREATE TABLE dunnage_loads (
     created_date DATETIME NOT NULL,
     modified_by VARCHAR(50),
     modified_date DATETIME,
-    CONSTRAINT FK_dunnage_loads_part_id 
-        FOREIGN KEY (part_id) 
-        REFERENCES dunnage_parts(part_id) 
+    INDEX IDX_LOADS_DATE (received_date) COMMENT 'Edit Mode date range filtering',
+    INDEX IDX_LOADS_USER (created_by) COMMENT 'Edit Mode user filtering',
+    CONSTRAINT FK_dunnage_loads_part_id
+        FOREIGN KEY (part_id)
+        REFERENCES dunnage_parts(part_id)
         ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -109,8 +113,41 @@ CREATE TABLE inventoried_dunnage (
     created_date DATETIME NOT NULL,
     modified_by VARCHAR(50),
     modified_date DATETIME,
-    CONSTRAINT FK_inventoried_dunnage_part_id 
-        FOREIGN KEY (part_id) 
-        REFERENCES dunnage_parts(part_id) 
+    CONSTRAINT FK_inventoried_dunnage_part_id
+        FOREIGN KEY (part_id)
+        REFERENCES dunnage_parts(part_id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Table 6: custom_field_definitions
+-- Purpose: User-defined custom fields for dunnage types (Add Type Dialog)
+-- =============================================
+CREATE TABLE IF NOT EXISTS custom_field_definitions (
+    ID INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for each custom field',
+    DunnageTypeID INT NOT NULL COMMENT 'References dunnage_types.ID',
+    FieldName VARCHAR(100) NOT NULL COMMENT 'Display name of the field (e.g., "Weight (lbs)")',
+    DatabaseColumnName VARCHAR(64) NOT NULL COMMENT 'Sanitized column name for database (e.g., "weight_lbs")',
+    FieldType VARCHAR(20) NOT NULL COMMENT 'Field type: Text, Number, Date, Boolean',
+    DisplayOrder INT NOT NULL COMMENT 'Order of field in UI (1, 2, 3, ...)',
+    IsRequired BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Whether field is mandatory during data entry',
+    ValidationRules TEXT NULL COMMENT 'JSON validation rules (e.g., {"min": 1, "max": 9999, "decimals": 2})',
+    CreatedDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when field was created',
+    CreatedBy VARCHAR(50) NOT NULL COMMENT 'Username of person who created the field',
+    FOREIGN KEY (DunnageTypeID) REFERENCES dunnage_types(ID) ON DELETE CASCADE,
+    UNIQUE KEY IDX_CUSTOM_002 (DunnageTypeID, DatabaseColumnName) COMMENT 'Prevent duplicate columns per type',
+    KEY IDX_CUSTOM_001 (DunnageTypeID) COMMENT 'FK lookup performance'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='User-defined custom fields for Add Type Dialog';
+
+-- =============================================
+-- Table 7: user_preferences
+-- Purpose: Per-user UI preferences (recently used icons, pagination settings)
+-- =============================================
+CREATE TABLE IF NOT EXISTS user_preferences (
+    ID INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for each preference record',
+    UserId VARCHAR(50) NOT NULL COMMENT 'Windows username or employee number',
+    PreferenceKey VARCHAR(100) NOT NULL COMMENT 'Preference identifier (e.g., icon_usage_history, pagination_size)',
+    PreferenceValue TEXT NOT NULL COMMENT 'JSON value for the preference',
+    LastUpdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last update',
+    UNIQUE KEY IDX_PREF_001 (UserId, PreferenceKey) COMMENT 'One value per user per key'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Per-user UI preferences for icon picker, pagination, etc.';

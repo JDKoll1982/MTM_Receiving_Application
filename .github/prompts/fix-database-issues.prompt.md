@@ -88,7 +88,7 @@ For each schema issue in the Database Schema Issues table:
 
 ### Step 2.1: Investigate the Issue
 
-1. Read the stored procedure file: `Database/StoredProcedures/{SP_Name}.sql`
+1. Read the stored procedure file: `Database/StoredProcedures/{SP_SubDirectory}/{SP_Name}.sql`
 2. Identify the exact missing column/table referenced
 3. Determine if it's a:
    - Typo in the SP (fix SP code)
@@ -140,7 +140,7 @@ Example for `receiving_line_Insert`:
 
 ```bash
 # Read the actual SP definition
-Get-Content Database/StoredProcedures/{SP_Name}.sql
+Get-Content Database/StoredProcedures/{SP_SubDirectory}/{SP_Name}.sql
 ```
 
 Identify:
@@ -385,7 +385,7 @@ If new patterns were established:
 ### Step 6.3: Commit Changes
 
 ```bash
-git add Database/StoredProcedures/*.sql
+git add Database/StoredProcedures/*/*.sql`
 git add Module_*/Data/Dao_*.cs
 git add Database/Schemas/*.sql
 git add Database/Migrations/*.sql
