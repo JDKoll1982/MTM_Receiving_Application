@@ -1,0 +1,151 @@
+<svg width="900" height="750" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="900" height="750" fill="#f9f9f9" />
+
+    <!-- Header -->
+    <rect x="0" y="0" width="900" height="80" fill="white" />
+    <text x="40" y="50" font-family="Segoe UI" font-size="28" font-weight="600" fill="#1a1a1a">User Preferences</text>
+    <text x="40" y="70" font-family="Segoe UI" font-size="12" fill="#666">Personalization and User Interface
+        Settings</text>
+
+    <!-- Content -->
+    <g transform="translate(40, 120)">
+        <!-- Appearance -->
+        <text x="0" y="0" font-family="Segoe UI" font-size="18" font-weight="600" fill="#5c2d91">Appearance</text>
+
+        <!-- Theme -->
+        <g transform="translate(0, 30)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Theme</text>
+            <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Application color theme</text>
+            <rect x="0" y="28" width="200" height="32" rx="4" fill="white" stroke="#d1d1d1" stroke-width="1" />
+            <text x="10" y="50" font-family="Segoe UI" font-size="14" fill="#1a1a1a">System Default</text>
+            <path d="M 170 44 L 175 49 L 180 44" stroke="#666" stroke-width="2" fill="none" />
+        </g>
+
+        <!-- Font size -->
+        <g transform="translate(0, 110)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Font Size</text>
+            <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Application text size (10-18)</text>
+            <rect x="0" y="28" width="150" height="32" rx="4" fill="white" stroke="#d1d1d1" stroke-width="1" />
+            <text x="10" y="50" font-family="Segoe UI" font-size="14" fill="#1a1a1a">14</text>
+            <g transform="translate(120, 28)">
+                <rect x="0" y="0" width="30" height="16" fill="#f3f3f3" stroke="#d1d1d1" stroke-width="1" />
+                <path d="M 10 12 L 15 6 L 20 12" stroke="#666" stroke-width="1.5" fill="none" />
+                <rect x="0" y="16" width="30" height="16" fill="#f3f3f3" stroke="#d1d1d1" stroke-width="1" />
+                <path d="M 10 20 L 15 26 L 20 20" stroke="#666" stroke-width="1.5" fill="none" />
+            </g>
+        </g>
+
+        <!-- Compact mode -->
+        <g transform="translate(0, 190)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Use Compact Mode</text>
+            <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Reduce spacing for denser layout</text>
+            <g transform="translate(0, 35)">
+                <rect x="0" y="0" width="44" height="20" rx="10" fill="#e0e0e0" />
+                <circle cx="11" cy="10" r="8" fill="white" />
+                <text x="60" y="14" font-family="Segoe UI" font-size="13" fill="#666">Off</text>
+            </g>
+        </g>
+
+        <!-- Behavior -->
+        <g transform="translate(0, 280)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="18" font-weight="600" fill="#5c2d91">Behavior</text>
+        </g>
+
+        <!-- Sound effects -->
+        <g transform="translate(0, 310)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Enable Sound Effects</text>
+            <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Play sounds for notifications and
+                actions</text>
+            <g transform="translate(0, 35)">
+                <rect x="0" y="0" width="44" height="20" rx="10" fill="#0078d4" />
+                <circle cx="33" cy="10" r="8" fill="white" />
+                <text x="60" y="14" font-family="Segoe UI" font-size="13" fill="#0078d4">On</text>
+            </g>
+        </g>
+
+        <!-- Confirm actions -->
+        <g transform="translate(0, 390)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Confirm Destructive Actions</text>
+            <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Show confirmation dialogs for
+                delete/cancel</text>
+            <g transform="translate(0, 35)">
+                <rect x="0" y="0" width="44" height="20" rx="10" fill="#0078d4" />
+                <circle cx="33" cy="10" r="8" fill="white" />
+                <text x="60" y="14" font-family="Segoe UI" font-size="13" fill="#0078d4">On</text>
+            </g>
+        </g>
+
+        <!-- Right Column: Data -->
+        <g transform="translate(450, 0)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="18" font-weight="600" fill="#5c2d91">Data Display</text>
+
+            <!-- Date format -->
+            <g transform="translate(0, 30)">
+                <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Date Format</text>
+                <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">How dates are displayed</text>
+                <rect x="0" y="28" width="250" height="32" rx="4" fill="white" stroke="#d1d1d1" stroke-width="1" />
+                <text x="10" y="50" font-family="Segoe UI" font-size="14" fill="#1a1a1a">MM/DD/YYYY</text>
+                <path d="M 220 44 L 225 49 L 230 44" stroke="#666" stroke-width="2" fill="none" />
+            </g>
+
+            <!-- Time format -->
+            <g transform="translate(0, 110)">
+                <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Time Format</text>
+                <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">12-hour or 24-hour clock</text>
+                <rect x="0" y="28" width="200" height="32" rx="4" fill="white" stroke="#d1d1d1" stroke-width="1" />
+                <text x="10" y="50" font-family="Segoe UI" font-size="14" fill="#1a1a1a">12-hour (AM/PM)</text>
+                <path d="M 170 44 L 175 49 L 180 44" stroke="#666" stroke-width="2" fill="none" />
+            </g>
+
+            <!-- Rows per page -->
+            <g transform="translate(0, 190)">
+                <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Rows Per Page</text>
+                <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Default pagination size
+                    (10-100)</text>
+                <rect x="0" y="28" width="150" height="32" rx="4" fill="white" stroke="#d1d1d1" stroke-width="1" />
+                <text x="10" y="50" font-family="Segoe UI" font-size="14" fill="#1a1a1a">25</text>
+                <g transform="translate(120, 28)">
+                    <rect x="0" y="0" width="30" height="16" fill="#f3f3f3" stroke="#d1d1d1" stroke-width="1" />
+                    <path d="M 10 12 L 15 6 L 20 12" stroke="#666" stroke-width="1.5" fill="none" />
+                    <rect x="0" y="16" width="30" height="16" fill="#f3f3f3" stroke="#d1d1d1" stroke-width="1" />
+                    <path d="M 10 20 L 15 26 L 20 20" stroke="#666" stroke-width="1.5" fill="none" />
+                </g>
+            </g>
+
+            <!-- Show tooltips -->
+            <g transform="translate(0, 280)">
+                <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Show Tooltips</text>
+                <text x="0" y="18" font-family="Segoe UI" font-size="12" fill="#666">Display helpful tooltips on
+                    hover</text>
+                <g transform="translate(0, 35)">
+                    <rect x="0" y="0" width="44" height="20" rx="10" fill="#0078d4" />
+                    <circle cx="33" cy="10" r="8" fill="white" />
+                    <text x="60" y="14" font-family="Segoe UI" font-size="13" fill="#0078d4">On</text>
+                </g>
+            </g>
+        </g>
+
+        <!-- Reset button -->
+        <g transform="translate(0, 520)">
+            <rect x="0" y="0" width="180" height="36" rx="4" fill="transparent" stroke="#d83b01" stroke-width="1" />
+            <text x="90" y="23" font-family="Segoe UI" font-size="14" fill="#d83b01" text-anchor="middle">Reset to
+                Defaults</text>
+        </g>
+    </g>
+
+    <!-- Footer -->
+    <g transform="translate(0, 670)">
+        <rect x="0" y="0" width="900" height="80" fill="white" stroke="#e0e0e0" stroke-width="1" />
+        <g transform="translate(650, 25)">
+            <rect x="0" y="0" width="100" height="32" rx="4" fill="#0078d4" />
+            <text x="50" y="21" font-family="Segoe UI" font-size="14" font-weight="600" fill="white"
+                text-anchor="middle">Save</text>
+        </g>
+        <g transform="translate(530, 25)">
+            <rect x="0" y="0" width="100" height="32" rx="4" fill="transparent" stroke="#d1d1d1" stroke-width="1" />
+            <text x="50" y="21" font-family="Segoe UI" font-size="14" fill="#1a1a1a" text-anchor="middle">Cancel</text>
+        </g>
+        <text x="40" y="45" font-family="Segoe UI" font-size="12" fill="#666">Changes apply immediately</text>
+    </g>
+</svg>

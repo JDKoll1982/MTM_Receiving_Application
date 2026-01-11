@@ -1,0 +1,44 @@
+<svg width="450" height="230" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background overlay -->
+    <rect width="450" height="230" fill="#000000" opacity="0.4" />
+
+    <!-- Dialog -->
+    <g transform="translate(50, 40)">
+        <rect width="350" height="150" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" />
+
+        <!-- Title bar -->
+        <rect width="350" height="48" rx="8" fill="white" />
+        <text x="20" y="32" font-family="Segoe UI" font-size="18" font-weight="600" fill="#1a1a1a">Reset
+            Preferences</text>
+
+        <!-- Content -->
+        <g transform="translate(20, 60)">
+            <text x="0" y="0" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Reset all preferences to default
+                values?</text>
+            <text x="0" y="24" font-family="Segoe UI" font-size="13" fill="#666">Your current theme, font size, and
+                display settings</text>
+            <text x="0" y="42" font-family="Segoe UI" font-size="13" fill="#666">will be restored to system
+                defaults.</text>
+        </g>
+
+        <!-- Button bar -->
+        <g transform="translate(0, 102)">
+            <rect y="0" width="350" height="48" fill="#f9f9f9" />
+            <line x1="0" y1="0" x2="350" y2="0" stroke="#e0e0e0" stroke-width="1" />
+
+            <!-- Reset button -->
+            <g transform="translate(230, 8)">
+                <rect width="100" height="32" rx="4" fill="#0078d4" />
+                <text x="50" y="21" font-family="Segoe UI" font-size="14" font-weight="600" fill="white"
+                    text-anchor="middle">Reset</text>
+            </g>
+
+            <!-- Cancel button -->
+            <g transform="translate(115, 8)">
+                <rect width="100" height="32" rx="4" fill="transparent" stroke="#d1d1d1" stroke-width="1" />
+                <text x="50" y="21" font-family="Segoe UI" font-size="14" fill="#1a1a1a"
+                    text-anchor="middle">Cancel</text>
+            </g>
+        </g>
+    </g>
+</svg>

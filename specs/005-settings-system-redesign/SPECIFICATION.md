@@ -25,28 +25,21 @@ This specification outlines the complete redesign of the MTM Receiving Applicati
 
 ### Database-Driven Configuration
 
-```
-┌─────────────────┐
-│ appsettings.json│  ← Deployment-time only (connection strings, environment)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   MySQL  Database│
-│                 │
-│ ┌──────────────┐│
-│ │system_settings││ ← All configurable settings
-│ └──────────────┘│
-│ ┌──────────────┐│
-│ │user_settings  ││ ← User-specific overrides
-│ └──────────────┘│
-│ ┌──────────────┐│
-│ │audit_log      ││ ← Change tracking
-│ └──────────────┘│
-│ ┌──────────────┐│
-│ │package_mappings│ ← Business rule data
-│ └──────────────┘│
-└─────────────────┘
+```mermaid
+flowchart TD
+    A[appsettings.json<br/>Deployment-time only<br/>connection strings, environment] --> B[MySQL Database]
+    
+    B --> C[system_settings<br/>All configurable settings]
+    B --> D[user_settings<br/>User-specific overrides]
+    B --> E[audit_log<br/>Change tracking]
+    B --> F[package_mappings<br/>Business rule data]
+    
+    style A fill:#e1f5ff
+    style B fill:#fff4e6
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#f3e5f5
+    style F fill:#f3e5f5
 ```
 
 ### Permission Levels
@@ -142,6 +135,59 @@ Business rules for part prefix → package type mapping.
 - `display_order`
 - `is_active`
 - `created_at`, `updated_at`, `created_by`
+
+#### 5. `package_types`
+
+Master list of package types for CRUD operations (from Receiving Settings).
+
+**Columns:**
+
+- `id` (PK)
+- `name` - Display name (e.g., 'Box', 'Pallet', 'Crate')
+- `code` - Unique code (e.g., 'BOX', 'PLT', 'CRT')
+- `is_active`
+- `created_at`, `updated_at`
+
+**Constraints:**
+- `UNIQUE (name)`
+- `UNIQUE (code)`
+
+#### 6. `routing_rules`
+
+Auto-routing rules with pattern matching (from Routing Settings).
+
+**Columns:**
+
+- `id` (PK)
+- `match_type` - ENUM('Part Number', 'Vendor', 'PO Type', 'Part Category')
+- `pattern` - Wildcard pattern (e.g., 'VOL-*', '*-BOLT')
+- `destination_location` - Target location code
+- `priority` - Lower = higher priority (1-100)
+- `is_active`
+- `created_at`, `updated_at`
+
+**Constraints:**
+- `UNIQUE (match_type, pattern)`
+- `INDEX (priority)`
+
+#### 7. `scheduled_reports`
+
+Scheduled report configurations (from Reporting Settings).
+
+**Columns:**
+
+- `id` (PK)
+- `report_type` - Report name
+- `schedule` - Schedule string (e.g., 'Daily at 8:00 AM')
+- `email_recipients` - Comma-separated email list
+- `is_active`
+- `next_run_date` - Calculated next run time
+- `last_run_date` - Last execution time
+- `created_at`, `updated_at`
+
+**Constraints:**
+- `INDEX (next_run_date)`
+- `INDEX (is_active)`
 
 ---
 
@@ -510,6 +556,61 @@ All inherit from template pattern (see `SettingsPageTemplate.xaml`).
 - `View_Settings_Volvo.xaml`
 - `View_Settings_Reporting.xaml`
 - `View_Settings_UserPreferences.xaml`
+
+#### Modal Dialogs (ContentDialogs)
+
+All modals documented in `mockups/MODAL_INDEX.md` with complete implementation guides:
+
+**CRUD Dialogs:**
+- `PackageTypeDialog.xaml` - Add/edit package types with validation
+- `RoutingRuleDialog.xaml` - Add/edit routing rules with pattern matching
+- `ScheduleReportDialog.xaml` - Configure scheduled reports
+
+**Confirmation Dialogs:**
+- Standard delete confirmations (with usage validation)
+- Reset preferences confirmation
+- Encryption key rotation warning (critical operation)
+
+**Informational Dialogs:**
+- Database connection test results (MySQL)
+- ERP connection test results (SQL Server with ApplicationIntent=ReadOnly)
+- Manual sync progress with IProgress<T>
+
+**WinUI 3 Controls Used:**
+- `ContentDialog` - All modal dialogs
+- `TextBox` - Text input with validation
+- `NumberBox` - Numeric input with spin buttons and min/max
+- `ToggleSwitch` - Boolean settings
+- `ComboBox` - Dropdown selections
+- `PasswordBox` - Encrypted credentials with show/hide
+- `DataGrid` - Package type mappings, routing rules
+- `InfoBar` - Warnings and notifications
+- `ProgressRing` - Loading indicators
+- `ProgressBar` - Sync operations
+
+**Validation Patterns:**
+- Required field validation
+- Pattern validation (regex for codes, emails, wildcards)
+- Range validation (min/max for NumberBox)
+- Unique constraint validation (database lookups)
+- Email list validation (comma-separated)
+- Usage validation before deletion
+
+**Service Implementations:**
+- Connection testing with friendly error messages
+- Encryption key rotation with re-encryption workflow  
+- Master data synchronization with progress reporting
+- Schedule parsing (daily/weekly/monthly patterns)
+- Routing pattern matching (`*` wildcard support)
+- Package type usage counting
+
+**Error Handling:**
+- SQL Server error code mapping (2, 4060, 18456, etc.)
+- MySQL error code mapping (0, 1042, 1045, 1049, 2002, 2003)
+- Friendly user messages for common errors
+- InfoBar for warnings
+- ContentDialog for validation errors
+- `Model_Dao_Result<T>` pattern throughout
 
 ---
 

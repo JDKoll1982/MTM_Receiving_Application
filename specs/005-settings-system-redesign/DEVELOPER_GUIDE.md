@@ -1,16 +1,20 @@
 # Settings System - Developer Quick Start Guide
 
 ## 🎯 Goal
+
 Implement the new database-driven settings system to replace hardcoded configuration values.
 
 ## 🏗️ Architecture at a Glance
 
-```
-User → ViewModel → Service → DAO → Stored Procedure → MySQL Database
-                      ↓
-                   Cache
-                      ↓
-                  Encryption (for sensitive values)
+```mermaid
+graph LR
+    User[User] --> ViewModel[ViewModel]
+    ViewModel --> Service[Service]
+    Service --> DAO[DAO]
+    DAO --> SP[Stored Procedure]
+    SP --> DB[(MySQL Database)]
+    Service --> Cache[Cache]
+    Service --> Encryption[Encryption<br/>for sensitive values]
 ```
 
 ## 🚦 Getting Started
@@ -38,24 +42,35 @@ mysql -h localhost -P 3306 -u root -p mtm_receiving_application -e "SELECT COUNT
 Location: `Module_Core/Models/Settings/`
 
 Create these files:
+
 - `Model_SystemSetting.cs`
 - `Model_UserSetting.cs`
 - `Model_SettingValue.cs`
 - `Model_PackageTypeMapping.cs`
+- `Model_PackageType.cs`
+- `Model_RoutingRule.cs`
+- `Model_ScheduledReport.cs`
 - `Model_SettingsAuditLog.cs`
+- `Model_ConnectionTestResult.cs` (for connection test modals)
+- `Model_DatabaseTestResult.cs` (for database test modals)
 
-See `SPECIFICATION.md` for complete model code.
+See `SPECIFICATION.md` and `mockups/*.md` files for complete model code.
 
 ### 3. Create DAOs
 
 Location: `Module_Core/Data/Settings/`
 
 Create instance-based DAOs:
+
 - `Dao_SystemSettings.cs`
 - `Dao_UserSettings.cs`
 - `Dao_PackageTypeMappings.cs`
+- `Dao_PackageType.cs` (for package type CRUD with usage validation)
+- `Dao_RoutingRule.cs` (for routing rules with pattern matching)
+- `Dao_ScheduledReport.cs` (for scheduled reports)
 
 **Pattern:**
+
 ```csharp
 public class Dao_SystemSettings
 {
@@ -115,12 +130,20 @@ public class Dao_SystemSettings
 Location: `Module_Core/Services/Settings/`
 
 Create:
+
 - `IService_Settings.cs` (interface)
 - `Service_Settings.cs` (implementation)
 - `IService_SettingsCache.cs` (interface)
 - `Service_SettingsCache.cs` (implementation)
+- `IService_Encryption.cs` (for sensitive values)
+- `Service_Encryption.cs` (AES-256 encryption with key rotation)
+- `IService_InforVisual.cs` (connection testing, read-only queries)
+- `Service_InforVisual.cs` (SQL Server connection with ApplicationIntent=ReadOnly)
+- `IService_VolvoMasterData.cs` (synchronization with progress)
+- `Service_VolvoMasterData.cs` (master data sync with IProgress<string>)
 
 **Key Service Methods:**
+
 ```csharp
 public class Service_Settings : IService_Settings
 {
@@ -277,6 +300,7 @@ public class Service_Settings : IService_Settings
 ### 5. Register in DI Container
 
 **`App.xaml.cs`:**
+
 ```csharp
 private static IServiceProvider ConfigureServices()
 {
@@ -315,6 +339,7 @@ private static IServiceProvider ConfigureServices()
 ### 6. Create ViewModels
 
 **Base ViewModel:**
+
 ```csharp
 public abstract partial class ViewModel_Settings_Base : ViewModel_Shared_Base
 {
@@ -406,6 +431,7 @@ public abstract partial class ViewModel_Settings_Base : ViewModel_Shared_Base
 ```
 
 **Category ViewModel Example:**
+
 ```csharp
 public partial class ViewModel_Settings_System : ViewModel_Settings_Base
 {
@@ -439,6 +465,7 @@ public partial class ViewModel_Settings_System : ViewModel_Settings_Base
 Use the template in `templates/SettingsPageTemplate.xaml` as a starting point.
 
 Customize for each category by:
+
 1. Setting correct category title/icon
 2. Binding to category-specific ViewModel
 3. Adding category-specific controls (e.g., DataGrid for package mappings)
@@ -446,6 +473,7 @@ Customize for each category by:
 ### 8. Replace Hardcoded Values
 
 **Before:**
+
 ```csharp
 // Hardcoded in code
 private const int DEFAULT_TIMEOUT = 15;
@@ -455,6 +483,7 @@ var timeout = _appSettings.Value.SharedTerminalTimeout;
 ```
 
 **After:**
+
 ```csharp
 // From settings service
 var timeoutSetting = await _settingsService.GetSettingAsync("Security", "SharedTerminalTimeoutMinutes");
@@ -495,21 +524,25 @@ Assert.IsTrue(saveResult.IsSuccess);
 ## 🔧 Troubleshooting
 
 ### "Setting not found" error
+
 - Verify database was seeded with initial data
 - Check `setting_key` matches exactly (case-sensitive)
 - Ensure category is correct
 
 ### "Setting is locked" error
+
 - Check `is_locked` flag in database
 - Only Super Admin can unlock settings
 - Use `sp_SystemSettings_SetLocked` to unlock
 
 ### Encryption errors
+
 - Ensure running on same machine that encrypted the value
 - DPAPI uses machine-specific key
 - For multi-machine deployments, use shared secret instead
 
 ### Cache not invalidating
+
 - Verify `InvalidateCache` is called after save
 - Check cache TTL configuration
 - Clear cache manually: `_cache.InvalidateAllForUser(userId)`

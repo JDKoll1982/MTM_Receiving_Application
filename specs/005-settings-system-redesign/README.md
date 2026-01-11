@@ -5,6 +5,7 @@ This folder contains the complete redesign specification for the MTM Receiving A
 ## 📋 Overview
 
 The settings system has been redesigned to:
+
 - ✅ Migrate all 79 settable objects from hardcoded values and `appsettings.json` to MySQL database
 - ✅ Implement role-based access control (User, Operator, Admin, Developer, Super Admin)
 - ✅ Support user-specific preference overrides
@@ -16,18 +17,44 @@ The settings system has been redesigned to:
 ## 📁 Deliverables
 
 ### 1. Mockups (`mockups/`)
-- **`settings-mode-selection.svg`** - Redesigned mode selection page with 9 category cards
-  - System Settings
-  - Security & Session
-  - ERP Integration
-  - Receiving
-  - Dunnage
-  - Routing
-  - Volvo
-  - Reporting
-  - User Preferences
+
+#### Main Navigation
+
+- **`settings-mode-selection.svg/.md`** - Redesigned mode selection page with 9 category cards
+
+#### Individual Settings Pages (9 pages)
+
+- **`01-system-settings.svg/.md`** - Development, database, logging
+- **`02-security-session.svg/.md`** - Authentication, session, encryption
+- **`03-erp-integration.svg/.md`** - Infor Visual connection, caching
+- **`04-receiving.svg/.md`** - Workflow, package types (DataGrid)
+- **`05-dunnage.svg/.md`** - Tracking, inventory alerts
+- **`06-routing.svg/.md`** - Auto-routing rules, locations
+- **`07-volvo.svg/.md`** - EDI, master data sync
+- **`08-reporting.svg/.md`** - Export formats, scheduled reports
+- **`09-user-preferences.svg/.md`** - Theme, fonts, personalization
+
+#### Modal Dialogs (10 modals)
+
+- **`01-system-modal-test-db.svg/.md`** - MySQL connection test
+- **`02-security-modal-rotate-key.svg/.md`** - Encryption key rotation
+- **`03-erp-modal-test-connection.svg/.md`** - Infor Visual test
+- **`04-receiving-modal-add-type.svg/.md`** - Add/edit package type
+- **`04-receiving-modal-delete-confirm.svg/.md`** - Delete confirmation
+- **`06-routing-modal-add-rule.svg/.md`** - Add/edit routing rule
+- **`07-volvo-modal-sync.svg/.md`** - Manual sync trigger
+- **`08-reporting-modal-schedule.svg/.md`** - Schedule report
+- **`09-preferences-modal-reset.svg/.md`** - Reset confirmation
+- **`MODAL_INDEX.md`** - Complete modal & view reference guide
+
+#### Development Tools (1 view)
+
+- **`10-dev-database-test.svg/.md`** - Comprehensive database validation and testing tool
+
+**Total:** 29 SVG files + 29 MD files = **58 mockup files**
 
 ### 2. Templates (`templates/`)
+
 - **`SettingsPageTemplate.xaml`** - Reusable WinUI 3 template for all settings pages
   - Grouped card layout
   - Auto-save with debounce
@@ -40,6 +67,7 @@ The settings system has been redesigned to:
   - Reset to defaults button
 
 ### 3. Database Schema (`../../Database/Schemas/`)
+
 - **`settings_system_schema.sql`** - Complete database schema
   - `system_settings` - All configurable settings (79 rows seeded)
   - `user_settings` - User-specific overrides
@@ -49,14 +77,19 @@ The settings system has been redesigned to:
   - Initial data migration from `appsettings.json`
 
 ### 4. Stored Procedures (`../../Database/StoredProcedures/`)
-- **`sp_SettingsSystem.sql`** - All CRUD operations
+
+- **`sp_SettingsSystem.sql`** - All CRUD operations (25+ procedures)
   - System settings: Get, Update, Reset, Lock/Unlock
   - User settings: Get, Set, Reset (individual & all)
   - Package mappings: Get, Insert, Update, Delete
+  - Package types: CRUD with usage validation
+  - Routing rules: CRUD with pattern matching
+  - Scheduled reports: CRUD with schedule parsing
   - Audit log: Get history
   - All procedures enforce locking rules and log changes
 
 ### 5. Specification (`SPECIFICATION.md`)
+
 - **Complete implementation plan** including:
   - Architecture overview
   - Data models (C# classes with sample code)
@@ -72,6 +105,7 @@ The settings system has been redesigned to:
 ## 🎯 Key Features
 
 ### Role-Based Access Control
+
 | Role | Can Access | Can Modify |
 |------|-----------|------------|
 | User | Own preferences | Own user settings |
@@ -95,6 +129,7 @@ The settings system has been redesigned to:
 | User Preferences | Variable | Per-user workflow defaults |
 
 ### Data Types Supported
+
 - `string` - Text values
 - `int` - Numeric values
 - `boolean` - Toggle switches
@@ -104,7 +139,9 @@ The settings system has been redesigned to:
 - `email` - Email addresses
 
 ### Validation Rules
+
 Settings can define JSON validation rules:
+
 ```json
 {
   "min": 1,
@@ -119,26 +156,31 @@ Settings can define JSON validation rules:
 ## 🚀 Implementation Phases
 
 ### Phase 1: Database Setup (Week 1)
+
 - Deploy schema and stored procedures
 - Seed initial data
 - Test all database operations
 
 ### Phase 2: Data Layer (Week 2)
+
 - Create models, DAOs, services
 - Register in DI container
 - Unit tests
 
 ### Phase 3: UI Development (Week 3-4)
+
 - Create ViewModels for all 9 categories
 - Build Views using template
 - Implement auto-save and validation
 
 ### Phase 4: Security (Week 5)
+
 - Implement encryption
 - Add role checks
 - Create audit log viewer
 
 ### Phase 5: Migration & Cleanup (Week 6)
+
 - Remove hardcoded values
 - Update all code references
 - Integration and UAT testing
@@ -146,6 +188,7 @@ Settings can define JSON validation rules:
 ## 📊 Migration Summary
 
 ### Before (Current State)
+
 - ❌ Settings scattered across `appsettings.json`, hardcoded constants, and inline code
 - ❌ No user preferences
 - ❌ No audit trail
@@ -154,6 +197,7 @@ Settings can define JSON validation rules:
 - ❌ Requires code changes for configuration updates
 
 ### After (Redesigned State)
+
 - ✅ All settings in centralized MySQL database
 - ✅ User-specific overrides supported
 - ✅ Complete audit trail with who/what/when
@@ -223,6 +267,7 @@ await _settingsService.ResetSettingAsync(
 ## 📞 Questions?
 
 Contact the development team for clarifications on:
+
 - Database schema design
 - ViewModel architecture
 - Security implementation

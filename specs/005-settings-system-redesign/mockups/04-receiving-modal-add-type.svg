@@ -1,0 +1,59 @@
+<svg width="500" height="350" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background overlay -->
+    <rect width="500" height="350" fill="#000000" opacity="0.4" />
+
+    <!-- Dialog -->
+    <g transform="translate(50, 50)">
+        <rect width="400" height="250" rx="8" fill="white" stroke="#e0e0e0" stroke-width="1" />
+
+        <!-- Title bar -->
+        <rect width="400" height="48" rx="8" fill="white" />
+        <text x="20" y="32" font-family="Segoe UI" font-size="18" font-weight="600" fill="#1a1a1a">Add Package
+            Type</text>
+
+        <!-- Content -->
+        <g transform="translate(20, 68)">
+            <!-- Name field -->
+            <text x="0" y="0" font-family="Segoe UI" font-size="12" font-weight="600" fill="#666">Name</text>
+            <rect x="0" y="8" width="360" height="32" rx="4" fill="white" stroke="#0078d4" stroke-width="2" />
+            <text x="10" y="30" font-family="Segoe UI" font-size="14" fill="#1a1a1a">Box</text>
+
+            <!-- Code field -->
+            <g transform="translate(0, 50)">
+                <text x="0" y="0" font-family="Segoe UI" font-size="12" font-weight="600" fill="#666">Code</text>
+                <rect x="0" y="8" width="360" height="32" rx="4" fill="white" stroke="#d1d1d1" stroke-width="1" />
+                <text x="10" y="30" font-family="Segoe UI" font-size="14" fill="#1a1a1a">BOX</text>
+            </g>
+
+            <!-- Active toggle -->
+            <g transform="translate(0, 100)">
+                <text x="0" y="0" font-family="Segoe UI" font-size="12" font-weight="600" fill="#666">Active</text>
+                <g transform="translate(0, 12)">
+                    <rect x="0" y="0" width="44" height="20" rx="10" fill="#0078d4" />
+                    <circle cx="33" cy="10" r="8" fill="white" />
+                    <text x="60" y="14" font-family="Segoe UI" font-size="13" fill="#0078d4">On</text>
+                </g>
+            </g>
+        </g>
+
+        <!-- Button bar -->
+        <g transform="translate(0, 202)">
+            <rect y="0" width="400" height="48" fill="#f9f9f9" />
+            <line x1="0" y1="0" x2="400" y2="0" stroke="#e0e0e0" stroke-width="1" />
+
+            <!-- Save button -->
+            <g transform="translate(280, 8)">
+                <rect width="100" height="32" rx="4" fill="#0078d4" />
+                <text x="50" y="21" font-family="Segoe UI" font-size="14" font-weight="600" fill="white"
+                    text-anchor="middle">Save</text>
+            </g>
+
+            <!-- Cancel button -->
+            <g transform="translate(165, 8)">
+                <rect width="100" height="32" rx="4" fill="transparent" stroke="#d1d1d1" stroke-width="1" />
+                <text x="50" y="21" font-family="Segoe UI" font-size="14" fill="#1a1a1a"
+                    text-anchor="middle">Cancel</text>
+            </g>
+        </g>
+    </g>
+</svg>
