@@ -270,6 +270,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
             try
             {
                 computerName ??= Environment.MachineName;
+                computerName = computerName.Trim();
 
                 // Get list of shared terminal names from database
                 var sharedTerminalsResult = await _daoUser.GetSharedTerminalNamesAsync();
@@ -279,7 +280,8 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                 if (sharedTerminalsResult.Success && sharedTerminalsResult.Data != null)
                 {
                     // Check if current computer is in shared terminals list
-                    var isShared = sharedTerminalsResult.Data.Contains(computerName);
+                    var isShared = sharedTerminalsResult.Data.Any(name =>
+                        string.Equals(name?.Trim(), computerName, StringComparison.OrdinalIgnoreCase));
                     config.WorkstationType = isShared ? "shared_terminal" : "personal_workstation";
                     config.Description = isShared
                         ? "Shared terminal - PIN authentication required"
@@ -290,6 +292,21 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
                     // Default to personal workstation if query fails
                     config.WorkstationType = "personal_workstation";
                     config.Description = "Personal workstation (default)";
+                }
+
+                // Best-effort persistence: ensure this machine exists in workstation_config.
+                // If the SP isn't deployed yet, ignore and proceed.
+                try
+                {
+                    await _daoUser.UpsertWorkstationConfigAsync(
+                        config.ComputerName,
+                        config.WorkstationType,
+                        isActive: true,
+                        description: config.Description);
+                }
+                catch
+                {
+                    // Swallow: persistence must not block startup.
                 }
 
                 return config;

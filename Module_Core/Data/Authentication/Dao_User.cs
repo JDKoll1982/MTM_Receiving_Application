@@ -259,6 +259,31 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         }
 
         /// <summary>
+        /// Inserts or updates the current workstation configuration record.
+        /// Best-effort: caller may ignore failures if the SP is not deployed yet.
+        /// </summary>
+        public async Task<Model_Dao_Result> UpsertWorkstationConfigAsync(
+            string workstationName,
+            string workstationType,
+            bool isActive,
+            string? description)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "@p_workstation_name", workstationName },
+                { "@p_workstation_type", workstationType },
+                { "@p_is_active", isActive },
+                { "@p_description", description ?? (object)DBNull.Value }
+            };
+
+            return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+                _connectionString,
+                "sp_UpsertWorkstationConfig",
+                parameters
+            );
+        }
+
+        /// <summary>
         /// Retrieves list of active departments for dropdown population.
         /// </summary>
         /// <returns>Result containing list of department names</returns>

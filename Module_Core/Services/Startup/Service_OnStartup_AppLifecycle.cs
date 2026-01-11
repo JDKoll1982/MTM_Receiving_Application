@@ -96,6 +96,32 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             authenticatedUser = userCheckResult.User;
                             UpdateSplash(45, $"Account created for {authenticatedUser?.FullName}");
                         }
+                        else
+                        {
+                            // Resilience: if the DB lookup doesn't immediately return the user (e.g. mismatch or timing),
+                            // continue startup with the known data instead of shutting down.
+                            authenticatedUser = new Model_User
+                            {
+                                EmployeeNumber = newUserViewModel.NewEmployeeNumber,
+                                WindowsUsername = windowsUser,
+                                FullName = newUserViewModel.FullName,
+                                Department = newUserViewModel.Department,
+                                Shift = newUserViewModel.Shift,
+                                Pin = newUserViewModel.Pin,
+                                IsActive = true,
+                                VisualUsername = newUserViewModel.ConfigureErpAccess ? newUserViewModel.VisualUsername : null,
+                                VisualPassword = newUserViewModel.ConfigureErpAccess ? newUserViewModel.VisualPassword : null
+                            };
+
+                            ApplySafeUserDefaults(authenticatedUser);
+
+                            await _errorHandler.HandleErrorAsync(
+                                $"User account was created but could not be reloaded by username '{windowsUser}'. Continuing with in-memory user for this session.",
+                                Models.Enums.Enum_ErrorSeverity.Warning,
+                                showDialog: false);
+
+                            UpdateSplash(45, $"Account created for {authenticatedUser.FullName}");
+                        }
                     }
                     else if (newUserViewModel.IsCancelled)
                     {
@@ -106,7 +132,11 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                             showDialog: false);
 
                         // Close splash screen
-                        _splashScreen?.Close();
+                        if (_splashScreen != null)
+                        {
+                            _splashScreen.IsProgrammaticClose = true;
+                            _splashScreen.Close();
+                        }
 
                         // Close main window if it exists
                         App.MainWindow?.Close();
@@ -252,7 +282,11 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             catch (Exception ex)
             {
                 await _errorHandler.HandleErrorAsync("Startup failed", Models.Enums.Enum_ErrorSeverity.Critical, ex);
-                _splashScreen?.Close();
+                if (_splashScreen != null)
+                {
+                    _splashScreen.IsProgrammaticClose = true;
+                    _splashScreen.Close();
+                }
                 System.Environment.Exit(1);
             }
         }

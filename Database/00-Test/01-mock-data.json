@@ -1,0 +1,1416 @@
+{
+  "sp_custom_fields_get_by_type": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_dunnage_type_id": 1
+    },
+    "executionOrder": 1999
+  },
+  "sp_ValidateUserPin": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_pin": "1234",
+      "p_username": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_RoutingRule_Delete": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2999
+  },
+  "sp_update_user_default_mode": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_user_id": 1,
+      "p_default_mode": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_PackageTypeMappings_Delete": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 3020
+  },
+  "sp_volvo_settings_upsert": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_setting_value": "TEST_VALUE",
+      "p_setting_key": "TEST_VALUE",
+      "p_modified_by": "TEST_VALUE"
+    },
+    "executionOrder": 210
+  },
+  "sp_dunnage_specs_delete_by_type": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 2030
+  },
+  "sp_PackageType_Update": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_id": 1,
+      "p_code": "TEST_VALUE",
+      "p_name": "TEST_VALUE"
+    },
+    "executionOrder": 1020
+  },
+  "sp_inventoried_dunnage_get_all": {
+    "enabled": true,
+    "category": "InventoriedDunnage",
+    "parameters": {},
+    "executionOrder": 1140
+  },
+  "sp_GetUserByWindowsUsername": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_windows_username": "TEST_USER"
+    },
+    "executionOrder": 1999
+  },
+  "sp_custom_fields_insert": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_field_name": "TEST_VALUE",
+      "p_dunnage_type_id": 1,
+      "p_is_required": 1,
+      "p_database_column_name": "TEST_VALUE",
+      "p_validation_rules": "TEST_VALUE",
+      "p_user": "TEST_VALUE",
+      "p_field_type": "TEST_VALUE",
+      "p_display_order": 1
+    },
+    "executionOrder": 999
+  },
+  "sp_routing_recipient_get_by_name": {
+    "enabled": true,
+    "category": "RoutingRecipients",
+    "parameters": {
+      "p_name": "TEST_VALUE"
+    },
+    "executionOrder": 1045
+  },
+  "sp_volvo_part_master_insert": {
+    "enabled": true,
+    "category": "VolvoParts",
+    "parameters": {
+      "p_part_number": "TEST_PART",
+      "p_is_active": true,
+      "p_quantity_per_skid": 10
+    },
+    "executionOrder": 40
+  },
+  "sp_SystemSettings_SetLocked": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_workstation_name": "TEST_VALUE",
+      "p_ip_address": "TEST_VALUE",
+      "p_changed_by": 1,
+      "p_setting_id": 1,
+      "p_is_locked": 1
+    },
+    "executionOrder": 210
+  },
+  "sp_ScheduledReport_Update": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {
+      "p_next_run_date": "2026-01-01",
+      "p_id": 1,
+      "p_report_type": "TEST_VALUE",
+      "p_email_recipients": "test@example.com",
+      "p_schedule": "TEST_VALUE"
+    },
+    "executionOrder": 220
+  },
+  "sp_PackageTypeMappings_GetAll": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {},
+    "executionOrder": 1020
+  },
+  "sp_ScheduledReport_GetAll": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {},
+    "executionOrder": 1220
+  },
+  "sp_dunnage_parts_search": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_type_id": 1,
+      "p_search_text": "TEST_VALUE"
+    },
+    "executionOrder": 1035
+  },
+  "sp_RoutingRule_GetAll": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {},
+    "executionOrder": 1999
+  },
+  "sp_routing_label_history_insert": {
+    "enabled": true,
+    "category": "RoutingHistory",
+    "parameters": {
+      "p_field_changed": "TEST_VALUE",
+      "p_new_value": "TEST_VALUE",
+      "p_edited_by": 1,
+      "p_label_id": 1,
+      "p_old_value": "TEST_VALUE"
+    },
+    "executionOrder": 160
+  },
+  "sp_routing_label_get_by_id": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_label_id": 1
+    },
+    "executionOrder": 1150
+  },
+  "sp_dunnage_parts_get_transaction_count": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_part_id": 1
+    },
+    "executionOrder": 1035
+  },
+  "sp_dunnage_types_get_all": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {},
+    "executionOrder": 1025
+  },
+  "sp_PackageTypeMappings_Update": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_display_order": 1,
+      "p_id": 1,
+      "p_package_type": 1,
+      "p_is_default": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_ScheduledReport_Delete": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2220
+  },
+  "sp_dunnage_types_get_part_count": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 1025
+  },
+  "sp_ScheduledReport_GetDue": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {},
+    "executionOrder": 1220
+  },
+  "sp_volvo_shipment_complete": {
+    "enabled": true,
+    "category": "VolvoShipments",
+    "parameters": {
+      "p_receiver_number": "TEST_VALUE",
+      "p_shipment_id": 1,
+      "p_po_number": "PO12345"
+    },
+    "executionOrder": 170
+  },
+  "sp_volvo_part_master_update": {
+    "enabled": true,
+    "category": "VolvoParts",
+    "parameters": {
+      "p_part_number": "TEST_PART",
+      "p_quantity_per_skid": 10
+    },
+    "executionOrder": 40
+  },
+  "sp_volvo_part_component_get": {
+    "enabled": true,
+    "category": "VolvoComponents",
+    "parameters": {
+      "p_parent_part_number": "TEST_PART"
+    },
+    "executionOrder": 1190
+  },
+  "sp_inventoried_dunnage_insert": {
+    "enabled": true,
+    "category": "InventoriedDunnage",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_inventory_method": "TEST_VALUE",
+      "p_notes": "Test data",
+      "p_part_id": 1
+    },
+    "executionOrder": 140
+  },
+  "sp_dunnage_parts_update": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_home_location": "TEST_VALUE",
+      "p_spec_values": null,
+      "p_id": 1,
+      "p_user": "TEST_VALUE"
+    },
+    "executionOrder": 35
+  },
+  "sp_SettingsAuditLog_Get": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_setting_id": 1,
+      "p_limit": 1
+    },
+    "executionOrder": 1210
+  },
+  "sp_volvo_part_master_get_by_id": {
+    "enabled": true,
+    "category": "VolvoParts",
+    "parameters": {
+      "p_part_number": "TEST_PART"
+    },
+    "executionOrder": 1040
+  },
+  "sp_GetPackageTypePreference": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_PartID": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_GetDepartments": {
+    "enabled": true,
+    "category": "Departments",
+    "parameters": {},
+    "executionOrder": 1015
+  },
+  "sp_RoutingRule_Insert": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_priority": 1,
+      "p_created_by": 1,
+      "p_destination_location": "TEST_VALUE",
+      "p_pattern": "TEST_VALUE",
+      "p_match_type": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_volvo_shipment_get_pending": {
+    "enabled": true,
+    "category": "VolvoShipments",
+    "parameters": {},
+    "executionOrder": 1170
+  },
+  "sp_volvo_shipment_history_get": {
+    "enabled": true,
+    "category": "VolvoShipments",
+    "parameters": {
+      "p_start_date": "2026-01-01",
+      "p_end_date": "2026-01-01",
+      "p_status": "TEST_VALUE"
+    },
+    "executionOrder": 1170
+  },
+  "sp_update_user_default_receiving_mode": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_user_id": 1,
+      "p_default_mode": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_SettingsAuditLog_GetByUser": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_changed_by": 1,
+      "p_limit": 1
+    },
+    "executionOrder": 1210
+  },
+  "sp_dunnage_parts_count_transactions": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_part_id": 1
+    },
+    "executionOrder": 1035
+  },
+  "sp_volvo_shipment_update": {
+    "enabled": true,
+    "category": "VolvoShipments",
+    "parameters": {
+      "p_notes": "Test data",
+      "p_id": 1
+    },
+    "executionOrder": 170
+  },
+  "sp_routing_user_preference_save": {
+    "enabled": true,
+    "category": "Preferences",
+    "parameters": {
+      "p_enable_validation": 1,
+      "p_employee_number": 1,
+      "p_default_mode": "TEST_VALUE"
+    },
+    "executionOrder": 200
+  },
+  "sp_routing_recipient_get_all_active": {
+    "enabled": true,
+    "category": "RoutingRecipients",
+    "parameters": {},
+    "executionOrder": 1045
+  },
+  "sp_PackageType_GetById": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_SystemSettings_GetByCategory": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_category": "TEST_VALUE"
+    },
+    "executionOrder": 1210
+  },
+  "sp_volvo_shipment_line_update": {
+    "enabled": true,
+    "category": "VolvoShipmentLines",
+    "parameters": {
+      "p_discrepancy_note": "TEST_VALUE",
+      "p_id": 1,
+      "p_received_skid_count": 1,
+      "p_expected_skid_count": 1,
+      "p_has_discrepancy": 1,
+      "p_calculated_piece_count": 1
+    },
+    "executionOrder": 180
+  },
+  "sp_dunnage_types_get_by_id": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 1025
+  },
+  "sp_RoutingRule_GetByPartNumber": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_part_number": "TEST_PART"
+    },
+    "executionOrder": 1999
+  },
+  "sp_PackageTypeMappings_GetByPrefix": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_part_prefix": "TEST_VALUE"
+    },
+    "executionOrder": 1020
+  },
+  "sp_routing_label_get_all": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_offset": 1,
+      "p_limit": 1
+    },
+    "executionOrder": 1150
+  },
+  "sp_dunnage_specs_count_parts_using_spec": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_type_id": 1,
+      "p_spec_key": "TEST_VALUE"
+    },
+    "executionOrder": 1030
+  },
+  "sp_volvo_part_master_get_all": {
+    "enabled": true,
+    "category": "VolvoParts",
+    "parameters": {
+      "p_include_inactive": true
+    },
+    "executionOrder": 1040
+  },
+  "sp_routing_label_get_history": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_start_date": "2026-01-01",
+      "p_end_date": "2026-01-01"
+    },
+    "executionOrder": 1999
+  },
+  "sp_SystemSettings_GetByKey": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_setting_key": "TEST_VALUE",
+      "p_category": "TEST_VALUE"
+    },
+    "executionOrder": 1210
+  },
+  "sp_update_user_default_dunnage_mode": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_user_id": 1,
+      "p_default_mode": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_InsertReceivingLoad": {
+    "enabled": true,
+    "category": "ReceivingLoads",
+    "parameters": {
+      "p_PackagesPerLoad": 1,
+      "p_WeightPerPackage": 1.0,
+      "p_PartID": 1,
+      "p_ReceivedDate": "2026-01-01",
+      "p_HeatLotNumber": "TEST_VALUE",
+      "p_PackageTypeName": 1,
+      "p_IsNonPOItem": true,
+      "p_LoadNumber": 1,
+      "p_POLineNumber": "PO12345",
+      "p_WeightQuantity": 10,
+      "p_PartType": "TEST_VALUE",
+      "p_PONumber": "PO12345",
+      "p_LoadID": "TEST_VALUE"
+    },
+    "executionOrder": 100
+  },
+  "sp_PackageType_UsageCount": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_SystemSettings_UpdateValue": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_workstation_name": "TEST_VALUE",
+      "p_ip_address": "TEST_VALUE",
+      "p_changed_by": 1,
+      "p_setting_id": 1,
+      "p_new_value": "TEST_VALUE"
+    },
+    "executionOrder": 210
+  },
+  "sp_dunnage_parts_get_all": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {},
+    "executionOrder": 1035
+  },
+  "sp_inventoried_dunnage_get_by_part": {
+    "enabled": true,
+    "category": "InventoriedDunnage",
+    "parameters": {
+      "p_part_id": 1
+    },
+    "executionOrder": 1140
+  },
+  "sp_dunnage_parts_insert": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_home_location": "TEST_VALUE",
+      "p_type_id": 1,
+      "p_user": "TEST_VALUE",
+      "p_spec_values": null,
+      "p_part_id": 1
+    },
+    "executionOrder": 35
+  },
+  "sp_ScheduledReport_UpdateLastRun": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {
+      "p_next_run_date": "2026-01-01",
+      "p_id": 1,
+      "p_last_run_date": "2026-01-01"
+    },
+    "executionOrder": 220
+  },
+  "sp_inventoried_dunnage_delete": {
+    "enabled": true,
+    "category": "InventoriedDunnage",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2140
+  },
+  "sp_routing_other_reason_get_all_active": {
+    "enabled": true,
+    "category": "RoutingReasons",
+    "parameters": {},
+    "executionOrder": 1050
+  },
+  "sp_DeleteReceivingLoad": {
+    "enabled": true,
+    "category": "ReceivingLoads",
+    "parameters": {
+      "p_LoadID": "TEST_VALUE"
+    },
+    "executionOrder": 2100
+  },
+  "sp_dunnage_specs_delete_by_id": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2030
+  },
+  "sp_PackageType_Insert": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_name": "TEST_VALUE",
+      "p_code": "TEST_VALUE",
+      "p_created_by": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_dunnage_loads_insert_batch": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_load_data": null
+    },
+    "executionOrder": 130
+  },
+  "sp_user_preferences_upsert": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_user_id": 1,
+      "p_preference_key": "TEST_VALUE",
+      "p_preference_value": "TEST_VALUE"
+    },
+    "executionOrder": 10
+  },
+  "sp_SystemSettings_ResetToDefault": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_workstation_name": "TEST_VALUE",
+      "p_ip_address": "TEST_VALUE",
+      "p_changed_by": 1,
+      "p_setting_id": 1
+    },
+    "executionOrder": 210
+  },
+  "sp_GetReceivingHistory": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_EndDate": "2026-01-01",
+      "p_StartDate": "2026-01-01",
+      "p_PartID": 1
+    },
+    "executionOrder": 1999
+  },
+  "sp_UserSettings_GetAllForUser": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_user_id": 1
+    },
+    "executionOrder": 1010
+  },
+  "sp_volvo_part_check_references": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_part_number": "TEST_PART"
+    },
+    "executionOrder": 1999
+  },
+  "sp_routing_label_archive": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_label_ids": "TEST_VALUE"
+    },
+    "executionOrder": 150
+  },
+  "sp_UserSettings_ResetAll": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_user_id": 1,
+      "p_changed_by": 1
+    },
+    "executionOrder": 10
+  },
+  "sp_dunnage_types_update": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_type_name": "TEST_VALUE",
+      "p_id": 1,
+      "p_icon": "TEST_VALUE"
+    },
+    "executionOrder": 25
+  },
+  "sp_volvo_settings_get": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_setting_key": "TEST_VALUE"
+    },
+    "executionOrder": 1210
+  },
+  "sp_dunnage_parts_delete": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2035
+  },
+  "sp_inventoried_dunnage_update": {
+    "enabled": true,
+    "category": "InventoriedDunnage",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_inventory_method": "TEST_VALUE",
+      "p_id": 1,
+      "p_notes": "Test data"
+    },
+    "executionOrder": 140
+  },
+  "sp_volvo_settings_get_all": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_category": "TEST_VALUE"
+    },
+    "executionOrder": 1210
+  },
+  "sp_routing_recipient_get_top_by_usage": {
+    "enabled": true,
+    "category": "RoutingRecipients",
+    "parameters": {
+      "p_employee_number": 1,
+      "p_top_count": 1
+    },
+    "executionOrder": 1045
+  },
+  "sp_routing_recipient_update": {
+    "enabled": true,
+    "category": "RoutingRecipients",
+    "parameters": {
+      "p_is_active": true,
+      "p_id": 1,
+      "p_default_department": "Production",
+      "p_name": "TEST_VALUE"
+    },
+    "executionOrder": 45
+  },
+  "sp_routing_label_delete": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2150
+  },
+  "sp_GetSharedTerminalNames": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {},
+    "executionOrder": 1999
+  },
+  "sp_UserSettings_Set": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_user_id": 1,
+      "p_setting_value": "TEST_VALUE",
+      "p_setting_id": 1
+    },
+    "executionOrder": 10
+  },
+  "sp_DeletePackageTypePreference": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_PartID": 1
+    },
+    "executionOrder": 3020
+  },
+  "receiving_line_Insert": {
+    "enabled": true,
+    "category": "ReceivingLines",
+    "parameters": {
+      "p_VendorName": "TEST_VALUE",
+      "p_EmployeeNumber": 1,
+      "p_CoilsOnSkid": 1,
+      "p_Quantity": 10,
+      "p_PONumber": "PO12345",
+      "p_PartID": 1,
+      "p_Heat": "TEST_VALUE",
+      "p_Date": "2026-01-01",
+      "p_InitialLocation": "TEST_VALUE",
+      "p_PartDescription": "Test data"
+    },
+    "executionOrder": 120
+  },
+  "sp_inventoried_dunnage_check": {
+    "enabled": true,
+    "category": "InventoriedDunnage",
+    "parameters": {
+      "p_part_id": 1
+    },
+    "executionOrder": 1140
+  },
+  "sp_dunnage_loads_delete": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {
+      "p_load_uuid": "TEST_VALUE"
+    },
+    "executionOrder": 2130
+  },
+  "sp_LogUserActivity": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_details": "TEST_VALUE",
+      "p_username": "TEST_VALUE",
+      "p_workstation_name": "TEST_VALUE",
+      "p_event_type": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_dunnage_specs_insert": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_type_id": 1,
+      "p_spec_key": "TEST_VALUE",
+      "p_spec_value": null
+    },
+    "executionOrder": 30
+  },
+  "sp_RoutingRule_Update": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_priority": 1,
+      "p_id": 1,
+      "p_destination_location": "TEST_VALUE",
+      "p_pattern": "TEST_VALUE",
+      "p_match_type": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_PackageType_Delete": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 3020
+  },
+  "sp_dunnage_types_count_transactions": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 1025
+  },
+  "sp_seed_user_default_modes": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_user_id": 1
+    },
+    "executionOrder": 999
+  },
+  "sp_dunnage_loads_update": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {
+      "p_load_uuid": "TEST_VALUE",
+      "p_user": "TEST_VALUE",
+      "p_quantity": 10
+    },
+    "executionOrder": 130
+  },
+  "sp_ScheduledReport_Insert": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {
+      "p_next_run_date": "2026-01-01",
+      "p_report_type": "TEST_VALUE",
+      "p_email_recipients": "test@example.com",
+      "p_schedule": "TEST_VALUE",
+      "p_created_by": 1
+    },
+    "executionOrder": 220
+  },
+  "sp_dunnage_types_insert": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_type_name": "TEST_VALUE",
+      "p_icon": "TEST_VALUE"
+    },
+    "executionOrder": 25
+  },
+  "carrier_delivery_label_Insert": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_Department": "Production",
+      "p_Date": "2026-01-01",
+      "p_WorkOrderNumber": "TEST_VALUE",
+      "p_EmployeeNumber": 1,
+      "p_PONumber": "PO12345",
+      "p_PackageDescription": "Test data",
+      "p_DeliverTo": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_volvo_settings_reset": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_setting_key": "TEST_VALUE",
+      "p_modified_by": "TEST_VALUE"
+    },
+    "executionOrder": 210
+  },
+  "sp_volvo_shipment_line_insert": {
+    "enabled": true,
+    "category": "VolvoShipmentLines",
+    "parameters": {
+      "p_quantity_per_skid": 10,
+      "p_discrepancy_note": "TEST_VALUE",
+      "p_received_skid_count": 1,
+      "p_shipment_id": 1,
+      "p_expected_skid_count": 1,
+      "p_has_discrepancy": 1,
+      "p_part_number": "TEST_PART",
+      "p_calculated_piece_count": 1
+    },
+    "executionOrder": 180
+  },
+  "sp_SettingsAuditLog_GetBySetting": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {
+      "p_setting_id": 1,
+      "p_limit": 1
+    },
+    "executionOrder": 1210
+  },
+  "sp_routing_label_update": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_department": "Production",
+      "p_work_order": "TEST_VALUE",
+      "p_package_description": "Test data",
+      "p_deliver_to": "TEST_VALUE",
+      "p_label_number": 1000,
+      "p_po_number": "PO12345",
+      "p_id": 1
+    },
+    "executionOrder": 150
+  },
+  "sp_dunnage_types_delete": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2025
+  },
+  "sp_UserSettings_Get": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_category": "TEST_VALUE",
+      "p_setting_key": "TEST_VALUE",
+      "p_user_id": 1
+    },
+    "executionOrder": 1010
+  },
+  "sp_dunnage_specs_get_by_type": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 1030
+  },
+  "sp_dunnage_types_check_duplicate": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_type_name": "TEST_VALUE",
+      "p_exclude_id": 1
+    },
+    "executionOrder": 1025
+  },
+  "sp_dunnage_parts_get_by_id": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_part_id": 1
+    },
+    "executionOrder": 1035
+  },
+  "sp_dunnage_specs_get_all_keys": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {},
+    "executionOrder": 1030
+  },
+  "sp_dunnage_specs_get_all": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {},
+    "executionOrder": 1030
+  },
+  "sp_dunnage_parts_get_by_type": {
+    "enabled": true,
+    "category": "DunnageParts",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 1035
+  },
+  "sp_UpdateReceivingLoad": {
+    "enabled": true,
+    "category": "ReceivingLoads",
+    "parameters": {
+      "p_PackagesPerLoad": 1,
+      "p_WeightPerPackage": 1.0,
+      "p_PartID": 1,
+      "p_ReceivedDate": "2026-01-01",
+      "p_HeatLotNumber": "TEST_VALUE",
+      "p_PackageTypeName": 1,
+      "p_IsNonPOItem": true,
+      "p_LoadNumber": 1,
+      "p_POLineNumber": "PO12345",
+      "p_WeightQuantity": 10,
+      "p_PartType": "TEST_VALUE",
+      "p_PONumber": "PO12345",
+      "p_LoadID": "TEST_VALUE"
+    },
+    "executionOrder": 100
+  },
+  "sp_dunnage_loads_get_all": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {},
+    "executionOrder": 1130
+  },
+  "sp_RoutingRule_GetById": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 1999
+  },
+  "sp_routing_recipient_get_all": {
+    "enabled": true,
+    "category": "RoutingRecipients",
+    "parameters": {},
+    "executionOrder": 1045
+  },
+  "sp_dunnage_specs_update": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_user": "TEST_VALUE",
+      "p_id": 1,
+      "p_spec_value": null
+    },
+    "executionOrder": 30
+  },
+  "sp_dunnage_loads_get_by_date_range": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {
+      "p_start_date": "2026-01-01",
+      "p_end_date": "2026-01-01"
+    },
+    "executionOrder": 1130
+  },
+  "sp_volvo_shipment_line_get_by_shipment": {
+    "enabled": true,
+    "category": "VolvoShipmentLines",
+    "parameters": {
+      "p_shipment_id": 1
+    },
+    "executionOrder": 1180
+  },
+  "sp_volvo_part_component_delete_by_parent": {
+    "enabled": true,
+    "category": "VolvoComponents",
+    "parameters": {
+      "p_parent_part_number": "TEST_PART"
+    },
+    "executionOrder": 2190
+  },
+  "sp_routing_usage_increment": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_employee_number": 1,
+      "p_recipient_id": 1
+    },
+    "executionOrder": 999
+  },
+  "sp_GetAllReceivingLoads": {
+    "enabled": true,
+    "category": "ReceivingLoads",
+    "parameters": {
+      "p_StartDate": "2026-01-01",
+      "p_EndDate": "2026-01-01"
+    },
+    "executionOrder": 1100
+  },
+  "sp_user_preferences_get_recent_icons": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_user_id": 1,
+      "p_count": 1
+    },
+    "executionOrder": 1010
+  },
+  "sp_ScheduledReport_GetById": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 1220
+  },
+  "sp_routing_label_get_today": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_today_date": "2026-01-01"
+    },
+    "executionOrder": 1150
+  },
+  "sp_volvo_part_master_set_active": {
+    "enabled": true,
+    "category": "VolvoParts",
+    "parameters": {
+      "p_part_number": "TEST_PART",
+      "p_is_active": true
+    },
+    "executionOrder": 40
+  },
+  "sp_ScheduledReport_ToggleActive": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {
+      "p_id": 1,
+      "p_is_active": true
+    },
+    "executionOrder": 220
+  },
+  "sp_volvo_shipment_line_delete": {
+    "enabled": true,
+    "category": "VolvoShipmentLines",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 2180
+  },
+  "sp_volvo_part_component_insert": {
+    "enabled": true,
+    "category": "VolvoComponents",
+    "parameters": {
+      "p_component_part_number": "TEST_PART",
+      "p_quantity": 10,
+      "p_parent_part_number": "TEST_PART"
+    },
+    "executionOrder": 190
+  },
+  "sp_RoutingRule_FindMatch": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_match_type": "TEST_VALUE",
+      "p_value": "TEST_VALUE"
+    },
+    "executionOrder": 1999
+  },
+  "sp_routing_label_insert": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_department": "Production",
+      "p_work_order": "TEST_VALUE",
+      "p_package_description": "Test data",
+      "p_deliver_to": "TEST_VALUE",
+      "p_created_date": "2026-01-01",
+      "p_label_number": 1000,
+      "p_po_number": "PO12345",
+      "p_employee_number": "TEST_VALUE"
+    },
+    "executionOrder": 150
+  },
+  "sp_routing_label_check_duplicate": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_hours_window": 1,
+      "p_recipient_id": 1,
+      "p_po_number": "PO12345",
+      "p_line_number": "TEST_VALUE"
+    },
+    "executionOrder": 1150
+  },
+  "sp_volvo_shipment_insert": {
+    "enabled": true,
+    "category": "VolvoShipments",
+    "parameters": {
+      "p_employee_number": "TEST_VALUE",
+      "p_notes": "Test data",
+      "p_shipment_date": "2026-01-01"
+    },
+    "executionOrder": 170
+  },
+  "sp_dunnage_loads_get_by_id": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {
+      "p_load_uuid": "TEST_VALUE"
+    },
+    "executionOrder": 1130
+  },
+  "sp_routing_label_mark_exported": {
+    "enabled": true,
+    "category": "RoutingLabels",
+    "parameters": {
+      "p_label_id": 1
+    },
+    "executionOrder": 150
+  },
+  "sp_CreateNewUser": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_shift": "TEST_VALUE",
+      "p_department": "Production",
+      "p_created_by": "TEST_VALUE",
+      "p_pin": "1234",
+      "p_visual_username": "TEST_VALUE",
+      "p_windows_username": "TEST_USER",
+      "p_full_name": "TEST_VALUE",
+      "p_employee_number": 1,
+      "p_visual_password": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_volvo_shipment_delete": {
+    "enabled": true,
+    "category": "VolvoShipments",
+    "parameters": {
+      "p_shipment_id": 1
+    },
+    "executionOrder": 2170
+  },
+  "sp_SystemSettings_GetAll": {
+    "enabled": true,
+    "category": "Settings",
+    "parameters": {},
+    "executionOrder": 1210
+  },
+  "sp_dunnage_types_count_parts": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 1025
+  },
+  "dunnage_line_Insert": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_Line1": "TEST_VALUE",
+      "p_VendorName": "TEST_VALUE",
+      "p_EmployeeNumber": 1,
+      "p_Location": "TEST_VALUE",
+      "p_PONumber": "PO12345",
+      "p_Date": "2026-01-01",
+      "p_Line2": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_dunnage_specs_get_by_id": {
+    "enabled": true,
+    "category": "DunnageSpecs",
+    "parameters": {
+      "p_id": 1
+    },
+    "executionOrder": 1030
+  },
+  "sp_dunnage_loads_insert": {
+    "enabled": true,
+    "category": "DunnageLoads",
+    "parameters": {
+      "p_load_uuid": "TEST_VALUE",
+      "p_user": "TEST_VALUE",
+      "p_part_id": 1,
+      "p_quantity": 10
+    },
+    "executionOrder": 130
+  },
+  "sp_UpsertUser": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_shift": "TEST_VALUE",
+      "p_department": "Production",
+      "p_created_by": "TEST_VALUE",
+      "p_pin": "1234",
+      "p_visual_username": "TEST_VALUE",
+      "p_is_active": true,
+      "p_windows_username": "TEST_USER",
+      "p_full_name": "TEST_VALUE",
+      "p_employee_number": 1,
+      "p_visual_password": "TEST_VALUE"
+    },
+    "executionOrder": 999
+  },
+  "sp_SavePackageTypePreference": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_LastModified": "2026-01-01",
+      "p_PartID": 1,
+      "p_CustomTypeName": "TEST_VALUE",
+      "p_PackageTypeName": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_PackageTypeMappings_Insert": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {
+      "p_display_order": 1,
+      "p_package_type": 1,
+      "p_part_prefix": "TEST_VALUE",
+      "p_is_default": 1,
+      "p_created_by": 1
+    },
+    "executionOrder": 1020
+  },
+  "sp_routing_recipient_insert": {
+    "enabled": true,
+    "category": "RoutingRecipients",
+    "parameters": {
+      "p_name": "TEST_VALUE",
+      "p_default_department": "Production"
+    },
+    "executionOrder": 45
+  },
+  "sp_PackageType_GetAll": {
+    "enabled": true,
+    "category": "PackageTypes",
+    "parameters": {},
+    "executionOrder": 1020
+  },
+  "sp_routing_user_preference_get": {
+    "enabled": true,
+    "category": "Preferences",
+    "parameters": {
+      "p_employee_number": 1
+    },
+    "executionOrder": 1200
+  },
+  "sp_ScheduledReport_GetActive": {
+    "enabled": true,
+    "category": "Reports",
+    "parameters": {},
+    "executionOrder": 1220
+  },
+  "sp_UserSettings_Reset": {
+    "enabled": true,
+    "category": "Users",
+    "parameters": {
+      "p_user_id": 1,
+      "p_setting_id": 1
+    },
+    "executionOrder": 10
+  },
+  "sp_dunnage_types_get_transaction_count": {
+    "enabled": true,
+    "category": "DunnageTypes",
+    "parameters": {
+      "p_type_id": 1
+    },
+    "executionOrder": 1025
+  },
+  "sp_get_user_default_mode": {
+    "enabled": true,
+    "category": "Other",
+    "parameters": {
+      "p_user_id": 1
+    },
+    "executionOrder": 1999
+  }
+}
