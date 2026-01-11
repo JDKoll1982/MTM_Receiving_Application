@@ -23,7 +23,7 @@ public class Dao_Reporting
     }
 
     /// <summary>
-    /// Retrieves receiving history from vw_receiving_history view
+    /// Retrieves receiving history from view_receiving_history view
     /// </summary>
     /// <param name="startDate"></param>
     /// <param name="endDate"></param>
@@ -34,7 +34,7 @@ public class Dao_Reporting
         try
         {
             var query = @"
-                SELECT 
+                SELECT
                     id,
                     po_number,
                     part_number,
@@ -45,7 +45,7 @@ public class Dao_Reporting
                     created_date,
                     employee_number,
                     source_module
-                FROM vw_receiving_history
+                FROM view_receiving_history
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC, id DESC";
 
@@ -87,7 +87,7 @@ public class Dao_Reporting
     }
 
     /// <summary>
-    /// Retrieves dunnage history from vw_dunnage_history view
+    /// Retrieves dunnage history from view_dunnage_history view
     /// </summary>
     /// <param name="startDate"></param>
     /// <param name="endDate"></param>
@@ -98,7 +98,7 @@ public class Dao_Reporting
         try
         {
             var query = @"
-                SELECT 
+                SELECT
                     id,
                     dunnage_type,
                     part_number,
@@ -107,7 +107,7 @@ public class Dao_Reporting
                     created_date,
                     employee_number,
                     source_module
-                FROM vw_dunnage_history
+                FROM view_dunnage_history
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC";
 
@@ -147,7 +147,7 @@ public class Dao_Reporting
     }
 
     /// <summary>
-    /// Retrieves routing history from vw_routing_history view
+    /// Retrieves routing history from view_routing_history view
     /// </summary>
     /// <param name="startDate"></param>
     /// <param name="endDate"></param>
@@ -158,7 +158,7 @@ public class Dao_Reporting
         try
         {
             var query = @"
-                SELECT 
+                SELECT
                     id,
                     po_number,
                     line_number,
@@ -171,7 +171,7 @@ public class Dao_Reporting
                     created_date,
                     other_reason,
                     source_module
-                FROM vw_routing_history
+                FROM view_routing_history
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC, id DESC";
 
@@ -215,7 +215,7 @@ public class Dao_Reporting
     }
 
     /// <summary>
-    /// Retrieves Volvo history from vw_volvo_history view
+    /// Retrieves Volvo history from view_volvo_history view
     /// </summary>
     /// <param name="startDate"></param>
     /// <param name="endDate"></param>
@@ -226,7 +226,7 @@ public class Dao_Reporting
         try
         {
             var query = @"
-                SELECT 
+                SELECT
                     id,
                     shipment_number,
                     shipment_date,
@@ -238,7 +238,7 @@ public class Dao_Reporting
                     part_count,
                     created_date,
                     source_module
-                FROM vw_volvo_history
+                FROM view_volvo_history
                 WHERE created_date BETWEEN @StartDate AND @EndDate
                 ORDER BY created_date DESC";
 
@@ -296,15 +296,15 @@ public class Dao_Reporting
             await connection.OpenAsync();
 
             // Check Receiving
-            var receivingCount = await GetCountAsync(connection, "vw_receiving_history", startDate, endDate);
+            var receivingCount = await GetCountAsync(connection, "view_receiving_history", startDate, endDate);
             availability["Receiving"] = receivingCount;
 
             // Check Dunnage
-            var dunnageCount = await GetCountAsync(connection, "vw_dunnage_history", startDate, endDate);
+            var dunnageCount = await GetCountAsync(connection, "view_dunnage_history", startDate, endDate);
             availability["Dunnage"] = dunnageCount;
 
             // Check Routing
-            var routingCount = await GetCountAsync(connection, "vw_routing_history", startDate, endDate);
+            var routingCount = await GetCountAsync(connection, "view_routing_history", startDate, endDate);
             availability["Routing"] = routingCount;
 
             // Check Volvo (placeholder)
@@ -334,7 +334,7 @@ public class Dao_Reporting
         DateTime endDate)
     {
         var query = $@"
-            SELECT COUNT(*) 
+            SELECT COUNT(*)
             FROM {viewName}
             WHERE created_date BETWEEN @StartDate AND @EndDate";
 

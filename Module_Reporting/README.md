@@ -1,7 +1,7 @@
 # Reporting Module Implementation Summary
 
-**Feature**: 003-reporting-module  
-**Status**: ✅ Implementation Complete  
+**Feature**: 003-reporting-module
+**Status**: ✅ Implementation Complete
 **Date**: 2026-01-04
 
 ## Overview
@@ -15,10 +15,10 @@ The End-of-Day Reporting module has been successfully implemented as a cross-cut
 **File**: `Database/Schemas/10_create_reporting_views.sql`
 
 Created four database views for unified reporting:
-- `vw_receiving_history` - Aggregates receiving loads with PO numbers, parts, quantities, weights, heat/lot numbers
-- `vw_dunnage_history` - Aggregates dunnage loads with types, parts, specs (concatenated), quantities
-- `vw_routing_history` - Aggregates routing labels with delivery info, departments, package descriptions
-- `vw_volvo_history` - Placeholder view for future Volvo module integration
+- `view_receiving_history` - Aggregates receiving loads with PO numbers, parts, quantities, weights, heat/lot numbers
+- `view_dunnage_history` - Aggregates dunnage loads with types, parts, specs (concatenated), quantities
+- `view_routing_history` - Aggregates routing labels with delivery info, departments, package descriptions
+- `view_volvo_history` - Placeholder view for future Volvo module integration
 
 **Note**: Views need to be deployed to MySQL server using the SQL script.
 
@@ -30,9 +30,9 @@ Created four database views for unified reporting:
 - Module-specific properties (Routing: DeliverTo/Department, Dunnage: Type/Specs, Volvo: ShipmentNumber/Status)
 
 **DAO**: `Module_Reporting/Data/Dao_Reporting.cs`
-- `GetReceivingHistoryAsync(startDate, endDate)` - Queries vw_receiving_history
-- `GetDunnageHistoryAsync(startDate, endDate)` - Queries vw_dunnage_history
-- `GetRoutingHistoryAsync(startDate, endDate)` - Queries vw_routing_history
+- `GetReceivingHistoryAsync(startDate, endDate)` - Queries view_receiving_history
+- `GetDunnageHistoryAsync(startDate, endDate)` - Queries view_dunnage_history
+- `GetRoutingHistoryAsync(startDate, endDate)` - Queries view_routing_history
 - `GetVolvoHistoryAsync(startDate, endDate)` - Placeholder for Volvo
 - `CheckAvailabilityAsync(startDate, endDate)` - Returns record counts per module
 
@@ -124,11 +124,11 @@ services.AddTransient<View_Reporting_Main>();
 
 ## Architecture Compliance
 
-✅ **MVVM Pattern**: Strict separation of View, ViewModel, Service, and DAO layers  
-✅ **Dependency Injection**: All components registered in DI container  
-✅ **Async Operations**: All database and file I/O is async  
-✅ **Error Handling**: Uses IService_ErrorHandler for user-facing errors  
-✅ **Logging**: Uses IService_LoggingUtility for audit trail  
+✅ **MVVM Pattern**: Strict separation of View, ViewModel, Service, and DAO layers
+✅ **Dependency Injection**: All components registered in DI container
+✅ **Async Operations**: All database and file I/O is async
+✅ **Error Handling**: Uses IService_ErrorHandler for user-facing errors
+✅ **Logging**: Uses IService_LoggingUtility for audit trail
 ✅ **Constitutional Compliance**: Follows all MTM constitution principles
 
 ## File Structure
@@ -292,6 +292,6 @@ For questions or issues with this implementation:
 
 ---
 
-**Implementation Date**: 2026-01-04  
-**Implementation Status**: ✅ Complete  
+**Implementation Date**: 2026-01-04
+**Implementation Status**: ✅ Complete
 **Testing Status**: ⏳ Pending Database Deployment

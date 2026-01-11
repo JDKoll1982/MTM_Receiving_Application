@@ -52,7 +52,7 @@ Note: Some routing stored procedure scripts also exist under `Database/StoredPro
 
 ## Reporting View Integration
 
-The reporting view `vw_routing_history` (used by Module_Reporting) is defined in:
+The reporting view `view_routing_history` (used by Module_Reporting) is defined in:
 - `Database/Schemas/views_01_create_reporting_views.sql`
 
 It reads from:

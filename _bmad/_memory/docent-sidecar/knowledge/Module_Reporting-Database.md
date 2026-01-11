@@ -20,15 +20,15 @@ Views consumed by `Dao_Reporting`:
 
 | View | Consumed By | Purpose |
 |------|------------|---------|
-| vw_receiving_history | GetReceivingHistoryAsync | Unified receiving transaction history for EoD reporting |
-| vw_dunnage_history | GetDunnageHistoryAsync | Unified dunnage load history including specs concatenation |
-| vw_routing_history | GetRoutingHistoryAsync | Unified routing label history |
-| vw_volvo_history | GetVolvoHistoryAsync | Placeholder/initial integration surface for Volvo |
+| view_receiving_history | GetReceivingHistoryAsync | Unified receiving transaction history for EoD reporting |
+| view_dunnage_history | GetDunnageHistoryAsync | Unified dunnage load history including specs concatenation |
+| view_routing_history | GetRoutingHistoryAsync | Unified routing label history |
+| view_volvo_history | GetVolvoHistoryAsync | Placeholder/initial integration surface for Volvo |
 
 ## Availability Counts
 
 - `Dao_Reporting.CheckAvailabilityAsync` computes record counts by querying each view between the selected dates.
-- Volvo is currently forced to 0 in availability checks (even though `vw_volvo_history` is defined). This matches the module README’s “placeholder view” stance.
+- Volvo is currently forced to 0 in availability checks (even though `view_volvo_history` is defined). This matches the module README’s “placeholder view” stance.
 
 ## Notes
 

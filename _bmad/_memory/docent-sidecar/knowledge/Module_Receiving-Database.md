@@ -43,14 +43,6 @@ Used for receiving label line inserts.
 |-----|------------------|-------------|------|
 | Dao_ReceivingLine.InsertReceivingLineAsync | receiving_line_Insert | Database/StoredProcedures/Receiving/receiving_line_Insert.sql | Uses output params p_Status and p_ErrorMsg. |
 
-### label_table_parcel
-
-Used for carrier delivery label inserts.
-
-| DAO | Stored Procedure | Script Path | Notes |
-|-----|------------------|-------------|------|
-| Dao_CarrierDeliveryLabel.InsertCarrierDeliveryLabelAsync | carrier_delivery_label_Insert | Database/StoredProcedures/Receiving/carrier_delivery_label_Insert.sql | DAO is static and uses a settable error handler. |
-
 ## Stored Procedures Referenced but Script Not Found
 
 The following stored procedures are referenced in code but no matching .sql script was found in Database/ (as of this analysis date):

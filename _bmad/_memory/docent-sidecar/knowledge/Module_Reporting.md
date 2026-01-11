@@ -132,4 +132,4 @@ See: [_bmad/_memory/docent-sidecar/knowledge/Module_Reporting-Database.md](../do
 ## Known Deviations & Notes
 
 - `Dao_Reporting` uses raw SQL SELECT queries against **database views** for reporting. This is intentionally read-only but differs from the typical “stored procedures only” MySQL rule used for application CRUD.
-- `vw_volvo_history` is documented as a placeholder view (counts currently forced to 0 in availability checks).
+- `view_volvo_history` is documented as a placeholder view (counts currently forced to 0 in availability checks).
