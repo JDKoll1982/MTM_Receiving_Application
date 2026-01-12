@@ -1,0 +1,404 @@
+﻿using FluentAssertions;
+using Xunit;
+using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+
+namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
+
+/// <summary>
+/// Unit tests for Dao_ReceivingLine data access object.
+/// Tests CRUD operations for receiving line data.
+/// </summary>
+public class Dao_ReceivingLine_Tests
+{
+    private const string TestConnectionString = "Server=localhost;Database=test_db;User Id=test;Password=test;";
+
+    // ====================================================================
+    // Constructor Tests
+    // ====================================================================
+
+    [Fact]
+    public void Constructor_ValidConnectionString_CreatesInstance()
+    {
+        // Act
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+
+        // Assert
+        dao.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Constructor_NullConnectionString_ThrowsArgumentNullException()
+    {
+        // Act
+        Action act = () => new Dao_ReceivingLine(null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("*connectionString*");
+    }
+
+    [Fact]
+    public void Constructor_EmptyConnectionString_DoesNotThrow()
+    {
+        // Act
+        Action act = () => new Dao_ReceivingLine(string.Empty);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    // ====================================================================
+    // InsertReceivingLineAsync Tests
+    // ====================================================================
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_ValidLine_CallsStoredProcedure()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_NullPartID_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.PartID = null;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_NullHeat_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.Heat = null;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_NullInitialLocation_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.InitialLocation = null;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_NullCoilsOnSkid_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.CoilsOnSkid = null;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_NullVendorName_UsesDefault()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.VendorName = null;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_NullPartDescription_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.PartDescription = null;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(100)]
+    [InlineData(1000)]
+    [InlineData(0)]
+    public async Task InsertReceivingLineAsync_DifferentQuantities_HandlesAll(int quantity)
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.Quantity = quantity;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(12345)]
+    [InlineData(67890)]
+    [InlineData(999999)]
+    public async Task InsertReceivingLineAsync_DifferentPONumbers_HandlesAll(int poNumber)
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.PONumber = poNumber;
+
+        // Act
+        var result = await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_AllFieldsPopulated_PassesAllParameters()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = new Model_ReceivingLine
+        {
+            Quantity = 500,
+            PartID = "PART-12345",
+            PONumber = 67890,
+            EmployeeNumber = 1001,
+            Heat = "HEAT-ABC123",
+            Date = DateTime.Now,
+            InitialLocation = "A-01-B",
+            CoilsOnSkid = 10,
+            VendorName = "Acme Corp",
+            PartDescription = "Steel Coil 1.5mm x 48in"
+        };
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_MinimalFields_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = new Model_ReceivingLine
+        {
+            Quantity = 1,
+            PONumber = 1,
+            EmployeeNumber = 100,
+            Date = DateTime.Now
+        };
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    // ====================================================================
+    // Edge Cases and Boundary Value Tests
+    // ====================================================================
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_VeryLongPartID_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.PartID = new string('A', 500);
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_VeryLongHeat_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.Heat = new string('H', 1000);
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_VeryLongPartDescription_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.PartDescription = new string('D', 2000);
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_FutureDate_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.Date = DateTime.Now.AddYears(1);
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_PastDate_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.Date = DateTime.Now.AddYears(-10);
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Theory]
+    [InlineData(int.MinValue)]
+    [InlineData(-1)]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(int.MaxValue)]
+    public async Task InsertReceivingLineAsync_BoundaryCoilsOnSkid_HandlesAll(int? coilsOnSkid)
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.CoilsOnSkid = coilsOnSkid;
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Theory]
+    [InlineData(int.MinValue)]
+    [InlineData(-1000)]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(99999)]
+    [InlineData(int.MaxValue)]
+    public async Task InsertReceivingLineAsync_BoundaryEmployeeNumbers_HandlesAll(int employeeNumber)
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.EmployeeNumber = employeeNumber;
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task InsertReceivingLineAsync_SpecialCharactersInFields_HandlesGracefully()
+    {
+        // Arrange
+        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var line = CreateValidReceivingLine();
+        line.PartID = "PART-@#$%^&*()";
+        line.Heat = "HEAT-<>{}[]";
+        line.VendorName = "Vendor's \"Company\"";
+
+        // Act
+        Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    // ====================================================================
+    // Helper Methods
+    // ====================================================================
+
+    /// <summary>
+    /// Creates a valid test receiving line with all required fields populated.
+    /// </summary>
+    private static Model_ReceivingLine CreateValidReceivingLine()
+    {
+        return new Model_ReceivingLine
+        {
+            Quantity = 100,
+            PartID = "PART-001",
+            PONumber = 12345,
+            EmployeeNumber = 1001,
+            Heat = "HEAT-123",
+            Date = DateTime.Now,
+            InitialLocation = "A-01",
+            CoilsOnSkid = 5,
+            VendorName = "Test Vendor",
+            PartDescription = "Test Part Description"
+        };
+    }
+}

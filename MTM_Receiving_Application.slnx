@@ -10,5 +10,8 @@
     <Platform Solution="*|x86" Project="x86" />
     <Deploy />
   </Project>
-  <Project Path="MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj" />
+  <Project Path="MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|ARM64" Project="ARM64" />
+  </Project>
 </Solution>
