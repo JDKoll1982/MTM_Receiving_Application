@@ -140,6 +140,7 @@ public class Dao_RoutingRule
     /// <summary>
     /// Finds the first matching routing rule for a part number (spec compatibility)
     /// </summary>
+    /// <param name="partNumber"></param>
     public async Task<Model_Dao_Result<Model_RoutingRule>> GetByPartNumberAsync(string partNumber)
     {
         var parameters = new Dictionary<string, object>

@@ -39,6 +39,14 @@
         <Content Include="Assets\StoreLogo.png" />
         <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     </ItemGroup>
+
+    <!-- Exclude test project files from compilation -->
+    <ItemGroup>
+        <Compile Remove="MTM_Receiving_Application.Tests\**" />
+        <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
+        <None Remove="MTM_Receiving_Application.Tests\**" />
+        <Page Remove="MTM_Receiving_Application.Tests\**" />
+    </ItemGroup>
     <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon
     property) -->
     <ItemGroup>

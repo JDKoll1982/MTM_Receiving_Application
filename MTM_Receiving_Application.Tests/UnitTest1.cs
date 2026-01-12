@@ -1,12 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using FluentAssertions;
 
 namespace MTM_Receiving_Application.Tests;
 
-[TestClass]
 public class UnitTest1
 {
-    [TestMethod]
+    [Fact]
     public void Test_BasicMath_ShouldPass()
     {
         // Arrange
@@ -17,10 +16,9 @@ public class UnitTest1
 
         // Assert
         result.Should().Be(expected);
-        Assert.AreEqual(expected, result);
     }
 
-    [TestMethod]
+    [Fact]
     public void Test_StringOperation_ShouldPass()
     {
         // Arrange
@@ -31,6 +29,5 @@ public class UnitTest1
 
         // Assert
         result.Should().Be("HELLO, WORLD!");
-        Assert.AreEqual("HELLO, WORLD!", result);
     }
 }

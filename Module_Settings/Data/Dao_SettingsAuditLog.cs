@@ -45,6 +45,8 @@ public class Dao_SettingsAuditLog
     /// <summary>
     /// Retrieves audit log entries for a specific setting (spec compatibility)
     /// </summary>
+    /// <param name="settingId"></param>
+    /// <param name="limit"></param>
     public async Task<Model_Dao_Result<List<Model_SettingsAuditLog>>> GetBySettingAsync(int settingId, int limit)
     {
         var parameters = new Dictionary<string, object>
@@ -64,6 +66,8 @@ public class Dao_SettingsAuditLog
     /// <summary>
     /// Retrieves audit log entries by user (spec compatibility)
     /// </summary>
+    /// <param name="changedBy"></param>
+    /// <param name="limit"></param>
     public async Task<Model_Dao_Result<List<Model_SettingsAuditLog>>> GetByUserAsync(int changedBy, int limit)
     {
         var parameters = new Dictionary<string, object>

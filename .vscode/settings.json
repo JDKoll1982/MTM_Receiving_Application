@@ -532,5 +532,26 @@
   "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
   // Disable telemetry for test explorer
   // Values: true | false
-  "dotnet-test-explorer.enableTelemetry": false
+  "dotnet-test-explorer.enableTelemetry": false,
+  // Additional build arguments for test discovery (required for WinUI 3)
+  // Values: string of MSBuild arguments
+  "dotnet-test-explorer.buildArguments": "/p:Platform=x64 /p:Configuration=Debug",
+  // Additional test arguments for test execution
+  // Values: string of dotnet test arguments
+  "dotnet-test-explorer.testArguments": "/p:Platform=x64",
+  // Auto-watch for test changes
+  // Values: true | false
+  "dotnet-test-explorer.autoWatch": false,
+  // ================================
+  // SECTION 23: .NET Testing (Built-in VS Code)
+  // ================================
+  // Enable built-in .NET test discovery
+  // Values: true | false
+  "dotnet.test.enable": true,
+  // MSBuild properties for test builds
+  // Values: object with key-value pairs
+  "dotnet.test.buildProperties": {
+    "Platform": "x64",
+    "Configuration": "Debug"
+  }
 }
