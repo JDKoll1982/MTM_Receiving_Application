@@ -9,8 +9,8 @@ CREATE PROCEDURE `sp_Dunnage_Types_GetPartCount`(
 BEGIN
     -- Get count of parts using this dunnage type
     SELECT COUNT(*) INTO p_count
-    FROM dunnage_part_numbers
-    WHERE DunnageTypeID = p_type_id;
+    FROM dunnage_parts
+    WHERE type_id = p_type_id;
 END $$
 
 DELIMITER ;

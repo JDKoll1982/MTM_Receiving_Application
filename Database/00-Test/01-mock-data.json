@@ -31,7 +31,7 @@
   },
   "sp_Dunnage_Parts_CountTransactions": {
     "parameters": {
-      "p_part_id": 1
+      "p_part_id": "TEST_PART"
     },
     "enabled": true,
     "category": "DunnageParts",
@@ -70,7 +70,7 @@
   },
   "sp_Dunnage_Inventory_Check": {
     "parameters": {
-      "p_part_id": 1
+      "p_part_id": "TEST_PART"
     },
     "enabled": true,
     "category": "Other",
@@ -79,7 +79,7 @@
   "sp_Settings_RoutingRule_FindMatch": {
     "parameters": {
       "p_value": "TEST_VALUE",
-      "p_match_type": "TEST_VALUE"
+      "p_match_type": "Part Number"
     },
     "enabled": true,
     "category": "Settings",
@@ -93,7 +93,7 @@
   },
   "sp_Receiving_PackageTypeMappings_GetByPrefix": {
     "parameters": {
-      "p_part_identifier": 1
+      "p_part_identifier": "TEST_PART"
     },
     "enabled": true,
     "category": "PackageTypes",
@@ -111,7 +111,7 @@
   },
   "sp_Settings_RoutingRule_Update": {
     "parameters": {
-      "p_match_type": "TEST_VALUE",
+      "p_match_type": "Part Number",
       "p_priority": 1,
       "p_destination_location": "TEST_VALUE",
       "p_pattern": "TEST_VALUE",
@@ -142,7 +142,7 @@
   },
   "sp_Dunnage_Parts_Insert": {
     "parameters": {
-      "p_part_id": 1,
+      "p_part_id": "TEST_PART",
       "p_type_id": 1,
       "p_home_location": "TEST_VALUE",
       "p_user": "TEST_VALUE",
@@ -216,7 +216,7 @@
       "p_EmployeeNumber": 1,
       "p_VendorName": "TEST_VALUE",
       "p_Location": "TEST_VALUE",
-      "p_PONumber": "PO12345",
+      "p_PONumber": 12345,
       "p_Line2": "TEST_VALUE"
     },
     "enabled": true,
@@ -225,7 +225,7 @@
   },
   "sp_Dunnage_Loads_Insert": {
     "parameters": {
-      "p_part_id": 1,
+      "p_part_id": "TEST_PART",
       "p_load_uuid": "TEST_VALUE",
       "p_quantity": 10,
       "p_user": "TEST_VALUE"
@@ -246,7 +246,7 @@
   },
   "sp_Dunnage_Inventory_GetByPart": {
     "parameters": {
-      "p_part_id": 1
+      "p_part_id": "TEST_PART"
     },
     "enabled": true,
     "category": "Other",
@@ -358,7 +358,7 @@
   },
   "sp_Receiving_Load_Update": {
     "parameters": {
-      "p_PartID": 1,
+      "p_PartID": "TEST_PART",
       "p_IsNonPOItem": true,
       "p_PONumber": "PO12345",
       "p_POLineNumber": "PO12345",
@@ -398,7 +398,7 @@
   },
   "sp_Receiving_Load_Insert": {
     "parameters": {
-      "p_PartID": 1,
+      "p_PartID": "TEST_PART",
       "p_IsNonPOItem": true,
       "p_PONumber": "PO12345",
       "p_POLineNumber": "PO12345",
@@ -468,7 +468,7 @@
   },
   "sp_Dunnage_Inventory_Insert": {
     "parameters": {
-      "p_part_id": 1,
+      "p_part_id": "TEST_PART",
       "p_inventory_method": "TEST_VALUE",
       "p_notes": "Test data",
       "p_user": "TEST_VALUE"
@@ -533,7 +533,7 @@
   },
   "sp_Dunnage_Parts_GetTransactionCount": {
     "parameters": {
-      "p_part_id": 1
+      "p_part_id": "TEST_PART"
     },
     "enabled": true,
     "category": "DunnageParts",
@@ -549,7 +549,7 @@
   },
   "sp_Receiving_PackageTypePreference_Save": {
     "parameters": {
-      "p_PartID": 1,
+      "p_PartID": "TEST_PART",
       "p_LastModified": "2026-01-01",
       "p_CustomTypeName": "TEST_VALUE",
       "p_PackageTypeName": 1
@@ -802,7 +802,7 @@
   },
   "sp_Receiving_History_Get": {
     "parameters": {
-      "p_PartID": 1,
+      "p_PartID": "TEST_PART",
       "p_EndDate": "2026-01-01",
       "p_StartDate": "2026-01-01"
     },
@@ -906,6 +906,23 @@
     "category": "Settings",
     "executionOrder": 1210
   },
+  "sp_Receiving_Line_Insert": {
+    "parameters": {
+      "p_Heat": "TEST_VALUE",
+      "p_InitialLocation": "TEST_VALUE",
+      "p_CoilsOnSkid": 1,
+      "p_EmployeeNumber": 1,
+      "p_PartID": "TEST_PART",
+      "p_PartDescription": "Test data",
+      "p_Date": "2026-01-01",
+      "p_VendorName": "TEST_VALUE",
+      "p_Quantity": 10,
+      "p_PONumber": 12345
+    },
+    "enabled": true,
+    "category": "ReceivingLines",
+    "executionOrder": 120
+  },
   "sp_Settings_ScheduledReport_UpdateLastRun": {
     "parameters": {
       "p_next_run_date": "2026-01-01",
@@ -955,26 +972,9 @@
     "category": "Settings",
     "executionOrder": 210
   },
-  "sp_sp_Receiving_Line_Insert": {
-    "parameters": {
-      "p_Heat": "TEST_VALUE",
-      "p_InitialLocation": "TEST_VALUE",
-      "p_CoilsOnSkid": 1,
-      "p_EmployeeNumber": 1,
-      "p_PartID": 1,
-      "p_PartDescription": "Test data",
-      "p_Date": "2026-01-01",
-      "p_VendorName": "TEST_VALUE",
-      "p_Quantity": 10,
-      "p_PONumber": "PO12345"
-    },
-    "enabled": true,
-    "category": "ReceivingLines",
-    "executionOrder": 120
-  },
   "sp_Receiving_PackageTypePreference_Get": {
     "parameters": {
-      "p_PartID": 1
+      "p_PartID": "TEST_PART"
     },
     "enabled": true,
     "category": "PackageTypes",
@@ -1122,7 +1122,7 @@
     "parameters": {
       "p_windows_username": "TEST_USER",
       "p_created_by": "TEST_VALUE",
-      "p_shift": "TEST_VALUE",
+      "p_shift": "1st Shift",
       "p_visual_username": "TEST_VALUE",
       "p_pin": "1234",
       "p_full_name": "TEST_VALUE",
@@ -1164,7 +1164,7 @@
   },
   "sp_Dunnage_Parts_GetById": {
     "parameters": {
-      "p_part_id": 1
+      "p_part_id": "TEST_PART"
     },
     "enabled": true,
     "category": "DunnageParts",
@@ -1210,7 +1210,7 @@
   },
   "sp_Receiving_PackageTypePreference_Delete": {
     "parameters": {
-      "p_PartID": 1
+      "p_PartID": "TEST_PART"
     },
     "enabled": true,
     "category": "PackageTypes",
@@ -1218,7 +1218,7 @@
   },
   "sp_Settings_RoutingRule_Insert": {
     "parameters": {
-      "p_match_type": "TEST_VALUE",
+      "p_match_type": "Part Number",
       "p_created_by": 1,
       "p_priority": 1,
       "p_destination_location": "TEST_VALUE",
@@ -1296,7 +1296,7 @@
       "p_windows_username": "TEST_USER",
       "p_visual_username": "TEST_VALUE",
       "p_created_by": "TEST_VALUE",
-      "p_shift": "TEST_VALUE",
+      "p_shift": "1st Shift",
       "p_pin": "1234",
       "p_full_name": "TEST_VALUE",
       "p_department": "Production",

@@ -21,8 +21,14 @@ if ($PSVersionTable.PSEdition -eq "Desktop") {
         Write-Warning "Windows PowerShell 5.1 detected. Relaunching under PowerShell 7 (pwsh) for .NET 8 MySql.Data compatibility..."
 
         $scriptPath = $MyInvocation.MyCommand.Path
-        $portArg = if ($Port -ne 3306) { "-Port $Port" } else { "" }
-        & $pwshCmd.Source -NoProfile -ExecutionPolicy Bypass -File $scriptPath -Server $Server $portArg -Database $Database -User $User
+        $args = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $scriptPath, '-Server', $Server, '-Database', $Database, '-User', $User)
+        if ($Port -ne 3306) {
+            $args += @('-Port', $Port)
+        }
+        if ($UseExecutionOrder) {
+            $args += '-UseExecutionOrder'
+        }
+        & $pwshCmd.Source @args
         return
     }
 
@@ -43,8 +49,7 @@ if (-not $Password) {
         $PlainPassword = "root"  # MAMP default
         Write-Host "Using default MAMP password 'root'" -ForegroundColor Cyan
     }
-}
-else {
+} else {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
@@ -85,25 +90,24 @@ try {
     foreach ($dll in $dependencyDlls) {
         try {
             $null = [System.Reflection.Assembly]::LoadFrom($dll.FullName)
-        }
-        catch {
+        } catch {
             # Ignore already loaded assemblies
         }
     }
     Write-Host "Loaded MySql.Data.dll from $($mysqlDll.FullName)" -ForegroundColor Green
-}
-catch {
+} catch {
     Write-Error "Failed to load MySql.Data.dll: $_"
     exit 1
 }
 
-# Build connection string with port
-$connStr = "Server=$Server;Port=$Port;Database=$Database;Uid=$User;Pwd=$PlainPassword;SslMode=none;"
+# Build connection string with port and options for stored procedure testing
+# NOTE: OUT parameter testing uses multi-statement batches (SET @out...; CALL ...; SELECT @out...;)
+# which requires AllowBatch/Allow User Variables.
+$connStr = "Server=$Server;Port=$Port;Database=$Database;Uid=$User;Pwd=$PlainPassword;SslMode=none;AllowUserVariables=true;Allow User Variables=true;AllowBatch=true;"
 
 try {
     $conn = New-Object MySql.Data.MySqlClient.MySqlConnection($connStr)
-}
-catch {
+} catch {
     Write-Error "Failed to create MySqlConnection: $_"
     Write-Host "Connection string (without password): Server=$Server;Port=$Port;Database=$Database;Uid=$User;SslMode=none;" -ForegroundColor Yellow
     exit 1
@@ -112,8 +116,7 @@ catch {
 try {
     $conn.Open()
     Write-Host "Connected to $Database on $Server`:$Port (MAMP)" -ForegroundColor Green
-}
-catch {
+} catch {
     Write-Error "Failed to connect: $_"
     Write-Host "Common MAMP issues:" -ForegroundColor Yellow
     Write-Host "  - MAMP MySQL service not running (Start Servers in MAMP)" -ForegroundColor Yellow
@@ -132,16 +135,35 @@ $executionOrderConfig = $null
 
 if (Test-Path $mockDataPath) {
     $mockData = Get-Content $mockDataPath -Raw | ConvertFrom-Json
-    Write-Host "✓ Loaded mock data configuration from 01-mock-data.json" -ForegroundColor Green
-}
-else {
+    Write-Host "Loaded mock data configuration from 01-mock-data.json" -ForegroundColor Green
+} else {
     Write-Warning "Mock data file not found: $mockDataPath"
     Write-Host "Run 01-Generate-SP-TestData.ps1 first to create configuration files." -ForegroundColor Yellow
 }
 
+# Make insert-style test values unique per run to avoid duplicate-key validations
+$runToken = (Get-Date).ToString("yyyyMMddHHmmss")
+$shortToken = (Get-Date).ToString("MMddHHmmss")
+try {
+    if ($mockData.'sp_Dunnage_Types_Insert') {
+        $mockData.'sp_Dunnage_Types_Insert'.parameters.p_type_name = "TEST_DUNNAGE_TYPE_INSERT_$runToken"
+    }
+    if ($mockData.'sp_Dunnage_Parts_Insert') {
+        $mockData.'sp_Dunnage_Parts_Insert'.parameters.p_part_id = "TEST_DUNNAGE_PART_$runToken"
+    }
+    if ($mockData.'sp_Settings_RoutingRule_Insert') {
+        $mockData.'sp_Settings_RoutingRule_Insert'.parameters.p_pattern = "TEST_PATTERN_INSERT_$runToken"
+        $mockData.'sp_Settings_RoutingRule_Insert'.parameters.p_destination_location = "LOC_TEST_INSERT_$runToken"
+    }
+    if ($mockData.'sp_Volvo_PartMaster_Insert') {
+        # VARCHAR(20) constraint: keep this short
+        $mockData.'sp_Volvo_PartMaster_Insert'.parameters.p_part_number = "TP$shortToken"
+    }
+} catch { }
+
 if ($UseExecutionOrder -and (Test-Path $executionOrderPath)) {
     $executionOrderConfig = Get-Content $executionOrderPath -Raw | ConvertFrom-Json
-    Write-Host "✓ Using execution order from 01-order.json" -ForegroundColor Green
+    Write-Host "Using execution order from 01-order.json" -ForegroundColor Green
 }
 
 # 1. Get List of Stored Procedures
@@ -172,14 +194,34 @@ if ($UseExecutionOrder -and $executionOrderConfig) {
     }
     $spList = $orderedList
     Write-Host "Executing in dependency order ($($spList.Count) procedures)" -ForegroundColor Cyan
-}
-else {
+} else {
     Write-Host "Found $($spList.Count) stored procedures to test (alphabetical order)" -ForegroundColor Cyan
 }
 
 $results = @()
 
 foreach ($sp in $spList) {
+    # Optional: allow disabling individual SP tests via 01-mock-data.json
+    if ($mockData -and $mockData.$sp -and $null -ne $mockData.$sp.enabled -and $mockData.$sp.enabled -eq $false) {
+        Write-Host "[Skipped] $sp" -ForegroundColor DarkGray
+        continue
+    }
+
+    # Pre-test cleanup for settings SPs: ensure the target setting isn't locked.
+    if ($sp -in @('sp_Settings_System_UpdateValue', 'sp_Settings_System_ResetToDefault')) {
+        try {
+            $settingId = 0
+            if ($mockData -and $mockData.$sp -and $mockData.$sp.parameters -and $mockData.$sp.parameters.p_setting_id) {
+                $settingId = [int]$mockData.$sp.parameters.p_setting_id
+            }
+            if ($settingId -gt 0) {
+                $unlockCmd = $conn.CreateCommand()
+                $unlockCmd.CommandText = "UPDATE settings_universal SET is_locked = 0 WHERE id = $settingId;"
+                $null = $unlockCmd.ExecuteNonQuery()
+            }
+        } catch { }
+    }
+
     # 2. Get Parameters for this SP
     $cmdParams = $conn.CreateCommand()
     $cmdParams.CommandText = @"
@@ -206,8 +248,7 @@ foreach ($sp in $spList) {
             # IN and INOUT parameters need values, OUT does not
             if ($mode -eq "IN" -or $mode -eq "INOUT") {
                 $paramDefs += $param
-            }
-            else {
+            } else {
                 $outParams += $param  # Track pure OUT params for diagnostics
             }
         }
@@ -230,39 +271,48 @@ foreach ($sp in $spList) {
         if ($null -eq $mockValue) {
             # Fallback to type-based defaults
             switch -Regex ($p.Type) {
-                'int|decimal|float|double|bigint|smallint' { $paramValues += "1" }
-                'bool|bit|tinyint' { $paramValues += "1" }
-                'date' { $paramValues += "'2026-01-01'" }
-                'datetime|timestamp' { $paramValues += "'2026-01-01 12:00:00'" }
-                'char|varchar|text|longtext' { $paramValues += "'TEST_VALUE'" }
-                'blob' { $paramValues += "NULL" }
+                'bool|bit|tinyint' { $paramValues += "1"; break }
+                'int|decimal|float|double|bigint|smallint' { $paramValues += "1"; break }
+                'date' { $paramValues += "'2026-01-01'"; break }
+                'datetime|timestamp' { $paramValues += "'2026-01-01 12:00:00'"; break }
+                'char|varchar|text|longtext' { $paramValues += "'TEST_VALUE'"; break }
+                'blob' { $paramValues += "NULL"; break }
                 default { $paramValues += "NULL" }
             }
-        }
-        else {
+        } else {
             # Format based on type
             switch -Regex ($p.Type) {
-                'int|decimal|float|double|bigint|smallint' {
-                    $paramValues += $mockValue
-                }
                 'bool|bit|tinyint' {
-                    $paramValues += if ($mockValue) { "1" } else { "0" }
+                    $converted = if ($mockValue) { "1" } else { "0" }
+                    $paramValues += $converted
+                    break
+                }
+                'int|decimal|float|double|bigint|smallint' {
+                    # Ensure numeric types never receive unquoted non-numeric strings (e.g., "PO12345"),
+                    # which MySQL interprets as an identifier and can raise "Unknown column ...".
+                    $text = $mockValue.ToString()
+                    if ($text -match '^-?\d+(\.\d+)?$') {
+                        $paramValues += $text
+                    } else {
+                        $paramValues += "1"
+                    }
+                    break
                 }
                 'date' {
                     if ($mockValue -match '^\d{4}-\d{2}-\d{2}$') {
                         $paramValues += "'$mockValue'"
-                    }
-                    else {
+                    } else {
                         $paramValues += "'2026-01-01'"
                     }
+                    break
                 }
                 'datetime|timestamp' {
                     if ($mockValue -match '^\d{4}-\d{2}-\d{2}') {
                         $paramValues += "'$mockValue'"
-                    }
-                    else {
+                    } else {
                         $paramValues += "'2026-01-01 12:00:00'"
                     }
+                    break
                 }
                 default {
                     # String types
@@ -273,26 +323,59 @@ foreach ($sp in $spList) {
         }
     }
 
+    # Prepare OUT parameter variables and add to parameter list
+    # NOTE: We intentionally do NOT pre-initialize user variables with SET here.
+    # Some MySql.Data configurations can choke on the leading SET statement for certain routines;
+    # MySQL will create/assign the user variable when it is used as an OUT argument.
+    $outVarSelects = @()
+    foreach ($outParam in $outParams) {
+        $varName = "@out_$($outParam.Name)"
+        $paramValues += $varName
+        $outVarSelects += $varName
+    }
+
     $testCall += ($paramValues -join ", ") + ");"
+
+    # Build complete SQL batch
+    $sqlBatch = "" + $testCall
+    if ($outVarSelects.Count -gt 0) {
+        $sqlBatch += " SELECT " + ($outVarSelects -join ", ") + ";"
+    }
+
+    # Known business-rule trigger: only one pending Volvo shipment allowed.
+    # For test execution, archive any existing pending shipment before attempting an insert.
+    if ($sp -eq 'sp_Volvo_Shipment_Insert') {
+        $cleanupCmd = $conn.CreateCommand()
+        $cleanupCmd.CommandText = "UPDATE volvo_label_data SET is_archived = 1 WHERE status = 'pending_po' AND is_archived = 0;"
+        try { $null = $cleanupCmd.ExecuteNonQuery() } catch { }
+    }
 
     # 4. Execute
     $testCmd = $conn.CreateCommand()
-    $testCmd.CommandText = $testCall
+    $testCmd.CommandText = $sqlBatch
 
     $status = "PASS"
     $errorMsg = ""
     $errorCode = 0
 
     try {
-        $null = $testCmd.ExecuteNonQuery()
-    }
-    catch {
+        $result = $testCmd.ExecuteReader()
+        # Read all result sets (including OUT parameter values)
+        while ($result.Read()) {
+            # Successfully read result
+        }
+        while ($result.NextResult()) {
+            while ($result.Read()) {
+                # Read subsequent result sets
+            }
+        }
+        $result.Close()
+    } catch {
         $status = "FAIL"
         $errorMsg = $_.Exception.Message
         if ($_.Exception.InnerException -and $_.Exception.InnerException.Number) {
             $errorCode = $_.Exception.InnerException.Number
-        }
-        elseif ($_.Exception.Number) {
+        } elseif ($_.Exception.Number) {
             $errorCode = $_.Exception.Number
         }
     }
@@ -301,17 +384,13 @@ foreach ($sp in $spList) {
     $category = "Unknown"
     if ($status -eq "PASS") {
         $category = "Valid"
-    }
-    elseif ($errorCode -eq 1054 -or $errorCode -eq 1146) {
+    } elseif ($errorCode -eq 1054 -or $errorCode -eq 1146) {
         $category = "SchemaBroken"
-    }
-    elseif ($errorCode -eq 1048 -or $errorCode -eq 1062) {
+    } elseif ($errorCode -eq 1048 -or $errorCode -eq 1062) {
         $category = "Constraint"
-    }
-    elseif ($status -eq "FAIL" -and $errorMsg -match "SQLSTATE\[45000\]") {
+    } elseif ($status -eq "FAIL" -and $errorMsg -match "SQLSTATE\[45000\]") {
         $category = "LogicCaught"
-    }
-    else {
+    } else {
         $category = "RuntimeError"
     }
 
@@ -388,9 +467,8 @@ if ($broken) {
         $brokenLines += "| **$($r.SP)** | $($r.ErrorCode) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
     }
     $schemaBrokenTable = $brokenLines -join "`n"
-}
-else {
-    $schemaBrokenTable = "| - | - | ✓ No schema errors | - | - |"
+} else {
+    $schemaBrokenTable = "| - | - | No schema errors | - | - |"
 }
 
 # Build parameter mismatches table
@@ -406,9 +484,8 @@ if ($paramMismatches) {
         $pmLines += "| $($r.SP) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
     }
     $paramMismatchesTable = $pmLines -join "`n"
-}
-else {
-    $paramMismatchesTable = "✓ No parameter mismatches detected"
+} else {
+    $paramMismatchesTable = "No parameter mismatches detected"
 }
 
 # Build constraint violations table
@@ -426,9 +503,8 @@ if ($constraintErrors) {
     $cvLines += ""
     $cvLines += "**Recommendation:** Run with ``-UseExecutionOrder`` flag or add prerequisite test data."
     $constraintViolationsTable = $cvLines -join "`n"
-}
-else {
-    $constraintViolationsTable = "✓ No constraint violations"
+} else {
+    $constraintViolationsTable = "No constraint violations"
 }
 
 # Build validation errors table
@@ -446,9 +522,8 @@ if ($validationErrors) {
     $veLines += ""
     $veLines += "**Recommendation:** Review mock data values in ``01-mock-data.json``."
     $validationErrorsTable = $veLines -join "`n"
-}
-else {
-    $validationErrorsTable = "✓ No data validation errors"
+} else {
+    $validationErrorsTable = "No data validation errors"
 }
 
 # Build other errors table
@@ -471,9 +546,8 @@ if ($otherErrors) {
         $oeLines += "| $($r.SP) | $($r.Category) | $($r.Message) |"
     }
     $otherErrorsTable = $oeLines -join "`n"
-}
-else {
-    $otherErrorsTable = "✓ No other runtime errors"
+} else {
+    $otherErrorsTable = "No other runtime errors"
 }
 
 # Build recommendations section
@@ -501,18 +575,16 @@ if ($constraintErrors.Count -gt 0) {
 }
 
 if ($successRate -eq 100) {
-    $recommendations += "### ✅ All Tests Passed!"
+    $recommendations += "### All Tests Passed!"
     $recommendations += "- All $totalTests stored procedures executed successfully"
     $recommendations += "- Database schema and stored procedures are in sync"
     $recommendations += ""
-}
-elseif ($successRate -ge 80) {
+} elseif ($successRate -ge 80) {
     $recommendations += "### Good Progress"
     $recommendations += "- $successRate% success rate"
     $recommendations += "- Focus on fixing the $failed remaining issues"
     $recommendations += ""
-}
-else {
+} else {
     $recommendations += "### Needs Attention"
     $recommendations += "- Only $successRate% success rate"
     $recommendations += "- Review error categories above and prioritize fixes"
@@ -546,13 +618,13 @@ $content = $template `
     -replace '{{VALIDATION_ERRORS_TABLE}}', $validationErrorsTable `
     -replace '{{OTHER_ERRORS_TABLE}}', $otherErrorsTable `
     -replace '{{RECOMMENDATIONS}}', ($recommendations -join "`n") `
-    -replace '{{MOCK_DATA_STATUS}}', $(if (Test-Path $mockDataPath) { '✓ Loaded' } else { '✗ Not found' }) `
-    -replace '{{EXEC_ORDER_STATUS}}', $(if (Test-Path $executionOrderPath) { '✓ Loaded' } else { '✗ Not found' }) `
+    -replace '{{MOCK_DATA_STATUS}}', $(if (Test-Path $mockDataPath) { 'Loaded' } else { 'Not found' }) `
+    -replace '{{EXEC_ORDER_STATUS}}', $(if (Test-Path $executionOrderPath) { 'Loaded' } else { 'Not found' }) `
     -replace '{{USING_EXEC_ORDER}}', $(if ($UseExecutionOrder) { 'Yes' } else { 'No' })
 
 $content | Out-File -FilePath $reportFile -Encoding UTF8
 
-Write-Host "`n✓ Generated test report: $reportFile" -ForegroundColor Green
+Write-Host "`nGenerated test report: $reportFile" -ForegroundColor Green
 Write-Host "  - Total Tests: $totalTests" -ForegroundColor Cyan
 Write-Host "  - Passed: $passed ($successRate%)" -ForegroundColor $(if ($successRate -ge 80) { 'Green' } elseif ($successRate -ge 50) { 'Yellow' } else { 'Red' })
 Write-Host "  - Failed: $failed" -ForegroundColor $(if ($failed -eq 0) { 'Green' } else { 'Red' })

@@ -1,6 +1,6 @@
 # Stored Procedure Analysis Report
 
-**Generated:** 2026-01-11 17:36:19
+**Generated:** 2026-01-11 18:38:48
 **Database:** mtm_receiving_application
 **Server:** localhost:3306
 
@@ -133,7 +133,7 @@
 
 ### ReceivingLines (1 procedures)
 
-- **sp_sp_Receiving_Line_Insert** - IN: 10 OUT: 2
+- **sp_Receiving_Line_Insert** - IN: 10 OUT: 2
 
 ### ReceivingLoads (4 procedures)
 
@@ -223,7 +223,7 @@
 | 35 | DunnageParts | 2 | sp_Dunnage_Parts_Insert, sp_Dunnage_Parts_Update |
 | 45 | RoutingRecipients | 2 | sp_routing_recipient_insert, sp_routing_recipient_update |
 | 100 | ReceivingLoads | 2 | sp_Receiving_Load_Insert, sp_Receiving_Load_Update |
-| 120 | ReceivingLines | 1 | sp_sp_Receiving_Line_Insert |
+| 120 | ReceivingLines | 1 | sp_Receiving_Line_Insert |
 | 150 | RoutingLabels | 4 | sp_routing_label_archive, sp_routing_label_insert, sp_routing_label_mark_exported, sp_routing_lab... |
 | 170 | VolvoShipments | 3 | sp_Volvo_Shipment_Complete, sp_Volvo_Shipment_Insert, sp_Volvo_Shipment_Update |
 | 200 | Preferences | 2 | sp_Dunnage_UserPreferences_Upsert, sp_routing_user_preference_save |
@@ -266,7 +266,7 @@
 |---------|--------------|-----|-----|-------|
 | sp_Receiving_Load_Update | 13 | 13 | 0 | 0 |
 | sp_Receiving_Load_Insert | 13 | 13 | 0 | 0 |
-| sp_sp_Receiving_Line_Insert | 12 | 10 | 2 | 0 |
+| sp_Receiving_Line_Insert | 12 | 10 | 2 | 0 |
 | sp_Dunnage_CustomFields_Insert | 11 | 8 | 3 | 0 |
 | sp_Auth_User_Create | 10 | 9 | 4 | 0 |
 | sp_Auth_User_Upsert | 10 | 10 | 0 | 0 |
@@ -293,6 +293,7 @@
 | [ ] | sp_Dunnage_Types_GetPartCount | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Types_GetPartCount.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
 | [ ] | sp_Dunnage_Types_GetTransactionCount | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_Types_GetTransactionCount.sql | Dao_Dunnage Types | OUT Parameters | High | Update DAO to handle 4 OUT params |
 | [ ] | sp_Dunnage_UserPreferences_Upsert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Dunnage_UserPreferences_Upsert.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
+| [ ] | sp_Receiving_Line_Insert | 10 IN | 12 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Receiving_Line_Insert.sql | Dao_Receiving Line | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_archive | 4 IN | 3 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_archive.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_check_duplicate | 4 IN | 6 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_label_check_duplicate.sql | Dao_Routing Label | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_label_delete | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_routing_label_delete.sql | Dao_Routing Label | OUT Parameters | High | Update DAO to handle 4 OUT params |
@@ -309,7 +310,6 @@
 | [ ] | sp_routing_user_preference_get | 4 IN | 3 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_user_preference_get.sql | Dao_Routing User Preference | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_routing_user_preference_save | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_routing_user_preference_save.sql |  | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_Settings_ScheduledReport_UpdateLastRun | 3 IN | 4 total | 4 OUT/INOUT | Database/StoredProcedures/sp_Settings_ScheduledReport_UpdateLastRun.sql | Dao_Settings Scheduledreport | OUT Parameters | High | Update DAO to handle 4 OUT params |
-| [ ] | sp_sp_Receiving_Line_Insert | 10 IN | 12 total | 2 OUT/INOUT | Database/StoredProcedures/sp_sp_Receiving_Line_Insert.sql | Dao_Sp Receiving Line | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 | [ ] | sp_volvo_part_check_references | 4 IN | 2 total | 4 OUT/INOUT | Database/StoredProcedures/sp_volvo_part_check_references.sql | Dao_Volvo Part | OUT Parameters | High | Update DAO to handle 4 OUT params |
 | [ ] | sp_Volvo_Shipment_Insert | 3 IN | 5 total | 2 OUT/INOUT | Database/StoredProcedures/sp_Volvo_Shipment_Insert.sql | Dao_Volvo Shipment | OUT Parameters | Medium | Update DAO to handle 2 OUT params |
 
@@ -323,13 +323,13 @@
 | [ ] | Dao_Dunnage Parts | **/Dao_Dunnage Parts.cs (search required) | sp_Dunnage_Parts_GetTransactionCount, sp_Dunnage_Parts_In... | 8 | Get*Async, Insert*Async | 8 OUT/INOUT params across 2 SP(s) | High |
 | [ ] | Dao_Dunnage Specs | **/Dao_Dunnage Specs.cs (search required) | sp_Dunnage_Specs_Insert | 4 | Insert*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
 | [ ] | Dao_Dunnage Types | **/Dao_Dunnage Types.cs (search required) | sp_Dunnage_Types_CheckDuplicate, sp_Dunnage_Types_Delete,... | 14 | Delete*Async, Get*Async | 14 OUT/INOUT params across 4 SP(s) | High |
+| [ ] | Dao_Receiving Line | **/Dao_Receiving Line.cs (search required) | sp_Receiving_Line_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Routing Label | **/Dao_Routing Label.cs (search required) | sp_routing_label_check_duplicate, sp_routing_label_delete... | 16 | Delete*Async, Get*Async, Insert*Async, Update*Async | 16 OUT/INOUT params across 6 SP(s) | High |
 | [ ] | Dao_Routing Label History | **/Dao_Routing Label History.cs (search required) | sp_routing_label_history_insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Routing Other Reason | **/Dao_Routing Other Reason.cs (search required) | sp_routing_other_reason_get_all_active | 2 | Get*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Routing Recipient | **/Dao_Routing Recipient.cs (search required) | sp_routing_recipient_insert, sp_routing_recipient_update | 6 | Insert*Async, Update*Async | 6 OUT/INOUT params across 2 SP(s) | High |
 | [ ] | Dao_Routing User Preference | **/Dao_Routing User Preference.cs (search required) | sp_routing_user_preference_get | 2 | Get*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Settings Scheduledreport | **/Dao_Settings Scheduledreport.cs (search required) | sp_Settings_ScheduledReport_UpdateLastRun | 4 | Update*Async | 4 OUT/INOUT params across 1 SP(s) | Medium |
-| [ ] | Dao_Sp Receiving Line | **/Dao_Sp Receiving Line.cs (search required) | sp_sp_Receiving_Line_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 | [ ] | Dao_Volvo Part | **/Dao_Volvo Part.cs (search required) | sp_volvo_part_check_references | 4 |  | 4 OUT/INOUT params across 1 SP(s) | Medium |
 | [ ] | Dao_Volvo Shipment | **/Dao_Volvo Shipment.cs (search required) | sp_Volvo_Shipment_Insert | 2 | Insert*Async | 2 OUT/INOUT params across 1 SP(s) | Low |
 
@@ -337,6 +337,5 @@
 
 | Fixed | SP Name | Missing Column/Table | Schema File | Table Name | Expected Column | Current Status | SQL Fix Required | Priority | Fix Notes |
 |-------|---------|----------------------|-------------|------------|-----------------|----------------|------------------|----------|-----------|
-| [ ] | sp_Dunnage_Types_GetAll |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
-| [ ] | sp_Receiving_PackageTypes_Delete |  | Database/Schemas/* (search for table) |  |  | Missing in DB | CREATE TABLE | Critical | Review SP definition and update schema or SP code |
+| - | *No schema issues detected - run 02-Test-StoredProcedures.ps1 first* | - | - | - | - | - | - | - | - |
 

@@ -10,6 +10,8 @@ DROP PROCEDURE IF EXISTS `mtm_receiving_application`.`sp_routing_recipient_get_b
 
 DELIMITER $$
 
+SET NAMES utf8mb4 COLLATE utf8mb4_general_ci$$
+
 CREATE PROCEDURE `mtm_receiving_application`.`sp_routing_recipient_get_by_name`(
     IN p_name VARCHAR(100)
 )
@@ -24,7 +26,7 @@ BEGIN
         `created_date`,
         `updated_date`
     FROM `mtm_receiving_application`.`routing_recipients`
-    WHERE `name` = p_name
+    WHERE `name` = (CONVERT(p_name USING utf8mb4) COLLATE utf8mb4_general_ci)
     LIMIT 1;
 END$$
 

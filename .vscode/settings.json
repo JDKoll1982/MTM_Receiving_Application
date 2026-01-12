@@ -347,7 +347,7 @@
   "chat.agent.thinking.collapsedTools": "always",
   // Auto-summarize long agent conversations
   // Values: true | false
-  "github.copilot.chat.summarizeAgentConversationHistory.enabled": true,
+  "github.copilot.chat.summarizeAgentConversationHistory.enabled": false,
   // ================================
   // SECTION 11: GitHub Copilot - Inline Chat
   // ================================

@@ -263,6 +263,16 @@ function Get-MockValue {
         [string]$dtd
     )
 
+    # Check if this is an ENUM type - extract first enum value from DTD
+    if ($type -eq "enum" -and $dtd) {
+        # DTD format: enum('value1','value2','value3')
+        if ($dtd -match "enum\('([^']+)'") {
+            $firstEnumValue = $Matches[1]
+            Write-Verbose "ENUM detected for $paramName in $spName : using '$firstEnumValue'"
+            return $firstEnumValue
+        }
+    }
+
     # Smart defaults based on parameter names
     if ($paramName -match "user.*id|p_user_id") { return 1 }
     if ($paramName -match "windows.*username|p_windows_username") { return "TEST_USER" }
@@ -270,11 +280,21 @@ function Get-MockValue {
     if ($paramName -match "pin|p_pin") { return "1234" }
     if ($paramName -match "email") { return "test@example.com" }
     if ($paramName -match "department") { return "Production" }
+    if ($paramName -match "shift|p_shift") { return "1st Shift" }  # Default shift value
+    if ($paramName -match "match.*type|p_match_type") { return "Part Number" }  # Default routing match type
     if ($paramName -match "package.*type|p_package_type") { return 1 }
     if ($paramName -match "dunnage.*type|type_id") { return 1 }
     if ($paramName -match "part.*number|p_part_number") { return "TEST_PART" }
-    if ($paramName -match "part.*id|p_part_id") { return 1 }
-    if ($paramName -match "po.*number|p_po_number") { return "PO12345" }
+    if ($paramName -match "part.*id|p_part_id") {
+        # Some schemas use part_id as VARCHAR, others use INT; align with the parameter type.
+        if ($type -match "char|varchar|text|longtext") { return "TEST_PART" }
+        return 1
+    }
+    if ($paramName -match "po.*number|p_po_number") {
+        # Many procedures define PO number as INT; returning a string like "PO12345" causes SQL errors.
+        if ($type -match "int|integer|bigint|smallint|tinyint|decimal|numeric") { return 12345 }
+        return "PO12345"
+    }
     if ($paramName -match "quantity|qty") { return 10 }
     if ($paramName -match "active|is_active|p_active") { return $true }
     if ($paramName -match "deleted|is_deleted") { return $false }
@@ -353,8 +373,8 @@ $executionOrderJson | Out-File -FilePath $executionOrderPath -Encoding UTF8
 
 $conn.Close()
 
-Write-Host "`n✓ Generated mock data configuration: $mockDataPath" -ForegroundColor Green
-Write-Host "✓ Generated execution order: $executionOrderPath" -ForegroundColor Green
+Write-Host "`nGenerated mock data configuration: $mockDataPath" -ForegroundColor Green
+Write-Host "Generated execution order: $executionOrderPath" -ForegroundColor Green
 
 # Generate Analysis Report using template
 $reportFile = Join-Path $scriptDir "01-report.md"
@@ -524,7 +544,6 @@ foreach ($dao in ($daoIssues.GetEnumerator() | Sort-Object Key)) {
 
     # Find DAO file path
     $daoFile = ""
-    $daoSearchPattern = "**/Data/**/$daoName.cs"
     $possiblePaths = @(
         "Module_Core/Data/$daoName.cs",
         "Module_Receiving/Data/$daoName.cs",
@@ -563,7 +582,7 @@ if (Test-Path $testReportPath) {
     $testReport = Get-Content $testReportPath -Raw
 
     # Parse schema broken section
-    if ($testReport -match "(?s)## 🔴 Critical Failures \(Schema Broken\).*?\n\|.*?\n\|.*?\n(.*?)\n\n") {
+    if ($testReport -match "(?s)## Critical Failures \(Schema Broken\).*?\n\|.*?\n\|.*?\n(.*?)\n\n") {
         $schemaIssues = $matches[1] -split "`n"
 
         foreach ($line in $schemaIssues) {
@@ -628,6 +647,6 @@ $content = $template `
 
 $content | Out-File -FilePath $reportFile -Encoding UTF8
 
-Write-Host "✓ Generated analysis report: $reportFile" -ForegroundColor Green
+Write-Host "Generated analysis report: $reportFile" -ForegroundColor Green
 Write-Host "`nTotal SPs analyzed: $($spList.Count)" -ForegroundColor Cyan
 Write-Host "Execution groups created: $($executionOrder.Count)" -ForegroundColor Cyan
