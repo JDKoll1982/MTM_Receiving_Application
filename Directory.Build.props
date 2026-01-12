@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <!-- Default to x64 platform for WinUI 3 projects when not explicitly specified -->
+        <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    </PropertyGroup>
+</Project>
