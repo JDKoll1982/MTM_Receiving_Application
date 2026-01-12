@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator - Active Jobs | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Operator</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>John Operator</strong> • Press 6
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">New Request</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="active-jobs.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon">&#xE7EE;</span>
+                        <span class="nav-item-text">Active Jobs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE81C;</span>
+                        <span class="nav-item-text">Recent Requests</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Active Jobs - Press 6</h2>
+                </div>
+                <div class="command-bar-right">
+                    <button class="btn btn-accent" onclick="refreshJobs()">
+                        <span class="fluent-icon">&#xE72C;</span>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="info-bar info-bar-info mb-lg">
+                    <span class="info-bar-icon fluent-icon">&#xE946;</span>
+                    <div class="info-bar-content">
+                        <div class="info-bar-title">Read-Only Job Data</div>
+                        <div class="info-bar-message">This data is pulled from Infor Visual ERP and is read-only. For job changes, use Visual Manufacturing.</div>
+                    </div>
+                </div>
+
+                <!-- Job Summary Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">3</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Active Jobs</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">1</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Running</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--warning-color);">2</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Setup</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">520</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Qty Remaining</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Jobs Table -->
+                <!-- WinUI3 Equivalent: ListView with GridView ItemTemplate (Read-Only) -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">JOB NUMBER</th>
+                            <th style="width: 140px;">PART NUMBER</th>
+                            <th style="width: 100px;">OPERATION</th>
+                            <th style="width: 140px;">QTY ORDERED</th>
+                            <th style="width: 140px;">QTY REMAINING</th>
+                            <th style="width: 160px;">EST. COMPLETE</th>
+                            <th style="width: 120px;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>J12345</strong></td>
+                            <td><strong>A110147</strong></td>
+                            <td>OP-19</td>
+                            <td>500</td>
+                            <td><strong style="color: var(--accent-default);">250</strong></td>
+                            <td><small>Today 2:30 PM</small></td>
+                            <td><span class="status-badge priority-low">Running</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>J12346</strong></td>
+                            <td><strong>B220345</strong></td>
+                            <td>OP-12</td>
+                            <td>300</td>
+                            <td><strong style="color: var(--accent-default);">180</strong></td>
+                            <td><small>Today 11:45 AM</small></td>
+                            <td><span class="status-badge priority-medium">Setup</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>J12348</strong></td>
+                            <td><strong>C330456</strong></td>
+                            <td>OP-05</td>
+                            <td>200</td>
+                            <td><strong style="color: var(--accent-default);">90</strong></td>
+                            <td><small>Today 4:00 PM</small></td>
+                            <td><span class="status-badge priority-medium">Setup</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Job Details Card -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Current Job Details: J12345</h3>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Part Number</div>
+                                <div style="font-size: 18px; font-weight: 600;">A110147</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Operation</div>
+                                <div style="font-size: 18px; font-weight: 600;">OP-19 - Spot Weld</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Customer</div>
+                                <div style="font-size: 18px; font-weight: 600;">ACME Manufacturing</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Qty Ordered</div>
+                                <div style="font-size: 18px; font-weight: 600;">500 units</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Qty Complete</div>
+                                <div style="font-size: 18px; font-weight: 600; color: var(--success-color);">250 units</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Qty Remaining</div>
+                                <div style="font-size: 18px; font-weight: 600; color: var(--accent-default);">250 units</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Started</div>
+                                <div style="font-size: 18px; font-weight: 600;">Today 8:15 AM</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Est. Complete</div>
+                                <div style="font-size: 18px; font-weight: 600;">Today 2:30 PM</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Due Date</div>
+                                <div style="font-size: 18px; font-weight: 600;">1/15/2026</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--divider-stroke);">
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Notes</div>
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <p style="margin: 0; color: var(--text-secondary);">
+                                    Quality check required after first 50 units. Use blue stickers for completed parts.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Link to Visual -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-content">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <strong>Need to update job details?</strong>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary);">Job changes must be made in Infor Visual Manufacturing</p>
+                            </div>
+                            <button class="btn" onclick="openVisual()">
+                                <span class="fluent-icon">&#xE8A7;</span>
+                                Open Visual Manufacturing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE7EE;</span>
+                    <span>Active Jobs (Read-Only)</span>
+                </div>
+                <div class="status-item">
+                    <span style="color: var(--success-color);">●</span>
+                    <span>Data from Visual ERP</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshJobs() {
+            console.log('Refreshing active jobs from Visual ERP...');
+            alert('Jobs refreshed from Visual ERP');
+        }
+
+        function openVisual() {
+            console.log('Opening Infor Visual Manufacturing...');
+            alert('Launching Infor Visual Manufacturing application...');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

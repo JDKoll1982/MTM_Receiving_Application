@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Lead - Performance Trends | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Operator Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Lead Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Press Floor Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="operator-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Operator Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="trends.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon">&#xE9D9;</span>
+                        <span class="nav-item-text">Trends</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Performance Trends</h2>
+                </div>
+                <div class="command-bar-right">
+                    <select class="form-select" id="timeRange" style="width: 180px; margin-right: 12px;">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30" selected>Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="custom">Custom Range...</option>
+                    </select>
+                    <button class="btn btn-accent" onclick="refreshTrends()">
+                        <span class="fluent-icon">&#xE72C;</span>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Summary Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">+8%</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Productivity Change</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">7,420</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Total Jobs (30d)</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">17.2</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Avg Cycle (min)</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">85%</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Avg Uptime (30d)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <!-- Chart: Daily Request Volume -->
+                    <!-- WinUI3 Equivalent: Custom Chart Control -->
+                    <div class="chart-container">
+                        <h3>Daily Request Volume (Last 30 Days)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Area Chart -->
+                            <polygon 
+                                points="70,140 90,130 110,145 130,125 150,135 170,120 190,130 210,115 230,125 250,110 270,120 290,105 310,115 330,100 350,110 350,200 70,200"
+                                fill="var(--accent-default)"
+                                opacity="0.2"
+                            />
+                            
+                            <!-- Line -->
+                            <polyline 
+                                points="70,140 90,130 110,145 130,125 150,135 170,120 190,130 210,115 230,125 250,110 270,120 290,105 310,115 330,100 350,110"
+                                fill="none"
+                                stroke="var(--accent-default)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            
+                            <!-- Data Points -->
+                            <circle cx="70" cy="140" r="4" fill="var(--accent-default)" />
+                            <circle cx="150" cy="135" r="4" fill="var(--accent-default)" />
+                            <circle cx="230" cy="125" r="4" fill="var(--accent-default)" />
+                            <circle cx="310" cy="115" r="4" fill="var(--accent-default)" />
+                            
+                            <!-- X-axis labels -->
+                            <text x="70" y="220" text-anchor="middle" font-size="10">Day 1</text>
+                            <text x="150" y="220" text-anchor="middle" font-size="10">Day 10</text>
+                            <text x="230" y="220" text-anchor="middle" font-size="10">Day 20</text>
+                            <text x="310" y="220" text-anchor="middle" font-size="10">Day 30</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">300</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">200</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">100</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                        </svg>
+                    </div>
+
+                    <!-- Chart: Average Wait Time Trend -->
+                    <div class="chart-container">
+                        <h3>Average Wait Time Trend (Last 30 Days)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Target line (20 min standard) -->
+                            <line x1="50" y1="120" x2="380" y2="120" stroke="var(--warning-color)" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                            <text x="380" y="115" text-anchor="end" font-size="10" fill="var(--warning-color)">Target: 20 min</text>
+                            
+                            <!-- Line Chart -->
+                            <polyline 
+                                points="70,140 90,135 110,128 130,125 150,120 170,118 190,115 210,112 230,108 250,105 270,102 290,100 310,98 330,95 350,92"
+                                fill="none"
+                                stroke="var(--success-color)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            
+                            <!-- Data Points -->
+                            <circle cx="70" cy="140" r="4" fill="var(--success-color)" />
+                            <circle cx="150" cy="120" r="4" fill="var(--success-color)" />
+                            <circle cx="230" cy="108" r="4" fill="var(--success-color)" />
+                            <circle cx="310" cy="98" r="4" fill="var(--success-color)" />
+                            <circle cx="350" cy="92" r="4" fill="var(--success-color)" />
+                            
+                            <!-- X-axis labels -->
+                            <text x="70" y="220" text-anchor="middle" font-size="10">Day 1</text>
+                            <text x="150" y="220" text-anchor="middle" font-size="10">Day 10</text>
+                            <text x="230" y="220" text-anchor="middle" font-size="10">Day 20</text>
+                            <text x="310" y="220" text-anchor="middle" font-size="10">Day 30</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">30</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">20</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">10</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <!-- Chart: Monthly Comparison -->
+                    <div class="chart-container">
+                        <h3>Monthly Job Completion Comparison</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Grouped Bars -->
+                            <!-- Month 1 -->
+                            <rect x="70" y="80" width="30" height="120" fill="var(--accent-default)" opacity="0.6"/>
+                            <rect x="105" y="60" width="30" height="140" fill="var(--accent-default)" opacity="1"/>
+                            <text x="105" y="215" text-anchor="middle" font-size="11">Oct</text>
+                            
+                            <!-- Month 2 -->
+                            <rect x="160" y="75" width="30" height="125" fill="var(--accent-default)" opacity="0.6"/>
+                            <rect x="195" y="55" width="30" height="145" fill="var(--accent-default)" opacity="1"/>
+                            <text x="195" y="215" text-anchor="middle" font-size="11">Nov</text>
+                            
+                            <!-- Month 3 -->
+                            <rect x="250" y="70" width="30" height="130" fill="var(--accent-default)" opacity="0.6"/>
+                            <rect x="285" y="50" width="30" height="150" fill="var(--accent-default)" opacity="1"/>
+                            <text x="285" y="215" text-anchor="middle" font-size="11">Dec</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">8000</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">6000</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">4000</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                            
+                            <!-- Legend -->
+                            <g transform="translate(100, 230)">
+                                <rect x="0" y="0" width="12" height="12" fill="var(--accent-default)" opacity="0.6" />
+                                <text x="18" y="10" font-size="10">Previous Month</text>
+                                
+                                <rect x="120" y="0" width="12" height="12" fill="var(--accent-default)" opacity="1" />
+                                <text x="138" y="10" font-size="10">Current Month</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Chart: Operator Productivity Trend -->
+                    <div class="chart-container">
+                        <h3>Operator Productivity Trend (Jobs/Day)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Multiple Lines (Top 3 Operators) -->
+                            <!-- Operator 1 -->
+                            <polyline 
+                                points="70,120 130,110 190,105 250,100 310,95 350,90"
+                                fill="none"
+                                stroke="var(--task-receiving)"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                            />
+                            
+                            <!-- Operator 2 -->
+                            <polyline 
+                                points="70,130 130,125 190,118 250,115 310,110 350,105"
+                                fill="none"
+                                stroke="var(--task-dunnage)"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                            />
+                            
+                            <!-- Operator 3 -->
+                            <polyline 
+                                points="70,145 130,140 190,133 250,130 310,125 350,120"
+                                fill="none"
+                                stroke="var(--task-routing)"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                            />
+                            
+                            <!-- X-axis labels -->
+                            <text x="70" y="220" text-anchor="middle" font-size="10">Week 1</text>
+                            <text x="190" y="220" text-anchor="middle" font-size="10">Week 2</text>
+                            <text x="310" y="220" text-anchor="middle" font-size="10">Week 3</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">20</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">15</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">10</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                            
+                            <!-- Legend -->
+                            <g transform="translate(80, 230)">
+                                <line x1="0" y1="6" x2="15" y2="6" stroke="var(--task-receiving)" stroke-width="2.5"/>
+                                <text x="20" y="10" font-size="10">John O.</text>
+                                
+                                <line x1="80" y1="6" x2="95" y2="6" stroke="var(--task-dunnage)" stroke-width="2.5"/>
+                                <text x="100" y="10" font-size="10">Sarah P.</text>
+                                
+                                <line x1="160" y1="6" x2="175" y2="6" stroke="var(--task-routing)" stroke-width="2.5"/>
+                                <text x="180" y="10" font-size="10">Lisa O.</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Key Insights -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Key Insights (Last 30 Days)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--success-color); display: flex; align-items: center; justify-content: center;">
+                                        <span class="fluent-icon" style="color: #FFFFFF;">&#xE73E;</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--success-color);">Productivity Improvement</strong>
+                                        <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                                            Average jobs per operator increased by 8% compared to previous month
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent-default); display: flex; align-items: center; justify-content: center;">
+                                        <span class="fluent-icon" style="color: #FFFFFF;">&#xE916;</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--accent-default);">Wait Time Reduction</strong>
+                                        <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                                            Average wait time decreased from 25 min to 18.5 min (26% improvement)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--warning-color); display: flex; align-items: center; justify-content: center;">
+                                        <span class="fluent-icon" style="color: #FFFFFF;">&#xE7BA;</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--warning-color);">Peak Hours</strong>
+                                        <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                                            Highest request volume between 9:00 AM - 11:00 AM (35% of daily requests)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--task-press); display: flex; align-items: center; justify-content: center;">
+                                        <span class="fluent-icon" style="color: #FFFFFF;">&#xE7EE;</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--task-press);">Top Performer</strong>
+                                        <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                                            John Operator consistently maintains 18.2 jobs/day avg (12% above team avg)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE9D9;</span>
+                    <span>Trends - Last 30 Days</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshTrends() {
+            console.log('Refreshing trends...');
+            alert('Trend data refreshed');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

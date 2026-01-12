@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Lead - Press Analytics | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Operator Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Lead Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Press Floor Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="operator-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Operator Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="trends.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE9D9;</span>
+                        <span class="nav-item-text">Trends</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Press Floor Analytics</h2>
+                </div>
+                <div class="command-bar-right">
+                    <input type="date" class="form-input" id="startDate" style="width: 140px; margin-right: 8px;" />
+                    <span style="margin: 0 8px;">to</span>
+                    <input type="date" class="form-input" id="endDate" style="width: 140px; margin-right: 12px;" />
+                    <button class="btn btn-accent" onclick="refreshAnalytics()">
+                        <span class="fluent-icon">&#xE72C;</span>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- KPI Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--success-color);">82%</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Overall Uptime</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--accent-default);">247</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Jobs Completed</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--text-secondary);">18.5</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Avg Cycle (min)</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--error-color);">1</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Presses Down</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <!-- Chart: Press Utilization -->
+                    <!-- WinUI3 Equivalent: Custom Chart Control -->
+                    <div class="chart-container">
+                        <h3>Press Utilization (Today)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <!-- Pie Chart -->
+                            <g transform="translate(200, 125)">
+                                <!-- Uptime: 82% (295deg) -->
+                                <path d="M 0,-80 A 80,80 0 1,1 -50.8,-62.4 L 0,0 Z" fill="var(--success-color)" opacity="0.8" />
+                                <text x="-20" y="-30" text-anchor="middle" font-size="16" fill="#FFFFFF" font-weight="600">82%</text>
+                                
+                                <!-- Downtime: 18% (65deg) -->
+                                <path d="M -50.8,-62.4 A 80,80 0 0,1 0,-80 L 0,0 Z" fill="var(--error-color)" opacity="0.8" />
+                                <text x="0" y="-50" text-anchor="middle" font-size="16" fill="#FFFFFF" font-weight="600">18%</text>
+                            </g>
+                            
+                            <!-- Legend -->
+                            <g transform="translate(80, 230)">
+                                <rect x="0" y="0" width="12" height="12" fill="var(--success-color)" opacity="0.8" />
+                                <text x="18" y="10" font-size="12">Uptime (82%)</text>
+                                
+                                <rect x="130" y="0" width="12" height="12" fill="var(--error-color)" opacity="0.8" />
+                                <text x="148" y="10" font-size="12">Downtime (18%)</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Chart: Jobs Completed Per Press -->
+                    <div class="chart-container">
+                        <h3>Jobs Completed Per Press (Today)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Bars -->
+                            <rect x="70" y="60" width="45" height="140" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="92" y="215" text-anchor="middle" font-size="11">P1</text>
+                            <text x="92" y="50" text-anchor="middle" font-size="14" font-weight="600">52</text>
+                            
+                            <rect x="130" y="70" width="45" height="130" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="152" y="215" text-anchor="middle" font-size="11">P2</text>
+                            <text x="152" y="60" text-anchor="middle" font-size="14" font-weight="600">48</text>
+                            
+                            <rect x="190" y="80" width="45" height="120" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="212" y="215" text-anchor="middle" font-size="11">P3</text>
+                            <text x="212" y="70" text-anchor="middle" font-size="14" font-weight="600">45</text>
+                            
+                            <rect x="250" y="75" width="45" height="125" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="272" y="215" text-anchor="middle" font-size="11">P4</text>
+                            <text x="272" y="65" text-anchor="middle" font-size="14" font-weight="600">46</text>
+                            
+                            <rect x="310" y="100" width="45" height="100" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="332" y="215" text-anchor="middle" font-size="11">P6</text>
+                            <text x="332" y="90" text-anchor="middle" font-size="14" font-weight="600">40</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">60</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">40</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">20</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <!-- Chart: Downtime Reasons -->
+                    <div class="chart-container">
+                        <h3>Downtime Breakdown (Today)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Stacked Bars -->
+                            <!-- Press 1 -->
+                            <rect x="70" y="150" width="50" height="50" fill="var(--warning-color)" opacity="0.8"/>
+                            <rect x="70" y="130" width="50" height="20" fill="var(--error-color)" opacity="0.8"/>
+                            <text x="95" y="215" text-anchor="middle" font-size="11">P1</text>
+                            
+                            <!-- Press 2 -->
+                            <rect x="140" y="120" width="50" height="80" fill="var(--warning-color)" opacity="0.8"/>
+                            <rect x="140" y="100" width="50" height="20" fill="var(--error-color)" opacity="0.8"/>
+                            <text x="165" y="215" text-anchor="middle" font-size="11">P2</text>
+                            
+                            <!-- Press 3 -->
+                            <rect x="210" y="160" width="50" height="40" fill="var(--warning-color)" opacity="0.8"/>
+                            <rect x="210" y="150" width="50" height="10" fill="var(--error-color)" opacity="0.8"/>
+                            <text x="235" y="215" text-anchor="middle" font-size="11">P3</text>
+                            
+                            <!-- Press 4 -->
+                            <rect x="280" y="140" width="50" height="60" fill="var(--warning-color)" opacity="0.8"/>
+                            <rect x="280" y="120" width="50" height="20" fill="var(--error-color)" opacity="0.8"/>
+                            <text x="305" y="215" text-anchor="middle" font-size="11">P4</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">120</text>
+                            <text x="40" y="120" text-anchor="end" font-size="10">60</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                            
+                            <!-- Legend -->
+                            <g transform="translate(80, 230)">
+                                <rect x="0" y="0" width="12" height="12" fill="var(--warning-color)" opacity="0.8" />
+                                <text x="18" y="10" font-size="10">Setup/Changeover</text>
+                                
+                                <rect x="130" y="0" width="12" height="12" fill="var(--error-color)" opacity="0.8" />
+                                <text x="148" y="10" font-size="10">Breakdown</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Chart: Cycle Time Trend -->
+                    <div class="chart-container">
+                        <h3>Average Cycle Time Trend (Last 7 Days)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Line Chart -->
+                            <polyline 
+                                points="70,110 110,120 150,105 190,115 230,100 270,108 310,95 350,100"
+                                fill="none"
+                                stroke="var(--accent-default)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            
+                            <!-- Data Points -->
+                            <circle cx="70" cy="110" r="5" fill="var(--accent-default)" />
+                            <circle cx="110" cy="120" r="5" fill="var(--accent-default)" />
+                            <circle cx="150" cy="105" r="5" fill="var(--accent-default)" />
+                            <circle cx="190" cy="115" r="5" fill="var(--accent-default)" />
+                            <circle cx="230" cy="100" r="5" fill="var(--accent-default)" />
+                            <circle cx="270" cy="108" r="5" fill="var(--accent-default)" />
+                            <circle cx="310" cy="95" r="5" fill="var(--accent-default)" />
+                            <circle cx="350" cy="100" r="5" fill="var(--accent-default)" />
+                            
+                            <!-- X-axis labels -->
+                            <text x="70" y="220" text-anchor="middle" font-size="10">1/6</text>
+                            <text x="150" y="220" text-anchor="middle" font-size="10">1/8</text>
+                            <text x="230" y="220" text-anchor="middle" font-size="10">1/10</text>
+                            <text x="310" y="220" text-anchor="middle" font-size="10">1/12</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">25</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">20</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">15</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">10</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Press Performance Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Press Performance Details</h3>
+                    </div>
+                    <table class="winui-table">
+                        <thead>
+                            <tr>
+                                <th>PRESS</th>
+                                <th style="width: 120px;">UPTIME %</th>
+                                <th style="width: 120px;">JOBS TODAY</th>
+                                <th style="width: 140px;">AVG CYCLE (MIN)</th>
+                                <th style="width: 120px;">STATUS</th>
+                                <th style="width: 180px;">CURRENT OPERATOR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Press 1</strong><br><small style="color: var(--text-secondary);">Zone A</small></td>
+                                <td><span class="priority-badge wait-normal">88%</span></td>
+                                <td><strong>52</strong></td>
+                                <td>17.2 min</td>
+                                <td><span class="status-badge priority-low">Running</span></td>
+                                <td>Bob Operator</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Press 2</strong><br><small style="color: var(--text-secondary);">Zone A</small></td>
+                                <td><span class="priority-badge wait-normal">85%</span></td>
+                                <td><strong>48</strong></td>
+                                <td>18.5 min</td>
+                                <td><span class="status-badge priority-medium">Setup</span></td>
+                                <td>Sarah Press</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Press 3</strong><br><small style="color: var(--text-secondary);">Zone B</small></td>
+                                <td><span class="priority-badge wait-normal">90%</span></td>
+                                <td><strong>45</strong></td>
+                                <td>16.8 min</td>
+                                <td><span class="status-badge priority-low">Running</span></td>
+                                <td>Lisa Operator</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Press 4</strong><br><small style="color: var(--text-secondary);">Zone B</small></td>
+                                <td><span class="priority-badge wait-normal">87%</span></td>
+                                <td><strong>46</strong></td>
+                                <td>19.1 min</td>
+                                <td><span class="status-badge priority-low">Running</span></td>
+                                <td>Mike Press</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Press 5</strong><br><small style="color: var(--text-secondary);">Zone C</small></td>
+                                <td><span class="priority-badge wait-critical">0%</span></td>
+                                <td><strong>0</strong></td>
+                                <td>N/A</td>
+                                <td><span class="status-badge priority-high">Down</span></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Press 6</strong><br><small style="color: var(--text-secondary);">Zone C - Spot Weld</small></td>
+                                <td><span class="priority-badge wait-normal">82%</span></td>
+                                <td><strong>40</strong></td>
+                                <td>21.3 min</td>
+                                <td><span class="status-badge priority-low">Running</span></td>
+                                <td>John Operator</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-analytics"></span>
+                    <span>Press Analytics</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshAnalytics() {
+            console.log('Refreshing analytics...');
+            alert('Analytics data refreshed');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Set date range (today)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        });
+    </script>
+</body>
+</html>

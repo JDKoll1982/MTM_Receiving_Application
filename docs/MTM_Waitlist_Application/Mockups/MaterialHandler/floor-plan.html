@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Handler - Floor Plan | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+    <style>
+        .floor-plan-container {
+            position: relative;
+            background-color: var(--card-background);
+            border: 2px solid var(--border-color);
+            border-radius: var(--corner-radius-medium);
+            padding: var(--spacing-lg);
+            min-height: 600px;
+        }
+
+        .floor-plan-svg {
+            width: 100%;
+            height: 600px;
+            background-color: var(--background-tertiary);
+            border-radius: var(--corner-radius-small);
+        }
+
+        .zone-legend {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            background-color: var(--background-tertiary);
+            border-radius: var(--corner-radius-small);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Material Handler</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Tom Handler</strong> • Zone A
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Unified Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-tasks.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE73A;</span>
+                        <span class="nav-item-text">My Tasks</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-calendar"></span>
+                        <span class="nav-item-text">Recent History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="floor-plan.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-location"></span>
+                        <span class="nav-item-text">Floor Plan</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="#" class="nav-item-link" onclick="showSettings(event)">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Facility Floor Plan</h2>
+                </div>
+                <div class="command-bar-right">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showHandlers" checked onchange="toggleHandlers()" />
+                        <div class="toggle-track">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                        <span>Show Handlers</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="info-bar info-bar-info mb-lg">
+                    <span class="info-bar-icon fluent-icon icon-info"></span>
+                    <div class="info-bar-content">
+                        <div class="info-bar-title">Floor Plan View (Placeholder)</div>
+                        <div class="info-bar-message">This is a placeholder for the facility floor plan. In the actual application, this would show real-time task locations and handler positions.</div>
+                    </div>
+                </div>
+
+                <!-- Zone Legend -->
+                <div class="zone-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(0, 120, 212, 0.3);"></div>
+                        <span>Zone A</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(16, 124, 16, 0.3);"></div>
+                        <span>Zone B</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255, 140, 0, 0.3);"></div>
+                        <span>Zone C</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(232, 17, 35, 0.3);"></div>
+                        <span>Zone D</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--accent-default);"></div>
+                        <span>Active Tasks</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--success-color);"></div>
+                        <span>Material Handlers</span>
+                    </div>
+                </div>
+
+                <!-- Floor Plan SVG Placeholder -->
+                <div class="floor-plan-container">
+                    <!-- SVG Placeholder: Facility Floor Plan -->
+                    <svg class="floor-plan-svg" viewBox="0 0 800 600">
+                        <!-- Grid Background -->
+                        <defs>
+                            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <rect width="40" height="40" fill="none" stroke="var(--divider-stroke)" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="800" height="600" fill="url(#grid)" />
+
+                        <!-- Zone A (Top Left) -->
+                        <rect x="20" y="20" width="360" height="260" fill="rgba(0, 120, 212, 0.1)" stroke="#0078D4" stroke-width="2" rx="8" />
+                        <text x="200" y="50" text-anchor="middle" font-size="24" font-weight="600" fill="#0078D4">ZONE A</text>
+                        
+                        <!-- Presses in Zone A -->
+                        <rect x="50" y="80" width="80" height="60" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="90" y="105" text-anchor="middle" font-size="12">Press 1</text>
+                        <text x="90" y="125" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Running</text>
+
+                        <rect x="160" y="80" width="80" height="60" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="200" y="105" text-anchor="middle" font-size="12">Press 2</text>
+                        <text x="200" y="125" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Setup</text>
+
+                        <!-- Active Task in Zone A -->
+                        <circle cx="90" cy="200" r="12" fill="var(--accent-default)" stroke="#FFFFFF" stroke-width="2" />
+                        <text x="90" y="230" text-anchor="middle" font-size="10" fill="var(--text-primary)">Task: P1-Morning</text>
+
+                        <!-- Zone B (Top Right) -->
+                        <rect x="420" y="20" width="360" height="260" fill="rgba(16, 124, 16, 0.1)" stroke="#107C10" stroke-width="2" rx="8" />
+                        <text x="600" y="50" text-anchor="middle" font-size="24" font-weight="600" fill="#107C10">ZONE B</text>
+
+                        <!-- Presses in Zone B -->
+                        <rect x="450" y="80" width="80" height="60" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="490" y="105" text-anchor="middle" font-size="12">Press 3</text>
+                        
+                        <rect x="560" y="80" width="80" height="60" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="600" y="105" text-anchor="middle" font-size="12">Press 4</text>
+
+                        <!-- Zone C (Bottom Left) -->
+                        <rect x="20" y="320" width="360" height="260" fill="rgba(255, 140, 0, 0.1)" stroke="#FF8C00" stroke-width="2" rx="8" />
+                        <text x="200" y="350" text-anchor="middle" font-size="24" font-weight="600" fill="#FF8C00">ZONE C</text>
+
+                        <!-- Spot Weld -->
+                        <rect x="50" y="380" width="100" height="80" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="100" y="410" text-anchor="middle" font-size="12">Spot Weld</text>
+                        <text x="100" y="430" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Press 6</text>
+
+                        <!-- Active Task in Zone C -->
+                        <circle cx="100" cy="500" r="12" fill="var(--error-color)" stroke="#FFFFFF" stroke-width="2" />
+                        <text x="100" y="530" text-anchor="middle" font-size="10" fill="var(--text-primary)">Task: spotweldP</text>
+
+                        <!-- Zone D (Bottom Right) - Shipping/Receiving -->
+                        <rect x="420" y="320" width="360" height="260" fill="rgba(232, 17, 35, 0.1)" stroke="#E81123" stroke-width="2" rx="8" />
+                        <text x="600" y="350" text-anchor="middle" font-size="24" font-weight="600" fill="#E81123">ZONE D</text>
+                        
+                        <rect x="450" y="380" width="140" height="80" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="520" y="410" text-anchor="middle" font-size="12">Receiving Dock</text>
+
+                        <rect x="620" y="380" width="140" height="80" fill="var(--card-background)" stroke="var(--border-color)" stroke-width="2" rx="4" />
+                        <text x="690" y="410" text-anchor="middle" font-size="12">Shipping Area</text>
+
+                        <!-- Material Handlers (if enabled) -->
+                        <g id="handlers">
+                            <!-- Handler in Zone A -->
+                            <circle cx="300" cy="150" r="16" fill="var(--success-color)" stroke="#FFFFFF" stroke-width="3" />
+                            <text x="300" y="155" text-anchor="middle" font-size="16" fill="#FFFFFF" font-weight="600">T</text>
+                            <text x="300" y="185" text-anchor="middle" font-size="10" fill="var(--text-primary)">Tom Handler</text>
+
+                            <!-- Handler in Zone B -->
+                            <circle cx="700" cy="150" r="16" fill="var(--success-color)" stroke="#FFFFFF" stroke-width="3" />
+                            <text x="700" y="155" text-anchor="middle" font-size="16" fill="#FFFFFF" font-weight="600">S</text>
+                            <text x="700" y="185" text-anchor="middle" font-size="10" fill="var(--text-primary)">Sarah MH</text>
+                        </g>
+
+                        <!-- Legend -->
+                        <text x="400" y="590" text-anchor="middle" font-size="12" fill="var(--text-tertiary)">
+                            Placeholder Floor Plan - Real implementation would use actual facility layout
+                        </text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-location" style="color: var(--accent-default);"></span>
+                    <span>4 active task locations</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleHandlers() {
+            const handlers = document.getElementById('handlers');
+            const checked = document.getElementById('showHandlers').checked;
+            handlers.style.display = checked ? 'block' : 'none';
+        }
+
+        function showSettings(event) {
+            event.preventDefault();
+            alert('Settings dialog would open here');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

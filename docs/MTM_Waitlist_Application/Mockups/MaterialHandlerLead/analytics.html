@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MH Lead - Full Analytics Dashboard | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">MH Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Lead Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Waitlist & Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analytics.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Full Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="team-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Team Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="controls.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Controls</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Material Handling Analytics</h2>
+                </div>
+                <div class="command-bar-right">
+                    <input type="date" class="form-input" id="startDate" style="width: 140px; margin-right: 8px;" />
+                    <span style="margin: 0 8px;">to</span>
+                    <input type="date" class="form-input" id="endDate" style="width: 140px; margin-right: 12px;" />
+                    <button class="btn btn-accent" onclick="refreshAnalytics()">
+                        <span class="fluent-icon">&#xE72C;</span>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- KPI Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--accent-default);">47</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Total Tasks</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--success-color);">35</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Completed</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--text-secondary);">18.5</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Avg Wait (min)</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 36px; font-weight: 600; color: var(--warning-color);">8</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Over Standard</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <!-- Chart: Task Volume by Type -->
+                    <!-- WinUI3 Equivalent: Custom Chart Control -->
+                    <div class="chart-container">
+                        <h3>Task Volume by Type</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <!-- X-axis -->
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <!-- Y-axis -->
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Bars -->
+                            <rect x="70" y="80" width="60" height="120" fill="var(--task-receiving)" opacity="0.8"/>
+                            <text x="100" y="215" text-anchor="middle" font-size="12">Receiving</text>
+                            <text x="100" y="70" text-anchor="middle" font-size="14" font-weight="600">12</text>
+                            
+                            <rect x="150" y="120" width="60" height="80" fill="var(--task-dunnage)" opacity="0.8"/>
+                            <text x="180" y="215" text-anchor="middle" font-size="12">Dunnage</text>
+                            <text x="180" y="110" text-anchor="middle" font-size="14" font-weight="600">8</text>
+                            
+                            <rect x="230" y="60" width="60" height="140" fill="var(--task-routing)" opacity="0.8"/>
+                            <text x="260" y="215" text-anchor="middle" font-size="12">Routing</text>
+                            <text x="260" y="50" text-anchor="middle" font-size="14" font-weight="600">15</text>
+                            
+                            <rect x="310" y="80" width="60" height="120" fill="var(--task-press)" opacity="0.8"/>
+                            <text x="340" y="215" text-anchor="middle" font-size="12">Press</text>
+                            <text x="340" y="70" text-anchor="middle" font-size="14" font-weight="600">12</text>
+                            
+                            <!-- Y-axis labels -->
+                            <text x="40" y="35" text-anchor="end" font-size="10">20</text>
+                            <text x="40" y="100" text-anchor="end" font-size="10">15</text>
+                            <text x="40" y="165" text-anchor="end" font-size="10">5</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                        </svg>
+                    </div>
+
+                    <!-- Chart: Handler Performance -->
+                    <div class="chart-container">
+                        <h3>Handler Performance (Tasks Completed)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Bars -->
+                            <rect x="70" y="60" width="60" height="140" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="100" y="215" text-anchor="middle" font-size="11">Tom H.</text>
+                            <text x="100" y="50" text-anchor="middle" font-size="14" font-weight="600">14</text>
+                            
+                            <rect x="150" y="80" width="60" height="120" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="180" y="215" text-anchor="middle" font-size="11">Sarah M.</text>
+                            <text x="180" y="70" text-anchor="middle" font-size="14" font-weight="600">12</text>
+                            
+                            <rect x="230" y="110" width="60" height="90" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="260" y="215" text-anchor="middle" font-size="11">Mike M.</text>
+                            <text x="260" y="100" text-anchor="middle" font-size="14" font-weight="600">9</text>
+                            
+                            <rect x="310" y="90" width="60" height="110" fill="var(--accent-default)" opacity="0.8"/>
+                            <text x="340" y="215" text-anchor="middle" font-size="11">Lisa M.</text>
+                            <text x="340" y="80" text-anchor="middle" font-size="14" font-weight="600">11</text>
+                            
+                            <text x="40" y="35" text-anchor="end" font-size="10">15</text>
+                            <text x="40" y="135" text-anchor="end" font-size="10">10</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">0</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <!-- Chart: Wait Time Trends -->
+                    <div class="chart-container">
+                        <h3>Average Wait Time Trend (Last 7 Days)</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <line x1="50" y1="200" x2="380" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            <line x1="50" y1="30" x2="50" y2="200" stroke="var(--divider-stroke)" stroke-width="2"/>
+                            
+                            <!-- Line Chart -->
+                            <polyline 
+                                points="70,120 110,100 150,130 190,110 230,95 270,105 310,85 350,90"
+                                fill="none"
+                                stroke="var(--accent-default)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            
+                            <!-- Data Points -->
+                            <circle cx="70" cy="120" r="5" fill="var(--accent-default)" />
+                            <circle cx="110" cy="100" r="5" fill="var(--accent-default)" />
+                            <circle cx="150" cy="130" r="5" fill="var(--accent-default)" />
+                            <circle cx="190" cy="110" r="5" fill="var(--accent-default)" />
+                            <circle cx="230" cy="95" r="5" fill="var(--accent-default)" />
+                            <circle cx="270" cy="105" r="5" fill="var(--accent-default)" />
+                            <circle cx="310" cy="85" r="5" fill="var(--accent-default)" />
+                            <circle cx="350" cy="90" r="5" fill="var(--accent-default)" />
+                            
+                            <!-- X-axis labels -->
+                            <text x="70" y="220" text-anchor="middle" font-size="10">Mon</text>
+                            <text x="150" y="220" text-anchor="middle" font-size="10">Tue</text>
+                            <text x="230" y="220" text-anchor="middle" font-size="10">Wed</text>
+                            <text x="310" y="220" text-anchor="middle" font-size="10">Thu</text>
+                            
+                            <text x="40" y="35" text-anchor="end" font-size="10">25</text>
+                            <text x="40" y="120" text-anchor="end" font-size="10">15</text>
+                            <text x="40" y="205" text-anchor="end" font-size="10">5</text>
+                        </svg>
+                    </div>
+
+                    <!-- Chart: Zone Distribution -->
+                    <div class="chart-container">
+                        <h3>Task Distribution by Zone</h3>
+                        <svg viewBox="0 0 400 250" class="chart-svg">
+                            <!-- Pie Chart Center -->
+                            <g transform="translate(200, 125)">
+                                <!-- Zone A: 30% (108deg) -->
+                                <path d="M 0,-80 A 80,80 0 0,1 69.3,46.2 L 0,0 Z" fill="var(--task-receiving)" opacity="0.8" />
+                                <text x="30" y="-40" text-anchor="middle" font-size="12" fill="#FFFFFF" font-weight="600">30%</text>
+                                
+                                <!-- Zone B: 25% (90deg) -->
+                                <path d="M 69.3,46.2 A 80,80 0 0,1 0,80 L 0,0 Z" fill="var(--task-dunnage)" opacity="0.8" />
+                                <text x="40" y="35" text-anchor="middle" font-size="12" fill="#FFFFFF" font-weight="600">25%</text>
+                                
+                                <!-- Zone C: 28% (101deg) -->
+                                <path d="M 0,80 A 80,80 0 0,1 -69.3,46.2 L 0,0 Z" fill="var(--task-routing)" opacity="0.8" />
+                                <text x="-35" y="35" text-anchor="middle" font-size="12" fill="#FFFFFF" font-weight="600">28%</text>
+                                
+                                <!-- Zone D: 17% (61deg) -->
+                                <path d="M -69.3,46.2 A 80,80 0 0,1 0,-80 L 0,0 Z" fill="var(--task-press)" opacity="0.8" />
+                                <text x="-30" y="-30" text-anchor="middle" font-size="12" fill="#FFFFFF" font-weight="600">17%</text>
+                            </g>
+                            
+                            <!-- Legend -->
+                            <g transform="translate(50, 230)">
+                                <rect x="0" y="0" width="12" height="12" fill="var(--task-receiving)" opacity="0.8" />
+                                <text x="18" y="10" font-size="11">Zone A</text>
+                                
+                                <rect x="70" y="0" width="12" height="12" fill="var(--task-dunnage)" opacity="0.8" />
+                                <text x="88" y="10" font-size="11">Zone B</text>
+                                
+                                <rect x="140" y="0" width="12" height="12" fill="var(--task-routing)" opacity="0.8" />
+                                <text x="158" y="10" font-size="11">Zone C</text>
+                                
+                                <rect x="210" y="0" width="12" height="12" fill="var(--task-press)" opacity="0.8" />
+                                <text x="228" y="10" font-size="11">Zone D</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Performance Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Handler Performance Details</h3>
+                    </div>
+                    <table class="winui-table">
+                        <thead>
+                            <tr>
+                                <th>HANDLER</th>
+                                <th style="width: 120px;">ZONE</th>
+                                <th style="width: 120px;">TASKS COMPLETED</th>
+                                <th style="width: 140px;">AVG TIME (MIN)</th>
+                                <th style="width: 120px;">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performanceTableBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-analytics"></span>
+                    <span>Analytics View</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        function populatePerformanceTable() {
+            const tbody = document.getElementById('performanceTableBody');
+            const handlers = MockData.analytics.handlerPerformance;
+
+            tbody.innerHTML = handlers.map(handler => `
+                <tr>
+                    <td><strong>${handler.name}</strong></td>
+                    <td><span class="priority-badge priority-low">${handler.zone}</span></td>
+                    <td><strong>${handler.tasksCompleted}</strong></td>
+                    <td>
+                        <span class="priority-badge ${handler.avgTime <= 15 ? 'wait-normal' : 'wait-warning'}">
+                            ${handler.avgTime} min
+                        </span>
+                    </td>
+                    <td><span class="status-badge priority-low">Active</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshAnalytics() {
+            console.log('Refreshing analytics...');
+            alert('Analytics data refreshed');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            populatePerformanceTable();
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Set date range (today)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        });
+    </script>
+</body>
+</html>

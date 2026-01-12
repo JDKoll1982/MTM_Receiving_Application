@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator - Recent Requests | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Operator</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>John Operator</strong> • Press 6
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">New Request</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="active-jobs.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE7EE;</span>
+                        <span class="nav-item-text">Active Jobs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link selected">
+                        <span class="fluent-icon icon-history"></span>
+                        <span class="nav-item-text">Recent Requests</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">My Recent Requests</h2>
+                </div>
+                <div class="command-bar-right">
+                    <input type="date" class="form-input" id="filterDate" style="width: 150px; margin-right: 12px;" />
+                    <select class="form-select" id="typeFilter" style="width: 180px; margin-right: 12px;">
+                        <option value="All">All Request Types</option>
+                        <option value="Part Pickup">Part Pickup</option>
+                        <option value="Skids">Skids</option>
+                        <option value="Coil Request">Coil Request</option>
+                        <option value="Die Change">Die Change</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="search-box">
+                        <input type="text" placeholder="Search requests..." id="searchInput" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Summary Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">18</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Today's Requests</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">15</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Completed</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">22</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Avg Time (min)</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--warning-color);">3</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Pending</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Requests Table -->
+                <!-- WinUI3 Equivalent: ListView with GridView ItemTemplate -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">DATE/TIME</th>
+                            <th style="width: 160px;">REQUEST TYPE</th>
+                            <th>DETAILS</th>
+                            <th style="width: 100px;">PRIORITY</th>
+                            <th style="width: 140px;">COMPLETION TIME</th>
+                            <th style="width: 120px;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><small>Today 2:15 PM</small></td>
+                            <td><span class="task-badge task-press">Part Pickup</span></td>
+                            <td>A110147 op 19 - blue sticker x2</td>
+                            <td><span class="priority-badge priority-high">High</span></td>
+                            <td><strong>18 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Today 12:30 PM</small></td>
+                            <td><span class="task-badge task-dunnage">Skids</span></td>
+                            <td>Need 4 skids at press 6</td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><strong>12 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Today 10:45 AM</small></td>
+                            <td><span class="task-badge task-routing">Coil Request</span></td>
+                            <td>New coil - running low</td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><strong>25 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Today 9:20 AM</small></td>
+                            <td><span class="task-badge task-press">Part Pickup</span></td>
+                            <td>B220345 x3</td>
+                            <td><span class="priority-badge priority-low">Low</span></td>
+                            <td><strong>15 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Today 8:30 AM</small></td>
+                            <td><span class="task-badge task-dunnage">Skids</span></td>
+                            <td>3 skids needed</td>
+                            <td><span class="priority-badge priority-low">Low</span></td>
+                            <td><strong>20 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Yesterday 3:45 PM</small></td>
+                            <td><span class="task-badge task-press">Die Change</span></td>
+                            <td>Die #4521 - setup needed</td>
+                            <td><span class="priority-badge priority-high">High</span></td>
+                            <td><strong>45 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Yesterday 2:15 PM</small></td>
+                            <td><span class="task-badge task-press">Part Pickup</span></td>
+                            <td>C330456 op 12</td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><strong>22 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Yesterday 1:00 PM</small></td>
+                            <td><span class="task-badge task-routing">Coil Request</span></td>
+                            <td>Coil material change</td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><strong>30 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Yesterday 11:20 AM</small></td>
+                            <td><span class="task-badge task-dunnage">Skids</span></td>
+                            <td>5 skids</td>
+                            <td><span class="priority-badge priority-low">Low</span></td>
+                            <td><strong>18 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td><small>Yesterday 9:30 AM</small></td>
+                            <td><span class="task-badge task-press">Part Pickup</span></td>
+                            <td>D440567 op 8 - urgent</td>
+                            <td><span class="priority-badge priority-high">High</span></td>
+                            <td><strong>19 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Performance Summary -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">My Performance Summary (Last 7 Days)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Total Requests</div>
+                                <div style="font-size: 28px; font-weight: 600; color: var(--accent-default);">47</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Avg Completion Time</div>
+                                <div style="font-size: 28px; font-weight: 600; color: var(--success-color);">21 min</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Fastest Response</div>
+                                <div style="font-size: 28px; font-weight: 600; color: var(--task-dunnage);">8 min</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Most Common</div>
+                                <div style="font-size: 28px; font-weight: 600; color: var(--task-press);">Part Pickup</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-history"></span>
+                    <span>Recent Requests History</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filterDate').value = today;
+        });
+    </script>
+</body>
+</html>

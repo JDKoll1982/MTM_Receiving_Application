@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Control - Waitlist | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Quality Control</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Nou L.</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Quality Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-calendar"></span>
+                        <span class="nav-item-text">History</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Quality Control Waitlist</h2>
+                </div>
+                <div class="command-bar-right">
+                    <select class="form-select" id="zoneFilter" onchange="filterWaitlist()" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Zones</option>
+                        <option value="Zone A">Zone A</option>
+                        <option value="Zone B">Zone B</option>
+                        <option value="Zone C">Zone C</option>
+                        <option value="Zone D">Zone D</option>
+                    </select>
+
+                    <div class="search-box">
+                        <input type="text" placeholder="Search tasks..." id="searchInput" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">TASK TYPE</th>
+                            <th>LOCATION</th>
+                            <th>DETAILS</th>
+                            <th style="width: 100px;">PRIORITY</th>
+                            <th style="width: 100px;">WAIT TIME</th>
+                            <th style="width: 120px;">REQUESTER</th>
+                            <th style="width: 180px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waitlistTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div id="emptyState" class="hidden" style="text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;">
+                        <span class="fluent-icon">&#xE73A;</span>
+                    </div>
+                    <h3 style="color: var(--text-secondary); margin-bottom: 8px;">No inspection tasks</h3>
+                    <p style="color: var(--text-tertiary);">You're all caught up!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-checkmark" style="color: var(--success-color);"></span>
+                    <span id="completedCount">5 completed today</span>
+                </div>
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE774;</span>
+                    <span id="activeCount">0 active tasks</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        const userRole = 'QualityControl';
+        let currentZone = 'All';
+
+        function populateWaitlist() {
+            const tbody = document.getElementById('waitlistTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Get unified list
+            let waitlist = MockData.materialHandlerWaitlist;
+
+            // 1. Role Filter (Strict - Only Quality Control tasks)
+            waitlist = MockUtils.filterByCategory(waitlist, 'All', userRole);
+
+            // 2. Zone Filter
+            waitlist = MockUtils.filterByZone(waitlist, currentZone);
+
+            if (waitlist.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tbody.innerHTML = waitlist.map((item, index) => {
+                const waitStatus = MockUtils.getWaitTimeStatus(item.waitTime, item.timeStandard);
+                const waitClass = `wait-${waitStatus}`;
+                
+                return `
+                    <tr data-id="${item.id}">
+                        <td>
+                            <span class="task-badge task-quality-control">
+                                ${item.taskType}
+                            </span>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>${item.location}</strong>
+                                <div style="font-size: var(--font-size-caption); color: var(--text-secondary);">
+                                    ${item.zone}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <small style="color: var(--text-secondary);">${item.details}</small>
+                            ${item.partNumber && item.partNumber !== 'N/A' ? `<div style="font-size: var(--font-size-caption); color: var(--text-tertiary);">Part: ${item.partNumber}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="priority-badge priority-${item.priority.toLowerCase()}">
+                                ${item.priority}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="priority-badge ${waitClass}">
+                                ${MockUtils.formatWaitTime(item.waitTime)}
+                            </span>
+                        </td>
+                        <td>
+                            <small>${item.requester}</small>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-accent" style="padding: 6px 12px; font-size: 12px;" onclick="acceptTask(${item.id})">
+                                    <span class="fluent-icon icon-checkmark"></span>
+                                    Accept
+                                </button>
+                                <button class="btn-icon btn-alert" aria-label="Need Help">
+                                    <span class="fluent-icon icon-help"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('activeCount').textContent = `${waitlist.length} active tasks`;
+        }
+
+        function filterWaitlist() {
+            currentZone = document.getElementById('zoneFilter').value;
+            populateWaitlist();
+        }
+
+        function acceptTask(id) {
+            alert('Task accepted!');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            populateWaitlist();
+        });
+    </script>
+</body>
+</html>

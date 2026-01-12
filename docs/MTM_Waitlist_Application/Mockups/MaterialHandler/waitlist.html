@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Handler - Unified Waitlist | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <!-- WinUI3 Equivalent: NavigationView + Frame -->
+    <div class="app-shell">
+        <!-- Navigation Pane -->
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Material Handler</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Mike L.</strong> • Zone A
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Unified Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-tasks.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE73A;</span> <!-- CheckList -->
+                        <span class="nav-item-text">My Tasks</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-calendar"></span>
+                        <span class="nav-item-text">Recent History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="floor-plan.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-location"></span>
+                        <span class="nav-item-text">Floor Plan</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="#" class="nav-item-link" onclick="showSettings(event)">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Command Bar -->
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Unified Waitlist</h2>
+                </div>
+                <div class="command-bar-right">
+                    <!-- Zone Filter -->
+                    <select class="form-select" id="zoneFilter" onchange="filterWaitlist()" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Zones</option>
+                        <option value="Zone A" selected>Zone A</option>
+                        <option value="Zone B">Zone B</option>
+                        <option value="Zone C">Zone C</option>
+                        <option value="Zone D">Zone D</option>
+                    </select>
+
+                    <!-- Task Type Filter -->
+                    <select class="form-select" id="taskTypeFilter" onchange="filterWaitlist()" style="width: 180px; margin-right: 12px;">
+                        <option value="All">All Task Types</option>
+                        <option value="Press Floor">Press Floor</option>
+                        <option value="Receiving">Receiving</option>
+                        <option value="Dunnage">Dunnage</option>
+                        <option value="Routing">Routing</option>
+                    </select>
+
+                    <div class="search-box">
+                        <input type="text" placeholder="Search tasks..." id="searchInput" />
+                    </div>
+
+                    <button class="btn btn-accent" onclick="openQuickAddDialog()">
+                        <span class="fluent-icon icon-add"></span>
+                        Quick Add
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Info Bar - Zone Assignment -->
+                <div class="info-bar info-bar-info mb-lg">
+                    <span class="info-bar-icon fluent-icon icon-location"></span>
+                    <div class="info-bar-content">
+                        <div class="info-bar-title">Assigned Zone: Zone A</div>
+                        <div class="info-bar-message">You are currently assigned to Zone A. Tasks are filtered to show your zone. <a href="#" style="color: var(--accent-default);">Change zone</a></div>
+                    </div>
+                </div>
+
+                <!-- Unified Waitlist Table -->
+                <!-- WinUI3 Equivalent: ListView with GridView ItemTemplate -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">TASK TYPE</th>
+                            <th>LOCATION</th>
+                            <th style="width: 120px;">LOAD/JOB #</th>
+                            <th>DETAILS</th>
+                            <th style="width: 100px;">PRIORITY</th>
+                            <th style="width: 100px;">WAIT TIME</th>
+                            <th style="width: 120px;">REQUESTER</th>
+                            <th style="width: 180px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waitlistTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div id="emptyState" class="hidden" style="text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 48px; color: var(--text-tertiary); margin-bottom: 16px;">
+                        <span class="fluent-icon">&#xE73A;</span>
+                    </div>
+                    <h3 style="color: var(--text-secondary); margin-bottom: 8px;">No tasks in queue</h3>
+                    <p style="color: var(--text-tertiary);">All tasks have been completed or no tasks match your filters.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-checkmark" style="color: var(--success-color);"></span>
+                    <span id="completedCount">12 completed today</span>
+                </div>
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE774;</span>
+                    <span id="activeCount">4 active tasks</span>
+                </div>
+                <div class="status-item">
+                    <span class="fluent-icon icon-location" style="color: var(--accent-default);"></span>
+                    <span>Zone A</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fabAddItem" aria-label="Quick Add Task" onclick="openQuickAddDialog()">
+        <span class="fluent-icon icon-add"></span>
+    </button>
+
+    <!-- Quick Add Dialog -->
+    <!-- WinUI3 Equivalent: ContentDialog -->
+    <div class="dialog-overlay hidden" id="quickAddDialog">
+        <div class="dialog">
+            <div class="dialog-header">
+                <h3 class="dialog-title">Quick Add Task</h3>
+            </div>
+            <div class="dialog-content">
+                <p style="margin-bottom: var(--spacing-md); color: var(--text-secondary);">
+                    Manually log a non-waitlist task for credit tracking.
+                </p>
+                <form id="quickAddForm">
+                    <div class="form-group">
+                        <label class="form-label" for="qaTaskType">Task Type</label>
+                        <select class="form-select" id="qaTaskType" required>
+                            <option value="">Select type...</option>
+                            <option value="Receiving">Receiving</option>
+                            <option value="Dunnage">Dunnage</option>
+                            <option value="Routing">Routing</option>
+                            <option value="Press Floor">Press Floor</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="qaLocation">Location</label>
+                        <input type="text" class="form-input" id="qaLocation" placeholder="e.g., Receiving Dock 2" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="qaNotes">Notes / Description</label>
+                        <textarea class="form-textarea" id="qaNotes" placeholder="What did you do?" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn" onclick="closeQuickAddDialog()">Cancel</button>
+                <button type="button" class="btn btn-accent" onclick="submitQuickAdd()">
+                    <span class="fluent-icon icon-checkmark"></span>
+                    Log Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        let currentZone = 'Zone A';
+        let currentTaskType = 'All';
+
+        // Populate waitlist table
+        function populateWaitlist() {
+            const tbody = document.getElementById('waitlistTableBody');
+            const emptyState = document.getElementById('emptyState');
+            let waitlist = MockData.materialHandlerWaitlist;
+
+            // Apply filters
+            if (currentZone !== 'All') {
+                waitlist = MockUtils.filterByZone(waitlist, currentZone);
+            }
+            if (currentTaskType !== 'All') {
+                waitlist = MockUtils.filterByTaskType(waitlist, currentTaskType);
+            }
+
+            if (waitlist.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                MockUtils.updateFABVisibility(0);
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tbody.innerHTML = waitlist.map((item, index) => {
+                const waitStatus = MockUtils.getWaitTimeStatus(item.waitTime, item.timeStandard);
+                const waitClass = `wait-${waitStatus}`;
+                
+                return `
+                    <tr data-id="${item.id}">
+                        <td>
+                            <span class="task-badge ${item.taskTypeColor}">
+                                ${item.taskType}
+                            </span>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>${item.location}</strong>
+                                <div style="font-size: var(--font-size-caption); color: var(--text-secondary);">
+                                    ${item.zone}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>${item.loadNumber}</strong>
+                        </td>
+                        <td>
+                            <small style="color: var(--text-secondary);">${item.details}</small>
+                            ${item.partNumber !== 'N/A' ? `<div style="font-size: var(--font-size-caption); color: var(--text-tertiary);">Part: ${item.partNumber}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="priority-badge priority-${item.priority.toLowerCase()}">
+                                ${item.priority}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="priority-badge ${waitClass}">
+                                ${MockUtils.formatWaitTime(item.waitTime)}
+                            </span>
+                        </td>
+                        <td>
+                            <small>${item.requester}</small>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-accent" style="padding: 6px 12px; font-size: 12px;" onclick="acceptTask(${item.id})">
+                                    <span class="fluent-icon icon-checkmark"></span>
+                                    Accept
+                                </button>
+                                <button class="btn-icon btn-alert" aria-label="Need Help" title="Request Assistance">
+                                    <span class="fluent-icon icon-help"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            MockUtils.updateFABVisibility(waitlist.length);
+        }
+
+        // Filter waitlist
+        function filterWaitlist() {
+            currentZone = document.getElementById('zoneFilter').value;
+            currentTaskType = document.getElementById('taskTypeFilter').value;
+            populateWaitlist();
+        }
+
+        // Accept task
+        function acceptTask(taskId) {
+            console.log('Accepting task:', taskId);
+            alert('Task accepted! It will appear in "My Tasks".');
+            // In real app, this would call service and refresh
+        }
+
+        // Quick Add Dialog
+        function openQuickAddDialog() {
+            document.getElementById('quickAddDialog').classList.remove('hidden');
+            document.getElementById('qaTaskType').focus();
+        }
+
+        function closeQuickAddDialog() {
+            document.getElementById('quickAddDialog').classList.add('hidden');
+            document.getElementById('quickAddForm').reset();
+        }
+
+        function submitQuickAdd() {
+            const form = document.getElementById('quickAddForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            console.log('Quick add task:', {
+                taskType: document.getElementById('qaTaskType').value,
+                location: document.getElementById('qaLocation').value,
+                notes: document.getElementById('qaNotes').value
+            });
+
+            alert('Task logged successfully! You received credit.');
+            closeQuickAddDialog();
+        }
+
+        // Settings
+        function showSettings(event) {
+            event.preventDefault();
+            alert('Settings dialog would open here');
+        }
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            populateWaitlist();
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            document.getElementById('activeCount').textContent = `${MockData.materialHandlerWaitlist.length} active tasks`;
+        });
+    </script>
+</body>
+</html>

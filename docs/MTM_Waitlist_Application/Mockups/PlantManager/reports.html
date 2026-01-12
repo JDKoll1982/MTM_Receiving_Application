@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Manager - Reports | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Plant Manager</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Manager Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="mh-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE7C8;</span>
+                        <span class="nav-item-text">MH Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE7EE;</span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon">&#xE8A5;</span>
+                        <span class="nav-item-text">Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="user-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">User Management</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Report Generation & Scheduling</h2>
+                </div>
+                <div class="command-bar-right">
+                    <button class="btn btn-accent" onclick="openScheduleDialog()">
+                        <span class="fluent-icon">&#xE787;</span>
+                        Schedule New Report
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Report Generator -->
+                <div class="card mb-lg">
+                    <div class="card-header">
+                        <h3 class="card-title">Generate Report</h3>
+                    </div>
+                    <div class="card-content">
+                        <form id="reportForm">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label" for="reportType">Report Type</label>
+                                    <select class="form-select" id="reportType" required>
+                                        <option value="">Select report type...</option>
+                                        <option value="daily">Daily Summary</option>
+                                        <option value="weekly">Weekly Performance</option>
+                                        <option value="monthly">Monthly Trends</option>
+                                        <option value="custom">Custom Report</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="reportFormat">Format</label>
+                                    <select class="form-select" id="reportFormat" required>
+                                        <option value="PDF" selected>PDF</option>
+                                        <option value="Excel">Excel (.xlsx)</option>
+                                        <option value="CSV">CSV</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label" for="startDate">Start Date</label>
+                                    <input type="date" class="form-input" id="startDate" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="endDate">End Date</label>
+                                    <input type="date" class="form-input" id="endDate" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Include Sections</label>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked />
+                                        <div class="toggle-track">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <span>Material Handling Metrics</span>
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked />
+                                        <div class="toggle-track">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <span>Press Floor Metrics</span>
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked />
+                                        <div class="toggle-track">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <span>Charts & Graphs</span>
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" />
+                                        <div class="toggle-track">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <span>Detailed Task List</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                                <button type="button" class="btn" onclick="resetForm()">Reset</button>
+                                <button type="submit" class="btn btn-accent" onclick="generateReport(event)">
+                                    <span class="fluent-icon">&#xE8A5;</span>
+                                    Generate Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Scheduled Reports Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Scheduled Reports</h3>
+                    </div>
+                    <table class="winui-table">
+                        <thead>
+                            <tr>
+                                <th>REPORT NAME</th>
+                                <th style="width: 180px;">FREQUENCY</th>
+                                <th style="width: 200px;">RECIPIENTS</th>
+                                <th style="width: 160px;">LAST RUN</th>
+                                <th style="width: 120px;">STATUS</th>
+                                <th style="width: 180px;">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Daily Summary</strong></td>
+                                <td>Daily at 5:00 PM</td>
+                                <td><small>nick.wunsch@mtm.com</small></td>
+                                <td><small>Yesterday 5:00 PM</small></td>
+                                <td><span class="status-badge priority-low">Active</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon btn-edit" title="Edit">
+                                            <span class="fluent-icon icon-edit"></span>
+                                        </button>
+                                        <button class="btn-icon btn-alert" title="Disable">
+                                            <span class="fluent-icon">&#xE785;</span>
+                                        </button>
+                                        <button class="btn-icon" title="Delete">
+                                            <span class="fluent-icon icon-delete"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Weekly Performance</strong></td>
+                                <td>Monday at 8:00 AM</td>
+                                <td><small>management@mtm.com</small></td>
+                                <td><small>1/6/2026 8:00 AM</small></td>
+                                <td><span class="status-badge priority-low">Active</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon btn-edit" title="Edit">
+                                            <span class="fluent-icon icon-edit"></span>
+                                        </button>
+                                        <button class="btn-icon btn-alert" title="Disable">
+                                            <span class="fluent-icon">&#xE785;</span>
+                                        </button>
+                                        <button class="btn-icon" title="Delete">
+                                            <span class="fluent-icon icon-delete"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monthly Trend Analysis</strong></td>
+                                <td>1st of month at 9:00 AM</td>
+                                <td><small>leads@mtm.com</small></td>
+                                <td><small>1/1/2026 9:00 AM</small></td>
+                                <td><span class="status-badge priority-low">Active</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon btn-edit" title="Edit">
+                                            <span class="fluent-icon icon-edit"></span>
+                                        </button>
+                                        <button class="btn-icon btn-alert" title="Disable">
+                                            <span class="fluent-icon">&#xE785;</span>
+                                        </button>
+                                        <button class="btn-icon" title="Delete">
+                                            <span class="fluent-icon icon-delete"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE8A5;</span>
+                    <span>Report Management</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Report Dialog -->
+    <div class="dialog-overlay hidden" id="scheduleDialog">
+        <div class="dialog">
+            <div class="dialog-header">
+                <h3 class="dialog-title">Schedule New Report</h3>
+            </div>
+            <div class="dialog-content">
+                <form id="scheduleForm">
+                    <div class="form-group">
+                        <label class="form-label" for="scheduleName">Report Name</label>
+                        <input type="text" class="form-input" id="scheduleName" placeholder="e.g., Weekly Team Performance" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="scheduleType">Report Type</label>
+                        <select class="form-select" id="scheduleType" required>
+                            <option value="daily">Daily Summary</option>
+                            <option value="weekly">Weekly Performance</option>
+                            <option value="monthly">Monthly Trends</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="scheduleFrequency">Frequency</label>
+                        <select class="form-select" id="scheduleFrequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="scheduleTime">Time</label>
+                        <input type="time" class="form-input" id="scheduleTime" value="17:00" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="scheduleRecipients">Recipients (comma-separated emails)</label>
+                        <textarea class="form-textarea" id="scheduleRecipients" placeholder="email1@mtm.com, email2@mtm.com" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn" onclick="closeScheduleDialog()">Cancel</button>
+                <button type="button" class="btn btn-accent" onclick="submitSchedule()">
+                    <span class="fluent-icon">&#xE787;</span>
+                    Schedule Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateReport(event) {
+            event.preventDefault();
+            console.log('Generating report...');
+            alert('Report generated successfully! Download starting...');
+        }
+
+        function resetForm() {
+            document.getElementById('reportForm').reset();
+        }
+
+        function openScheduleDialog() {
+            document.getElementById('scheduleDialog').classList.remove('hidden');
+        }
+
+        function closeScheduleDialog() {
+            document.getElementById('scheduleDialog').classList.add('hidden');
+            document.getElementById('scheduleForm').reset();
+        }
+
+        function submitSchedule() {
+            const form = document.getElementById('scheduleForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            console.log('Scheduling report...');
+            alert('Report scheduled successfully!');
+            closeScheduleDialog();
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Set default dates
+            const today = new Date();
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            
+            document.getElementById('startDate').value = weekAgo.toISOString().split('T')[0];
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>

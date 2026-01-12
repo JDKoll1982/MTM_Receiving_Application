@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Control - History | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Quality Control</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Nou L.</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Quality Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-calendar"></span>
+                        <span class="nav-item-text">History</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Inspection History</h2>
+                </div>
+                <div class="command-bar-right">
+                    <input type="date" class="form-input" id="filterDate" style="width: 150px; margin-right: 12px;" />
+                    <div class="search-box">
+                        <input type="text" placeholder="Search history..." id="searchInput" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Summary Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">5</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Inspected Today</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Requests Table -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">DATE/TIME</th>
+                            <th style="width: 160px;">TYPE</th>
+                            <th>DETAILS</th>
+                            <th style="width: 100px;">PRIORITY</th>
+                            <th style="width: 140px;">DURATION</th>
+                            <th style="width: 120px;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><small>Today 1:00 PM</small></td>
+                            <td><span class="task-badge task-quality-control">Inspection</span></td>
+                            <td>First piece check - Press 3</td>
+                            <td><span class="priority-badge priority-high">High</span></td>
+                            <td><strong>15 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                         <tr>
+                            <td><small>Today 10:30 AM</small></td>
+                            <td><span class="task-badge task-quality-control">Quality Check</span></td>
+                            <td>Spot weld verification - Press 6</td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><strong>20 min</strong></td>
+                            <td><span class="status-badge priority-low">Completed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-history"></span>
+                    <span>Recent History</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filterDate').value = today;
+        });
+    </script>
+</body>
+</html>

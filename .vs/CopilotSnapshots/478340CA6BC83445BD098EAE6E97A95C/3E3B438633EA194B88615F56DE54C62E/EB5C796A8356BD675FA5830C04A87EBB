@@ -1,0 +1,946 @@
+﻿// Mock Data for MTM Waitlist Application Mockups
+// Provides sample data for testing UI without backend
+
+const MockData = {
+  // Current user context
+  currentUser: {
+    id: 1,
+    badgeId: "MTM001",
+    name: "John Operator",
+    role: "Operator", // Operator | MaterialHandler | MaterialHandlerLead | OperatorLead | PlantManager | Quality
+    site: "Expo Drive",
+    siteId: 1,
+    press: "Press 6" // For operators
+  },
+
+  // Sites
+  sites: [
+    { id: 1, code: "EXPO", name: "Expo Drive" },
+    { id: 2, code: "VITS", name: "VITS Drive" }
+  ],
+
+  // Presses (for operators)
+  presses: [
+    { id: 1, name: "Press 1", location: "Zone A", siteId: 1 },
+    { id: 2, name: "Press 2", location: "Zone A", siteId: 1 },
+    { id: 3, name: "Press 3", location: "Zone B", siteId: 1 },
+    { id: 4, name: "Press 4", location: "Zone B", siteId: 1 },
+    { id: 5, name: "Press 5", location: "Zone C", siteId: 1 },
+    { id: 6, name: "Press 6", location: "Zone C", siteId: 1, nickname: "Spot Weld" }
+  ],
+
+  // Zones (for material handlers)
+  zones: ["Zone A", "Zone B", "Zone C", "Zone D"],
+
+  // ===== OPERATOR REQUEST TYPES (4 Categories) =====
+  
+  // 1. Material Handler Requests
+  requestTypes_MaterialHandler: [
+    { 
+      id: 'mh-coil-to-press',
+      name: "Coils - Bring to Press", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 25,
+      icon: "&#xE7C8;",
+      description: "Request coil to be brought to press"
+    },
+    { 
+      id: 'mh-coil-to-storage',
+      name: "Coils - Return to Storage", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 20,
+      icon: "&#xE7C8;",
+      description: "Request coil to be returned to storage"
+    },
+    { 
+      id: 'mh-flatstock-to-press',
+      name: "Flatstock - Bring to Press", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 25,
+      icon: "&#xE8D1;",
+      description: "Request flatstock to be brought to press"
+    },
+    { 
+      id: 'mh-flatstock-to-storage',
+      name: "Flatstock - Return to Storage", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 20,
+      icon: "&#xE8D1;",
+      description: "Request flatstock to be returned to storage"
+    },
+    { 
+      id: 'mh-needs-component',
+      name: "Needs - Component Parts", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 15,
+      icon: "&#xE7C8;",
+      description: "Request component parts delivery"
+    },
+    { 
+      id: 'mh-needs-dunnage',
+      name: "Needs - Dunnage", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 10,
+      icon: "&#xE7C8;",
+      description: "Request dunnage (skids, pallets, etc.)"
+    },
+    { 
+      id: 'mh-needs-finished',
+      name: "Needs - Finished Goods", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 15,
+      icon: "&#xE7C8;",
+      description: "Request finished goods delivery"
+    },
+    { 
+      id: 'mh-return-component',
+      name: "Returns - Component Parts", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 15,
+      icon: "&#xE72A;",
+      description: "Return component parts to storage"
+    },
+    { 
+      id: 'mh-return-dunnage',
+      name: "Returns - Dunnage", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 10,
+      icon: "&#xE72A;",
+      description: "Return dunnage to storage"
+    },
+    { 
+      id: 'mh-return-finished',
+      name: "Returns - Finished Goods", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 15,
+      icon: "&#xE72A;",
+      description: "Return finished goods to storage"
+    },
+    { 
+      id: 'mh-ncm-pickup',
+      name: "Pickup Non Conforming Material (NCM)", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: true,
+      requiresWorkOrder: true,
+      timeStandard: 20,
+      icon: "&#xE7BA;",
+      description: "Pickup NCM - SEPARATE TRACKING REQUIRED",
+      isNCM: true,
+      priority: "high"
+    },
+    { 
+      id: 'mh-empty-scrap',
+      name: "Empty Scrap Container", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresScrapType: true,
+      timeStandard: 12,
+      icon: "&#xE74D;",
+      description: "Request scrap container to be emptied"
+    },
+    { 
+      id: 'mh-die-to-press',
+      name: "Dies - Bring to Press", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: false,
+      requiresWorkOrder: true,
+      requiresDieNumber: true,
+      allowMultipleDies: true,
+      timeStandard: 30,
+      icon: "&#xE7EE;",
+      description: "Request die(s) to be brought to press"
+    },
+    { 
+      id: 'mh-die-to-storage',
+      name: "Dies - Return to Storage", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: false,
+      requiresWorkOrder: true,
+      requiresDieNumber: true,
+      allowMultipleDies: true,
+      timeStandard: 25,
+      icon: "&#xE7EE;",
+      description: "Request die(s) to be returned to storage"
+    },
+    { 
+      id: 'mh-other',
+      name: "Other Material Handling Request", 
+      category: "Material Handler",
+      fulfiller: "Material Handler",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 20,
+      icon: "&#xE8AB;",
+      description: "Special request not covered by standard categories"
+    }
+  ],
+
+  // 2. Setup Technician Requests
+  requestTypes_SetupTech: [
+    { 
+      id: 'st-die-protection',
+      name: "Die Protection (Die Pro) Alarm", 
+      category: "Setup Technician",
+      fulfiller: "Setup Technician",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 10,
+      icon: "&#xE7BA;",
+      description: "Die Protection triggered, press needs reset",
+      priority: "high"
+    },
+    { 
+      id: 'st-die-issue-stuck',
+      name: "Die Issue - Material Stuck", 
+      category: "Setup Technician",
+      fulfiller: "Setup Technician",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 15,
+      icon: "&#xE73E;",
+      description: "Material stuck in die"
+    },
+    { 
+      id: 'st-die-issue-misaligned',
+      name: "Die Issue - Misalignment", 
+      category: "Setup Technician",
+      fulfiller: "Setup Technician",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 20,
+      icon: "&#xE73E;",
+      description: "Die appears misaligned"
+    },
+    { 
+      id: 'st-die-issue-damage',
+      name: "Die Issue - Suspected Damage", 
+      category: "Setup Technician",
+      fulfiller: "Setup Technician",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 25,
+      icon: "&#xE73E;",
+      description: "Suspected die damage"
+    },
+    { 
+      id: 'st-die-issue-adjustment',
+      name: "Die Issue - Needs Adjustment", 
+      category: "Setup Technician",
+      fulfiller: "Setup Technician",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      timeStandard: 15,
+      icon: "&#xE73E;",
+      description: "Die needs adjustment"
+    },
+    { 
+      id: 'st-other',
+      name: "Other Setup Technician Request", 
+      category: "Setup Technician",
+      fulfiller: "Setup Technician",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 20,
+      icon: "&#xE8AB;",
+      description: "Special request not covered by standard categories"
+    }
+  ],
+
+  // 3. Production Lead Requests
+  requestTypes_ProductionLead: [
+    { 
+      id: 'pl-production-question',
+      name: "Production Question", 
+      category: "Production Lead",
+      fulfiller: "Production Lead",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 15,
+      icon: "&#xE11B;",
+      description: "Question regarding job or process"
+    },
+    { 
+      id: 'pl-safety-injury',
+      name: "Report Injury or Safety Concern", 
+      category: "Production Lead",
+      fulfiller: "Production Lead",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 5,
+      icon: "&#xE7BA;",
+      description: "URGENT: Report safety issue or injury",
+      priority: "critical",
+      alertPlantManager: true
+    },
+    { 
+      id: 'pl-other',
+      name: "Other Production Lead Request", 
+      category: "Production Lead",
+      fulfiller: "Production Lead",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 15,
+      icon: "&#xE8AB;",
+      description: "Special request not covered by standard categories"
+    }
+  ],
+
+  // 4. Quality Control Requests (NEW)
+  requestTypes_QualityControl: [
+    { 
+      id: 'qc-inspection-request',
+      name: "Inspection Request", 
+      category: "Quality Control",
+      fulfiller: "Quality Control",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 20,
+      icon: "&#xE9D9;",
+      description: "Request additional inspection or verification"
+    },
+    { 
+      id: 'qc-quality-question',
+      name: "Quality Question", 
+      category: "Quality Control",
+      fulfiller: "Quality Control",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 15,
+      icon: "&#xE11B;",
+      description: "Question regarding job or process quality"
+    },
+    { 
+      id: 'qc-other',
+      name: "Other Quality Control Request", 
+      category: "Quality Control",
+      fulfiller: "Quality Control",
+      requiresPartNumber: false,
+      requiresWorkOrder: false,
+      requiresFreeText: true,
+      timeStandard: 20,
+      icon: "&#xE8AB;",
+      description: "Special request not covered by standard categories"
+    }
+  ],
+
+  // Sample Part Numbers (from MockupData.md)
+  samplePartNumbers: {
+    coils: ["MMC0001000", "MMC0000651", "MMC0000352", "MMC0000789"],
+    flatstock: ["MMF0005500", "MMF0001234", "MMF0009876"],
+    parts: ["23-23415-006", "45-67890-123", "67-89012-345"]
+  },
+
+  // Die Numbers and Locations
+  dieNumbers: [
+    { number: "FGT-001", location: "Not Located", status: "Unknown" },
+    { number: "FGT-1934", location: "R-A0-01", status: "In Storage" },
+    { number: "FGT-2045", location: "R-B2-03", status: "In Storage" },
+    { number: "FGT-3056", location: "R-C1-02", status: "In Storage" },
+    { number: "FGT-2156", location: "Press 3", status: "In Use" },
+    { number: "FGT-3487", location: "Press 6", status: "In Use" }
+  ],
+
+  // Scrap Metal Types
+  scrapTypes: [
+    "5052 Aluminum",
+    "3003 Aluminum",
+    "Steel",
+    "Galvanized Steel",
+    "Stainless Steel",
+    "Copper",
+    "Other"
+  ],
+
+  // Task Types (for material handlers - legacy, kept for backward compatibility)
+  taskTypes: [
+    { id: 1, name: "Receiving", color: "task-receiving" },
+    { id: 2, name: "Dunnage", color: "task-dunnage" },
+    { id: 3, name: "Routing", color: "task-routing" },
+    { id: 4, name: "Press Floor", color: "task-press" }
+  ],
+
+  // Sample waitlist items (operator view) - UPDATED WITH NEW TYPES
+  operatorWaitlist: [
+    {
+      id: 1,
+      position: 1,
+      requestType: "mh-needs-component",
+      category: "Material Handler",
+      partNumber: "23-23415-006",
+      workOrder: "WO-12345",
+      operation: "19",
+      details: "blue sticker x2",
+      waitTime: 41,
+      timeStandard: 15,
+      priority: "high",
+      status: "Assigned",
+      assignedTo: "Sarah MH",
+      createdBy: "John Operator",
+      press: "Press 6",
+      createdAt: "2026-01-11 09:15:00"
+    },
+    {
+      id: 2,
+      position: 2,
+      requestType: "mh-needs-dunnage",
+      category: "Material Handler",
+      partNumber: null,
+      workOrder: null,
+      details: "Skids needed - 4pc",
+      waitTime: 25,
+      timeStandard: 10,
+      priority: "medium",
+      status: "Pending",
+      assignedTo: null,
+      createdBy: "Sarah Press",
+      press: "Press 2",
+      createdAt: "2026-01-11 09:30:00"
+    },
+    {
+      id: 3,
+      position: 3,
+      requestType: "st-die-protection",
+      category: "Setup Technician",
+      partNumber: null,
+      workOrder: null,
+      details: "Die Pro alarm - press stopped",
+      waitTime: 8,
+      timeStandard: 10,
+      priority: "high",
+      status: "Pending",
+      assignedTo: null,
+      createdBy: "Bob Operator",
+      press: "Press 1",
+      createdAt: "2026-01-11 09:47:00"
+    },
+    {
+      id: 4,
+      position: 4,
+      requestType: "mh-coil-to-press",
+      category: "Material Handler",
+      partNumber: "MMC0001000",
+      workOrder: "WO-12346",
+      details: "New coil - running low",
+      waitTime: 15,
+      timeStandard: 25,
+      priority: "medium",
+      status: "Pending",
+      assignedTo: null,
+      createdBy: "Mike Press",
+      press: "Press 4",
+      createdAt: "2026-01-11 09:40:00"
+    }
+  ],
+
+  // Sample unified waitlist (material handler view) - UPDATED
+  materialHandlerWaitlist: [
+    {
+      id: 1,
+      requestType: "mh-needs-component",
+      category: "Material Handler",
+      taskType: "Press Floor",
+      taskTypeColor: "task-press",
+      location: "Press 6 - Spot Weld",
+      zone: "Zone C",
+      partNumber: "23-23415-006",
+      workOrder: "WO-12345",
+      priority: "High",
+      waitTime: 41,
+      timeStandard: 15,
+      requester: "John Operator",
+      details: "blue sticker x2 - op 19",
+      createdAt: "2026-01-11 09:15:00",
+      status: "Assigned",
+      assignedTo: "Sarah MH"
+    },
+    {
+      id: 2,
+      requestType: "mh-needs-dunnage",
+      category: "Material Handler",
+      taskType: "Dunnage",
+      taskTypeColor: "task-dunnage",
+      location: "Press 2",
+      zone: "Zone A",
+      partNumber: null,
+      workOrder: null,
+      priority: "Medium",
+      waitTime: 25,
+      timeStandard: 10,
+      requester: "Sarah Press",
+      details: "Skids needed - 4pc",
+      createdAt: "2026-01-11 09:30:00",
+      status: "Pending",
+      assignedTo: null
+    },
+    {
+      id: 5,
+      requestType: "mh-ncm-pickup",
+      category: "Material Handler",
+      taskType: "NCM",
+      taskTypeColor: "task-ncm",
+      location: "Press 3",
+      zone: "Zone B",
+      partNumber: "45-67890-123",
+      workOrder: "WO-12350",
+      priority: "High",
+      waitTime: 5,
+      timeStandard: 20,
+      requester: "Lisa Operator",
+      details: "NCM - bad weld on parts",
+      createdAt: "2026-01-11 09:50:00",
+      status: "Pending",
+      assignedTo: null,
+      isNCM: true
+    },
+    {
+      id: 6,
+      requestType: "mh-empty-scrap",
+      category: "Material Handler",
+      taskType: "Scrap",
+      taskTypeColor: "task-routing",
+      location: "Press 1",
+      zone: "Zone A",
+      partNumber: null,
+      workOrder: null,
+      scrapType: "5052 Aluminum",
+      priority: "Low",
+      waitTime: 12,
+      timeStandard: 12,
+      requester: "Bob Operator",
+      details: "Scrap bin full - 5052 Aluminum",
+      createdAt: "2026-01-11 09:43:00",
+      status: "Pending",
+      assignedTo: null
+    },
+    {
+      id: 7,
+      requestType: "mh-die-to-press",
+      category: "Material Handler",
+      taskType: "Die Change",
+      taskTypeColor: "task-press",
+      location: "Press 4",
+      zone: "Zone B",
+      partNumber: null,
+      workOrder: "WO-12351",
+      dieNumber: "FGT-2045",
+      dieLocation: "R-B2-03",
+      priority: "Medium",
+      waitTime: 18,
+      timeStandard: 30,
+      requester: "Mike Press",
+      details: "Need die FGT-2045 from R-B2-03",
+      createdAt: "2026-01-11 09:37:00",
+      status: "Pending",
+      assignedTo: null
+    },
+    // NEW: Quality Control Task (should only be visible to QC, MH Lead, PL, PM)
+    {
+      id: 8,
+      requestType: "qc-inspection-request",
+      category: "Quality Control",
+      taskType: "Inspection",
+      taskTypeColor: "task-quality-control",
+      location: "Press 6",
+      zone: "Zone C",
+      partNumber: "23-23415-006",
+      workOrder: "WO-12345",
+      priority: "High",
+      waitTime: 10,
+      timeStandard: 20,
+      requester: "John Operator",
+      details: "First piece inspection required",
+      createdAt: "2026-01-11 10:05:00",
+      status: "Pending",
+      assignedTo: null
+    },
+    // NEW: Setup Tech Task (should only be visible to ST, PM)
+    {
+      id: 9,
+      requestType: "st-die-issue-stuck",
+      category: "Setup Technician",
+      taskType: "Die Issue",
+      taskTypeColor: "task-setup-tech",
+      location: "Press 1",
+      zone: "Zone A",
+      partNumber: null,
+      workOrder: null,
+      priority: "Critical",
+      waitTime: 5,
+      timeStandard: 15,
+      requester: "Bob Operator",
+      details: "Part stuck in die",
+      createdAt: "2026-01-11 10:10:00",
+      status: "Pending",
+      assignedTo: null
+    },
+    // NEW: Production Lead Task (should only be visible to PL, Operator Lead, PM)
+    {
+      id: 10,
+      requestType: "pl-production-question",
+      category: "Production Lead",
+      taskType: "Question",
+      taskTypeColor: "task-production-lead",
+      location: "Press 3",
+      zone: "Zone B",
+      partNumber: null,
+      workOrder: "WO-12399",
+      priority: "Normal",
+      waitTime: 20,
+      timeStandard: 15,
+      requester: "Steve Operator",
+      details: "Question about run rate",
+      createdAt: "2026-01-11 09:20:00",
+      status: "Pending",
+      assignedTo: null
+    }
+  ],
+
+  // Recent completed tasks - UPDATED
+  recentTasks: [
+    {
+      id: 101,
+      time: "10:23 AM",
+      date: "2026-01-11",
+      requestType: "mh-needs-dunnage",
+      category: "Material Handler",
+      taskType: "Dunnage",
+      partNumber: null,
+      workOrder: null,
+      details: "Skids - 6pc",
+      handler: "Tom Handler",
+      requester: "Sarah Press",
+      duration: 12,
+      status: "Completed"
+    },
+    {
+      id: 102,
+      time: "10:15 AM",
+      date: "2026-01-11",
+      requestType: "mh-coil-to-press",
+      category: "Material Handler",
+      taskType: "Coil Delivery",
+      partNumber: "MMC0000651",
+      workOrder: "WO-12347",
+      details: "Coil delivery to Press 1",
+      handler: "Sarah MH",
+      requester: "Bob Operator",
+      duration: 28,
+      status: "Completed"
+    },
+    {
+      id: 103,
+      time: "9:58 AM",
+      date: "2026-01-11",
+      requestType: "mh-return-component",
+      category: "Material Handler",
+      taskType: "Returns",
+      partNumber: "67-89012-345",
+      workOrder: "WO-12348",
+      details: "Return excess parts to storage",
+      handler: "Tom Handler",
+      requester: "Mike Press",
+      duration: 8,
+      status: "Completed"
+    }
+  ],
+
+  // Analytics data (for leads)
+  analytics: {
+    todayMetrics: {
+      totalTasks: 47,
+      completedTasks: 35,
+      averageWaitTime: 18.5,
+      averageCompletionTime: 14.2,
+      tasksOverStandard: 8,
+      ncmTasks: 3 // Separate tracking
+    },
+    tasksByType: [
+      { type: "Coil/Flatstock Delivery", count: 12, avgTime: 22 },
+      { type: "Needs (Parts/Dunnage)", count: 15, avgTime: 11 },
+      { type: "Returns", count: 8, avgTime: 13 },
+      { type: "Die Changes", count: 5, avgTime: 28 },
+      { type: "NCM Pickup", count: 3, avgTime: 19 },
+      { type: "Scrap Containers", count: 4, avgTime: 10 }
+    ],
+    handlerPerformance: [
+      { name: "Tom Handler", tasksCompleted: 14, avgTime: 12.5, zone: "A" },
+      { name: "Sarah MH", tasksCompleted: 12, avgTime: 15.2, zone: "B" },
+      { name: "Mike MH", tasksCompleted: 9, avgTime: 13.8, zone: "C" }
+    ],
+    pressPerformance: [
+      { press: "Press 1", tasksCompleted: 8, avgWaitTime: 15.2 },
+      { press: "Press 2", tasksCompleted: 6, avgWaitTime: 18.5 },
+      { press: "Press 3", tasksCompleted: 10, avgWaitTime: 12.3 },
+      { press: "Press 4", tasksCompleted: 7, avgWaitTime: 21.1 }
+    ]
+  },
+
+  // Material Handlers (for team management)
+  materialHandlers: [
+    { id: 1, name: "Tom Handler", zone: "Zone A", status: "Active", tasksToday: 14 },
+    { id: 2, name: "Sarah MH", zone: "Zone B", status: "Active", tasksToday: 12 },
+    { id: 3, name: "Mike MH", zone: "Zone C", status: "On Break", tasksToday: 9 },
+    { id: 4, name: "Lisa MH", zone: "Zone D", status: "Active", tasksToday: 11 }
+  ],
+
+  // Press Operators (for operator management)
+  pressOperators: [
+    { id: 1, name: "John Operator", press: "Press 6", status: "Running", shift: "Day" },
+    { id: 2, name: "Sarah Press", press: "Press 2", status: "Setup", shift: "Day" },
+    { id: 3, name: "Bob Operator", press: "Press 1", status: "Running", shift: "Day" },
+    { id: 4, name: "Mike Press", press: "Press 4", status: "Break", shift: "Day" }
+  ],
+
+  // Settings/Configuration
+  settings: {
+    zoneMode: true,
+    autoAssign: false,
+    enableNotifications: true,
+    defaultTimeStandards: {
+      // Material Handler requests
+      coilToPress: 25,
+      coilToStorage: 20,
+      flatstockToPress: 25,
+      flatstockToStorage: 20,
+      needsComponent: 15,
+      needsDunnage: 10,
+      needsFinished: 15,
+      returnComponent: 15,
+      returnDunnage: 10,
+      returnFinished: 15,
+      ncmPickup: 20,
+      emptyScrap: 12,
+      dieToPress: 30,
+      dieToStorage: 25,
+      materialHandlerOther: 20,
+      // Setup Tech requests
+      dieProtection: 10,
+      dieIssue: 15,
+      setupTechOther: 20,
+      // Production Lead requests
+      productionQuestion: 15,
+      safetyReport: 5,
+      productionLeadOther: 15
+    }
+  }
+};
+
+// Utility functions
+const MockUtils = {
+  // Get all request types for a specific category
+  getRequestTypesByCategory(category) {
+    switch(category) {
+      case 'Material Handler':
+        return MockData.requestTypes_MaterialHandler;
+      case 'Setup Technician':
+        return MockData.requestTypes_SetupTech;
+      case 'Production Lead':
+        return MockData.requestTypes_ProductionLead;
+      case 'Quality Control':
+        return MockData.requestTypes_QualityControl;
+      default:
+        return [];
+    }
+  },
+
+  // Get all request types that a specific role can see (for filtering waitlists)
+  getRequestTypesForRole(role) {
+    let categories = [];
+    
+    switch(role) {
+      case 'Operator':
+        // Operators can create requests for all categories
+        categories = ['Material Handler', 'Setup Technician', 'Production Lead', 'Quality Control'];
+        break;
+      case 'MaterialHandler':
+        // Material Handlers see ONLY Material Handler requests
+        categories = ['Material Handler'];
+        break;
+      case 'MaterialHandlerLead':
+        // Material Handler Leads see Material Handler + Quality requests
+        categories = ['Material Handler', 'Quality Control'];
+        break;
+      case 'OperatorLead':
+      case 'ProductionLead':
+        // Production Leads see Production Lead + Material Handler + Quality requests
+        categories = ['Production Lead', 'Material Handler', 'Quality Control'];
+        break;
+      case 'Quality':
+      case 'QualityControl':
+        // Quality sees ONLY Quality Control requests
+        categories = ['Quality Control'];
+        break;
+      case 'PlantManager':
+        // Plant Managers see ALL requests
+        categories = ['Material Handler', 'Setup Technician', 'Production Lead', 'Quality Control'];
+        break;
+      default:
+        categories = [];
+    }
+    
+    let allTypes = [];
+    categories.forEach(cat => {
+      allTypes = allTypes.concat(this.getRequestTypesByCategory(cat));
+    });
+    
+    return allTypes;
+  },
+
+  // Get categories visible to a specific role (for filter dropdowns)
+  getCategoriesForRole(role) {
+    switch(role) {
+      case 'Operator':
+        return ['Material Handler', 'Setup Technician', 'Production Lead', 'Quality Control'];
+      case 'MaterialHandler':
+        return ['Material Handler'];
+      case 'MaterialHandlerLead':
+        return ['Material Handler', 'Quality Control'];
+      case 'OperatorLead':
+      case 'ProductionLead':
+        return ['Production Lead', 'Material Handler', 'Quality Control'];
+      case 'Quality':
+      case 'QualityControl':
+        return ['Quality Control'];
+      case 'PlantManager':
+        return ['Material Handler', 'Setup Technician', 'Production Lead', 'Quality Control'];
+      default:
+        return [];
+    }
+  },
+
+  // Get request type details by ID
+  getRequestTypeById(requestTypeId) {
+    const allTypes = [
+      ...MockData.requestTypes_MaterialHandler,
+      ...MockData.requestTypes_SetupTech,
+      ...MockData.requestTypes_ProductionLead,
+      ...MockData.requestTypes_QualityControl
+    ];
+    return allTypes.find(rt => rt.id === requestTypeId);
+  },
+
+  // Get die location by die number
+  getDieLocation(dieNumber) {
+    const die = MockData.dieNumbers.find(d => d.number === dieNumber);
+    return die ? die.location : "Unknown Location";
+  },
+
+  // Calculate wait time status
+  getWaitTimeStatus(waitTime, timeStandard) {
+    const ratio = waitTime / timeStandard;
+    if (ratio >= 1) return 'critical';
+    if (ratio >= 0.75) return 'warning';
+    return 'normal';
+  },
+
+  // Format wait time display
+  formatWaitTime(minutes) {
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  },
+
+  // Format timestamp
+  formatTimestamp(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  },
+
+  // Get priority class
+  getPriorityClass(priority) {
+    return `priority-${priority.toLowerCase()}`;
+  },
+
+  // Filter waitlist by zone
+  filterByZone(waitlist, zone) {
+    if (!zone || zone === 'All') return waitlist;
+    return waitlist.filter(item => item.zone === zone);
+  },
+
+  // Filter waitlist by task type
+  filterByTaskType(waitlist, taskType) {
+    if (!taskType || taskType === 'All') return waitlist;
+    return waitlist.filter(item => item.taskType === taskType);
+  },
+
+  // Filter waitlist by category (role-based)
+  filterByCategory(waitlist, category, userRole) {
+    // If "All" selected, show all categories visible to this role
+    if (!category || category === 'All') {
+      const visibleCategories = this.getCategoriesForRole(userRole);
+      return waitlist.filter(item => visibleCategories.includes(item.category));
+    }
+    
+    // Otherwise filter to specific category
+    return waitlist.filter(item => item.category === category);
+  },
+
+  // Check if request is NCM (requires separate tracking)
+  isNCMRequest(requestTypeId) {
+    return requestTypeId === 'mh-ncm-pickup';
+  },
+
+  // Check if request should alert plant manager
+  shouldAlertPlantManager(requestTypeId) {
+    const requestType = this.getRequestTypeById(requestTypeId);
+    return requestType && requestType.alertPlantManager === true;
+  },
+
+  // Show/hide FAB based on waitlist
+  updateFABVisibility(waitlistLength) {
+    const fab = document.getElementById('fabAddItem');
+    if (fab) {
+      fab.style.display = waitlistLength > 0 ? 'flex' : 'none';
+    }
+  }
+};
+
+// Export for use in mockups
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { MockData, MockUtils };
+}

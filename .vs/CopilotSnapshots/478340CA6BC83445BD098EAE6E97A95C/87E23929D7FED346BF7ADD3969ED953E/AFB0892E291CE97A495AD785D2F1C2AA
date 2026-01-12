@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Waitlist Application - Mockup Navigation</title>
+    <link rel="stylesheet" href="Shared/winui3-theme.css">
+    <link rel="stylesheet" href="Shared/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0078D4 0%, #004578 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .hub-container {
+            background-color: var(--card-background);
+            border-radius: var(--corner-radius-large);
+            box-shadow: var(--shadow-dialog);
+            padding: var(--spacing-xxl);
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .hub-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xxl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--divider-stroke);
+        }
+
+        .hub-title {
+            font-size: var(--font-size-display);
+            font-weight: var(--font-weight-semibold);
+            color: var(--accent-default);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .hub-subtitle {
+            font-size: var(--font-size-subtitle);
+            color: var(--text-secondary);
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        .module-card {
+            background-color: var(--card-background);
+            border: 2px solid var(--border-color);
+            border-radius: var(--corner-radius-medium);
+            padding: var(--spacing-lg);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .module-card:hover {
+            border-color: var(--accent-default);
+            box-shadow: var(--shadow-card);
+            transform: translateY(-2px);
+        }
+
+        .module-icon {
+            font-size: 48px;
+            color: var(--accent-default);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .module-title {
+            font-size: var(--font-size-subtitle);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .module-description {
+            font-size: var(--font-size-body);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .module-views {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .module-views li {
+            padding: var(--spacing-xs) 0;
+            font-size: var(--font-size-caption);
+            color: var(--text-tertiary);
+        }
+
+        .module-views li::before {
+            content: "→ ";
+            color: var(--accent-default);
+        }
+
+        .info-section {
+            background-color: var(--background-tertiary);
+            border-radius: var(--corner-radius-medium);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .info-section h3 {
+            font-size: var(--font-size-subtitle);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .quick-links {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--corner-radius-small);
+            text-decoration: none;
+            color: var(--accent-default);
+            font-size: var(--font-size-caption);
+            transition: all 0.1s ease;
+        }
+
+        .quick-link:hover {
+            background-color: var(--accent-default);
+            color: #FFFFFF;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--divider-stroke);
+            font-size: var(--font-size-caption);
+            color: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="hub-container">
+        <!-- Header -->
+        <div class="hub-header">
+            <h1 class="hub-title">MTM Waitlist Application</h1>
+            <p class="hub-subtitle">WinUI3 HTML Mockups - Module Navigation</p>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <h3>About These Mockups</h3>
+            <p style="margin-bottom: var(--spacing-md);">
+                These HTML mockups simulate WinUI3 UI/UX patterns for the MTM Waitlist Application. 
+                Each module demonstrates role-specific functionality, Fluent Design components, and 
+                responsive layouts optimized for 1920x1080 desktop displays.
+            </p>
+            <div class="quick-links">
+                <a href="README.md" class="quick-link">📄 README Documentation</a>
+                <a href="MockupPrompt.md" class="quick-link">📋 Mockup Specification</a>
+                <a href="../Documentation/Planning/" class="quick-link">📁 Planning Docs</a>
+            </div>
+        </div>
+
+        <!-- Module Grid -->
+        <div class="module-grid">
+            <!-- Login Module -->
+            <a href="Login/login.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE77B;</div> <!-- Lock icon -->
+                <div class="module-title">Login Module</div>
+                <div class="module-description">Badge + PIN authentication with role auto-detection</div>
+                <ul class="module-views">
+                    <li>Login screen</li>
+                    <li>Role selection</li>
+                    <li>Session management</li>
+                </ul>
+            </a>
+
+            <!-- Operator Module -->
+            <a href="Operator/waitlist.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE7EE;</div> <!-- Manufacturing icon -->
+                <div class="module-title">Operator Module</div>
+                <div class="module-description">Press floor operator workflow with guided request wizard</div>
+                <ul class="module-views">
+                    <li>My Waitlist</li>
+                    <li>Active Jobs</li>
+                    <li>Recent Requests</li>
+                </ul>
+            </a>
+
+            <!-- Setup Technician Module -->
+            <a href="SetupTechnician/waitlist.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE73E;</div> <!-- Wrench icon -->
+                <div class="module-title">Setup Technician</div>
+                <div class="module-description">Die protection and press setup task management</div>
+                <ul class="module-views">
+                    <li>Setup Waitlist</li>
+                    <li>My Tasks</li>
+                    <li>Die Locations</li>
+                </ul>
+            </a>
+
+            <!-- Material Handler Module -->
+            <a href="MaterialHandler/waitlist.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE7C8;</div> <!-- Forklift/Package icon -->
+                <div class="module-title">Material Handler Module</div>
+                <div class="module-description">Unified task management across all departments</div>
+                <ul class="module-views">
+                    <li>Unified Waitlist (4 task types)</li>
+                    <li>My Tasks</li>
+                    <li>Recent History</li>
+                    <li>Floor Plan</li>
+                </ul>
+            </a>
+
+            <!-- Quality Control Module -->
+            <a href="Quality/waitlist.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE9D9;</div> <!-- Checkmark/Shield icon -->
+                <div class="module-title">Quality Control</div>
+                <div class="module-description">Inspection requests and quality issue tracking</div>
+                <ul class="module-views">
+                    <li>Quality Waitlist</li>
+                    <li>Inspection History</li>
+                    <li>Quality Metric</li>
+                </ul>
+            </a>
+
+            <!-- Material Handler Lead Module -->
+            <a href="MaterialHandlerLead/waitlist.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE8F1;</div> <!-- Admin/Analytics icon -->
+                <div class="module-title">Material Handler Lead</div>
+                <div class="module-description">MH functionality + team analytics and control toggles</div>
+                <ul class="module-views">
+                    <li>Waitlist with Analytics Panel</li>
+                    <li>Full Analytics Dashboard</li>
+                    <li>Team Management</li>
+                    <li>Zone/Auto-Assign Controls</li>
+                </ul>
+            </a>
+
+            <!-- Operator Lead Module -->
+            <a href="OperatorLead/waitlist.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE9D9;</div> <!-- Chart/Analytics icon -->
+                <div class="module-title">Operator Lead</div>
+                <div class="module-description">Press floor analytics with operator management</div>
+                <ul class="module-views">
+                    <li>Press Floor Waitlist</li>
+                    <li>Press Analytics & Trends</li>
+                    <li>Operator Management</li>
+                    <li>Performance Metrics</li>
+                </ul>
+            </a>
+
+            <!-- Plant Manager Module -->
+            <a href="PlantManager/dashboard.html" class="module-card">
+                <div class="module-icon fluent-icon">&#xE716;</div> <!-- Organization icon -->
+                <div class="module-title">Plant Manager</div>
+                <div class="module-description">Unified admin dashboard with cross-department oversight</div>
+                <ul class="module-views">
+                    <li>Unified Dashboard</li>
+                    <li>MH Analytics</li>
+                    <li>Press Analytics</li>
+                    <li>Reports & User Management</li>
+                </ul>
+            </a>
+        </div>
+
+        <!-- Technical Info -->
+        <div class="info-section">
+            <h3>Technical Stack</h3>
+            <p style="margin-bottom: var(--spacing-sm);">
+                <strong>HTML5</strong> (semantic markup) • 
+                <strong>CSS3</strong> (Fluent Design with Grid/Flexbox) • 
+                <strong>Vanilla JavaScript</strong> (mock data binding) • 
+                <strong>Fluent UI Icons</strong> (Segoe Fluent Icons font)
+            </p>
+            <p style="font-size: var(--font-size-caption); color: var(--text-tertiary);">
+                These mockups demonstrate WinUI3 controls using web technologies. 
+                All HTML comments include WinUI3 XAML control equivalents for implementation reference.
+            </p>
+        </div>
+
+        <!-- WinUI3 Control Reference -->
+        <div class="info-section">
+            <h3>WinUI3 Controls Demonstrated</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-sm); font-size: var(--font-size-caption);">
+                <div>✓ NavigationView</div>
+                <div>✓ ListView / GridView</div>
+                <div>✓ CommandBar</div>
+                <div>✓ ContentDialog</div>
+                <div>✓ AppBarButton</div>
+                <div>✓ InfoBar</div>
+                <div>✓ AutoSuggestBox</div>
+                <div>✓ ToggleSwitch</div>
+                <div>✓ Card / Expander</div>
+                <div>✓ TextBox / ComboBox</div>
+                <div>✓ Button (Accent style)</div>
+                <div>✓ Floating Action Button</div>
+            </div>
+        </div>
+
+        <!-- Key Features Highlights -->
+        <div class="info-section">
+            <h3>Key Features Showcased</h3>
+            <ul style="column-count: 2; column-gap: var(--spacing-xxl); font-size: var(--font-size-body); color: var(--text-secondary);">
+                <li style="margin-bottom: var(--spacing-sm);">🎨 Fluent Design System styling</li>
+                <li style="margin-bottom: var(--spacing-sm);">📊 SVG placeholder charts (analytics)</li>
+                <li style="margin-bottom: var(--spacing-sm);">🔄 Real-time wait time tracking</li>
+                <li style="margin-bottom: var(--spacing-sm);">🎯 Priority-based task escalation</li>
+                <li style="margin-bottom: var(--spacing-sm);">🌐 Zone-based task filtering</li>
+                <li style="margin-bottom: var(--spacing-sm);">🎨 Color-coded task types</li>
+                <li style="margin-bottom: var(--spacing-sm);">⚡ Floating Action Button (FAB)</li>
+                <li style="margin-bottom: var(--spacing-sm);">🔐 Role-based navigation</li>
+                <li style="margin-bottom: var(--spacing-sm);">♿ Accessibility (ARIA labels)</li>
+                <li style="margin-bottom: var(--spacing-sm);">🌙 Dark mode support</li>
+                <li style="margin-bottom: var(--spacing-sm);">📱 Responsive layout (desktop-first)</li>
+                <li style="margin-bottom: var(--spacing-sm);">🔍 Search & filter functionality</li>
+            </ul>
+        </div>
+
+        <!-- Usage Instructions -->
+        <div class="info-section">
+            <h3>How to Use</h3>
+            <ol style="font-size: var(--font-size-body); color: var(--text-secondary);">
+                <li style="margin-bottom: var(--spacing-sm);">
+                    <strong>Start at Login:</strong> Click "Login Module" above or navigate to <code>Login/login.html</code>
+                </li>
+                <li style="margin-bottom: var(--spacing-sm);">
+                    <strong>Mock Credentials:</strong> Badge ID: <code>MTM001</code>, PIN: <code>1234</code> (any values work)
+                </li>
+                <li style="margin-bottom: var(--spacing-sm);">
+                    <strong>Select Role:</strong> Choose from dropdown or use "Auto-Detect" to see role-specific views
+                </li>
+                <li style="margin-bottom: var(--spacing-sm);">
+                    <strong>Explore Modules:</strong> Use left navigation sidebar to switch between views
+                </li>
+                <li style="margin-bottom: var(--spacing-sm);">
+                    <strong>Test Interactions:</strong> Click buttons, open modals, filter tables, toggle switches
+                </li>
+            </ol>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <strong>MTM Waitlist Application</strong> - Version 1.0.0 (Mockup Phase)<br>
+                MTM, LLC © 2026 | For stakeholder review only - Not production code
+            </p>
+            <p style="margin-top: var(--spacing-sm);">
+                Project Owner: John Kollodge | 
+                <a href="mailto:support@mtm.com" style="color: var(--accent-default);">Contact Support</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Simple analytics tracking (mock)
+        const moduleLinks = document.querySelectorAll('.module-card');
+        moduleLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const moduleName = link.querySelector('.module-title').textContent;
+                console.log(`Navigating to module: ${moduleName}`);
+                // In real analytics, this would send to tracking service
+            });
+        });
+
+        // Display current date/time
+        const updateFooter = () => {
+            const footer = document.querySelector('.footer p:last-child');
+            const now = new Date();
+            footer.innerHTML += `<br><small>Last viewed: ${now.toLocaleString()}</small>`;
+        };
+        window.addEventListener('load', updateFooter);
+    </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Handler - My Tasks | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Material Handler</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Tom Handler</strong> • Zone A
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Unified Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-tasks.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon">&#xE73A;</span>
+                        <span class="nav-item-text">My Tasks</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-calendar"></span>
+                        <span class="nav-item-text">Recent History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="floor-plan.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-location"></span>
+                        <span class="nav-item-text">Floor Plan</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="#" class="nav-item-link" onclick="showSettings(event)">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">My Active Tasks</h2>
+                </div>
+                <div class="command-bar-right">
+                    <button class="btn" onclick="window.location.href='waitlist.html'">
+                        <span class="fluent-icon">&#xE72E;</span> <!-- Back arrow -->
+                        Back to Waitlist
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="info-bar info-bar-success mb-lg">
+                    <span class="info-bar-icon fluent-icon icon-checkmark"></span>
+                    <div class="info-bar-content">
+                        <div class="info-bar-title">2 Tasks in Progress</div>
+                        <div class="info-bar-message">Complete tasks below to update your statistics</div>
+                    </div>
+                </div>
+
+                <!-- My Tasks Table -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">TASK TYPE</th>
+                            <th>LOCATION</th>
+                            <th style="width: 120px;">LOAD #</th>
+                            <th>DETAILS</th>
+                            <th style="width: 120px;">STARTED</th>
+                            <th style="width: 120px;">ELAPSED</th>
+                            <th style="width: 150px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="task-badge task-press">Press Floor</span>
+                            </td>
+                            <td>
+                                <strong>Press 6 - Spot Weld</strong>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Zone C</div>
+                            </td>
+                            <td><strong>spotweldP</strong></td>
+                            <td>
+                                <small>blue sticker x2 - op 19</small>
+                                <div style="font-size: 11px; color: var(--text-tertiary);">Part: A110147</div>
+                            </td>
+                            <td><small>10:45 AM</small></td>
+                            <td>
+                                <span class="priority-badge wait-normal" id="elapsed1">8 min</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-accent" onclick="completeTask(1)" style="width: 100%;">
+                                    <span class="fluent-icon icon-checkmark"></span>
+                                    Complete
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="task-badge task-routing">Routing</span>
+                            </td>
+                            <td>
+                                <strong>Press 3</strong>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Zone B</div>
+                            </td>
+                            <td><strong>P3-Transfer</strong></td>
+                            <td>
+                                <small>Move to next operation</small>
+                                <div style="font-size: 11px; color: var(--text-tertiary);">Part: C334567</div>
+                            </td>
+                            <td><small>10:52 AM</small></td>
+                            <td>
+                                <span class="priority-badge wait-normal" id="elapsed2">1 min</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-accent" onclick="completeTask(2)" style="width: 100%;">
+                                    <span class="fluent-icon icon-checkmark"></span>
+                                    Complete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 24px; padding: 16px; background-color: var(--background-tertiary); border-radius: 8px;">
+                    <h3 style="font-size: 18px; margin-bottom: 12px;">Today's Summary</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <div>
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">12</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Completed</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">2</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">In Progress</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">12.5</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Avg Time (min)</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">Zone A</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Current Zone</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE774;</span>
+                    <span>Tom Handler</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        function completeTask(taskId) {
+            if (confirm('Mark this task as complete?')) {
+                console.log('Completing task:', taskId);
+                alert('Task completed successfully!');
+                // In real app, would call service and refresh
+            }
+        }
+
+        function showSettings(event) {
+            event.preventDefault();
+            alert('Settings dialog would open here');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Update elapsed timers
+        let startTime1 = Date.now() - (8 * 60 * 1000);
+        let startTime2 = Date.now() - (1 * 60 * 1000);
+
+        function updateElapsed() {
+            const elapsed1 = Math.floor((Date.now() - startTime1) / 60000);
+            const elapsed2 = Math.floor((Date.now() - startTime2) / 60000);
+            
+            document.getElementById('elapsed1').textContent = `${elapsed1} min`;
+            document.getElementById('elapsed2').textContent = `${elapsed2} min`;
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            updateElapsed();
+            setInterval(updateClock, 1000);
+            setInterval(updateElapsed, 60000);
+        });
+    </script>
+</body>
+</html>

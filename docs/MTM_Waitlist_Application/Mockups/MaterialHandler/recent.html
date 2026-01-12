@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Handler - Recent History | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Material Handler</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Tom Handler</strong> • Zone A
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Unified Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-tasks.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE73A;</span>
+                        <span class="nav-item-text">My Tasks</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recent.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-calendar"></span>
+                        <span class="nav-item-text">Recent History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="floor-plan.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-location"></span>
+                        <span class="nav-item-text">Floor Plan</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="#" class="nav-item-link" onclick="showSettings(event)">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Recent Completed Tasks</h2>
+                </div>
+                <div class="command-bar-right">
+                    <input type="date" class="form-input" id="dateFilter" style="width: 150px; margin-right: 12px;" />
+                    <div class="search-box">
+                        <input type="text" placeholder="Search history..." id="searchInput" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Recent Tasks Table -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">TIME</th>
+                            <th style="width: 120px;">TASK TYPE</th>
+                            <th>LOCATION</th>
+                            <th style="width: 120px;">LOAD #</th>
+                            <th>DETAILS</th>
+                            <th style="width: 100px;">DURATION</th>
+                            <th style="width: 100px;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-checkmark" style="color: var(--success-color);"></span>
+                    <span id="totalCount">14 tasks completed</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        function populateRecentTasks() {
+            const tbody = document.getElementById('recentTableBody');
+            const tasks = MockData.recentTasks;
+
+            tbody.innerHTML = tasks.map(task => `
+                <tr>
+                    <td><strong>${task.time}</strong></td>
+                    <td>
+                        <span class="task-badge ${getTaskTypeColor(task.taskType)}">
+                            ${task.taskType}
+                        </span>
+                    </td>
+                    <td>
+                        <small>${task.loadNumber}</small>
+                    </td>
+                    <td><strong>${task.partNumber !== 'Various' ? task.partNumber : '-'}</strong></td>
+                    <td>
+                        <small style="color: var(--text-secondary);">${task.details}</small>
+                    </td>
+                    <td>
+                        <span class="priority-badge ${task.duration <= 15 ? 'wait-normal' : 'wait-warning'}">
+                            ${task.duration} min
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge priority-low">${task.status}</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getTaskTypeColor(taskType) {
+            const colors = {
+                'Press Floor': 'task-press',
+                'Receiving': 'task-receiving',
+                'Dunnage': 'task-dunnage',
+                'Routing': 'task-routing'
+            };
+            return colors[taskType] || 'task-press';
+        }
+
+        function showSettings(event) {
+            event.preventDefault();
+            alert('Settings dialog would open here');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            populateRecentTasks();
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateFilter').value = today;
+
+            document.getElementById('totalCount').textContent = `${MockData.recentTasks.length} tasks completed`;
+        });
+    </script>
+</body>
+</html>

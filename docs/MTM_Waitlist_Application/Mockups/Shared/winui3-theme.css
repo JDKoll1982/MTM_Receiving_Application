@@ -1,0 +1,160 @@
+/* WinUI3 Fluent Design Theme Variables */
+/* Based on Windows 11 design language */
+
+:root {
+  /* Accent Colors */
+  --accent-default: #0078D4;
+  --accent-secondary: #005A9E;
+  --accent-tertiary: #004578;
+  --accent-disabled: rgba(0, 120, 212, 0.4);
+
+  /* Status Colors */
+  --success-color: #107C10;
+  --warning-color: #FFC83D;
+  --error-color: #E81123;
+  --info-color: #0078D4;
+
+  /* Task Type Colors (Material Handler) */
+  --task-receiving: #0078D4;    /* Blue */
+  --task-dunnage: #107C10;      /* Green */
+  --task-routing: #FF8C00;      /* Orange */
+  --task-press: #E81123;        /* Red */
+
+  /* Neutral Colors - Light Mode */
+  --background-primary: #F3F3F3;
+  --background-secondary: #FFFFFF;
+  --background-tertiary: #F9F9F9;
+  
+  --card-background: #FFFFFF;
+  --card-background-hover: #F9F9F9;
+  --card-background-pressed: #F0F0F0;
+  
+  --divider-stroke: #EDEBE9;
+  --border-color: #EDEBE9;
+  
+  --text-primary: #000000;
+  --text-secondary: #605E5C;
+  --text-tertiary: #8A8886;
+  --text-disabled: #A19F9D;
+  --text-on-accent: #FFFFFF;
+
+  /* Shadows & Elevation */
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
+  --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.24);
+
+  /* Acrylic Background */
+  --acrylic-background: rgba(243, 243, 243, 0.7);
+  --acrylic-border: rgba(0, 0, 0, 0.08);
+
+  /* Corner Radius */
+  --corner-radius-small: 4px;
+  --corner-radius-medium: 8px;
+  --corner-radius-large: 12px;
+
+  /* Spacing Grid (4px system) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+
+  /* Typography */
+  --font-family: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-caption: 12px;
+  --font-size-body: 14px;
+  --font-size-subtitle: 18px;
+  --font-size-title: 24px;
+  --font-size-display: 32px;
+
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  /* Navigation View */
+  --nav-pane-background: #F3F3F3;
+  --nav-item-background-hover: rgba(0, 0, 0, 0.05);
+  --nav-item-background-pressed: rgba(0, 0, 0, 0.08);
+  --nav-item-background-selected: rgba(0, 120, 212, 0.1);
+  --nav-item-border-selected: #0078D4;
+
+  /* Command Bar */
+  --commandbar-background: #FAFAFA;
+  --commandbar-border: #EDEBE9;
+
+  /* Priority Indicators */
+  --priority-low: #107C10;
+  --priority-medium: #FFC83D;
+  --priority-high: #E81123;
+
+  /* Wait Time Colors */
+  --wait-time-normal: #107C10;      /* Green */
+  --wait-time-warning: #FFC83D;     /* Amber */
+  --wait-time-critical: #E81123;    /* Red */
+
+  /* Floating Action Button */
+  --fab-background: #107C10;
+  --fab-background-hover: #0F6E0F;
+  --fab-shadow: 0 4px 8px rgba(0, 0, 0, 0.24);
+}
+
+/* Dark Mode Variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-primary: #1F1F1F;
+    --background-secondary: #2D2D2D;
+    --background-tertiary: #252525;
+    
+    --card-background: #2D2D2D;
+    --card-background-hover: #333333;
+    --card-background-pressed: #3A3A3A;
+    
+    --divider-stroke: #3B3B3B;
+    --border-color: #3B3B3B;
+    
+    --text-primary: #FFFFFF;
+    --text-secondary: #E1E1E1;
+    --text-tertiary: #C7C7C7;
+    --text-disabled: #8A8886;
+    
+    --acrylic-background: rgba(47, 47, 47, 0.7);
+    --acrylic-border: rgba(255, 255, 255, 0.08);
+
+    --nav-pane-background: #1F1F1F;
+    --nav-item-background-hover: rgba(255, 255, 255, 0.05);
+    --nav-item-background-pressed: rgba(255, 255, 255, 0.08);
+    
+    --commandbar-background: #2D2D2D;
+    --commandbar-border: #3B3B3B;
+  }
+}
+
+/* Fluent UI System Icons (Unicode mappings) */
+/* Reference: https://aka.ms/fluentui-system-icons */
+.fluent-icon {
+  font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets";
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Common icon mappings */
+.icon-add::before { content: "\E710"; }
+.icon-phone::before { content: "\E717"; }
+.icon-message::before { content: "\E8BD"; }
+.icon-edit::before { content: "\E70F"; }
+.icon-cancel::before { content: "\E711"; }
+.icon-checkmark::before { content: "\E73E"; }
+.icon-search::before { content: "\E721"; }
+.icon-filter::before { content: "\E71C"; }
+.icon-settings::before { content: "\E713"; }
+.icon-logout::before { content: "\E7E8"; }
+.icon-analytics::before { content: "\E9D9"; }
+.icon-people::before { content: "\E716"; }
+.icon-home::before { content: "\E80F"; }
+.icon-calendar::before { content: "\E787"; }
+.icon-location::before { content: "\E707"; }
+.icon-alert::before { content: "\E7BA"; }
+.icon-info::before { content: "\E946"; }
+.icon-help::before { content: "\E897"; }
+.icon-more::before { content: "\E712"; }

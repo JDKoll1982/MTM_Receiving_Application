@@ -1,0 +1,301 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Lead - Press Floor Waitlist | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Operator Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Lead Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Press Floor Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="operator-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Operator Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="trends.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE9D9;</span>
+                        <span class="nav-item-text">Trends</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Press Floor Waitlist</h2>
+                </div>
+                <div class="command-bar-right">
+                    <select class="form-select" id="pressFilter" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Presses</option>
+                        <option value="Press 1">Press 1</option>
+                        <option value="Press 2">Press 2</option>
+                        <option value="Press 3">Press 3</option>
+                        <option value="Press 4">Press 4</option>
+                        <option value="Press 6">Press 6 (Spot Weld)</option>
+                    </select>
+                    <select class="form-select" id="priorityFilter" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Priorities</option>
+                        <option value="High">High Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="Low">Low Priority</option>
+                    </select>
+                    <div class="search-box">
+                        <input type="text" placeholder="Search requests..." id="searchInput" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Overview Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--error-color);">3</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">High Priority</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">6</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Active Presses</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">23.5</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Avg Wait (min)</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">12</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Operators On Floor</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waitlist Table -->
+                <!-- WinUI3 Equivalent: ListView with GridView ItemTemplate -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">PRESS</th>
+                            <th style="width: 140px;">OPERATOR</th>
+                            <th>REQUEST TYPE</th>
+                            <th>DETAILS</th>
+                            <th style="width: 100px;">PRIORITY</th>
+                            <th style="width: 100px;">WAIT TIME</th>
+                            <th style="width: 120px;">STATUS</th>
+                            <th style="width: 180px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Press 6</strong><br><small style="color: var(--text-secondary);">Spot Weld</small></td>
+                            <td><strong>John Operator</strong></td>
+                            <td>Part Pickup</td>
+                            <td><small>A110147 op 19 - blue sticker x2</small></td>
+                            <td><span class="priority-badge priority-high">High</span></td>
+                            <td><span class="priority-badge wait-critical">41m</span></td>
+                            <td><span class="status-badge priority-medium">Assigned</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit Priority">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon" title="Reassign">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Press 2</strong></td>
+                            <td><strong>Sarah Press</strong></td>
+                            <td>Skids</td>
+                            <td><small>B220345 - 4pc needed</small></td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><span class="priority-badge wait-warning">25m</span></td>
+                            <td><span class="status-badge priority-low">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit Priority">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon" title="Reassign">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Press 1</strong></td>
+                            <td><strong>Bob Operator</strong></td>
+                            <td>Coil Request</td>
+                            <td><small>New coil - current running low</small></td>
+                            <td><span class="priority-badge priority-medium">Med</span></td>
+                            <td><span class="priority-badge wait-normal">12m</span></td>
+                            <td><span class="status-badge priority-low">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit Priority">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon" title="Reassign">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Press 4</strong></td>
+                            <td><strong>Mike Press</strong></td>
+                            <td>Die Change</td>
+                            <td><small>Die #4521 - setup for next run</small></td>
+                            <td><span class="priority-badge priority-low">Low</span></td>
+                            <td><span class="priority-badge wait-normal">8m</span></td>
+                            <td><span class="status-badge priority-low">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit Priority">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon" title="Reassign">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Press Status Overview -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Press Status Overview</h3>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Press 1</strong>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Zone A</div>
+                                    </div>
+                                    <span class="status-badge priority-low">Running</span>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Press 2</strong>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Zone A</div>
+                                    </div>
+                                    <span class="status-badge priority-medium">Setup</span>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Press 3</strong>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Zone B</div>
+                                    </div>
+                                    <span class="status-badge priority-low">Running</span>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Press 4</strong>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Zone B</div>
+                                    </div>
+                                    <span class="status-badge priority-low">Running</span>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Press 5</strong>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Zone C</div>
+                                    </div>
+                                    <span class="status-badge priority-high">Down</span>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background-color: var(--background-tertiary); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Press 6</strong>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Zone C - Spot Weld</div>
+                                    </div>
+                                    <span class="status-badge priority-low">Running</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE753;</span>
+                    <span>Lead View - All Presses</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

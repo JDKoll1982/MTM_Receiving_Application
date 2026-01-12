@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MH Lead - System Controls | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">MH Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Lead Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Waitlist & Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Full Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="team-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Team Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="controls.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Controls</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Material Handling Controls</h2>
+                </div>
+                <div class="command-bar-right">
+                    <button class="btn btn-accent" onclick="saveSettings()">
+                        <span class="fluent-icon">&#xE74E;</span>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="info-bar info-bar-warning mb-lg">
+                    <span class="info-bar-icon fluent-icon icon-alert"></span>
+                    <div class="info-bar-content">
+                        <div class="info-bar-title">Lead Controls - Use Carefully</div>
+                        <div class="info-bar-message">Changes to these settings affect all material handlers. Some settings require approval from Nick Wunsch or Cristofer Muchowski.</div>
+                    </div>
+                </div>
+
+                <!-- Assignment Controls -->
+                <div class="card mb-lg">
+                    <div class="card-header">
+                        <h3 class="card-title">Task Assignment Controls</h3>
+                    </div>
+                    <div class="card-content">
+                        <!-- Zone Mode Toggle -->
+                        <!-- WinUI3 Equivalent: ToggleSwitch -->
+                        <div style="padding: 20px; background-color: var(--background-tertiary); border-radius: 8px; margin-bottom: 20px;">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="zoneModeToggle" checked onchange="toggleZoneMode()" />
+                                <div class="toggle-track">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <span style="font-size: 18px; font-weight: 600;">Zone Mode</span>
+                            </label>
+                            <p style="margin-top: 12px; color: var(--text-secondary); font-size: 14px;">
+                                When enabled, material handlers are assigned to specific zones (A, B, C, D) and 
+                                only see tasks within their zone. This prevents cherry-picking and ensures 
+                                balanced workload distribution.
+                            </p>
+                            <div style="margin-top: 16px; padding: 12px; background-color: var(--card-background); border-radius: 4px; border-left: 4px solid var(--success-color);">
+                                <strong style="color: var(--success-color);">✓ Currently ON</strong>
+                                <p style="margin-top: 4px; font-size: 13px; color: var(--text-secondary);">
+                                    Handlers are assigned to zones. Tasks are filtered by zone assignment.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Auto-Assign Toggle -->
+                        <div style="padding: 20px; background-color: var(--background-tertiary); border-radius: 8px; margin-bottom: 20px;">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoAssignToggle" onchange="toggleAutoAssign()" />
+                                <div class="toggle-track">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <span style="font-size: 18px; font-weight: 600;">Auto-Assign Mode</span>
+                            </label>
+                            <p style="margin-top: 12px; color: var(--text-secondary); font-size: 14px;">
+                                Automatically assign urgent tasks (red status) to available handlers in the 
+                                appropriate zone. Tasks are assigned based on proximity, handler availability, 
+                                and current workload.
+                            </p>
+
+                            <!-- Auto-Assign Settings (shown when enabled) -->
+                            <div id="autoAssignSettings" class="hidden" style="margin-top: 16px; padding: 12px; background-color: var(--card-background); border-radius: 4px; border-left: 4px solid var(--accent-default);">
+                                <strong style="color: var(--accent-default);">Auto-Assign Settings</strong>
+                                
+                                <div class="form-group" style="margin-top: 12px;">
+                                    <label class="form-label" for="urgencyThreshold">Urgency Threshold (minutes remaining)</label>
+                                    <input type="range" id="urgencyThreshold" min="0" max="10" value="5" 
+                                           style="width: 100%;" oninput="updateThresholdLabel()" />
+                                    <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                        <small style="color: var(--text-tertiary);">0 min</small>
+                                        <small style="color: var(--accent-default); font-weight: 600;" id="thresholdLabel">5 min</small>
+                                        <small style="color: var(--text-tertiary);">10 min</small>
+                                    </div>
+                                    <p style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
+                                        Tasks with less than this many minutes remaining before standard time 
+                                        will be auto-assigned.
+                                    </p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="notifyHandler" checked />
+                                        <div class="toggle-track">
+                                            <div class="toggle-thumb"></div>
+                                        </div>
+                                        <span>Notify handler when task auto-assigned</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="autoAssignOff" style="margin-top: 16px; padding: 12px; background-color: var(--card-background); border-radius: 4px; border-left: 4px solid var(--error-color);">
+                                <strong style="color: var(--error-color);">✗ Currently OFF</strong>
+                                <p style="margin-top: 4px; font-size: 13px; color: var(--text-secondary);">
+                                    Tasks must be manually accepted by handlers from the waitlist.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Standards (Approval Required) -->
+                <div class="card mb-lg">
+                    <div class="card-header">
+                        <h3 class="card-title">Time Standards (Requires Approval)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-bar info-bar-warning" style="margin-bottom: 16px;">
+                            <span class="info-bar-icon fluent-icon icon-alert"></span>
+                            <div class="info-bar-content">
+                                <div class="info-bar-message">Changes to time standards require approval from Nick Wunsch or Cristofer Muchowski</div>
+                            </div>
+                        </div>
+
+                        <table class="winui-table">
+                            <thead>
+                                <tr>
+                                    <th>TASK TYPE</th>
+                                    <th style="width: 180px;">CURRENT STANDARD (MIN)</th>
+                                    <th style="width: 180px;">SUGGESTED (FROM DATA)</th>
+                                    <th style="width: 120px;">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Receiving</strong></td>
+                                    <td>
+                                        <input type="number" class="form-input" value="30" min="1" max="120" style="width: 100px;" />
+                                        <small style="margin-left: 8px; color: var(--text-secondary);">minutes</small>
+                                    </td>
+                                    <td>
+                                        <span class="priority-badge wait-normal">22 min (avg actual)</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-icon" title="Request Approval">
+                                            <span class="fluent-icon">&#xE8E1;</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Dunnage</strong></td>
+                                    <td>
+                                        <input type="number" class="form-input" value="15" min="1" max="120" style="width: 100px;" />
+                                        <small style="margin-left: 8px; color: var(--text-secondary);">minutes</small>
+                                    </td>
+                                    <td>
+                                        <span class="priority-badge wait-normal">11 min (avg actual)</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-icon" title="Request Approval">
+                                            <span class="fluent-icon">&#xE8E1;</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Routing</strong></td>
+                                    <td>
+                                        <input type="number" class="form-input" value="20" min="1" max="120" style="width: 100px;" />
+                                        <small style="margin-left: 8px; color: var(--text-secondary);">minutes</small>
+                                    </td>
+                                    <td>
+                                        <span class="priority-badge wait-normal">13 min (avg actual)</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-icon" title="Request Approval">
+                                            <span class="fluent-icon">&#xE8E1;</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Press Floor</strong></td>
+                                    <td>
+                                        <input type="number" class="form-input" value="20" min="1" max="120" style="width: 100px;" />
+                                        <small style="margin-left: 8px; color: var(--text-secondary);">minutes</small>
+                                    </td>
+                                    <td>
+                                        <span class="priority-badge wait-normal">19 min (avg actual)</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-icon" title="Request Approval">
+                                            <span class="fluent-icon">&#xE8E1;</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Notification Preferences</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableNotifications" checked />
+                                <div class="toggle-track">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <span>Enable Notifications</span>
+                            </label>
+                            <p style="margin-top: 8px; font-size: 13px; color: var(--text-secondary);">
+                                Allow system to send notifications via email and Teams
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="notificationMethod">Notification Method</label>
+                            <select class="form-select" id="notificationMethod">
+                                <option value="email">Email Only</option>
+                                <option value="teams">Teams Only</option>
+                                <option value="both" selected>Email + Teams</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-settings"></span>
+                    <span>System Controls</span>
+                </div>
+                <div class="status-item">
+                    <span style="color: var(--success-color);">●</span>
+                    <span>Zone Mode: ON</span>
+                </div>
+                <div class="status-item">
+                    <span style="color: var(--error-color);">●</span>
+                    <span>Auto-Assign: OFF</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        function toggleZoneMode() {
+            const isEnabled = document.getElementById('zoneModeToggle').checked;
+            console.log('Zone Mode:', isEnabled ? 'ON' : 'OFF');
+            
+            if (!isEnabled) {
+                if (!confirm('Disabling Zone Mode will allow handlers to see all tasks regardless of zone. Continue?')) {
+                    document.getElementById('zoneModeToggle').checked = true;
+                    return;
+                }
+            }
+            
+            updateStatus();
+        }
+
+        function toggleAutoAssign() {
+            const isEnabled = document.getElementById('autoAssignToggle').checked;
+            console.log('Auto-Assign:', isEnabled ? 'ON' : 'OFF');
+            
+            document.getElementById('autoAssignSettings').classList.toggle('hidden', !isEnabled);
+            document.getElementById('autoAssignOff').classList.toggle('hidden', isEnabled);
+            
+            updateStatus();
+        }
+
+        function updateThresholdLabel() {
+            const value = document.getElementById('urgencyThreshold').value;
+            document.getElementById('thresholdLabel').textContent = `${value} min`;
+        }
+
+        function updateStatus() {
+            const zoneMode = document.getElementById('zoneModeToggle').checked;
+            const autoAssign = document.getElementById('autoAssignToggle').checked;
+            
+            // Would update status bar indicators in real app
+            console.log('Status updated - Zone:', zoneMode, 'Auto:', autoAssign);
+        }
+
+        function saveSettings() {
+            const settings = {
+                zoneMode: document.getElementById('zoneModeToggle').checked,
+                autoAssign: document.getElementById('autoAssignToggle').checked,
+                urgencyThreshold: document.getElementById('urgencyThreshold').value,
+                notifyHandler: document.getElementById('notifyHandler').checked,
+                enableNotifications: document.getElementById('enableNotifications').checked,
+                notificationMethod: document.getElementById('notificationMethod').value
+            };
+
+            console.log('Saving settings:', settings);
+            alert('Settings saved successfully!');
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

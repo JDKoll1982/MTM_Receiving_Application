@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Lead - Operator Management | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Operator Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Lead Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Press Floor Waitlist</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="operator-management.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Operator Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="trends.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE9D9;</span>
+                        <span class="nav-item-text">Trends</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Operator Roster</h2>
+                </div>
+                <div class="command-bar-right">
+                    <select class="form-select" id="shiftFilter" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Shifts</option>
+                        <option value="1st">1st Shift</option>
+                        <option value="2nd">2nd Shift</option>
+                        <option value="3rd">3rd Shift</option>
+                    </select>
+                    <select class="form-select" id="statusFilter" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Statuses</option>
+                        <option value="On Floor">On Floor</option>
+                        <option value="On Break">On Break</option>
+                        <option value="Not Clocked In">Not Clocked In</option>
+                    </select>
+                    <div class="search-box">
+                        <input type="text" placeholder="Search operators..." id="searchInput" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Operator Status Overview -->
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">10</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">On Floor</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--warning-color);">2</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">On Break</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">12</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Total 1st Shift</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">10</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Total 2nd Shift</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">6</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Presses Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operator Roster Table -->
+                <!-- WinUI3 Equivalent: ListView with GridView ItemTemplate -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th>OPERATOR NAME</th>
+                            <th style="width: 140px;">ASSIGNED PRESS</th>
+                            <th style="width: 100px;">SHIFT</th>
+                            <th style="width: 120px;">CLOCKED IN</th>
+                            <th style="width: 120px;">STATUS</th>
+                            <th style="width: 140px;">JOBS TODAY</th>
+                            <th style="width: 200px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent-default); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                        J
+                                    </div>
+                                    <strong>John Operator</strong>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-low">Press 6</span></td>
+                            <td><strong>1st</strong></td>
+                            <td><small>7:00 AM</small></td>
+                            <td><span class="status-badge priority-low">On Floor</span></td>
+                            <td><strong>12</strong> jobs</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="reassignPress(1)">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                        Reassign
+                                    </button>
+                                    <button class="btn-icon" title="View Details">
+                                        <span class="fluent-icon">&#xE8A7;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--success-color); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                        S
+                                    </div>
+                                    <strong>Sarah Press</strong>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-low">Press 2</span></td>
+                            <td><strong>1st</strong></td>
+                            <td><small>7:05 AM</small></td>
+                            <td><span class="status-badge priority-low">On Floor</span></td>
+                            <td><strong>10</strong> jobs</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="reassignPress(2)">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                        Reassign
+                                    </button>
+                                    <button class="btn-icon" title="View Details">
+                                        <span class="fluent-icon">&#xE8A7;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--task-routing); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                        B
+                                    </div>
+                                    <strong>Bob Operator</strong>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-low">Press 1</span></td>
+                            <td><strong>1st</strong></td>
+                            <td><small>7:00 AM</small></td>
+                            <td><span class="status-badge priority-medium">On Break</span></td>
+                            <td><strong>11</strong> jobs</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="reassignPress(3)">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                        Reassign
+                                    </button>
+                                    <button class="btn-icon" title="View Details">
+                                        <span class="fluent-icon">&#xE8A7;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--task-press); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                        M
+                                    </div>
+                                    <strong>Mike Press</strong>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-low">Press 4</span></td>
+                            <td><strong>1st</strong></td>
+                            <td><small>7:10 AM</small></td>
+                            <td><span class="status-badge priority-low">On Floor</span></td>
+                            <td><strong>9</strong> jobs</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="reassignPress(4)">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                        Reassign
+                                    </button>
+                                    <button class="btn-icon" title="View Details">
+                                        <span class="fluent-icon">&#xE8A7;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--task-dunnage); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                        L
+                                    </div>
+                                    <strong>Lisa Operator</strong>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-low">Press 3</span></td>
+                            <td><strong>1st</strong></td>
+                            <td><small>7:03 AM</small></td>
+                            <td><span class="status-badge priority-low">On Floor</span></td>
+                            <td><strong>11</strong> jobs</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="reassignPress(5)">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                        Reassign
+                                    </button>
+                                    <button class="btn-icon" title="View Details">
+                                        <span class="fluent-icon">&#xE8A7;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="opacity: 0.6;">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--text-tertiary); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                        D
+                                    </div>
+                                    <strong>Dave Operator</strong>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-medium">Unassigned</span></td>
+                            <td><strong>2nd</strong></td>
+                            <td><small>-</small></td>
+                            <td><span class="status-badge priority-high">Not Clocked In</span></td>
+                            <td><strong>0</strong> jobs</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn" disabled style="padding: 6px 12px; font-size: 12px;">
+                                        <span class="fluent-icon">&#xE8AB;</span>
+                                        Reassign
+                                    </button>
+                                    <button class="btn-icon" disabled title="View Details">
+                                        <span class="fluent-icon">&#xE8A7;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Press Assignment Panel -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Press Reassignment</h3>
+                    </div>
+                    <div class="card-content">
+                        <p style="margin-bottom: 16px; color: var(--text-secondary);">
+                            Reassign an operator to a different press. This will update their assignment immediately.
+                        </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="reassignOperator">Operator</label>
+                                <select class="form-select" id="reassignOperator">
+                                    <option value="">Select operator...</option>
+                                    <option value="1">John Operator (Press 6)</option>
+                                    <option value="2">Sarah Press (Press 2)</option>
+                                    <option value="3">Bob Operator (Press 1)</option>
+                                    <option value="4">Mike Press (Press 4)</option>
+                                    <option value="5">Lisa Operator (Press 3)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="reassignNewPress">New Press</label>
+                                <select class="form-select" id="reassignNewPress">
+                                    <option value="">Select press...</option>
+                                    <option value="Press 1">Press 1</option>
+                                    <option value="Press 2">Press 2</option>
+                                    <option value="Press 3">Press 3</option>
+                                    <option value="Press 4">Press 4</option>
+                                    <option value="Press 5">Press 5</option>
+                                    <option value="Press 6">Press 6 (Spot Weld)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-accent" onclick="submitReassignment()">
+                                <span class="fluent-icon icon-checkmark"></span>
+                                Reassign
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-people"></span>
+                    <span>Operator Management</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function reassignPress(operatorId) {
+            const operator = ['', 'John Operator', 'Sarah Press', 'Bob Operator', 'Mike Press', 'Lisa Operator'][operatorId];
+            const newPress = prompt(`Reassign ${operator} to which press? (Enter press number 1-6):`);
+            
+            if (newPress && parseInt(newPress) >= 1 && parseInt(newPress) <= 6) {
+                console.log('Reassigning', operator, 'to Press', newPress);
+                alert(`${operator} reassigned to Press ${newPress}`);
+            }
+        }
+
+        function submitReassignment() {
+            const operatorId = document.getElementById('reassignOperator').value;
+            const newPress = document.getElementById('reassignNewPress').value;
+            
+            if (!operatorId || !newPress) {
+                alert('Please select both an operator and a press');
+                return;
+            }
+
+            console.log('Reassigning operator', operatorId, 'to', newPress);
+            alert(`Operator reassigned to ${newPress} successfully!`);
+            
+            // Reset form
+            document.getElementById('reassignOperator').value = '';
+            document.getElementById('reassignNewPress').value = '';
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

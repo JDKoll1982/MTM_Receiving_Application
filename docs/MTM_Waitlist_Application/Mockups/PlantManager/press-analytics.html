@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Manager - Press Analytics | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Plant Manager</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Nick W.</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="mh-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE7C8;</span>
+                        <span class="nav-item-text">MH Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon">&#xE7EE;</span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE8A5;</span>
+                        <span class="nav-item-text">Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="user-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">User Management</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Press Floor Analytics</h2>
+                </div>
+                <div class="command-bar-right">
+                    <select class="form-select" id="siteFilter" style="width: 150px; margin-right: 12px;">
+                        <option value="Expo">Expo Drive</option>
+                        <option value="VITS">VITS Drive</option>
+                        <option value="Both">Both Sites</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="chart-container">
+                    <h3>Press Performance Metrics</h3>
+                    <p style="color: var(--text-tertiary); margin-top: 20px; text-align: center;">Full analytics dashboard placeholder.</p>
+                     <p style="color: var(--text-tertiary); text-align: center;">Charts for Uptime, Job Completion, and Operator Efficiency will appear here.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+             <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE7EE;</span>
+                    <span>Press Floor Analytics</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

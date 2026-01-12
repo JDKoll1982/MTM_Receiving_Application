@@ -1,0 +1,338 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MH Lead - Waitlist & Analytics | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+    <style>
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--spacing-lg);
+            height: 100%;
+        }
+
+        .analytics-panel {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--corner-radius-medium);
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+        }
+
+        .metric-card {
+            background-color: var(--background-tertiary);
+            border-radius: var(--corner-radius-small);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--accent-default);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mini-chart {
+            width: 100%;
+            height: 120px;
+            margin-top: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Material Handler Lead</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Doyle H.</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="waitlist.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Waitlist & Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-analytics"></span>
+                        <span class="nav-item-text">Full Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="team-management.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">Team Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="controls.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-settings"></span>
+                        <span class="nav-item-text">Controls</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">Waitlist with Live Analytics</h2>
+                </div>
+                <div class="command-bar-right">
+                    <!-- Category Filter (NEW) -->
+                    <select class="form-select" id="categoryFilter" onchange="filterWaitlist()" style="width: 160px; margin-right: 12px;">
+                        <option value="Material Handler" selected>Material Handler</option>
+                        <option value="Quality Control">Quality Control</option>
+                        <option value="All">All Tasks</option>
+                    </select>
+
+                    <select class="form-select" id="zoneFilter" onchange="filterWaitlist()" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Zones</option>
+                        <option value="Zone A">Zone A</option>
+                        <option value="Zone B">Zone B</option>
+                        <option value="Zone C">Zone C</option>
+                        <option value="Zone D">Zone D</option>
+                    </select>
+                    <button class="btn btn-accent" onclick="refreshData()">
+                        <span class="fluent-icon">&#xE72C;</span>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="split-view">
+                    <!-- Waitlist Table (Left) -->
+                    <div>
+                        <div id="waitlistContainer">
+                            <table class="winui-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 140px;">TASK TYPE</th>
+                                        <th>LOCATION</th>
+                                        <th style="width: 100px;">PRIORITY</th>
+                                        <th style="width: 100px;">WAIT</th>
+                                        <th style="width: 120px;">HANDLER</th>
+                                        <th style="width: 100px;">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="waitlistTableBody">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Panel (Right) -->
+                    <div class="analytics-panel">
+                        <h3 style="margin-bottom: var(--spacing-lg);">Live Metrics</h3>
+
+                        <!-- Metric Cards -->
+                        <div class="metric-card">
+                            <div class="metric-value">18.5</div>
+                            <div class="metric-label">Avg Wait Time (min)</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--success-color);">35</div>
+                            <div class="metric-label">Tasks Completed Today</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--warning-color);">4</div>
+                            <div class="metric-label">Active Handlers</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--error-color);">8</div>
+                            <div class="metric-label">Tasks Over Standard</div>
+                        </div>
+
+                        <!-- Mini Chart: Task Volume Trend -->
+                        <div class="chart-container" style="margin-top: var(--spacing-lg);">
+                            <h4 style="font-size: 14px; margin-bottom: 8px;">Task Volume (Last 6 Hours)</h4>
+                            <!-- SVG Mini Chart -->
+                            <svg class="mini-chart" viewBox="0 0 300 100">
+                                <!-- Line Chart -->
+                                <polyline 
+                                    points="20,80 60,65 100,70 140,50 180,55 220,40 260,45"
+                                    fill="none"
+                                    stroke="var(--accent-default)"
+                                    stroke-width="3"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                                <!-- Data Points -->
+                                <circle cx="20" cy="80" r="4" fill="var(--accent-default)" />
+                                <circle cx="60" cy="65" r="4" fill="var(--accent-default)" />
+                                <circle cx="100" cy="70" r="4" fill="var(--accent-default)" />
+                                <circle cx="140" cy="50" r="4" fill="var(--accent-default)" />
+                                <circle cx="180" cy="55" r="4" fill="var(--accent-default)" />
+                                <circle cx="220" cy="40" r="4" fill="var(--accent-default)" />
+                                <circle cx="260" cy="45" r="4" fill="var(--accent-default)" />
+                                <!-- X-axis labels -->
+                                <text x="20" y="95" text-anchor="middle" font-size="10" fill="var(--text-tertiary)">6h</text>
+                                <text x="140" y="95" text-anchor="middle" font-size="10" fill="var(--text-tertiary)">3h</text>
+                                <text x="260" y="95" text-anchor="middle" font-size="10" fill="var(--text-tertiary)">Now</text>
+                            </svg>
+                        </div>
+
+                        <!-- Handler Status -->
+                        <div style="margin-top: var(--spacing-lg);">
+                            <h4 style="font-size: 14px; margin-bottom: 8px;">Handler Status</h4>
+                            <div id="handlerStatusList" style="display: flex; flex-direction: column; gap: 8px;">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <button class="btn btn-accent" onclick="window.location.href='analytics.html'" style="width: 100%; margin-top: var(--spacing-lg);">
+                            <span class="fluent-icon icon-analytics"></span>
+                            View Full Analytics
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon">&#xE753;</span>
+                    <span>Lead View</span>
+                </div>
+                <div class="status-item">
+                    <span style="color: var(--success-color);">●</span>
+                    <span>Zone Mode: ON</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Shared/mock-data.js"></script>
+    <script>
+        // Set context for this view
+        const userRole = 'MaterialHandlerLead';
+        
+        // Populate Handler Status
+        function populateHandlerStatus() {
+            const container = document.getElementById('handlerStatusList');
+            const handlers = MockData.materialHandlers; // Updated names are in mock-data.js
+            
+            container.innerHTML = handlers.map(h => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background-color: var(--background-tertiary); border-radius: 4px;">
+                    <div>
+                        <span style="font-size: 13px;">${h.name}</span>
+                        <div style="font-size: 11px; color: var(--text-secondary);">${h.zone} • ${h.tasksToday} tasks</div>
+                    </div>
+                    <span class="status-badge priority-low" style="font-size: 10px;">${h.status}</span>
+                </div>
+            `).join('');
+        }
+
+        // Populate waitlist table
+        function populateWaitlist() {
+            const tbody = document.getElementById('waitlistTableBody');
+            let waitlist = MockData.materialHandlerWaitlist;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const zoneFilter = document.getElementById('zoneFilter').value;
+
+            // 1. Role & Category Filter
+            waitlist = MockUtils.filterByCategory(waitlist, categoryFilter, userRole);
+
+            // 2. Zone Filter
+            waitlist = MockUtils.filterByZone(waitlist, zoneFilter);
+
+            tbody.innerHTML = waitlist.map((item, index) => {
+                const waitStatus = MockUtils.getWaitTimeStatus(item.waitTime, item.timeStandard);
+                const waitClass = `wait-${waitStatus}`;
+                
+                return `
+                    <tr class="${item.isNCM ? 'ncm-task' : ''}">
+                        <td>
+                            <span class="task-badge ${item.taskTypeColor}">
+                                ${item.taskType}
+                            </span>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>${item.location}</strong>
+                                <div style="font-size: var(--font-size-caption); color: var(--text-secondary);">
+                                    ${item.zone}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="priority-badge priority-${item.priority.toLowerCase()}">
+                                ${item.priority}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="priority-badge ${waitClass}">
+                                ${MockUtils.formatWaitTime(item.waitTime)}
+                            </span>
+                        </td>
+                        <td><small>${item.assignedTo || 'Unassigned'}</small></td>
+                        <td>
+                            <button class="btn btn-accent" style="padding: 4px 8px; font-size: 11px;" onclick="assignTask(${item.id})">Assign</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function filterWaitlist() {
+            populateWaitlist();
+        }
+
+        function assignTask(id) {
+            alert('Assign dialog would open here');
+        }
+
+        function refreshData() {
+            console.log('Refreshing data...');
+            populateWaitlist();
+            populateHandlerStatus();
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            populateWaitlist();
+            populateHandlerStatus();
+        });
+    </script>
+</body>
+</html>

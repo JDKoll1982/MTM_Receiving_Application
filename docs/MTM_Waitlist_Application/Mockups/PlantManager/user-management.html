@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Manager - User Management | MTM Waitlist</title>
+    <link rel="stylesheet" href="../Shared/winui3-theme.css">
+    <link rel="stylesheet" href="../Shared/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="nav-pane">
+            <div class="nav-pane-header">
+                <h1>MTM Waitlist</h1>
+                <div class="subtitle">Plant Manager</div>
+                <div class="subtitle" style="margin-top: 4px;">
+                    <strong>Manager Name</strong> • Expo Drive
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-home"></span>
+                        <span class="nav-item-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="mh-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE7C8;</span>
+                        <span class="nav-item-text">MH Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="press-analytics.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE7EE;</span>
+                        <span class="nav-item-text">Press Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon">&#xE8A5;</span>
+                        <span class="nav-item-text">Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="user-management.html" class="nav-item-link selected">
+                        <span class="nav-item-icon fluent-icon icon-people"></span>
+                        <span class="nav-item-text">User Management</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-separator"></div>
+
+            <ul class="nav-menu nav-footer">
+                <li class="nav-item">
+                    <a href="../Login/login.html" class="nav-item-link">
+                        <span class="nav-item-icon fluent-icon icon-logout"></span>
+                        <span class="nav-item-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-area">
+            <div class="command-bar">
+                <div class="command-bar-left">
+                    <h2 class="page-title">User Management</h2>
+                </div>
+                <div class="command-bar-right">
+                    <select class="form-select" id="siteFilter" style="width: 150px; margin-right: 12px;">
+                        <option value="All">All Sites</option>
+                        <option value="Expo">Expo Drive</option>
+                        <option value="VITS">VITS Drive</option>
+                    </select>
+                    <select class="form-select" id="roleFilter" style="width: 180px; margin-right: 12px;">
+                        <option value="All">All Roles</option>
+                        <option value="Operator">Operator</option>
+                        <option value="Operator Lead">Operator Lead</option>
+                        <option value="Material Handler">Material Handler</option>
+                        <option value="MH Lead">MH Lead</option>
+                        <option value="Plant Manager">Plant Manager</option>
+                    </select>
+                    <div class="search-box" style="margin-right: 12px;">
+                        <input type="text" placeholder="Search users..." id="searchInput" />
+                    </div>
+                    <button class="btn btn-accent" onclick="openAddUserDialog()">
+                        <span class="fluent-icon icon-add"></span>
+                        Add User
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Summary Cards -->
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--accent-default);">24</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Total Users</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--success-color);">22</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Active</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--error-color);">2</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Inactive</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">12</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Operators</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div style="font-size: 32px; font-weight: 600; color: var(--text-secondary);">4</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px;">Handlers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <table class="winui-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">BADGE ID</th>
+                            <th>NAME</th>
+                            <th style="width: 160px;">ROLE</th>
+                            <th style="width: 120px;">SITE</th>
+                            <th style="width: 160px;">LAST LOGIN</th>
+                            <th style="width: 100px;">STATUS</th>
+                            <th style="width: 180px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>MTM001</strong></td>
+                            <td>Tom Handler</td>
+                            <td>Material Handler</td>
+                            <td>Expo Drive</td>
+                            <td><small>Today 7:05 AM</small></td>
+                            <td><span class="status-badge priority-low">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit" onclick="editUser('MTM001')">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon btn-alert" title="Deactivate">
+                                        <span class="fluent-icon">&#xE785;</span>
+                                    </button>
+                                    <button class="btn-icon" title="Reset PIN">
+                                        <span class="fluent-icon">&#xE8AC;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>MTM002</strong></td>
+                            <td>Sarah MH</td>
+                            <td>Material Handler</td>
+                            <td>Expo Drive</td>
+                            <td><small>Today 7:10 AM</small></td>
+                            <td><span class="status-badge priority-low">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit" onclick="editUser('MTM002')">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon btn-alert" title="Deactivate">
+                                        <span class="fluent-icon">&#xE785;</span>
+                                    </button>
+                                    <button class="btn-icon" title="Reset PIN">
+                                        <span class="fluent-icon">&#xE8AC;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>LEAD001</strong></td>
+                            <td>Lead Name</td>
+                            <td>MH Lead</td>
+                            <td>Expo Drive</td>
+                            <td><small>Today 6:55 AM</small></td>
+                            <td><span class="status-badge priority-low">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit" onclick="editUser('LEAD001')">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon btn-alert" title="Deactivate">
+                                        <span class="fluent-icon">&#xE785;</span>
+                                    </button>
+                                    <button class="btn-icon" title="Reset PIN">
+                                        <span class="fluent-icon">&#xE8AC;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>OPR001</strong></td>
+                            <td>John Operator</td>
+                            <td>Operator</td>
+                            <td>Expo Drive</td>
+                            <td><small>Today 7:00 AM</small></td>
+                            <td><span class="status-badge priority-low">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" title="Edit" onclick="editUser('OPR001')">
+                                        <span class="fluent-icon icon-edit"></span>
+                                    </button>
+                                    <button class="btn-icon btn-alert" title="Deactivate">
+                                        <span class="fluent-icon">&#xE785;</span>
+                                    </button>
+                                    <button class="btn-icon" title="Reset PIN">
+                                        <span class="fluent-icon">&#xE8AC;</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="opacity: 0.6;">
+                            <td><strong>MTM099</strong></td>
+                            <td>Former Employee</td>
+                            <td>Material Handler</td>
+                            <td>Expo Drive</td>
+                            <td><small>12/15/2025 3:30 PM</small></td>
+                            <td><span class="status-badge priority-high">Inactive</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="Reactivate">
+                                        <span class="fluent-icon">&#xE8FB;</span>
+                                    </button>
+                                    <button class="btn-icon btn-alert" title="Delete">
+                                        <span class="fluent-icon icon-delete"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <span class="fluent-icon icon-people"></span>
+                    <span>User Management</span>
+                </div>
+            </div>
+            <div>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Dialog -->
+    <div class="dialog-overlay hidden" id="userDialog">
+        <div class="dialog">
+            <div class="dialog-header">
+                <h3 class="dialog-title" id="dialogTitle">Add New User</h3>
+            </div>
+            <div class="dialog-content">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label class="form-label" for="badgeId">Badge ID</label>
+                        <input type="text" class="form-input" id="badgeId" placeholder="e.g., MTM123" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="userName">Full Name</label>
+                        <input type="text" class="form-input" id="userName" placeholder="e.g., John Smith" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="userPIN">PIN (4 digits)</label>
+                        <input type="password" class="form-input" id="userPIN" placeholder="****" maxlength="4" pattern="\d{4}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="userRole">Role</label>
+                        <select class="form-select" id="userRole" required>
+                            <option value="">Select role...</option>
+                            <option value="Operator">Operator</option>
+                            <option value="Operator Lead">Operator Lead</option>
+                            <option value="Material Handler">Material Handler</option>
+                            <option value="MH Lead">MH Lead</option>
+                            <option value="Plant Manager">Plant Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="userSite">Site</label>
+                        <select class="form-select" id="userSite" required>
+                            <option value="">Select site...</option>
+                            <option value="Expo">Expo Drive</option>
+                            <option value="VITS">VITS Drive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="userActive" checked />
+                            <div class="toggle-track">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                            <span>Active User</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn" onclick="closeUserDialog()">Cancel</button>
+                <button type="button" class="btn btn-accent" onclick="submitUser()">
+                    <span class="fluent-icon icon-checkmark"></span>
+                    <span id="submitBtnText">Add User</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+
+        function openAddUserDialog() {
+            editMode = false;
+            document.getElementById('dialogTitle').textContent = 'Add New User';
+            document.getElementById('submitBtnText').textContent = 'Add User';
+            document.getElementById('userForm').reset();
+            document.getElementById('userDialog').classList.remove('hidden');
+            document.getElementById('badgeId').focus();
+        }
+
+        function editUser(badgeId) {
+            editMode = true;
+            document.getElementById('dialogTitle').textContent = 'Edit User';
+            document.getElementById('submitBtnText').textContent = 'Save Changes';
+            
+            // In real app, would load user data
+            document.getElementById('badgeId').value = badgeId;
+            document.getElementById('badgeId').disabled = true;
+            
+            document.getElementById('userDialog').classList.remove('hidden');
+        }
+
+        function closeUserDialog() {
+            document.getElementById('userDialog').classList.add('hidden');
+            document.getElementById('userForm').reset();
+            document.getElementById('badgeId').disabled = false;
+        }
+
+        function submitUser() {
+            const form = document.getElementById('userForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const userData = {
+                badgeId: document.getElementById('badgeId').value,
+                name: document.getElementById('userName').value,
+                role: document.getElementById('userRole').value,
+                site: document.getElementById('userSite').value,
+                active: document.getElementById('userActive').checked
+            };
+
+            console.log(editMode ? 'Updating user:' : 'Adding user:', userData);
+            alert(editMode ? 'User updated successfully!' : 'User added successfully!');
+            closeUserDialog();
+        }
+
+        function updateClock() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        window.addEventListener('load', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>
