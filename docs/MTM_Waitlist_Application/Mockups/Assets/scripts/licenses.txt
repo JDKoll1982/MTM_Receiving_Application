@@ -1,3 +1,0 @@
-This mockup is self-contained and does not rely on third-party UI libraries.
-
-Font: Segoe UI (system font on Windows)
