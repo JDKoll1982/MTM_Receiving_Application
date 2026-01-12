@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET. Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <RootNamespace>MTM_Receiving_Application.Tests</RootNamespace>
+        <Platforms>x86;x64;ARM64</Platforms>
+        <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    </PropertyGroup>
+
+    <!-- Test Framework Packages -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test. Sdk"
+                          Version="17.11.1" />
+        <PackageReference Include="xunit"
+                          Version="2.9.0" />
+        <PackageReference Include="xunit.runner.visualstudio"
+                          Version="2.8.2">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector"
+                          Version="6.0.2">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <!-- Mocking and Assertion Libraries -->
+    <ItemGroup>
+        <PackageReference Include="Moq"
+                          Version="4.20.72" />
+        <PackageReference Include="FluentAssertions"
+                          Version="6.12.1" />
+    </ItemGroup>
+
+    <!-- Match dependencies from main project needed for testing -->
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit. Mvvm"
+                          Version="8.2.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"
+                          Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting"
+                          Version="8.0.0" />
+    </ItemGroup>
+
+    <!-- Database Testing (if needed) -->
+    <ItemGroup>
+        <!-- For in-memory database testing -->
+        <PackageReference Include="Microsoft.Data. Sqlite"
+                          Version="8.0.0" />
+
+        <!-- If you need to test against real databases, include these -->
+        <!-- <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" /> -->
+        <!-- <PackageReference Include="MySql.Data" Version="9.4.0" /> -->
+    </ItemGroup>
+
+    <!-- Reference to main project -->
+    <ItemGroup>
+        <ProjectReference Include=". .\MTM_Receiving_Application.csproj" />
+    </ItemGroup>
+
+    <!-- Disable telemetry (matching main project) -->
+    <PropertyGroup>
+        <MicrosoftTelemetryDisabled>true</MicrosoftTelemetryDisabled>
+    </PropertyGroup>
+</Project>

@@ -304,7 +304,7 @@
   "chat.agent.enabled": true,
   // Maximum tool calls per agent session
   // Values: 1-100 (default: 25)
-  "chat.agent.maxRequests": 25,
+  "chat.agent.maxRequests": 2500,
   // Auto-fix issues in generated code
   // Values: true | false
   "github.copilot.chat.agent.autoFix": true,
