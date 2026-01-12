@@ -1,7 +1,40 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{91BDA914-A01C-D13F-F041-0A57452A50F0}|MTM_Receiving_Application.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\module_dunnage\\data\\dao_dunnageline.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91BDA914-A01C-D13F-F041-0A57452A50F0}|MTM_Receiving_Application.csproj|solutionrelative:module_dunnage\\data\\dao_dunnageline.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\mtm_receiving_application.tests\\module_core\\data\\authentication\\dao_user_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|solutionrelative:mtm_receiving_application.tests\\module_core\\data\\authentication\\dao_user_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\mtm_receiving_application.tests\\module_routing\\data\\dao_routinglabel_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|solutionrelative:mtm_receiving_application.tests\\module_routing\\data\\dao_routinglabel_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\mtm_receiving_application.tests\\module_receiving\\data\\dao_receivingload_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|solutionrelative:mtm_receiving_application.tests\\module_receiving\\data\\dao_receivingload_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\mtm_receiving_application.tests\\module_receiving\\data\\dao_receivingline_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|solutionrelative:mtm_receiving_application.tests\\module_receiving\\data\\dao_receivingline_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\mtm_receiving_application.tests\\module_settings\\data\\dao_packagetype_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|solutionrelative:mtm_receiving_application.tests\\module_settings\\data\\dao_packagetype_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\mtm_receiving_application.tests\\module_dunnage\\data\\dao_dunnageload_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A114F184-CFD0-FE1F-EC63-8BF980871541}|MTM_Receiving_Application.Tests\\MTM_Receiving_Application.Tests.csproj|solutionrelative:mtm_receiving_application.tests\\module_dunnage\\data\\dao_dunnageload_tests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91BDA914-A01C-D13F-F041-0A57452A50F0}|MTM_Receiving_Application.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\database\\01-deploy\\deploy-database-gui-fixed.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{91BDA914-A01C-D13F-F041-0A57452A50F0}|MTM_Receiving_Application.csproj|solutionrelative:database\\01-deploy\\deploy-database-gui-fixed.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -18,6 +51,110 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Dao_User_Tests.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Core\\Data\\Authentication\\Dao_User_Tests.cs",
+              "RelativeDocumentMoniker": "MTM_Receiving_Application.Tests\\Module_Core\\Data\\Authentication\\Dao_User_Tests.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Core\\Data\\Authentication\\Dao_User_Tests.cs*",
+              "RelativeToolTip": "MTM_Receiving_Application.Tests\\Module_Core\\Data\\Authentication\\Dao_User_Tests.cs*",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAqwBkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:44:12.512Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Dao_RoutingLabel_Tests.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Routing\\Data\\Dao_RoutingLabel_Tests.cs",
+              "RelativeDocumentMoniker": "MTM_Receiving_Application.Tests\\Module_Routing\\Data\\Dao_RoutingLabel_Tests.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Routing\\Data\\Dao_RoutingLabel_Tests.cs*",
+              "RelativeToolTip": "MTM_Receiving_Application.Tests\\Module_Routing\\Data\\Dao_RoutingLabel_Tests.cs*",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAqwA4AAABwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:44:07.215Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Dao_ReceivingLoad_Tests.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLoad_Tests.cs",
+              "RelativeDocumentMoniker": "MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLoad_Tests.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLoad_Tests.cs*",
+              "RelativeToolTip": "MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLoad_Tests.cs*",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAqwA8AAAB0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:43:57.527Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Dao_ReceivingLine_Tests.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLine_Tests.cs",
+              "RelativeDocumentMoniker": "MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLine_Tests.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLine_Tests.cs*",
+              "RelativeToolTip": "MTM_Receiving_Application.Tests\\Module_Receiving\\Data\\Dao_ReceivingLine_Tests.cs*",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAqwBAAAABwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:43:48.793Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Dao_PackageType_Tests.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Settings\\Data\\Dao_PackageType_Tests.cs",
+              "RelativeDocumentMoniker": "MTM_Receiving_Application.Tests\\Module_Settings\\Data\\Dao_PackageType_Tests.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Settings\\Data\\Dao_PackageType_Tests.cs*",
+              "RelativeToolTip": "MTM_Receiving_Application.Tests\\Module_Settings\\Data\\Dao_PackageType_Tests.cs*",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAqwA4AAABwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:43:43.197Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Dao_DunnageLoad_Tests.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Dunnage\\Data\\Dao_DunnageLoad_Tests.cs",
+              "RelativeDocumentMoniker": "MTM_Receiving_Application.Tests\\Module_Dunnage\\Data\\Dao_DunnageLoad_Tests.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\Module_Dunnage\\Data\\Dao_DunnageLoad_Tests.cs*",
+              "RelativeToolTip": "MTM_Receiving_Application.Tests\\Module_Dunnage\\Data\\Dao_DunnageLoad_Tests.cs*",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAiwA8AAAB0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:43:32.185Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Dao_DunnageLine.cs",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Dunnage\\Data\\Dao_DunnageLine.cs",
+              "RelativeDocumentMoniker": "Module_Dunnage\\Data\\Dao_DunnageLine.cs",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Dunnage\\Data\\Dao_DunnageLine.cs",
+              "RelativeToolTip": "Module_Dunnage\\Data\\Dao_DunnageLine.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAqwCQAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-12T14:43:23.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Deploy-Database-GUI-Fixed.ps1",
+              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Database\\01-Deploy\\Deploy-Database-GUI-Fixed.ps1",
+              "RelativeDocumentMoniker": "Database\\01-Deploy\\Deploy-Database-GUI-Fixed.ps1",
+              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Database\\01-Deploy\\Deploy-Database-GUI-Fixed.ps1*",
+              "RelativeToolTip": "Database\\01-Deploy\\Deploy-Database-GUI-Fixed.ps1*",
+              "ViewState": "AgIAAEsCAAAAAAAAAAAWwNkCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-01-12T14:39:27.535Z",
+              "EditorCaption": ""
             }
           ]
         }

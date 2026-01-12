@@ -2,6 +2,7 @@ using FluentAssertions;
 using Xunit;
 using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Routing.Models;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Routing.Data;
 
@@ -11,7 +12,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Routing.Data;
 /// </summary>
 public class Dao_RoutingLabel_Tests
 {
-    private const string TestConnectionString = "Server=localhost;Database=test_db;User Id=test;Password=test;";
+private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
 
     // ====================================================================
     // Constructor Tests

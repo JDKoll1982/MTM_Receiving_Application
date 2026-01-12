@@ -51,6 +51,13 @@
     <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon
     property) -->
     <ItemGroup>
+        <None Include=".github\prompts\converter-unit-tests.prompt.md" />
+        <None Include=".github\prompts\dao-unit-tests.prompt.md" />
+        <None Include=".github\prompts\generate-all-tests.prompt.md" />
+        <None Include=".github\prompts\helper-unit-tests.prompt.md" />
+        <None Include=".github\prompts\model-unit-tests.prompt.md" />
+        <None Include=".github\prompts\service-unit-tests.prompt.md" />
+        <None Include=".github\prompts\viewmodel-unit-tests.prompt.md" />
         <None Include="Assets\\app-icon.ico" />
         <None Include="Assets\\app-icon.svg" />
     </ItemGroup>

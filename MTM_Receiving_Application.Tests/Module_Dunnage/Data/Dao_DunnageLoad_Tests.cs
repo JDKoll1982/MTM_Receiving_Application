@@ -2,16 +2,18 @@ using FluentAssertions;
 using Xunit;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Data;
 
 /// <summary>
 /// Unit tests for Dao_DunnageLoad data access object.
 /// Tests CRUD operations, batch processing, and date range queries for dunnage loads.
+/// Uses the mtm_receiving_application_test database.
 /// </summary>
 public class Dao_DunnageLoad_Tests
 {
-    private const string TestConnectionString = "Server=localhost;Database=test_db;User Id=test;Password=test;";
+    private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
 
     // ====================================================================
     // Constructor Tests

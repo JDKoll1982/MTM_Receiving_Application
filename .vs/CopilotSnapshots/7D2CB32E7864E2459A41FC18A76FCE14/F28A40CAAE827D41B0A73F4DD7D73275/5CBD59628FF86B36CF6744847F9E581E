@@ -1,0 +1,138 @@
+﻿using MTM_Receiving_Application.Module_Core.Converters;
+
+namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+
+/// <summary>
+/// Unit tests for <see cref="Converter_DecimalToString"/>.
+/// Tests bidirectional conversion between decimal and string, with special handling for zero values.
+/// </summary>
+[Trait("Category", "Unit")]
+[Trait("Type", "Converter")]
+public class Converter_DecimalToString_Tests
+{
+    private readonly Converter_DecimalToString _sut;
+
+    public Converter_DecimalToString_Tests()
+    {
+        _sut = new();
+    }
+
+    [Theory]
+    [InlineData(0.0, "")]
+    [InlineData(42.5, "42.5")]
+    [InlineData(100.0, "100")]
+    [InlineData(1234.56789, "1234.56789")]
+    [InlineData(-50.25, "-50.25")]
+    public void Convert_WithDecimalValue_ReturnsExpectedString(decimal input, string expected)
+    {
+        // Act
+        var result = _sut.Convert(input, typeof(string), null, "en-US");
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Convert_WithVeryPreciseDecimal_ReturnsPreciseString()
+    {
+        // Arrange - G29 format preserves up to 29 significant digits
+        var input = 0.12345678901234567890123456789m;
+
+        // Act
+        var result = _sut.Convert(input, typeof(string), null, "en-US");
+
+        // Assert - G29 will trim trailing zeros and use the most compact representation
+        result.Should().NotBeNullOrEmpty();
+        result.Should().StartWith("0.12345678901234");
+    }
+
+    [Fact]
+    public void Convert_WithZero_ReturnsEmptyString()
+    {
+        // Act
+        var result = _sut.Convert(0m, typeof(string), null, "en-US");
+
+        // Assert
+        result.Should().Be(string.Empty);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("text")]
+    [InlineData(42)]
+    public void Convert_WithNonDecimalValue_ReturnsEmptyString(object? input)
+    {
+        // Act
+        var result = _sut.Convert(input, typeof(string), null, "en-US");
+
+        // Assert
+        result.Should().Be(string.Empty);
+    }
+
+    [Theory]
+    [InlineData("42.5", 42.5)]
+    [InlineData("100", 100)]
+    [InlineData("1234.56789", 1234.56789)]
+    [InlineData("-50.25", -50.25)]
+    [InlineData("0", 0)]
+    public void ConvertBack_WithValidString_ReturnsDecimal(string input, decimal expected)
+    {
+        // Act
+        var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(null)]
+    public void ConvertBack_WithEmptyOrWhitespaceString_ReturnsZero(string? input)
+    {
+        // Act
+        var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+
+        // Assert
+        result.Should().Be(0m);
+    }
+
+    [Theory]
+    [InlineData("abc")]
+    [InlineData("12.34.56")]
+    [InlineData("not a number")]
+    public void ConvertBack_WithInvalidString_ReturnsZero(string input)
+    {
+        // Act
+        var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+
+        // Assert
+        result.Should().Be(0m);
+    }
+
+    [Fact]
+    public void ConvertBack_WithNonStringValue_ReturnsZero()
+    {
+        // Act
+        var result = _sut.ConvertBack(42, typeof(decimal), null, "en-US");
+
+        // Assert
+        result.Should().Be(0m);
+    }
+
+    [Fact]
+    public void Convert_RoundTrip_PreservesValue()
+    {
+        // Arrange
+        var originalValue = 1234.56789m;
+
+        // Act - Convert to string
+        var stringResult = _sut.Convert(originalValue, typeof(string), null, "en-US");
+
+        // Act - Convert back to decimal
+        var decimalResult = _sut.ConvertBack(stringResult, typeof(decimal), null, "en-US");
+
+        // Assert
+        decimalResult.Should().Be(originalValue);
+    }
+}

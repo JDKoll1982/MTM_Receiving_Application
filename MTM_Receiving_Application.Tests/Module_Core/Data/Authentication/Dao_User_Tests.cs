@@ -2,6 +2,7 @@ using FluentAssertions;
 using Xunit;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
 {
@@ -11,7 +12,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
     /// </summary>
     public class Dao_User_Tests
     {
-        private const string TestConnectionString = "Server=localhost;Database=test_db;User Id=test;Password=test;";
+    private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
 
         // ====================================================================
         // Constructor Tests

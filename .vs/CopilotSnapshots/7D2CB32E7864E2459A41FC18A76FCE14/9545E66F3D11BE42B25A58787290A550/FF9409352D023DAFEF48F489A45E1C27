@@ -1,0 +1,110 @@
+﻿using FluentAssertions;
+using Microsoft.UI.Xaml;
+using MTM_Receiving_Application.Module_Core.Converters;
+
+namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+
+/// <summary>
+/// Unit tests for <see cref="Converter_EnumToVisibility"/>.
+/// Tests conversion of enum values to Visibility based on parameter match (case-insensitive).
+/// </summary>
+[Trait("Category", "Unit")]
+[Trait("Type", "Converter")]
+public class Converter_EnumToVisibility_Tests
+{
+    private readonly Converter_EnumToVisibility _sut;
+
+    // Test enum for converter testing
+    public enum TestEnum
+    {
+        First,
+        Second,
+        Third
+    }
+
+    public Converter_EnumToVisibility_Tests()
+    {
+        _sut = new();
+    }
+
+    [Theory]
+    [InlineData(TestEnum.First, "First", Visibility.Visible)]
+    [InlineData(TestEnum.First, "Second", Visibility.Collapsed)]
+    [InlineData(TestEnum.Second, "Second", Visibility.Visible)]
+    [InlineData(TestEnum.Third, "Third", Visibility.Visible)]
+    [InlineData(TestEnum.First, "first", Visibility.Visible)]
+    [InlineData(TestEnum.Second, "SECOND", Visibility.Visible)]
+    public void Convert_WithEnumValue_ReturnsExpectedVisibility(TestEnum input, string parameter, Visibility expected)
+    {
+        // Act
+        var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Convert_WithNullValue_ReturnsCollapsed()
+    {
+        // Act
+        var result = _sut.Convert(null, typeof(Visibility), "First", "en-US");
+
+        // Assert
+        result.Should().Be(Visibility.Collapsed);
+    }
+
+    [Fact]
+    public void Convert_WithNullParameter_ReturnsCollapsed()
+    {
+        // Act
+        var result = _sut.Convert(TestEnum.First, typeof(Visibility), null, "en-US");
+
+        // Assert
+        result.Should().Be(Visibility.Collapsed);
+    }
+
+    [Fact]
+    public void Convert_WithBothNull_ReturnsCollapsed()
+    {
+        // Act
+        var result = _sut.Convert(null, typeof(Visibility), null, "en-US");
+
+        // Assert
+        result.Should().Be(Visibility.Collapsed);
+    }
+
+    [Theory]
+    [InlineData("First", "First", Visibility.Visible)]
+    [InlineData("Second", "Second", Visibility.Visible)]
+    [InlineData("First", "Second", Visibility.Collapsed)]
+    public void Convert_WithStringValue_ComparesCorrectly(string input, string parameter, Visibility expected)
+    {
+        // Act
+        var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(1, "1", Visibility.Visible)]
+    [InlineData(2, "1", Visibility.Collapsed)]
+    public void Convert_WithNumericValue_ComparesAsString(int input, string parameter, Visibility expected)
+    {
+        // Act
+        var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Fact]
+    public void ConvertBack_ThrowsNotImplementedException()
+    {
+        // Act
+        Action act = () => _sut.ConvertBack(Visibility.Visible, typeof(TestEnum), "First", "en-US");
+
+        // Assert
+        act.Should().Throw<NotImplementedException>();
+    }
+}

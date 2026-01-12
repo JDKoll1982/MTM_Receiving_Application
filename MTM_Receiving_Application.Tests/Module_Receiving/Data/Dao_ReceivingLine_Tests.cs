@@ -3,6 +3,7 @@ using Xunit;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
 
@@ -13,7 +14,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
 /// </summary>
 public class Dao_ReceivingLine_Tests
 {
-    private const string TestConnectionString = "Server=localhost;Database=test_db;User Id=test;Password=test;";
+private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
 
     // ====================================================================
     // Constructor Tests
