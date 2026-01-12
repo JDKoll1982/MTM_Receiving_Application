@@ -1,35 +1,64 @@
-﻿<Project Sdk="Microsoft.NET. Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>MTM_Receiving_Application.Tests</RootNamespace>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <Platforms>x86;x64;ARM64</Platforms>
+        <Platform Condition="'$(Platform)' == ''">x64</Platform>
+        <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+        <UseWinUI>true</UseWinUI>
+        <EnableMsixTooling>true</EnableMsixTooling>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <RootNamespace>MTM_Receiving_Application.Tests</RootNamespace>
-        <Platforms>x86;x64;ARM64</Platforms>
-        <Platform Condition="'$(Platform)' == ''">x64</Platform>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <!-- Prevent duplicate assembly attributes -->
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     </PropertyGroup>
 
-    <!-- Test Framework Packages -->
+    <!-- Mark this as a test container for VS Test Explorer -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test. Sdk"
+        <ProjectCapability Include="TestContainer" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Page Remove="TestApp.xaml" />
+        <ApplicationDefinition Include="TestApp.xaml" />
+    </ItemGroup>
+
+    <!-- Assets for WinUI app -->
+    <ItemGroup>
+        <Content Include="Assets\SplashScreen.scale-200.png" />
+        <Content Include="Assets\LockScreenLogo.scale-200.png" />
+        <Content Include="Assets\Square150x150Logo.scale-200.png" />
+        <Content Include="Assets\Square44x44Logo.scale-200.png" />
+        <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+        <Content Include="Assets\StoreLogo.png" />
+        <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Manifest Include="$(ApplicationManifest)" />
+    </ItemGroup>
+
+    <!-- MSTest packages (recommended for WinUI 3) -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"
                           Version="17.11.1" />
-        <PackageReference Include="xunit"
-                          Version="2.9.0" />
-        <PackageReference Include="xunit.runner.visualstudio"
-                          Version="2.8.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="coverlet.collector"
-                          Version="6.0.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
+        <PackageReference Include="MSTest.TestAdapter"
+                          Version="3.6.4" />
+        <PackageReference Include="MSTest.TestFramework"
+                          Version="3.6.4" />
+        <PackageReference Include="Microsoft.TestPlatform.TestHost"
+                          Version="17.11.1">
+            <ExcludeAssets>build</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
 
-    <!-- Mocking and Assertion Libraries -->
+    <!-- Mocking and Assertions -->
     <ItemGroup>
         <PackageReference Include="Moq"
                           Version="4.20.72" />
@@ -37,33 +66,43 @@
                           Version="6.12.1" />
     </ItemGroup>
 
-    <!-- Match dependencies from main project needed for testing -->
+    <!-- WinUI 3 and Windows App SDK -->
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit. Mvvm"
+        <PackageReference Include="Microsoft.WindowsAppSDK"
+                          Version="1.8.251106002" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools"
+                          Version="10.0.26100.7175" />
+    </ItemGroup>
+
+    <!-- Match dependencies from main project -->
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm"
                           Version="8.2.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection"
                           Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting"
                           Version="8.0.0" />
+        <PackageReference Include="Microsoft.Graphics.Win2D"
+                          Version="1.3.2" />
     </ItemGroup>
 
-    <!-- Database Testing (if needed) -->
+    <!-- Database Testing -->
     <ItemGroup>
-        <!-- For in-memory database testing -->
-        <PackageReference Include="Microsoft.Data. Sqlite"
+        <PackageReference Include="Microsoft.Data.Sqlite"
                           Version="8.0.0" />
-
-        <!-- If you need to test against real databases, include these -->
-        <!-- <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" /> -->
-        <!-- <PackageReference Include="MySql.Data" Version="9.4.0" /> -->
     </ItemGroup>
 
-    <!-- Reference to main project -->
+    <!-- Enable Msix capability -->
+    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+        <ProjectCapability Include="Msix" />
+    </ItemGroup>
+
+    <!-- Reference the main app project -->
     <ItemGroup>
-        <ProjectReference Include=". .\MTM_Receiving_Application.csproj" />
+        <ProjectReference Include="..\MTM_Receiving_Application.csproj" />
     </ItemGroup>
 
-    <!-- Disable telemetry (matching main project) -->
+    <!-- Disable telemetry -->
     <PropertyGroup>
         <MicrosoftTelemetryDisabled>true</MicrosoftTelemetryDisabled>
     </PropertyGroup>
