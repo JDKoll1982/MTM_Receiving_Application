@@ -44,7 +44,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertLabelAsync_ValidLabel_CallsStoredProcedure()
+    public async Task InsertLabelAsync_ValidLabel_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -58,7 +58,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertLabelAsync_NullOtherReasonId_HandlesGracefully()
+    public async Task InsertLabelAsync_NullOtherReasonId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -73,7 +73,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertLabelAsync_WithOtherReasonId_HandlesGracefully()
+    public async Task InsertLabelAsync_WithOtherReasonId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -92,7 +92,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(10)]
     [InlineData(100)]
     [InlineData(1000)]
-    public async Task InsertLabelAsync_DifferentQuantities_HandlesAll(int quantity)
+    public async Task InsertLabelAsync_DifferentQuantities_HandlesAll_Async(int quantity)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -110,7 +110,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData("PO-12345", "001")]
     [InlineData("12345", "002")]
     [InlineData("PO12345", "999")]
-    public async Task InsertLabelAsync_DifferentPONumbers_HandlesAll(string poNumber, string lineNumber)
+    public async Task InsertLabelAsync_DifferentPONumbers_HandlesAll_Async(string poNumber, string lineNumber)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -130,7 +130,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(100)]
     [InlineData(999)]
     [InlineData(int.MaxValue)]
-    public async Task InsertLabelAsync_DifferentCreatedBy_HandlesAll(int createdBy)
+    public async Task InsertLabelAsync_DifferentCreatedBy_HandlesAll_Async(int createdBy)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -149,7 +149,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task UpdateLabelAsync_ValidLabel_CallsStoredProcedure()
+    public async Task UpdateLabelAsync_ValidLabel_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -164,7 +164,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task UpdateLabelAsync_UpdatedQuantity_CallsStoredProcedure()
+    public async Task UpdateLabelAsync_UpdatedQuantity_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -180,7 +180,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task UpdateLabelAsync_NullOtherReasonId_HandlesGracefully()
+    public async Task UpdateLabelAsync_NullOtherReasonId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -200,7 +200,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(-1)]
-    public async Task UpdateLabelAsync_DifferentIds_HandlesAll(int id)
+    public async Task UpdateLabelAsync_DifferentIds_HandlesAll_Async(int id)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -219,7 +219,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task GetLabelByIdAsync_ValidId_CallsStoredProcedure()
+    public async Task GetLabelByIdAsync_ValidId_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -237,7 +237,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(int.MaxValue)]
-    public async Task GetLabelByIdAsync_DifferentIds_HandlesAll(int labelId)
+    public async Task GetLabelByIdAsync_DifferentIds_HandlesAll_Async(int labelId)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -250,7 +250,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task GetLabelByIdAsync_NegativeId_HandlesGracefully()
+    public async Task GetLabelByIdAsync_NegativeId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -268,7 +268,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task GetAllLabelsAsync_DefaultParameters_CallsStoredProcedure()
+    public async Task GetAllLabelsAsync_DefaultParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -286,7 +286,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(100, 0)]
     [InlineData(100, 100)]
     [InlineData(100, 500)]
-    public async Task GetAllLabelsAsync_DifferentPagination_HandlesAll(int limit, int offset)
+    public async Task GetAllLabelsAsync_DifferentPagination_HandlesAll_Async(int limit, int offset)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -299,7 +299,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task GetAllLabelsAsync_ZeroLimit_HandlesGracefully()
+    public async Task GetAllLabelsAsync_ZeroLimit_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -312,7 +312,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task GetAllLabelsAsync_NegativeOffset_HandlesGracefully()
+    public async Task GetAllLabelsAsync_NegativeOffset_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -329,7 +329,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task DeleteLabelAsync_ValidId_CallsStoredProcedure()
+    public async Task DeleteLabelAsync_ValidId_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -347,7 +347,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(int.MaxValue)]
-    public async Task DeleteLabelAsync_DifferentIds_HandlesAll(int labelId)
+    public async Task DeleteLabelAsync_DifferentIds_HandlesAll_Async(int labelId)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -364,7 +364,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task MarkLabelExportedAsync_ValidId_CallsStoredProcedure()
+    public async Task MarkLabelExportedAsync_ValidId_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -381,7 +381,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(int.MaxValue)]
-    public async Task MarkLabelExportedAsync_DifferentIds_HandlesAll(int labelId)
+    public async Task MarkLabelExportedAsync_DifferentIds_HandlesAll_Async(int labelId)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -398,7 +398,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task CheckDuplicateLabelAsync_ValidParameters_CallsStoredProcedure()
+    public async Task CheckDuplicateLabelAsync_ValidParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -419,7 +419,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(24)]
     [InlineData(48)]
     [InlineData(168)]
-    public async Task CheckDuplicateLabelAsync_DifferentTimeWindows_HandlesAll(int hoursWindow)
+    public async Task CheckDuplicateLabelAsync_DifferentTimeWindows_HandlesAll_Async(int hoursWindow)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -435,7 +435,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task CheckDuplicateLabelAsync_ZeroHoursWindow_HandlesGracefully()
+    public async Task CheckDuplicateLabelAsync_ZeroHoursWindow_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -454,7 +454,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData("PO-12345", "001")]
     [InlineData("12345", "002")]
     [InlineData("", "003")]
-    public async Task CheckDuplicateLabelAsync_DifferentPONumbers_HandlesAll(string poNumber, string lineNumber)
+    public async Task CheckDuplicateLabelAsync_DifferentPONumbers_HandlesAll_Async(string poNumber, string lineNumber)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -472,7 +472,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task CheckDuplicateAsync_ValidParameters_CallsCheckDuplicate()
+    public async Task CheckDuplicateAsync_ValidParameters_CallsCheckDuplicate_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -489,7 +489,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task CheckDuplicateAsync_DefaultDateTime_UsesDefault24Hours()
+    public async Task CheckDuplicateAsync_DefaultDateTime_UsesDefault24Hours_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -505,7 +505,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task CheckDuplicateAsync_FutureDate_HandlesGracefully()
+    public async Task CheckDuplicateAsync_FutureDate_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -522,7 +522,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task CheckDuplicateAsync_OldDate_CapsAtOneWeek()
+    public async Task CheckDuplicateAsync_OldDate_CapsAtOneWeek_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -543,7 +543,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task MarkExportedAsync_EmptyList_HandlesGracefully()
+    public async Task MarkExportedAsync_EmptyList_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -557,7 +557,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task MarkExportedAsync_SingleId_CallsMarkExported()
+    public async Task MarkExportedAsync_SingleId_CallsMarkExported_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -571,7 +571,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task MarkExportedAsync_MultipleIds_CallsMarkExportedForEach()
+    public async Task MarkExportedAsync_MultipleIds_CallsMarkExportedForEach_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -589,7 +589,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertLabelAsync_VeryLongDescription_HandlesGracefully()
+    public async Task InsertLabelAsync_VeryLongDescription_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -604,7 +604,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertLabelAsync_SpecialCharactersInFields_HandlesGracefully()
+    public async Task InsertLabelAsync_SpecialCharactersInFields_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -620,7 +620,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertLabelAsync_ZeroQuantity_HandlesGracefully()
+    public async Task InsertLabelAsync_ZeroQuantity_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -635,7 +635,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertLabelAsync_NegativeQuantity_HandlesGracefully()
+    public async Task InsertLabelAsync_NegativeQuantity_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -655,7 +655,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(int.MaxValue)]
-    public async Task InsertLabelAsync_BoundaryRecipientIds_HandlesAll(int recipientId)
+    public async Task InsertLabelAsync_BoundaryRecipientIds_HandlesAll_Async(int recipientId)
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -670,7 +670,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task GetAllLabelsAsync_VeryLargeLimit_HandlesGracefully()
+    public async Task GetAllLabelsAsync_VeryLargeLimit_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -683,7 +683,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task CheckDuplicateLabelAsync_VeryLargeTimeWindow_HandlesGracefully()
+    public async Task CheckDuplicateLabelAsync_VeryLargeTimeWindow_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -696,7 +696,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task CheckDuplicateLabelAsync_NegativeTimeWindow_HandlesGracefully()
+    public async Task CheckDuplicateLabelAsync_NegativeTimeWindow_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_RoutingLabel(TestConnectionString);
@@ -734,3 +734,4 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
         };
     }
 }
+

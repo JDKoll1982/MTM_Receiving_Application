@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Routing.Converters;
 
 public class IntToProgressBrushConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, string language)
+    public object Convert(object? value, Type targetType, object? parameter, string language)
     {
         if (value is int currentStep && parameter is string stepStr && int.TryParse(stepStr, out int step))
         {
@@ -19,7 +19,7 @@ public class IntToProgressBrushConverter : IValueConverter
         return Application.Current.Resources["SystemControlBackgroundBaseLowBrush"] as Brush ?? DependencyProperty.UnsetValue;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    public object ConvertBack(object? value, Type targetType, object? parameter, string language)
     {
         throw new NotImplementedException();
     }

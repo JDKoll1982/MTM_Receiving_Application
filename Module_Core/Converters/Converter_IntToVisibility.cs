@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
     /// </summary>
     public class Converter_IntToVisibility : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public object Convert(object? value, Type targetType, object? parameter, string language)
         {
             if (value == null)
                 return Visibility.Collapsed;
@@ -53,7 +53,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
             return isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public object ConvertBack(object? value, Type targetType, object? parameter, string language)
         {
             throw new NotImplementedException();
         }

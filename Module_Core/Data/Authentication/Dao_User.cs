@@ -37,7 +37,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="windowsUsername">Windows username from Environment.UserName</param>
         /// <returns>Result containing user data or error</returns>
-        public async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
+        public virtual async Task<Model_Dao_Result<Model_User>> GetUserByWindowsUsernameAsync(string windowsUsername)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -58,7 +58,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="username">Username (Windows username or full name)</param>
         /// <param name="pin">4-digit numeric PIN</param>
         /// <returns>Result containing user data or error</returns>
-        public async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(string username, string pin)
+        public virtual async Task<Model_Dao_Result<Model_User>> ValidateUserPinAsync(string username, string pin)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -84,7 +84,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="user">User model with account data</param>
         /// <param name="createdBy">Windows username of account creator</param>
         /// <returns>Result containing new employee number or error</returns>
-        public async Task<Model_Dao_Result<int>> CreateNewUserAsync(Model_User user, string createdBy)
+        public virtual async Task<Model_Dao_Result<int>> CreateNewUserAsync(Model_User user, string createdBy)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="username">Windows username to check</param>
         /// <param name="excludeEmployeeNumber">Optional employee number to exclude from check</param>
         /// <returns>Result indicating if username is unique</returns>
-        public async Task<Model_Dao_Result<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
+        public virtual async Task<Model_Dao_Result<bool>> IsWindowsUsernameUniqueAsync(string username, int? excludeEmployeeNumber = null)
         {
             try
             {
@@ -211,7 +211,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="workstationName">Computer name where event occurred</param>
         /// <param name="details">Additional event details</param>
         /// <returns>Result indicating success or failure</returns>
-        public async Task<Model_Dao_Result<bool>> LogUserActivityAsync(
+        public virtual async Task<Model_Dao_Result<bool>> LogUserActivityAsync(
             string eventType,
             string username,
             string workstationName,
@@ -249,7 +249,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// Retrieves list of shared terminal workstation names.
         /// </summary>
         /// <returns>Result containing list of workstation names</returns>
-        public async Task<Model_Dao_Result<List<string>>> GetSharedTerminalNamesAsync()
+        public virtual async Task<Model_Dao_Result<List<string>>> GetSharedTerminalNamesAsync()
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
@@ -266,7 +266,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// <param name="workstationType"></param>
         /// <param name="isActive"></param>
         /// <param name="description"></param>
-        public async Task<Model_Dao_Result> UpsertWorkstationConfigAsync(
+        public virtual async Task<Model_Dao_Result> UpsertWorkstationConfigAsync(
             string workstationName,
             string workstationType,
             bool isActive,
@@ -291,7 +291,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// Retrieves list of active departments for dropdown population.
         /// </summary>
         /// <returns>Result containing list of department names</returns>
-        public async Task<Model_Dao_Result<List<string>>> GetActiveDepartmentsAsync()
+        public virtual async Task<Model_Dao_Result<List<string>>> GetActiveDepartmentsAsync()
         {
             return await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
@@ -340,7 +340,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="defaultMode"></param>
-        public async Task<Model_Dao_Result> UpdateDefaultModeAsync(int userId, string? defaultMode)
+        public virtual async Task<Model_Dao_Result> UpdateDefaultModeAsync(int userId, string? defaultMode)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -360,7 +360,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="defaultMode"></param>
-        public async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(int userId, string? defaultMode)
+        public virtual async Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(int userId, string? defaultMode)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -380,7 +380,7 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="defaultMode"></param>
-        public async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(int userId, string? defaultMode)
+        public virtual async Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(int userId, string? defaultMode)
         {
             var parameters = new Dictionary<string, object>
             {

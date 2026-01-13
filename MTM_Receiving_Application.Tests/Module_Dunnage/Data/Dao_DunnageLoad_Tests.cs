@@ -44,7 +44,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task GetAllAsync_NoParameters_CallsStoredProcedure()
+    public async Task GetAllAsync_NoParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -61,7 +61,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task GetByDateRangeAsync_ValidDateRange_CallsStoredProcedure()
+    public async Task GetByDateRangeAsync_ValidDateRange_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -76,7 +76,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByDateRangeAsync_StartDateAfterEndDate_HandlesGracefully()
+    public async Task GetByDateRangeAsync_StartDateAfterEndDate_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -91,7 +91,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByDateRangeAsync_SameDates_HandlesGracefully()
+    public async Task GetByDateRangeAsync_SameDates_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -105,7 +105,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByDateRangeAsync_VeryOldDates_HandlesGracefully()
+    public async Task GetByDateRangeAsync_VeryOldDates_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -120,7 +120,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByDateRangeAsync_FutureDates_HandlesGracefully()
+    public async Task GetByDateRangeAsync_FutureDates_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -135,7 +135,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByDateRangeAsync_VeryLargeRange_HandlesGracefully()
+    public async Task GetByDateRangeAsync_VeryLargeRange_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -154,7 +154,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task GetByIdAsync_ValidGuid_CallsStoredProcedure()
+    public async Task GetByIdAsync_ValidGuid_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -168,7 +168,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByIdAsync_EmptyGuid_HandlesGracefully()
+    public async Task GetByIdAsync_EmptyGuid_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -182,7 +182,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task GetByIdAsync_DifferentGuids_HandlesAll()
+    public async Task GetByIdAsync_DifferentGuids_HandlesAll_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -201,7 +201,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task InsertAsync_ValidParameters_CallsStoredProcedure()
+    public async Task InsertAsync_ValidParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -221,7 +221,7 @@ public class Dao_DunnageLoad_Tests
     [InlineData("PART-001", 100.0)]
     [InlineData("DUNNAGE-123", 50.5)]
     [InlineData("SKD-456", 1000.99)]
-    public async Task InsertAsync_DifferentParts_HandlesAll(string partId, decimal quantity)
+    public async Task InsertAsync_DifferentParts_HandlesAll_Async(string partId, decimal quantity)
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -240,7 +240,7 @@ public class Dao_DunnageLoad_Tests
     [InlineData(0.001)]
     [InlineData(1.0)]
     [InlineData(999999.99)]
-    public async Task InsertAsync_DifferentQuantities_HandlesAll(decimal quantity)
+    public async Task InsertAsync_DifferentQuantities_HandlesAll_Async(decimal quantity)
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -260,7 +260,7 @@ public class Dao_DunnageLoad_Tests
     [InlineData("admin")]
     [InlineData("testuser")]
     [InlineData("")]
-    public async Task InsertAsync_DifferentUsers_HandlesAll(string user)
+    public async Task InsertAsync_DifferentUsers_HandlesAll_Async(string user)
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -280,7 +280,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task InsertBatchAsync_ValidSingleLoad_CallsStoredProcedure()
+    public async Task InsertBatchAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -295,7 +295,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task InsertBatchAsync_MultipleLoads_CallsStoredProcedure()
+    public async Task InsertBatchAsync_MultipleLoads_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -319,7 +319,7 @@ public class Dao_DunnageLoad_Tests
     [InlineData(5)]
     [InlineData(10)]
     [InlineData(50)]
-    public async Task InsertBatchAsync_VariousBatchSizes_HandlesAll(int batchSize)
+    public async Task InsertBatchAsync_VariousBatchSizes_HandlesAll_Async(int batchSize)
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -342,7 +342,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task UpdateAsync_ValidParameters_CallsStoredProcedure()
+    public async Task UpdateAsync_ValidParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -362,7 +362,7 @@ public class Dao_DunnageLoad_Tests
     [InlineData(0.001)]
     [InlineData(100.5)]
     [InlineData(9999.99)]
-    public async Task UpdateAsync_DifferentQuantities_HandlesAll(decimal quantity)
+    public async Task UpdateAsync_DifferentQuantities_HandlesAll_Async(decimal quantity)
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -377,7 +377,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task UpdateAsync_EmptyGuid_HandlesGracefully()
+    public async Task UpdateAsync_EmptyGuid_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -397,7 +397,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task DeleteAsync_ValidGuid_CallsStoredProcedure()
+    public async Task DeleteAsync_ValidGuid_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -411,7 +411,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task DeleteAsync_EmptyGuid_HandlesGracefully()
+    public async Task DeleteAsync_EmptyGuid_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -425,7 +425,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task DeleteAsync_MultipleDeletes_HandlesGracefully()
+    public async Task DeleteAsync_MultipleDeletes_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -444,7 +444,7 @@ public class Dao_DunnageLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task InsertAsync_VeryLongPartId_HandlesGracefully()
+    public async Task InsertAsync_VeryLongPartId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -461,7 +461,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task InsertAsync_VeryLongUsername_HandlesGracefully()
+    public async Task InsertAsync_VeryLongUsername_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -478,7 +478,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task InsertAsync_SpecialCharactersInPartId_HandlesGracefully()
+    public async Task InsertAsync_SpecialCharactersInPartId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -495,7 +495,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task InsertAsync_NegativeQuantity_HandlesGracefully()
+    public async Task InsertAsync_NegativeQuantity_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -512,7 +512,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task InsertBatchAsync_EmptyList_HandlesGracefully()
+    public async Task InsertBatchAsync_EmptyList_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -527,7 +527,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task InsertBatchAsync_DuplicatePartIds_HandlesGracefully()
+    public async Task InsertBatchAsync_DuplicatePartIds_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -543,7 +543,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task UpdateAsync_VeryLargeQuantity_HandlesGracefully()
+    public async Task UpdateAsync_VeryLargeQuantity_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -559,7 +559,7 @@ public class Dao_DunnageLoad_Tests
     }
 
     [Fact]
-    public async Task UpdateAsync_VerySmallQuantity_HandlesGracefully()
+    public async Task UpdateAsync_VerySmallQuantity_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_DunnageLoad(TestConnectionString);
@@ -596,3 +596,4 @@ public class Dao_DunnageLoad_Tests
         };
     }
 }
+

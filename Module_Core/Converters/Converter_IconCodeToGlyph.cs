@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters;
 /// </summary>
 public class Converter_IconCodeToGlyph : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, string language)
+    public object Convert(object? value, Type targetType, object? parameter, string language)
     {
         if (value is string iconCode && !string.IsNullOrWhiteSpace(iconCode))
         {
@@ -36,7 +36,7 @@ public class Converter_IconCodeToGlyph : IValueConverter
         return "\uE7B8"; // Default box icon
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    public object ConvertBack(object? value, Type targetType, object? parameter, string language)
     {
         throw new NotImplementedException();
     }

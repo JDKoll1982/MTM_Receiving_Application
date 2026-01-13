@@ -44,7 +44,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task GetAllAsync_NoParameters_CallsStoredProcedure()
+    public async Task GetAllAsync_NoParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -61,7 +61,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task GetByIdAsync_ValidId_CallsStoredProcedure()
+    public async Task GetByIdAsync_ValidId_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -79,7 +79,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(int.MaxValue)]
-    public async Task GetByIdAsync_DifferentIds_HandlesAll(int id)
+    public async Task GetByIdAsync_DifferentIds_HandlesAll_Async(int id)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -92,7 +92,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task GetByIdAsync_NegativeId_HandlesGracefully()
+    public async Task GetByIdAsync_NegativeId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -110,7 +110,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertAsync_ValidPackageType_CallsStoredProcedure()
+    public async Task InsertAsync_ValidPackageType_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -125,7 +125,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertAsync_MinimalData_CallsStoredProcedure()
+    public async Task InsertAsync_MinimalData_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -148,7 +148,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData("Pallet", "PLT")]
     [InlineData("Box", "BOX")]
     [InlineData("Crate", "CRT")]
-    public async Task InsertAsync_DifferentTypes_HandlesAll(string name, string code)
+    public async Task InsertAsync_DifferentTypes_HandlesAll_Async(string name, string code)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -171,7 +171,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(999)]
     [InlineData(int.MaxValue)]
-    public async Task InsertAsync_DifferentCreatedBy_HandlesAll(int createdBy)
+    public async Task InsertAsync_DifferentCreatedBy_HandlesAll_Async(int createdBy)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -189,7 +189,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task UpdateAsync_ValidPackageType_CallsStoredProcedure()
+    public async Task UpdateAsync_ValidPackageType_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -204,7 +204,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task UpdateAsync_AllFieldsChanged_CallsStoredProcedure()
+    public async Task UpdateAsync_AllFieldsChanged_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -227,7 +227,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(-1)]
-    public async Task UpdateAsync_DifferentIds_HandlesAll(int id)
+    public async Task UpdateAsync_DifferentIds_HandlesAll_Async(int id)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -246,7 +246,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task DeleteAsync_ValidId_CallsStoredProcedure()
+    public async Task DeleteAsync_ValidId_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -264,7 +264,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(int.MaxValue)]
-    public async Task DeleteAsync_DifferentIds_HandlesAll(int id)
+    public async Task DeleteAsync_DifferentIds_HandlesAll_Async(int id)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -277,7 +277,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task DeleteAsync_NegativeId_HandlesGracefully()
+    public async Task DeleteAsync_NegativeId_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -295,7 +295,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task GetUsageCountAsync_ValidId_CallsStoredProcedure()
+    public async Task GetUsageCountAsync_ValidId_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -313,7 +313,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(100)]
     [InlineData(int.MaxValue)]
-    public async Task GetUsageCountAsync_DifferentIds_HandlesAll(int id)
+    public async Task GetUsageCountAsync_DifferentIds_HandlesAll_Async(int id)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -330,7 +330,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertAsync_VeryLongName_HandlesGracefully()
+    public async Task InsertAsync_VeryLongName_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -349,7 +349,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertAsync_VeryLongCode_HandlesGracefully()
+    public async Task InsertAsync_VeryLongCode_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -368,7 +368,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertAsync_SpecialCharactersInName_HandlesGracefully()
+    public async Task InsertAsync_SpecialCharactersInName_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -387,7 +387,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertAsync_EmptyStrings_HandlesGracefully()
+    public async Task InsertAsync_EmptyStrings_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -406,7 +406,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task UpdateAsync_VeryLongName_HandlesGracefully()
+    public async Task UpdateAsync_VeryLongName_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -425,7 +425,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task UpdateAsync_SpecialCharactersInCode_HandlesGracefully()
+    public async Task UpdateAsync_SpecialCharactersInCode_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -451,7 +451,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(999)]
     [InlineData(int.MaxValue)]
-    public async Task GetUsageCountAsync_BoundaryValues_HandlesAll(int id)
+    public async Task GetUsageCountAsync_BoundaryValues_HandlesAll_Async(int id)
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -464,7 +464,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertAsync_NegativeCreatedBy_HandlesGracefully()
+    public async Task InsertAsync_NegativeCreatedBy_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -479,7 +479,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task UpdateAsync_WithIdZero_HandlesGracefully()
+    public async Task UpdateAsync_WithIdZero_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_PackageType(TestConnectionString);
@@ -512,3 +512,4 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
         };
     }
 }
+

@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         /// <summary>
         /// Windows computer name (from Environment.MachineName)
         /// </summary>
-        public string ComputerName { get; set; } = string.Empty;
+        public string ComputerName { get; set; } = Environment.MachineName;
 
         /// <summary>
         /// Workstation type: "personal_workstation" or "shared_terminal"

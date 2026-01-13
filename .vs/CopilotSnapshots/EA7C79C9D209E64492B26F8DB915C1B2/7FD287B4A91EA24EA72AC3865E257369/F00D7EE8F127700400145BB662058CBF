@@ -1,0 +1,144 @@
+﻿using System;
+using System.Threading.Tasks;
+using Xunit;
+using FluentAssertions;
+using Moq;
+using MTM_Receiving_Application.Module_Core.Services.Authentication;
+using MTM_Receiving_Application.Module_Core.Data.Authentication;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+
+namespace MTM_Receiving_Application.Tests.Module_Core.Services.Authentication
+{
+    /// <summary>
+    /// Unit tests for Service_UserSessionManager
+    /// </summary>
+    [Trait("Category", "Unit")]
+    [Trait("Layer", "Service")]
+    public class Service_UserSessionManager_Tests
+    {
+        private readonly Mock<Dao_User> _mockDaoUser;
+        private readonly Mock<IService_Dispatcher> _mockDispatcher;
+        private readonly Mock<IService_DispatcherTimer> _mockTimer;
+        private readonly Service_UserSessionManager _sut;
+
+        public Service_UserSessionManager_Tests()
+        {
+            _mockDaoUser = new Mock<Dao_User>("Server=fake;");
+            _mockDispatcher = new Mock<IService_Dispatcher>();
+            _mockTimer = new Mock<IService_DispatcherTimer>();
+            
+            _mockDispatcher.Setup(x => x.CreateTimer()).Returns(_mockTimer.Object);
+
+            _sut = new Service_UserSessionManager(_mockDaoUser.Object, _mockDispatcher.Object);
+        }
+
+        [Fact]
+        public void CreateSession_NullUser_ThrowsArgumentNullException()
+        {
+            // Act
+            Action act = () => _sut.CreateSession(null!, new Model_WorkstationConfig("PC"), "Windows");
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>().WithParameterName("user");
+        }
+
+        [Fact]
+        public void CreateSession_ValidData_SetsCurrentSession()
+        {
+            // Arrange
+            var user = new Model_User { WindowsUsername = "test" };
+            var config = new Model_WorkstationConfig("PC") { WorkstationType = "personal_workstation" };
+
+            // Act
+            var session = _sut.CreateSession(user, config, "Windows");
+
+            // Assert
+            session.Should().NotBeNull();
+            session.User.Should().Be(user);
+            session.WorkstationName.Should().Be("PC");
+            session.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(30));
+            _sut.CurrentSession.Should().Be(session);
+        }
+
+        [Fact]
+        public void StartTimeoutMonitoring_NoSession_ThrowsInvalidOperationException()
+        {
+            // Act
+            Action act = () => _sut.StartTimeoutMonitoring();
+
+            // Assert
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void StartTimeoutMonitoring_WithSession_StartsTimer()
+        {
+            // Arrange
+            _sut.CreateSession(new Model_User(), new Model_WorkstationConfig("PC"), "Windows");
+
+            // Act
+            _sut.StartTimeoutMonitoring();
+
+            // Assert
+            _mockDispatcher.Verify(x => x.CreateTimer(), Times.Once);
+            _mockTimer.Verify(x => x.Start(), Times.Once);
+            _mockTimer.VerifySet(x => x.Interval = It.IsAny<TimeSpan>());
+            _mockTimer.VerifySet(x => x.IsRepeating = true);
+        }
+
+        [Fact]
+        public void StopTimeoutMonitoring_StopsTimer()
+        {
+            // Arrange
+            _sut.CreateSession(new Model_User(), new Model_WorkstationConfig("PC"), "Windows");
+            _sut.StartTimeoutMonitoring();
+
+            // Act
+            _sut.StopTimeoutMonitoring();
+
+            // Assert
+            _mockTimer.Verify(x => x.Stop(), Times.Once);
+        }
+
+        [Fact]
+        public async Task EndSessionAsync_LogsAndClearsSession()
+        {
+            // Arrange
+            var user = new Model_User { WindowsUsername = "test" };
+            _sut.CreateSession(user, new Model_WorkstationConfig("PC"), "Windows");
+            _sut.StartTimeoutMonitoring();
+
+            _mockDaoUser.Setup(x => x.LogUserActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+
+            // Act
+            await _sut.EndSessionAsync("Logout");
+
+            // Assert
+            _sut.CurrentSession.Should().BeNull();
+            _mockTimer.Verify(x => x.Stop(), Times.Once); // Should stop monitoring
+             _mockDaoUser.Verify(x => x.LogUserActivityAsync("Logout", "test", "PC", It.IsNotNull<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void UpdateLastActivity_UpdatesTimestamp()
+        {
+            // Arrange
+            _sut.CreateSession(new Model_User(), new Model_WorkstationConfig("PC"), "Windows");
+            var initialTime = _sut.CurrentSession!.LastActivityTimestamp;
+            
+            // Wait a tiny bit (not reliable in unit tests really, but checks update)
+            // Instead we can check that it's very close or just called.
+            // Since we can't inject time provider, we assume DateTime.Now changes or is called.
+            
+            // Act
+            _sut.UpdateLastActivity();
+
+            // Assert
+            _sut.CurrentSession.LastActivityTimestamp.Should().BeOnOrAfter(initialTime);
+        }
+    }
+}

@@ -125,6 +125,7 @@
     <!-- Properties Files -->
     <ItemGroup>
         <None Include="Properties\launchSettings.json" />
+        <None Include="Scripts\Add-AsyncSuffix.ps1" />
     </ItemGroup>
     <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging

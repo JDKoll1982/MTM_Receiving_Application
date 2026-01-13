@@ -91,7 +91,7 @@ public static class Helper_Database_StoredProcedure
     /// Validates that all required parameters are present and not null
     /// </summary>
     /// <param name="parameters"></param>
-    public static bool ValidateParameters(MySqlParameter[] parameters)
+    public static bool ValidateParameters(MySqlParameter[]? parameters)
     {
         if (parameters == null)
         {

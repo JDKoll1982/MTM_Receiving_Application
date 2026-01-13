@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Xunit;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
-using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
+using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
 {
@@ -12,7 +12,8 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
     /// </summary>
     public class Dao_User_Tests
     {
-    private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
+        private static string TestConnectionString =>
+            Helper_Database_Variables.GetConnectionString(useProduction: false);
 
         // ====================================================================
         // Constructor Tests
@@ -35,8 +36,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
             Action act = () => new Dao_User(null!);
 
             // Assert
-            act.Should().Throw<ArgumentNullException>()
-                .WithMessage("*connectionString*");
+            act.Should().Throw<ArgumentNullException>().WithMessage("*connectionString*");
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task GetUserByWindowsUsernameAsync_ValidUsername_CallsStoredProcedure()
+        public async Task GetUserByWindowsUsernameAsync_ValidUsername_CallsStoredProcedure_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -74,7 +74,9 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData("   ")]
         [InlineData("valid_user")]
         [InlineData("UPPERCASE_USER")]
-        public async Task GetUserByWindowsUsernameAsync_VariousUsernames_AcceptsInput(string username)
+        public async Task GetUserByWindowsUsernameAsync_VariousUsernames_AcceptsInput_Async(
+            string username
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -91,7 +93,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task ValidateUserPinAsync_ValidCredentials_CallsStoredProcedure()
+        public async Task ValidateUserPinAsync_ValidCredentials_CallsStoredProcedure_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -111,7 +113,10 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData("user", "1234")]
         [InlineData("", "1234")]
         [InlineData("user", "")]
-        public async Task ValidateUserPinAsync_VariousInputs_AcceptsAllCombinations(string username, string pin)
+        public async Task ValidateUserPinAsync_VariousInputs_AcceptsAllCombinations_Async(
+            string username,
+            string pin
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -128,7 +133,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task CreateNewUserAsync_ValidUser_ReturnsEmployeeNumber()
+        public async Task CreateNewUserAsync_ValidUser_ReturnsEmployeeNumber_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -144,7 +149,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task CreateNewUserAsync_NullVisualCredentials_HandlesGracefully()
+        public async Task CreateNewUserAsync_NullVisualCredentials_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -161,7 +166,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task CreateNewUserAsync_WithVisualCredentials_PassesParameters()
+        public async Task CreateNewUserAsync_WithVisualCredentials_PassesParameters_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -182,7 +187,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task IsWindowsUsernameUniqueAsync_WithoutExclusion_ChecksAllUsers()
+        public async Task IsWindowsUsernameUniqueAsync_WithoutExclusion_ChecksAllUsers_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -196,7 +201,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task IsWindowsUsernameUniqueAsync_WithExclusion_ExcludesSpecificEmployee()
+        public async Task IsWindowsUsernameUniqueAsync_WithExclusion_ExcludesSpecificEmployee_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -215,9 +220,10 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData("user2", 100)]
         [InlineData("user3", 999)]
         [InlineData("", null)]
-        public async Task IsWindowsUsernameUniqueAsync_VariousScenarios_HandlesAllCases(
+        public async Task IsWindowsUsernameUniqueAsync_VariousScenarios_HandlesAllCases_Async(
             string username,
-            int? excludeId)
+            int? excludeId
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -234,7 +240,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task LogUserActivityAsync_ValidData_LogsActivity()
+        public async Task LogUserActivityAsync_ValidData_LogsActivity_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -255,11 +261,12 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData("login_failed", "user", "WS02", "Failed attempt")]
         [InlineData("session_timeout", "user", "WS03", "Timeout")]
         [InlineData("user_created", "admin", "WS04", "New user")]
-        public async Task LogUserActivityAsync_DifferentEventTypes_LogsCorrectly(
+        public async Task LogUserActivityAsync_DifferentEventTypes_LogsCorrectly_Async(
             string eventType,
             string username,
             string workstation,
-            string details)
+            string details
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -272,7 +279,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task LogUserActivityAsync_NullParameters_HandlesGracefully()
+        public async Task LogUserActivityAsync_NullParameters_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -289,7 +296,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task GetSharedTerminalNamesAsync_NoParameters_ReturnsTerminalList()
+        public async Task GetSharedTerminalNamesAsync_NoParameters_ReturnsTerminalList_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -306,7 +313,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task UpsertWorkstationConfigAsync_ValidData_InsertsOrUpdates()
+        public async Task UpsertWorkstationConfigAsync_ValidData_InsertsOrUpdates_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -320,24 +327,21 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
                 workstationName,
                 workstationType,
                 isActive,
-                description);
+                description
+            );
 
             // Assert
             result.Should().NotBeNull();
         }
 
         [Fact]
-        public async Task UpsertWorkstationConfigAsync_NullDescription_HandlesGracefully()
+        public async Task UpsertWorkstationConfigAsync_NullDescription_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
 
             // Act
-            var result = await dao.UpsertWorkstationConfigAsync(
-                "WS-01",
-                "dedicated",
-                true,
-                null);
+            var result = await dao.UpsertWorkstationConfigAsync("WS-01", "dedicated", true, null);
 
             // Assert
             result.Should().NotBeNull();
@@ -347,11 +351,12 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData("WS-01", "shared", true, "Description 1")]
         [InlineData("WS-02", "dedicated", false, "Description 2")]
         [InlineData("WS-03", "shared", true, null)]
-        public async Task UpsertWorkstationConfigAsync_VariousConfigurations_HandlesAll(
+        public async Task UpsertWorkstationConfigAsync_VariousConfigurations_HandlesAll_Async(
             string name,
             string type,
             bool active,
-            string? description)
+            string? description
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -368,7 +373,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task GetActiveDepartmentsAsync_NoParameters_ReturnsDepartmentList()
+        public async Task GetActiveDepartmentsAsync_NoParameters_ReturnsDepartmentList_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -385,7 +390,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task UpdateDefaultModeAsync_ValidData_UpdatesMode()
+        public async Task UpdateDefaultModeAsync_ValidData_UpdatesMode_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -400,7 +405,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task UpdateDefaultModeAsync_NullMode_HandlesGracefully()
+        public async Task UpdateDefaultModeAsync_NullMode_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -417,7 +422,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData(100, "guided")]
         [InlineData(200, "manual")]
         [InlineData(300, null)]
-        public async Task UpdateDefaultModeAsync_VariousInputs_HandlesAll(int userId, string? mode)
+        public async Task UpdateDefaultModeAsync_VariousInputs_HandlesAll_Async(int userId, string? mode)
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -434,7 +439,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task UpdateDefaultReceivingModeAsync_ValidData_UpdatesMode()
+        public async Task UpdateDefaultReceivingModeAsync_ValidData_UpdatesMode_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -453,9 +458,10 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData(200, "manual")]
         [InlineData(300, "edit")]
         [InlineData(400, null)]
-        public async Task UpdateDefaultReceivingModeAsync_DifferentModes_HandlesAll(
+        public async Task UpdateDefaultReceivingModeAsync_DifferentModes_HandlesAll_Async(
             int userId,
-            string? mode)
+            string? mode
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -472,7 +478,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task UpdateDefaultDunnageModeAsync_ValidData_UpdatesMode()
+        public async Task UpdateDefaultDunnageModeAsync_ValidData_UpdatesMode_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -490,7 +496,10 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData(100, "standard")]
         [InlineData(200, "quick")]
         [InlineData(300, null)]
-        public async Task UpdateDefaultDunnageModeAsync_VariousModes_HandlesAll(int userId, string? mode)
+        public async Task UpdateDefaultDunnageModeAsync_VariousModes_HandlesAll_Async(
+            int userId,
+            string? mode
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -507,7 +516,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         // ====================================================================
 
         [Fact]
-        public async Task GetUserByWindowsUsernameAsync_EmptyString_DoesNotThrow()
+        public async Task GetUserByWindowsUsernameAsync_EmptyString_DoesNotThrow_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -520,7 +529,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task ValidateUserPinAsync_SpecialCharactersInUsername_HandlesGracefully()
+        public async Task ValidateUserPinAsync_SpecialCharactersInUsername_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -535,7 +544,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task CreateNewUserAsync_AllFieldsPopulated_PassesAllParameters()
+        public async Task CreateNewUserAsync_AllFieldsPopulated_PassesAllParameters_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -549,7 +558,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
                 Shift = "Day",
                 VisualUsername = "visual_test",
                 VisualPassword = "visual_pass123",
-                IsActive = true
+                IsActive = true,
             };
             var createdBy = "admin";
 
@@ -561,7 +570,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task IsWindowsUsernameUniqueAsync_VeryLongUsername_HandlesGracefully()
+        public async Task IsWindowsUsernameUniqueAsync_VeryLongUsername_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -575,36 +584,30 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         }
 
         [Fact]
-        public async Task LogUserActivityAsync_LongDetails_HandlesGracefully()
+        public async Task LogUserActivityAsync_LongDetails_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
             var longDetails = new string('x', 1000);
 
             // Act
-            Func<Task> act = async () => await dao.LogUserActivityAsync(
-                "test_event",
-                "user",
-                "workstation",
-                longDetails);
+            Func<Task> act = async () =>
+                await dao.LogUserActivityAsync("test_event", "user", "workstation", longDetails);
 
             // Assert
             await act.Should().NotThrowAsync();
         }
 
         [Fact]
-        public async Task UpsertWorkstationConfigAsync_VeryLongDescription_HandlesGracefully()
+        public async Task UpsertWorkstationConfigAsync_VeryLongDescription_HandlesGracefully_Async()
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
             var longDescription = new string('d', 2000);
 
             // Act
-            Func<Task> act = async () => await dao.UpsertWorkstationConfigAsync(
-                "WS-01",
-                "shared",
-                true,
-                longDescription);
+            Func<Task> act = async () =>
+                await dao.UpsertWorkstationConfigAsync("WS-01", "shared", true, longDescription);
 
             // Assert
             await act.Should().NotThrowAsync();
@@ -619,7 +622,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData(1)]
         [InlineData(int.MaxValue)]
         [InlineData(int.MinValue)]
-        public async Task UpdateDefaultModeAsync_BoundaryUserIds_HandlesAll(int userId)
+        public async Task UpdateDefaultModeAsync_BoundaryUserIds_HandlesAll_Async(int userId)
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -637,7 +640,9 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
         [InlineData(-1)]
         [InlineData(1)]
         [InlineData(int.MaxValue)]
-        public async Task IsWindowsUsernameUniqueAsync_BoundaryExclusionValues_HandlesAll(int? excludeId)
+        public async Task IsWindowsUsernameUniqueAsync_BoundaryExclusionValues_HandlesAll_Async(
+            int? excludeId
+        )
         {
             // Arrange
             var dao = new Dao_User(TestConnectionString);
@@ -666,8 +671,9 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
                 Pin = "1234",
                 Department = "Engineering",
                 Shift = "Day",
-                IsActive = true
+                IsActive = true,
             };
         }
     }
 }
+

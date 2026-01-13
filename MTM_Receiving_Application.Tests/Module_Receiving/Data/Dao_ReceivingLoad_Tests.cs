@@ -45,7 +45,7 @@ public class Dao_ReceivingLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task SaveLoadsAsync_NullList_ReturnsFailure()
+    public async Task SaveLoadsAsync_NullList_ReturnsFailure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -60,7 +60,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_EmptyList_ReturnsFailure()
+    public async Task SaveLoadsAsync_EmptyList_ReturnsFailure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -76,7 +76,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_ValidSingleLoad_CallsStoredProcedure()
+    public async Task SaveLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -90,7 +90,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_MultipleValidLoads_CallsStoredProcedure()
+    public async Task SaveLoadsAsync_MultipleValidLoads_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -109,7 +109,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_NullPONumber_HandlesGracefully()
+    public async Task SaveLoadsAsync_NullPONumber_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -128,7 +128,7 @@ public class Dao_ReceivingLoad_Tests
     [InlineData("PO-12345")]
     [InlineData("12345")]
     [InlineData("PO12345")]
-    public async Task SaveLoadsAsync_CleansPONumberPrefix_HandlesAll(string poNumber)
+    public async Task SaveLoadsAsync_CleansPONumberPrefix_HandlesAll_Async(string poNumber)
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -144,7 +144,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_NonPOItem_HandlesGracefully()
+    public async Task SaveLoadsAsync_NonPOItem_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -165,7 +165,7 @@ public class Dao_ReceivingLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task UpdateLoadsAsync_NullList_ReturnsFailure()
+    public async Task UpdateLoadsAsync_NullList_ReturnsFailure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -180,7 +180,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task UpdateLoadsAsync_EmptyList_ReturnsFailure()
+    public async Task UpdateLoadsAsync_EmptyList_ReturnsFailure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -195,7 +195,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task UpdateLoadsAsync_ValidSingleLoad_CallsStoredProcedure()
+    public async Task UpdateLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -209,7 +209,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task UpdateLoadsAsync_MultipleLoads_CallsStoredProcedure()
+    public async Task UpdateLoadsAsync_MultipleLoads_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -231,7 +231,7 @@ public class Dao_ReceivingLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task DeleteLoadsAsync_NullList_ReturnsSuccess()
+    public async Task DeleteLoadsAsync_NullList_ReturnsSuccess_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -246,7 +246,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task DeleteLoadsAsync_EmptyList_ReturnsSuccess()
+    public async Task DeleteLoadsAsync_EmptyList_ReturnsSuccess_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -262,7 +262,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task DeleteLoadsAsync_ValidSingleLoad_CallsStoredProcedure()
+    public async Task DeleteLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -276,7 +276,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task DeleteLoadsAsync_MultipleLoads_CallsStoredProcedure()
+    public async Task DeleteLoadsAsync_MultipleLoads_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -299,7 +299,7 @@ public class Dao_ReceivingLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task GetHistoryAsync_ValidParameters_CallsStoredProcedure()
+    public async Task GetHistoryAsync_ValidParameters_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -318,7 +318,7 @@ public class Dao_ReceivingLoad_Tests
     [InlineData("")]
     [InlineData("PART-001")]
     [InlineData("ABC123")]
-    public async Task GetHistoryAsync_DifferentPartIDs_HandlesAll(string partID)
+    public async Task GetHistoryAsync_DifferentPartIDs_HandlesAll_Async(string partID)
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -333,7 +333,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task GetHistoryAsync_StartDateAfterEndDate_HandlesGracefully()
+    public async Task GetHistoryAsync_StartDateAfterEndDate_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -349,7 +349,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task GetHistoryAsync_SameDateRange_HandlesGracefully()
+    public async Task GetHistoryAsync_SameDateRange_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -368,7 +368,7 @@ public class Dao_ReceivingLoad_Tests
     // ====================================================================
 
     [Fact]
-    public async Task GetAllAsync_ValidDateRange_CallsStoredProcedure()
+    public async Task GetAllAsync_ValidDateRange_CallsStoredProcedure_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -383,7 +383,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task GetAllAsync_WideRange_HandlesGracefully()
+    public async Task GetAllAsync_WideRange_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -406,7 +406,7 @@ public class Dao_ReceivingLoad_Tests
     [InlineData(0.001)]
     [InlineData(1.5)]
     [InlineData(1000000.99)]
-    public async Task SaveLoadsAsync_DifferentWeights_HandlesAll(decimal weight)
+    public async Task SaveLoadsAsync_DifferentWeights_HandlesAll_Async(decimal weight)
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -427,7 +427,7 @@ public class Dao_ReceivingLoad_Tests
     [InlineData(10)]
     [InlineData(100)]
     [InlineData(1000)]
-    public async Task SaveLoadsAsync_DifferentPackageCounts_HandlesAll(int packageCount)
+    public async Task SaveLoadsAsync_DifferentPackageCounts_HandlesAll_Async(int packageCount)
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -443,7 +443,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_VeryLongPartID_HandlesGracefully()
+    public async Task SaveLoadsAsync_VeryLongPartID_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -459,7 +459,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_VeryLongHeatNumber_HandlesGracefully()
+    public async Task SaveLoadsAsync_VeryLongHeatNumber_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -475,7 +475,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task SaveLoadsAsync_SpecialCharactersInFields_HandlesGracefully()
+    public async Task SaveLoadsAsync_SpecialCharactersInFields_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -497,7 +497,7 @@ public class Dao_ReceivingLoad_Tests
     [InlineData(5)]
     [InlineData(10)]
     [InlineData(50)]
-    public async Task SaveLoadsAsync_VariousBatchSizes_HandlesAll(int batchSize)
+    public async Task SaveLoadsAsync_VariousBatchSizes_HandlesAll_Async(int batchSize)
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -515,7 +515,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task GetHistoryAsync_VeryOldDates_HandlesGracefully()
+    public async Task GetHistoryAsync_VeryOldDates_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -530,7 +530,7 @@ public class Dao_ReceivingLoad_Tests
     }
 
     [Fact]
-    public async Task GetAllAsync_FutureDates_HandlesGracefully()
+    public async Task GetAllAsync_FutureDates_HandlesGracefully_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLoad(TestConnectionString);
@@ -571,3 +571,4 @@ public class Dao_ReceivingLoad_Tests
         };
     }
 }
+

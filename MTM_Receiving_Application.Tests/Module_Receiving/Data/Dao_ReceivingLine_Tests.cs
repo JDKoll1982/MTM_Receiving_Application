@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
 /// </summary>
 public class Dao_ReceivingLine_Tests
 {
-private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
+    private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
 
     // ====================================================================
     // Constructor Tests
@@ -57,7 +57,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertReceivingLineAsync_InvalidConnectionString_ReturnsFailureResult()
+    public async Task InsertReceivingLineAsync_InvalidConnectionString_ReturnsFailureResult_Async()
     {
         // Arrange - Use invalid connection string to simulate connection failure
         var dao = new Dao_ReceivingLine("Server=invalid;Database=nonexistent;");
@@ -78,12 +78,12 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertReceivingLineAsync_NullPartID_ReturnsResult()
+    public async Task InsertReceivingLineAsync_NullPartID_ReturnsResult_Async()
     {
         // Arrange - Invalid connection ensures we're testing parameter construction, not DB
         var dao = new Dao_ReceivingLine("Server=invalid;");
         var line = CreateValidReceivingLine();
-        line.PartID = null;
+        line.PartID = null!;
 
         // Act
         var result = await dao.InsertReceivingLineAsync(line);
@@ -94,12 +94,12 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_NullHeat_ReturnsResult()
+    public async Task InsertReceivingLineAsync_NullHeat_ReturnsResult_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
         var line = CreateValidReceivingLine();
-        line.Heat = null;
+        line.Heat = null!;
 
         // Act
         var result = await dao.InsertReceivingLineAsync(line);
@@ -109,12 +109,12 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_NullInitialLocation_ReturnsResult()
+    public async Task InsertReceivingLineAsync_NullInitialLocation_ReturnsResult_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
         var line = CreateValidReceivingLine();
-        line.InitialLocation = null;
+        line.InitialLocation = null!;
 
         // Act
         var result = await dao.InsertReceivingLineAsync(line);
@@ -124,7 +124,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_NullCoilsOnSkid_ReturnsResult()
+    public async Task InsertReceivingLineAsync_NullCoilsOnSkid_ReturnsResult_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -139,12 +139,12 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_NullVendorName_ReturnsResult()
+    public async Task InsertReceivingLineAsync_NullVendorName_ReturnsResult_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
         var line = CreateValidReceivingLine();
-        line.VendorName = null;
+        line.VendorName = null!;
 
         // Act
         var result = await dao.InsertReceivingLineAsync(line);
@@ -154,12 +154,12 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_NullPartDescription_ReturnsResult()
+    public async Task InsertReceivingLineAsync_NullPartDescription_ReturnsResult_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
         var line = CreateValidReceivingLine();
-        line.PartDescription = null;
+        line.PartDescription = null!;
 
         // Act
         var result = await dao.InsertReceivingLineAsync(line);
@@ -178,7 +178,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1000)]
     [InlineData(0)]
     [InlineData(-1)]
-    public async Task InsertReceivingLineAsync_DifferentQuantities_HandlesAllValues(int quantity)
+    public async Task InsertReceivingLineAsync_DifferentQuantities_HandlesAllValues_Async(int quantity)
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -198,7 +198,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(67890)]
     [InlineData(999999)]
     [InlineData(-1)]
-    public async Task InsertReceivingLineAsync_DifferentPONumbers_HandlesAllValues(int poNumber)
+    public async Task InsertReceivingLineAsync_DifferentPONumbers_HandlesAllValues_Async(int poNumber)
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -213,7 +213,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_AllFieldsPopulated_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_AllFieldsPopulated_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -239,7 +239,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_MinimalFields_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_MinimalFields_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -263,7 +263,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertReceivingLineAsync_VeryLongPartID_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_VeryLongPartID_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -278,7 +278,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_VeryLongHeat_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_VeryLongHeat_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -293,7 +293,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_VeryLongPartDescription_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_VeryLongPartDescription_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -308,7 +308,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_FutureDate_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_FutureDate_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -323,7 +323,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_PastDate_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_PastDate_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -343,7 +343,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(int.MaxValue)]
-    public async Task InsertReceivingLineAsync_BoundaryCoilsOnSkid_DoesNotThrow(int? coilsOnSkid)
+    public async Task InsertReceivingLineAsync_BoundaryCoilsOnSkid_DoesNotThrow_Async(int? coilsOnSkid)
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -364,7 +364,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     [InlineData(1)]
     [InlineData(99999)]
     [InlineData(int.MaxValue)]
-    public async Task InsertReceivingLineAsync_BoundaryEmployeeNumbers_DoesNotThrow(int employeeNumber)
+    public async Task InsertReceivingLineAsync_BoundaryEmployeeNumbers_DoesNotThrow_Async(int employeeNumber)
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -379,7 +379,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     }
 
     [Fact]
-    public async Task InsertReceivingLineAsync_SpecialCharactersInFields_DoesNotThrow()
+    public async Task InsertReceivingLineAsync_SpecialCharactersInFields_DoesNotThrow_Async()
     {
         // Arrange
         var dao = new Dao_ReceivingLine("Server=invalid;");
@@ -400,7 +400,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
     // ====================================================================
 
     [Fact]
-    public async Task InsertReceivingLineAsync_DatabaseException_ReturnsFailureNotThrow()
+    public async Task InsertReceivingLineAsync_DatabaseException_ReturnsFailureNotThrow_Async()
     {
         // Arrange - Empty connection string will cause connection failure
         var dao = new Dao_ReceivingLine(string.Empty);
@@ -411,7 +411,7 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
 
         // Assert - CRITICAL: DAO MUST NOT throw exceptions per Constitutional Rule II
         await act.Should().NotThrowAsync("DAO must return failure result instead of throwing exception");
-        
+
         var result = await dao.InsertReceivingLineAsync(line);
         result.Success.Should().BeFalse();
         result.ErrorMessage.Should().NotBeNullOrEmpty();
@@ -441,3 +441,4 @@ private static string TestConnectionString => Helper_Database_Variables.GetConne
         };
     }
 }
+

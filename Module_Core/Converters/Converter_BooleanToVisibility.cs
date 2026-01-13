@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
 {
     public class Converter_BooleanToVisibility : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public object Convert(object? value, Type targetType, object? parameter, string language)
         {
             bool boolValue = value is bool b && b;
             if (parameter is string s && s.Equals("Inverse", StringComparison.OrdinalIgnoreCase))
@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
             return boolValue ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public object ConvertBack(object? value, Type targetType, object? parameter, string language)
         {
             throw new NotImplementedException();
         }

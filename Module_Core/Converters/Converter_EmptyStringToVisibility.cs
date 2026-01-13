@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
 {
     public class Converter_EmptyStringToVisibility : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public object Convert(object? value, Type targetType, object? parameter, string language)
         {
             string? stringValue = value as string;
             bool isVisible = !string.IsNullOrWhiteSpace(stringValue);
@@ -19,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters
             return isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public object ConvertBack(object? value, Type targetType, object? parameter, string language)
         {
             throw new NotImplementedException();
         }
