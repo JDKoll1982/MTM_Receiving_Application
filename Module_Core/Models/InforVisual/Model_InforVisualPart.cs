@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MTM_Receiving_Application.Module_Core.Defaults;
 
 namespace MTM_Receiving_Application.Module_Core.Models.InforVisual;
 
@@ -23,7 +24,7 @@ public partial class Model_InforVisualPart : ObservableObject
 
     /// <summary>Primary Unit of Measure</summary>
     [ObservableProperty]
-    private string _primaryUom = "EA";
+    private string _primaryUom = InforVisualDefaults.DefaultUom;
 
     /// <summary>On-Hand Quantity at Warehouse 002</summary>
     [ObservableProperty]
@@ -39,11 +40,11 @@ public partial class Model_InforVisualPart : ObservableObject
 
     /// <summary>Default Warehouse/Site</summary>
     [ObservableProperty]
-    private string _defaultSite = "002";
+    private string _defaultSite = InforVisualDefaults.DefaultSiteId;
 
     /// <summary>Part Status (ACTIVE, OBSOLETE, etc.)</summary>
     [ObservableProperty]
-    private string _partStatus = "ACTIVE";
+    private string _partStatus = InforVisualDefaults.DefaultPartStatus;
 
     /// <summary>Product Line/Category</summary>
     [ObservableProperty]

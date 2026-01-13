@@ -1,0 +1,63 @@
+﻿using System;
+using FluentAssertions;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
+using Xunit;
+
+namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+{
+    /// <summary>
+    /// Unit tests for Model_ValidationResult
+    /// </summary>
+    [Trait("Category", "Unit")]
+    [Trait("Layer", "Model")]
+    public class Model_ValidationResult_Tests
+    {
+        [Fact]
+        public void Valid_SetsIsValidTrue()
+        {
+            var result = Model_ValidationResult.Valid();
+
+            result.IsValid.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Valid_SetsErrorMessageEmpty()
+        {
+            var result = Model_ValidationResult.Valid();
+
+            result.ErrorMessage.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Invalid_SetsIsValidFalse()
+        {
+            var result = Model_ValidationResult.Invalid("bad");
+
+            result.IsValid.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Invalid_SetsErrorMessage()
+        {
+            var result = Model_ValidationResult.Invalid("bad");
+
+            result.ErrorMessage.Should().Be("bad");
+        }
+
+        [Fact]
+        public void Invalid_WithNullMessage_Throws()
+        {
+            var act = static () => Model_ValidationResult.Invalid(null!);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Invalid_WithWhitespaceMessage_Throws()
+        {
+            var act = static () => Model_ValidationResult.Invalid("   ");
+
+            act.Should().Throw<ArgumentException>();
+        }
+    }
+}

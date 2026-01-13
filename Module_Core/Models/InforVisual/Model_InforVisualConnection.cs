@@ -1,4 +1,6 @@
-﻿namespace MTM_Receiving_Application.Module_Core.Models.InforVisual;
+namespace MTM_Receiving_Application.Module_Core.Models.InforVisual;
+
+using MTM_Receiving_Application.Module_Core.Defaults;
 
 /// <summary>
 /// Configuration for Infor Visual database connection
@@ -6,11 +8,11 @@
 /// </summary>
 public class Model_InforVisualConnection
 {
-    public string Server { get; set; } = "VISUAL";
-    public string Database { get; set; } = "MTMFG";
+    public string Server { get; set; } = InforVisualDefaults.DefaultServer;
+    public string Database { get; set; } = InforVisualDefaults.DefaultDatabase;
     public string UserId { get; set; } = "SHOP2";
     public string Password { get; set; } = "SHOP";
-    public string SiteId { get; set; } = "002";
+    public string SiteId { get; set; } = InforVisualDefaults.DefaultSiteId;
 
     /// <summary>
     /// Builds READ-ONLY connection string for Infor Visual

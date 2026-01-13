@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MTM_Receiving_Application.Module_Core.Defaults;
 
 namespace MTM_Receiving_Application.Module_Core.Models.InforVisual;
 
@@ -27,7 +28,7 @@ public partial class Model_InforVisualPO : ObservableObject
     private decimal _remainingQty;
 
     [ObservableProperty]
-    private string _unitOfMeasure = "EA";
+    private string _unitOfMeasure = InforVisualDefaults.DefaultUom;
 
     [ObservableProperty]
     private DateTime? _dueDate;
@@ -42,6 +43,6 @@ public partial class Model_InforVisualPO : ObservableObject
     private string _poStatus = string.Empty;
 
     [ObservableProperty]
-    private string _siteId = "002";
+    private string _siteId = InforVisualDefaults.DefaultSiteId;
 }
 

@@ -1,5 +1,5 @@
-﻿using MTM_Receiving_Application.Module_Core.Models.Enums;
 using System;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Core.Models.Core;
 
@@ -8,12 +8,12 @@ namespace MTM_Receiving_Application.Module_Core.Models.Core;
 /// </summary>
 public static class Model_Dao_Result_Factory
 {
-    public static Model_Dao_Result Failure(string message, Exception? ex = null)
+    public static Model_Dao_Result Failure(string? message, Exception? ex = null)
     {
         return new Model_Dao_Result
         {
             Success = false,
-            ErrorMessage = message,
+            ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Operation failed." : message,
             Exception = ex,
             Severity = Enum_ErrorSeverity.Error
         };
@@ -24,16 +24,17 @@ public static class Model_Dao_Result_Factory
         return new Model_Dao_Result
         {
             Success = true,
-            AffectedRows = affectedRows
+            AffectedRows = Math.Max(0, affectedRows),
+            ErrorMessage = string.Empty
         };
     }
 
-    public static Model_Dao_Result<T> Failure<T>(string message, Exception? ex = null)
+    public static Model_Dao_Result<T> Failure<T>(string? message, Exception? ex = null)
     {
         return new Model_Dao_Result<T>
         {
             Success = false,
-            ErrorMessage = message,
+            ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Operation failed." : message,
             Exception = ex,
             Severity = Enum_ErrorSeverity.Error
         };
@@ -45,7 +46,8 @@ public static class Model_Dao_Result_Factory
         {
             Success = true,
             Data = data,
-            AffectedRows = affectedRows
+            AffectedRows = Math.Max(0, affectedRows),
+            ErrorMessage = string.Empty
         };
     }
 }

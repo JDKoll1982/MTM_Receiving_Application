@@ -1,0 +1,134 @@
+﻿using System;
+using FluentAssertions;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using Xunit;
+
+namespace MTM_Receiving_Application.Tests.Module_Core.Models.Core
+{
+    /// <summary>
+    /// Unit tests for Model_Dao_Result_Factory
+    /// </summary>
+    [Trait("Category", "Unit")]
+    [Trait("Layer", "Model")]
+    public class Model_Dao_Result_Factory_Tests
+    {
+        [Fact]
+        public void Failure_CreatesFailedResult()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Failure("Error!");
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Be("Error!");
+            result.Severity.Should().Be(Enum_ErrorSeverity.Error);
+        }
+
+        [Fact]
+        public void Failure_WithNullMessage_UsesDefaultMessage()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Failure(null);
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Be("Operation failed.");
+        }
+
+        [Fact]
+        public void Failure_WithWhitespaceMessage_UsesDefaultMessage()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Failure("   ");
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Be("Operation failed.");
+        }
+
+        [Fact]
+        public void Failure_WithException_CapturesException()
+        {
+            // Arrange
+            var ex = new InvalidOperationException("Test ex");
+
+            // Act
+            var result = Model_Dao_Result_Factory.Failure("Error!", ex);
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.Exception.Should().Be(ex);
+        }
+
+        [Fact]
+        public void Success_CreatesSuccessResult()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Success(5);
+
+            // Assert
+            result.Success.Should().BeTrue();
+            result.AffectedRows.Should().Be(5);
+            result.ErrorMessage.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Success_WithNegativeAffectedRows_ClampsToZero()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Success(-1);
+
+            // Assert
+            result.Success.Should().BeTrue();
+            result.AffectedRows.Should().Be(0);
+        }
+
+        [Fact]
+        public void FailureGeneric_CreatesFailedResult()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Failure<string>("Generic Error!");
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Be("Generic Error!");
+            result.Data.Should().BeNull();
+        }
+
+        [Fact]
+        public void FailureGeneric_WithNullMessage_UsesDefaultMessage()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Failure<string>(null);
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Be("Operation failed.");
+        }
+
+        [Fact]
+        public void SuccessGeneric_CreatesSuccessResultWithData()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Success("Test Data", 1);
+
+            // Assert
+            result.Success.Should().BeTrue();
+            result.Data.Should().Be("Test Data");
+            result.AffectedRows.Should().Be(1);
+            result.ErrorMessage.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void SuccessGeneric_WithNegativeAffectedRows_ClampsToZero()
+        {
+            // Act
+            var result = Model_Dao_Result_Factory.Success("Test Data", -1);
+
+            // Assert
+            result.Success.Should().BeTrue();
+            result.AffectedRows.Should().Be(0);
+        }
+    }
+}

@@ -1,12 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{91BDA914-A01C-D13F-F041-0A57452A50F0}|MTM_Receiving_Application.csproj|c:\\users\\johnk\\source\\repos\\mtm_receiving_application\\module_volvo\\viewmodels\\viewmodel_volvo_shipmententry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{91BDA914-A01C-D13F-F041-0A57452A50F0}|MTM_Receiving_Application.csproj|solutionrelative:module_volvo\\viewmodels\\viewmodel_volvo_shipmententry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,24 +9,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ViewModel_Volvo_ShipmentEntry.cs",
-              "DocumentMoniker": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Volvo\\ViewModels\\ViewModel_Volvo_ShipmentEntry.cs",
-              "RelativeDocumentMoniker": "Module_Volvo\\ViewModels\\ViewModel_Volvo_ShipmentEntry.cs",
-              "ToolTip": "C:\\Users\\johnk\\source\\repos\\MTM_Receiving_Application\\Module_Volvo\\ViewModels\\ViewModel_Volvo_ShipmentEntry.cs",
-              "RelativeToolTip": "Module_Volvo\\ViewModels\\ViewModel_Volvo_ShipmentEntry.cs",
-              "ViewState": "AgIAAPEBAAAAAAAAAAAlwP4BAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T14:48:57.869Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             }
           ]
         }

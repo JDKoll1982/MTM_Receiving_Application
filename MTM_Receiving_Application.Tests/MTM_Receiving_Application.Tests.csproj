@@ -45,4 +45,7 @@
     <ItemGroup>
         <ProjectReference Include="..\MTM_Receiving_Application.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Module_Core\Models\InforVisual\" />
+    </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace MTM_Receiving_Application.Module_Core.Models.Systems
+using System;
+
+namespace MTM_Receiving_Application.Module_Core.Models.Systems
 {
     /// <summary>
     /// Result of a validation operation.
@@ -8,11 +10,16 @@
         public bool IsValid { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public static Model_ValidationResult Valid() => new() { IsValid = true };
-        public static Model_ValidationResult Invalid(string message) => new()
+        public static Model_ValidationResult Valid() => new()
+        {
+            IsValid = true,
+            ErrorMessage = string.Empty
+        };
+
+        public static Model_ValidationResult Invalid(string? message) => new()
         {
             IsValid = false,
-            ErrorMessage = message
+            ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Validation failed." : message
         };
     }
 }

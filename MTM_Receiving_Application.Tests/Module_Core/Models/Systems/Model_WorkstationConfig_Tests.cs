@@ -1,7 +1,8 @@
 using System;
-using Xunit;
 using FluentAssertions;
+using MTM_Receiving_Application.Module_Core.Defaults;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
 {
@@ -15,73 +16,73 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
         [Fact]
         public void Constructor_Default_UsesMachineName()
         {
-            // Act
             var config = new Model_WorkstationConfig();
 
-            // Assert
             config.ComputerName.Should().Be(Environment.MachineName);
         }
 
         [Fact]
         public void Constructor_WithParameter_SetsComputerName()
         {
-            // Act
             var config = new Model_WorkstationConfig("TEST-PC");
 
-            // Assert
             config.ComputerName.Should().Be("TEST-PC");
         }
 
         [Fact]
         public void IsSharedTerminal_ReturnsTrueForSharedType()
         {
-            // Act
-            var config = new Model_WorkstationConfig { WorkstationType = "shared_terminal" };
+            var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.SharedTerminalWorkstationType };
 
-            // Assert
             config.IsSharedTerminal.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsSharedTerminal_ReturnsFalseForSharedType()
+        {
+            var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.SharedTerminalWorkstationType };
+
             config.IsPersonalWorkstation.Should().BeFalse();
         }
 
         [Fact]
         public void IsPersonalWorkstation_ReturnsTrueForPersonalType()
         {
-             // Act
-            var config = new Model_WorkstationConfig { WorkstationType = "personal_workstation" };
+            var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.PersonalWorkstationWorkstationType };
 
-            // Assert
             config.IsPersonalWorkstation.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsPersonalWorkstation_ReturnsFalseForPersonalType()
+        {
+            var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.PersonalWorkstationWorkstationType };
+
             config.IsSharedTerminal.Should().BeFalse();
         }
 
         [Fact]
-        public void TimeoutDuration_SharedTerminal_Returns15Minutes()
+        public void TimeoutDuration_SharedTerminal_ReturnsSharedTimeoutMinutes()
         {
-            // Act
-            var config = new Model_WorkstationConfig { WorkstationType = "shared_terminal" };
+            var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.SharedTerminalWorkstationType };
 
-            // Assert
-            config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(15));
+            config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(WorkstationDefaults.SharedTerminalTimeoutMinutes));
         }
 
         [Fact]
-        public void TimeoutDuration_PersonalWorkstation_Returns30Minutes()
+        public void TimeoutDuration_PersonalWorkstation_ReturnsPersonalTimeoutMinutes()
         {
-            // Act
-            var config = new Model_WorkstationConfig { WorkstationType = "personal_workstation" };
+            var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.PersonalWorkstationWorkstationType };
 
-            // Assert
-            config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(30));
+            config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(WorkstationDefaults.PersonalWorkstationTimeoutMinutes));
         }
 
         [Fact]
-        public void TimeoutDuration_UnknownType_Returns30MinutesDefault()
+        public void TimeoutDuration_UnknownType_ReturnsPersonalTimeoutMinutesDefault()
         {
-            // Act
             var config = new Model_WorkstationConfig { WorkstationType = "unknown" };
 
-            // Assert
-            config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(30));
+            config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(WorkstationDefaults.PersonalWorkstationTimeoutMinutes));
         }
     }
 }

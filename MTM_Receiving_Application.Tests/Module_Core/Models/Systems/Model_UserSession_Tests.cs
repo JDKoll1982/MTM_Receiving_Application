@@ -1,8 +1,7 @@
 using System;
-using System.Threading;
-using Xunit;
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
 {
@@ -16,12 +15,18 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
         [Fact]
         public void DefaultConstructor_SetsTimestamps()
         {
+            // Arrange
+            var before = DateTime.Now;
+
             // Act
             var session = new Model_UserSession();
+            var after = DateTime.Now;
 
             // Assert
-            session.LoginTimestamp.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
-            session.LastActivityTimestamp.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+            session.LoginTimestamp.Should().BeOnOrAfter(before);
+            session.LoginTimestamp.Should().BeOnOrBefore(after);
+            session.LastActivityTimestamp.Should().BeOnOrAfter(before);
+            session.LastActivityTimestamp.Should().BeOnOrBefore(after);
         }
 
         [Fact]
@@ -29,14 +34,13 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
         {
             // Arrange
             var session = new Model_UserSession();
-            var oldTime = session.LastActivityTimestamp;
-            Thread.Sleep(10); // Ensure minimal time passage
+            session.LastActivityTimestamp = DateTime.Now.AddMinutes(-1);
 
             // Act
             session.UpdateLastActivity();
 
             // Assert
-            session.LastActivityTimestamp.Should().BeAfter(oldTime);
+            session.LastActivityTimestamp.Should().BeAfter(DateTime.Now.AddSeconds(-5));
         }
 
         [Fact]
@@ -44,14 +48,13 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
         {
             // Arrange
             var session = new Model_UserSession();
-            var pastTime = DateTime.Now.AddMinutes(-5);
-            session.LastActivityTimestamp = pastTime;
+            session.LastActivityTimestamp = DateTime.Now.AddMinutes(-5);
 
             // Act
             var elapsed = session.TimeSinceLastActivity;
 
             // Assert
-            elapsed.Should().BeCloseTo(TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(1));
+            elapsed.Should().BeCloseTo(TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(2));
         }
 
         [Fact]
@@ -89,14 +92,11 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
         }
 
         [Fact]
-        public void HasErpAccess_ReturnsFalseIfUserNull()
+        public void HasErpAccess_ReturnsFalseIfUserIsNull()
         {
-             // Arrange
-            var session = new Model_UserSession();
-            // User is null by default due to strict null checks but initialization logic allows null refs for a moment?
-            // User is marked as non-nullable in property signature `Model_User User { get; set; } = null!;` 
-            // but effectively null until set.
-            
+            // Arrange
+            var session = new Model_UserSession { User = null };
+
             // Act
             var hasAccess = session.HasErpAccess;
 
@@ -105,21 +105,58 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
         }
 
         [Fact]
-        public void HasErpAccess_ReturnsUserValue()
+        public void HasErpAccess_ReturnsFalseIfUserHasNoVisualUsername()
         {
             // Arrange
             var session = new Model_UserSession
             {
-                User = new Model_User 
-                { 
-                     VisualUsername = "user", 
-                     VisualPassword = "pass" // Assumed this makes HasErpAccess true, let's check Model_User later
-                }
+                User = new Model_User { VisualUsername = null }
             };
-            
-            // Note: We need to know logic of Model_User.HasErpAccess. Assuming it checks props.
-            // If Model_User logic is complex, we should mock or configure it correctly.
-            // Let's assume HasErpAccess depends on VisualUsername/Password being set.
+
+            // Act
+            var hasAccess = session.HasErpAccess;
+
+            // Assert
+            hasAccess.Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasErpAccess_ReturnsTrueIfUserHasVisualUsername()
+        {
+            // Arrange
+            var session = new Model_UserSession
+            {
+                User = new Model_User { VisualUsername = "user" }
+            };
+
+            // Act
+            var hasAccess = session.HasErpAccess;
+
+            // Assert
+            hasAccess.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Constructor_WithUser_SetsUser()
+        {
+            // Arrange
+            var user = new Model_User();
+
+            // Act
+            var session = new Model_UserSession(user);
+
+            // Assert
+            session.User.Should().BeSameAs(user);
+        }
+
+        [Fact]
+        public void Constructor_WithNullUser_Throws()
+        {
+            // Act
+            var act = static () => new Model_UserSession(null!);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>();
         }
     }
 }

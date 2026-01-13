@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MTM_Receiving_Application.Module_Core.Models.Systems
 {
@@ -8,6 +8,8 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
     /// </summary>
     public class Model_User
     {
+        private static Func<DateTime> NowProvider { get; } = static () => DateTime.Now;
+
         // ====================================================================
         // Database Fields
         // ====================================================================
@@ -108,8 +110,9 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         /// </summary>
         public Model_User()
         {
-            CreatedDate = DateTime.Now;
-            ModifiedDate = DateTime.Now;
+            var now = NowProvider();
+            CreatedDate = now;
+            ModifiedDate = now;
         }
     }
 }

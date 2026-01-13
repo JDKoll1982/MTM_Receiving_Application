@@ -1,0 +1,162 @@
+﻿using System;
+using FluentAssertions;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
+using Xunit;
+
+namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+{
+    /// <summary>
+    /// Unit tests for Model_UserSession
+    /// </summary>
+    [Trait("Category", "Unit")]
+    [Trait("Layer", "Model")]
+    public class Model_UserSession_Tests
+    {
+        [Fact]
+        public void DefaultConstructor_SetsTimestamps()
+        {
+            // Arrange
+            var before = DateTime.Now;
+
+            // Act
+            var session = new Model_UserSession();
+            var after = DateTime.Now;
+
+            // Assert
+            session.LoginTimestamp.Should().BeOnOrAfter(before);
+            session.LoginTimestamp.Should().BeOnOrBefore(after);
+            session.LastActivityTimestamp.Should().BeOnOrAfter(before);
+            session.LastActivityTimestamp.Should().BeOnOrBefore(after);
+        }
+
+        [Fact]
+        public void UpdateLastActivity_UpdatesTimestamp()
+        {
+            // Arrange
+            var session = new Model_UserSession();
+            session.LastActivityTimestamp = DateTime.Now.AddMinutes(-1);
+
+            // Act
+            session.UpdateLastActivity();
+
+            // Assert
+            session.LastActivityTimestamp.Should().BeAfter(DateTime.Now.AddSeconds(-5));
+        }
+
+        [Fact]
+        public void TimeSinceLastActivity_ReturnsCorrectDifference()
+        {
+            // Arrange
+            var session = new Model_UserSession();
+            session.LastActivityTimestamp = DateTime.Now.AddMinutes(-5);
+
+            // Act
+            var elapsed = session.TimeSinceLastActivity;
+
+            // Assert
+            elapsed.Should().BeCloseTo(TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(2));
+        }
+
+        [Fact]
+        public void IsTimedOut_ReturnsTrueWhenExpired()
+        {
+            // Arrange
+            var session = new Model_UserSession
+            {
+                TimeoutDuration = TimeSpan.FromMinutes(10),
+                LastActivityTimestamp = DateTime.Now.AddMinutes(-11)
+            };
+
+            // Act
+            var isTimedOut = session.IsTimedOut;
+
+            // Assert
+            isTimedOut.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsTimedOut_ReturnsFalseWhenActive()
+        {
+            // Arrange
+            var session = new Model_UserSession
+            {
+                TimeoutDuration = TimeSpan.FromMinutes(10),
+                LastActivityTimestamp = DateTime.Now.AddMinutes(-5)
+            };
+
+            // Act
+            var isTimedOut = session.IsTimedOut;
+
+            // Assert
+            isTimedOut.Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasErpAccess_ReturnsFalseIfUserIsNull()
+        {
+            // Arrange
+            var session = new Model_UserSession { User = null };
+
+            // Act
+            var hasAccess = session.HasErpAccess;
+
+            // Assert
+            hasAccess.Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasErpAccess_ReturnsFalseIfUserHasNoVisualUsername()
+        {
+            // Arrange
+            var session = new Model_UserSession
+            {
+                User = new Model_User { VisualUsername = null }
+            };
+
+            // Act
+            var hasAccess = session.HasErpAccess;
+
+            // Assert
+            hasAccess.Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasErpAccess_ReturnsTrueIfUserHasVisualUsername()
+        {
+            // Arrange
+            var session = new Model_UserSession
+            {
+                User = new Model_User { VisualUsername = "user" }
+            };
+
+            // Act
+            var hasAccess = session.HasErpAccess;
+
+            // Assert
+            hasAccess.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Constructor_WithUser_SetsUser()
+        {
+            // Arrange
+            var user = new Model_User();
+
+            // Act
+            var session = new Model_UserSession(user);
+
+            // Assert
+            session.User.Should().BeSameAs(user);
+        }
+
+        [Fact]
+        public void Constructor_WithNullUser_Throws()
+        {
+            // Act
+            var act = static () => new Model_UserSession(null!);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>();
+        }
+    }
+}

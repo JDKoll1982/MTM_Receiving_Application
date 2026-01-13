@@ -1,4 +1,4 @@
-﻿using MTM_Receiving_Application.Module_Core.Models.Systems;
+using System;
 
 namespace MTM_Receiving_Application.Module_Core.Models.Systems
 {
@@ -11,17 +11,32 @@ namespace MTM_Receiving_Application.Module_Core.Models.Systems
         public Model_User? User { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public static Model_AuthenticationResult SuccessResult(Model_User user) => new()
+        public static Model_AuthenticationResult SuccessResult(Model_User user)
         {
-            Success = true,
-            User = user
-        };
+            ArgumentNullException.ThrowIfNull(user);
 
-        public static Model_AuthenticationResult ErrorResult(string message) => new()
+            return new Model_AuthenticationResult
+            {
+                Success = true,
+                User = user,
+                ErrorMessage = string.Empty
+            };
+        }
+
+        public static Model_AuthenticationResult ErrorResult(string message)
         {
-            Success = false,
-            ErrorMessage = message
-        };
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentException("Error message cannot be null or whitespace.", nameof(message));
+            }
+
+            return new Model_AuthenticationResult
+            {
+                Success = false,
+                User = null,
+                ErrorMessage = message
+            };
+        }
     }
 }
 
