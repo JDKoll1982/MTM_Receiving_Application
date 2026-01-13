@@ -173,8 +173,8 @@ namespace MTM_Receiving_Application.Module_Core.Data.Authentication
                 await connection.OpenAsync();
 
                 var query = excludeEmployeeNumber.HasValue
-                    ? "SELECT COUNT(*) FROMauth_users WHERE windows_username = @username AND employee_number != @excludeId"
-                    : "SELECT COUNT(*) FROMauth_users WHERE windows_username = @username";
+                    ? "SELECT COUNT(*) FROM auth_users WHERE windows_username = @username AND employee_number != @excludeId"
+                    : "SELECT COUNT(*) FROM auth_users WHERE windows_username = @username";
 
                 await using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@username", username);

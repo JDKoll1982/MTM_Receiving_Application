@@ -41,6 +41,8 @@ Connection string is managed by `Helper_Database_Variables`.
 | Hardcoded Lines | PO-067343 | ❌ FAIL | Invalid columns: `PO_ID`, `QTY_RECEIVED`, `PART_NAME`, etc. |
 | Correction Verification | PO-067343 | ✅ PASS | Validated with `ID`, `SITE_ID`='MTM2', `STATUS` IN ('O','P','R') |
 | Query Verification | GetLines | ✅ PASS | Retrieved 1 row. Columns: `PO_ID` (aliased), `PO_LINE` (aliased), `PART_NAME` (aliased), `QTY_RECEIVED` (aliased) |
+| Correction Verification | PO-067381 | ✅ PASS | Validated Closed PO with `STATUS` IN ('O','P','R',**'C'**) |
+| Correction Verification | PO-067381 | ✅ PASS | Validated with `STATUS` check removed completely |
 
 ### Tested Queries
 All queries (01-04) executed successfully against the live database without SQL errors.
@@ -67,3 +69,5 @@ Mismatches resolved:
 - `SITE_REF` -> `SITE_ID`
 - `QTY_RECEIVED` -> `TOTAL_RECEIVED_QTY` (aliased as QTY_RECEIVED)
 - `PART_NAME` -> `DESCRIPTION` (aliased as PART_NAME)
+- Added `C` (Closed) to allowed statuses in `Dao_InforVisualPO.ValidatePOAsync` to support Routing workflow for closed POs.
+- Removed `STATUS` check entirely from `Dao_InforVisualPO.ValidatePOAsync` to match user requirement "SHOWS data NO MATTER the status".

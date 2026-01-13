@@ -76,7 +76,13 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// Selected PO line from DataGrid
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsLineSelected))]
     private Model_InforVisualPOLine? _selectedPOLine;
+
+    /// <summary>
+    /// Helper property for binding visibility of details panel
+    /// </summary>
+    public bool IsLineSelected => SelectedPOLine != null;
 
     /// <summary>
     /// Indicates whether we're in OTHER mode (no PO validation)

@@ -50,6 +50,18 @@ public class Model_InforVisualPOLine
     public string VendorName { get; set; } = string.Empty;
 
     /// <summary>
+    /// Full specification text from PURC_LINE_BINARY
+    /// </summary>
+    public string Specifications { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Truncated specification text for grid display (first 50 chars)
+    /// </summary>
+    public string SpecificationsPreview => Specifications.Length > 50 
+        ? Specifications.Substring(0, 50) + "..." 
+        : Specifications;
+
+    /// <summary>
     /// Expected delivery date (nullable)
     /// </summary>
     public DateTime? DueDate { get; set; }

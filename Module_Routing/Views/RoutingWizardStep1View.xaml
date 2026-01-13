@@ -120,60 +120,101 @@
             </StackPanel>
         </Border>
 
-        <!-- PO Lines DataGrid (visible when NOT in OTHER mode) -->
-        <Border Grid.Row="2" 
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="16"
-                Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
-            <Grid>
-                <TextBlock Text="Select a line from the PO"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"/>
+        <!-- PO Lines DataGrid + Specs (visible when NOT in OTHER mode) -->
+        <Grid Grid.Row="2" ColumnSpacing="16"
+              Visibility="{x:Bind ViewModel.IsOtherMode, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <ListView ItemsSource="{x:Bind ViewModel.PoLines, Mode=OneWay}"
-                          SelectedItem="{x:Bind ViewModel.SelectedPOLine, Mode=TwoWay}"
-                          SelectionMode="Single"
-                          Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}}">
-                    <ListView.HeaderTemplate>
-                        <DataTemplate>
-                            <Grid Padding="8" ColumnSpacing="12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Line" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="Part ID" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="2" Text="Description" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="3" Text="Quantity" FontWeight="SemiBold" HorizontalAlignment="Right"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.HeaderTemplate>
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Model_InforVisualPOLine">
-                            <Grid Padding="8" ColumnSpacing="12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{x:Bind LineNumber}"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind PartID}"/>
-                                <TextBlock Grid.Column="2" Text="{x:Bind Description}"/>
-                                <TextBlock Grid.Column="3" Text="{x:Bind QuantityOrdered}" HorizontalAlignment="Right"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
-        </Border>
+            <!-- Lines List -->
+            <Border Grid.Column="0" 
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid>
+                    <TextBlock Text="Select a line from the PO"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=Inverse}"/>
+
+                    <ListView ItemsSource="{x:Bind ViewModel.PoLines, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedPOLine, Mode=TwoWay}"
+                              SelectionMode="Single"
+                              Visibility="{x:Bind ViewModel.PoLines.Count, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}}">
+                        <ListView.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Padding="8" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="80"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Line" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="Part ID" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="2" Text="Description" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="3" Text="Specs (Preview)" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="4" Text="Qty" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.HeaderTemplate>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Model_InforVisualPOLine">
+                                <Grid Padding="8" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                         <ColumnDefinition Width="50"/>
+                                         <ColumnDefinition Width="120"/>
+                                         <ColumnDefinition Width="150"/>
+                                         <ColumnDefinition Width="*"/>
+                                         <ColumnDefinition Width="80"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{x:Bind LineNumber}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind PartID}"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind Description}" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="3" Text="{x:Bind SpecificationsPreview}" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock Grid.Column="4" Text="{x:Bind QuantityOrdered}" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Border>
+
+            <!-- Specs Detail Panel -->
+            <Border Grid.Column="1" 
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16"
+                    Visibility="{x:Bind ViewModel.SelectedPOLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid RowSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock Text="Line Specifications" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="{x:Bind ViewModel.SelectedPOLine.PartID, Mode=OneWay}" 
+                                   Style="{ThemeResource CaptionTextBlockStyle}" 
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <TextBlock Text="{x:Bind ViewModel.SelectedPOLine.Specifications, Mode=OneWay}" 
+                                   TextWrapping="Wrap" 
+                                   Style="{ThemeResource BodyTextBlockStyle}"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- Status Bar -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">

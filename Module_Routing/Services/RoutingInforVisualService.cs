@@ -88,7 +88,8 @@ public class RoutingInforVisualService : IRoutingInforVisualService
                         Description = "Mock Part 1 Description",
                         QuantityOrdered = 100,
                         QuantityReceived = 0,
-                        VendorName = "MOCK VENDOR"
+                        VendorName = "MOCK VENDOR",
+                        Specifications = "These are mock specifications for part 1. They are long enough to be truncated in the display."
                     },
                     new Model_InforVisualPOLine
                     {
@@ -98,7 +99,8 @@ public class RoutingInforVisualService : IRoutingInforVisualService
                         Description = "Mock Part 2 Description",
                         QuantityOrdered = 50,
                         QuantityReceived = 10,
-                        VendorName = "MOCK VENDOR"
+                        VendorName = "MOCK VENDOR",
+                        Specifications = "Short specs."
                     }
                 };
                 return Model_Dao_Result_Factory.Success(mockLines);

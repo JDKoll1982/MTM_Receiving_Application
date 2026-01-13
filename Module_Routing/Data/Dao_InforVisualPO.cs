@@ -34,7 +34,7 @@ public class Dao_InforVisualPO
     public async Task<Model_Dao_Result<bool>> ValidatePOAsync(string poNumber)
     {
         try
-        {            // Issue #32: Enhanced logging
+        {
             Console.WriteLine($"[DAO] Validating PO: {poNumber}");
             await using (var connection = new SqlConnection(_connectionString))
             {
@@ -43,9 +43,7 @@ public class Dao_InforVisualPO
                 var query = @"
                     SELECT COUNT(*)
                     FROM PURCHASE_ORDER WITH (NOLOCK)
-                    WHERE ID = @PoNumber
-                      AND SITE_ID = 'MTM2'
-                      AND STATUS IN ('O', 'P', 'R')"; // Open, Partial, or Released
+                    WHERE ID = @PoNumber;";
 
                 await using (var command = new SqlCommand(query, connection))
                 {
@@ -93,12 +91,15 @@ public class Dao_InforVisualPO
                     pol.UNIT_PRICE,
                     pol.LINE_STATUS AS STATUS,
                     p.DESCRIPTION AS PART_NAME,
-                    po.VENDOR_ID
+                    po.VENDOR_ID,
+                    CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) AS SPECS
                 FROM PURC_ORDER_LINE pol WITH (NOLOCK)
                 INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PURC_ORDER_ID = po.ID
                 LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.ID
+                LEFT JOIN PURC_LINE_BINARY plb WITH (NOLOCK) ON pol.PURC_ORDER_ID = plb.PURC_ORDER_ID 
+                    AND pol.LINE_NO = plb.PURC_ORDER_LINE_NO 
+                    AND plb.TYPE = 'D'
                 WHERE pol.PURC_ORDER_ID = @PoNumber
-                  AND po.SITE_ID = 'MTM2'
                 ORDER BY pol.LINE_NO";
 
             await using var command = new SqlCommand(query, connection);
@@ -148,13 +149,16 @@ public class Dao_InforVisualPO
                         pol.UNIT_PRICE,
                         pol.LINE_STATUS AS STATUS,
                         p.DESCRIPTION AS PART_NAME,
-                        po.VENDOR_ID
+                        po.VENDOR_ID,
+                        CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) AS SPECS
                     FROM PURC_ORDER_LINE pol WITH (NOLOCK)
                     INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PURC_ORDER_ID = po.ID
                     LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.ID
+                    LEFT JOIN PURC_LINE_BINARY plb WITH (NOLOCK) ON pol.PURC_ORDER_ID = plb.PURC_ORDER_ID 
+                        AND pol.LINE_NO = plb.PURC_ORDER_LINE_NO 
+                        AND plb.TYPE = 'D'
                     WHERE pol.PURC_ORDER_ID = @PoNumber
-                      AND pol.LINE_NO = @LineNumber
-                      AND po.SITE_ID = 'MTM2'";
+                      AND pol.LINE_NO = @LineNumber";
 
                 await using (var command = new SqlCommand(query, connection))
                 {
@@ -222,13 +226,23 @@ public class Dao_InforVisualPO
         return new Model_InforVisualPOLine
         {
             PONumber = reader["PO_ID"].ToString() ?? string.Empty,
-            LineNumber = reader.GetInt32(reader.GetOrdinal("PO_LINE")).ToString(),
+            // Use indexer + ToString() to safely handle smallint (Int16) vs int (Int32) mismatch
+            // reader.GetInt32() throws on smallint columns
+            LineNumber = reader["PO_LINE"].ToString() ?? string.Empty,
             PartID = reader["PART_ID"].ToString() ?? string.Empty,
             Description = reader.IsDBNull(reader.GetOrdinal("PART_NAME"))
                 ? string.Empty
                 : reader.GetString(reader.GetOrdinal("PART_NAME")),
-            QuantityOrdered = reader.GetDecimal(reader.GetOrdinal("QTY_ORDERED")),
-            QuantityReceived = reader.GetDecimal(reader.GetOrdinal("QTY_RECEIVED"))
+            Specifications = reader.IsDBNull(reader.GetOrdinal("SPECS"))
+                ? string.Empty
+                : reader.GetString(reader.GetOrdinal("SPECS")),
+            // Handle potentially nullable decimals safely
+            QuantityOrdered = reader.IsDBNull(reader.GetOrdinal("QTY_ORDERED"))
+                ? 0m
+                : reader.GetDecimal(reader.GetOrdinal("QTY_ORDERED")),
+            QuantityReceived = reader.IsDBNull(reader.GetOrdinal("QTY_RECEIVED"))
+                ? 0m
+                : reader.GetDecimal(reader.GetOrdinal("QTY_RECEIVED"))
         };
     }
 }

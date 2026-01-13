@@ -48,7 +48,7 @@ namespace InforVisualTest
 
                 // Test Case 5: Corrected Queries
                 Console.WriteLine("\nTEST CASE 5: Corrected Routing Queries (Proposed)");
-                await TestCorrectedRoutingQueries("PO-067343");
+                await TestCorrectedRoutingQueries("PO-067381"); // Testing the Closed PO
             }
             catch (Exception ex)
             {
@@ -151,6 +151,8 @@ ORDER BY pol.LINE_NO;";
                         reader["SiteId"]
                     );
                 }
+
+                Console.WriteLine($"   ✅ Retrieved {rows} lines"); 
 
                 if (rows > 0)
                 {
@@ -317,13 +319,13 @@ ORDER BY p.ID;";
         {
              // 1. Corrected ValidatePOAsync
             Console.WriteLine($"Step A: Validate PO (Corrected Logic)");
-            // Fixes: PO_ID -> ID, SITE_REF -> SITE_ID ('MTM2'), STATUS IN ('O','P','R')
+            // Fixes: PO_ID -> ID, SITE_REF -> SITE_ID ('MTM2'), STATUS IN ('O','P','R','C')
             string query1 = @"
                     SELECT COUNT(*)
                     FROM dbo.PURCHASE_ORDER WITH (NOLOCK)
                     WHERE ID = @PoNumber
                       AND SITE_ID = 'MTM2'
-                      AND STATUS IN ('O', 'P', 'R')"; 
+                      AND STATUS IN ('O', 'P', 'R', 'C')"; 
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
