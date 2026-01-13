@@ -125,7 +125,7 @@ test.describe('Movie CRUD - offline with network recorder', () => {
 // playwright.config.ts - Map URLs for different environments
 export default defineConfig({
   use: {
-    baseURL: process.env.CI ? 'https://app.ci.example.com' : 'http://localhost:3000',
+    baseURL: process.env.CI ? 'https://app.ci.example.com' : 'http://172.16.1.104:3000',
   },
 });
 
@@ -133,7 +133,7 @@ export default defineConfig({
 test('cross-environment playback', async ({ page, context, networkRecorder }) => {
   await networkRecorder.setup(context);
 
-  // In dev: hits http://localhost:3000/api/movies
+  // In dev: hits http://172.16.1.104:3000/api/movies
   // In CI: HAR replays with https://app.ci.example.com/api/movies
   await page.goto('/movies');
 

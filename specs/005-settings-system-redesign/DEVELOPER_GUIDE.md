@@ -26,14 +26,14 @@ graph LR
 cd Database\Schemas
 
 # Deploy to MySQL (replace with your credentials)
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < settings_system_schema.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < settings_system_schema.sql
 
 # Deploy stored procedures
 cd ..\StoredProcedures
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_SettingsSystem.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < sp_SettingsSystem.sql
 
 # Verify deployment
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application -e "SELECT COUNT(*) FROM settings_universal;"
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application -e "SELECT COUNT(*) FROM settings_universal;"
 # Expected: 79 rows (or close to it)
 ```
 

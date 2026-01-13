@@ -68,10 +68,10 @@ dotnet test --filter "FullyQualifiedName~Integration" # Integration tests only
 
 ```powershell
 # MySQL connection test
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application
 
 # Deploy stored procedures (from Database/StoredProcedures/)
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_name.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < sp_name.sql
 ```
 
 ### XAML Troubleshooting
@@ -449,7 +449,7 @@ dotnet restore
 # No command - manually review ConfigureServices method
 
 # Database connection test
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application -e "SELECT 1;"
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application -e "SELECT 1;"
 ```
 
 ---

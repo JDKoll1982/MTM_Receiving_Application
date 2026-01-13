@@ -37,7 +37,7 @@ export default defineConfig({
     video: 'retain-on-failure', // Delete on pass
 
     // Context for debugging
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || 'http://172.16.1.104:3000',
 
     // Timeout context
     actionTimeout: 15_000, // 15s for clicks/fills

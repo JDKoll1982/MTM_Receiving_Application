@@ -22,7 +22,7 @@
             <text x="36" y="18" font-family="Segoe UI" font-size="16" font-weight="600" fill="#2e7d32">Connection
                 Successful</text>
 
-            <text x="0" y="48" font-family="Segoe UI" font-size="13" fill="#666">Host: localhost:3306</text>
+            <text x="0" y="48" font-family="Segoe UI" font-size="13" fill="#666">Host: 172.16.1.104:3306</text>
             <text x="0" y="68" font-family="Segoe UI" font-size="13" fill="#666">Database:
                 mtm_receiving_application</text>
             <text x="0" y="88" font-family="Segoe UI" font-size="13" fill="#666">Connection time: 48 ms</text>

@@ -3,7 +3,7 @@
 # Creates both production and test databases
 
 param(
-    [string]$Server = "localhost",
+    [string]$Server = "172.16.1.104",
     [string]$Port = "3306",
     [string]$Database = "mtm_receiving_application",
     [string]$TestDatabase = "mtm_receiving_application_test",

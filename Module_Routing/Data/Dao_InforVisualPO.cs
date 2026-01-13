@@ -43,9 +43,9 @@ public class Dao_InforVisualPO
                 var query = @"
                     SELECT COUNT(*)
                     FROM PURCHASE_ORDER WITH (NOLOCK)
-                    WHERE PO_ID = @PoNumber
-                      AND SITE_REF = '002'
-                      AND STATUS IN ('O', 'P')"; // Open or Partial
+                    WHERE ID = @PoNumber
+                      AND SITE_ID = 'MTM2'
+                      AND STATUS IN ('O', 'P', 'R')"; // Open, Partial, or Released
 
                 await using (var command = new SqlCommand(query, connection))
                 {
@@ -85,21 +85,21 @@ public class Dao_InforVisualPO
 
             var query = @"
                 SELECT 
-                    pol.PO_ID,
-                    pol.PO_LINE,
+                    pol.PURC_ORDER_ID AS PO_ID,
+                    pol.LINE_NO AS PO_LINE,
                     pol.PART_ID,
-                    pol.QTY_ORDERED,
-                    pol.QTY_RECEIVED,
+                    pol.ORDER_QTY AS QTY_ORDERED,
+                    pol.TOTAL_RECEIVED_QTY AS QTY_RECEIVED,
                     pol.UNIT_PRICE,
-                    pol.STATUS,
-                    p.PART_NAME,
+                    pol.LINE_STATUS AS STATUS,
+                    p.DESCRIPTION AS PART_NAME,
                     po.VENDOR_ID
                 FROM PURC_ORDER_LINE pol WITH (NOLOCK)
-                INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PO_ID = po.PO_ID
-                LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.PART_ID
-                WHERE pol.PO_ID = @PoNumber
-                  AND pol.SITE_REF = '002'
-                ORDER BY pol.PO_LINE";
+                INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PURC_ORDER_ID = po.ID
+                LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.ID
+                WHERE pol.PURC_ORDER_ID = @PoNumber
+                  AND po.SITE_ID = 'MTM2'
+                ORDER BY pol.LINE_NO";
 
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@PoNumber", poNumber);
@@ -140,21 +140,21 @@ public class Dao_InforVisualPO
 
                 var query = @"
                     SELECT 
-                        pol.PO_ID,
-                        pol.PO_LINE,
+                        pol.PURC_ORDER_ID AS PO_ID,
+                        pol.LINE_NO AS PO_LINE,
                         pol.PART_ID,
-                        pol.QTY_ORDERED,
-                        pol.QTY_RECEIVED,
+                        pol.ORDER_QTY AS QTY_ORDERED,
+                        pol.TOTAL_RECEIVED_QTY AS QTY_RECEIVED,
                         pol.UNIT_PRICE,
-                        pol.STATUS,
-                        p.PART_NAME,
+                        pol.LINE_STATUS AS STATUS,
+                        p.DESCRIPTION AS PART_NAME,
                         po.VENDOR_ID
                     FROM PURC_ORDER_LINE pol WITH (NOLOCK)
-                    INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PO_ID = po.PO_ID
-                    LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.PART_ID
-                    WHERE pol.PO_ID = @PoNumber
-                      AND pol.PO_LINE = @LineNumber
-                      AND pol.SITE_REF = '002'";
+                    INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PURC_ORDER_ID = po.ID
+                    LEFT JOIN PART p WITH (NOLOCK) ON pol.PART_ID = p.ID
+                    WHERE pol.PURC_ORDER_ID = @PoNumber
+                      AND pol.LINE_NO = @LineNumber
+                      AND po.SITE_ID = 'MTM2'";
 
                 await using (var command = new SqlCommand(query, connection))
                 {

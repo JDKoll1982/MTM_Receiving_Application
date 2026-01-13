@@ -282,7 +282,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 
 ### Database Access
 - **MySql.Data 9.4.0**: MySQL ADO.NET provider
-  - Server: localhost:3306
+  - Server: 172.16.1.104:3306
   - Database: `mtm_receiving_application`
   - Access: Full READ/WRITE
   - All operations via stored procedures

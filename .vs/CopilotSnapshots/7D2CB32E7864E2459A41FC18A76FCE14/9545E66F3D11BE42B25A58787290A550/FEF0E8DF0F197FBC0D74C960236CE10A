@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Data;
 /// </summary>
 public class Dao_DunnageLoad_Tests
 {
-    private const string TestConnectionString = "Server=localhost;Database=test_db;User Id=test;Password=test;";
+    private const string TestConnectionString = "Server=172.16.1.104;Database=test_db;User Id=test;Password=test;";
 
     // ====================================================================
     // Constructor Tests

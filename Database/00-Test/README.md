@@ -112,7 +112,7 @@ pwsh -File .\02-Test-StoredProcedures.ps1 -UseExecutionOrder
 
 ```powershell
 pwsh -File .\01-Generate-SP-TestData.ps1 `
-    -Server "localhost" `
+    -Server "172.16.1.104" `
     -Port 3306 `
     -Database "mtm_receiving_application" `
     -User "root"
@@ -122,7 +122,7 @@ pwsh -File .\01-Generate-SP-TestData.ps1 `
 
 ```powershell
 pwsh -File .\02-Test-StoredProcedures.ps1 `
-    -Server "localhost" `
+    -Server "172.16.1.104" `
     -Port 3306 `
     -Database "mtm_receiving_application" `
     -User "root" `

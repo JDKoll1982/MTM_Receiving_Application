@@ -32,7 +32,7 @@
                 <circle cx="10" cy="10" r="10" fill="#107c10" />
                 <path d="M 6 10 L 9 13 L 14 7" stroke="white" stroke-width="2" fill="none" />
                 <text x="30" y="14" font-family="Segoe UI" font-size="13" fill="#107c10">Connected to
-                    localhost:3306/mtm_receiving_application</text>
+                    172.16.1.104:3306/mtm_receiving_application</text>
             </g>
 
             <text x="20" y="80" font-family="Segoe UI" font-size="12" fill="#666">Connection time: 42ms | MySQL

@@ -2,7 +2,7 @@
 
 **Generated:** 2026-01-11 18:38:48
 **Database:** mtm_receiving_application
-**Server:** localhost:3306
+**Server:** 172.16.1.104:3306
 
 ## Summary
 
