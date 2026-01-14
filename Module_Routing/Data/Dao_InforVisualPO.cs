@@ -92,6 +92,8 @@ public class Dao_InforVisualPO
                     pol.LINE_STATUS AS STATUS,
                     p.DESCRIPTION AS PART_NAME,
                     po.VENDOR_ID,
+                    COALESCE(wo.DEMAND_BASE_ID, '') AS WORK_ORDER_ID,
+                    COALESCE(co.DEMAND_BASE_ID, '') AS CUST_ORDER_ID,
                     CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) AS SPECS
                 FROM PURC_ORDER_LINE pol WITH (NOLOCK)
                 INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PURC_ORDER_ID = po.ID
@@ -99,6 +101,22 @@ public class Dao_InforVisualPO
                 LEFT JOIN PURC_LINE_BINARY plb WITH (NOLOCK) ON pol.PURC_ORDER_ID = plb.PURC_ORDER_ID 
                     AND pol.LINE_NO = plb.PURC_ORDER_LINE_NO 
                     AND plb.TYPE = 'D'
+                OUTER APPLY (
+                    SELECT TOP 1 DEMAND_BASE_ID
+                    FROM DEMAND_SUPPLY_LINK dsl WITH (NOLOCK)
+                    WHERE dsl.SUPPLY_BASE_ID = pol.PURC_ORDER_ID
+                      AND (dsl.SUPPLY_NO = pol.LINE_NO OR dsl.SUPPLY_NO IS NULL)
+                      AND dsl.SUPPLY_TYPE = 'PO'
+                      AND (dsl.DEMAND_TYPE = 'WO' OR dsl.DEMAND_TYPE = 'RQ')
+                ) wo
+                OUTER APPLY (
+                    SELECT TOP 1 DEMAND_BASE_ID
+                    FROM DEMAND_SUPPLY_LINK dsl WITH (NOLOCK)
+                    WHERE dsl.SUPPLY_BASE_ID = pol.PURC_ORDER_ID
+                      AND dsl.SUPPLY_NO = pol.LINE_NO
+                      AND dsl.SUPPLY_TYPE = 'PO'
+                      AND dsl.DEMAND_TYPE = 'CO'
+                ) co
                 WHERE pol.PURC_ORDER_ID = @PoNumber
                 ORDER BY pol.LINE_NO";
 
@@ -150,6 +168,8 @@ public class Dao_InforVisualPO
                         pol.LINE_STATUS AS STATUS,
                         p.DESCRIPTION AS PART_NAME,
                         po.VENDOR_ID,
+                        COALESCE(wo.DEMAND_BASE_ID, '') AS WORK_ORDER_ID,
+                        COALESCE(co.DEMAND_BASE_ID, '') AS CUST_ORDER_ID,
                         CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) AS SPECS
                     FROM PURC_ORDER_LINE pol WITH (NOLOCK)
                     INNER JOIN PURCHASE_ORDER po WITH (NOLOCK) ON pol.PURC_ORDER_ID = po.ID
@@ -157,6 +177,22 @@ public class Dao_InforVisualPO
                     LEFT JOIN PURC_LINE_BINARY plb WITH (NOLOCK) ON pol.PURC_ORDER_ID = plb.PURC_ORDER_ID 
                         AND pol.LINE_NO = plb.PURC_ORDER_LINE_NO 
                         AND plb.TYPE = 'D'
+                    OUTER APPLY (
+                        SELECT TOP 1 DEMAND_BASE_ID
+                        FROM DEMAND_SUPPLY_LINK dsl WITH (NOLOCK)
+                        WHERE dsl.SUPPLY_BASE_ID = pol.PURC_ORDER_ID
+                          AND (dsl.SUPPLY_NO = pol.LINE_NO OR dsl.SUPPLY_NO IS NULL)
+                          AND dsl.SUPPLY_TYPE = 'PO'
+                          AND (dsl.DEMAND_TYPE = 'WO' OR dsl.DEMAND_TYPE = 'RQ')
+                    ) wo
+                    OUTER APPLY (
+                        SELECT TOP 1 DEMAND_BASE_ID
+                        FROM DEMAND_SUPPLY_LINK dsl WITH (NOLOCK)
+                        WHERE dsl.SUPPLY_BASE_ID = pol.PURC_ORDER_ID
+                          AND dsl.SUPPLY_NO = pol.LINE_NO
+                          AND dsl.SUPPLY_TYPE = 'PO'
+                          AND dsl.DEMAND_TYPE = 'CO'
+                    ) co
                     WHERE pol.PURC_ORDER_ID = @PoNumber
                       AND pol.LINE_NO = @LineNumber";
 
@@ -242,7 +278,30 @@ public class Dao_InforVisualPO
                 : reader.GetDecimal(reader.GetOrdinal("QTY_ORDERED")),
             QuantityReceived = reader.IsDBNull(reader.GetOrdinal("QTY_RECEIVED"))
                 ? 0m
-                : reader.GetDecimal(reader.GetOrdinal("QTY_RECEIVED"))
+                : reader.GetDecimal(reader.GetOrdinal("QTY_RECEIVED")),
+            WorkOrder = HasColumn(reader, "WORK_ORDER_ID") && !reader.IsDBNull(reader.GetOrdinal("WORK_ORDER_ID"))
+                ? reader.GetString(reader.GetOrdinal("WORK_ORDER_ID")) 
+                : string.Empty,
+            CustomerOrder = HasColumn(reader, "CUST_ORDER_ID") && !reader.IsDBNull(reader.GetOrdinal("CUST_ORDER_ID"))
+                ? reader.GetString(reader.GetOrdinal("CUST_ORDER_ID")) 
+                : string.Empty
         };
+    }
+
+    /// <summary>
+    /// Helper to check if column exists in reader
+    /// </summary>
+    /// <param name="reader">The data reader</param>
+    /// <param name="columnName">Name of the column to check</param>
+    private bool HasColumn(IDataReader reader, string columnName)
+    {
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            if (reader.GetName(i).Equals(columnName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

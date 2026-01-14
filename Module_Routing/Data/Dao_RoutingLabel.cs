@@ -44,8 +44,7 @@ public class Dao_RoutingLabel
                 new MySqlParameter("@p_created_by", label.CreatedBy),
                 new MySqlParameter("@p_other_reason_id", (object?)label.OtherReasonId ?? DBNull.Value),
                 new MySqlParameter("@p_new_label_id", MySqlDbType.Int32) { Direction = ParameterDirection.Output },
-                new MySqlParameter("@p_status", MySqlDbType.Int32) { Direction = ParameterDirection.Output },
-                new MySqlParameter("@p_error_msg", MySqlDbType.VarChar, 500) { Direction = ParameterDirection.Output }
+                new MySqlParameter("@p_error_message", MySqlDbType.VarChar, 500) { Direction = ParameterDirection.Output }
             };
 
             var result = await Helper_Database_StoredProcedure.ExecuteAsync(
@@ -60,18 +59,25 @@ public class Dao_RoutingLabel
                 int newId = newIdParam?.Value != DBNull.Value ? Convert.ToInt32(newIdParam?.Value) : 0;
 
                 // Issue #12: Extract output parameters for better error reporting
-                var statusParam = Array.Find(parameters, p => p.ParameterName == "@p_status");
-                var errorMsgParam = Array.Find(parameters, p => p.ParameterName == "@p_error_msg");
-
-                int status = statusParam?.Value != DBNull.Value ? Convert.ToInt32(statusParam?.Value) : 1;
+                var errorMsgParam = Array.Find(parameters, p => p.ParameterName == "@p_error_message");
                 string spErrorMsg = errorMsgParam?.Value?.ToString() ?? string.Empty;
 
-                if (status != 1 && !string.IsNullOrEmpty(spErrorMsg))
+                if (!string.IsNullOrEmpty(spErrorMsg))
                 {
                     return new Model_Dao_Result<int>
                     {
                         Success = false,
                         ErrorMessage = $"Stored procedure error: {spErrorMsg}",
+                        Severity = Enum_ErrorSeverity.Medium
+                    };
+                }
+
+                if (newId <= 0)
+                {
+                    return new Model_Dao_Result<int>
+                    {
+                        Success = false,
+                        ErrorMessage = "Failed to retrieve new ID from stored procedure (ID was 0 or NULL)",
                         Severity = Enum_ErrorSeverity.Medium
                     };
                 }

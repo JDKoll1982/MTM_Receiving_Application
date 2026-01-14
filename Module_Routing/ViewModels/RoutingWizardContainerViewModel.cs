@@ -251,7 +251,9 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
                 Quantity = FinalQuantity,
                 OtherReasonId = SelectedOtherReason?.Id,
                 CreatedBy = GetCurrentEmployeeNumber(),
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                WorkOrder = SelectedPOLine?.WorkOrder ?? string.Empty,
+                CustomerOrder = SelectedPOLine?.CustomerOrder ?? string.Empty
             };
 
             // Create label via service

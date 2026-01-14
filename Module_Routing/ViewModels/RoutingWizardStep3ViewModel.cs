@@ -158,6 +158,16 @@ public partial class RoutingWizardStep3ViewModel : ObservableObject
         _logger.LogInfo("EditRecipientSelection - Navigating to Step 2 in edit mode");
         _containerViewModel.NavigateToStep2ForEditCommand.Execute(null);
     }
+
+    /// <summary>
+    /// Navigate back to Step 2 (standard back navigation)
+    /// </summary>
+    [RelayCommand]
+    private void NavigateBack()
+    {
+        _logger.LogInfo("NavigateBack - Navigating back to Step 2");
+        _containerViewModel.NavigateBackToStep2Command.Execute(null);
+    }
     #endregion
 
     #region Create Label Command

@@ -74,6 +74,16 @@ public class Model_RoutingLabel
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// Work Order ID (if linked) - Not stored in DB currently, used for CSV
+    /// </summary>
+    public string WorkOrder { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Customer Order ID (if linked) - Not stored in DB currently, used for CSV
+    /// </summary>
+    public string CustomerOrder { get; set; } = string.Empty;
+
+    /// <summary>
     /// Whether label has been exported to CSV file
     /// </summary>
     public bool CsvExported { get; set; } = false;

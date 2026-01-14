@@ -13,7 +13,6 @@
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -24,141 +23,129 @@
                    Text="Step 3: Review and Confirm" 
                    Style="{StaticResource TitleTextBlockStyle}"/>
 
-        <!-- Review Grid -->
-        <Border Grid.Row="2" 
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="4"
-                Padding="24">
-            <Grid RowSpacing="16">
+        <!-- Review Cards -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid ColumnSpacing="24" RowSpacing="24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- PO Information -->
-                <StackPanel Grid.Row="0" Spacing="8">
-                    <TextBlock Text="PO Information" 
-                               Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                <!-- Source Card (PO & Part) -->
+                <Border Grid.Column="0" Grid.Row="0"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="16">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE8B9;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="Source" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                            </StackPanel>
+                            <Button HorizontalAlignment="Right"
+                                    Command="{x:Bind ViewModel.EditPOSelectionCommand}"
+                                    Style="{StaticResource SubtleButtonStyle}" 
+                                    ToolTipService.ToolTip="Edit Source">
+                                <FontIcon Glyph="&#xE70F;" FontSize="14"/>
+                            </Button>
+                        </Grid>
+                        
+                        <MenuFlyoutSeparator/>
 
-                        <TextBlock Grid.Column="0" Text="PO Number:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PoNumber, Mode=OneWay}"/>
-                        <Button Grid.Column="2" 
-                                Content="Edit" 
-                                Command="{x:Bind ViewModel.EditPOSelectionCommand}"
-                                Style="{StaticResource SubtleButtonStyle}"/>
-                    </Grid>
+                        <!-- PO Info -->
+                        <Grid ColumnSpacing="12" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                    <Grid ColumnSpacing="12" 
-                          Visibility="{x:Bind ViewModel.IsOtherWorkflow, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                            <TextBlock Text="PO:" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PoNumber, Mode=OneWay}" FontWeight="SemiBold"/>
 
-                        <TextBlock Grid.Column="0" Text="Line Number:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PoLine, Mode=OneWay}"/>
-                    </Grid>
+                            <TextBlock Grid.Row="1" Text="Line:" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Visibility="{x:Bind ViewModel.IsOtherWorkflow, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.PoLine, Mode=OneWay}"
+                                       Visibility="{x:Bind ViewModel.IsOtherWorkflow, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+                                       
+                            <TextBlock Grid.Row="1" Text="Reason:" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Visibility="{x:Bind ViewModel.IsOtherWorkflow, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.OtherReason, Mode=OneWay}"
+                                       Visibility="{x:Bind ViewModel.IsOtherWorkflow, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </Grid>
+                        
+                        <!-- Part Info -->
+                        <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4" Padding="12">
+                             <StackPanel Spacing="4">
+                                <TextBlock Text="{x:Bind ViewModel.PartID, Mode=OneWay}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="{x:Bind ViewModel.PartDescription, Mode=OneWay}" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,8,0,0">
+                                    <TextBlock Text="Qty:" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Quantity, Mode=OneWay}"/>
+                                </StackPanel>
+                             </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
 
-                    <Grid ColumnSpacing="12"
-                          Visibility="{x:Bind ViewModel.IsOtherWorkflow, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                <!-- Destination Card (Recipient) -->
+                <Border Grid.Column="1" Grid.Row="0"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                     <StackPanel Spacing="16">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE77B;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="Destination" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                            </StackPanel>
+                            <Button HorizontalAlignment="Right"
+                                    Command="{x:Bind ViewModel.EditRecipientSelectionCommand}"
+                                    Style="{StaticResource SubtleButtonStyle}"
+                                    ToolTipService.ToolTip="Edit Destination">
+                                <FontIcon Glyph="&#xE70F;" FontSize="14"/>
+                            </Button>
+                        </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Other Reason:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.OtherReason, Mode=OneWay}"/>
-                    </Grid>
-                </StackPanel>
+                        <MenuFlyoutSeparator/>
 
-                <MenuFlyoutSeparator Grid.Row="1"/>
-
-                <!-- Part Information -->
-                <StackPanel Grid.Row="2" Spacing="8">
-                    <TextBlock Text="Part Information" 
-                               Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Part ID:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.PartID, Mode=OneWay}"/>
-                    </Grid>
-
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Description:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{x:Bind ViewModel.PartDescription, Mode=OneWay}"
-                                   TextWrapping="Wrap"/>
-                    </Grid>
-
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Quantity:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Quantity, Mode=OneWay}"/>
-                    </Grid>
-                </StackPanel>
-
-                <MenuFlyoutSeparator Grid.Row="3"/>
-
-                <!-- Recipient Information -->
-                <StackPanel Grid.Row="4" Spacing="8">
-                    <TextBlock Text="Recipient Information" 
-                               Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Recipient:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.RecipientName, Mode=OneWay}"/>
-                        <Button Grid.Column="2" 
-                                Content="Edit" 
-                                Command="{x:Bind ViewModel.EditRecipientSelectionCommand}"
-                                Style="{StaticResource SubtleButtonStyle}"/>
-                    </Grid>
-
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="Location:" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.RecipientLocation, Mode=OneWay}"/>
-                    </Grid>
-                </StackPanel>
+                        <StackPanel Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Recipient" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12"/>
+                                <TextBlock Text="{x:Bind ViewModel.RecipientName, Mode=OneWay}" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16"/>
+                            </StackPanel>
+                            
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Location / Department" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12"/>
+                                <TextBlock Text="{x:Bind ViewModel.RecipientLocation, Mode=OneWay}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <!-- Placeholder for Label Preview -->
+                        <Border Height="60" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4" VerticalAlignment="Bottom" Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                                <FontIcon Glyph="&#xE743;" FontSize="16" Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                <TextBlock Text="Ready to Print" Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
             </Grid>
-        </Border>
+        </ScrollViewer>
 
         <!-- Status Bar -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12">
             <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                           Width="20" Height="20"/>
             <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
@@ -166,9 +153,9 @@
         </StackPanel>
 
         <!-- Action Buttons -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
             <Button Content="Back"
-                    Command="{x:Bind ViewModel.EditRecipientSelectionCommand}"/>
+                    Command="{x:Bind ViewModel.NavigateBackCommand}"/>
             <Button Content="Create Label"
                     Command="{x:Bind ViewModel.CreateLabelCommand}"
                     Style="{StaticResource AccentButtonStyle}"/>

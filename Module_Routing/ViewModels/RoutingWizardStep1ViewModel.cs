@@ -77,12 +77,26 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsLineSelected))]
+    [NotifyPropertyChangedFor(nameof(SelectedPOLineTitle))]
+    [NotifyPropertyChangedFor(nameof(HasReferenceInfo))]
     private Model_InforVisualPOLine? _selectedPOLine;
 
     /// <summary>
     /// Helper property for binding visibility of details panel
     /// </summary>
     public bool IsLineSelected => SelectedPOLine != null;
+
+    /// <summary>
+    /// Title for the details panel
+    /// </summary>
+    public string SelectedPOLineTitle => SelectedPOLine != null 
+        ? $"Line {SelectedPOLine.LineNumber} Specifications" 
+        : string.Empty;
+
+    /// <summary>
+    /// Helper to show/hide reference info field
+    /// </summary>
+    public bool HasReferenceInfo => SelectedPOLine != null && !string.IsNullOrEmpty(SelectedPOLine.ReferenceInfo);
 
     /// <summary>
     /// Indicates whether we're in OTHER mode (no PO validation)
@@ -129,6 +143,24 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// Button text for navigation (changes when editing from review)
     /// </summary>
     public string NavigationButtonText => IsEditingFromReview ? "Back to Review" : "Next: Select Recipient";
+
+    /// <summary>
+    /// Controls visibility of the Reference column (hidden if empty for all rows)
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ReferenceColumnWidth))]
+    private bool _isReferenceColumnVisible;
+
+    public Microsoft.UI.Xaml.GridLength ReferenceColumnWidth => _isReferenceColumnVisible ? new Microsoft.UI.Xaml.GridLength(100) : new Microsoft.UI.Xaml.GridLength(0);
+
+    /// <summary>
+    /// Controls visibility of the Specs column (hidden if empty for all rows)
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SpecsColumnWidth))]
+    private bool _isSpecsColumnVisible;
+
+    public Microsoft.UI.Xaml.GridLength SpecsColumnWidth => _isSpecsColumnVisible ? new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) : new Microsoft.UI.Xaml.GridLength(0);
     #endregion
 
     #region Commands
@@ -168,10 +200,18 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
                 if (linesResult.IsSuccess && linesResult.Data != null)
                 {
                     PoLines.Clear();
+                    bool hasRefs = false;
+                    bool hasSpecs = false;
+
                     foreach (var line in linesResult.Data)
                     {
                         PoLines.Add(line);
+                        if (!string.IsNullOrEmpty(line.ReferenceInfo)) hasRefs = true;
+                        if (!string.IsNullOrEmpty(line.SpecificationsPreview)) hasSpecs = true;
                     }
+
+                    IsReferenceColumnVisible = hasRefs;
+                    IsSpecsColumnVisible = hasSpecs;
 
                     // Issue #27: Check for empty lines result
                     if (PoLines.Count == 0)

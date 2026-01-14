@@ -521,8 +521,8 @@ public class RoutingService : IRoutingService
     /// <returns>CSV-formatted string</returns>
     private string FormatCsvLine(Model_RoutingLabel label)
     {
-        // CSV format: PO,Line,Part,Quantity,Recipient,Location,Date
-        return $"{label.PONumber},{label.LineNumber},{label.Description ?? ""},{label.Quantity},{label.RecipientName ?? ""},{label.RecipientLocation ?? ""},{label.CreatedDate:yyyy-MM-dd HH:mm:ss}";
+        // CSV format: PO,Line,Part,Quantity,Recipient,Location,Date,WorkOrder,CustomerOrder
+        return $"{label.PONumber},{label.LineNumber},{label.Description ?? ""},{label.Quantity},{label.RecipientName ?? ""},{label.RecipientLocation ?? ""},{label.CreatedDate:yyyy-MM-dd HH:mm:ss},{label.WorkOrder},{label.CustomerOrder}";
     }
 
     private async Task<bool> TryWriteCsvAsync(string filePath, string csvLine, int retryCount, int retryDelayMs)

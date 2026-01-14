@@ -45,6 +45,13 @@ public class Model_InforVisualPOLine
     public decimal QuantityRemaining => QuantityOrdered - QuantityReceived;
 
     /// <summary>
+    /// Formatted quantity for display (trims trailing zeros)
+    /// Uses G29 format to strip trailing zeros while preserving up to 29 significant digits
+    /// Example: 4.0000 -> 4, 4.6140 -> 4.614
+    /// </summary>
+    public string QuantityOrderedDisplay => QuantityOrdered.ToString("G29");
+
+    /// <summary>
     /// Vendor name
     /// </summary>
     public string VendorName { get; set; } = string.Empty;
@@ -65,4 +72,27 @@ public class Model_InforVisualPOLine
     /// Expected delivery date (nullable)
     /// </summary>
     public DateTime? DueDate { get; set; }
+
+    /// <summary>
+    /// Work Order ID (if linked)
+    /// </summary>
+    public string WorkOrder { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Customer Order ID (if linked)
+    /// </summary>
+    public string CustomerOrder { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Formatted reference info for UI (WO or CO)
+    /// </summary>
+    public string ReferenceInfo
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(WorkOrder)) return $"WO: {WorkOrder}";
+            if (!string.IsNullOrEmpty(CustomerOrder)) return $"CO: {CustomerOrder}";
+            return string.Empty;
+        }
+    }
 }
