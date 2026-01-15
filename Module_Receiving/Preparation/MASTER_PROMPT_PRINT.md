@@ -1,3 +1,15 @@
+<style>
+@media print {
+  .page-break { page-break-after: always; }
+  .keep-together { page-break-inside: avoid; }
+  .avoid-break-before { page-break-before: avoid; }
+  h1 { page-break-before: always; }
+  h1:first-of-type { page-break-before: avoid; }
+  h2 { page-break-after: avoid; }
+  pre, .mermaid { page-break-inside: avoid; margin: 1em 0; }
+}
+</style>
+
 # Module_Receiving Ground-Up Rebuild Implementation Guide
 
 **Version:** 2.0.0 | **Date:** January 15, 2026 | **Estimated Effort:** 6-8 weeks
@@ -44,7 +56,7 @@ This document outlines a complete architectural redesign of Module_Receiving usi
 - Logging lacks structured context and semantic properties
 - CSV export functionality uses custom writer instead of proven libraries
 
----
+<div class="page-break"></div>
 
 ## Target Architecture
 
@@ -97,6 +109,8 @@ graph TD
 
 ### Data Flow Transformation
 
+<div class="keep-together">
+
 **Current (Service Pattern):**
 
 ```mermaid
@@ -105,6 +119,10 @@ flowchart LR
     Service --> DAO[DAO]
     DAO --> DB[(Database)]
 ```
+
+</div>
+
+<div class="keep-together">
 
 **New (CQRS Pattern):**
 
@@ -117,6 +135,12 @@ flowchart LR
     Handler --> DAO[DAO]
     DAO --> DB[(Database)]
 ```
+
+</div>
+</div>
+
+<div class="page-break"></div>
+<div class="avoid-break-before">
 
 **Benefits:**
 
@@ -169,7 +193,7 @@ These architectural principles are non-negotiable and must be maintained through
 
 - All diagrams MUST use PlantUML (no ASCII art)
 - Architecture documents MUST be updated when behavior changes
-- Task tracking required with status updates
+<div class="page-break"></div>ask tracking required with status updates
 
 ---
 
@@ -192,7 +216,7 @@ These architectural principles are non-negotiable and must be maintained through
 - All packages installed and configured
 - Folder structure established
 - Dependency injection configured
-- Logging outputs to daily rolling log files
+<div class="page-break"></div>ogging outputs to daily rolling log files
 
 ---
 
@@ -224,7 +248,7 @@ Instead of scattered validation logic in ViewModels and Services, validation rul
 - Unit tests for validation rules
 - Default configuration values defined
 
----
+<div class="page-break"></div>
 
 ### Phase 3: CQRS Handlers (Week 2-3)
 
@@ -268,7 +292,7 @@ Instead of scattered validation logic in ViewModels and Services, validation rul
 - Pipeline behaviors implemented and tested
 - Unit tests for all handlers
 
----
+<div class="page-break"></div>
 
 ### Phase 4: ViewModels & Navigation (Week 3-4)
 
@@ -303,7 +327,7 @@ Two approaches considered:
 - Navigation strategy implemented and working
 - All ViewModels properly registered in dependency injection
 
----
+<div class="page-break"></div>
 
 ### Phase 5: Services Cleanup (Week 4)
 
@@ -329,7 +353,7 @@ Two approaches considered:
 - All dependency injection registrations updated
 - Zero compilation errors
 
----
+<div class="page-break"></div>
 
 ### Phase 6: Testing & Documentation (Week 5)
 
@@ -362,7 +386,7 @@ Two approaches considered:
 - All documentation updated
 - Code review completed and approved
 
----
+<div class="page-break"></div>
 
 ## Success Metrics
 
@@ -382,7 +406,7 @@ Two approaches considered:
 - **Scalability:** Easy to add new operations without modifying existing code
 - **Developer Experience:** Clear patterns for implementing new features
 
----
+<div class="page-break"></div>
 
 ## Common Pitfalls to Avoid
 
@@ -410,7 +434,7 @@ Two approaches considered:
 
 **Correct:** Structured logging with semantic properties
 
----
+<div class="page-break"></div>
 
 ## Risk Mitigation
 
@@ -438,7 +462,7 @@ Two approaches considered:
 
 **Mitigation:** Comprehensive documentation, code examples, pair programming during implementation
 
----
+<div class="page-break"></div>
 
 ## Pre-Implementation Checklist
 
@@ -468,7 +492,7 @@ Two approaches considered:
 - [ ] Code review approved by team
 - [ ] Deployment plan reviewed and approved
 
----
+<div class="page-break"></div>
 
 ## References
 
@@ -493,7 +517,7 @@ Two approaches considered:
 - MVVM Guide: .github/instructions/mvvm-pattern.instructions.md
 - DAO Guide: .github/instructions/dao-pattern.instructions.md
 
----
+<div class="page-break"></div>
 
 ## Appendix: Key Concepts
 

@@ -1,3 +1,16 @@
+<style>
+@media print {
+  .page-break { page-break-after: always; }
+  .keep-together { page-break-inside: avoid; }
+  .avoid-break-before { page-break-before: avoid; }
+  h1 { page-break-before: always; }
+  h1:first-of-type { page-break-before: avoid; }
+  h2 { page-break-after: avoid; }
+  table { page-break-inside: avoid; margin: 1em 0; }
+  pre, .mermaid { page-break-inside: avoid; margin: 1em 0; }
+}
+</style>
+
 # Module_Receiving Rebuild - Enhancement Suggestions
 
 **Date:** January 15, 2026 | **Status:** Recommendations for Consideration
@@ -10,7 +23,7 @@ This document identifies additional elements that could enhance the Module_Recei
 
 The base implementation guide (MASTER_PROMPT.md) is comprehensive and complete. These suggestions represent enhancements that would further improve robustness, reduce risk, and improve long-term maintainability.
 
----
+<div class="page-break"></div>
 
 ## Critical Additions (High Impact)
 
@@ -196,7 +209,7 @@ sequenceDiagram
 3. Review all logging statements for sensitive data exposure
 4. Create audit log retention policy
 
----
+<div class="page-break"></div>
 
 ## Important Additions (Medium Impact)
 
@@ -352,7 +365,7 @@ Configure Serilog to automatically add context to all log entries:
 3. Create performance dashboards
 4. Define and configure alerting rules
 
----
+<div class="page-break"></div>
 
 ## Nice-to-Have Additions (Low Impact)
 
@@ -582,7 +595,7 @@ Use dotnet test with filter parameter to run subset of tests
 3. Link glossary from onboarding guide
 4. Review glossary during team meetings
 
----
+<div class="page-break"></div>
 
 ## Advanced Considerations (Expert Level)
 
@@ -691,9 +704,11 @@ Create builder pattern classes to simplify test data creation. Reduces boilerpla
 3. Implement test data builder pattern
 4. Document integration test guidelines
 
----
+<div class="page-break"></div>
 
 ## Impact Summary Table
+
+<div class="keep-together">
 
 | Enhancement | Impact Level | Implementation Effort | Priority Category |
 |-------------|--------------|----------------------|-------------------|
@@ -710,7 +725,9 @@ Create builder pattern classes to simplify test data creation. Reduces boilerpla
 | DI Scoping Strategy | Medium | Low | Advanced |
 | Integration Testing | Medium | Medium | Advanced |
 
----
+</div>
+
+<div class="page-break"></div>
 
 ## Recommended Action Plan
 
@@ -751,21 +768,27 @@ gantt
 
 7. Set up CI/CD pipeline
 8. Create developer onboarding guide
-9. Establish code review process
+<div class="page-break"></div>
 
----
+## Decision Tracking
+
+<div class="avoid-break-before">
 
 ## Decision Tracking
 
 For each suggestion in this document, team should decide:
 
-- **Accept:** Incorporate into implementation plan
-- **Reject:** Document reason for rejection
-- **Defer:** Schedule for future iteration
+<div class="keep-together">
 
 **Decision Log Template:**
 
 | Enhancement | Decision | Rationale | Decided By | Date |
+|-------------|----------|-----------|------------|------|
+| Example | Accept | Critical for production | Team Lead | 2026-01-15 |
+
+</div>
+
+<div class="page-break"></div>nhancement | Decision | Rationale | Decided By | Date |
 |-------------|----------|-----------|------------|------|
 | Example | Accept | Critical for production | Team Lead | 2026-01-15 |
 
