@@ -7,6 +7,20 @@
   h1:first-of-type { page-break-before: avoid; }
   h2 { page-break-after: avoid; }
   pre, .mermaid { page-break-inside: avoid; margin: 1em 0; }
+  
+  /* Scale Mermaid diagrams to fit 8.5x11 page width */
+  .mermaid, pre.mermaid {
+    max-width: 100%;
+    transform: scale(0.75);
+    transform-origin: top left;
+    margin-bottom: 2em;
+  }
+  
+  /* Keep diagram containers properly sized */
+  .keep-together {
+    max-width: 100%;
+    overflow: visible;
+  }
 }
 </style>
 
@@ -114,7 +128,7 @@ graph TD
 **Current (Service Pattern):**
 
 ```mermaid
-flowchart LR
+flowchart TD
     ViewModel[ViewModel] --> Service[Service<br/>10+ methods]
     Service --> DAO[DAO]
     DAO --> DB[(Database)]
@@ -127,7 +141,7 @@ flowchart LR
 **New (CQRS Pattern):**
 
 ```mermaid
-flowchart LR
+flowchart TD
     ViewModel[ViewModel] --> Mediator[Mediator]
     Mediator --> Handler[Handler<br/>Single Responsibility]
     Handler --> Validator[Validator]

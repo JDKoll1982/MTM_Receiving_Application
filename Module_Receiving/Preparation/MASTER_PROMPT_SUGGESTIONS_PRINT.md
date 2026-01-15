@@ -8,6 +8,20 @@
   h2 { page-break-after: avoid; }
   table { page-break-inside: avoid; margin: 1em 0; }
   pre, .mermaid { page-break-inside: avoid; margin: 1em 0; }
+  
+  /* Scale Mermaid diagrams to fit 8.5x11 page width */
+  .mermaid, pre.mermaid {
+    max-width: 100%;
+    transform: scale(0.75);
+    transform-origin: top left;
+    margin-bottom: 2em;
+  }
+  
+  /* Keep diagram containers properly sized */
+  .keep-together {
+    max-width: 100%;
+    overflow: visible;
+  }
 }
 </style>
 
