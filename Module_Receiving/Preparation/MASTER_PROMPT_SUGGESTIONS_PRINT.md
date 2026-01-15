@@ -245,7 +245,7 @@ Create pipeline behavior that catches unhandled exceptions from all handlers and
 Use try-catch in handlers for expected failures. Use global exception pipeline as safety net for unexpected exceptions.
 
 ```mermaid
-graph LR
+graph TB
     subgraph "Hybrid Exception Strategy"
         A[Command/Query] --> B{Handler Try-Catch}
         B -->|Expected Error| C[Return Failure Result]
@@ -400,7 +400,7 @@ Configure Serilog to automatically add context to all log entries:
 - Static code analysis
 
 ```mermaid
-flowchart LR
+flowchart TB
     A[Code Commit] --> B[Restore NuGet]
     B --> C[Build Solution]
     C --> D{Build Success?}
