@@ -95,63 +95,20 @@ This document outlines a complete architectural redesign of Module_Receiving usi
 
 **Post-Rebuild Structure:**
 
-```mermaid
-graph TD
-    Views[Views - XAML UI Only]
-    ViewModels[ViewModels - Presentation Logic]
-    Handlers[Handlers - CQRS Implementation]
-    Queries[Queries - Read Operations]
-    Commands[Commands - Write Operations]
-    Behaviors[Behaviors - Cross-Cutting Concerns]
-    Validators[Validators - FluentValidation Rules]
-    Services[Services - Navigation & Orchestration]
-    Data[Data - Instance-Based DAOs]
-    Models[Models - Data Transfer Objects]
-    Defaults[Defaults - Configuration & Presets]
-    
-    Views --> ViewModels
-    ViewModels --> Handlers
-    Handlers --> Queries
-    Handlers --> Commands
-    Handlers --> Behaviors
-    Commands --> Validators
-    Handlers --> Data
-    Data --> Models
-    Services --> ViewModels
-    Defaults --> Models
-```
+_(See Diagram Appendix A: Module Architecture Layers - Page end of document)_
+
+The architecture consists of multiple layers:
+- **Presentation Layer:** Views and ViewModels manage user interface and presentation logic
+- **Application Layer:** Handlers process business operations using CQRS pattern
+- **Validation Layer:** Declarative validators ensure data integrity
+- **Data Access Layer:** Data Access Objects interface with database
+- **Domain Layer:** Models represent business entities
 
 ### Data Flow Transformation
 
-<div class="keep-together">
+_(See Diagram Appendix B: Current vs. New Data Flow - Page end of document)_
 
-**Current (Service Pattern):**
-
-```mermaid
-flowchart TD
-    ViewModel[ViewModel] --> Service[Service<br/>10+ methods]
-    Service --> DAO[DAO]
-    DAO --> DB[(Database)]
-```
-
-</div>
-
-<div class="keep-together">
-
-**New (CQRS Pattern):**
-
-```mermaid
-flowchart TD
-    ViewModel[ViewModel] --> Mediator[Mediator]
-    Mediator --> Handler[Handler<br/>Single Responsibility]
-    Handler --> Validator[Validator]
-    Handler --> Logger[Logger]
-    Handler --> DAO[DAO]
-    DAO --> DB[(Database)]
-```
-
-</div>
-</div>
+The rebuild transforms data flow from a monolithic service pattern to a modern CQRS pattern where:
 
 <div class="page-break"></div>
 <div class="avoid-break-before">
@@ -196,9 +153,6 @@ These architectural principles are non-negotiable and must be maintained through
 - Use structured logging for all diagnostic information
 - Data Access Objects MUST NOT throw exceptions (return failure results instead)
 
-### V. Code Quality
-
-- Explicit accessibility modifiers required on all members
 - Braces required for all control flow statements
 - Async methods MUST end with "Async" suffix
 - XML documentation comments required for all public APIs
@@ -557,5 +511,223 @@ Validation rules defined as data/configuration rather than imperative code. Rule
 
 ---
 
-**End of Implementation Guide**
+<div class="page-break"></div>
+
+---
+
+# DIAGRAM APPENDIX
+
+## Diagram Appendix A: Module Architecture Layers
+
+**Purpose:** Visual representation of the complete Module_Receiving architecture showing all layers, their components, and dependencies after the rebuild is complete.
+
+<div class="keep-together">
+
+```mermaid
+graph TD
+    Views[Views - XAML UI Only]
+    ViewModels[ViewModels - Presentation Logic]
+    Handlers[Handlers - CQRS Implementation]
+    Queries[Queries - Read Operations]
+    Commands[Commands - Write Operations]
+    Behaviors[Behaviors - Cross-Cutting Concerns]
+    Validators[Validators - FluentValidation Rules]
+    Services[Services - Navigation & Orchestration]
+    Data[Data - Instance-Based DAOs]
+    Models[Models - Data Transfer Objects]
+    Defaults[Defaults - Configuration & Presets]
+    
+    Views --> ViewModels
+    ViewModels --> Handlers
+    Handlers --> Queries
+    Handlers --> Commands
+    Handlers --> Behaviors
+    Commands --> Validators
+    Handlers --> Data
+    Data --> Models
+    Services --> ViewModels
+    Defaults --> Models
+```
+
+</div>
+
+### Component Descriptions
+
+**[1] Views - XAML UI Only**
+- **Purpose:** Pure user interface markup using WinUI 3 XAML
+- **Responsibility:** Display data and capture user input through data binding
+- **Key Constraint:** Contains zero business logic; all logic resides in ViewModels
+- **Technology:** WinUI 3 XAML with compile-time binding (x:Bind)
+
+**[2] ViewModels - Presentation Logic**
+- **Purpose:** Bridge between user interface and application logic
+- **Responsibility:** Manage UI state, handle user commands, coordinate with Mediator to execute operations
+- **Key Feature:** Uses source generators for property change notifications and command implementations
+- **Dependencies:** Injects Mediator interface for all business operations
+
+**[3] Handlers - CQRS Implementation**
+- **Purpose:** Execute specific business operations (one handler = one operation)
+- **Responsibility:** Coordinate Queries, Commands, Validators, and Data Access Objects
+- **Key Benefit:** Highly testable, single responsibility per class
+- **Pattern:** Mediator pattern routes requests from ViewModels to appropriate handlers
+
+**[4] Queries - Read Operations**
+- **Purpose:** Retrieve data without modifying application state
+- **Responsibility:** Execute database queries and return results
+- **Key Characteristic:** Side-effect free; can be cached or optimized independently
+- **Return Type:** Data transfer objects or result wrappers
+
+**[5] Commands - Write Operations**
+- **Purpose:** Modify application state (create, update, delete operations)
+- **Responsibility:** Execute state-changing operations with validation
+- **Key Feature:** Always validated before execution via pipeline behaviors
+- **Return Type:** Success/failure result objects
+
+**[6] Behaviors - Cross-Cutting Concerns**
+- **Purpose:** Apply consistent functionality across all handlers
+- **Responsibility:** Logging, validation, transaction management, error handling
+- **Key Benefit:** Eliminates code duplication; applied automatically via pipeline
+- **Examples:** Logging every handler execution, validating all commands, wrapping operations in transactions
+
+**[7] Validators - FluentValidation Rules**
+- **Purpose:** Define validation logic separate from business operations
+- **Responsibility:** Validate data integrity using declarative rules
+- **Key Feature:** Strongly-typed, composable, testable validation
+- **Technology:** FluentValidation library with custom validation rules
+
+**[8] Services - Navigation & Orchestration**
+- **Purpose:** High-level workflow coordination and navigation management
+- **Responsibility:** Manage workflow steps, coordinate multiple operations, handle navigation
+- **Key Change:** Data access logic removed; focuses solely on orchestration
+- **Scope:** Module-specific services only (Receiving-specific services stay in Module_Receiving)
+
+**[9] Data - Instance-Based DAOs**
+- **Purpose:** Interface with database using stored procedures
+- **Responsibility:** Execute database operations and return structured results
+- **Key Constraint:** Never throws exceptions; returns success/failure result objects
+- **Pattern:** Instance-based (registered in dependency injection) with connection string injection
+
+**[10] Models - Data Transfer Objects**
+- **Purpose:** Represent business entities and data structures
+- **Responsibility:** Hold data; provide structure for data transfer between layers
+- **Key Feature:** Plain objects with no behavior; focused on data representation
+- **Usage:** Shared across all layers for data transfer
+
+**[11] Defaults - Configuration & Presets**
+- **Purpose:** Centralized configuration values and default settings
+- **Responsibility:** Provide preset values, default configurations, lookup tables
+- **Key Benefit:** Single source of truth for default values
+- **Examples:** Default package types, validation thresholds, workflow step definitions
+
+<div class="page-break"></div>
+
+## Diagram Appendix B: Current vs. New Data Flow
+
+**Purpose:** Contrast between existing monolithic service architecture and new CQRS-based architecture to illustrate the transformation in data flow patterns.
+
+### Current Architecture (Service Pattern)
+
+<div class="keep-together">
+
+```mermaid
+flowchart TD
+    ViewModel[ViewModel] --> Service[Service<br/>10+ methods]
+    Service --> DAO[DAO]
+    DAO --> DB[(Database)]
+```
+
+</div>
+
+### Current Architecture - Component Descriptions
+
+**[1] ViewModel**
+- **Role:** Presentation logic container
+- **Problem:** Tightly coupled to specific service implementations
+- **Issue:** Difficult to test (must mock entire service with 10+ methods)
+
+**[2] Service (10+ methods)**
+- **Role:** Monolithic business logic container
+- **Problem:** Single file contains multiple responsibilities (Insert, Update, Delete, Get, Validate, Export)
+- **Issue:** Large files (500+ lines), difficult to maintain, violates Single Responsibility Principle
+
+**[3] DAO (Data Access Object)**
+- **Role:** Database interface
+- **Note:** This layer works well and is retained in new architecture
+
+**[4] Database**
+- **Role:** Data persistence
+- **Note:** MySQL for application data, SQL Server (Infor Visual) for read-only reference data
+
+### New Architecture (CQRS Pattern)
+
+<div class="keep-together">
+
+```mermaid
+flowchart TD
+    ViewModel[ViewModel] --> Mediator[Mediator]
+    Mediator --> Handler[Handler<br/>Single Responsibility]
+    Handler --> Validator[Validator]
+    Handler --> Logger[Logger]
+    Handler --> DAO[DAO]
+    DAO --> DB[(Database)]
+```
+
+</div>
+
+### New Architecture - Component Descriptions
+
+**[1] ViewModel**
+- **Role:** Presentation logic container
+- **Improvement:** Injects single Mediator interface instead of multiple services
+- **Benefit:** Easier to test (mock Mediator instead of 5+ service interfaces)
+
+**[2] Mediator**
+- **Role:** Request router and dispatcher
+- **Responsibility:** Routes queries and commands to appropriate handlers
+- **Benefit:** Decouples ViewModels from specific handler implementations
+
+**[3] Handler (Single Responsibility)**
+- **Role:** Execute one specific operation (example: InsertReceivingLine)
+- **Improvement:** One class per operation instead of one service for all operations
+- **Benefit:** Small, focused classes (~50-100 lines), easy to understand and maintain
+
+**[4] Validator**
+- **Role:** Data integrity enforcement using declarative rules
+- **Responsibility:** Automatically validates commands before execution via pipeline behavior
+- **Benefit:** Centralized validation logic, reusable rules, testable independently
+
+**[5] Logger**
+- **Role:** Diagnostic information capture
+- **Responsibility:** Automatically logs handler execution via pipeline behavior
+- **Benefit:** Consistent structured logging across all operations without duplicating logging code
+
+**[6] DAO (Data Access Object)**
+- **Role:** Database interface (unchanged from current architecture)
+- **Note:** Instance-based, returns structured result objects, uses stored procedures
+
+**[7] Database**
+- **Role:** Data persistence (unchanged from current architecture)
+- **Note:** MySQL for read/write, SQL Server (Infor Visual) for read-only access
+
+### Key Transformation Benefits
+
+**Reduced Coupling:**
+- Current: ViewModel depends on specific service implementation
+- New: ViewModel depends only on Mediator interface
+
+**Single Responsibility:**
+- Current: One service handles 10+ operations
+- New: One handler handles exactly one operation
+
+**Cross-Cutting Concerns:**
+- Current: Logging and validation scattered in each service method
+- New: Pipeline behaviors apply logging and validation automatically
+
+**Testability:**
+- Current: Must mock entire service interface with all methods
+- New: Mock Mediator to simulate any handler response
+
+**Maintainability:**
+- Current: Modifying one operation requires editing large service file
+- New: Each operation is isolated in its own handler class
 
