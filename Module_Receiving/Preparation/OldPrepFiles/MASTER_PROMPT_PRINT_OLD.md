@@ -359,62 +359,6 @@ Instead of scattered validation logic, validation rules are defined in dedicated
 
 ---
 
-## Suggested Documentation Files (Module-Agnostic)
-
-These files should exist for any module to support development, troubleshooting, and onboarding.
-
-### Core Documentation Files (High Priority)
-
-- **README.md (Module Root)**
-  - Purpose: Entry point for module understanding.
-  - Include: module purpose/scope, key components, dependencies, and a quick-start pointer to preparation workflow.
-
-- **ARCHITECTURE.md**
-  - Purpose: Deep dive into architecture, patterns, and design decisions.
-  - Include: MVVM usage, service responsibilities, DAO pattern, error handling, validation, and database interaction constraints.
-
-- **DATA_MODEL.md**
-  - Purpose: Database schema reference.
-  - Include: PlantUML ERD, table schemas, stored procedures, foreign keys, and indexing notes.
-
-- **WORKFLOWS.md**
-  - Purpose: Visual and textual description of user workflows.
-  - Include: workflow steps, state transitions, user interactions, ViewModel data flow, and session management notes.
-
-### Preparation Files (Planning & Implementation)
-
-- **Preparation/03_Clarification_Questions.md**
-  - Purpose: Questions to answer before implementation begins.
-  - Include: architecture decisions, database constraints, dependencies, validation/testing expectations, UI/UX constraints, and deployment requirements.
-
-- **Preparation/04_Implementation_Order.md**
-  - Purpose: Step-by-step development plan.
-  - Include: phases, milestones, and step dependencies.
-
-- **Preparation/05_Task_Checklist.md**
-  - Purpose: Granular task tracking.
-  - Include: setup, model/DAO/validator, ViewModel/navigation, testing, documentation, and code review tasks.
-
-- **Preparation/06_Schematic_File.md**
-  - Purpose: Visual diagrams and schematics.
-  - Include: folder structure schematic, architecture diagram (PlantUML), workflow state diagram (PlantUML), and data flow diagram (PlantUML).
-
-- **Preparation/07_Research_Archive.md**
-  - Purpose: Store research notes, links, and investigation findings.
-  - Include: library research, architecture references, testing strategies, and performance/migration notes.
-
-### Runtime Documentation (Developer Experience)
-
-- **DEFAULTS.md**
-  - Purpose: Document default values and configuration settings.
-  - Include: default validation rules, workflow settings, and export settings.
-
-- **TROUBLESHOOTING.md**
-  - Purpose: Common issues and solutions.
-  - Include: frequent binding/DI errors, common runtime exceptions, and diagnostic steps.
-
----
-
 ## Success Metrics
 
 ### Quantitative Goals
@@ -559,6 +503,62 @@ Configure Serilog to add context:
 - Constitutional compliance checks pass
 - Performance benchmarks within targets
 - Security scan shows no vulnerabilities
+
+---
+
+## Suggested Documentation Files (Module-Agnostic)
+
+These files should exist for any module to support development, troubleshooting, and onboarding.
+
+### Core Documentation Files (High Priority)
+
+- **README.md (Module Root)**
+  - Purpose: Entry point for module understanding.
+  - Include: module purpose/scope, key components, dependencies, and a quick-start pointer to preparation workflow.
+
+- **ARCHITECTURE.md**
+  - Purpose: Deep dive into architecture, patterns, and design decisions.
+  - Include: MVVM usage, service responsibilities, DAO pattern, error handling, validation, and database interaction constraints.
+
+- **DATA_MODEL.md**
+  - Purpose: Database schema reference.
+  - Include: PlantUML ERD, table schemas, stored procedures, foreign keys, and indexing notes.
+
+- **WORKFLOWS.md**
+  - Purpose: Visual and textual description of user workflows.
+  - Include: workflow steps, state transitions, user interactions, ViewModel data flow, and session management notes.
+
+### Preparation Files (Planning & Implementation)
+
+- **Preparation/03_Clarification_Questions.md**
+  - Purpose: Questions to answer before implementation begins.
+  - Include: architecture decisions, database constraints, dependencies, validation/testing expectations, UI/UX constraints, and deployment requirements.
+
+- **Preparation/04_Implementation_Order.md**
+  - Purpose: Step-by-step development plan.
+  - Include: phases, milestones, and step dependencies.
+
+- **Preparation/05_Task_Checklist.md**
+  - Purpose: Granular task tracking.
+  - Include: setup, model/DAO/validator, ViewModel/navigation, testing, documentation, and code review tasks.
+
+- **Preparation/06_Schematic_File.md**
+  - Purpose: Visual diagrams and schematics.
+  - Include: folder structure schematic, architecture diagram (PlantUML), workflow state diagram (PlantUML), and data flow diagram (PlantUML).
+
+- **Preparation/07_Research_Archive.md**
+  - Purpose: Store research notes, links, and investigation findings.
+  - Include: library research, architecture references, testing strategies, and performance/migration notes.
+
+### Runtime Documentation (Developer Experience)
+
+- **DEFAULTS.md**
+  - Purpose: Document default values and configuration settings.
+  - Include: default validation rules, workflow settings, and export settings.
+
+- **TROUBLESHOOTING.md**
+  - Purpose: Common issues and solutions.
+  - Include: frequent binding/DI errors, common runtime exceptions, and diagnostic steps.
 
 ---
 

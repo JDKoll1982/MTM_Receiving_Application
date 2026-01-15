@@ -14,7 +14,6 @@ This document outlines non-code documentation files that should exist within Mod
 
 **Suggested Content:**
 
-```markdown
 # Module_Receiving
 
 ## Purpose
@@ -40,7 +39,6 @@ package type selection, heat lot tracking, and final review before database comm
 
 ## Quick Start
 See `Preparation/04_Implementation_Order.md` for development workflow.
-```
 
 **Location:** `Module_Receiving/README.md`
 
@@ -117,7 +115,6 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 
 **Suggested Content:**
 
-```markdown
 # Clarification Questions for Module_Receiving Rebuild
 
 ## Architecture Decisions
@@ -149,7 +146,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 ## Deployment
 15. What is the deployment process for Module_Receiving changes?
 16. Are there backward compatibility requirements?
-```
+
 
 **Location:** `Module_Receiving/Preparation/03_Clarification_Questions.md`
 
@@ -161,7 +158,6 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 
 **Suggested Content:**
 
-```markdown
 # Implementation Order for Module_Receiving Rebuild
 
 ## Phase 1: Foundation (Week 1)
@@ -226,7 +222,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Merge to development branch
 - [ ] QA testing
 - [ ] Production deployment
-```
+
 
 **Location:** `Module_Receiving/Preparation/04_Implementation_Order.md`
 
@@ -238,7 +234,6 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 
 **Suggested Content:**
 
-```markdown
 # Task Checklist for Module_Receiving Rebuild
 
 ## Setup Tasks
@@ -329,7 +324,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Peer review by team
 - [ ] Address review feedback
 - [ ] Final approval
-```
+
 
 **Location:** `Module_Receiving/Preparation/05_Task_Checklist.md`
 
@@ -341,7 +336,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 
 **Suggested Content:**
 
-```markdown
+
 # Module_Receiving - Schematic Diagrams
 
 ## Folder Structure
@@ -394,11 +389,10 @@ Module_Receiving/
     ├── 05_Task_Checklist.md
     ├── 06_Schematic_File.md
     └── 07_Research_Archive.md
-\`\`\`
 
 ## Architecture Diagram (PlantUML)
 
-\`\`\`plantuml
+```plantuml
 @startuml Module_Receiving_Architecture
 
 package "Module_Receiving" {
@@ -457,11 +451,11 @@ package "Database" {
 [ViewModel_Receiving_POEntry] --> [ILogger<T>]
 
 @enduml
-\`\`\`
+```
 
 ## Workflow State Diagram (PlantUML)
 
-\`\`\`plantuml
+```plantuml
 @startuml Receiving_Workflow_State_Diagram
 
 [*] --> ModeSelection
@@ -480,11 +474,11 @@ Review --> [*] : Save to DB
 Review --> ModeSelection : Cancel
 
 @enduml
-\`\`\`
+```
 
 ## Data Flow Diagram (PlantUML)
 
-\`\`\`plantuml
+```plantuml
 @startuml Receiving_Data_Flow
 
 actor User
@@ -516,7 +510,6 @@ else Validation Failed
 end
 
 @enduml
-\`\`\`
 ```
 
 **Location:** `Module_Receiving/Preparation/06_Schematic_File.md`
