@@ -37,8 +37,6 @@ This document identifies additional elements that could enhance the Module_Recei
 
 The base implementation guide (MASTER_PROMPT.md) is comprehensive and complete. These suggestions represent enhancements that would further improve robustness, reduce risk, and improve long-term maintainability.
 
-<div class="page-break"></div>
-
 ## Critical Additions (High Impact)
 
 ### 1. Performance Baseline & Benchmarks
@@ -177,8 +175,6 @@ _(See Diagram Appendix C: Audit Trail Sequence - Page end of document)_
 3. Review all logging statements for sensitive data exposure
 4. Create audit log retention policy
 
-<div class="page-break"></div>
-
 ## Important Additions (Medium Impact)
 
 ### 4. Exception Handling Strategy for MediatR
@@ -198,21 +194,7 @@ Create pipeline behavior that catches unhandled exceptions from all handlers and
 **Option 3: Hybrid Approach (Recommended)**
 Use try-catch in handlers for expected failures. Use global exception pipeline as safety net for unexpected exceptions.
 
-<<<<<<< HEAD
-```mermaid
-graph TB
-    subgraph "Hybrid Exception Strategy"
-        A[Command/Query] --> B{Handler Try-Catch}
-        B -->|Expected Error| C[Return Failure Result]
-        B -->|Success| D[Return Success Result]
-        B -->|Unexpected Exception| E[Global Exception Behavior]
-        E --> F[Log Exception]
-        F --> G[Return Generic Failure]
-    end
-```
-=======
 _(See Diagram Appendix D: Exception Handling Strategy - Page end of document)_
->>>>>>> 5d9f689 (Implement code changes to enhance functionality and improve performance)
 
 **Action Items:**
 
@@ -313,8 +295,6 @@ Configure Serilog to automatically add context to all log entries:
 
 <div class="page-break"></div>
 
-## Nice-to-Have Additions (Low Impact)
-
 ### 7. CI/CD Pipeline Integration
 
 **What's Missing:** No build/deploy automation guidance
@@ -331,29 +311,7 @@ Configure Serilog to automatically add context to all log entries:
 - Code coverage reporting
 - Static code analysis
 
-<<<<<<< HEAD
-```mermaid
-flowchart TB
-    A[Code Commit] --> B[Restore NuGet]
-    B --> C[Build Solution]
-    C --> D{Build Success?}
-    D -->|No| E[Notify Developer]
-    D -->|Yes| F[Run Tests]
-    F --> G{Tests Pass?}
-    G -->|No| E
-    G -->|Yes| H[Code Coverage]
-    H --> I{Coverage > 80%?}
-    I -->|No| J[Warning]
-    I -->|Yes| K[Static Analysis]
-    J --> K
-    K --> L{No Violations?}
-    L -->|No| E
-    L -->|Yes| M[Create Artifact]
-    M --> N[Deploy to Staging]
-```
-=======
 _(See Diagram Appendix G: CI/CD Pipeline Flow - Page end of document)_
->>>>>>> 5d9f689 (Implement code changes to enhance functionality and improve performance)
 
 **Deployment Checklist:**
 
@@ -534,8 +492,6 @@ Use dotnet test with filter parameter to run subset of tests
 
 ## Advanced Considerations (Expert Level)
 
-### 11. Dependency Injection Scoping Strategy
-
 **What's Missing:** No guidance on service lifetimes for MediatR handlers and dependencies
 
 **Why It Matters:** Incorrect dependency injection scoping causes subtle bugs like stale data, memory leaks, or premature disposal of services.
@@ -611,8 +567,6 @@ Create builder pattern classes to simplify test data creation. Reduces boilerpla
 
 <div class="keep-together">
 
-| Enhancement | Impact Level | Implementation Effort | Priority Category |
-|-------------|--------------|----------------------|-------------------|
 | Performance Baselines | High | Medium | Critical |
 | Database Migration Plan | High | High | Critical |
 | Security & Audit Trail | High | Low | Critical |
@@ -636,8 +590,6 @@ Create builder pattern classes to simplify test data creation. Reduces boilerpla
 gantt
     title Enhancement Implementation Timeline
     dateFormat YYYY-MM-DD
-    
-    section Phase 0 (Pre-Implementation)
     Performance Baseline           :p0a, 2026-01-15, 3d
     Database Migration Plan        :p0b, 2026-01-15, 5d
     Security Requirements          :p0c, after p0a, 2d
@@ -681,7 +633,6 @@ _(See Diagram Appendix K: Enhancement Implementation Timeline - Page end of docu
 
 For each suggestion in this document, team should decide:
 
-<div class="keep-together">
 
 **Decision Log Template:**
 
@@ -730,8 +681,6 @@ The base implementation guide (MASTER_PROMPT.md) provides a solid foundation for
 ## Diagram Appendix A: Performance Monitoring Flow
 
 **Purpose:** Illustrates the iterative process of measuring, implementing, and validating performance throughout the rebuild to ensure the new architecture meets or exceeds baseline performance.
-
-<div class="keep-together">
 
 ```mermaid
 graph TB
@@ -821,8 +770,6 @@ graph TB
 ```mermaid
 flowchart TD
     A[Production Deployment] --> B{Monitor for 48 Hours}
-    B -->|All OK| C[Success]
-    B -->|Critical Bug?| D[Rollback Decision]
     B -->|Data Loss?| D
     B -->|Performance > 50% Degradation?| D
     
@@ -923,8 +870,6 @@ sequenceDiagram
     participant VM as ViewModel
     participant M as MediatR
     participant AB as AuditBehavior
-    participant H as Handler
-    participant L as Logger
     participant DB as Database
 
     VM->>M: Send(Command)
@@ -1035,8 +980,6 @@ graph LR
         B -->|Expected Error| C[Return Failure Result]
         B -->|Success| D[Return Success Result]
         B -->|Unexpected Exception| E[Global Exception Behavior]
-        E --> F[Log Exception]
-        F --> G[Return Generic Failure]
     end
 ```
 

@@ -7,7 +7,7 @@
   h1:first-of-type { page-break-before: avoid; }
   h2 { page-break-after: avoid; }
   pre, .mermaid { page-break-inside: avoid; margin: 1em 0; }
-  
+
   /* Scale Mermaid diagrams to fit 8.5x11 page width */
   .mermaid, pre.mermaid {
     max-width: 100%;
@@ -70,8 +70,6 @@ This document outlines a complete architectural redesign of Module_Receiving usi
 - Logging lacks structured context and semantic properties
 - CSV export functionality uses custom writer instead of proven libraries
 
-<div class="page-break"></div>
-
 ## Target Architecture
 
 ### Modern Architecture Stack
@@ -110,7 +108,6 @@ _(See Diagram Appendix B: Current vs. New Data Flow - Page end of document)_
 
 The rebuild transforms data flow from a monolithic service pattern to a modern CQRS pattern where:
 
-<div class="page-break"></div>
 <div class="avoid-break-before">
 
 **Benefits:**
@@ -255,8 +252,6 @@ Instead of scattered validation logic in ViewModels and Services, validation rul
 - Pipeline behaviors implemented and tested
 - Unit tests for all handlers
 
-<div class="page-break"></div>
-
 **Objective:** Refactor ViewModels to use Mediator pattern
 
 **ViewModel Changes:**
@@ -290,8 +285,6 @@ Two approaches considered:
 
 <div class="page-break"></div>
 
-### Phase 5: Services Cleanup (Week 4)
-
 **Services to Remove/Replace:**
 
 1. MySQL Receiving Line Service → Replaced by MediatR handlers
@@ -315,8 +308,6 @@ Two approaches considered:
 <div class="page-break"></div>
 
 ### Phase 6: Testing & Documentation (Week 5)
-
-**Objective:** Achieve 80% test coverage and update all documentation
 
 **Unit Tests:**
 
@@ -349,8 +340,6 @@ Two approaches considered:
 
 ### Quantitative Goals
 
-- Reduce Module_Core service count by 50% (from ~15 to 7-8 services)
-- Achieve 80%+ test coverage for Module_Receiving
 - Reduce average service file size from 500 lines to under 100 lines (handlers)
 - Maintain or improve application performance
 - Zero architectural constraint violations
@@ -368,8 +357,6 @@ Two approaches considered:
 ## Common Pitfalls to Avoid
 
 ### Anti-Pattern 1: Direct DAO Injection
-
-**Incorrect:** ViewModels directly inject Data Access Objects
 
 **Correct:** ViewModels inject Mediator interface
 
@@ -396,8 +383,6 @@ Two approaches considered:
 ## Risk Mitigation
 
 ### Performance Risk
-
-**Risk:** MediatR adds overhead to every operation
 
 **Mitigation:** Establish performance baseline before rebuild, measure after each phase, optimize hotspots
 
@@ -427,8 +412,6 @@ Two approaches considered:
 
 - [ ] All critical questions in Clarification Questions document answered
 - [ ] Team approval on library selections
-- [ ] NuGet package approval process completed
-- [ ] Test database environment available
 - [ ] Development environment setup verified
 - [ ] Constitutional compliance review completed
 
@@ -459,8 +442,6 @@ Two approaches considered:
 - Serilog: serilog.net
 - FluentValidation: docs.fluentvalidation.net
 - CsvHelper: joshclose.github.io/CsvHelper
-- WinUI 3: learn.microsoft.com/windows/apps/winui
-
 ### Architecture Patterns
 
 - Clean Architecture: blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
@@ -509,8 +490,6 @@ Validation rules defined as data/configuration rather than imperative code. Rule
 ## Diagram Appendix A: Module Architecture Layers
 
 **Purpose:** Visual representation of the complete Module_Receiving architecture showing all layers, their components, and dependencies after the rebuild is complete.
-
-<div class="keep-together">
 
 ```mermaid
 graph TD
@@ -618,8 +597,6 @@ graph TD
 
 <div class="keep-together">
 
-```mermaid
-flowchart TD
     ViewModel[ViewModel] --> Service[Service<br/>10+ methods]
     Service --> DAO[DAO]
     DAO --> DB[(Database)]
