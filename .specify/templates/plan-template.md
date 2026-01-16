@@ -31,36 +31,14 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with [MTM Receiving Application Constitution](.specify/memory/constitution.md) v1.0.0.
-
-### Core Principles Alignment
-
-- [ ] **I. MVVM Architecture**: Plan separates ViewModels, Views, Models, and Services
-- [ ] **II. Database Layer**: Plan uses Model_Dao_Result pattern, stored procedures only, async operations
-- [ ] **III. Dependency Injection**: All services will be registered in DI container with interfaces
-- [ ] **IV. Error Handling & Logging**: Plan includes IService_ErrorHandler and ILoggingService usage
-- [ ] **V. Security & Authentication**: Authentication/authorization approach specified if applicable
-- [ ] **VI. WinUI 3 Modern Practices**: UI uses x:Bind, ObservableCollection, async/await patterns
-- [ ] **VII. Specification-Driven**: This plan follows Speckit workflow structure
-
-### Technology Constraints
-
-- [ ] **Platform**: Windows 10/11, .NET 8.0, WinUI 3 (Windows App SDK 1.8+)
-- [ ] **Database**: MySQL for app data, SQL Server for Infor Visual (READ ONLY)
-- [ ] **MySQL 5.7.24 Compatible**: No JSON functions, CTEs, window functions, CHECK constraints
-- [ ] **Required Packages**: CommunityToolkit.Mvvm, MySql.Data, Microsoft.Data.SqlClient
-
-### Critical Constraints
-
-- [ ] **Infor Visual READ ONLY**: If feature queries VISUAL/MTMFG database:
-  - [ ] Connection uses ApplicationIntent=ReadOnly
-  - [ ] Only SELECT queries via stored procedures
-  - [ ] No INSERT, UPDATE, DELETE, or DDL operations
-  - [ ] Graceful handling of connection failures
-- [ ] **Forbidden Practices**: No direct SQL, no DAO exceptions, no logic in code-behind, no service locator
-
-### Justification for Violations
-[Document any principle violations here with rationale and mitigation]
+Verify alignment with the constitution:
+- MVVM purity (partial ViewModels, x:Bind only, no code-behind business logic).
+- Data access integrity (MySQL stored procedures only; Infor Visual read-only; instance DAOs returning Model_Dao_Result; no static DAOs).
+- CQRS/MediatR usage with pipeline behaviors (validation/logging/audit) and mediator-first ViewModels.
+- DI registration in App.xaml.cs with module boundaries (Module_Core infra only; module-specific logic stays local).
+- Validation/logging/error handling (FluentValidation + IService_ErrorHandler + Serilog structured logs; no exception leakage to UI).
+- Security/session discipline (auth tiers, timeouts, auditability; no secrets in code).
+- Library-first approach (use approved libraries before writing custom services: MediatR, FluentValidation, Serilog, CsvHelper, AutoMapper/Mapster, Scrutor, Polly, Ardalis.GuardClauses, FluentAssertions/Bogus).
 
 ## Project Structure
 

@@ -1,269 +1,56 @@
 <!--
-  SYNC IMPACT REPORT
-  Version Change: Initial → 1.0.0
-  Rationale: MINOR bump - First formal constitution establishing governance framework
-
-  Principles Defined:
-  - I. MVVM Architecture (NON-NEGOTIABLE)
-  - II. Database Layer Consistency (NON-NEGOTIABLE)
-  - III. Dependency Injection (NON-NEGOTIABLE)
-  - IV. Error Handling & Logging (REQUIRED)
-  - V. Security & Authentication (REQUIRED)
-  - VI. WinUI 3 Modern Practices (REQUIRED)
-  - VII. Specification-Driven Development (REQUIRED)
-
-  Sections Added:
-  - Technology Constraints
-  - Development Workflow
-  - Governance
-
-  Templates Requiring Updates:
-  ✅ plan-template.md - Updated Constitution Check section with all 7 principles
-  ✅ spec-template.md - Aligned with structured requirements approach
-  ✅ tasks-template.md - Will align task categorization with principle domains
-
-  Follow-up TODOs:
-  - Monitor principle adherence during first 3 implementation cycles
-  - Review DAO migration progress (instance-based pattern adoption)
-  - Evaluate MCP tooling integration effectiveness
+Sync Impact Report
+- Version: template → 1.0.0
+- Modified principles: none (template filled with 7 concrete principles)
+- Added sections: Architecture & Technical Constraints; Development Workflow & Quality Gates
+- Removed sections: none
+- Templates requiring updates: .specify/templates/plan-template.md (updated), .specify/templates/spec-template.md (no change), .specify/templates/tasks-template.md (no change), commands templates (⚠ not present in repo; none updated)
+- Follow-up TODOs: none
 -->
 
 # MTM Receiving Application Constitution
 
 ## Core Principles
 
-### I. MVVM Architecture (NON-NEGOTIABLE)
+### I. MVVM and View Purity (Non-Negotiable)
+WinUI 3 views use x:Bind only; ViewModels are partial, inherit ViewModel_Shared_Base or ObservableObject, expose state via [ObservableProperty]/[RelayCommand], avoid code-behind business logic, and update UI solely through bindings and dispatcher-safe calls.
 
-**Strict Layer Separation**: View (XAML) → ViewModel → Service → DAO → Database
+### II. Data Access Integrity
+MySQL access uses stored procedures only; SQL Server (Infor Visual) is strictly read-only with ApplicationIntent=ReadOnly; DAOs are instance-based, async, and return Model_Dao_Result/Model_Dao_Result<T> without throwing; no raw SQL or static DAOs.
 
-**Mandatory Rules**:
+### III. CQRS + Mediator First
+All workflows are modeled as commands/queries via MediatR with single-responsibility handlers; cross-cutting concerns (validation, logging, audit) run through pipeline behaviors; ViewModels depend on mediator rather than multi-method services.
 
-- ViewModels MUST inherit from `ViewModel_Shared_Base` or `ObservableObject`
-- ViewModels MUST be `partial` classes (required for CommunityToolkit.Mvvm source generators)
-- ViewModels SHALL NOT directly call DAOs (`Dao_*` classes)
-- ViewModels SHALL NOT access `Helper_Database_*` classes directly
-- ViewModels SHALL NOT use connection strings
-- ALL data binding MUST use `x:Bind` (compile-time) over `Binding` (runtime)
-- ALL data access MUST flow through Service layer
-- Business logic in `.xaml.cs` code-behind files is FORBIDDEN
+### IV. Dependency Injection and Modular Boundaries
+Constructor injection is mandatory; registrations live in App.xaml.cs; ViewModels are transient, infra/DAO services singleton unless stateful; module-specific logic remains within its module, Module_Core provides only generic infrastructure (error handling, dispatcher, windowing, logging scaffolding).
 
-**Rationale**: MVVM ensures testability, maintainability, and clear separation between UI presentation and business logic. Compile-time binding (`x:Bind`) provides type safety and performance benefits. The strict layering prevents tight coupling and ensures each layer has a single, well-defined responsibility.
+### V. Validation, Errors, and Structured Logging
+FluentValidation enforces inputs/commands; IService_ErrorHandler contains user-facing handling; no exceptions leak to UI; Serilog produces structured, contextual logs with audit breadcrumbs; failure paths always return typed results.
 
-### II. Database Layer Consistency (NON-NEGOTIABLE)
+### VI. Security and Session Discipline
+Authentication/session flows honor workstation type, timeouts, and lockouts; auditability is preserved for user actions and data writes; secrets and connection strings are never embedded in code; read-only rules for Infor Visual are enforced everywhere.
 
-**Instance-Based DAOs**: All Data Access Objects MUST be instance-based classes (NOT static)
+### VII. Library-First Reuse
+Prefer proven libraries over custom services: MediatR for orchestration, FluentValidation for rules, Serilog for logging, CsvHelper for exports, AutoMapper/Mapster for mapping, Scrutor for DI scanning/decorators, Polly for resilience, Ardalis.GuardClauses for guards, FluentAssertions/Bogus for tests; new utilities must justify gaps before custom code is added.
 
-**Mandatory Rules**:
+## Architecture and Technical Constraints
+- Stack: WinUI 3 (.NET 8), CommunityToolkit.Mvvm, MediatR, FluentValidation, Serilog, CsvHelper, OpenTelemetry (future), MySQL 8, SQL Server (read-only). 
+- Patterns: CQRS with pipeline behaviors; DAOs use Helper_Database_StoredProcedure; no static/global service locators; no raw SQL for MySQL; no writes to Infor Visual. 
+- Performance/observability: structured logs on handler start/stop; capture timing at validation, handler, DAO, and end-to-end; favor caching on queries where safe; avoid blocking UI thread. 
+- UI conventions: use x:Bind, keep Views free of business logic, window sizing via WindowHelper standards, converters from Module_Core where applicable. 
+- Library-first mapping: prefer mapping libraries over manual mapping; prefer Scrutor for DI assembly scanning; apply Polly policies for external/unstable calls.
 
-- DAOs MUST accept `connectionString` in constructor
-- DAOs MUST be registered in DI container as Singletons
-- DAOs MUST return `Model_Dao_Result` or `Model_Dao_Result<T>`
-- DAOs MUST NEVER throw exceptions (return failure results instead)
-- MySQL operations MUST use stored procedures ONLY (never raw SQL in C#)
-- SQL Server (Infor Visual) is READ ONLY (ApplicationIntent=ReadOnly required)
-- SQL Server connections MUST use stored procedures or parameterized queries
-- NO INSERT, UPDATE, DELETE operations on Infor Visual database
-- All database operations MUST be async (`Task<T>` return types)
-
-**Rationale**: Instance-based DAOs enable dependency injection, testability, and configuration flexibility. Stored procedures provide security (SQL injection protection), performance (query plan caching), and separation of data logic from application code. The Infor Visual READ ONLY constraint protects the ERP system of record from accidental data corruption.
-
-### III. Dependency Injection (NON-NEGOTIABLE)
-
-**Constructor Injection**: All dependencies MUST be injected via constructor
-
-**Mandatory Rules**:
-
-- ALL services MUST have interface definitions (`IService_*`)
-- ALL services MUST be registered in `App.xaml.cs` ConfigureServices
-- ViewModels MUST be registered as Transient (new instance per navigation)
-- DAOs MUST be registered as Singletons (stateless, reusable)
-- Shared services (logging, error handling) MUST be registered as Singletons
-- Service locator pattern is FORBIDDEN (no direct `App.GetService<T>()` calls in business logic)
-- Static service access is FORBIDDEN (except in App.xaml.cs initialization)
-
-**Rationale**: Dependency injection enables loose coupling, testability (mocking dependencies), and centralized configuration. Proper lifetime management (Transient vs Singleton) prevents memory leaks and ensures correct state management.
-
-### IV. Error Handling & Logging (REQUIRED)
-
-**Structured Error Management**: All errors MUST be logged and handled consistently
-
-**Mandatory Rules**:
-
-- DAOs MUST return `Model_Dao_Result` with `Success`, `ErrorMessage`, and `Severity` properties
-- DAOs MUST catch exceptions and return failure results (never propagate exceptions)
-- ViewModels MUST use `IService_ErrorHandler.HandleException()` for user-facing errors
-- Services MUST use `IService_LoggingUtility` for audit trails and diagnostics
-- Async operations MUST set `IsBusy = true` during execution and `finally` reset to `false`
-- User notifications MUST use `IService_ErrorHandler.ShowUserError()` (not raw MessageBox)
-- All public API methods MUST include XML documentation comments
-
-**Rationale**: Consistent error handling ensures users receive clear, actionable feedback. Structured logging enables troubleshooting and audit compliance. Never throwing from DAOs prevents cascade failures and enables graceful degradation.
-
-### V. Security & Authentication (REQUIRED)
-
-**Tiered Access Control**: Authentication adapts to workstation type
-
-**Mandatory Rules**:
-
-- Personal workstations: Auto-login with Windows username (30-minute timeout)
-- Shared terminals: Username + 4-digit PIN authentication (15-minute timeout)
-- Session management MUST track user activity (mouse, keyboard, window activation)
-- New user creation MUST validate PIN uniqueness
-- All authentication events MUST be logged to audit trail
-- Credentials MUST NEVER be stored in plaintext (appsettings.json exceptions documented)
-- Connection strings MUST use `Helper_Database_Variables.GetConnectionString()` (centralized)
-
-**Rationale**: Tiered authentication balances security with usability. Shorter timeouts for shared terminals reduce unauthorized access risk. Comprehensive activity logging supports security auditing and compliance.
-
-### VI. WinUI 3 Modern Practices (REQUIRED)
-
-**Platform-Specific Patterns**: Leverage WinUI 3 and .NET 8 modern capabilities
-
-**Mandatory Rules**:
-
-- Use `[ObservableProperty]` attribute on private fields (not manual PropertyChanged)
-- Use `[RelayCommand]` attribute for command methods (not manual ICommand implementation)
-- Use `async/await` for all I/O operations (database, file, network)
-- Use `ObservableCollection<T>` for data-bound collections
-- Window sizing MUST use `WindowHelper_WindowSizeAndStartupLocation.SetWindowSize()`
-- Converters MUST be defined in `Module_Core/Converters/` and reused
-- XAML `UpdateSourceTrigger=PropertyChanged` required for TwoWay TextBox bindings
-- Braces MUST be used for all control flow statements (if, for, while)
-- Accessibility modifiers MUST be explicit (no implicit `private`)
-
-**Rationale**: CommunityToolkit.Mvvm source generators reduce boilerplate and eliminate errors. Async/await prevents UI freezing. Standardized window sizing and converters ensure consistent UX. Explicit coding standards (.editorconfig compliance) improve code clarity and reduce bugs.
-
-### VII. Specification-Driven Development (REQUIRED)
-
-**Speckit Workflow**: All features MUST follow structured specification process
-
-**Mandatory Rules**:
-
-- Features MUST have specification in `specs/[###-feature-name]/` directory
-- Specifications MUST include: User scenarios, requirements, constitution check
-- Implementation plans MUST verify constitutional compliance before Phase 0
-- Tasks MUST be tracked in `tasks.md` with status updates
-- Database schema changes MUST be documented in `data-model.md` with PlantUML diagrams
-- Stored procedures MUST be idempotent (use `INSERT IGNORE`, `IF NOT EXISTS`)
-- All diagrams MUST use PlantUML (NOT ASCII art)
-- Feature branches MUST follow naming convention: `[###-feature-name]`
-
-**Rationale**: Structured specifications ensure requirements are understood before implementation, reducing rework. Constitutional compliance checks prevent architectural drift. PlantUML diagrams provide parseable, version-controllable documentation that both AI agents and humans can process effectively.
-
-## Technology Constraints
-
-**Platform**: Windows 10/11, .NET 8.0, WinUI 3 (Windows App SDK 1.8+)
-
-**Databases**:
-
-- MySQL 5.7.24 (mtm_receiving_application) - Full READ/WRITE access
-- SQL Server (Infor Visual - VISUAL/MTMFG) - READ ONLY (ApplicationIntent=ReadOnly)
-
-**MySQL 5.7.24 Compatibility Constraints**:
-
-- NO JSON functions (JSON_EXTRACT, JSON_OBJECT)
-- NO Common Table Expressions (WITH clause)
-- NO Window functions (ROW_NUMBER, RANK)
-- NO CHECK constraints (use triggers for validation)
-- NO generated columns (use triggers to populate)
-
-**Required NuGet Packages**:
-
-- CommunityToolkit.Mvvm (MVVM source generators)
-- MySql.Data (MySQL connector)
-- Microsoft.Data.SqlClient (SQL Server connector)
-- xUnit + FluentAssertions (testing)
-
-**Modules** (logical separation within monolith):
-
-- `Module_Core` - Shared infrastructure, helpers, base classes
-- `Module_Shared` - Shared ViewModels, Views, models
-- `Module_Receiving` - Receiving workflow, label generation
-- `Module_Dunnage` - Dunnage management
-- `Module_Routing` - Routing rules, location management
-- `Module_Reporting` - Report generation, scheduling
-- `Module_Settings` - Application configuration, user preferences
-- `Module_Volvo` - Volvo-specific integration
-
-## Development Workflow
-
-**Feature Implementation Sequence**:
-
-1. Read specification from `specs/[###-feature-name]/spec.md`
-2. Run constitution compliance check (verify MVVM, database, DI principles)
-3. Create Models (`Models/[Module]/Model_*.cs`)
-4. Create DAOs (instance-based in `Data/[Module]/Dao_*.cs`)
-5. Create Service Interfaces (`Contracts/Services/IService_*.cs`)
-6. Implement Services (`Services/[Module]/Service_*.cs`)
-7. Create ViewModels (partial, inherits `ViewModel_Shared_Base`)
-8. Create Views (XAML with `x:Bind`)
-9. Register all components in DI (`App.xaml.cs`)
-10. Write unit tests (`Tests/Unit/[Module]/`)
-11. Update documentation if architecture changed
-12. Run `dotnet build && dotnet test` before commit
-
-**MCP Tools (Preferred)**:
-
-- Filesystem I/O: `mcp_filesystem_*` for reading/writing/listing files
-- Symbol navigation: `mcp_oraios_serena_*` for code exploration
-- GitHub: `githubRemote` MCP tools (use `githubLocal` Docker-based when remote unavailable)
-- UI/Web testing: `mcp_playwright_browser_*` for smoke tests
-
-**Naming Conventions**:
-
-- ViewModels: `ViewModel_[Module]_[Feature]`
-- Views: `View_[Module]_[Feature]` or `[Feature]View`
-- Services: `Service_[Purpose]` with `IService_[Purpose]`
-- DAOs: `Dao_[EntityName]`
-- Models: `Model_[EntityName]`
-- Enums: `Enum_[Category]`
-- Helpers: `Helper_[Category]_[Function]`
-- Methods: PascalCase, async methods end with `Async`
-- Properties: PascalCase (public), `_camelCase` (private fields)
-- Constants: PascalCase in static classes (NOT UPPER_SNAKE_CASE)
-
-**Testing Requirements**:
-
-- Framework: xUnit with FluentAssertions
-- Pattern: Arrange-Act-Assert (AAA)
-- Coverage: Unit tests for all Services and DAOs
-- Integration tests for database operations
-- UI tests via Playwright MCP for critical workflows
+## Development Workflow and Quality Gates
+- Specification-first: use Speckit (spec/plan/tasks) before implementation; Constitution Check must pass prior to coding. 
+- Testing: unit tests for handlers/validators/DAOs; integration tests for DAOs against test DB; ViewModels tested with mediator mocks; test data via Bogus where appropriate; assertions via FluentAssertions. 
+- Reviews and CI: code reviews verify principle compliance, DI registration, stored-procedure usage, and absence of raw SQL or static DAOs; builds run dotnet build/test; structured logging enabled. 
+- Documentation: architecture/plan/spec/tasks kept in sync with changes; diagrams use PlantUML; changelog entries note principle-impacting changes. 
+- Dependency hygiene: new packages require justification; DI registrations centralized; keep Module_Core free of module-specific services.
 
 ## Governance
+- Authority: This constitution supersedes other practice docs for technical decisions; conflicts resolve in favor of these principles. 
+- Amendments: Proposed via PR with rationale and migration notes; require version bump and update to Sync Impact Report; review must confirm downstream templates remain aligned. 
+- Versioning: Semantic (MAJOR for breaking/removal of principles, MINOR for new/expanded principles, PATCH for clarifications); Last Amended updates on any change. 
+- Compliance: Reviews/checklists must reference Core Principles; deviations require documented waivers and expiration; periodic audits validate DI registrations, DAO patterns, and UI binding rules.
 
-**Constitutional Authority**: This constitution supersedes all other development practices, coding guidelines, and architectural preferences. When conflicts arise between this document and other guidance (READMEs, inline comments, historical patterns), this constitution MUST take precedence.
-
-**Amendment Process**:
-
-1. Proposed changes MUST be documented in specification format
-2. Impact analysis MUST assess affected code, templates, and workflows
-3. Migration plan MUST be created for existing code violating new principles
-4. Version MUST be incremented according to semantic versioning:
-   - **MAJOR**: Backward-incompatible governance or principle removal/redefinition
-   - **MINOR**: New principle/section added or materially expanded guidance
-   - **PATCH**: Clarifications, wording, typo fixes, non-semantic refinements
-5. Sync Impact Report MUST be updated as HTML comment at top of this file
-
-**Compliance Review**:
-
-- All PRs MUST verify constitutional compliance before merge
-- Speckit `/speckit.plan` command MUST run Constitution Check during Phase 0
-- Feature specifications MUST include "Constitution Check" section
-- Architectural decisions MUST be justified against constitutional principles
-- Complexity MUST be justified with rationale (avoid premature optimization)
-
-**Runtime Development Guidance**:
-
-- Use `AGENTS.md` for AI agent instructions and quick reference patterns
-- Use `.github/copilot-instructions.md` for detailed Copilot coding standards
-- Use `.github/instructions/*.instructions.md` for domain-specific patterns
-- Use `specs/[feature]/` for feature-specific context and requirements
-
-**Enforcement**:
-
-- Constitutional violations MUST be documented as technical debt if shipping urgently
-- Refactoring tasks MUST be created to resolve violations within 2 release cycles
-- Repeated violations indicate need for tooling/automation (linters, analyzers)
-
-**Version**: 1.0.0 | **Ratified**: 2026-01-11 | **Last Amended**: 2026-01-11
+**Version**: 1.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-16

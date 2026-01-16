@@ -17,7 +17,7 @@
                 "file:_bmad/module-agents/config/stack-winui3-csharp.yaml",
                 "file:_bmad/module-agents/diagrams/module-rebuild-diagrams.md"
             ],
-            "model": "claude-sonnet-4.5",
+            "model": "gpt-4o",
             "tools": {
                 "enabled": [
                     "create_file",
@@ -25,7 +25,11 @@
                     "list_dir",
                     "file_search",
                     "grep_search",
-                    "semantic_search"
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
                 ]
             }
         },
@@ -46,7 +50,7 @@
                 "file:.specify/memory/constitution.md",
                 "file:.github/copilot-instructions.md"
             ],
-            "model": "claude-sonnet-4.5",
+            "model": "gpt-4o",
             "tools": {
                 "enabled": [
                     "create_file",
@@ -56,7 +60,9 @@
                     "grep_search",
                     "semantic_search",
                     "replace_string_in_file",
-                    "multi_replace_string_in_file"
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
                 ]
             }
         },
@@ -77,9 +83,10 @@
                 "file:.specify/memory/constitution.md",
                 "file:.github/copilot-instructions.md"
             ],
-            "model": "claude-sonnet-4.5",
+            "model": "gpt-4o",
             "tools": {
                 "enabled": [
+                    "create_file",
                     "read_file",
                     "list_dir",
                     "file_search",
@@ -87,8 +94,8 @@
                     "semantic_search",
                     "replace_string_in_file",
                     "multi_replace_string_in_file",
-                    "create_file",
-                    "list_code_usages"
+                    "list_code_usages",
+                    "get_errors"
                 ]
             }
         },
@@ -109,9 +116,43 @@
                 "file:.specify/memory/constitution.md",
                 "file:.github/copilot-instructions.md"
             ],
-            "model": "claude-sonnet-4.5",
+            "model": "gpt-4o",
             "tools": {
                 "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "module-agent-forge",
+            "displayName": "Module Agent Forge",
+            "description": "Creates and registers module agents across projects with workflow and template validation.",
+            "instructions": "file:_bmad/module-agents/agents/module-agent-forge.md",
+            "conversationStarters": [
+                "Create and register module agents across projects",
+                "Run full module agent workflow with template checks",
+                "Audit templates and validate copilot-agents registry"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:_bmad/module-agents/config/stack-winui3-csharp.yaml",
+                "file:_bmad/module-agents/diagrams/module-rebuild-diagrams.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
                     "read_file",
                     "list_dir",
                     "file_search",

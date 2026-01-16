@@ -1,11 +1,12 @@
 installation:
-  version: 6.0.0-alpha.22
-  installDate: 2026-01-04T17:05:25.848Z
-  lastUpdated: 2026-01-04T17:05:25.848Z
+  version: 6.0.0-alpha.23
+  installDate: 2026-01-16T13:07:09.090Z
+  lastUpdated: 2026-01-16T13:07:09.090Z
 modules:
   - core
   - bmb
   - bmm
   - cis
+  - module-agents
 ides:
   - github-copilot
