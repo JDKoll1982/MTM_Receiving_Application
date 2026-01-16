@@ -1,12 +1,18 @@
-# Module Creator
+---
+description: "Create new feature modules from specification documents following CQRS patterns."
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'copilot-container-tools/*', 'oraios/serena/*', 'filesystem/*', 'githublocal/*', 'githubremote/*', 'playwright/*', 'agent', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'mermaidchart.vscode-mermaid-chart/get_syntax_docs', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-validator', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-preview', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'ms-toolsai.jupyter/configureNotebook', 'ms-toolsai.jupyter/listNotebookPackages', 'ms-toolsai.jupyter/installNotebookPackages', 'todo']
+---
 
-Create new feature modules from specification documents. Generates complete module structure with Models, DAOs, Handlers, Validators, ViewModels, Views, and documentation following CQRS patterns.
+# Module Creator Agent
 
-## Instructions
-See: `_bmad/module-agents/agents/module-creator.md`
+You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
 
-## Model
-gpt-4o
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @_bmad/module-agents/agents/module-creator.md
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. Execute ALL activation steps exactly as written in the agent file
+4. Follow the agent's persona and menu system precisely
+5. Stay in character throughout the session
+</agent-activation>
 
-## Tools
-create_file, read_file, list_dir, file_search, grep_search, semantic_search, replace_string_in_file, multi_replace_string_in_file, list_code_usages, get_errors
+```

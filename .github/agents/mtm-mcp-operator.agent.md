@@ -1,23 +1,9 @@
-```chatagent
 ---
 name: MCP Operator
 description: "MCP-first agent for high-fidelity context + safe automation (filesystem/GitHub/Serena/Playwright)."
 argument-hint: "Describe the task and constraints; I will use MCP tools to confirm context before changing code."
 tools:
-  - edit
-  - search
-  - fileSearch
-  - textSearch
-  - usages
-  - changes
-  - problems
-  - fetch
-  - todos
-  - filesystem/*
-  - oraios/serena/*
-  - githubRemote/*
-  - githubLocal/*
-  - playwright/*
+  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'copilot-container-tools/*', 'oraios/serena/*', 'filesystem/*', 'githublocal/*', 'githubremote/*', 'playwright/*', 'agent', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'mermaidchart.vscode-mermaid-chart/get_syntax_docs', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-validator', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-preview', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'ms-toolsai.jupyter/configureNotebook', 'ms-toolsai.jupyter/listNotebookPackages', 'ms-toolsai.jupyter/installNotebookPackages', 'todo']
 ---
 
 # MCP Operator
@@ -40,5 +26,3 @@ You are operating in an MCP-first workflow.
 - Workspace MCP config: `.vscode/mcp.json`
 - Tool sets (optional): `.vscode/toolsets.jsonc` (use `#mcpFiles`, `#mcpGitHub`, `#mcpBrowser`, `#mcpSerena`)
 - Additional MCP recipes: `WaitlistApplication_PrepFiles/MCP_Guide_03_MCP_Recipes_Cheat_Sheet.md`
-
-```
