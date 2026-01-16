@@ -403,7 +403,7 @@ public partial class ViewModel_Settings_DatabaseTest : ViewModel_Shared_Base
             ConnectionTimeMs = (int)stopwatch.ElapsedMilliseconds;
             ServerVersion = connection.ServerVersion;
             IsConnected = true;
-            ConnectionStatus = $"Connected to 172.16.1.104:3306/mtm_receiving_application";
+            ConnectionStatus = $"Connected to localhost:3306/mtm_receiving_application";
 
             AddLog($"✓ Database connection successful ({ConnectionTimeMs}ms)");
             AddLog($"  Server version: MySQL {ServerVersion}");

@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -294,7 +295,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var saveResult = await _workflowService.SaveToDatabaseOnlyAsync();
                 if (!saveResult.Success)
                 {
-                     var warnDialog = new ContentDialog
+                    var warnDialog = new ContentDialog
                     {
                         Title = "Database Save Failed",
                         Content = $"Failed to save to database: {string.Join(", ", saveResult.Errors)}\n\nDo you want to proceed with deleting CSV files anyway?",
@@ -303,7 +304,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         DefaultButton = ContentDialogButton.Close,
                         XamlRoot = xamlRoot
                     };
-                    
+
                     var warnResult = await warnDialog.ShowAsync();
                     if (warnResult != ContentDialogResult.Primary)
                     {

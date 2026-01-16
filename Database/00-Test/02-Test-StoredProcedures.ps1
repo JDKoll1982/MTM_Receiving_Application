@@ -4,7 +4,7 @@
 # Configuration: 01-mock-data.json (parameter values), 01-order.json (execution sequence)
 
 param (
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [int]$Port = 3306,  # MAMP default is 3306, MAMP PRO uses 8889
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -49,7 +49,8 @@ if (-not $Password) {
         $PlainPassword = "root"  # MAMP default
         Write-Host "Using default MAMP password 'root'" -ForegroundColor Cyan
     }
-} else {
+}
+else {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
@@ -90,12 +91,14 @@ try {
     foreach ($dll in $dependencyDlls) {
         try {
             $null = [System.Reflection.Assembly]::LoadFrom($dll.FullName)
-        } catch {
+        }
+        catch {
             # Ignore already loaded assemblies
         }
     }
     Write-Host "Loaded MySql.Data.dll from $($mysqlDll.FullName)" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Error "Failed to load MySql.Data.dll: $_"
     exit 1
 }
@@ -107,7 +110,8 @@ $connStr = "Server=$Server;Port=$Port;Database=$Database;Uid=$User;Pwd=$PlainPas
 
 try {
     $conn = New-Object MySql.Data.MySqlClient.MySqlConnection($connStr)
-} catch {
+}
+catch {
     Write-Error "Failed to create MySqlConnection: $_"
     Write-Host "Connection string (without password): Server=$Server;Port=$Port;Database=$Database;Uid=$User;SslMode=none;" -ForegroundColor Yellow
     exit 1
@@ -116,7 +120,8 @@ try {
 try {
     $conn.Open()
     Write-Host "Connected to $Database on $Server`:$Port (MAMP)" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Error "Failed to connect: $_"
     Write-Host "Common MAMP issues:" -ForegroundColor Yellow
     Write-Host "  - MAMP MySQL service not running (Start Servers in MAMP)" -ForegroundColor Yellow
@@ -136,7 +141,8 @@ $executionOrderConfig = $null
 if (Test-Path $mockDataPath) {
     $mockData = Get-Content $mockDataPath -Raw | ConvertFrom-Json
     Write-Host "Loaded mock data configuration from 01-mock-data.json" -ForegroundColor Green
-} else {
+}
+else {
     Write-Warning "Mock data file not found: $mockDataPath"
     Write-Host "Run 01-Generate-SP-TestData.ps1 first to create configuration files." -ForegroundColor Yellow
 }
@@ -159,7 +165,8 @@ try {
         # VARCHAR(20) constraint: keep this short
         $mockData.'sp_Volvo_PartMaster_Insert'.parameters.p_part_number = "TP$shortToken"
     }
-} catch { }
+}
+catch { }
 
 if ($UseExecutionOrder -and (Test-Path $executionOrderPath)) {
     $executionOrderConfig = Get-Content $executionOrderPath -Raw | ConvertFrom-Json
@@ -194,7 +201,8 @@ if ($UseExecutionOrder -and $executionOrderConfig) {
     }
     $spList = $orderedList
     Write-Host "Executing in dependency order ($($spList.Count) procedures)" -ForegroundColor Cyan
-} else {
+}
+else {
     Write-Host "Found $($spList.Count) stored procedures to test (alphabetical order)" -ForegroundColor Cyan
 }
 
@@ -219,7 +227,8 @@ foreach ($sp in $spList) {
                 $unlockCmd.CommandText = "UPDATE settings_universal SET is_locked = 0 WHERE id = $settingId;"
                 $null = $unlockCmd.ExecuteNonQuery()
             }
-        } catch { }
+        }
+        catch { }
     }
 
     # 2. Get Parameters for this SP
@@ -248,7 +257,8 @@ foreach ($sp in $spList) {
             # IN and INOUT parameters need values, OUT does not
             if ($mode -eq "IN" -or $mode -eq "INOUT") {
                 $paramDefs += $param
-            } else {
+            }
+            else {
                 $outParams += $param  # Track pure OUT params for diagnostics
             }
         }
@@ -279,7 +289,8 @@ foreach ($sp in $spList) {
                 'blob' { $paramValues += "NULL"; break }
                 default { $paramValues += "NULL" }
             }
-        } else {
+        }
+        else {
             # Format based on type
             switch -Regex ($p.Type) {
                 'bool|bit|tinyint' {
@@ -293,7 +304,8 @@ foreach ($sp in $spList) {
                     $text = $mockValue.ToString()
                     if ($text -match '^-?\d+(\.\d+)?$') {
                         $paramValues += $text
-                    } else {
+                    }
+                    else {
                         $paramValues += "1"
                     }
                     break
@@ -301,7 +313,8 @@ foreach ($sp in $spList) {
                 'date' {
                     if ($mockValue -match '^\d{4}-\d{2}-\d{2}$') {
                         $paramValues += "'$mockValue'"
-                    } else {
+                    }
+                    else {
                         $paramValues += "'2026-01-01'"
                     }
                     break
@@ -309,7 +322,8 @@ foreach ($sp in $spList) {
                 'datetime|timestamp' {
                     if ($mockValue -match '^\d{4}-\d{2}-\d{2}') {
                         $paramValues += "'$mockValue'"
-                    } else {
+                    }
+                    else {
                         $paramValues += "'2026-01-01 12:00:00'"
                     }
                     break
@@ -370,12 +384,14 @@ foreach ($sp in $spList) {
             }
         }
         $result.Close()
-    } catch {
+    }
+    catch {
         $status = "FAIL"
         $errorMsg = $_.Exception.Message
         if ($_.Exception.InnerException -and $_.Exception.InnerException.Number) {
             $errorCode = $_.Exception.InnerException.Number
-        } elseif ($_.Exception.Number) {
+        }
+        elseif ($_.Exception.Number) {
             $errorCode = $_.Exception.Number
         }
     }
@@ -384,13 +400,17 @@ foreach ($sp in $spList) {
     $category = "Unknown"
     if ($status -eq "PASS") {
         $category = "Valid"
-    } elseif ($errorCode -eq 1054 -or $errorCode -eq 1146) {
+    }
+    elseif ($errorCode -eq 1054 -or $errorCode -eq 1146) {
         $category = "SchemaBroken"
-    } elseif ($errorCode -eq 1048 -or $errorCode -eq 1062) {
+    }
+    elseif ($errorCode -eq 1048 -or $errorCode -eq 1062) {
         $category = "Constraint"
-    } elseif ($status -eq "FAIL" -and $errorMsg -match "SQLSTATE\[45000\]") {
+    }
+    elseif ($status -eq "FAIL" -and $errorMsg -match "SQLSTATE\[45000\]") {
         $category = "LogicCaught"
-    } else {
+    }
+    else {
         $category = "RuntimeError"
     }
 
@@ -467,7 +487,8 @@ if ($broken) {
         $brokenLines += "| **$($r.SP)** | $($r.ErrorCode) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
     }
     $schemaBrokenTable = $brokenLines -join "`n"
-} else {
+}
+else {
     $schemaBrokenTable = "| - | - | No schema errors | - | - |"
 }
 
@@ -484,7 +505,8 @@ if ($paramMismatches) {
         $pmLines += "| $($r.SP) | $($r.Message) | $($r.InParams) | $($r.OutParams) |"
     }
     $paramMismatchesTable = $pmLines -join "`n"
-} else {
+}
+else {
     $paramMismatchesTable = "No parameter mismatches detected"
 }
 
@@ -503,7 +525,8 @@ if ($constraintErrors) {
     $cvLines += ""
     $cvLines += "**Recommendation:** Run with ``-UseExecutionOrder`` flag or add prerequisite test data."
     $constraintViolationsTable = $cvLines -join "`n"
-} else {
+}
+else {
     $constraintViolationsTable = "No constraint violations"
 }
 
@@ -522,7 +545,8 @@ if ($validationErrors) {
     $veLines += ""
     $veLines += "**Recommendation:** Review mock data values in ``01-mock-data.json``."
     $validationErrorsTable = $veLines -join "`n"
-} else {
+}
+else {
     $validationErrorsTable = "No data validation errors"
 }
 
@@ -546,7 +570,8 @@ if ($otherErrors) {
         $oeLines += "| $($r.SP) | $($r.Category) | $($r.Message) |"
     }
     $otherErrorsTable = $oeLines -join "`n"
-} else {
+}
+else {
     $otherErrorsTable = "No other runtime errors"
 }
 
@@ -579,12 +604,14 @@ if ($successRate -eq 100) {
     $recommendations += "- All $totalTests stored procedures executed successfully"
     $recommendations += "- Database schema and stored procedures are in sync"
     $recommendations += ""
-} elseif ($successRate -ge 80) {
+}
+elseif ($successRate -ge 80) {
     $recommendations += "### Good Progress"
     $recommendations += "- $successRate% success rate"
     $recommendations += "- Focus on fixing the $failed remaining issues"
     $recommendations += ""
-} else {
+}
+else {
     $recommendations += "### Needs Attention"
     $recommendations += "- Only $successRate% success rate"
     $recommendations += "- Review error categories above and prioritize fixes"

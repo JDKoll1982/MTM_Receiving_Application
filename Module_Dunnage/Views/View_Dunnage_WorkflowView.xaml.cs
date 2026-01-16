@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using System;
 using Microsoft.UI.Xaml;
 
@@ -51,7 +52,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private async void OnNextClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var workflowService = App.GetService<Module_Core.Contracts.Services.IService_DunnageWorkflow>();
+        var workflowService = App.GetService<IService_DunnageWorkflow>();
         var result = await workflowService.AdvanceToNextStepAsync();
 
         if (!result.IsSuccess)
@@ -86,7 +87,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         if (confirmResult == ContentDialogResult.Primary)
         {
             // User confirmed, proceed to next step
-            var workflowService = App.GetService<Module_Core.Contracts.Services.IService_DunnageWorkflow>();
+            var workflowService = App.GetService<IService_DunnageWorkflow>();
             var result = await workflowService.AdvanceToNextStepAsync();
 
             if (!result.IsSuccess)
@@ -106,7 +107,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private void OnBackClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var workflowService = App.GetService<Module_Core.Contracts.Services.IService_DunnageWorkflow>();
+        var workflowService = App.GetService<IService_DunnageWorkflow>();
 
         // Navigate back based on current step
         switch (workflowService.CurrentStep)

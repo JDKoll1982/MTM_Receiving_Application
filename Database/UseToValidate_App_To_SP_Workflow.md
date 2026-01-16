@@ -9,6 +9,7 @@
 ## Overview
 
 This workflow validates the complete data pipeline:
+
 ```
 Application Code (DAO) → Stored Procedure → Database Schema → Response → Application Model
 ```
@@ -16,8 +17,11 @@ Application Code (DAO) → Stored Procedure → Database Schema → Response →
 ## Validation Layers
 
 ### 1. **Static Schema Validation** (Audit Script)
+
 ### 2. **Parameter Alignment Validation** (Manual)
+
 ### 3. **Model Mapping Validation** (Manual)
+
 ### 4. **Runtime Testing** (Optional)
 
 ---
@@ -27,25 +31,30 @@ Application Code (DAO) → Stored Procedure → Database Schema → Response →
 ### Tool: `Scripts/Audit-StoredProcedures.ps1`
 
 **What It Does:**
+
 - Parses all database schema files to extract table definitions and column names
 - Analyzes all stored procedures to identify SELECT/INSERT/UPDATE statements
 - Cross-references column usage against schema definitions
 - Generates `StoredProcedure_Audit.md` report with findings
 
 **Limitations:**
+
 - Cannot fully validate JOINs (flags columns from joined tables as errors)
 - Cannot validate function calls like `COALESCE()`, `CAST()`, etc.
 - Does not validate parameter types or counts
 
 **How to Run:**
+
 ```powershell
 .\Scripts\Audit-StoredProcedures.ps1
 ```
 
 **Output:**
+
 - `StoredProcedure_Audit.md` - Lists schema mismatches and validation results
 
 **Key Features:**
+
 - ✅ Detects missing columns in SELECT/INSERT/UPDATE statements
 - ✅ Ignores SQL keywords like `INTO`, `AS`, `COUNT`, `SUM`, etc.
 - ✅ Handles table aliases (`l.id` → `id`)
@@ -53,6 +62,7 @@ Application Code (DAO) → Stored Procedure → Database Schema → Response →
 - ✅ Uses smart comma-splitting (respects parentheses in `COALESCE(a,b)`)
 
 **Interpreting Results:**
+
 - **Critical Errors**: Columns that don't exist in the base table (excluding JOINs)
 - **False Positives**: Columns from JOINed tables or complex expressions
 
@@ -65,6 +75,7 @@ Application Code (DAO) → Stored Procedure → Database Schema → Response →
 ### Step 1: Identify All Stored Procedure Calls
 
 **Search DAOs for SP calls:**
+
 ```powershell
 # Find all stored procedure invocations
 Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
@@ -72,6 +83,7 @@ Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
 ```
 
 **Example Output:**
+
 ```csharp
 var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
     _connectionString,
@@ -82,11 +94,13 @@ var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
 ### Step 2: Extract Parameter Lists from DAOs
 
 **For each SP call, document:**
+
 1. **SP Name**: `sp_Volvo_ShipmentLine_Insert`
 2. **Parameters Passed**: `shipment_id`, `part_number`, `received_skid_count`, etc.
 3. **Parameter Types**: `int`, `string`, `DateTime`, etc.
 
 **Example from DAO:**
+
 ```csharp
 new Dictionary<string, object>
 {
@@ -99,6 +113,7 @@ new Dictionary<string, object>
 ### Step 3: Compare Against Stored Procedure Signature
 
 **Read SP file:**
+
 ```sql
 CREATE PROCEDURE sp_Volvo_ShipmentLine_Insert(
   IN p_shipment_id INT,
@@ -108,6 +123,7 @@ CREATE PROCEDURE sp_Volvo_ShipmentLine_Insert(
 ```
 
 **Validation Checklist:**
+
 - [ ] All parameters from DAO exist in SP signature
 - [ ] Parameter types match (int → INT, string → VARCHAR, etc.)
 - [ ] **Boolean values converted to 0/1 for TINYINT parameters**
@@ -115,6 +131,7 @@ CREATE PROCEDURE sp_Volvo_ShipmentLine_Insert(
 - [ ] OUT parameters are handled correctly in DAO (if applicable)
 
 **Common Issues Found:**
+
 - ❌ **Missing Parameter**: DAO passes `quantity_per_skid`, SP doesn't define it (MySQL error 1318)
 - ❌ **Extra Parameter**: SP defines `p_description`, but table doesn't have `description` column
 - ❌ **Type Mismatch**: DAO passes `string`, SP expects `INT`
@@ -129,6 +146,7 @@ CREATE PROCEDURE sp_Volvo_ShipmentLine_Insert(
 ### Step 1: Find MapFromReader Methods
 
 **Search pattern:**
+
 ```powershell
 Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
     Select-String -Pattern "MapFromReader"
@@ -137,6 +155,7 @@ Get-ChildItem -Path "Module_[ModuleName]\Data" -Filter "*.cs" -Recurse |
 ### Step 2: Extract Column Reads from Mapper
 
 **Example MapFromReader:**
+
 ```csharp
 private static Model_VolvoPart MapFromReader(IDataReader reader)
 {
@@ -150,6 +169,7 @@ private static Model_VolvoPart MapFromReader(IDataReader reader)
 ```
 
 **Columns Required:**
+
 - `part_number` (string)
 - `quantity_per_skid` (int)
 - `is_active` (bool)
@@ -157,6 +177,7 @@ private static Model_VolvoPart MapFromReader(IDataReader reader)
 ### Step 3: Compare Against SP SELECT Statement
 
 **Read SP SELECT clause:**
+
 ```sql
 SELECT part_number, quantity_per_skid, is_active
 FROM volvo_masterdata
@@ -164,11 +185,13 @@ WHERE part_number = p_part_number;
 ```
 
 **Validation Checklist:**
+
 - [ ] All columns read by `MapFromReader` are returned by SP
 - [ ] Column names match exactly (case-sensitive in MySQL)
 - [ ] Data types are compatible (VARCHAR → string, INT → int, TINYINT → bool)
 
 **Common Issues Found:**
+
 - ❌ **Missing Column in SELECT**: SP doesn't return `description`, but mapper tries to read it
 - ❌ **Column Name Mismatch**: SP returns `PartNumber`, mapper reads `part_number`
 - ❌ **Type Incompatibility**: SP returns `VARCHAR`, mapper uses `GetInt32()`
@@ -182,11 +205,13 @@ WHERE part_number = p_part_number;
 ### Manual SQL Testing
 
 **Connect to database:**
+
 ```sql
 USE mtm_receiving_application;
 ```
 
 **Test SP with dummy data:**
+
 ```sql
 -- Test INSERT
 CALL sp_Volvo_ShipmentLine_Insert(
@@ -207,6 +232,7 @@ DELETE FROM volvo_line_data WHERE shipment_id = 1;
 ```
 
 **Common Errors:**
+
 - `1054: Unknown column 'description'` → Schema mismatch
 - `1318: Incorrect number of arguments` → Parameter count mismatch
 - `1048: Column cannot be null` → Missing NOT NULL constraint
@@ -219,18 +245,21 @@ DELETE FROM volvo_line_data WHERE shipment_id = 1;
 ### Example: Volvo Module Validation
 
 **Step 1: Inventory All Stored Procedures**
+
 ```powershell
 Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" |
     Select-Object Name
 ```
 
 **Output:**
+
 - `sp_volvo_shipment_insert.sql`
 - `sp_volvo_shipment_update.sql`
 - `sp_Volvo_PartMaster_GetAll.sql`
 - ... (18 total)
 
 **Step 2: Inventory All DAO SP Calls**
+
 ```powershell
 Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse |
     Select-String -Pattern '"sp_volvo' |
@@ -239,6 +268,7 @@ Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse |
 ```
 
 **Step 3: Cross-Reference (Find Unused SPs)**
+
 ```
 Compare-Object -ReferenceObject $allSpFiles -DifferenceObject $usedSps
 ```
@@ -262,6 +292,7 @@ For each SP found in DAOs:
 **Step 5: Fix Issues**
 
 **Example Fix 1: Remove Non-Existent Column**
+
 ```sql
 -- BEFORE (BROKEN)
 SELECT part_number, description, quantity_per_skid
@@ -273,6 +304,7 @@ FROM volvo_masterdata;
 ```
 
 **Example Fix 2: Remove Invalid Parameter**
+
 ```csharp
 // BEFORE (BROKEN)
 new Dictionary<string, object>
@@ -291,6 +323,7 @@ new Dictionary<string, object>
 **Step 6: Archive Unused SPs**
 
 If any SPs are found that are NOT called by any DAO:
+
 ```powershell
 # Create archive folder if it doesn't exist
 New-Item -Path "Database\StoredProcedures\Archived" -ItemType Directory -Force
@@ -311,16 +344,19 @@ Move-Item -Path "Database\StoredProcedures\Volvo\sp_unused_procedure.sql" `
 **Date**: _________
 
 #### 1. Schema Validation
+
 - [ ] Run `Scripts\Audit-StoredProcedures.ps1`
 - [ ] Review `StoredProcedure_Audit.md` for `[Module]` errors
 - [ ] Verify schema files exist: `Database\Schemas\[##]_schema_[module].sql`
 
 #### 2. Stored Procedure Inventory
+
 - [ ] Count SP files: `Database\StoredProcedures\[Module]\*.sql`
 - [ ] Count DAO SP calls in `Module_[Module]\Data\*.cs`
 - [ ] Identify unused SPs (if any)
 
 #### 3. Parameter Validation (Per SP)
+
 - [ ] SP Name: `_________________________`
 - [ ] DAO File: `_________________________`
 - [ ] Parameters in DAO: `_________________________`
@@ -328,6 +364,7 @@ Move-Item -Path "Database\StoredProcedures\Volvo\sp_unused_procedure.sql" `
 - [ ] Match: ✅ / ❌
 
 #### 4. Column Validation (Per SP)
+
 - [ ] SP Name: `_________________________`
 - [ ] SELECT columns: `_________________________`
 - [ ] Table schema columns: `_________________________`
@@ -335,11 +372,13 @@ Move-Item -Path "Database\StoredProcedures\Volvo\sp_unused_procedure.sql" `
 - [ ] Match: ✅ / ❌
 
 #### 5. Issues Found
+
 | Issue | SP/DAO | Type | Fix Applied | Status |
 |-------|--------|------|-------------|--------|
 | | | | | |
 
 #### 6. Deployment
+
 - [ ] Deploy fixed SPs: `Database\Deploy\Deploy-Database-GUI-Fixed.ps1`
 - [ ] Verify SP deployment with query: `SHOW CREATE PROCEDURE sp_name`
 - [ ] Build application: `dotnet build`
@@ -351,16 +390,18 @@ Move-Item -Path "Database\StoredProcedures\Volvo\sp_unused_procedure.sql" `
 
 **IMPORTANT**: After fixing stored procedures in `.sql` files, you MUST redeploy them to the database!
 
-### Quick Deployment Steps:
+### Quick Deployment Steps
+
 ```powershell
 # Run the deployment GUI
 .\Database\Deploy\Deploy-Database-GUI-Fixed.ps1
 
 # OR manually deploy single SP
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Database\StoredProcedures\Volvo\sp_Volvo_PartMaster_GetById.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database\StoredProcedures\Volvo\sp_Volvo_PartMaster_GetById.sql
 ```
 
-### Verify Deployment:
+### Verify Deployment
+
 ```sql
 USE mtm_receiving_application;
 SHOW CREATE PROCEDURE sp_Volvo_PartMaster_GetById;
@@ -376,12 +417,14 @@ SHOW CREATE PROCEDURE sp_Volvo_PartMaster_GetById;
 **Version History:**
 
 **v1.0 - Initial Static Schema Parser**
+
 - Parsed CREATE TABLE statements
 - Extracted column names from schemas
 - Matched SELECT statements against tables
 - **Limitation**: False positives on JOINs, aliases, functions
 
 **v2.0 - Enhanced Parsing (2026-01-05)**
+
 - ✅ Added `SELECT ... INTO` filtering
 - ✅ Improved alias handling (`l.id AS label_id` → `id`)
 - ✅ Table alias extraction (`l.column` → `column`)
@@ -389,6 +432,7 @@ SHOW CREATE PROCEDURE sp_Volvo_PartMaster_GetById;
 - ✅ Function call detection (skips validation for columns with `(`)
 
 **v3.0 - Recommended Future Enhancements**
+
 - 🔄 Parse JOIN clauses to validate cross-table columns
 - 🔄 Extract table schemas from `information_schema` instead of parsing SQL
 - 🔄 Validate parameter types (VARCHAR → string, INT → int)
@@ -399,28 +443,33 @@ SHOW CREATE PROCEDURE sp_Volvo_PartMaster_GetById;
 ## Quick Reference Commands
 
 ### Run Static Audit
+
 ```powershell
 .\Scripts\Audit-StoredProcedures.ps1
 ```
 
 ### Find All SP Calls in Module
+
 ```powershell
 Get-ChildItem -Path "Module_Volvo\Data" -Filter "*.cs" -Recurse |
     Select-String -Pattern '"sp_' -Context 0,3
 ```
 
 ### List All SPs for Module
+
 ```powershell
 Get-ChildItem -Path "Database\StoredProcedures\Volvo" -Filter "*.sql" |
     Select-Object Name
 ```
 
 ### Deploy Database Changes
+
 ```powershell
 .\Database\Deploy\Deploy-Database-GUI-Fixed.ps1
 ```
 
 ### Build Application
+
 ```powershell
 dotnet build
 ```
@@ -430,6 +479,7 @@ dotnet build
 ## Lessons Learned
 
 ### Issue 1: `description` Column in Volvo Module
+
 **Problem**: 4 stored procedures referenced a `description` column that didn't exist in `volvo_masterdata` table.
 
 **Root Cause**: SPs were created before final schema was locked in.
@@ -441,6 +491,7 @@ dotnet build
 ---
 
 ### Issue 2: `quantity_per_skid` Parameter Mismatch
+
 **Problem**: `Service_Volvo.cs` passed `quantity_per_skid` to `sp_Volvo_ShipmentLine_Insert`, causing MySQL error 1318.
 
 **Root Cause**: `QuantityPerSkid` is a cached UI property in `Model_VolvoShipmentLine`, but NOT a database column in `volvo_line_data`.
@@ -452,6 +503,7 @@ dotnet build
 ---
 
 ### Issue 3: Collation Mismatch (MySQL Error 1267)
+
 **Problem**: "Illegal mix of collations" error when comparing VARCHAR columns.
 
 **Root Cause**: Volvo tables were created with `utf8mb4_general_ci` collation, but other database tables use `utf8mb4_unicode_ci`, causing comparison failures in WHERE clauses.
@@ -465,6 +517,7 @@ dotnet build
 ---
 
 ### Issue 4: Boolean to TINYINT Conversion
+
 **Problem**: `Service_Volvo.cs` passed boolean `true/false` directly to MySQL TINYINT(1) parameter, causing type mismatch error.
 
 **Root Cause**: C# bool values are not automatically converted to MySQL TINYINT by the parameter handler.
@@ -478,11 +531,13 @@ dotnet build
 ---
 
 ### Issue 4: Audit Script False Positives
+
 **Problem**: Audit script flagged columns like `l.id`, `name AS deliver_to`, `COALESCE(...)` as errors.
 
 **Root Cause**: Simple regex parsing couldn't handle complex SQL expressions.
 
 **Fix**:
+
 - Handle table aliases by extracting last segment after `.`
 - Skip validation for any column containing `(` (function calls)
 - Smart comma-splitting that respects parentheses
@@ -494,6 +549,7 @@ dotnet build
 ## Success Metrics
 
 After completing this workflow:
+
 - ✅ **Zero runtime SQL errors** from schema mismatches
 - ✅ **All SPs documented** with usage in DAOs
 - ✅ **No orphaned SPs** (all used or archived)
@@ -520,6 +576,7 @@ After completing this workflow:
 **Document Maintained By**: Development Team
 **Contact**: See project README for team contacts
 **Related Files**:
+
 - `Scripts/Audit-StoredProcedures.ps1`
 - `StoredProcedure_Audit.md` (generated)
 - `Database/Deploy/Deploy-Database-GUI-Fixed.ps1`

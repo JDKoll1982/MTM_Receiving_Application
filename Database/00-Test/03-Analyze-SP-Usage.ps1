@@ -3,7 +3,7 @@
 # Output: 03-usage-report.md, 03-hardcode-report.md, and individual SP reports in sp-reports/
 
 param (
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [int]$Port = 3306,
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -35,7 +35,8 @@ if (-not $Password) {
         $PlainPassword = "root"
         Write-Host "Using default MAMP password 'root'" -ForegroundColor Cyan
     }
-} else {
+}
+else {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
@@ -76,7 +77,8 @@ try {
         try { $null = [System.Reflection.Assembly]::LoadFrom($dll.FullName) } catch { }
     }
     Write-Host "✓ Loaded MySql.Data.dll" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Error "Failed to load MySql.Data.dll: $_"
     exit 1
 }
@@ -87,7 +89,8 @@ try {
     $conn = New-Object MySql.Data.MySqlClient.MySqlConnection($connStr)
     $conn.Open()
     Write-Host "✓ Connected to $Database" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Error "Failed to connect: $_"
     exit 1
 }
@@ -177,7 +180,8 @@ function Determine-DBType {
 
     if ($query -match "\b(po_detail|po_master|part|site_ref|MTMFG|VISUAL)\b") {
         return "Infor Visual (SQL Server)"
-    } elseif ($query -match "\b(SELECT|INSERT|UPDATE|DELETE)\b") {
+    }
+    elseif ($query -match "\b(SELECT|INSERT|UPDATE|DELETE)\b") {
         return "MySQL"
     }
     return "Unknown"
@@ -420,7 +424,8 @@ foreach ($methodEntry in $uniqueMethods.GetEnumerator()) {
                 if ($callCount -gt 0) {
                     $callers += "Same file ($callCount calls)"
                 }
-            } else {
+            }
+            else {
                 if ($content -match $searchPattern) {
                     $callers += $relativePath
                 }
@@ -500,7 +505,8 @@ foreach ($sp in $spList) {
                 foreach ($caller in $refInfo.Callers) {
                     $methodRefs += "- $caller"
                 }
-            } else {
+            }
+            else {
                 $methodRefs += "⚠️ **No references found** - May be dead code or called via reflection"
             }
             $methodRefs += ""
@@ -518,7 +524,8 @@ foreach ($sp in $spList) {
             -replace '{{METHOD_REFERENCES}}', ($methodRefs -join "`n")
 
         $content | Out-File -FilePath $reportPath -Encoding UTF8
-    } else {
+    }
+    else {
         # Load unused template
         $template = Get-Content (Join-Path $templatesDir "sp-report-unused-template.md") -Raw
 
@@ -605,7 +612,8 @@ if ($unusedList.Count -gt 0) {
 
         $usageReport += "| [``$sp``]($reportLink) | $category | $recommendation |"
     }
-} else {
+}
+else {
     $usageReport += "✓ All stored procedures are in use!"
 }
 

@@ -217,7 +217,7 @@ describe('Pact Provider Verification', () => {
     const opts: VerifierOptions = {
       // Provider details
       provider: 'user-api-service',
-      providerBaseUrl: `http://172.16.1.104:${PORT}`,
+      providerBaseUrl: `http://localhost:${PORT}`,
 
       // Pact Broker configuration
       pactBrokerUrl: process.env.PACT_BROKER_URL,

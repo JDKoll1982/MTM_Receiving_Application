@@ -3,7 +3,7 @@
 # Output: 01-mock-data.json and 01-order.json
 
 param (
-    [string]$Server = "172.16.1.104",
+    [string]$Server = "localhost",
     [int]$Port = 3306,
     [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
@@ -36,7 +36,8 @@ if (-not $Password) {
         $PlainPassword = "root"
         Write-Host "Using default password 'root'" -ForegroundColor Cyan
     }
-} else {
+}
+else {
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     $PlainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
@@ -79,7 +80,8 @@ try {
         catch { }
     }
     Write-Host "Loaded MySql.Data.dll" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Error "Failed to load MySql.Data.dll: $_"
     exit 1
 }
@@ -91,7 +93,8 @@ try {
     $conn = New-Object MySql.Data.MySqlClient.MySqlConnection($connStr)
     $conn.Open()
     Write-Host "Connected to $Database on $Server`:$Port" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Error "Failed to connect: $_"
     exit 1
 }
@@ -175,67 +178,88 @@ foreach ($sp in $spDetails.Keys) {
     if ($sp -match "^(sp_)?user") {
         $category = "Users"
         $order = 10
-    } elseif ($sp -match "department") {
+    }
+    elseif ($sp -match "department") {
         $category = "Departments"
         $order = 15
-    } elseif ($sp -match "package_type|PackageType") {
+    }
+    elseif ($sp -match "package_type|PackageType") {
         $category = "PackageTypes"
         $order = 20
-    } elseif ($sp -match "dunnage_types") {
+    }
+    elseif ($sp -match "dunnage_types") {
         $category = "DunnageTypes"
         $order = 25
-    } elseif ($sp -match "dunnage_specs") {
+    }
+    elseif ($sp -match "dunnage_specs") {
         $category = "DunnageSpecs"
         $order = 30
-    } elseif ($sp -match "dunnage_parts") {
+    }
+    elseif ($sp -match "dunnage_parts") {
         $category = "DunnageParts"
         $order = 35
-    } elseif ($sp -match "volvo_part_master") {
+    }
+    elseif ($sp -match "volvo_part_master") {
         $category = "VolvoParts"
         $order = 40
-    } elseif ($sp -match "routing_recipient") {
+    }
+    elseif ($sp -match "routing_recipient") {
         $category = "RoutingRecipients"
         $order = 45
-    } elseif ($sp -match "routing_other_reason") {
+    }
+    elseif ($sp -match "routing_other_reason") {
         $category = "RoutingReasons"
         $order = 50
-    } elseif ($sp -match "receiving.*load|ReceivingLoad") {
+    }
+    elseif ($sp -match "receiving.*load|ReceivingLoad") {
         $category = "ReceivingLoads"
         $order = 100
-    } elseif ($sp -match "receiving.*package") {
+    }
+    elseif ($sp -match "receiving.*package") {
         $category = "ReceivingPackages"
         $order = 110
-    } elseif ($sp -match "receiving.*line|receiving_line") {
+    }
+    elseif ($sp -match "receiving.*line|receiving_line") {
         $category = "ReceivingLines"
         $order = 120
-    } elseif ($sp -match "dunnage_history") {
+    }
+    elseif ($sp -match "dunnage_history") {
         $category = "DunnageLoads"
         $order = 130
-    } elseif ($sp -match "dunnage_requires_inventory") {
+    }
+    elseif ($sp -match "dunnage_requires_inventory") {
         $category = "InventoriedDunnage"
         $order = 140
-    } elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
+    }
+    elseif ($sp -match "routing_label" -and $sp -notmatch "history") {
         $category = "RoutingLabels"
         $order = 150
-    } elseif ($sp -match "routing_history") {
+    }
+    elseif ($sp -match "routing_history") {
         $category = "RoutingHistory"
         $order = 160
-    } elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {
+    }
+    elseif ($sp -match "volvo_shipment" -and $sp -notmatch "line") {
         $category = "VolvoShipments"
         $order = 170
-    } elseif ($sp -match "volvo_shipment_line") {
+    }
+    elseif ($sp -match "volvo_shipment_line") {
         $category = "VolvoShipmentLines"
         $order = 180
-    } elseif ($sp -match "volvo_part_component") {
+    }
+    elseif ($sp -match "volvo_part_component") {
         $category = "VolvoComponents"
         $order = 190
-    } elseif ($sp -match "preference") {
+    }
+    elseif ($sp -match "preference") {
         $category = "Preferences"
         $order = 200
-    } elseif ($sp -match "settings|Settings") {
+    }
+    elseif ($sp -match "settings|Settings") {
         $category = "Settings"
         $order = 210
-    } elseif ($sp -match "report") {
+    }
+    elseif ($sp -match "report") {
         $category = "Reports"
         $order = 220
     }
@@ -391,7 +415,8 @@ foreach ($sp in $spDetails.Keys) {
     $params = $spDetails[$sp].parameters
     if ($params.Count -eq 0) {
         $withoutParams++
-    } else {
+    }
+    else {
         $totalParams += $params.Count
         foreach ($p in $params) {
             switch ($p.mode) {
@@ -492,7 +517,8 @@ foreach ($sp in ($spDetails.GetEnumerator() | Sort-Object Key)) {
         if ($spName -match "^sp_(.+?)_(insert|update|delete|get|check|count|find|search)") {
             $entity = $matches[1]
             $daoClass = "Dao_" + ($entity -split '_' | ForEach-Object { (Get-Culture).TextInfo.ToTitleCase($_) }) -join ''
-        } elseif ($spName -match "^(.+?)_(Insert|Update|Delete|Get)") {
+        }
+        elseif ($spName -match "^(.+?)_(Insert|Update|Delete|Get)") {
             $entity = $matches[1]
             $daoClass = "Dao_" + ($entity -split '_' | ForEach-Object { (Get-Culture).TextInfo.ToTitleCase($_) }) -join ''
         }
@@ -598,7 +624,8 @@ if (Test-Path $testReportPath) {
                     $missingItem = $matches[1]
                     $expectedColumn = $missingItem
                     $tableName = "Unknown (query inspection needed)"
-                } elseif ($errorMsg -match "Table '.*?\.(.+?)' doesn't exist") {
+                }
+                elseif ($errorMsg -match "Table '.*?\.(.+?)' doesn't exist") {
                     $tableName = $matches[1]
                     $missingItem = "Table: $tableName"
                 }
@@ -607,7 +634,8 @@ if (Test-Path $testReportPath) {
                 $currentStatus = "Missing in DB"
                 $sqlFix = if ($expectedColumn -ne "") {
                     "ALTER TABLE ADD COLUMN"
-                } else {
+                }
+                else {
                     "CREATE TABLE"
                 }
                 $priority = "Critical"

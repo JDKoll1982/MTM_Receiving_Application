@@ -5,27 +5,32 @@
 Your existing Module_Core now includes complete CQRS (Command Query Responsibility Segregation) infrastructure:
 
 ### 1. **MediatR** - CQRS Pattern Framework
+
 - **Version:** 12.4.1
 - **Purpose:** Enables CQRS pattern with handlers for commands and queries
 - **Configuration:** Auto-registered in `App.xaml.cs` with assembly scanning
 
 ### 2. **FluentValidation** - Declarative Validation
+
 - **Version:** 11.10.0
 - **Purpose:** Automatic validation of commands before handlers execute
 - **Configuration:** Auto-discovery enabled in `App.xaml.cs`
 
 ### 3. **Serilog** - Structured Logging
+
 - **Version:** 4.1.0
 - **Purpose:** Replaces basic logging with structured, searchable logs
 - **Configuration:** Configured in `App.xaml.cs` before creating the host. Daily rolling logs in `logs/app-.txt` with 30-day retention
 - **Note:** Serilog is configured BEFORE the host builder to capture early startup errors
 
 ### 4. **Global Pipeline Behaviors** (Module_Core/Behaviors/)
+
 - **LoggingBehavior** - Logs every request with execution time
 - **ValidationBehavior** - Validates commands using FluentValidation
 - **AuditBehavior** - Logs user context for all operations
 
 ### 5. **Shared Models** (Module_Core/Models/)
+
 - **Model_Dao_Result** - Standard result type for DAOs (no exceptions)
 - **Model_Dao_Result<T>** - Generic result type with data payload
 - **Enum_ErrorSeverity** - Error severity levels (already existed, now integrated)
@@ -260,6 +265,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 Every handler in every module automatically gets these behaviors:
 
 ### 1. **LoggingBehavior** (Automatic)
+
 ```
 Output in logs/app-2026-01-15.txt:
 
@@ -268,11 +274,13 @@ Output in logs/app-2026-01-15.txt:
 ```
 
 ### 2. **ValidationBehavior** (Automatic)
+
 - Runs FluentValidation validators BEFORE handler executes
 - If validation fails, throws `ValidationException` (handler never runs)
 - If validation passes, handler executes normally
 
 ### 3. **AuditBehavior** (Automatic)
+
 ```
 Output in logs:
 
@@ -284,12 +292,14 @@ Audit: User JOHNK executing InsertReceivingLineCommand at 2026-01-15T10:30:45Z f
 ## 📊 Logging Output Examples
 
 **Before (Basic Logging):**
+
 ```
 INFO: Saving receiving line
 INFO: Line saved
 ```
 
 **After (Structured Serilog Logging):**
+
 ```
 2026-01-15 10:30:45.123 [INF] [LoggingBehavior] [{RequestGuid=abc123}] Handling InsertReceivingLineCommand
 2026-01-15 10:30:45.145 [INF] [AuditBehavior] Audit: User JOHNK executing InsertReceivingLineCommand at 2026-01-15T10:30:45Z from MACHINE01
@@ -297,6 +307,7 @@ INFO: Line saved
 ```
 
 You can now search logs by:
+
 - Request GUID (trace single request)
 - User (see all actions by user)
 - Execution time (find slow queries)
@@ -307,29 +318,34 @@ You can now search logs by:
 ## ✅ Next Steps
 
 ### Option A: Use Module Rebuilder to Modernize Existing Modules
+
 ```
 @module-rebuilder
 Rebuild Module_Receiving using the new CQRS infrastructure
 ```
 
 This will:
+
 1. Create Handlers from existing Service methods
 2. Create FluentValidation validators
 3. Refactor ViewModels to use IMediator
 4. Achieve 100% module independence
 
 ### Option B: Use Module Creator for New Modules
+
 ```
 @module-creator
 Create Module_Inventory from specs/Module_Inventory_Specification.md
 ```
 
 This will:
+
 1. Generate complete CQRS structure
 2. Create Models, Handlers, Validators, ViewModels, Views
 3. Follow all established patterns automatically
 
 ### Option C: Start Using CQRS Manually
+
 1. Create a `Handlers/` folder in your feature module
 2. Create `Queries/` and `Commands/` subfolders
 3. Create Query/Command classes + Handlers
@@ -341,24 +357,29 @@ This will:
 ## 🎓 Learning Resources
 
 **MediatR Documentation:**
-- https://github.com/jbogard/MediatR/wiki
+
+- <https://github.com/jbogard/MediatR/wiki>
 
 **FluentValidation Documentation:**
-- https://docs.fluentvalidation.net
+
+- <https://docs.fluentvalidation.net>
 
 **Serilog Documentation:**
-- https://serilog.net
+
+- <https://serilog.net>
 
 **Project-Specific:**
+
 - Module Development Guide: `_bmad/module-agents/config/module-development-guide.md`
 - CQRS Diagrams: `_bmad/module-agents/diagrams/module-rebuild-diagrams.md`
 - Tech Stack Config: `_bmad/module-agents/config/stack-winui3-csharp.yaml`
 
 ---
 
-## 🚀 You're Ready!
+## 🚀 You're Ready
 
 Your Module_Core now has enterprise-grade CQRS infrastructure. All feature modules can now:
+
 - ✅ Use MediatR for clean CQRS architecture
 - ✅ Auto-validate with FluentValidation
 - ✅ Get structured logging automatically

@@ -98,7 +98,7 @@ result.ErrorMessage.Should().NotBeNullOrEmpty();
 ### Step 6: Verify No Real Database Required
 
 **Check connection strings used:**
-- `"Server=172.16.1.104;Database=test_db;User Id=test;Password=test;"` - For valid constructor test
+- `"Server=localhost;Database=test_db;User Id=test;Password=test;"` - For valid constructor test
 - `"Server=invalid;Database=nonexistent;"` - For failure tests
 - `"Server=invalid;"` - For parameter tests
 - `string.Empty` - For exception handling tests

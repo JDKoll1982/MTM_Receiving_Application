@@ -432,7 +432,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
         public static string GetConnectionString()
         {
             // TODO: Load from appsettings.json or User Secrets
-            var server = "172.16.1.104";
+            var server = "localhost";
             var port = 3306;
             var database = "mtm_receiving_application";
             var userId = "root";

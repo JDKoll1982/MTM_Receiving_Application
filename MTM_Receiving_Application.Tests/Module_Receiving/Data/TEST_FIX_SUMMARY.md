@@ -321,7 +321,7 @@ public async Task InsertReceivingLineAsync_NullVendorName_ReturnsResult()
 public class Dao_ReceivingLine_IntegrationTests : IAsyncLifetime
 {
     private MySqlConnection _connection;
-    private const string TestDbConnectionString = "Server=172.16.1.104;...";
+    private const string TestDbConnectionString = "Server=localhost;...";
     
     public async Task InitializeAsync()
     {
@@ -363,7 +363,7 @@ public class Dao_ReceivingLine_IntegrationTests : IAsyncLifetime
 - Catches parameter type mismatches
 
 **Requires:**
-- MySQL server running (172.16.1.104 or CI/CD)
+- MySQL server running (localhost or CI/CD)
 - Test database creation/teardown
 - Longer execution time
 - More complex setup

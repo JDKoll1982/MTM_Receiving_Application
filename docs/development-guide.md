@@ -14,7 +14,7 @@
 ### Database Requirements
 
 - **MySQL Server 8.x**: Application database server
-  - Host: 172.16.1.104:3306
+  - Host: localhost:3306
   - Database: `mtm_receiving_application`
   - User: `root` (development)
   - Character Set: utf8mb4
@@ -60,7 +60,7 @@ Edit `appsettings.json` to match your environment:
         "Environment": "Development"
     },
     "ConnectionStrings": {
-        "MySQL": "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;CharSet=utf8mb4;",
+        "MySQL": "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=root;Pwd=root;CharSet=utf8mb4;",
         "InforVisual": "Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;"
     }
 }
@@ -75,21 +75,21 @@ Edit `appsettings.json` to match your environment:
 cd Database
 
 # Deploy schemas in order
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/01_create_receiving_tables.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/02_create_authentication_tables.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/03_create_receiving_tables.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/04_create_package_preferences.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/06_create_dunnage_tables.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < Schemas/07_create_dunnage_tables_v2.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/01_create_receiving_tables.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/02_create_authentication_tables.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/03_create_receiving_tables.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/04_create_package_preferences.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/06_create_dunnage_tables.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Schemas/07_create_dunnage_tables_v2.sql
 
 # Deploy stored procedures
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_Auth_User_GetByWindowsUsername.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_Auth_User_ValidatePin.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_Auth_User_GetByWindowsUsername.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < StoredProcedures/Authentication/sp_Auth_User_ValidatePin.sql
 # ... (deploy all stored procedures)
 
 # Load test data (optional)
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < TestData/insert_test_data.sql
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < TestData/010_seed_dunnage_complete.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < TestData/insert_test_data.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application < TestData/010_seed_dunnage_complete.sql
 ```
 
 ### 4. Restore NuGet Packages

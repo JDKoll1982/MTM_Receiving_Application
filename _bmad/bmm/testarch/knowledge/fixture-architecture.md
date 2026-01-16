@@ -149,7 +149,7 @@ export const test = base.extend({
         {
           name: 'auth_token',
           value: token,
-          domain: '172.16.1.104',
+          domain: 'localhost',
           path: '/',
         },
       ]);
@@ -214,7 +214,7 @@ import { makeHttpRequest } from '../../shared/helpers/http-helper';
 
 export const test = base.extend({
   httpHelper: async ({}, use) => {
-    const baseUrl = process.env.API_BASE_URL || 'http://172.16.1.104:3000';
+    const baseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
 
     await use((params) => makeHttpRequest({ baseUrl, ...params }));
   },
@@ -225,7 +225,7 @@ export const test = base.extend({
 import { makeHttpRequest } from '../../shared/helpers/http-helper';
 
 Cypress.Commands.add('apiRequest', (params) => {
-  const baseUrl = Cypress.env('API_BASE_URL') || 'http://172.16.1.104:3000';
+  const baseUrl = Cypress.env('API_BASE_URL') || 'http://localhost:3000';
   return cy.wrap(makeHttpRequest({ baseUrl, ...params }));
 });
 ```

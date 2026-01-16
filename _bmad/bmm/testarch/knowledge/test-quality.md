@@ -539,7 +539,7 @@ test('user completes order', async ({ page, apiRequest }) => {
     {
       name: 'auth_token',
       value: user.token,
-      domain: '172.16.1.104',
+      domain: 'localhost',
       path: '/',
     },
   ]);

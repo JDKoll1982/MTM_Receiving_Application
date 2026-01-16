@@ -86,12 +86,12 @@ export default defineConfig({
   ...baseConfig,
   use: {
     ...baseConfig.use,
-    baseURL: 'http://172.16.1.104:3000',
+    baseURL: 'http://localhost:3000',
     video: 'off', // No video locally for speed
   },
   webServer: {
     command: 'npm run dev',
-    url: 'http://172.16.1.104:3000',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },
@@ -133,7 +133,7 @@ export default defineConfig({
 # .env.example - Template for developers
 TEST_ENV=local
 API_KEY=your_api_key_here
-DATABASE_URL=postgresql://172.16.1.104:5432/test_db
+DATABASE_URL=postgresql://localhost:5432/test_db
 ```
 
 **Key Points**:
@@ -624,7 +624,7 @@ async function globalSetup(config: FullConfig) {
   const page = await browser.newPage();
 
   // Perform authentication
-  await page.goto('http://172.16.1.104:3000/login');
+  await page.goto('http://localhost:3000/login');
   await page.fill('[data-testid="email"]', 'test@example.com');
   await page.fill('[data-testid="password"]', 'password123');
   await page.click('[data-testid="login-button"]');

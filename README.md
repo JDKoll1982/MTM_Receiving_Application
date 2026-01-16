@@ -189,7 +189,7 @@ Update the database connection in `Helpers/Database/Helper_Database_Variables.cs
 
 ```csharp
 private static readonly string ProductionConnectionString =
-    "Server=172.16.1.104;Database=mtm_receiving_application;Uid=your_username;Pwd=your_password;";
+    "Server=localhost;Database=mtm_receiving_application;Uid=your_username;Pwd=your_password;";
 ```
 
 ### 4. Build and Run

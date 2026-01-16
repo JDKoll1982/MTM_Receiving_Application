@@ -22815,7 +22815,7 @@ var config = new Model_WorkstationConfig { WorkstationType = "unknown" };
 public static class Helper_Database_Variables
 ⋮----
 /// Production MySQL connection string
-/// Server: 172.16.1.104, Port: 3306, Database: mtm_receiving_application
+/// Server: localhost, Port: 3306, Database: mtm_receiving_application
 ⋮----
 /// Test MySQL connection string (same as production for now)
 ⋮----
