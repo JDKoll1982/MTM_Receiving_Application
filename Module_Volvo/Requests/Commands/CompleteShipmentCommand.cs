@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+using MediatR;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+
+namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+
+/// <summary>
+/// Command to finalize shipment (generates labels, sends email, marks as completed).
+/// </summary>
+public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
+{
+    /// <summary>
+    /// Shipment date.
+    /// </summary>
+    public DateTimeOffset ShipmentDate { get; init; }
+
+    /// <summary>
+    /// Shipment number (auto-generated if 0).
+    /// </summary>
+    public int ShipmentNumber { get; init; }
+
+    /// <summary>
+    /// Optional notes for this shipment.
+    /// </summary>
+    public string Notes { get; init; } = string.Empty;
+
+    /// <summary>
+    /// List of parts in this shipment.
+    /// </summary>
+    public List<ShipmentLineDto> Parts { get; init; } = new();
+
+    /// <summary>
+    /// PO number for requisition.
+    /// </summary>
+    public string PONumber { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Receiver number for tracking.
+    /// </summary>
+    public string ReceiverNumber { get; init; } = string.Empty;
+}
