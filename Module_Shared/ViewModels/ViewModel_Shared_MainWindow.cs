@@ -25,7 +25,7 @@ public partial class ViewModel_Shared_MainWindow : ViewModel_Shared_Base
         NotificationService = notificationService;
         NotificationService.PropertyChanged += OnNotificationServicePropertyChanged;
 
-        if (_sessionManager.CurrentSession != null)
+        if (_sessionManager.CurrentSession?.User != null)
         {
             UpdateUserDisplay(_sessionManager.CurrentSession.User);
         }

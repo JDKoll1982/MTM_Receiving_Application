@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
 
-namespace MTM_Receiving_Application.Module_Core.Contracts.Services;
+namespace MTM_Receiving_Application.Module_Receiving.Contracts;
 
 public interface IService_MySQL_ReceivingLine
 {

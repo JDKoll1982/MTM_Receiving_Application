@@ -11,24 +11,28 @@ This document explains how to activate and use the custom module development age
 Four specialized agents are now available in your workspace:
 
 ### 1. **Module Core Creator** 🏗️
+
 - **Command:** `@module-core-creator`
 - **Purpose:** Create Module_Core infrastructure for new WinUI 3 projects
 - **When to Use:** Starting a brand new project from scratch
 - **Example:** `@module-core-creator Create Module_Core for a new manufacturing application`
 
 ### 2. **Module Creator** 🎨
+
 - **Command:** `@module-creator`
 - **Purpose:** Generate new feature modules from specification documents
 - **When to Use:** Adding a new feature to an existing project
 - **Example:** `@module-creator Create Module_Inventory from specs/Module_Inventory_Specification.md`
 
 ### 3. **Module Rebuilder** 🔧
+
 - **Command:** `@module-rebuilder`
 - **Purpose:** Modernize existing modules to CQRS architecture
 - **When to Use:** Refactoring legacy code to use MediatR/FluentValidation
 - **Example:** `@module-rebuilder Rebuild Module_Receiving using CQRS patterns`
 
 ### 4. **Core Maintainer** 🛡️
+
 - **Command:** `@core-maintainer`
 - **Purpose:** Safely maintain and evolve Module_Core infrastructure
 - **When to Use:** Adding/modifying/removing Core services
@@ -38,14 +42,14 @@ Four specialized agents are now available in your workspace:
 
 ## 🚀 How to Activate Agents
 
-### In GitHub Copilot Chat:
+### In GitHub Copilot Chat
 
 1. **Open Copilot Chat** (Ctrl+Alt+I or Cmd+Shift+I)
 2. **Type `@` to see available agents**
 3. **Select the agent** you want to use
 4. **Type your request** after the agent name
 
-### Example Activation:
+### Example Activation
 
 ```
 You: @module-core-creator Create Module_Core for a new WinUI 3 project
@@ -125,6 +129,7 @@ Rebuild Module_Receiving to use CQRS architecture
 ```
 
 **Agent will:**
+
 1. Extract current workflows for your validation
 2. Classify services (Core vs Feature)
 3. Present analysis report for approval
@@ -143,6 +148,7 @@ Add a new method ShowUserWarning to IService_ErrorHandler
 ```
 
 **Agent will:**
+
 1. Analyze impact on all modules
 2. Classify as SAFE/MINOR/BREAKING
 3. If safe, implement immediately
@@ -198,14 +204,16 @@ Step 6: @module-rebuilder
 
 Each agent automatically loads these documents:
 
-### All Agents Load:
+### All Agents Load
+
 - ✅ `_bmad/module-agents/config/module-development-guide.md` (constitutional rules)
 - ✅ `_bmad/module-agents/config/stack-winui3-csharp.yaml` (tech stack)
 - ✅ `_bmad/module-agents/diagrams/module-rebuild-diagrams.md` (20 diagrams)
 - ✅ `.specify/memory/constitution.md` (non-negotiables)
 - ✅ `.github/copilot-instructions.md` (project standards)
 
-### Agent-Specific Documents:
+### Agent-Specific Documents
+
 - **Module Core Creator:** Uses all setup/scaffolding patterns
 - **Module Creator:** Uses Diagrams 16-17 (spec structure, scaffolding workflow)
 - **Module Rebuilder:** Uses Diagrams 11-12 (workflow extraction, service classification)
@@ -243,6 +251,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ### Agent Not Appearing in `@` List
 
 **Solution:**
+
 1. Reload VS Code window (Ctrl+Shift+P → "Reload Window")
 2. Verify `.github/copilot-agents.json` exists
 3. Check agent definition files exist in `_bmad/module-agents/agents/`
@@ -250,6 +259,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ### Agent Doesn't Follow Instructions
 
 **Solution:**
+
 1. Ensure all reference documents exist:
    - `_bmad/module-agents/config/module-development-guide.md`
    - `_bmad/module-agents/config/stack-winui3-csharp.yaml`
@@ -260,6 +270,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ### Agent Creates Wrong Files
 
 **Solution:**
+
 1. Check your specification document has all 5 required sections
 2. Validate PlantUML diagrams are correct
 3. Review agent's scaffolding plan before approving
@@ -269,6 +280,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ## 📖 Quick Reference
 
 ### Module Core Creator
+
 ```
 @module-core-creator Create Module_Core for [project name]
 - Gathers project requirements
@@ -278,6 +290,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ```
 
 ### Module Creator
+
 ```
 @module-creator Create Module_[Feature] from specs/[file]
 - Validates specification (5 required sections)
@@ -287,6 +300,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ```
 
 ### Module Rebuilder
+
 ```
 @module-rebuilder Rebuild Module_[Feature]
 - Extracts workflows → validates with user
@@ -296,6 +310,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ```
 
 ### Core Maintainer
+
 ```
 @core-maintainer [Add/Modify/Remove] [service/method] in Module_Core
 - Analyzes impact on all modules
@@ -334,6 +349,7 @@ Agents are configured in `.github/copilot-agents.json`:
 ---
 
 **For detailed agent documentation, see:**
+
 - Module Core Creator: `_bmad/module-agents/agents/module-core-creator.md`
 - Module Creator: `_bmad/module-agents/agents/module-creator.md`
 - Module Rebuilder: `_bmad/module-agents/agents/module-rebuilder.md`

@@ -41,7 +41,7 @@ namespace MTM_Receiving_Application
             ConfigureTitleBar();
 
             // Set user display from current session
-            if (_sessionManager.CurrentSession != null)
+            if (_sessionManager.CurrentSession?.User != null)
             {
                 var user = _sessionManager.CurrentSession.User;
                 UserDisplayTextBlock.Text = user.DisplayName;
@@ -315,7 +315,7 @@ namespace MTM_Receiving_Application
         /// </summary>
         public void UpdateUserDisplay()
         {
-            if (_sessionManager.CurrentSession != null)
+            if (_sessionManager.CurrentSession?.User != null)
             {
                 var user = _sessionManager.CurrentSession.User;
                 UserDisplayTextBlock.Text = user.DisplayName;

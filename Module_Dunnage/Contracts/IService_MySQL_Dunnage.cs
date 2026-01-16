@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
-namespace MTM_Receiving_Application.Module_Core.Contracts.Services
+namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 {
     /// <summary>
     /// Service for dunnage database operations.

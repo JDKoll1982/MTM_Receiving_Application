@@ -1,0 +1,54 @@
+{
+    "$schema": "https://repomix.com/schemas/latest/schema.json",
+    "output": {
+        "filePath": "repomix-output-code-only.xml",
+        "style": "xml",
+        "compress": false,
+        "headerText": "MTM Receiving Application - Core Project Code (Architecture & Implementation)",
+        "fileSummary": true,
+        "directoryStructure": true,
+        "files": true,
+        "removeComments": false,
+        "removeEmptyLines": false,
+        "topFilesLength": 10,
+        "showLineNumbers": false,
+        "copyToClipboard": false,
+        "git": {
+            "sortByChanges": true,
+            "sortByChangesMaxCommits": 100,
+            "includeDiffs": false,
+            "includeLogs": false
+        }
+    },
+    "include": [
+        "**/*.cs",
+        "**/*.xaml",
+        "App.xaml.cs",
+        "MainWindow.xaml.cs"
+    ],
+    "ignore": {
+        "useGitignore": true,
+        "useDotIgnore": true,
+        "useDefaultPatterns": true,
+        "customPatterns": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/.vs/**",
+            "**/node_modules/**",
+            "**/*.md",
+            "docs/**",
+            "Documentation/**",
+            "Assets/**",
+            "Database/**",
+            "specs/**",
+            "_bmad-output/**",
+            "**/*REPORT.md"
+        ]
+    },
+    "security": {
+        "enableSecurityCheck": true
+    },
+    "tokenCount": {
+        "encoding": "o200k_base"
+    }
+}

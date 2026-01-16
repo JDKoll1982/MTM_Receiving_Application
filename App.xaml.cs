@@ -6,7 +6,9 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Services;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Services;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Services;
 using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
@@ -36,6 +38,11 @@ using MTM_Receiving_Application.Module_Reporting.Services;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
 using MTM_Receiving_Application.Module_Reporting.Views;
 using Microsoft.Extensions.Configuration;
+using MediatR;
+using FluentValidation;
+using Serilog;
+using MTM_Receiving_Application.Module_Core.Behaviors;
+using System.Reflection;
 
 namespace MTM_Receiving_Application;
 
@@ -58,10 +65,39 @@ public partial class App : Application
     {
         InitializeComponent();
 
+        // Configure Serilog for structured logging
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .Enrich.WithMachineName()
+            .Enrich.WithThreadId()
+            .Enrich.WithProperty("Application", "MTM_Receiving_Application")
+            .Enrich.WithProperty("Environment", "Production")
+            .WriteTo.File(
+                "logs/app-.txt",
+                rollingInterval: RollingInterval.Day,
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] [{Properties}] {Message:lj}{NewLine}{Exception}",
+                retainedFileCountLimit: 30)
+            .CreateLogger();
+
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                // Core Services
+                // ===== CQRS INFRASTRUCTURE (MediatR + Global Pipeline Behaviors) =====
+                services.AddMediatR(cfg =>
+                {
+                    // Register all handlers from this assembly
+                    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+
+                    // Register GLOBAL pipeline behaviors (applied to ALL handlers in ALL modules)
+                    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+                    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+                    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuditBehavior<,>));
+                });
+
+                // ===== FLUENTVALIDATION CONFIGURATION (Auto-discovery) =====
+                services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+                // ===== CORE SERVICES (Generic Infrastructure) =====
                 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
                 services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
                 services.AddSingleton<IService_Notification, Service_Notification>();

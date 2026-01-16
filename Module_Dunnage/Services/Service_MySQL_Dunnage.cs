@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 
-namespace MTM_Receiving_Application.Module_Core.Services.Database
+namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
     public class Service_MySQL_Dunnage : IService_MySQL_Dunnage
     {
@@ -23,7 +24,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database
         private readonly Dao_DunnageCustomField _daoCustomField;
         private readonly Dao_DunnageUserPreference _daoUserPreference;
 
-        private string CurrentUser => _sessionManager.CurrentSession?.User.WindowsUsername ?? "System";
+        private string CurrentUser => _sessionManager.CurrentSession?.User?.WindowsUsername ?? "System";
 
         public Service_MySQL_Dunnage(
             IService_ErrorHandler errorHandler,

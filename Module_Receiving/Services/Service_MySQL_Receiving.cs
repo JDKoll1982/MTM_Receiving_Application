@@ -1,12 +1,13 @@
-﻿using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MTM_Receiving_Application.Module_Core.Services.Database
+namespace MTM_Receiving_Application.Module_Receiving.Services
 {
     /// <summary>
     /// Service for saving receiving load data to MySQL database.
@@ -152,6 +153,3 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database
         }
     }
 }
-
-
-

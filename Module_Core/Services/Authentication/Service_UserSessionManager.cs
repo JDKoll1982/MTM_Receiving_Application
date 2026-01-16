@@ -122,7 +122,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         /// <inheritdoc/>
         public async Task EndSessionAsync(string reason)
         {
-            if (CurrentSession == null)
+            if (CurrentSession?.User == null)
             {
                 return;
             }
