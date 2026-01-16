@@ -31,13 +31,15 @@ $args = @(
 
 if ($WhatIf) {
     Write-Host "Would run: npx $($args -join ' ')" -ForegroundColor Yellow
-} else {
+}
+else {
     Write-Host "Running: npx $($args -join ' ')" -ForegroundColor Green
     & npx @args
     
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`nMarkdown files fixed successfully!" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Warning "Some issues could not be auto-fixed. Please review manually."
     }
 }
