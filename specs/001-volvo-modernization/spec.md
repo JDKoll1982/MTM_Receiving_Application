@@ -251,6 +251,7 @@ Based on initial analysis, the following constitutional violations exist in curr
 3. **Principle V Violation**: No FluentValidation validators exist (validation logic embedded in services/ViewModels)
 
 **Modernization resolves ALL violations** by:
+
 - Refactoring ViewModels to use `IMediator` exclusively
 - Migrating all `{Binding}` to `x:Bind` with appropriate Mode
 - Creating FluentValidation validators for all command models
@@ -260,6 +261,7 @@ Based on initial analysis, the following constitutional violations exist in curr
 ### Current ViewModel Commands (to be converted to MediatR handlers)
 
 **ViewModel_Volvo_ShipmentEntry (26 methods)**:
+
 - `InitializeAsync` → Query: GetInitialShipmentDataQuery
 - `LoadPendingShipmentAsync` → Query: GetPendingShipmentQuery
 - `UpdatePartSuggestions` → Query: SearchVolvoPartsQuery
@@ -274,6 +276,7 @@ Based on initial analysis, the following constitutional violations exist in curr
 - `ViewHistory` → Navigation (no handler needed)
 
 **ViewModel_Volvo_History (9 methods)**:
+
 - Constructor initialization → Query: GetRecentShipmentsQuery
 - `FilterAsync` → Query: GetShipmentHistoryQuery (with filter parameters)
 - `ViewDetailAsync` → Query: GetShipmentDetailQuery
@@ -282,6 +285,7 @@ Based on initial analysis, the following constitutional violations exist in curr
 - `GoBack` → Navigation (no handler needed)
 
 **ViewModel_Volvo_Settings (12 methods)**:
+
 - Constructor initialization → Query: GetAllVolvoPartsQuery
 - `RefreshAsync` → Query: GetAllVolvoPartsQuery (with active/inactive filter)
 - `AddPartAsync` → Command: AddVolvoPartCommand
@@ -337,6 +341,7 @@ Based on initial analysis, the following constitutional violations exist in curr
 **Specification Status**: ✅ READY FOR TASK GENERATION
 
 **Next Steps**:
+
 1. Run `/speckit.tasks` to generate implementation checklist
 2. Run `@module-compliance-auditor Module_Volvo` for detailed violation report
 3. Run `/speckit.plan` for detailed technical implementation plan
