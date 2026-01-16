@@ -30,32 +30,26 @@ public class GetPendingShipmentQueryHandlerTests
     public async Task Handle_ShouldReturnPendingShipment_WhenFound()
     {
         // Arrange
-        var userName = "testuser";
         var expectedShipment = new Model_VolvoShipment
         {
             Id = 123,
             ShipmentNumber = 100,
-            ShipmentDate = DateTimeOffset.Now,
-            Status = "Pending",
-            CreatedBy = userName
+            ShipmentDate = DateTime.Now,
+            Status = "Pending"
         };
 
         _mockShipmentDao
-            .Setup(x => x.GetPendingAsync(userName))
-            .ReturnsAsync(new Model_Dao_Result<Model_VolvoShipment>
-            {
-                Success = true,
-                Data = expectedShipment
-            });
+            .Setup(x => x.GetPendingAsync())
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedShipment));
 
-        var query = new GetPendingShipmentQuery { UserName = userName };
+        var query = new GetPendingShipmentQuery();
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
         result.Data!.Id.Should().Be(123);
         result.Data.ShipmentNumber.Should().Be(100);
@@ -66,24 +60,18 @@ public class GetPendingShipmentQueryHandlerTests
     public async Task Handle_ShouldReturnNull_WhenNoPendingShipmentExists()
     {
         // Arrange
-        var userName = "testuser";
-
         _mockShipmentDao
-            .Setup(x => x.GetPendingAsync(userName))
-            .ReturnsAsync(new Model_Dao_Result<Model_VolvoShipment>
-            {
-                Success = true,
-                Data = null
-            });
+            .Setup(x => x.GetPendingAsync())
+            .ReturnsAsync(Model_Dao_Result_Factory.Success<Model_VolvoShipment>(null));
 
-        var query = new GetPendingShipmentQuery { UserName = userName };
+        var query = new GetPendingShipmentQuery();
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.Success.Should().BeTrue();
         result.Data.Should().BeNull();
     }
 
@@ -91,25 +79,20 @@ public class GetPendingShipmentQueryHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenDaoFails()
     {
         // Arrange
-        var userName = "testuser";
         var expectedError = "Database error";
 
         _mockShipmentDao
-            .Setup(x => x.GetPendingAsync(userName))
-            .ReturnsAsync(new Model_Dao_Result<Model_VolvoShipment>
-            {
-                Success = false,
-                ErrorMessage = expectedError
-            });
+            .Setup(x => x.GetPendingAsync())
+            .ReturnsAsync(Model_Dao_Result_Factory.Failure<Model_VolvoShipment>(expectedError));
 
-        var query = new GetPendingShipmentQuery { UserName = userName };
+        var query = new GetPendingShipmentQuery();
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
+        result.Success.Should().BeFalse();
         result.ErrorMessage.Should().Contain(expectedError);
     }
 
@@ -117,22 +100,16 @@ public class GetPendingShipmentQueryHandlerTests
     public async Task Handle_ShouldCallDaoOnce()
     {
         // Arrange
-        var userName = "testuser";
-
         _mockShipmentDao
-            .Setup(x => x.GetPendingAsync(userName))
-            .ReturnsAsync(new Model_Dao_Result<Model_VolvoShipment>
-            {
-                Success = true,
-                Data = null
-            });
+            .Setup(x => x.GetPendingAsync())
+            .ReturnsAsync(Model_Dao_Result_Factory.Success<Model_VolvoShipment>(null));
 
-        var query = new GetPendingShipmentQuery { UserName = userName };
+        var query = new GetPendingShipmentQuery();
 
         // Act
         await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        _mockShipmentDao.Verify(x => x.GetPendingAsync(userName), Times.Once);
+        _mockShipmentDao.Verify(x => x.GetPendingAsync(), Times.Once);
     }
 }

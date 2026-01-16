@@ -105,15 +105,15 @@
 ### Unit Tests for User Story 1
 
 - [X] T051 [P] [US1] Unit test GetInitialShipmentDataQueryHandler in Module_Volvo.Tests/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
-- [ ] T052 [P] [US1] Unit test GetPendingShipmentQueryHandler in Module_Volvo.Tests/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
+- [X] T052 [P] [US1] Unit test GetPendingShipmentQueryHandler in Module_Volvo.Tests/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
 - [X] T053 [P] [US1] Unit test SearchVolvoPartsQueryHandler in Module_Volvo.Tests/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
 - [X] T054 [P] [US1] Unit test GenerateLabelCsvQueryHandler in Module_Volvo.Tests/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
 - [X] T055 [P] [US1] Unit test AddPartToShipmentCommandValidator in Module_Volvo.Tests/Validators/AddPartToShipmentCommandValidatorTests.cs
 - [X] T056 [P] [US1] Unit test AddPartToShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
 - [X] T057 [P] [US1] Unit test SavePendingShipmentCommandValidator in Module_Volvo.Tests/Validators/SavePendingShipmentCommandValidatorTests.cs
-- [ ] T058 [P] [US1] Unit test SavePendingShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
+- [X] T058 [P] [US1] Unit test SavePendingShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
 - [X] T059 [P] [US1] Unit test CompleteShipmentCommandValidator in Module_Volvo.Tests/Validators/CompleteShipmentCommandValidatorTests.cs
-- [ ] T060 [P] [US1] Unit test CompleteShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
+- [X] T060 [P] [US1] Unit test CompleteShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
 
 ### Integration & Golden File Tests for User Story 1
 
@@ -371,24 +371,29 @@
 ### Parallel Opportunities
 
 **Within Phase 2 (Foundational)**:
+
 - T015-T019: NuGet packages and shared DTOs (5 tasks parallel)
 - T020-T022: Golden file capture (3 tasks parallel)
 
 **Within User Story 1**:
+
 - T023-T030: All query DTOs and handlers (8 tasks parallel)
 - T031, T034, T036, T039: All command DTOs (4 tasks parallel)
 - T051-T060: All unit tests (10 tasks parallel)
 
 **Within User Story 2**:
+
 - T064-T071: All query DTOs and handlers (8 tasks parallel)
 - T083-T088: All unit tests (6 tasks parallel)
 
 **Within User Story 3**:
+
 - T091-T096: All query DTOs and handlers (6 tasks parallel)
 - T097, T100, T103, T106: All command DTOs (4 tasks parallel)
 - T120-T130: All unit tests (11 tasks parallel)
 
 **Within Phase 10 (Polish)**:
+
 - T153-T158: All documentation and validation tasks (6 tasks parallel)
 
 ---
@@ -396,6 +401,7 @@
 ## Parallel Execution Example: User Story 1
 
 ### Sprint 1 - Query Infrastructure (Can run in parallel)
+
 ```bash
 # Developer 1
 git checkout -b feature/us1-init-query
@@ -415,6 +421,7 @@ git checkout -b feature/us1-csv-query
 ```
 
 ### Sprint 2 - Command Infrastructure (Sequential validators, then parallel handlers)
+
 ```bash
 # All developers: Validators first (sequential - share validation patterns)
 # T032, T037, T040 (AddPart, SavePending, CompleteShipment validators)
@@ -426,6 +433,7 @@ git checkout -b feature/us1-csv-query
 ```
 
 ### Sprint 3 - ViewModel Refactoring + Tests (Parallel tests after ViewModel done)
+
 ```bash
 # Developer 1: T042-T050 (ViewModel refactoring - sequential)
 # Developer 2-4: T051-T060 (Unit tests - parallel while Developer 1 works on ViewModel)
@@ -436,18 +444,21 @@ git checkout -b feature/us1-csv-query
 ## Implementation Strategy
 
 ### MVP Delivery (Minimum Viable Product)
+
 - **Phase 1-3 ONLY**: Setup + Foundational + User Story 1
 - **Estimated Time**: 20-25 hours
 - **Value**: Core shipment entry workflow functional with CQRS
 - **Deliverable**: Users can create/complete shipments using modernized architecture
 
 ### Incremental Delivery
+
 - **Phase 4**: Add history viewing/editing (P2)
 - **Phase 5**: Add master data management (P2)
 - **Phase 6**: Add email preview (P3)
 - **Each phase independently testable and deployable**
 
 ### Full Modernization
+
 - **All Phases**: Complete constitutional compliance
 - **Estimated Time**: 50-60 hours
 - **Value**: All 3 constitutional violations resolved, 80%+ test coverage, functional parity verified
@@ -478,6 +489,7 @@ git checkout -b feature/us1-csv-query
 **Total Tasks**: 161
 
 **By Phase**:
+
 - Phase 1 (Setup): 11 tasks
 - Phase 2 (Foundational): 11 tasks
 - Phase 3 (US1 - P1): 41 tasks
@@ -490,6 +502,7 @@ git checkout -b feature/us1-csv-query
 - Phase 10 (Polish): 9 tasks
 
 **By Category**:
+
 - Query Handlers: 11 tasks
 - Command Handlers: 8 tasks
 - Validators: 8 tasks
@@ -505,6 +518,7 @@ git checkout -b feature/us1-csv-query
 **Sequential Tasks**: 72 tasks
 
 **Estimated Effort**:
+
 - MVP (Phases 1-3): 20-25 hours
 - Full Modernization (All Phases): 50-60 hours
 

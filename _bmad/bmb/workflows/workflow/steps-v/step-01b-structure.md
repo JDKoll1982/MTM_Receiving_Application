@@ -52,6 +52,7 @@ To create the validation report and check that the workflow has correct file str
 - File size limits (<200 recommended, 250 max)
 - Required folder structure
 - Required files
+
 1. Lists the entire folder structure using bash commands
 2. Verifies all required folders and files exist
 3. Returns structured findings to parent for aggregation

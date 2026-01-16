@@ -300,7 +300,7 @@ Changed from **3-column** to **2x2 grid**:
 
 ### Testing
 
-5. **Role Isolation Testing**
+1. **Role Isolation Testing**
    - Verify Quality users CANNOT see MH/ST/PL tasks
    - Verify MH users CANNOT see QC/ST/PL tasks
    - Verify filters respect role boundaries

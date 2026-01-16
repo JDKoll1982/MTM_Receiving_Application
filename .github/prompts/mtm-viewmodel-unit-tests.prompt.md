@@ -90,4 +90,4 @@ Generate a complete xUnit test class with:
   - Data validation scenarios
 - XML documentation for complex MVVM patterns
 - Organized with `#region` blocks for readability
- 	- Traits: `[Trait("Category", "Unit")]` and `[Trait("Layer", "ViewModel")]`
+  - Traits: `[Trait("Category", "Unit")]` and `[Trait("Layer", "ViewModel")]`

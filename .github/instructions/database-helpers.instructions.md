@@ -46,10 +46,12 @@ if (result.IsSuccess)
 ```
 
 ## Parameter Naming
+
 * **C# Side**: Use dictionary keys matching the stored procedure parameter names (usually with `p_` prefix, e.g., `p_part_id`).
 * **SQL Side**: Stored procedure parameters must match the dictionary keys.
 
 ## Connection Strings
+
 * Access via `Helper_Database_Variables.GetConnectionString()`.
 * Never hardcode connection strings in DAOs.
 

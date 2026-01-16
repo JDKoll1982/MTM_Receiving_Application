@@ -130,33 +130,33 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 
 ## Database
 
-4. Can we modify stored procedures, or are they locked?
+1. Can we modify stored procedures, or are they locked?
 2. Are there existing integration tests for database operations?
 3. What is the migration strategy for existing data?
 
 ## Dependencies
 
-7. Which Module_Core services must remain shared vs. moved to Module_Receiving?
+1. Which Module_Core services must remain shared vs. moved to Module_Receiving?
 2. Can we introduce new NuGet packages (MediatR, Serilog, FluentValidation)?
 
 ## Validation
 
-9. Should validation happen in ViewModel, Service, or DAO layer?
+1. Should validation happen in ViewModel, Service, or DAO layer?
 2. Are there existing validation rules documented?
 
 ## Testing
 
-11. Required test coverage percentage?
+1. Required test coverage percentage?
 2. Prefer unit tests (mocked DAOs) or integration tests (test database)?
 
 ## UI/UX
 
-13. Can navigation flow be changed, or must it match current exactly?
+1. Can navigation flow be changed, or must it match current exactly?
 2. Are there performance requirements (e.g., load time < X seconds)?
 
 ## Deployment
 
-15. What is the deployment process for Module_Receiving changes?
+1. What is the deployment process for Module_Receiving changes?
 2. Are there backward compatibility requirements?
 
 **Location:** `Module_Receiving/Preparation/03_Clarification_Questions.md`
