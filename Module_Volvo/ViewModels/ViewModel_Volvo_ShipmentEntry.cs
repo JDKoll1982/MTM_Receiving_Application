@@ -28,7 +28,10 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+
+    [Obsolete("Legacy service kept for non-migrated methods. Use IMediator for new code.", false)]
     private readonly IService_Volvo _volvoService; // Keep for legacy methods not yet migrated
+
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
@@ -1070,6 +1073,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         return saveResult;
     }
 
+    /// <summary>
+    /// Completes pending shipment using CompleteShipmentCommand (CQRS)
+    /// </summary>
     [RelayCommand]
     private async Task CompleteShipmentAsync()
     {
@@ -1079,7 +1085,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Completing shipment...";
 
-            var pendingResult = await _volvoService.GetPendingShipmentAsync();
+            // Get pending shipment using MediatR
+            var pendingQuery = new GetPendingShipmentQuery
+            {
+                UserName = Environment.UserName
+            };
+            var pendingResult = await _mediator.Send(pendingQuery);
+
             if (!pendingResult.IsSuccess || pendingResult.Data == null)
             {
                 await _errorHandler.HandleErrorAsync(
@@ -1157,16 +1169,34 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return;
             }
 
-            var completeResult = await _volvoService.CompleteShipmentAsync(
-                shipment.Id,
-                poTextBox.Text.Trim(),
-                receiverTextBox.Text.Trim());
+            // Use MediatR CompleteShipmentCommand
+            var partsDto = Parts.Select(p => new ShipmentLineDto
+            {
+                PartNumber = p.PartNumber,
+                ReceivedSkidCount = p.ReceivedSkidCount,
+                ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
+                HasDiscrepancy = p.HasDiscrepancy,
+                DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
+            }).ToList();
+
+            var completeCommand = new CompleteShipmentCommand
+            {
+                ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+                ShipmentNumber = ShipmentNumber,
+                PONumber = poTextBox.Text.Trim(),
+                ReceiverNumber = receiverTextBox.Text.Trim(),
+                Notes = Notes ?? string.Empty,
+                Parts = partsDto
+            };
+
+            var completeResult = await _mediator.Send(completeCommand);
 
             if (completeResult.IsSuccess)
             {
-                SuccessMessage = "Shipment completed successfully!";
+                SuccessMessage = $"Shipment #{ShipmentNumber} completed successfully!";
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = false;
+                await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} completed with PO: {poTextBox.Text.Trim()}");
 
                 // Clear the form
                 ClearShipmentForm();

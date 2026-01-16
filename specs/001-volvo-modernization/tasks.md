@@ -51,9 +51,9 @@
 - [X] T017 [P] Create shared DTO: InitialShipmentData in Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
 - [X] T018 [P] Create shared DTO: ShipmentDetail in Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs
 - [X] T019 [P] Create shared DTO: ImportPartsCsvResult in Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs
-- [ ] T020 [P] Capture golden file: expected_label_basic.csv (create test shipment, save CSV to Module_Volvo.Tests/GoldenFiles/)
-- [ ] T021 [P] Capture golden file: expected_email_html.html (use Preview Email, save HTML to Module_Volvo.Tests/GoldenFiles/)
-- [ ] T022 [P] Capture golden file: expected_email_text.txt (use Preview Email, save plain text to Module_Volvo.Tests/GoldenFiles/)
+- [ ] T020 [P] DEFERRED: Capture golden file: expected_label_basic.csv (moved to T061 - integration test)
+- [ ] T021 [P] DEFERRED: Capture golden file: expected_email_html.html (moved to Phase 6)
+- [ ] T022 [P] DEFERRED: Capture golden file: expected_email_text.txt (moved to Phase 6)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -67,52 +67,52 @@
 
 ### Query Handlers for User Story 1
 
-- [ ] T023 [P] [US1] Create GetInitialShipmentDataQuery DTO in Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
-- [ ] T024 [P] [US1] Create GetInitialShipmentDataQueryHandler in Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandler.cs
-- [ ] T025 [P] [US1] Create GetPendingShipmentQuery DTO in Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs
-- [ ] T026 [P] [US1] Create GetPendingShipmentQueryHandler in Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandler.cs
-- [ ] T027 [P] [US1] Create SearchVolvoPartsQuery DTO in Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs
-- [ ] T028 [P] [US1] Create SearchVolvoPartsQueryHandler in Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs
-- [ ] T029 [P] [US1] Create GenerateLabelCsvQuery DTO in Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs
-- [ ] T030 [P] [US1] Create GenerateLabelCsvQueryHandler in Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs (functional parity with legacy CSV format)
+- [X] T023 [P] [US1] Create GetInitialShipmentDataQuery DTO in Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
+- [X] T024 [P] [US1] Create GetInitialShipmentDataQueryHandler in Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandler.cs
+- [X] T025 [P] [US1] Create GetPendingShipmentQuery DTO in Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs
+- [X] T026 [P] [US1] Create GetPendingShipmentQueryHandler in Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandler.cs
+- [X] T027 [P] [US1] Create SearchVolvoPartsQuery DTO in Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs
+- [X] T028 [P] [US1] Create SearchVolvoPartsQueryHandler in Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs
+- [X] T029 [P] [US1] Create GenerateLabelCsvQuery DTO in Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs
+- [X] T030 [P] [US1] Create GenerateLabelCsvQueryHandler in Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs (functional parity with legacy CSV format)
 
 ### Command Handlers for User Story 1
 
-- [ ] T031 [P] [US1] Create AddPartToShipmentCommand DTO in Module_Volvo/Requests/Commands/AddPartToShipmentCommand.cs
-- [ ] T032 [US1] Create AddPartToShipmentCommandValidator in Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs (PartNumber required, ReceivedSkidCount > 0, HasDiscrepancy → ExpectedSkidCount + DiscrepancyNote required)
-- [ ] T033 [US1] Create AddPartToShipmentCommandHandler in Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs
-- [ ] T034 [P] [US1] Create RemovePartFromShipmentCommand DTO in Module_Volvo/Requests/Commands/RemovePartFromShipmentCommand.cs
-- [ ] T035 [P] [US1] Create RemovePartFromShipmentCommandHandler in Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs
-- [ ] T036 [P] [US1] Create SavePendingShipmentCommand DTO in Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs
-- [ ] T037 [US1] Create SavePendingShipmentCommandValidator in Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs (ShipmentDate <= Now, Parts.Count > 0)
-- [ ] T038 [US1] Create SavePendingShipmentCommandHandler in Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs
-- [ ] T039 [P] [US1] Create CompleteShipmentCommand DTO in Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs
-- [ ] T040 [US1] Create CompleteShipmentCommandValidator in Module_Volvo/Validators/CompleteShipmentCommandValidator.cs (ShipmentDate <= Now, Parts.Count > 0, all parts validated)
-- [ ] T041 [US1] Create CompleteShipmentCommandHandler in Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs (save, generate labels, send email)
+- [X] T031 [P] [US1] Create AddPartToShipmentCommand DTO in Module_Volvo/Requests/Commands/AddPartToShipmentCommand.cs
+- [X] T032 [US1] Create AddPartToShipmentCommandValidator in Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs (PartNumber required, ReceivedSkidCount > 0, HasDiscrepancy → ExpectedSkidCount + DiscrepancyNote required)
+- [X] T033 [US1] Create AddPartToShipmentCommandHandler in Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs
+- [X] T034 [P] [US1] Create RemovePartFromShipmentCommand DTO in Module_Volvo/Requests/Commands/RemovePartFromShipmentCommand.cs
+- [X] T035 [P] [US1] Create RemovePartFromShipmentCommandHandler in Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs
+- [X] T036 [P] [US1] Create SavePendingShipmentCommand DTO in Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs
+- [X] T037 [US1] Create SavePendingShipmentCommandValidator in Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs (ShipmentDate <= Now, Parts.Count > 0)
+- [X] T038 [US1] Create SavePendingShipmentCommandHandler in Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs
+- [X] T039 [P] [US1] Create CompleteShipmentCommand DTO in Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs
+- [X] T040 [US1] Create CompleteShipmentCommandValidator in Module_Volvo/Validators/CompleteShipmentCommandValidator.cs (ShipmentDate <= Now, Parts.Count > 0, all parts validated)
+- [X] T041 [US1] Create CompleteShipmentCommandHandler in Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs (save, generate labels, send email)
 
 ### ViewModel Refactoring for User Story 1
 
-- [ ] T042 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Inject IMediator, replace InitializeAsync with GetInitialShipmentDataQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T043 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace LoadPendingShipmentAsync with GetPendingShipmentQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T044 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace UpdatePartSuggestions with SearchVolvoPartsQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T045 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace AddPart with AddPartToShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T046 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace RemovePart with RemovePartFromShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T047 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace GenerateLabelsAsync with GenerateLabelCsvQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T048 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace SaveAsPendingAsync with SavePendingShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T049 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace CompleteShipmentAsync with CompleteShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [ ] T050 [US1] Mark IService_Volvo injection in ViewModel_Volvo_ShipmentEntry as [Obsolete] (keep for gradual migration)
+- [X] T042 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Inject IMediator, replace InitializeAsync with GetInitialShipmentDataQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T043 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace LoadPendingShipmentAsync with GetPendingShipmentQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T044 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace UpdatePartSuggestions with SearchVolvoPartsQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T045 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace AddPart with AddPartToShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T046 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace RemovePart with RemovePartFromShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T047 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace GenerateLabelsAsync with GenerateLabelCsvQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T048 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace SaveAsPendingAsync with SavePendingShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T049 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace CompleteShipmentAsync with CompleteShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+- [X] T050 [US1] Mark IService_Volvo injection in ViewModel_Volvo_ShipmentEntry as [Obsolete] (keep for gradual migration)
 
 ### Unit Tests for User Story 1
 
-- [ ] T051 [P] [US1] Unit test GetInitialShipmentDataQueryHandler in Module_Volvo.Tests/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
+- [X] T051 [P] [US1] Unit test GetInitialShipmentDataQueryHandler in Module_Volvo.Tests/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
 - [ ] T052 [P] [US1] Unit test GetPendingShipmentQueryHandler in Module_Volvo.Tests/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
-- [ ] T053 [P] [US1] Unit test SearchVolvoPartsQueryHandler in Module_Volvo.Tests/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
-- [ ] T054 [P] [US1] Unit test GenerateLabelCsvQueryHandler in Module_Volvo.Tests/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
-- [ ] T055 [P] [US1] Unit test AddPartToShipmentCommandValidator in Module_Volvo.Tests/Validators/AddPartToShipmentCommandValidatorTests.cs
-- [ ] T056 [P] [US1] Unit test AddPartToShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
-- [ ] T057 [P] [US1] Unit test SavePendingShipmentCommandValidator in Module_Volvo.Tests/Validators/SavePendingShipmentCommandValidatorTests.cs
+- [X] T053 [P] [US1] Unit test SearchVolvoPartsQueryHandler in Module_Volvo.Tests/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
+- [X] T054 [P] [US1] Unit test GenerateLabelCsvQueryHandler in Module_Volvo.Tests/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
+- [X] T055 [P] [US1] Unit test AddPartToShipmentCommandValidator in Module_Volvo.Tests/Validators/AddPartToShipmentCommandValidatorTests.cs
+- [X] T056 [P] [US1] Unit test AddPartToShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
+- [X] T057 [P] [US1] Unit test SavePendingShipmentCommandValidator in Module_Volvo.Tests/Validators/SavePendingShipmentCommandValidatorTests.cs
 - [ ] T058 [P] [US1] Unit test SavePendingShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
-- [ ] T059 [P] [US1] Unit test CompleteShipmentCommandValidator in Module_Volvo.Tests/Validators/CompleteShipmentCommandValidatorTests.cs
+- [X] T059 [P] [US1] Unit test CompleteShipmentCommandValidator in Module_Volvo.Tests/Validators/CompleteShipmentCommandValidatorTests.cs
 - [ ] T060 [P] [US1] Unit test CompleteShipmentCommandHandler in Module_Volvo.Tests/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
 
 ### Integration & Golden File Tests for User Story 1

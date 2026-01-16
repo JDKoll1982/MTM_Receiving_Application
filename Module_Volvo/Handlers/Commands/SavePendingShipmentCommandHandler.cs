@@ -48,7 +48,7 @@ public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShip
                 // Update existing pending shipment
                 shipment.Id = request.ShipmentId.Value;
                 var updateResult = await _shipmentDao.UpdateAsync(shipment);
-                
+
                 if (!updateResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(updateResult.ErrorMessage);
