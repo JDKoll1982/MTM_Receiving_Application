@@ -1,0 +1,468 @@
+# WinUI 3 + C# Technology Stack Configuration
+
+version: "1.0.0"
+date: "2026-01-15"
+description: "Technology stack configuration for WinUI 3 desktop applications using C# and MVVM architecture"
+
+# ============================================================================
+# FRAMEWORK & RUNTIME
+# ============================================================================
+framework:
+  name: "WinUI 3"
+  version: "1.6+"
+  runtime: ".NET 8"
+  language: "C# 12"
+  platform: "Windows App SDK"
+  ui_framework: "XAML"
+
+# ============================================================================
+# REQUIRED NUGET PACKAGES
+# ============================================================================
+packages:
+  mvvm:
+    - name: "CommunityToolkit.Mvvm"
+      version: "8.2.0+"
+      purpose: "Source generators for MVVM (ObservableProperty, RelayCommand)"
+
+  cqrs:
+    - name: "MediatR"
+      version: "12.0+"
+      purpose: "Mediator pattern for CQRS architecture"
+      downloads: "607M+"
+
+  logging:
+    - name: "Serilog"
+      version: "3.1+"
+      purpose: "Structured logging framework"
+      downloads: "2.3B+"
+    - name: "Serilog.Sinks.File"
+      version: "5.0+"
+      purpose: "File sink for Serilog (rolling daily logs)"
+    - name: "Serilog.Extensions.Logging"
+      version: "8.0+"
+      purpose: "Integration with Microsoft.Extensions.Logging"
+
+  validation:
+    - name: "FluentValidation"
+      version: "11.8+"
+      purpose: "Declarative validation rules"
+      downloads: "741M+"
+
+  csv:
+    - name: "CsvHelper"
+      version: "30.0+"
+      purpose: "Type-safe CSV export/import"
+      downloads: "34M+"
+
+  navigation:
+    - name: "Uno.Extensions.Navigation.WinUI"
+      version: "4.0+"
+      purpose: "ViewModel-first navigation library"
+      recommended: true
+
+  database:
+    - name: "MySqlConnector"
+      version: "2.3+"
+      purpose: "MySQL database connectivity"
+    - name: "Microsoft.Data.SqlClient"
+      version: "5.1+"
+      purpose: "SQL Server connectivity (READ ONLY for Infor Visual)"
+
+# ============================================================================
+# ARCHITECTURAL PATTERNS
+# ============================================================================
+patterns:
+  primary:
+    - name: "MVVM (Model-View-ViewModel)"
+      enforcement: "strict"
+      description: "Separation of UI, presentation logic, and business logic"
+
+    - name: "CQRS (Command Query Responsibility Segregation)"
+      enforcement: "required"
+      description: "Separate read (queries) from write (commands) operations"
+
+    - name: "Repository Pattern (DAO)"
+      enforcement: "required"
+      description: "Instance-based Data Access Objects with structured results"
+
+    - name: "Dependency Injection"
+      enforcement: "strict"
+      description: "Constructor injection only, no service locator"
+
+  supporting:
+    - name: "Pipeline Behaviors"
+      scope: "global"
+      location: "Module_Core/Behaviors/"
+      description: "Cross-cutting concerns (logging, validation, audit)"
+
+    - name: "Event Aggregator"
+      scope: "optional"
+      description: "Loosely coupled module communication"
+
+# ============================================================================
+# NAMING CONVENTIONS
+# ============================================================================
+naming:
+  modules:
+    pattern: "Module_{Feature}/"
+    example: "Module_Receiving/"
+    case: "PascalCase"
+
+  viewmodels:
+    pattern: "ViewModel_{Module}_{Feature}"
+    example: "ViewModel_Receiving_POEntry"
+    modifiers: "partial class"
+    inheritance: "ViewModel_Shared_Base"
+
+  views:
+    pattern: "View_{Module}_{Feature}"
+    example: "View_Receiving_POEntry"
+    file_xaml: "View_Receiving_POEntry.xaml"
+    file_code: "View_Receiving_POEntry.xaml.cs"
+
+  handlers:
+    queries:
+      pattern: "{Verb}{Entity}Query / {Verb}{Entity}Handler"
+      example: "GetReceivingLineQuery / GetReceivingLineHandler"
+      verbs: ["Get", "List", "Search", "Find", "Exists", "Count"]
+
+    commands:
+      pattern: "{Verb}{Entity}Command / {Verb}{Entity}Handler"
+      example: "InsertReceivingLineCommand / InsertReceivingLineHandler"
+      verbs: ["Insert", "Update", "Delete", "Archive", "Restore", "Activate"]
+
+  validators:
+    pattern: "{CommandName}Validator"
+    example: "InsertReceivingLineValidator"
+    inheritance: "AbstractValidator<T>"
+
+  daos:
+    pattern: "Dao_{EntityName}"
+    example: "Dao_ReceivingLine"
+    style: "instance-based (NOT static)"
+
+  models:
+    pattern: "Model_{EntityName}"
+    example: "Model_ReceivingLine"
+
+  services:
+    interface: "IService_{Purpose}"
+    implementation: "Service_{Purpose}"
+    example: "IService_ErrorHandler / Service_ErrorHandler"
+
+  methods:
+    async: "must end with 'Async' suffix"
+    example: "LoadDataAsync(), SaveAsync(), DeleteAsync()"
+
+# ============================================================================
+# CODE QUALITY STANDARDS
+# ============================================================================
+code_quality:
+  accessibility:
+    rule: "Explicit accessibility modifiers required"
+    example: "public, private, protected, internal"
+
+  braces:
+    rule: "Required for all control flow statements"
+    enforcement: "strict"
+
+  async:
+    rule: "All async methods must end with 'Async' suffix"
+    enforcement: "strict"
+
+  documentation:
+    rule: "XML documentation required for public APIs"
+    format: "/// <summary>...</summary>"
+
+  binding:
+    xaml: "x:Bind (compile-time) required"
+    forbidden: "Binding (runtime)"
+
+# ============================================================================
+# PERFORMANCE TARGETS
+# ============================================================================
+performance:
+  validation:
+    target: "< 10ms"
+    measured_at: "ValidationBehavior pipeline"
+
+  dao_query:
+    target: "< 50ms"
+    measured_at: "DAO stored procedure execution"
+
+  handler_execution:
+    target: "< 100ms"
+    measured_at: "Handler complete lifecycle"
+
+  end_to_end:
+    target: "< 200ms"
+    measured_at: "ViewModel request to response"
+
+  view_load:
+    target: "< 200ms"
+    measured_at: "View initialization and first render"
+
+# ============================================================================
+# DATABASE CONSTRAINTS
+# ============================================================================
+database:
+  mysql:
+    connection_string_source: "Helper_Database_Variables.GetConnectionString()"
+    operations: "READ/WRITE"
+    stored_procedures: "required for all operations"
+    raw_sql: "forbidden in C# code"
+
+  sql_server_infor_visual:
+    server: "VISUAL"
+    databases:
+      production: "MTMFG"
+      playground: "MTMFGPLAY"
+    connection_string: "ApplicationIntent=ReadOnly required"
+    operations: "READ ONLY"
+    forbidden: ["INSERT", "UPDATE", "DELETE"]
+
+  audit_columns:
+    required: ["CreatedBy", "CreatedDate", "ModifiedBy", "ModifiedDate"]
+    type: "string (username), DateTime (UTC)"
+
+# ============================================================================
+# DEPENDENCY INJECTION RULES
+# ============================================================================
+dependency_injection:
+  lifetimes:
+    singleton:
+      use_for: ["Stateless services", "Thread-safe services"]
+      examples:
+        [
+          "IService_ErrorHandler",
+          "ILogger",
+          "DAOs",
+          "Global Pipeline Behaviors",
+        ]
+      registration: "services.AddSingleton<IService, Service>()"
+
+    transient:
+      use_for: ["Stateful services", "Per-operation data"]
+      examples: ["ViewModels", "Handlers", "Validators"]
+      registration: "services.AddTransient<ViewModel>()"
+
+    scoped:
+      use_for: "Not applicable to WinUI desktop apps"
+      note: "Scoped lifetime is for web applications only"
+
+  anti_patterns:
+    captive_dependency:
+      rule: "Never inject Transient into Singleton"
+      reason: "Causes stale data and memory leaks"
+
+# ============================================================================
+# MODULE STRUCTURE
+# ============================================================================
+module_structure:
+  canonical_folders:
+    - name: "Data/"
+      purpose: "Instance-based DAOs for database operations"
+
+    - name: "Models/"
+      purpose: "Domain entities and DTOs"
+
+    - name: "Handlers/"
+      purpose: "CQRS command/query handlers"
+      subfolders: ["Queries/", "Commands/"]
+
+    - name: "Validators/"
+      purpose: "FluentValidation validators for commands"
+
+    - name: "ViewModels/"
+      purpose: "Presentation logic (partial classes)"
+
+    - name: "Views/"
+      purpose: "XAML UI files"
+
+    - name: "Services/"
+      purpose: "Feature-specific services (minimal, optional)"
+
+    - name: "Defaults/"
+      purpose: "Configuration and constants"
+
+    - name: "Preparation/"
+      purpose: "Planning artifacts and documentation"
+
+  forbidden_folders:
+    - name: "Behaviors/"
+      reason: "Pipeline behaviors are GLOBAL in Module_Core only"
+
+# ============================================================================
+# MODULE INDEPENDENCE CRITERIA
+# ============================================================================
+module_independence:
+  allowed_dependencies:
+    - "Module_Core (generic infrastructure only)"
+    - "External NuGet packages"
+
+  forbidden_dependencies:
+    - "Other Module_{Feature} folders"
+    - "Direct references to feature-specific code in other modules"
+
+  allowed_core_services:
+    - "IService_ErrorHandler"
+    - "IService_Window"
+    - "IService_Dispatcher"
+    - "Helper_Database_Variables"
+    - "Helper_Database_StoredProcedure"
+    - "Global Pipeline Behaviors (LoggingBehavior, ValidationBehavior, AuditBehavior)"
+    - "ViewModel_Shared_Base"
+    - "Model_Dao_Result<T>"
+
+  communication:
+    method: "Event Aggregator (optional)"
+    location: "Module_Core"
+    coupling: "loose (publisher doesn't know subscribers)"
+
+# ============================================================================
+# TESTING REQUIREMENTS
+# ============================================================================
+testing:
+  framework: "xUnit"
+  assertions: "FluentAssertions"
+  coverage_target: "80%+"
+
+  unit_tests:
+    - "ViewModels with mocked IMediator"
+    - "Handlers with mocked DAOs"
+    - "Validators with test data"
+
+  integration_tests:
+    - "DAOs against test database"
+    - "End-to-end workflow scenarios"
+
+# ============================================================================
+# DOCUMENTATION REQUIREMENTS
+# ============================================================================
+documentation:
+  diagrams:
+    format: "PlantUML"
+    forbidden: "ASCII art"
+
+  required_files:
+    module_root:
+      - "README.md (module overview)"
+      - "ARCHITECTURE.md (design decisions)"
+      - "DATA_MODEL.md (PlantUML ERD)"
+      - "WORKFLOWS.md (PlantUML state diagrams)"
+      - "CODE_REVIEW_CHECKLIST.md (constitutional compliance)"
+
+    preparation:
+      - "03_Clarification_Questions.md"
+      - "04_Implementation_Order.md"
+      - "05_Task_Checklist.md"
+      - "06_Schematic_File.md"
+      - "07_Research_Archive.md"
+
+# ============================================================================
+# ERROR HANDLING STRATEGY
+# ============================================================================
+error_handling:
+  daos:
+    rule: "NEVER throw exceptions"
+    return: "Model_Dao_Result.Failure(errorMessage)"
+
+  handlers:
+    rule: "Wrap in try-catch"
+    catch: ["DbException", "ValidationException", "Exception"]
+    return: "Model_Dao_Result.Failure(userFriendlyMessage)"
+    log: "Full exception with context"
+
+  viewmodels:
+    rule: "Use IService_ErrorHandler for user-facing errors"
+    method: "_errorHandler.ShowUserError(message, title, source)"
+
+# ============================================================================
+# LOGGING STANDARDS
+# ============================================================================
+logging:
+  format: "Structured logging with semantic properties"
+
+  correct:
+    example: '_logger.LogInformation("User {UserId} performed {Action}", userId, action)'
+
+  incorrect:
+    example: '_logger.LogInformation("User " + userId + " performed " + action)'
+
+  enrichers:
+    - "Machine name"
+    - "Thread ID"
+    - "Application name"
+    - "Module name"
+    - "Environment (Dev/Staging/Production)"
+
+  output:
+    file: "logs/app-.txt"
+    rolling: "daily"
+    retention: "30 days"
+
+# ============================================================================
+# CONSTITUTIONAL CONSTRAINTS (NON-NEGOTIABLE)
+# ============================================================================
+constitutional:
+  mvvm:
+    - "ViewModels SHALL NOT directly call DAOs"
+    - "ViewModels SHALL NOT access database helpers"
+    - "All data access MUST flow through Mediator layer"
+    - "All ViewModels MUST be partial classes"
+    - "All data binding MUST use x:Bind (compile-time)"
+
+  database:
+    - "All MySQL operations MUST use stored procedures"
+    - "All DAOs MUST return Model_Dao_Result or Model_Dao_Result<T>"
+    - "DAOs MUST be instance-based (NOT static)"
+    - "SQL Server (Infor Visual) is READ ONLY"
+
+  dependency_injection:
+    - "All services MUST be registered in App.xaml.cs"
+    - "Constructor injection REQUIRED"
+    - "Service locator pattern is FORBIDDEN"
+
+  error_handling:
+    - "Use centralized IService_ErrorHandler for user errors"
+    - "Use structured logging for diagnostics"
+    - "DAOs MUST NOT throw exceptions"
+
+  code_quality:
+    - "Explicit accessibility modifiers required"
+    - "Braces required for all control flow"
+    - "Async methods MUST end with 'Async'"
+    - "XML documentation required for public APIs"
+
+# ============================================================================
+# REFERENCES
+# ============================================================================
+references:
+  official_docs:
+    - name: "MediatR Wiki"
+      url: "https://github.com/jbogard/MediatR/wiki"
+
+    - name: "Serilog Documentation"
+      url: "https://serilog.net"
+
+    - name: "FluentValidation Documentation"
+      url: "https://docs.fluentvalidation.net"
+
+    - name: "CsvHelper Documentation"
+      url: "https://joshclose.github.io/CsvHelper"
+
+    - name: "WinUI 3 Documentation"
+      url: "https://learn.microsoft.com/windows/apps/winui"
+
+  project_specific:
+    - name: "Constitution"
+      path: ".specify/memory/constitution.md"
+
+    - name: "Copilot Instructions"
+      path: ".github/copilot-instructions.md"
+
+    - name: "Module Development Guide"
+      path: "_bmad/module-agents/config/module-development-guide.md"
+
+    - name: "Module Diagrams"
+      path: "_bmad/module-agents/diagrams/module-rebuild-diagrams.md"

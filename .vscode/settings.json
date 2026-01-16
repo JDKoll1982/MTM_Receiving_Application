@@ -7,5 +7,20 @@
     "omnisharp.enableEditorConfigSupport": true,
     "dotnet.unitTestDebuggingOptions": {},
     "dotnet.defaultSolution.openExternally": false,
-    "dotnet.preferCSharpExtension": false
+    "dotnet.preferCSharpExtension": false,
+    "cSpell.words": [
+        "daos",
+        "gantt",
+        "Infor",
+        "Mediat",
+        "MTMFG",
+        "MTMFGPLAY",
+        "MVVM",
+        "Rebuilder",
+        "Serilog",
+        "startuml",
+        "subfolders",
+        "viewmodels",
+        "Wireframes"
+    ]
 }

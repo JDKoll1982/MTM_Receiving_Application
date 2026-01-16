@@ -1,0 +1,128 @@
+{
+    "$schema": "https://aka.ms/copilot/agent-schema",
+    "version": "1.0",
+    "agents": [
+        {
+            "name": "module-core-creator",
+            "displayName": "Module Core Creator",
+            "description": "Scaffold complete Module_Core infrastructure for new WinUI 3 projects. Creates foundational services, helpers, models, global behaviors, and DI configuration from scratch.",
+            "instructions": "file:_bmad/module-agents/agents/module-core-creator.md",
+            "conversationStarters": [
+                "Create Module_Core for a new WinUI 3 manufacturing application",
+                "Scaffold Module_Core infrastructure for a new project",
+                "Set up Module_Core with MySQL and SQL Server support"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:_bmad/module-agents/config/stack-winui3-csharp.yaml",
+                "file:_bmad/module-agents/diagrams/module-rebuild-diagrams.md"
+            ],
+            "model": "claude-sonnet-4.5",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search"
+                ]
+            }
+        },
+        {
+            "name": "module-creator",
+            "displayName": "Module Creator",
+            "description": "Create new feature modules from specification documents. Generates complete module structure with Models, DAOs, Handlers, Validators, ViewModels, Views, and documentation following CQRS patterns.",
+            "instructions": "file:_bmad/module-agents/agents/module-creator.md",
+            "conversationStarters": [
+                "Create Module_Inventory from specification document",
+                "Scaffold a new module for label printing",
+                "Generate Module_Reporting from specs"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:_bmad/module-agents/config/stack-winui3-csharp.yaml",
+                "file:_bmad/module-agents/diagrams/module-rebuild-diagrams.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "claude-sonnet-4.5",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file"
+                ]
+            }
+        },
+        {
+            "name": "module-rebuilder",
+            "displayName": "Module Rebuilder",
+            "description": "Modernize existing modules to CQRS architecture. Extracts workflows, migrates from Service pattern to MediatR handlers, implements FluentValidation, and achieves 100% module independence.",
+            "instructions": "file:_bmad/module-agents/agents/module-rebuilder.md",
+            "conversationStarters": [
+                "Rebuild Module_Receiving using CQRS patterns",
+                "Modernize Module_Routing to use MediatR",
+                "Migrate Module_Dunnage to FluentValidation"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:_bmad/module-agents/config/stack-winui3-csharp.yaml",
+                "file:_bmad/module-agents/diagrams/module-rebuild-diagrams.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "claude-sonnet-4.5",
+            "tools": {
+                "enabled": [
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "create_file",
+                    "list_code_usages"
+                ]
+            }
+        },
+        {
+            "name": "core-maintainer",
+            "displayName": "Core Maintainer",
+            "description": "Safely maintain and evolve Module_Core infrastructure. Performs impact analysis on all modules before changes, prevents breaking changes, and ensures backwards compatibility.",
+            "instructions": "file:_bmad/module-agents/agents/core-maintainer.md",
+            "conversationStarters": [
+                "Add a new method to IService_ErrorHandler",
+                "Update LoggingBehavior to include execution time",
+                "Analyze impact of removing Service_CSVWriter from Core"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:_bmad/module-agents/config/stack-winui3-csharp.yaml",
+                "file:_bmad/module-agents/diagrams/module-rebuild-diagrams.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "claude-sonnet-4.5",
+            "tools": {
+                "enabled": [
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        }
+    ]
+}
