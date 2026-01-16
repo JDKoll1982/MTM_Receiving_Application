@@ -283,4 +283,39 @@ public class Dao_VolvoShipment
             IsArchived = reader.GetBoolean(reader.GetOrdinal("is_archived"))
         };
     }
+
+    /// <summary>
+    /// Gets the next available shipment number (max + 1)
+    /// </summary>
+    public async Task<Model_Dao_Result<int>> GetNextShipmentNumberAsync()
+    {
+        try
+        {
+            // Query to get max shipment_number + 1
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string query = "SELECT COALESCE(MAX(shipment_number), 0) + 1 FROM volvo_label_data";
+            await using var command = new MySqlCommand(query, connection);
+
+            var result = await command.ExecuteScalarAsync();
+            var nextNumber = Convert.ToInt32(result);
+
+            return new Model_Dao_Result<int>
+            {
+                Success = true,
+                Data = nextNumber
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Model_Dao_Result<int>
+            {
+                Success = false,
+                ErrorMessage = $"Error getting next shipment number: {ex.Message}",
+                Severity = Enum_ErrorSeverity.Error,
+                Exception = ex
+            };
+        }
+    }
 }
