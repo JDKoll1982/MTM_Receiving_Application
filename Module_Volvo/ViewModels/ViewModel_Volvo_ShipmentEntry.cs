@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediatR;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -14,26 +15,32 @@ using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Requests;
+using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 
 /// <summary>
-/// ViewModel for Volvo shipment entry
+/// ViewModel for Volvo shipment entry (CQRS-enabled with MediatR)
 /// </summary>
 public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
-    private readonly IService_Volvo _volvoService;
+    private readonly IMediator _mediator;
+    private readonly IService_Volvo _volvoService; // Keep for legacy methods not yet migrated
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_Volvo_ShipmentEntry(
+        IMediator mediator,
         IService_Volvo volvoService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
         IService_UserSessionManager sessionManager) : base(errorHandler, logger)
     {
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _volvoService = volvoService;
         _windowService = windowService;
         _sessionManager = sessionManager;
@@ -89,14 +96,37 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     #region Initialization
 
+    /// <summary>
+    /// Initializes ViewModel - loads initial data and checks for pending shipment (CQRS)
+    /// </summary>
     public async Task InitializeAsync()
     {
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading Volvo parts catalog...";
+            StatusMessage = "Initializing shipment entry...";
 
-            // Load available parts
+            // Get initial shipment data (current date + next shipment number)
+            var initialDataQuery = new GetInitialShipmentDataQuery();
+            var initialDataResult = await _mediator.Send(initialDataQuery);
+
+            if (initialDataResult.IsSuccess && initialDataResult.Data != null)
+            {
+                ShipmentDate = initialDataResult.Data.CurrentDate;
+                ShipmentNumber = initialDataResult.Data.NextShipmentNumber;
+                await _logger.LogInfoAsync($"Initialized with shipment number: {ShipmentNumber}");
+            }
+            else
+            {
+                await _errorHandler.HandleErrorAsync(
+                    initialDataResult.ErrorMessage ?? "Failed to get initial shipment data",
+                    Enum_ErrorSeverity.Medium,
+                    null,
+                    true);
+            }
+
+            // Load available parts using legacy service (TODO: Migrate to GetAllVolvoPartsQuery)
+            StatusMessage = "Loading Volvo parts catalog...";
             var partsResult = await _volvoService.GetActivePartsAsync();
             if (partsResult.IsSuccess && partsResult.Data != null)
             {
@@ -116,13 +146,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     true);
             }
 
-            // Check for pending shipment
-            var pendingResult = await _volvoService.GetPendingShipmentAsync();
+            // Check for pending shipment using MediatR
+            var pendingQuery = new GetPendingShipmentQuery
+            {
+                UserName = Environment.UserName
+            };
+            var pendingResult = await _mediator.Send(pendingQuery);
+
             if (pendingResult.IsSuccess && pendingResult.Data != null)
             {
                 HasPendingShipment = true;
-                // Load pending shipment details if exists
-                await LoadPendingShipmentAsync();
+                await LoadPendingShipmentAsync(pendingResult.Data.Id);
             }
 
             StatusMessage = "Ready";
@@ -142,26 +176,37 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
     }
 
-    private async Task LoadPendingShipmentAsync()
+    /// <summary>
+    /// Loads pending shipment data (CQRS)
+    /// </summary>
+    private async Task LoadPendingShipmentAsync(int shipmentId)
     {
-        var pendingResult = await _volvoService.GetPendingShipmentAsync();
-        if (pendingResult.IsSuccess && pendingResult.Data != null)
+        try
         {
-            var shipment = pendingResult.Data;
-            ShipmentDate = new DateTimeOffset(shipment.ShipmentDate);
-            ShipmentNumber = shipment.ShipmentNumber;
-            Notes = shipment.Notes ?? string.Empty;
+            // Get shipment detail using MediatR
+            var detailQuery = new GetShipmentDetailQuery { ShipmentId = shipmentId };
+            var detailResult = await _mediator.Send(detailQuery);
 
-            // Load lines
-            var linesResult = await _volvoService.GetShipmentLinesAsync(shipment.Id);
-            if (linesResult.IsSuccess && linesResult.Data != null)
+            if (detailResult.IsSuccess && detailResult.Data != null)
             {
+                var shipment = detailResult.Data.Shipment;
+                ShipmentDate = new DateTimeOffset(shipment.ShipmentDate);
+                ShipmentNumber = shipment.ShipmentNumber;
+                Notes = shipment.Notes ?? string.Empty;
+
+                // Load lines
                 Parts.Clear();
-                foreach (var line in linesResult.Data)
+                foreach (var line in detailResult.Data.Lines)
                 {
                     Parts.Add(line);
                 }
+
+                await _logger.LogInfoAsync($"Loaded pending shipment #{shipment.ShipmentNumber} with {Parts.Count} parts");
             }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error loading pending shipment: {ex.Message}", ex);
         }
     }
 
@@ -170,12 +215,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     #region AutoSuggestBox Support
 
     /// <summary>
-    /// Updates the part suggestions list based on user's search text
-    /// Filters parts by case-insensitive substring match on part number
-    /// Optimized to reduce collection change notifications
+    /// Updates the part suggestions list based on user's search text (CQRS)
+    /// Uses SearchVolvoPartsQuery for autocomplete functionality
     /// </summary>
     /// <param name="queryText">Search text from AutoSuggestBox</param>
-    public void UpdatePartSuggestions(string queryText)
+    public async void UpdatePartSuggestions(string queryText)
     {
         if (string.IsNullOrWhiteSpace(queryText))
         {
@@ -184,24 +228,36 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
-        var suggestions = _allParts
-            .Where(p => p.PartNumber.Contains(queryText, StringComparison.OrdinalIgnoreCase))
-            .Take(20)
-            .ToList();
-
-        // Optimize: Use bulk replace to reduce collection change events
-        // Clear and add all at once instead of individual adds
-        var tempList = new List<Model_VolvoPart>(suggestions);
-        SuggestedParts.Clear();
-        foreach (var part in tempList)
+        try
         {
-            SuggestedParts.Add(part);
-        }
+            // Use MediatR query for search
+            var searchQuery = new SearchVolvoPartsQuery
+            {
+                SearchText = queryText,
+                MaxResults = 20
+            };
 
-        // Check if text matches a part exactly
-        var exactMatch = _allParts.FirstOrDefault(p =>
-            p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase));
-        SelectedPartToAdd = exactMatch;
+            var searchResult = await _mediator.Send(searchQuery);
+
+            if (searchResult.IsSuccess && searchResult.Data != null)
+            {
+                // Update suggestions collection
+                SuggestedParts.Clear();
+                foreach (var part in searchResult.Data)
+                {
+                    SuggestedParts.Add(part);
+                }
+
+                // Check if text matches a part exactly
+                var exactMatch = searchResult.Data.FirstOrDefault(p =>
+                    p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase));
+                SelectedPartToAdd = exactMatch;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error searching parts: {ex.Message}", ex);
+        }
     }
 
     /// <summary>
@@ -227,6 +283,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     #region Commands
 
+    /// <summary>
+    /// Adds part to shipment using AddPartToShipmentCommand (CQRS)
+    /// </summary>
     [RelayCommand(CanExecute = nameof(CanAddPart))]
     private async void AddPart()
     {
@@ -235,54 +294,86 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
-        // Input validation (1-99 range)
-        if (ReceivedSkidsToAdd < 1 || ReceivedSkidsToAdd > 99)
+        try
         {
-            await _errorHandler.HandleErrorAsync(
-                "Received skid count must be between 1 and 99",
-                Enum_ErrorSeverity.Low,
-                null,
-                true);
-            return;
+            // Input validation (1-99 range)
+            if (ReceivedSkidsToAdd < 1 || ReceivedSkidsToAdd > 99)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "Received skid count must be between 1 and 99",
+                    Enum_ErrorSeverity.Low,
+                    null,
+                    true);
+                return;
+            }
+
+            // Check for duplicate part number
+            if (Parts.Any(p => p.PartNumber.Equals(SelectedPartToAdd.PartNumber, StringComparison.OrdinalIgnoreCase)))
+            {
+                await _errorHandler.HandleErrorAsync(
+                    $"Part {SelectedPartToAdd.PartNumber} is already in this shipment. Remove it first if you want to update the quantity.",
+                    Enum_ErrorSeverity.Low,
+                    null,
+                    true);
+                return;
+            }
+
+            // Validate part using MediatR command (checks part exists in master data)
+            var addCommand = new AddPartToShipmentCommand
+            {
+                PartNumber = SelectedPartToAdd.PartNumber,
+                ReceivedSkidCount = ReceivedSkidsToAdd,
+                HasDiscrepancy = false
+            };
+
+            var validationResult = await _mediator.Send(addCommand);
+
+            if (!validationResult.IsSuccess)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    validationResult.ErrorMessage ?? "Failed to validate part",
+                    Enum_ErrorSeverity.Medium,
+                    null,
+                    true);
+                return;
+            }
+
+            // Validation passed - add to ObservableCollection
+            var calculatedPieces = SelectedPartToAdd.QuantityPerSkid * ReceivedSkidsToAdd;
+
+            var newLine = new Model_VolvoShipmentLine
+            {
+                PartNumber = SelectedPartToAdd.PartNumber,
+                QuantityPerSkid = SelectedPartToAdd.QuantityPerSkid,
+                ReceivedSkidCount = ReceivedSkidsToAdd,
+                CalculatedPieceCount = calculatedPieces,
+                HasDiscrepancy = false,
+                ExpectedSkidCount = null,
+                DiscrepancyNote = string.Empty
+            };
+
+            Parts.Add(newLine);
+
+            // Log user action
+            await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {ReceivedSkidsToAdd} skids ({calculatedPieces} pcs)");
+
+            // Reset input fields
+            SelectedPartToAdd = null;
+            ReceivedSkidsToAdd = 0;
+            PartSearchText = string.Empty;
+            SuggestedParts.Clear();
+
+            ValidateSaveEligibility();
         }
-
-        // Check for duplicate part number
-        if (Parts.Any(p => p.PartNumber.Equals(SelectedPartToAdd.PartNumber, StringComparison.OrdinalIgnoreCase)))
+        catch (Exception ex)
         {
+            await _logger.LogErrorAsync($"Error adding part: {ex.Message}", ex);
             await _errorHandler.HandleErrorAsync(
-                $"Part {SelectedPartToAdd.PartNumber} is already in this shipment. Remove it first if you want to update the quantity.",
-                Enum_ErrorSeverity.Low,
-                null,
+                "Error adding part to shipment",
+                Enum_ErrorSeverity.Medium,
+                ex,
                 true);
-            return;
         }
-
-        // Calculate pieces based on quantity per skid
-        var calculatedPieces = SelectedPartToAdd.QuantityPerSkid * ReceivedSkidsToAdd;
-
-        var newLine = new Model_VolvoShipmentLine
-        {
-            PartNumber = SelectedPartToAdd.PartNumber,
-            QuantityPerSkid = SelectedPartToAdd.QuantityPerSkid,
-            ReceivedSkidCount = ReceivedSkidsToAdd,
-            CalculatedPieceCount = calculatedPieces,
-            HasDiscrepancy = false,
-            ExpectedSkidCount = null,
-            DiscrepancyNote = string.Empty
-        };
-
-        Parts.Add(newLine);
-
-        // Log user action
-        await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {ReceivedSkidsToAdd} skids ({calculatedPieces} pcs)");
-
-        // Reset input fields
-        SelectedPartToAdd = null;
-        ReceivedSkidsToAdd = 0;
-        PartSearchText = string.Empty;
-        SuggestedParts.Clear();
-
-        ValidateSaveEligibility();
     }
 
     private bool CanAddPart()
@@ -290,17 +381,56 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         return SelectedPartToAdd != null && ReceivedSkidsToAdd >= 1 && ReceivedSkidsToAdd <= 99;
     }
 
+    /// <summary>
+    /// Removes part from shipment using RemovePartFromShipmentCommand (CQRS)
+    /// </summary>
     [RelayCommand]
     private async void RemovePart()
     {
-        if (SelectedPart != null)
+        if (SelectedPart == null)
         {
+            return;
+        }
+
+        try
+        {
+            // Validate removal using MediatR command
+            var removeCommand = new RemovePartFromShipmentCommand
+            {
+                PartNumber = SelectedPart.PartNumber
+            };
+
+            var validationResult = await _mediator.Send(removeCommand);
+
+            if (!validationResult.IsSuccess)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    validationResult.ErrorMessage ?? "Failed to validate part removal",
+                    Enum_ErrorSeverity.Low,
+                    null,
+                    true);
+                return;
+            }
+
+            // Validation passed - remove from ObservableCollection
             await _logger.LogInfoAsync($"User removed part {SelectedPart.PartNumber} from shipment");
             Parts.Remove(SelectedPart);
             ValidateSaveEligibility();
         }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error removing part: {ex.Message}", ex);
+            await _errorHandler.HandleErrorAsync(
+                "Error removing part from shipment",
+                Enum_ErrorSeverity.Medium,
+                ex,
+                true);
+        }
     }
 
+    /// <summary>
+    /// Generates CSV labels using GenerateLabelCsvQuery (CQRS)
+    /// </summary>
     [RelayCommand]
     private async Task GenerateLabelsAsync()
     {
@@ -324,8 +454,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 }
             }
 
-            // Get the pending shipment ID
-            var pendingResult = await _volvoService.GetPendingShipmentAsync();
+            // Get the pending shipment ID using MediatR
+            var pendingQuery = new GetPendingShipmentQuery
+            {
+                UserName = Environment.UserName
+            };
+            var pendingResult = await _mediator.Send(pendingQuery);
+
             if (!pendingResult.IsSuccess || pendingResult.Data == null)
             {
                 await _errorHandler.HandleErrorAsync(
@@ -336,13 +471,19 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return;
             }
 
-            // Generate CSV
-            var csvResult = await _volvoService.GenerateLabelCsvAsync(pendingResult.Data.Id);
+            // Generate CSV using MediatR query
+            var csvQuery = new GenerateLabelCsvQuery
+            {
+                ShipmentId = pendingResult.Data.Id
+            };
+            var csvResult = await _mediator.Send(csvQuery);
+
             if (csvResult.IsSuccess)
             {
                 SuccessMessage = $"Labels generated successfully!\nFile: {csvResult.Data}";
                 IsSuccessMessageVisible = true;
                 StatusMessage = "Labels generated";
+                await _logger.LogInfoAsync($"Labels generated for shipment ID: {pendingResult.Data.Id}, File: {csvResult.Data}");
             }
             else
             {
@@ -747,6 +888,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
     }
 
+    /// <summary>
+    /// Saves shipment as pending using SavePendingShipmentCommand (CQRS)
+    /// </summary>
     [RelayCommand]
     private async Task SaveAsPendingAsync()
     {
@@ -755,13 +899,44 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Saving shipment...";
 
-            var result = await SaveShipmentInternalAsync();
+            // Validate first
+            if (!ValidateShipment())
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "Please add at least one part before saving",
+                    Enum_ErrorSeverity.Low,
+                    null,
+                    true);
+                return;
+            }
+
+            // Build command with ShipmentLineDto list
+            var partsDto = Parts.Select(p => new ShipmentLineDto
+            {
+                PartNumber = p.PartNumber,
+                ReceivedSkidCount = p.ReceivedSkidCount,
+                ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
+                HasDiscrepancy = p.HasDiscrepancy,
+                DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
+            }).ToList();
+
+            var saveCommand = new SavePendingShipmentCommand
+            {
+                ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+                ShipmentNumber = ShipmentNumber,
+                Notes = Notes ?? string.Empty,
+                Parts = partsDto
+            };
+
+            var result = await _mediator.Send(saveCommand);
+
             if (result.IsSuccess)
             {
-                SuccessMessage = $"Shipment #{result.Data.ShipmentNumber} saved as pending PO";
+                SuccessMessage = $"Shipment #{ShipmentNumber} saved as pending";
                 IsSuccessMessageVisible = true;
                 HasPendingShipment = true;
                 StatusMessage = "Shipment saved";
+                await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} saved as pending (ID: {result.Data})");
             }
             else
             {
@@ -787,7 +962,57 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
     }
 
+    /// <summary>
+    /// Internal save method for backward compatibility (legacy code)
+    /// TODO: Migrate all callers to use SavePendingShipmentCommand directly
+    /// </summary>
     private async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentInternalAsync()
+    {
+        // Validate
+        if (!ValidateShipment())
+        {
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment validation failed");
+        }
+
+        // Use MediatR command for save
+        var partsDto = Parts.Select(p => new ShipmentLineDto
+        {
+            PartNumber = p.PartNumber,
+            ReceivedSkidCount = p.ReceivedSkidCount,
+            ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
+            HasDiscrepancy = p.HasDiscrepancy,
+            DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
+        }).ToList();
+
+        var saveCommand = new SavePendingShipmentCommand
+        {
+            ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+            ShipmentNumber = ShipmentNumber,
+            Notes = Notes ?? string.Empty,
+            Parts = partsDto
+        };
+
+        var result = await _mediator.Send(saveCommand);
+
+        if (result.IsSuccess)
+        {
+            return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+            {
+                Success = true,
+                Data = (result.Data, ShipmentNumber)
+            };
+        }
+        else
+        {
+            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(result.ErrorMessage);
+        }
+    }
+
+    /// <summary>
+    /// Legacy save method - replaced by SavePendingShipmentCommand
+    /// Keeping for reference during migration
+    /// </summary>
+    private async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentInternalAsync_Legacy()
     {
         // Validate
         if (!ValidateShipment())
