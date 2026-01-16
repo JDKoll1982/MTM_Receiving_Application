@@ -47,10 +47,10 @@
 - [X] T013 Verify FluentValidation 11.10.0 pipeline behavior registered in App.xaml.cs
 - [X] T014 [P] Verify LoggingBehavior, ValidationBehavior, AuditBehavior are active
 - [X] T015 [P] Install recommended NuGet packages: Mapster (for DTO mapping), Ardalis.GuardClauses, Bogus (test data), FsCheck.Xunit (property tests), Verify.Xunit (golden files)
-- [ ] T016 [P] Create shared DTO: ShipmentLineDto in Module_Volvo/Requests/ShipmentLineDto.cs
-- [ ] T017 [P] Create shared DTO: InitialShipmentData in Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
-- [ ] T018 [P] Create shared DTO: ShipmentDetail in Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs
-- [ ] T019 [P] Create shared DTO: ImportPartsCsvResult in Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs
+- [X] T016 [P] Create shared DTO: ShipmentLineDto in Module_Volvo/Requests/ShipmentLineDto.cs
+- [X] T017 [P] Create shared DTO: InitialShipmentData in Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
+- [X] T018 [P] Create shared DTO: ShipmentDetail in Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs
+- [X] T019 [P] Create shared DTO: ImportPartsCsvResult in Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs
 - [ ] T020 [P] Capture golden file: expected_label_basic.csv (create test shipment, save CSV to Module_Volvo.Tests/GoldenFiles/)
 - [ ] T021 [P] Capture golden file: expected_email_html.html (use Preview Email, save HTML to Module_Volvo.Tests/GoldenFiles/)
 - [ ] T022 [P] Capture golden file: expected_email_text.txt (use Preview Email, save plain text to Module_Volvo.Tests/GoldenFiles/)
