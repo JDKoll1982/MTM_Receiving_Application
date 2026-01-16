@@ -148,7 +148,7 @@ Users must be able to preview email notifications before completing shipments an
 ### Measurable Outcomes
 
 - **SC-001**: CQRS Migration Completeness - 100% of ViewModel operations use IMediator (verified via grep search for `IMediator` presence and absence of direct service calls in ViewModels)
-- **SC-002**: Handler Implementation - All 15+ identified operations have corresponding command/query handlers (verified by file count in Handlers/Commands/ and Handlers/Queries/)
+- **SC-002**: Handler Implementation - All 21 identified operations have corresponding command/query handlers (12 queries + 9 commands, verified by file count in Handlers/Commands/ and Handlers/Queries/)
 - **SC-003**: Validation Coverage - All command handlers have FluentValidation validators (verified by 1:1 mapping of commands to validators)
 - **SC-004**: Test Coverage - Minimum 80% code coverage for handlers, validators, and services (verified by test coverage report)
 - **SC-005**: Functional Parity - CSV label files are byte-for-byte identical to legacy implementation (verified by diff comparison using golden files)

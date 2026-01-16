@@ -7,7 +7,7 @@
 
 ## Summary
 
-Refactor Module_Volvo from legacy service-based architecture to CQRS pattern using MediatR, implementing 11 query handlers and 8 command handlers with FluentValidation validators. Migrate ViewModels from direct service injection to IMediator-based operations while maintaining 100% functional parity with existing CSV label generation, email formatting, and component explosion calculations. Preserve all existing stored procedures and database schema. Achieve constitutional compliance by eliminating Principle III violations (ViewModels calling services directly), Principle I violations (Binding vs x:Bind), and Principle V violations (missing FluentValidation).
+Refactor Module_Volvo from legacy service-based architecture to CQRS pattern using MediatR, implementing 12 query handlers and 9 command handlers with FluentValidation validators. Migrate ViewModels from direct service injection to IMediator-based operations while maintaining 100% functional parity with existing CSV label generation, email formatting, and component explosion calculations. Preserve all existing stored procedures and database schema. Achieve constitutional compliance by eliminating Principle III violations (ViewModels calling services directly), Principle I violations (Binding vs x:Bind), and Principle V violations (missing FluentValidation).
 
 ## Technical Context
 
@@ -19,7 +19,7 @@ Refactor Module_Volvo from legacy service-based architecture to CQRS pattern usi
 **Project Type**: Desktop application - modular structure with Module_Volvo as feature module  
 **Performance Goals**: <500ms for database operations (constitutional target), <10ms MediatR pipeline overhead, maintain or improve current shipment completion time  
 **Constraints**: Zero database schema changes, byte-for-byte CSV/email parity with legacy, 100% functional preservation, no UI redesign  
-**Scale/Scope**: 3 ViewModels (26+9+12 methods), 19 handlers (11 queries + 8 commands), 8 validators, 5 DAOs, 6 XAML views, ~3000 LOC in module
+**Scale/Scope**: 3 ViewModels (26+9+12 methods), 21 handlers (12 queries + 9 commands), 8 validators, 5 DAOs, 6 XAML views, ~3000 LOC in module
 
 ## Constitution Check
 
@@ -83,7 +83,7 @@ Refactor Module_Volvo from legacy service-based architecture to CQRS pattern usi
 
 ✅ **Phase 1 Design Complete** - All constitutional requirements addressed in design:
 
-- **Principle III (CQRS/MediatR)**: 19 handlers designed (11 queries + 8 commands) with IRequest<Model_Dao_Result<T>> pattern ✅
+- **Principle III (CQRS/MediatR)**: 21 handlers designed (12 queries + 9 commands) with IRequest<Model_Dao_Result<T>> pattern ✅
 - **Principle I (MVVM Purity)**: DataGridTemplateColumn pattern documented for `x:Bind` migration ✅
 - **Principle V (Validation)**: 8 FluentValidation validators designed (one per command) ✅
 
@@ -143,7 +143,7 @@ Module_Volvo/
 │   └── Dao_VolvoShipmentLine.cs
 │
 ├── Handlers/                                # [NEW] CQRS handlers
-│   ├── Commands/                            # [NEW] 8 command handlers
+│   ├── Commands/                            # [NEW] 9 command handlers
 │   │   ├── AddPartToShipmentCommand.cs
 │   │   ├── RemovePartFromShipmentCommand.cs
 │   │   ├── SavePendingShipmentCommand.cs
@@ -154,7 +154,7 @@ Module_Volvo/
 │   │   ├── DeactivateVolvoPartCommand.cs
 │   │   └── ImportPartsCsvCommand.cs
 │   │
-│   └── Queries/                             # [NEW] 11 query handlers
+│   └── Queries/                             # [NEW] 12 query handlers
 │       ├── GetInitialShipmentDataQuery.cs
 │       ├── GetPendingShipmentQuery.cs
 │       ├── SearchVolvoPartsQuery.cs
@@ -178,8 +178,8 @@ Module_Volvo/
 │   └── VolvoShipmentStatus.cs
 │
 ├── Requests/                                # [NEW] Command/Query DTOs
-│   ├── Commands/                            # [NEW] 8 command DTOs
-│   └── Queries/                             # [NEW] 11 query DTOs
+│   ├── Commands/                            # [NEW] 9 command DTOs
+│   └── Queries/                             # [NEW] 12 query DTOs
 │
 ├── Services/
 │   ├── Service_Volvo.cs                     # [TO DEPRECATE] Mark [Obsolete] after migration
