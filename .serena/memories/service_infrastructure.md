@@ -5,6 +5,7 @@
 ### Registration Types
 
 **Singleton Services** (Single instance for application lifetime):
+
 - Infrastructure services: `IService_ErrorHandler`, `IService_LoggingUtility`, `IService_Window`
 - Workflow services: `IService_ReceivingWorkflow`, `IService_DunnageWorkflow`, `IService_DunnageAdminWorkflow`, `IService_SettingsWorkflow`
 - Session management: `IService_SessionManager`, `IService_UserSessionManager`, `IService_Authentication`
@@ -13,6 +14,7 @@
 - All DAOs (registered with connection string factory pattern)
 
 **Transient Services** (New instance per request):
+
 - All ViewModels (every ViewModel is Transient)
 - Some data services: `IService_MySQL_ReceivingLine`, `IService_MySQL_Dunnage`, `IService_DunnageCSVWriter`
 - Pagination: `IService_Pagination`
@@ -21,13 +23,16 @@
 - All dialog Views
 
 ### DAO Registration Pattern
+
 All DAOs are registered as Singletons with connection string from `Helper_Database_Variables`:
+
 ```csharp
 services.AddSingleton(sp => new Dao_User(mySqlConnectionString));
 services.AddSingleton(sp => new Dao_DunnageType(mySqlConnectionString));
 ```
 
 ### Service with Dependencies Pattern
+
 ```csharp
 services.AddSingleton<IService_SessionManager>(sp => {
     var logger = sp.GetRequiredService<IService_LoggingUtility>();
@@ -38,14 +43,18 @@ services.AddSingleton<IService_SessionManager>(sp => {
 ## Service Interface Patterns
 
 ### Standard Service Methods
+
 Services typically provide:
+
 - Async operations (all methods suffixed with `Async`)
 - Return `Task` for void operations
 - Return `Task<Model_Dao_Result>` or `Task<Model_Dao_Result<T>>` for data operations
 - Accept cancellation tokens where appropriate
 
 ### Workflow Services Pattern
+
 Workflow services manage:
+
 - Current workflow step (enum)
 - Session state (current selection, entered data)
 - Step navigation (`GoToStep`, `GoNext`, `GoBack`)
@@ -54,7 +63,9 @@ Workflow services manage:
 - Events for step changes (`StepChanged` event)
 
 ### Error Handler Service Pattern
+
 `IService_ErrorHandler` provides:
+
 - `HandleErrorAsync()` - Logs and optionally shows dialog
 - `LogErrorAsync()` - Logs only
 - `ShowErrorDialogAsync()` - Shows user dialog
@@ -64,6 +75,7 @@ Workflow services manage:
 ## Service Consumption Patterns
 
 ### In ViewModels
+
 ```csharp
 public partial class MyViewModel : Shared_BaseViewModel
 {
@@ -80,6 +92,7 @@ public partial class MyViewModel : Shared_BaseViewModel
 ```
 
 ### In Code-Behind (Views/Dialogs)
+
 ```csharp
 public MyDialog()
 {
@@ -91,11 +104,13 @@ private var service = App.GetService<IMyService>();
 ```
 
 ### Service Retrieval
+
 `App.GetService<T>()` static method retrieves any registered service.
 
 ## BaseViewModel Pattern
 
 All ViewModels inherit from `Shared_BaseViewModel` which provides:
+
 - `_errorHandler` - protected readonly IService_ErrorHandler
 - `_logger` - protected readonly IService_LoggingUtility
 - `IsBusy` - Observable boolean for loading states
@@ -113,11 +128,13 @@ Constructor must call `base(errorHandler, logger)`.
 **Dialog ViewModel**: `ViewModels/Shared/Shared_HelpDialogViewModel.cs` (Transient)
 
 **Dependencies**:
+
 - `IService_Window` - For XamlRoot when displaying dialogs
 - `IService_LoggingUtility` - For logging help display events
 - `IService_Dispatcher` - For UI thread dispatching
 
 **Key Methods**:
+
 - `ShowHelpAsync(string helpKey)` - Display help dialog
 - `ShowContextualHelpAsync(Enum_DunnageWorkflowStep step)` - Workflow-specific help
 - `ShowContextualHelpAsync(Enum_ReceivingWorkflowStep step)` - Workflow-specific help
@@ -128,6 +145,7 @@ Constructor must call `base(errorHandler, logger)`.
 - `SetDismissedAsync(string helpKey, bool isDismissed)` - Mark tip as dismissed
 
 **Legacy Methods** (backward compatibility):
+
 - `GetTooltip(string elementName)` - Returns tooltip text
 - `GetPlaceholder(string fieldName)` - Returns placeholder text
 - `GetTip(string viewName)` - Returns tip text
@@ -136,12 +154,14 @@ Constructor must call `base(errorHandler, logger)`.
 - `GetReceivingWorkflowHelp(Enum_ReceivingWorkflowStep step)` - Returns workflow help text
 
 **Content Organization**:
+
 - All content loaded at service initialization into in-memory dictionary cache
 - Hierarchical key structure (e.g., "Dunnage.PartSelection", "Tooltip.Button.Save")
 - Categories: "Dunnage Workflow", "Receiving Workflow", "Admin"
 - 100+ help entries covering tooltips, placeholders, tips, and contextual help
 
 **Usage in ViewModels**:
+
 ```csharp
 public partial class MyViewModel : BaseViewModel
 {
@@ -167,6 +187,7 @@ public partial class MyViewModel : BaseViewModel
 ```
 
 **Usage in XAML**:
+
 ```xml
 <!-- Direct binding for static content -->
 <TextBox PlaceholderText="{x:Bind ViewModel.HelpService.GetPlaceholder('Field.PONumber'), Mode=OneTime}"/>
@@ -176,6 +197,7 @@ public partial class MyViewModel : BaseViewModel
 ```
 
 **Features**:
+
 - In-memory content cache (O(1) lookups)
 - Related topics navigation
 - Copy content to clipboard

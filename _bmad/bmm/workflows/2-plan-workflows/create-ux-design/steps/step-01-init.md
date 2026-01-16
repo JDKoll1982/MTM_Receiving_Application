@@ -1,6 +1,6 @@
 # Step 1: UX Design Workflow Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -12,25 +12,25 @@
 - 🚪 DETECT existing workflow state and handle continuation properly
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Input document discovery happens in this step
 
-## YOUR TASK:
+## YOUR TASK
 
 Initialize the UX design workflow by detecting continuation state and setting up the design specification document.
 
-## INITIALIZATION SEQUENCE:
+## INITIALIZATION SEQUENCE
 
 ### 1. Check for Existing Workflow
 
@@ -55,6 +55,7 @@ If no document exists or no `stepsCompleted` in frontmatter:
 #### A. Input Document Discovery
 
 Discover and load context documents using smart discovery. Documents can be in the following locations:
+
 - {planning_artifacts}/**
 - {output_folder}/**
 - {product_knowledge}/**
@@ -63,6 +64,7 @@ Discover and load context documents using smart discovery. Documents can be in t
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
 Try to discover the following:
+
 - Product Brief (`*brief*.md`)
 - Research Documents (`*prd*.md`)
 - Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
@@ -108,13 +110,13 @@ Do you have any other documents you'd like me to include, or shall we continue t
 
 [C] Continue to UX discovery"
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects [C] to continue, ensure the file `{planning_artifacts}/ux-design-specification.md` has been created and saved, and then load `./step-02-discovery.md` to begin the UX discovery phase.
 
 Remember: Do NOT proceed to step-02 until output file has been updated and user explicitly selects [C] to continue!
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing workflow detected and handed off to step-01b correctly
 ✅ Fresh workflow initialized with template and frontmatter
@@ -122,7 +124,7 @@ Remember: Do NOT proceed to step-02 until output file has been updated and user 
 ✅ All discovered files tracked in frontmatter `inputDocuments`
 ✅ User confirmed document setup and can proceed
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Proceeding with fresh initialization when existing workflow exists
 ❌ Not updating frontmatter with discovered input documents

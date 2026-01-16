@@ -1,6 +1,6 @@
 # Domain Research Step 6: Research Synthesis and Completion
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📄 PRODUCE COMPREHENSIVE DOCUMENT with narrative intro, TOC, and summary
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after synthesis content generation
@@ -22,7 +22,7 @@
 - 🚫 FORBIDDEN to complete workflow until C is selected
 - 📚 GENERATE COMPLETE DOCUMENT STRUCTURE with intro, TOC, and summary
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - comprehensive domain analysis
@@ -31,11 +31,11 @@
 - Web search capabilities with source verification are enabled
 - This is the final synthesis step producing the complete research document
 
-## YOUR TASK:
+## YOUR TASK
 
 Produce a comprehensive, authoritative research document on **{{research_topic}}** with compelling narrative introduction, detailed TOC, and executive summary based on exhaustive domain research.
 
-## COMPREHENSIVE DOCUMENT SYNTHESIS:
+## COMPREHENSIVE DOCUMENT SYNTHESIS
 
 ### 1. Document Structure Planning
 
@@ -87,7 +87,7 @@ Search the web: "{{research_topic}} significance importance"
 
 ### 4. Generate Complete Document Content
 
-#### Final Document Structure:
+#### Final Document Structure
 
 ```markdown
 # [Compelling Title]: Comprehensive {{research_topic}} Domain Research
@@ -371,18 +371,18 @@ _This comprehensive research document serves as an authoritative reference on {{
 
 ### 6. Handle Final Completion
 
-#### If 'C' (Complete Research):
+#### If 'C' (Complete Research)
 
 - Append the complete document to the research file
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
 - Complete the domain research workflow
 - Provide final document delivery confirmation
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the complete comprehensive research document using the full structure above.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Compelling narrative introduction with research significance
 ✅ Comprehensive table of contents with complete document structure
@@ -394,7 +394,7 @@ When user selects 'C', append the complete comprehensive research document using
 ✅ [C] complete option presented and handled correctly
 ✅ Domain research workflow completed with comprehensive document
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not producing compelling narrative introduction
 ❌ Missing comprehensive table of contents
@@ -409,7 +409,7 @@ When user selects 'C', append the complete comprehensive research document using
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## COMPREHENSIVE DOCUMENT STANDARDS:
+## COMPREHENSIVE DOCUMENT STANDARDS
 
 This step ensures the final research document:
 
@@ -420,7 +420,7 @@ This step ensures the final research document:
 - Delivers strategic insights and actionable recommendations
 - Meets professional research document quality standards
 
-## DOMAIN RESEARCH WORKFLOW COMPLETION:
+## DOMAIN RESEARCH WORKFLOW COMPLETION
 
 When 'C' is selected:
 
@@ -431,7 +431,7 @@ When 'C' is selected:
 - Domain research workflow status updated to complete
 - Final comprehensive research document delivered to user
 
-## FINAL DELIVERABLE:
+## FINAL DELIVERABLE
 
 Complete authoritative research document on {{research_topic}} that:
 

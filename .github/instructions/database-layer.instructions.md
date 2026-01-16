@@ -135,6 +135,7 @@ DELIMITER ;
 ## MySQL 5.7.24 Constraints
 
 **FORBIDDEN** (MySQL 8.0+ features not available):
+
 - ❌ JSON functions (`JSON_EXTRACT`, `JSON_TABLE`)
 - ❌ Common Table Expressions (CTEs / `WITH` clause)
 - ❌ Window functions (`ROW_NUMBER()`, `RANK()`)
@@ -142,6 +143,7 @@ DELIMITER ;
 - ❌ Recursive queries
 
 **USE INSTEAD**:
+
 - Temporary tables for complex queries
 - Stored procedure variables
 - Subqueries
@@ -152,10 +154,11 @@ DELIMITER ;
 ## Parameter Naming Convention
 
 **C# (Dictionary Key)**: `"PartID"` (NO prefix)
-**SQL (Stored Procedure)**: `IN p_PartID` (WITH p_ prefix)
+**SQL (Stored Procedure)**: `IN p_PartID` (WITH p_prefix)
 **Automatic**: Helper_Database_StoredProcedure adds `p_` prefix automatically
 
 **Example**:
+
 ```csharp
 // C# Code
 var parameters = new Dictionary<string, object>
@@ -178,6 +181,7 @@ CREATE PROCEDURE `example_SP`(
 ## Error Handling Pattern
 
 ### DAO Layer (Returns Model_Dao_Result)
+
 ```csharp
 catch (MySqlException ex)
 {
@@ -186,6 +190,7 @@ catch (MySqlException ex)
 ```
 
 ### ViewModel Layer (Handles Model_Dao_Result)
+
 ```csharp
 var result = await Dao_ReceivingLine.InsertReceivingLineAsync(line);
 
@@ -236,6 +241,7 @@ public async Task InsertReceivingLineAsync_ValidData_ReturnsSuccess()
 ## Common Mistakes to Avoid
 
 ❌ **Throwing exceptions from DAO methods**
+
 ```csharp
 // WRONG
 public static async Task<int> InsertAsync(Model_ReceivingLine line)
@@ -246,6 +252,7 @@ public static async Task<int> InsertAsync(Model_ReceivingLine line)
 ```
 
 ✅ **Return Model_Dao_Result instead**
+
 ```csharp
 // CORRECT
 public static async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
@@ -256,6 +263,7 @@ public static async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine 
 ```
 
 ❌ **Direct MySqlConnection usage**
+
 ```csharp
 // WRONG
 using (var conn = new MySqlConnection(connectionString))
@@ -265,6 +273,7 @@ using (var conn = new MySqlConnection(connectionString))
 ```
 
 ✅ **Use Helper_Database_StoredProcedure**
+
 ```csharp
 // CORRECT
 await Helper_Database_StoredProcedure.ExecuteNonQueryWithStatusAsync(...);
@@ -282,6 +291,7 @@ await Helper_Database_StoredProcedure.ExecuteNonQueryWithStatusAsync(...);
 | SELECT (scalar) | `ExecuteScalarWithStatusAsync` | `Model_Dao_Result<object>` |
 
 **Always**:
+
 - Check `result.IsSuccess` before accessing `result.Data`
 - Log errors with `_logger.LogApplicationError(result.Exception)`
 - Use `Service_ErrorHandler` to display user-friendly errors

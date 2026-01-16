@@ -12,6 +12,6 @@
 
 {{TIL}}
 
-## Etc...
+## Etc
 
 {{Additional Thoughts, Feelings, other random content to append for user}}

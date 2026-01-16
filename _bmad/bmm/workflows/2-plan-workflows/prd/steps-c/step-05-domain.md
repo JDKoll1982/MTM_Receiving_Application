@@ -16,13 +16,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 5 of 13** - Next: Innovation Focus
 
-## STEP GOAL:
+## STEP GOAL
 
 For complex domains only that have a mapping in {domainComplexityCSV}, explore domain-specific constraints, compliance requirements, and technical considerations that shape the product.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -31,20 +31,20 @@ For complex domains only that have a mapping in {domainComplexityCSV}, explore d
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused PM facilitator collaborating with an expert peer
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 This step is OPTIONAL - only needed for complex domains
 - 🚫 SKIP if domain complexity is "low" from step-02
 - 💬 APPROACH: Natural conversation to discover domain-specific needs
 - 🎯 Focus on constraints, compliance, and domain patterns
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Check domain complexity from step-02 classification first
 - ⚠️ If complexity is "low", offer to skip this step
@@ -53,22 +53,23 @@ For complex domains only that have a mapping in {domainComplexityCSV}, explore d
 - 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Domain classification from step-02 is available
 - If complexity is low, this step may be skipped
 - Domain CSV data provides complexity reference
 - Focus on domain-specific constraints, not general requirements
 
-## YOUR TASK:
+## YOUR TASK
 
 For complex domains, explore what makes this domain special:
+
 - **Compliance requirements** - regulations, standards, certifications
 - **Technical constraints** - security, privacy, integration requirements
 - **Domain patterns** - common patterns, best practices, anti-patterns
 - **Risks and mitigations** - what could go wrong, how to prevent it
 
-## DOMAIN DISCOVERY SEQUENCE:
+## DOMAIN DISCOVERY SEQUENCE
 
 ### 1. Check Domain Complexity
 
@@ -81,6 +82,7 @@ For complex domains, explore what makes this domain special:
 
 Offer to skip:
 "The domain complexity from our discovery is low. We may not need deep domain-specific requirements. Would you like to:
+
 - [C] Skip this step and move to Innovation
 - [D] Do domain exploration anyway"
 
@@ -95,6 +97,7 @@ Proceed with domain exploration.
 "Your task: Lookup data in {domainComplexityCSV}
 
 **Search criteria:**
+
 - Find row where domain matches {{domainFromStep02}}
 
 **Return format:**
@@ -104,6 +107,7 @@ domain, complexity, typical_concerns, compliance_requirements
 **Do NOT return the entire CSV - only the matching row.**"
 
 **Graceful degradation (if Task tool unavailable):**
+
 - Load the CSV file directly
 - Find the matching row manually
 - Extract required fields
@@ -114,12 +118,14 @@ domain, complexity, typical_concerns, compliance_requirements
 **Start with what you know:**
 
 Acknowledge the domain and explore what makes it complex:
+
 - What regulations apply? (HIPAA, PCI-DSS, GDPR, SOX, etc.)
 - What standards matter? (ISO, NIST, domain-specific standards)
 - What certifications are needed? (security, privacy, domain-specific)
 - What integrations are required? (EMR systems, payment processors, etc.)
 
 **Explore technical constraints:**
+
 - Security requirements (encryption, audit logs, access control)
 - Privacy requirements (data handling, consent, retention)
 - Performance requirements (real-time, batch, latency)
@@ -153,13 +159,15 @@ Acknowledge the domain and explore what makes it complex:
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue - Save and Proceed to Innovation (Step 6 of 13)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
+
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Save content to {outputFile}, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#n-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
@@ -184,7 +192,7 @@ ONLY WHEN [C continue option] is selected and [content saved or skipped], will y
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Domain complexity checked before proceeding
 - Offered to skip if complexity is low
@@ -194,7 +202,7 @@ ONLY WHEN [C continue option] is selected and [content saved or skipped], will y
 - User validated completeness
 - Content properly saved (or step skipped) when C selected
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking domain complexity first
 - Not offering to skip for low-complexity domains

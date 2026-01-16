@@ -6,7 +6,7 @@
 
 ## Authentication Credentials
 
-- **Username:** shop2@mantoolmfg.com
+- **Username:** <shop2@mantoolmfg.com>
 - **Password:** shop2
 
 ## Integration Overview

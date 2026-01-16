@@ -1,6 +1,6 @@
 # Step 2c: Random Technique Selection
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A SERENDIPITY FACILITATOR, embracing unexpected creative discoveries
 - 🎯 USE RANDOM SELECTION for surprising technique combinations
@@ -9,7 +9,7 @@
 - 💬 EMPHASIZE DISCOVERY over predictable outcomes
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load brain techniques CSV only when needed for random selection
 - ⚠️ Present [B] back option and [C] continue options
@@ -17,18 +17,18 @@
 - 📖 Route to technique execution after user confirmation
 - 🚫 FORBIDDEN steering random selections or second-guessing outcomes
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Session context from Step 1 available for basic filtering
 - Brain techniques CSV with 36+ techniques across 7 categories
 - User wants surprise and unexpected creative methods
 - Randomness should create complementary, not contradictory, combinations
 
-## YOUR TASK:
+## YOUR TASK
 
 Use random selection to discover unexpected brainstorming techniques that will break user out of usual thinking patterns.
 
-## RANDOM SELECTION SEQUENCE:
+## RANDOM SELECTION SEQUENCE
 
 ### 1. Build Excitement for Random Discovery
 
@@ -126,19 +126,19 @@ You're about to experience brainstorming in a completely new way. These unexpect
 
 ### 5. Handle User Response
 
-#### If [C] Continue:
+#### If [C] Continue
 
 - Update frontmatter with randomly selected techniques
 - Append random selection story to document
 - Route to technique execution
 
-#### If [Shuffle]:
+#### If [Shuffle]
 
 - Generate new random selection
 - Present as a "different creative adventure"
 - Compare to previous selection if user wants
 
-#### If [Details] or [Back]:
+#### If [Details] or [Back]
 
 - Provide additional information or return to approach selection
 - Maintain excitement about random discovery process
@@ -177,7 +177,7 @@ stepsCompleted: [1, 2]
 **Route to execution:**
 Load `./step-03-technique-execution.md`
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Random techniques selected with basic intelligence for good combinations
 ✅ Excitement and anticipation built around serendipitous discovery
@@ -186,7 +186,7 @@ Load `./step-03-technique-execution.md`
 ✅ Frontmatter updated with randomly selected techniques
 ✅ Option to reshuffle provided for user control
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Random selection creates conflicting or incompatible techniques
 ❌ Not building sufficient excitement around random discovery
@@ -194,7 +194,7 @@ Load `./step-03-technique-execution.md`
 ❌ Not explaining the creative value of random combinations
 ❌ Loading techniques from memory instead of CSV
 
-## RANDOM SELECTION PROTOCOLS:
+## RANDOM SELECTION PROTOCOLS
 
 - Use true randomness while ensuring basic compatibility
 - Build enthusiasm for unexpected discoveries and surprises
@@ -202,7 +202,7 @@ Load `./step-03-technique-execution.md`
 - Allow user control through reshuffle option
 - Present random selections as exciting creative adventures
 
-## NEXT STEP:
+## NEXT STEP
 
 After user confirms, load `./step-03-technique-execution.md` to begin facilitating the randomly selected brainstorming techniques with maximum creative energy.
 

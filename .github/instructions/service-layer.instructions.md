@@ -7,7 +7,9 @@
 ## Service Architecture Principles
 
 ### Single Responsibility
+
 Each service class should have ONE clear purpose:
+
 - `LoggingUtility`: File-based application logging
 - `Service_ErrorHandler`: Centralized error handling and user notifications
 - Future services: Focus on specific business capabilities
@@ -15,11 +17,13 @@ Each service class should have ONE clear purpose:
 ### Dependency Injection
 
 All services MUST:
+
 - Accept dependencies via constructor injection
 - Define corresponding interfaces in `Contracts/Services/`
 - Support testability through interface abstraction
 
 Example:
+
 ```csharp
 public class Service_ErrorHandler : IService_ErrorHandler
 {
@@ -37,6 +41,7 @@ public class Service_ErrorHandler : IService_ErrorHandler
 ### Severity Levels
 
 Use appropriate `Enum_ErrorSeverity` levels:
+
 - **Info**: Informational messages, no action required
 - **Warning**: Potential issues, operation continues
 - **Error**: Operation failed, application continues
@@ -46,6 +51,7 @@ Use appropriate `Enum_ErrorSeverity` levels:
 ### Error Message Formatting
 
 Error messages MUST be:
+
 - **User-friendly**: Avoid technical jargon for UI dialogs
 - **Descriptive**: Include context about what failed
 - **Actionable**: Suggest what user can do (when applicable)
@@ -74,11 +80,13 @@ catch (SpecificException ex)
 ### When to Show Dialogs
 
 **Show Dialog (`showDialog: true`)**:
+
 - User-initiated actions that fail
 - Critical errors affecting user workflow
 - Validation errors requiring user correction
 
 **Don't Show Dialog (`showDialog: false`)**:
+
 - Background operations
 - Automatic retries
 - DAO/database layer errors (handled at higher level)
@@ -89,6 +97,7 @@ catch (SpecificException ex)
 ### Log Levels
 
 Match logging to severity:
+
 ```csharp
 _loggingService.LogInfo("Operation completed successfully");
 _loggingService.LogWarning("Deprecated method called", context: "UserService.OldMethod");
@@ -100,6 +109,7 @@ _loggingService.LogFatal("Out of memory", exception: ex);
 ### Contextual Logging
 
 Always provide context:
+
 ```csharp
 _loggingService.LogError(
     message: "Failed to insert receiving line",
@@ -111,6 +121,7 @@ _loggingService.LogError(
 ### Performance Logging
 
 Log performance metrics for slow operations:
+
 ```csharp
 var stopwatch = Stopwatch.StartNew();
 // ... operation ...
@@ -130,6 +141,7 @@ if (stopwatch.ElapsedMilliseconds > 1000) // Threshold: 1 second
 ### Manual Registration (Current Pattern)
 
 Services are instantiated and injected manually:
+
 ```csharp
 var loggingService = new LoggingUtility();
 var errorHandler = new Service_ErrorHandler(loggingService);
@@ -143,6 +155,7 @@ Dao_RoutingLabel.SetErrorHandler(errorHandler);
 ### Future: DI Container (Phase 2)
 
 When implementing MVVM with Microsoft.Extensions.DependencyInjection:
+
 ```csharp
 services.AddSingleton<ILoggingService, LoggingUtility>();
 services.AddSingleton<IService_ErrorHandler, Service_ErrorHandler>();
@@ -159,11 +172,13 @@ Services used across threads MUST be thread-safe:
 ## Testing Guidelines
 
 ### Unit Tests
+
 - Mock dependencies via interfaces
 - Test each severity level
 - Verify error messages and logging
 
 ### Integration Tests
+
 - Test actual file I/O (LoggingUtility)
 - Verify dialog display (Service_ErrorHandler)
 - Test end-to-end error flows
@@ -210,6 +225,7 @@ if (errors.Any())
 ## Examples
 
 See existing implementations:
+
 - `Services/Database/LoggingUtility.cs`
 - `Services/Database/Service_ErrorHandler.cs`
 - `Contracts/Services/ILoggingService.cs`

@@ -15,7 +15,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 4 of 11** - Next: Domain Requirements
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -27,7 +27,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 CRITICAL: No journey = no functional requirements = product doesn't exist
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating journey content
@@ -35,18 +35,18 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Success criteria and scope already defined
 - Input documents from step-01 are available (product briefs with user personas)
 - Every human interaction with the system needs a journey
 
-## YOUR TASK:
+## YOUR TASK
 
 Create compelling narrative user journeys that leverage existing personas from product briefs and identify additional user types needed for comprehensive coverage.
 
-## JOURNEY MAPPING SEQUENCE:
+## JOURNEY MAPPING SEQUENCE
 
 ### 1. Leverage Existing Users & Identify Additional Types
 
@@ -55,6 +55,7 @@ Analyze product brief, research, and brainstorming documents for user personas a
 
 **If User Personas Exist in Input Documents:**
 Guide user to build on existing personas:
+
 - Acknowledge personas found in their product brief
 - Extract key persona details and backstories
 - Leverage existing insights about their needs
@@ -64,6 +65,7 @@ Guide user to build on existing personas:
 
 **If No Personas in Input Documents:**
 Start with comprehensive user type discovery:
+
 - Guide exploration of ALL people who interact with the system
 - Consider beyond primary users: admins, moderators, support staff, API consumers, internal ops
 - Ask what user types should be mapped for this specific product
@@ -73,16 +75,18 @@ Start with comprehensive user type discovery:
 
 For each user type, create compelling narrative journeys that tell their story:
 
-#### Narrative Journey Creation Process:
+#### Narrative Journey Creation Process
 
 **If Using Existing Persona from Input Documents:**
 Guide narrative journey creation:
+
 - Use persona's existing backstory from brief
 - Explore how the product changes their life/situation
 - Craft journey narrative: where do we meet them, how does product help them write their next chapter?
 
 **If Creating New Persona:**
 Guide persona creation with story framework:
+
 - Name: realistic name and personality
 - Situation: What's happening in their life/work that creates need?
 - Goal: What do they desperately want to achieve?
@@ -92,6 +96,7 @@ Guide persona creation with story framework:
 **Story-Based Journey Mapping:**
 
 Guide narrative journey creation using story structure:
+
 - **Opening Scene**: Where/how do we meet them? What's their current pain?
 - **Rising Action**: What steps do they take? What do they discover?
 - **Climax**: Critical moment where product delivers real value
@@ -102,6 +107,7 @@ Encourage narrative format with specific user details, emotional journey, and cl
 ### 3. Guide Journey Exploration
 
 For each journey, facilitate detailed exploration:
+
 - What happens at each step specifically?
 - What could go wrong? What's the recovery path?
 - What information do they need to see/hear?
@@ -111,6 +117,7 @@ For each journey, facilitate detailed exploration:
 ### 4. Connect Journeys to Requirements
 
 After each journey, explicitly state:
+
 - This journey reveals requirements for specific capability areas
 - Help user see how different journeys create different feature sets
 - Connect journey needs to concrete capabilities (onboarding, dashboards, notifications, etc.)
@@ -130,7 +137,7 @@ Ask if additional journeys are needed to cover uncovered user types
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -147,6 +154,7 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present MENU OPTIONS
 
 Present the user journey content for review, then display menu:
+
 - Show the mapped user journeys (using structure from section 6)
 - Highlight how each journey reveals different capabilities
 - Ask if they'd like to refine further, get other perspectives, or proceed
@@ -154,22 +162,24 @@ Present the user journey content for review, then display menu:
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Domain Requirements (Step 5 of 11)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
+
 - IF A: Execute {advancedElicitationTask} with the current journey content, process the enhanced journey insights that come back, ask user "Accept these improvements to the user journeys? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF P: Execute {partyModeWorkflow} with the current journeys, process the collaborative journey improvements and additions, ask user "Accept these changes to the user journeys? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing personas from product briefs leveraged when available
 ✅ All user types identified (not just primary users)
@@ -180,7 +190,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Ignoring existing personas from product briefs
 ❌ Only mapping primary user journeys and missing secondary users
@@ -196,7 +206,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## JOURNEY TYPES TO ENSURE:
+## JOURNEY TYPES TO ENSURE
 
 **Minimum Coverage:**
 
@@ -206,7 +216,7 @@ When user selects 'C', append the content directly to the document using the str
 4. **Support/Troubleshooting**: Help, investigation, issue resolution
 5. **API/Integration** (if applicable): Developer/technical user journey
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-05-domain.md`.
 

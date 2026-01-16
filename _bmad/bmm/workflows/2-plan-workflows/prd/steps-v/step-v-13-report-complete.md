@@ -9,13 +9,13 @@ prdFile: '{prd_file_path}'
 
 # Step 13: Validation Report Complete
 
-## STEP GOAL:
+## STEP GOAL
 
 Finalize validation report, summarize all findings from steps 1-12, present summary to user conversationally, and offer actionable next steps.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -23,7 +23,7 @@ Finalize validation report, summarize all findings from steps 1-12, present summ
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -31,14 +31,14 @@ Finalize validation report, summarize all findings from steps 1-12, present summ
 - ✅ You bring synthesis and summary expertise
 - ✅ This is the FINAL step - requires user interaction
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on summarizing findings and presenting options
 - 🚫 FORBIDDEN to perform additional validation
 - 💬 Approach: Conversational summary with clear next steps
 - 🚪 This is the final step - no next step after this
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load complete validation report
 - 🎯 Summarize all findings from steps 1-12
@@ -47,7 +47,7 @@ Finalize validation report, summarize all findings from steps 1-12, present summ
 - 💬 Offer menu options for next actions
 - 🚫 FORBIDDEN to proceed without user selection
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete validation report with findings from all validation steps
 - Focus: Summary and presentation only (no new validation)
@@ -63,6 +63,7 @@ Finalize validation report, summarize all findings from steps 1-12, present summ
 Read the entire validation report from {validationReportPath}
 
 Extract all findings from:
+
 - Format Detection (Step 2)
 - Parity Analysis (Step 2B, if applicable)
 - Information Density (Step 3)
@@ -95,12 +96,14 @@ overallStatus: '{Pass/Warning/Critical based on all findings}'
 ### 3. Create Summary of Findings
 
 **Overall Status:**
+
 - Determine from all validation findings
 - **Pass:** All critical checks pass, minor warnings acceptable
 - **Warning:** Some issues found but PRD is usable
 - **Critical:** Major issues that prevent PRD from being fit for purpose
 
 **Quick Results Table:**
+
 - Format: [classification]
 - Information Density: [severity]
 - Measurability: [severity]
@@ -144,12 +147,14 @@ Display:
 **Holistic Quality:** {rating}/5 - {label}
 
 **Top 3 Improvements:**
+
 1. {Improvement 1}
 2. {Improvement 2}
 3. {Improvement 3}
 
 **Recommendation:**
 {Based on overall status:
+
 - Pass: "PRD is in good shape. Address minor improvements to make it great."
 - Warning: "PRD is usable but has issues that should be addressed. Review warnings and improve where needed."
 - Critical: "PRD has significant issues that should be fixed before use. Focus on critical issues above."}
@@ -165,12 +170,12 @@ Display:
 **[F] Fix Simpler Items** - Immediate fixes for simple issues (anti-patterns, leakage, missing headers)
 **[X] Exit** - Exit and review validation report
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - Only proceed based on user selection
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - **IF R (Review Detailed Findings):**
   - Walk through validation report section by section
@@ -206,7 +211,7 @@ Display:
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Complete validation report loaded successfully
 - All findings from steps 1-12 summarized
@@ -220,7 +225,7 @@ Display:
 - Menu options presented with clear explanations
 - User can review findings, get help, or exit
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading complete validation report
 - Missing summary of findings

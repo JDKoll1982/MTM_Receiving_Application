@@ -109,7 +109,7 @@ For example:
 
 Based on the user's initial topic, explore and refine the research scope:
 
-#### Topic Clarification Questions:
+#### Topic Clarification Questions
 
 1. **Core Topic**: "What exactly about [topic] are you most interested in?"
 2. **Research Goals**: "What do you hope to achieve with this research?"
@@ -117,7 +117,7 @@ Based on the user's initial topic, explore and refine the research scope:
 4. **Timeline**: "Are you looking at current state, historical context, or future trends?"
 5. **Application**: "How will you use this research? (product development, strategy, academic, etc.)"
 
-#### Context Building:
+#### Context Building
 
 - **Initial Input**: User provides topic or research interest
 - **Collaborative Refinement**: Work together to clarify scope and objectives
@@ -147,21 +147,21 @@ After understanding the research topic and goals, identify the most appropriate 
 
 <critical>Based on user selection, route to appropriate sub-workflow with the discovered topic using the following IF block sets of instructions. YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`</critical>
 
-#### If Market Research:
+#### If Market Research
 
 - Set `research_type = "market"`
 - Set `research_topic = [discovered topic from discussion]`
 - Create the starter output file: `{planning_artifacts}/research/market-{{research_topic}}-research-{{date}}.md` with exact copy of the ./research.template.md contents
 - Load: `./market-steps/step-01-init.md` with topic context
 
-#### If Domain Research:
+#### If Domain Research
 
 - Set `research_type = "domain"`
 - Set `research_topic = [discovered topic from discussion]`
 - Create the starter output file: `{planning_artifacts}/research/domain-{{research_topic}}-research-{{date}}.md` with exact copy of the ./research.template.md contents
 - Load: `./domain-steps/step-01-init.md` with topic context
 
-#### If Technical Research:
+#### If Technical Research
 
 - Set `research_type = "technical"`
 - Set `research_topic = [discovered topic from discussion]`

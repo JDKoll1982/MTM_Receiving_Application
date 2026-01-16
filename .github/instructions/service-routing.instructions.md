@@ -14,6 +14,7 @@
 Core service for routing label operations. Handles the complete lifecycle of routing labels: creation, validation, CSV export, editing, and duplicate detection.
 
 **Dependencies:**
+
 - `Dao_RoutingLabel` - Label database operations
 - `Dao_RoutingLabelHistory` - Edit history tracking
 - `IRoutingInforVisualService` - PO validation via Infor Visual
@@ -26,6 +27,7 @@ Core service for routing label operations. Handles the complete lifecycle of rou
 ## Key Methods
 
 ### CreateLabelAsync
+
 ```csharp
 Task<Model_Dao_Result<int>> CreateLabelAsync(Model_RoutingLabel label)
 ```
@@ -33,6 +35,7 @@ Task<Model_Dao_Result<int>> CreateLabelAsync(Model_RoutingLabel label)
 **Purpose:** Creates new routing label, validates, checks duplicates, exports to CSV, tracks usage
 
 **Workflow:**
+
 1. Validates label data (ValidateLabel)
 2. Checks for duplicates within 24-hour window
 3. Inserts label into database
@@ -41,17 +44,20 @@ Task<Model_Dao_Result<int>> CreateLabelAsync(Model_RoutingLabel label)
 6. Returns new label ID
 
 **Important Notes:**
+
 - **No transaction** - CSV export failure doesn't rollback database insert (Issue #2)
 - **Race condition risk** - Concurrent CSV writes may corrupt file (Issue #3)
 - Continues even if CSV export or usage tracking fails (warns but doesn't fail)
 
 **Common Issues:**
+
 - Duplicate detection hardcoded to 24 hours (should be configurable)
 - CSV paths must be writable or method fails
 
 ---
 
 ### UpdateLabelAsync
+
 ```csharp
 Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label, int editedByEmployeeNumber)
 ```
@@ -59,6 +65,7 @@ Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label, int editedByEm
 **Purpose:** Updates existing label and logs all field changes to history table
 
 **Workflow:**
+
 1. Retrieves original label from database
 2. Validates updated label data
 3. Updates label in database
@@ -66,17 +73,20 @@ Task<Model_Dao_Result> UpdateLabelAsync(Model_RoutingLabel label, int editedByEm
 5. Returns success/failure result
 
 **Important Notes:**
+
 - **N+1 query** - Inserts history records one-by-one (Issue #18)
 - Edit history is critical for audit trail
 - Must provide editedByEmployeeNumber for audit tracking
 
 **Common Issues:**
+
 - Slow updates when many fields change (no batch insert)
 - Original label not found = update fails
 
 ---
 
 ### ValidateLabel
+
 ```csharp
 Model_Dao_Result ValidateLabel(Model_RoutingLabel label)
 ```
@@ -84,6 +94,7 @@ Model_Dao_Result ValidateLabel(Model_RoutingLabel label)
 **Purpose:** Business rule validation before database operations
 
 **Validations:**
+
 - PONumber not empty
 - LineNumber not empty
 - Quantity > 0
@@ -92,6 +103,7 @@ Model_Dao_Result ValidateLabel(Model_RoutingLabel label)
 - If PONumber = "OTHER", OtherReasonId must be set
 
 **Important Notes:**
+
 - **Synchronous method** (no database calls)
 - **Missing validation**: String length limits (Issue #6)
 - **Missing validation**: RecipientId exists (Issue #9)
@@ -99,6 +111,7 @@ Model_Dao_Result ValidateLabel(Model_RoutingLabel label)
 ---
 
 ### CheckDuplicateLabelAsync
+
 ```csharp
 Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateLabelAsync(
     string poNumber,
@@ -110,16 +123,19 @@ Task<Model_Dao_Result<(bool Exists, int? ExistingLabelId)>> CheckDuplicateLabelA
 **Purpose:** Prevents accidental duplicate labels (same PO/Line/Recipient within time window)
 
 **Returns:** Tuple with:
+
 - `Exists`: true if duplicate found
 - `ExistingLabelId`: ID of existing label (null if no duplicate)
 
 **Important Notes:**
+
 - DateTime parameter ignored - always checks 24-hour window (Issue #8)
 - Only checks active labels (is_active = 1)
 
 ---
 
 ### ExportLabelToCsvAsync
+
 ```csharp
 Task<Model_Dao_Result> ExportLabelToCsvAsync(Model_RoutingLabel label)
 ```
@@ -127,18 +143,21 @@ Task<Model_Dao_Result> ExportLabelToCsvAsync(Model_RoutingLabel label)
 **Purpose:** Appends label data to CSV file for external system import
 
 **CSV Format:**
+
 ```
 PO,Line,Part,Quantity,Recipient,Location,Date
 12345,001,WIDGET-A,5,John Doe,Building 2,2026-01-06 14:30:00
 ```
 
 **Workflow:**
+
 1. Tries network path with retry (default 3 attempts, 500ms delay)
 2. Falls back to local path if network fails
 3. Marks label as csv_exported in database
 4. Returns success/failure result
 
 **Important Notes:**
+
 - **Path security risk** - No path traversal validation (Issue #5)
 - **Race condition** - No file mutex (Issue #3)
 - Configuration keys: `RoutingModule:CsvExportPath:Network` and `:Local`
@@ -148,6 +167,7 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 ## Configuration Requirements
 
 ### appsettings.json Structure
+
 ```json
 {
   "RoutingModule": {
@@ -168,6 +188,7 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 ## Usage Examples
 
 ### Creating a Label (Wizard Workflow)
+
 ```csharp
 var label = new Model_RoutingLabel
 {
@@ -194,6 +215,7 @@ else
 ```
 
 ### Creating OTHER Label (Manual Entry)
+
 ```csharp
 var label = new Model_RoutingLabel
 {
@@ -211,6 +233,7 @@ var result = await _routingService.CreateLabelAsync(label);
 ```
 
 ### Editing Existing Label
+
 ```csharp
 // Get label
 var getResult = await _routingService.GetLabelByIdAsync(labelId);
@@ -236,12 +259,14 @@ if (updateResult.IsSuccess)
 ## Error Handling Patterns
 
 ### Service Layer (RoutingService)
+
 - Catches all exceptions
 - Logs via IService_LoggingUtility
 - Returns Model_Dao_Result.Failure with user-friendly message
 - Never throws exceptions to ViewModels
 
 ### ViewModel Consumption
+
 ```csharp
 try
 {
@@ -268,12 +293,14 @@ catch (Exception ex)
 ## Testing Guidance
 
 ### Unit Test Mocking
+
 - Mock `IRoutingInforVisualService.ValidatePoNumberAsync`
 - Mock `Dao_RoutingLabel.InsertLabelAsync` to return known ID
 - Mock `IConfiguration` to return test CSV paths
 - Mock `IService_LoggingUtility` to verify log calls
 
 ### Integration Test Scenarios
+
 1. **Happy Path**: Create label with valid PO → verify database + CSV file
 2. **Duplicate Detection**: Create label twice → second fails with duplicate error
 3. **CSV Fallback**: Network path unavailable → succeeds via local path
@@ -281,6 +308,7 @@ catch (Exception ex)
 5. **Edit Workflow**: Update label → verify history table has change records
 
 ### Test Data Requirements
+
 - Valid PO in Infor Visual (or mock service)
 - Active recipient in routing_recipients table
 - Writable CSV paths (use temp directory for tests)

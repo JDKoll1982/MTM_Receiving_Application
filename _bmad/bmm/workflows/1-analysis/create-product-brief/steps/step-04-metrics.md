@@ -13,13 +13,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 4: Success Metrics Definition
 
-## STEP GOAL:
+## STEP GOAL
 
 Define comprehensive success metrics that include user success, business objectives, and key performance indicators through collaborative metric definition aligned with product vision and user value.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -27,7 +27,7 @@ Define comprehensive success metrics that include user success, business objecti
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -35,21 +35,21 @@ Define comprehensive success metrics that include user success, business objecti
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative discovery tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on defining measurable success criteria and business objectives
 - 🚫 FORBIDDEN to create vague metrics that can't be measured or tracked
 - 💬 Approach: Systematic metric definition that connects user value to business success
 - 📋 COLLABORATIVE metric definition that drives actionable decisions
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Generate success metrics collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to proceed without user confirmation through menu
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Current document and frontmatter from previous steps, product vision and target users already defined
 - Focus: Creating measurable, actionable success criteria that align with product strategy
@@ -160,14 +160,14 @@ Prepare the following structure for document append:
 
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} with current metrics content to dive deeper into success metric insights
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to validate comprehensive metrics
 - IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4], then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -182,7 +182,7 @@ ONLY WHEN [C continue option] is selected and [success metrics finalized and sav
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - User success metrics that focus on outcomes and behaviors
 - Clear business objectives aligned with product strategy
@@ -192,7 +192,7 @@ ONLY WHEN [C continue option] is selected and [success metrics finalized and sav
 - Content properly appended to document when C selected
 - Frontmatter updated with stepsCompleted: [1, 2, 3, 4]
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Vague success metrics that can't be measured or tracked
 - Business objectives disconnected from user success

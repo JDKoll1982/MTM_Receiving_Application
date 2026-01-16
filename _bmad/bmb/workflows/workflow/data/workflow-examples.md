@@ -16,6 +16,7 @@ Flow: Discovery → Assessment → Strategy → Shopping List → Prep Schedule
 ```
 
 **Each step file contains internal structure:**
+
 - STEP GOAL
 - MANDATORY EXECUTION RULES
 - EXECUTION PROTOCOLS

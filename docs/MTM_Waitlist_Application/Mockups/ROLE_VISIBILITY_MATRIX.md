@@ -8,18 +8,22 @@
 ## Request Categories (4 Total)
 
 ### 1. Material Handler (15 request types)
+
 **Fulfiller:** Material Handler  
 **Examples:** Coils, Flatstock, Component Parts, Dunnage, Dies, Scrap, NCM
 
 ### 2. Setup Technician (6 request types)
+
 **Fulfiller:** Setup Technician  
 **Examples:** Die Protection Alarm, Die Issues (Stuck, Misalignment, Damage, Adjustment)
 
 ### 3. Quality Control (3 request types) ⭐ NEW
+
 **Fulfiller:** Quality Control  
 **Examples:** Inspection Request, Quality Question, Other QC Requests
 
 ### 4. Production Lead (3 request types)
+
 **Fulfiller:** Production Lead  
 **Examples:** Production Question, Safety/Injury Report, Other PL Requests
 
@@ -43,7 +47,9 @@
 ## Detailed Visibility Rules
 
 ### Operator (Can Request All)
+
 **Categories Visible in Wizard:** All 4
+
 - ✅ Material Handler
 - ✅ Setup Technician
 - ✅ Quality Control
@@ -54,7 +60,9 @@
 ---
 
 ### Material Handler (MH Tasks Only)
+
 **Categories Visible in Waitlist:** Material Handler ONLY
+
 - ✅ Material Handler
 - ❌ Setup Technician
 - ❌ Quality Control
@@ -67,13 +75,16 @@
 ---
 
 ### Material Handler Lead (MH + Quality)
+
 **Categories Visible in Waitlist:** Material Handler + Quality Control
+
 - ✅ Material Handler
 - ❌ Setup Technician
 - ✅ Quality Control
 - ❌ Production Lead
 
 **Filter Options:**
+
 - Material Handler (default)
 - Quality Control
 - All (shows both MH + QC)
@@ -83,7 +94,9 @@
 ---
 
 ### Setup Technician (Setup Tasks Only)
+
 **Categories Visible in Waitlist:** Setup Technician ONLY
+
 - ❌ Material Handler
 - ✅ Setup Technician
 - ❌ Quality Control
@@ -96,7 +109,9 @@
 ---
 
 ### Quality Control (QC Tasks Only)
+
 **Categories Visible in Waitlist:** Quality Control ONLY
+
 - ❌ Material Handler
 - ❌ Setup Technician
 - ✅ Quality Control
@@ -109,13 +124,16 @@
 ---
 
 ### Production Lead / Operator Lead (PL + MH + QC)
+
 **Categories Visible in Waitlist:** Production Lead + Material Handler + Quality Control
+
 - ✅ Material Handler
 - ❌ Setup Technician
 - ✅ Quality Control
 - ✅ Production Lead
 
 **Filter Options:**
+
 - Production Lead (default)
 - Material Handler
 - Quality Control
@@ -126,13 +144,16 @@
 ---
 
 ### Plant Manager (All Tasks)
+
 **Categories Visible in Waitlist:** All 4 Categories
+
 - ✅ Material Handler
 - ✅ Setup Technician
 - ✅ Quality Control
 - ✅ Production Lead
 
 **Filter Options:**
+
 - Material Handler
 - Setup Technician
 - Quality Control
@@ -203,7 +224,8 @@ filterByCategory(allTasks, 'Material Handler', 'ProductionLead')
 
 ## Mockup Updates Required
 
-### ✅ COMPLETED:
+### ✅ COMPLETED
+
 1. **mock-data.js**
    - Added `requestTypes_QualityControl` array (3 types)
    - Added `fulfiller` property to all request types
@@ -219,26 +241,26 @@ filterByCategory(allTasks, 'Material Handler', 'ProductionLead')
    - Changed `.category-cards` to 2-column grid
    - Added `.task-quality-control` color (green)
 
-### 🔄 PENDING:
+### 🔄 PENDING
 
-4. **MaterialHandler/waitlist.html**
+1. **MaterialHandler/waitlist.html**
    - Should ONLY show Material Handler tasks
    - No filter dropdown (fixed to MH tasks only)
 
-5. **MaterialHandlerLead/waitlist.html**
+2. **MaterialHandlerLead/waitlist.html**
    - Filter dropdown with options: MH | QC | All
    - Default to "Material Handler"
 
-6. **OperatorLead/waitlist.html** or **ProductionLead/waitlist.html**
+3. **OperatorLead/waitlist.html** or **ProductionLead/waitlist.html**
    - Filter dropdown with options: Production Lead | Material Handler | Quality Control | All
    - Default to "Production Lead"
 
-7. **Quality/waitlist.html** (NEW - doesn't exist yet)
+4. **Quality/waitlist.html** (NEW - doesn't exist yet)
    - Should ONLY show Quality Control tasks
    - No filter dropdown (fixed to QC tasks only)
    - Similar layout to Material Handler view
 
-8. **PlantManager/dashboard.html**
+5. **PlantManager/dashboard.html**
    - Filter dropdown with options: Material Handler | Setup Technician | Quality Control | Production Lead | All
    - Default to "All"
    - Shows comprehensive metrics across all categories
@@ -247,7 +269,8 @@ filterByCategory(allTasks, 'Material Handler', 'ProductionLead')
 
 ## Category Filter Dropdown HTML
 
-### For Material Handler Lead (2 options + All):
+### For Material Handler Lead (2 options + All)
+
 ```html
 <select class="form-select" id="categoryFilter" onchange="filterWaitlist()">
   <option value="Material Handler" selected>Material Handler</option>
@@ -256,7 +279,8 @@ filterByCategory(allTasks, 'Material Handler', 'ProductionLead')
 </select>
 ```
 
-### For Production Lead (3 options + All):
+### For Production Lead (3 options + All)
+
 ```html
 <select class="form-select" id="categoryFilter" onchange="filterWaitlist()">
   <option value="Production Lead" selected>Production Lead</option>
@@ -266,7 +290,8 @@ filterByCategory(allTasks, 'Material Handler', 'ProductionLead')
 </select>
 ```
 
-### For Plant Manager (4 options + All):
+### For Plant Manager (4 options + All)
+
 ```html
 <select class="form-select" id="categoryFilter" onchange="filterWaitlist()">
   <option value="All" selected>All Categories</option>
@@ -344,6 +369,7 @@ function filterWaitlist() {
 ## Special Request Types
 
 ### NCM (Non-Conforming Material)
+
 - **Category:** Material Handler
 - **Special Handling:** Separate tracking required
 - **Visual:** Red badge with border
@@ -351,6 +377,7 @@ function filterWaitlist() {
 - **Visibility:** MH, MH Lead, Production Lead, Plant Manager
 
 ### Safety Reports
+
 - **Category:** Production Lead
 - **Special Handling:** Immediate alert to Plant Manager
 - **Visual:** Red critical alert banner
@@ -362,6 +389,7 @@ function filterWaitlist() {
 ## Testing Checklist
 
 ### Role Isolation Testing
+
 - [ ] Quality user CANNOT see Material Handler tasks
 - [ ] Quality user CANNOT see Setup Technician tasks
 - [ ] Quality user CANNOT see Production Lead tasks
@@ -370,6 +398,7 @@ function filterWaitlist() {
 - [ ] Material Handler user CANNOT see Production Lead tasks
 
 ### Multi-Category Role Testing
+
 - [ ] MH Lead can toggle between MH and QC
 - [ ] MH Lead CANNOT see Setup Tech or Production Lead
 - [ ] Production Lead can toggle between PL, MH, and QC
@@ -377,6 +406,7 @@ function filterWaitlist() {
 - [ ] Plant Manager can see all 4 categories
 
 ### Filter Dropdown Testing
+
 - [ ] Single-category roles (MH, Setup Tech, QC) have NO filter dropdown
 - [ ] Multi-category roles (MH Lead, Prod Lead, Plant Mgr) HAVE filter dropdown
 - [ ] "All" option shows only categories visible to that role

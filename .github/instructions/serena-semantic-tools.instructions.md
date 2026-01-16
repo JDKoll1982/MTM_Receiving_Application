@@ -29,14 +29,15 @@ applyTo: '**/*.cs'
 **Serena** is a semantic coding agent toolkit providing IDE-like capabilities through the Language Server Protocol (LSP). It enables symbol-level operations (classes, methods, properties) rather than file-based text manipulation, significantly reducing token usage and improving accuracy.
 
 **Key Benefits:**
+
 - **80-90% token reduction** for large codebase exploration
 - **Symbol-level precision** - Edit specific methods without reading entire files
 - **Relationship discovery** - Find all usages before refactoring
 - **Architectural validation** - Search for anti-patterns across codebase
 - **C# language support** - Full LSP integration with OmniSharp/Roslyn
 
-**Official Documentation**: https://oraios.github.io/serena/  
-**Dashboard**: http://127.0.0.1:24282/dashboard/ (when MCP server running)
+**Official Documentation**: <https://oraios.github.io/serena/>  
+**Dashboard**: <http://127.0.0.1:24282/dashboard/> (when MCP server running)
 
 ---
 
@@ -68,7 +69,8 @@ Is the task about code navigation/editing?
 
 ### When to Use Serena
 
-#### ✅ Use Serena For:
+#### ✅ Use Serena For
+
 - **Large codebases** - Navigate 300+ files efficiently
 - **Symbol discovery** - Find classes, methods, properties by name or pattern
 - **Relationship analysis** - Discover where symbols are referenced
@@ -79,7 +81,8 @@ Is the task about code navigation/editing?
 - **Architectural validation** - Finding anti-patterns (MessageBox.Show, direct SQL)
 - **Token efficiency** - When context window is limited
 
-#### ❌ Don't Use Serena For:
+#### ❌ Don't Use Serena For
+
 - **Single-line edits** - Use standard editing tools
 - **Non-code files** - Serena is optimized for code (C#, Java, Python, etc.)
 - **Simple file reading** - Use `read_file` for small, non-code files (<100 lines)
@@ -106,12 +109,14 @@ serena project create --language csharp --name "MTM_Receiving_Application" --ind
 ```
 
 **What it does:**
+
 - Creates `.serena/project.yml` in project root
 - Configures C# language server (OmniSharp/Roslyn)
 - Sets up ignore patterns (respects .gitignore)
 - Optionally indexes project (recommended for large codebases)
 
 **MTM Project Configuration** (`.serena/project.yml`):
+
 ```yaml
 name: MTM_Receiving_Application
 languages:
@@ -133,6 +138,7 @@ serena project health-check
 ```
 
 **Why it matters:**
+
 - **300+ C# files** in MTM project
 - Indexing takes 30-60 seconds upfront
 - Saves 5-10 seconds per tool call during session
@@ -153,6 +159,7 @@ activate_project("MTM_Receiving_Application")
 ```
 
 **What it does:**
+
 - Loads project configuration
 - Starts language server
 - Makes all tools available for this project
@@ -173,6 +180,7 @@ onboarding()
 ```
 
 **What onboarding does:**
+
 1. Explores project structure (directories, key files)
 2. Identifies main components (DAOs, Services, Views, Helpers)
 3. Reads architectural patterns (DAO pattern, error handling, MVVM)
@@ -183,6 +191,7 @@ onboarding()
    - `common_tasks.md`
 
 **MTM Onboarding Focus:**
+
 - DAO structure and `Model_Dao_Result` pattern
 - `Service_ErrorHandler` usage
 - `Helper_Database_StoredProcedure` for all database access
@@ -202,6 +211,7 @@ onboarding()
 **Purpose:** Locate and optionally read specific symbols by name or pattern.
 
 **Parameters:**
+
 - `name_path_pattern` (required, string): Symbol name or path (see Name Path Syntax)
 - `relative_path` (optional, string): Restrict search to file/directory
 - `include_body` (optional, boolean): Include source code (default: false)
@@ -213,6 +223,7 @@ onboarding()
 **Returns:** List of symbols with name, kind, location, optionally body.
 
 **Symbol Kinds Reference:**
+
 ```
 5  = Class         | 12 = Function    | 22 = Enum Member
 6  = Method        | 13 = Variable    | 23 = Struct
@@ -272,11 +283,13 @@ find_symbol(
 ```
 
 **Token Efficiency:**
+
 - Reading one method: **~100-500 tokens**
 - Reading entire 500-line file: **~5,000 tokens**
 - **Savings: 90%**
 
 **Name Path Syntax:**
+
 - **Simple name**: `"GetAllAsync"` → Matches any symbol with that name
 - **Relative path**: `"Dao_ReceivingLine/GetAllAsync"` → Matches this path suffix
 - **Absolute path**: `"/Dao_ReceivingLine/GetAllAsync"` → Exact match from file root
@@ -284,6 +297,7 @@ find_symbol(
 - **Overload**: `"MyMethod[0]"` → First overload (0-based index)
 
 **Anti-Patterns:**
+
 - ❌ Reading body when you only need the signature
 - ❌ Not restricting `relative_path` when you know the file
 - ❌ Using without `substring_matching` when name is uncertain
@@ -295,6 +309,7 @@ find_symbol(
 **Purpose:** Get overview of top-level symbols in a file WITHOUT reading full code.
 
 **Parameters:**
+
 - `relative_path` (required, string): File path
 - `depth` (optional, integer): Hierarchy depth (0 = top-level only, 1 = include immediate children)
 - `max_answer_chars` (optional, integer): Limit output size (-1 = default limit)
@@ -326,6 +341,7 @@ get_symbols_overview("ViewModels/Receiving/Receiving_WorkflowViewModel.cs", dept
 **Best Practice:** **ALWAYS** call this first when exploring a new file. It's like reading a table of contents before diving into chapters.
 
 **Token Efficiency:**
+
 - Overview of 20-method class: **~200-300 tokens**
 - Reading full class: **~3,000-5,000 tokens**
 - **Savings: 93-95%**
@@ -337,6 +353,7 @@ get_symbols_overview("ViewModels/Receiving/Receiving_WorkflowViewModel.cs", dept
 **Purpose:** Discover where a symbol is referenced (calls, instantiations, etc.).
 
 **Parameters:**
+
 - `name_path` (required, string): Symbol to find references for
 - `relative_path` (required, string): File containing the symbol
 - `include_kinds` (optional, list[int]): Filter referencing symbols by type
@@ -380,6 +397,7 @@ find_referencing_symbols(
 ```
 
 **Use Cases:**
+
 - **Before refactoring** - Check impact radius
 - **Breaking changes** - Find all callers to update
 - **Usage validation** - Verify pattern compliance
@@ -396,6 +414,7 @@ find_referencing_symbols(
 **Purpose:** Replace complete symbol definition (method, class, property).
 
 **Parameters:**
+
 - `name_path` (required, string): Symbol to replace
 - `relative_path` (required, string): File containing symbol
 - `body` (required, string): New complete symbol definition
@@ -403,11 +422,13 @@ find_referencing_symbols(
 **Returns:** Success/failure status.
 
 **Important:** `body` must include the **COMPLETE** definition:
+
 - For methods: Signature + implementation
 - For classes: Class declaration + all members
 - For properties: Full property definition
 
 **MTM Examples:**
+
 ```
 # 1. Replace DAO method implementation
 replace_symbol_body(
@@ -435,11 +456,13 @@ replace_symbol_body(
 ```
 
 **Workflow:**
+
 1. Read existing symbol: `find_symbol("Class/Method", include_body=true)`
 2. Modify the code
 3. Replace: `replace_symbol_body("Class/Method", file, modified_code)`
 
 **Anti-Patterns:**
+
 - ❌ Using for single-line edits (use standard tools)
 - ❌ Forgetting XML documentation in the new body
 - ❌ Not including correct indentation
@@ -452,6 +475,7 @@ replace_symbol_body(
 **Purpose:** Add new code immediately after a symbol's definition ends.
 
 **Parameters:**
+
 - `name_path` (required, string): Symbol after which to insert
 - `relative_path` (required, string): File path
 - `body` (required, string): Code to insert
@@ -493,6 +517,7 @@ insert_after_symbol(
 ```
 
 **Use Cases:**
+
 - Adding new methods to classes
 - Inserting code at end of file
 - Adding properties to models
@@ -505,6 +530,7 @@ insert_after_symbol(
 **Purpose:** Add new code immediately before a symbol's definition starts.
 
 **Parameters:**
+
 - `name_path` (required, string): Symbol before which to insert
 - `relative_path` (required, string): File path
 - `body` (required, string): Code to insert
@@ -539,6 +565,7 @@ insert_before_symbol(
 **Purpose:** Rename a symbol throughout the **entire codebase** using LSP refactoring.
 
 **Parameters:**
+
 - `name_path` (required, string): Symbol to rename
 - `relative_path` (required, string): File containing symbol
 - `new_name` (required, string): New symbol name
@@ -572,6 +599,7 @@ rename_symbol(
 ```
 
 **Important:**
+
 - LSP handles **all references** automatically
 - Safer than find-and-replace
 - Works across **multiple files**
@@ -588,6 +616,7 @@ rename_symbol(
 **Purpose:** Find files matching a glob pattern.
 
 **Parameters:**
+
 - `file_mask` (required, string): Filename or glob pattern (* and ? wildcards)
 - `relative_path` (required, string): Directory to search in ("." for root)
 
@@ -613,6 +642,7 @@ find_file("md_receiving_*.sql", "Database/StoredProcedures")
 ```
 
 **Use Cases:**
+
 - Locating files before reading
 - Finding related files (e.g., all DAOs)
 - Discovering file organization
@@ -624,6 +654,7 @@ find_file("md_receiving_*.sql", "Database/StoredProcedures")
 **Purpose:** Search for regex patterns across codebase with context.
 
 **Parameters:**
+
 - `substring_pattern` (required, string): Regex pattern (Python `re` module syntax)
 - `relative_path` (optional, string): Restrict to file/directory
 - `restrict_search_to_code_files` (optional, boolean): Only search LSP-indexed code files
@@ -695,6 +726,7 @@ search_for_pattern(
 ```
 
 **Performance Tips:**
+
 - Use `relative_path` to limit search scope
 - Use `restrict_search_to_code_files=true` to skip binaries/logs
 - Use `paths_exclude_glob` to skip large directories (e.g., "bin/**")
@@ -707,6 +739,7 @@ search_for_pattern(
 **Purpose:** List files and subdirectories.
 
 **Parameters:**
+
 - `relative_path` (required, string): Directory path ("." for root)
 - `recursive` (required, boolean): Include subdirectories
 - `skip_ignored_files` (optional, boolean): Respect .gitignore
@@ -731,6 +764,7 @@ list_dir("Database/StoredProcedures", recursive=false)
 ```
 
 **Use Cases:**
+
 - Understanding project structure
 - Finding related files
 - Verifying file organization
@@ -770,6 +804,7 @@ list_memories()
 **Purpose:** Load project knowledge into context.
 
 **Parameters:**
+
 - `memory_file_name` (required, string): Memory filename
 - `max_answer_chars` (optional, integer): Limit output size
 
@@ -792,6 +827,7 @@ read_memory("common_tasks.md")
 ```
 
 **Best Practices:**
+
 - Read relevant memories at **start of conversation**
 - Only read memories relevant to current task
 - Don't re-read same memory multiple times in one conversation
@@ -803,12 +839,14 @@ read_memory("common_tasks.md")
 **Purpose:** Store project knowledge for future sessions.
 
 **Parameters:**
+
 - `memory_file_name` (required, string): Memory filename
 - `content` (required, string): Markdown content
 
 **Returns:** Success confirmation.
 
 **When to Write:**
+
 - After discovering important patterns
 - When completing complex refactoring (save summary)
 - When user provides new architectural guidance
@@ -823,6 +861,7 @@ read_memory("common_tasks.md")
 **Purpose:** Execute commands for builds, tests, database operations.
 
 **Parameters:**
+
 - `command` (required, string): Shell command to run
 - `cwd` (optional, string): Working directory
 
@@ -846,6 +885,7 @@ execute_shell_command(command="git diff")
 ```
 
 **Security Warning:**
+
 - ⚠️ Can execute **arbitrary commands**
 - ⚠️ Risk of data loss if used incorrectly
 - ⚠️ Consider `excluded_tools: [execute_shell_command]` for read-only agents
@@ -857,6 +897,7 @@ execute_shell_command(command="git diff")
 **Purpose:** Restart C# language server if it becomes unresponsive.
 
 **When to Use:**
+
 - Symbol search returns no results (but files exist)
 - \"Language server not responding\" errors
 - After major refactoring (LSP loses sync)
@@ -941,6 +982,7 @@ serena start-mcp-server --context ide --project /path/to/MTM_Receiving_Applicati
 | `no-onboarding` | Skip onboarding - use after first time |
 
 **MTM Recommendations:**
+
 - **Daily work:** `editing` + `interactive` (default)
 - **Initial exploration:** `planning` + `interactive` + `onboarding`
 - **Quick fixes:** `editing` + `one-shot` + `no-onboarding`
@@ -1088,17 +1130,20 @@ execute_shell_command("dotnet build MTM_Receiving_Application.csproj")
 ### Exploring a New Component
 
 1. **Get file structure**:
+
    ```
    get_symbols_overview("Data/Receiving/Dao_ReceivingLine.cs", depth=1)
    ```
 
 2. **Read specific methods**:
+
    ```
    find_symbol("Dao_ReceivingLine/GetAllAsync", include_body=true)
    find_symbol("Dao_ReceivingLine/InsertAsync", include_body=true)
    ```
 
 3. **Find dependencies**:
+
    ```
    find_referencing_symbols("GetAllAsync", "Data/Receiving/Dao_ReceivingLine.cs")
    ```
@@ -1106,16 +1151,19 @@ execute_shell_command("dotnet build MTM_Receiving_Application.csproj")
 ### Modifying a Method
 
 1. **Find the method**:
+
    ```
    find_symbol("Dao_ReceivingLine/GetAllAsync", include_body=true)
    ```
 
 2. **Check where it's used**:
+
    ```
    find_referencing_symbols("GetAllAsync", "Data/Receiving/Dao_ReceivingLine.cs")
    ```
 
 3. **Replace the method**:
+
    ```
    replace_symbol_body("Dao_ReceivingLine/GetAllAsync", "Data/Receiving/Dao_ReceivingLine.cs", new_code)
    ```
@@ -1123,11 +1171,13 @@ execute_shell_command("dotnet build MTM_Receiving_Application.csproj")
 ### Adding a New Method
 
 1. **Find where to insert**:
+
    ```
    get_symbols_overview("Data/Receiving/Dao_ReceivingLine.cs", depth=1)
    ```
 
 2. **Insert after related method**:
+
    ```
    insert_after_symbol("Dao_ReceivingLine/GetAllAsync", "Data/Receiving/Dao_ReceivingLine.cs", new_method)
    ```
@@ -1175,6 +1225,7 @@ Symbols are identified by their **name path** within a file:
 | **Token savings** | **94%** | **75% faster** |
 
 ### ❌ Inefficient Approach
+
 ```
 # Reading entire files repeatedly
 read_file("Data/Receiving/Dao_ReceivingLine.cs", 1, 500)
@@ -1184,6 +1235,7 @@ read_file("Data/Receiving/Dao_DunnageLine.cs", 1, 500)
 ```
 
 ### ✅ Efficient Approach with Serena
+
 ```
 # Get overview first
 get_symbols_overview("Data/Receiving/Dao_ReceivingLine.cs", depth=1)
@@ -1353,6 +1405,7 @@ read_only: true
 ```
 
 **Effect:**
+
 - Disables: `replace_symbol_body`, `insert_*`, `create_text_file`, `execute_shell_command`
 - Enables: All read/search tools
 
@@ -1377,17 +1430,21 @@ excluded_tools:
 ### MTM-Specific Security
 
 **Database:**
+
 - **Never** expose MySQL root password in commands
 - Use `Helper_Database_Variables.cs` for connection strings
 - Don't commit database credentials to git
 
 **Sensitive Data:**
+
 - Search for API keys before committing:
+
   ```
   search_for_pattern("API[_-]?KEY|SECRET|PASSWORD", restrict_search_to_code_files=true)
   ```
 
 **Production Safety:**
+
 - Use `read_only: true` for production environment exploration
 - Test changes in `mtm_receiving_application_test` database first
 - Never run `DROP` or `TRUNCATE` commands via `execute_shell_command`
@@ -1397,12 +1454,14 @@ excluded_tools:
 ## Additional Resources
 
 ### Serena Documentation
-- **Homepage**: https://oraios.github.io/serena/
-- **Tool Reference**: https://oraios.github.io/serena/03-tools/000_intro.html
-- **Configuration**: https://oraios.github.io/serena/02-usage/050_configuration.html
-- **GitHub Repository**: https://github.com/oraios/serena
+
+- **Homepage**: <https://oraios.github.io/serena/>
+- **Tool Reference**: <https://oraios.github.io/serena/03-tools/000_intro.html>
+- **Configuration**: <https://oraios.github.io/serena/02-usage/050_configuration.html>
+- **GitHub Repository**: <https://github.com/oraios/serena>
 
 ### MTM Project Documentation
+
 - **Architecture Guide**: `.github/copilot-instructions.md`
 - **Development Workflow**: `AGENTS.md`
 - **Constitution**: `.specify/memory/constitution.md`

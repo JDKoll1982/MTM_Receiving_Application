@@ -28,6 +28,7 @@ You are an expert C# unit test developer specializing in .NET 8, xUnit, and the 
 ### 1. Property Validation
 
 Test ALL properties for:
+
 - **Getters/Setters:** Verify values are stored and retrieved correctly
 - **Null Handling:** Test nullable properties accept null
 - **Required Constraints:** Verify non-nullable properties cannot be null (compile-time enforced)
@@ -93,17 +94,16 @@ Test ALL properties for:
 
 ## Test Class Template
 
-
 ## FluentAssertions Best Practices
 
 Use these assertion methods consistently:
-
 
 ## Test Naming Convention
 
 Follow this pattern:
 
 Examples:
+
 - `Constructor_Default_ShouldInitializeWithExpectedDefaults`
 - `PartID_WhenSetToValidValue_ShouldReturnSameValue`
 - `Quantity_WhenSetToNegative_ShouldStoreNegativeValue`
@@ -147,7 +147,6 @@ Generate a **complete, compilable test class** with:
 
 ## Example: Complete Test Class
 
-
 ## Verification Checklist
 
 Before submitting generated tests:
@@ -166,6 +165,7 @@ Before submitting generated tests:
 ---
 
 **When generating tests, analyze the model class first to identify:**
+
 1. All properties and their types
 2. Any implemented interfaces (IEquatable, etc.)
 3. Constructors and their parameters
@@ -173,4 +173,3 @@ Before submitting generated tests:
 5. Nullable vs. non-nullable properties
 
 Then generate comprehensive tests covering all scenarios.
-

@@ -18,13 +18,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 9: Build Next Step (Repeatable)
 
-## STEP GOAL:
+## STEP GOAL
 
 To build the next step file in the workflow sequence based on the approved design. This step is REPEATABLE - continue running it until all steps from the design have been built.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -32,7 +32,7 @@ To build the next step file in the workflow sequence based on the approved desig
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -40,21 +40,21 @@ To build the next step file in the workflow sequence based on the approved desig
 - ✅ You bring implementation expertise and best practices
 - ✅ User brings their specific requirements and design approvals
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load the plan to determine WHICH step to build next
 - 🚫 FORBIDDEN to skip steps or build out of order
 - 💬 Each step is built collaboratively based on approved design
 - 🚪 This step REPEATS until all workflow steps are built
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Always check what's been built, then build the next one
 - 💾 Document each step in the plan as it's built
 - 📖 Update frontmatter stepsCompleted to add each step when completed
 - 🚫 Don't proceed to completion until ALL workflow steps are built
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved design from step 6 specifies all steps
 - The plan tracks which steps have been built
@@ -70,12 +70,14 @@ To build the next step file in the workflow sequence based on the approved desig
 Load {workflowPlanFile} and check:
 
 **What steps have been built so far?**
+
 - Step 01: Always built in step-08
 - Subsequent steps: Track in plan
 
 **What is the NEXT step to build?**
 
 From the design in the plan, identify:
+
 - Step number and name
 - Step type (Middle/Standard, Middle/Simple, Branch, Validation, Final Polish, Final)
 - This step's goal and purpose
@@ -85,6 +87,7 @@ Confirm: "The next step to build is **step-{N}-{name}** which is a [step type]. 
 ### 2. Load Standards for This Step Type
 
 **Load {stepTypePatterns}** and find the pattern for this step type:
+
 - Middle Step (Standard) - A/P/C menu, collaborative content
 - Middle Step (Simple) - C only menu, no A/P
 - Branch Step - Custom menu with routing logic
@@ -113,6 +116,7 @@ Load {subprocessPatterns} and implement the subprocess optimization for this ste
    - Pattern 4: Parallel execution of independent operations
 
 2. **Add subprocess-specific Step-Specific Rules to this step:**
+
    ```markdown
    ### Step-Specific Rules:
    - 🎯 [Brief description of which pattern applies]
@@ -148,6 +152,7 @@ Skip this section and proceed to build the step file.
 Create `steps-c/step-{N}-{name}.md` with:
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-{N}-{name}'
@@ -236,6 +241,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ```
 
 **Customize based on:**
+
 - Step type pattern from {stepTypePatterns}
 - The step's specific goal and actions from design
 - What this step outputs (if document-producing workflow)
@@ -248,6 +254,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 **Small templates?** - Inline in step content or create small template file
 
 **Data files?** - If step references CSV data, create in `data/` folder
+
 - Load {csvDataFileStandards} for CSV structure
 - Create CSV with proper headers and data
 
@@ -256,6 +263,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 **Section templates?** - If step outputs to specific document section
 
 **If supporting files are created:**
+
 1. Create in appropriate folder (`data/` or `templates/`)
 2. Update step frontmatter to reference them
 3. Document in plan
@@ -285,6 +293,7 @@ Append to {workflowPlanFile}:
 After documenting, check the design:
 
 **Are all steps from the design now built?**
+
 - **YES:** Proceed to completion menu (option 7 below)
 - **NO:** Present continuation menu (option 6 below)
 
@@ -292,13 +301,13 @@ After documenting, check the design:
 
 Display: **Step {N} Complete - Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Build Next Step
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY build next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
@@ -309,12 +318,12 @@ Display: **Step {N} Complete - Select an Option:** [A] Advanced Elicitation [P] 
 
 Display: **All Workflow Steps Built! Select an Option:** [R] Review Built Steps [V] Proceed to Validation [C] Complete Build
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - User selects final action
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF R: List all built steps with their paths, allow review, then redisplay menu
 - IF V: Save final build summary to {workflowPlanFile}, update frontmatter stepsCompleted to include ALL steps, then load `./step-10-confirmation.md`
@@ -329,7 +338,7 @@ This step REPEATS until all workflow steps from the design are built. When compl
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Each step file created with proper structure for its type
 - Frontmatter follows {frontmatterStandards}
@@ -339,7 +348,7 @@ This step REPEATS until all workflow steps from the design are built. When compl
 - Each build documented in plan
 - Process continues until ALL design steps are built
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Building steps out of order
 - Skipping steps from the design

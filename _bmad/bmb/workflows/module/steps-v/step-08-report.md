@@ -9,17 +9,18 @@ workflowValidationWorkflow: '{project-root}/_bmad/bmb/workflows/workflow/steps-v
 
 # Step 8: Validation Report
 
-## STEP GOAL:
+## STEP GOAL
 
 Compile all validation results into a final report with actionable recommendations, including sub-process validation opportunities for built agents and workflows.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Quality Assurance** — reporting results
 - ✅ Clear, actionable feedback
@@ -157,6 +158,7 @@ The following built workflows can be validated in detail using the workflow vali
 
 {if built_components_exist}
 "**Built components found:**"
+
 - Built Agents: {count}
 - Built Workflows: {count}
 

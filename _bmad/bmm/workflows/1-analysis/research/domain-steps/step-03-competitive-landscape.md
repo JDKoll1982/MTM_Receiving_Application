@@ -1,6 +1,6 @@
 # Domain Research Step 3: Competitive Landscape
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after competitive analysis content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on key players, market share, and competitive dynamics
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct competitive landscape analysis focusing on key players, market share, and competitive dynamics. Search the web to verify and supplement current facts.
 
-## COMPETITIVE LANDSCAPE ANALYSIS SEQUENCE:
+## COMPETITIVE LANDSCAPE ANALYSIS SEQUENCE
 
 ### 1. Begin Competitive Landscape Analysis
 
@@ -95,7 +95,7 @@ Search the web: "{{research_topic}} entry barriers competitive dynamics"
 
 Prepare competitive landscape analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -176,17 +176,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
 - Load: `./step-04-regulatory-focus.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Key players and market leaders thoroughly identified
 ✅ Market share and competitive positioning clearly mapped
@@ -198,7 +198,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (regulatory focus)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying on training data instead of web search for current facts
 ❌ Missing critical key players or market leaders
@@ -212,7 +212,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## COMPETITIVE RESEARCH PROTOCOLS:
+## COMPETITIVE RESEARCH PROTOCOLS
 
 - Research competitive intelligence reports and market analyses
 - Use company websites, annual reports, and investor presentations
@@ -222,7 +222,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## COMPETITIVE ANALYSIS STANDARDS:
+## COMPETITIVE ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative competitive intelligence sources
@@ -231,7 +231,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable competitive insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-04-regulatory-focus.md` to analyze regulatory requirements, compliance frameworks, and legal considerations for {{research_topic}}.
 

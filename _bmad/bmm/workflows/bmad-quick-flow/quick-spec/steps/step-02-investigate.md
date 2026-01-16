@@ -11,7 +11,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Progress: Step 2 of 4** - Next: Generate Plan
 
-## RULES:
+## RULES
 
 - MUST NOT skip steps.
 - MUST NOT optimize sequence.
@@ -19,7 +19,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 - MUST NOT generate the full spec yet (that's Step 3).
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## CONTEXT:
+## CONTEXT
 
 - Requires `{wipFile}` from Step 1 with the "Problem Statement" defined.
 - Focus: Map the problem statement to specific anchor points in the codebase.
@@ -62,7 +62,6 @@ For each file/directory provided:
 - Scan parent directories for architectural context.
 - Identify standard project utilities or boilerplate that SHOULD be used.
 - Document this as "Confirmed Clean Slate" - establishing that no legacy constraints exist.
-
 
 c) **Document Technical Context**
 
@@ -125,7 +124,7 @@ Fill in:
 
 **HALT and wait for user selection.**
 
-#### Menu Handling:
+#### Menu Handling
 
 - **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
 - **[c]**: Verify frontmatter updated with `stepsCompleted: [1, 2]`, then load and execute `{nextStepFile}`
@@ -133,12 +132,12 @@ Fill in:
 
 ---
 
-## REQUIRED OUTPUTS:
+## REQUIRED OUTPUTS
 
 - MUST document technical context (stack, patterns, files identified).
 - MUST update `{wipFile}` with functional context.
 
-## VERIFICATION CHECKLIST:
+## VERIFICATION CHECKLIST
 
 - [ ] Technical mapping performed and documented.
 - [ ] `stepsCompleted: [1, 2]` set in frontmatter.

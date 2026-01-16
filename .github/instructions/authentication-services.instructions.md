@@ -20,12 +20,14 @@ Authentication functionality is split into two complementary services:
 ### 2. Dependency Injection
 
 All authentication services MUST:
+
 - Define corresponding interfaces in `Contracts/Services/`
 - Accept dependencies via constructor injection
 - Be registered in `App.xaml.cs` DI container
 - Use non-nullable required dependencies (no optional dependencies)
 
 Example:
+
 ```csharp
 public class Service_Authentication : IService_Authentication
 {
@@ -45,6 +47,7 @@ public class Service_Authentication : IService_Authentication
 Authentication services follow strict error handling patterns:
 
 **Always Handle Exceptions**:
+
 - Wrap all DAO calls in try-catch blocks
 - Use `IService_ErrorHandler` for consistent error logging
 - Return result objects (never throw exceptions from service methods)
@@ -69,6 +72,7 @@ catch (Exception ex)
 ```
 
 **Result Objects**:
+
 - Use strongly-typed result objects (e.g., `AuthenticationResult`, `ValidationResult`)
 - Include `Success`, `ErrorMessage`, and `Data` properties
 - Provide static factory methods: `SuccessResult()`, `ErrorResult()`
@@ -89,6 +93,7 @@ public async Task<AuthenticationResult> AuthenticateByWindowsUsernameAsync(
 ```
 
 **Rules**:
+
 - Progress parameter must be optional (nullable)
 - Always use null-conditional operator: `progress?.Report()`
 - Provide user-friendly status messages
@@ -101,12 +106,14 @@ public async Task<AuthenticationResult> AuthenticateByWindowsUsernameAsync(
 Authenticates users on personal workstations using Windows username.
 
 **Requirements**:
+
 - Query database for user by `windows_username`
 - Verify user is active (`is_active = true`)
 - Log successful authentication to `settings_personal_activity_log`
 - Return user object on success
 
 **Error Cases**:
+
 - User not found → ErrorResult("User not found")
 - User inactive → ErrorResult("User account is inactive")
 - Database error → Log and return generic error
@@ -116,6 +123,7 @@ Authenticates users on personal workstations using Windows username.
 Authenticates users on shared terminals using username + 4-digit PIN.
 
 **Requirements**:
+
 - Validate PIN format (4 digits, not all same)
 - Query database using `sp_Auth_User_ValidatePin`
 - Verify user is active
@@ -127,6 +135,7 @@ Authenticates users on shared terminals using username + 4-digit PIN.
 Creates new user accounts (used during first-time setup).
 
 **Requirements**:
+
 - Validate all required fields
 - Check PIN uniqueness before creation
 - Check Windows username uniqueness
@@ -139,6 +148,7 @@ Creates new user accounts (used during first-time setup).
 Validates PIN format and uniqueness.
 
 **Rules**:
+
 - Exactly 4 digits
 - Cannot be all same digit (e.g., "1111")
 - Must be unique in database (unless `excludeEmployeeNumber` provided)
@@ -148,6 +158,7 @@ Validates PIN format and uniqueness.
 Determines if current workstation is personal or shared terminal.
 
 **Logic**:
+
 - Query `auth_workstation_config` table by computer name
 - If found → Return configured type
 - If not found → Default to "personal_workstation"
@@ -190,11 +201,13 @@ public class Model_UserSession
 ### Integration Points
 
 **UI Integration**:
+
 - Wire up mouse/keyboard events to call `UpdateLastActivity()`
 - Subscribe to `SessionTimedOut` event in `App.xaml.cs`
 - Update UI header to display current user
 
 **App Lifecycle**:
+
 - Start monitoring after successful authentication
 - Stop monitoring on app close
 - Log "session_end" event on close
@@ -204,6 +217,7 @@ public class Model_UserSession
 All authentication events MUST be logged:
 
 **Event Types**:
+
 - `login_windows` - Windows username authentication
 - `login_pin` - PIN authentication
 - `login_failed` - Failed authentication attempt
@@ -212,6 +226,7 @@ All authentication events MUST be logged:
 - `session_end` - User closed application
 
 **Log Format**:
+
 ```csharp
 await LogUserActivityAsync(
     eventType: "login_windows",
@@ -222,6 +237,7 @@ await LogUserActivityAsync(
 ```
 
 **Rules**:
+
 - Always log successful authentications
 - Log failed attempts (but don't expose sensitive details)
 - Don't block application flow if logging fails
@@ -234,6 +250,7 @@ await LogUserActivityAsync(
 Required test coverage:
 
 **Service_Authentication**:
+
 - Test successful Windows username authentication
 - Test successful PIN authentication
 - Test failed authentication scenarios
@@ -242,6 +259,7 @@ Required test coverage:
 - Test workstation detection (configured, default)
 
 **Service_SessionManager**:
+
 - Test session creation with correct timeout durations
 - Test activity timestamp updates
 - Test timeout detection logic
@@ -250,6 +268,7 @@ Required test coverage:
 ### Integration Tests
 
 Required scenarios:
+
 - Full authentication flow (Windows username → session → timeout)
 - Full authentication flow (PIN → session → timeout)
 - Activity tracking integration with UI
@@ -268,6 +287,7 @@ Required scenarios:
 ## Common Pitfalls
 
 ❌ **Don't**:
+
 - Throw exceptions from service methods
 - Use nullable error handler dependencies
 - Block application flow for logging failures
@@ -275,6 +295,7 @@ Required scenarios:
 - Hardcode timeout durations (use workstation-specific values)
 
 ✅ **Do**:
+
 - Return strongly-typed result objects
 - Require non-nullable dependencies in constructor
 - Handle all exceptions gracefully

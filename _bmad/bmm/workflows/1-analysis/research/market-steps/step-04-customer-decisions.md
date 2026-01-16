@@ -1,6 +1,6 @@
 # Market Research Step 4: Customer Decisions and Journey
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after decision processes content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Customer behavior and pain points analysis completed in previous steps
@@ -31,11 +31,11 @@
 - **Research topic = "{{research_topic}}"** - established from initial discussion
 - **Research goals = "{{research_goals}}"** - established from initial discussion
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct customer decision processes and journey analysis with emphasis on decision factors and journey mapping.
 
-## CUSTOMER DECISIONS ANALYSIS SEQUENCE:
+## CUSTOMER DECISIONS ANALYSIS SEQUENCE
 
 ### 1. Begin Customer Decisions Analysis
 
@@ -96,7 +96,7 @@ Search the web: "{{research_topic}} decision influencing factors"
 
 Prepare customer decisions analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -196,17 +196,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Load: `./step-05-competitive-analysis.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Customer decision-making processes clearly mapped
 ✅ Decision factors and criteria thoroughly analyzed
@@ -218,7 +218,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (competitive analysis)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -233,7 +233,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## CUSTOMER DECISIONS RESEARCH PROTOCOLS:
+## CUSTOMER DECISIONS RESEARCH PROTOCOLS
 
 - Research customer decision studies and psychology
 - Use customer journey mapping methodologies
@@ -243,7 +243,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## DECISION ANALYSIS STANDARDS:
+## DECISION ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative customer decision research sources
@@ -252,7 +252,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable decision insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-05-competitive-analysis.md` to analyze competitive landscape, market positioning, and competitive strategies for {{research_topic}}.
 

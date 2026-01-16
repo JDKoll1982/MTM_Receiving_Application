@@ -1,6 +1,6 @@
 # Technical Research Step 5: Technical Synthesis and Completion
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📄 PRODUCE COMPREHENSIVE DOCUMENT with narrative intro, TOC, and summary
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after synthesis content generation
@@ -22,7 +22,7 @@
 - 🚫 FORBIDDEN to complete workflow until C is selected
 - 📚 GENERATE COMPLETE DOCUMENT STRUCTURE with intro, TOC, and summary
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - comprehensive technical analysis
@@ -31,11 +31,11 @@
 - Web search capabilities with source verification are enabled
 - This is the final synthesis step producing the complete technical research document
 
-## YOUR TASK:
+## YOUR TASK
 
 Produce a comprehensive, authoritative technical research document on **{{research_topic}}** with compelling narrative introduction, detailed TOC, and executive summary based on exhaustive technical research.
 
-## COMPREHENSIVE TECHNICAL DOCUMENT SYNTHESIS:
+## COMPREHENSIVE TECHNICAL DOCUMENT SYNTHESIS
 
 ### 1. Technical Document Structure Planning
 
@@ -89,7 +89,7 @@ Search the web: "{{research_topic}} technical significance importance"
 
 ### 4. Generate Complete Technical Document Content
 
-#### Final Technical Document Structure:
+#### Final Technical Document Structure
 
 ```markdown
 # [Compelling Title]: Comprehensive {{research_topic}} Technical Research
@@ -414,18 +414,18 @@ _This comprehensive technical research document serves as an authoritative techn
 
 ### 6. Handle Final Technical Completion
 
-#### If 'C' (Complete Research):
+#### If 'C' (Complete Research)
 
 - Append the complete technical document to the research file
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
 - Complete the technical research workflow
 - Provide final technical document delivery confirmation
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the complete comprehensive technical research document using the full structure above.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Compelling technical introduction with research significance
 ✅ Comprehensive technical table of contents with complete document structure
@@ -437,7 +437,7 @@ When user selects 'C', append the complete comprehensive technical research docu
 ✅ [C] complete option presented and handled correctly
 ✅ Technical research workflow completed with comprehensive document
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not producing compelling technical introduction
 ❌ Missing comprehensive technical table of contents
@@ -452,7 +452,7 @@ When user selects 'C', append the complete comprehensive technical research docu
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## COMPREHENSIVE TECHNICAL DOCUMENT STANDARDS:
+## COMPREHENSIVE TECHNICAL DOCUMENT STANDARDS
 
 This step ensures the final technical research document:
 
@@ -463,7 +463,7 @@ This step ensures the final technical research document:
 - Delivers strategic technical insights and actionable recommendations
 - Meets professional technical research document quality standards
 
-## TECHNICAL RESEARCH WORKFLOW COMPLETION:
+## TECHNICAL RESEARCH WORKFLOW COMPLETION
 
 When 'C' is selected:
 
@@ -474,7 +474,7 @@ When 'C' is selected:
 - Technical research workflow status updated to complete
 - Final comprehensive technical research document delivered to user
 
-## FINAL TECHNICAL DELIVERABLE:
+## FINAL TECHNICAL DELIVERABLE
 
 Complete authoritative technical research document on {{research_topic}} that:
 

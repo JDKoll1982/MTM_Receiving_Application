@@ -10,13 +10,13 @@ prdPurpose: '{project-root}/src/modules/bmm/workflows/2-plan-workflows/prd/data/
 
 # Step E-1B: Legacy PRD Conversion Assessment
 
-## STEP GOAL:
+## STEP GOAL
 
 Analyze legacy PRD against BMAD standards, identify gaps, propose conversion strategy, and let user choose how to proceed.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Analyze legacy PRD against BMAD standards, identify gaps, propose conversion str
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and PRD Improvement Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -32,21 +32,21 @@ Analyze legacy PRD against BMAD standards, identify gaps, propose conversion str
 - ✅ You bring BMAD standards expertise and conversion guidance
 - ✅ User brings domain knowledge and edit requirements
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on conversion assessment and proposal
 - 🚫 FORBIDDEN to perform conversion yet (that comes in edit step)
 - 💬 Approach: Analytical gap analysis with clear recommendations
 - 🚪 This is a branch step - user chooses conversion path
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze legacy PRD against BMAD standard
 - 💾 Identify gaps and estimate conversion effort
 - 📖 Present conversion options with effort estimates
 - 🚫 FORBIDDEN to proceed without user selection
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Legacy PRD, user's edit requirements, prd-purpose standards
 - Focus: Conversion assessment only (not actual conversion)
@@ -66,12 +66,14 @@ Analyze legacy PRD against BMAD standards, identify gaps, propose conversion str
 **Load the PRD and prd-purpose.md**
 
 **For each BMAD PRD section, analyze:**
+
 1. Does PRD have this section? (Executive Summary, Success Criteria, Product Scope, User Journeys, Functional Requirements, Non-Functional Requirements)
 2. If present: Is it complete and well-structured?
 3. If missing: What content exists that could migrate to this section?
 4. Effort to create/complete: Minimal / Moderate / Significant
 
 **Identify:**
+
 - Core sections present: {count}/6
 - Content gaps in each section
 - Overall conversion effort: Quick / Moderate / Substantial
@@ -80,6 +82,7 @@ Analyze legacy PRD against BMAD standards, identify gaps, propose conversion str
 Return conversion assessment with gap analysis and effort estimate."
 
 **Graceful degradation (if no Task tool):**
+
 - Manually check PRD for each BMAD section
 - Note what's present and what's missing
 - Estimate conversion effort
@@ -90,36 +93,43 @@ Return conversion assessment with gap analysis and effort estimate."
 **For each BMAD core section:**
 
 **Executive Summary:**
+
 - Present: [Yes/No/Partial]
 - Gap: [what's missing or incomplete]
 - Effort to Complete: [Minimal/Moderate/Significant]
 
 **Success Criteria:**
+
 - Present: [Yes/No/Partial]
 - Gap: [what's missing or incomplete]
 - Effort to Complete: [Minimal/Moderate/Significant]
 
 **Product Scope:**
+
 - Present: [Yes/No/Partial]
 - Gap: [what's missing or incomplete]
 - Effort to Complete: [Minimal/Moderate/Significant]
 
 **User Journeys:**
+
 - Present: [Yes/No/Partial]
 - Gap: [what's missing or incomplete]
 - Effort to Complete: [Minimal/Moderate/Significant]
 
 **Functional Requirements:**
+
 - Present: [Yes/No/Partial]
 - Gap: [what's missing or incomplete]
 - Effort to Complete: [Minimal/Moderate/Significant]
 
 **Non-Functional Requirements:**
+
 - Present: [Yes/No/Partial]
 - Gap: [what's missing or incomplete]
 - Effort to Complete: [Minimal/Moderate/Significant]
 
 **Overall Assessment:**
+
 - Sections Present: {count}/6
 - Total Conversion Effort: [Quick/Moderate/Substantial]
 - Recommended: [Full restructuring / Targeted improvements]
@@ -131,6 +141,7 @@ Display:
 "**Legacy PRD Conversion Assessment**
 
 **Current PRD Structure:**
+
 - Core sections present: {count}/6
 {List which sections are present/missing}
 
@@ -155,12 +166,12 @@ Display:
 **[E] Edit & Restructure** - Do both: convert format AND apply your edits
 **[X] Exit** - Review assessment and decide
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - Only proceed based on user selection
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF R (Restructure): Note conversion mode, then load next step
 - IF I (Targeted): Note targeted mode, then load next step
@@ -188,7 +199,7 @@ Load and execute {nextStepFile} (step-e-02-review.md)
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All 6 BMAD core sections analyzed for gaps
 - Effort estimates provided for each section
@@ -197,7 +208,7 @@ Load and execute {nextStepFile} (step-e-02-review.md)
 - User chooses conversion strategy (restructure/targeted/both)
 - Conversion strategy documented for next step
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not analyzing all 6 core sections
 - Missing effort estimates

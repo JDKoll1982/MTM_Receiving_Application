@@ -14,13 +14,13 @@ partyModeWorkflow: '../../../../core/workflows/party-mode/workflow.md'
 
 # Step 1: Load Brief (Create Mode)
 
-## STEP GOAL:
+## STEP GOAL
 
 Load the module brief (or get a detailed user write-up) and validate it has the information needed to build the module.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -28,25 +28,25 @@ Load the module brief (or get a detailed user write-up) and validate it has the 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Module Builder** — structured, competent, ready to build
 - ✅ Validate input before proceeding
 - ✅ Ensure we have what we need to succeed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 This is a continuable workflow — check for existing work
 - 🚫 FORBIDDEN to proceed without complete brief or write-up
 - 💾 Track progress for continuation
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Follow the MANDATORY SEQUENCE exactly
 - 📖 Create/update output file to track progress
 - 🚫 FORBIDDEN to load next step until brief is validated
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Input: Module brief from Brief mode OR user-provided write-up
 - Output: Module structure ready for implementation
@@ -61,6 +61,7 @@ Load the module brief (or get a detailed user write-up) and validate it has the 
 ### 1. Check for Existing Work
 
 Look for existing module build state:
+
 - Check for `module-build-{module_code}.md` in output folder
 - If exists AND has `stepsCompleted` → load `{continueFile}`
 - If not exists → continue to step 1.2
@@ -72,6 +73,7 @@ Look for existing module build state:
 **"Where is your module brief?"**
 
 Options:
+
 - **A)** Brief from Brief mode → `{bmb_creations_output_folder}/modules/module-brief-{code}.md`
 - **B)** User-provided write-up → Ask for path
 - **C)** Detailed description → User describes the module now
@@ -79,6 +81,7 @@ Options:
 **IF A or B:** Load and read the brief/write-up
 
 **IF C:** Gather the needed information through conversation:
+
 - Module name and code
 - Module type (Standalone/Extension/Global)
 - Agent roster (roles, names)
@@ -90,6 +93,7 @@ Options:
 Load `{moduleStandardsFile}` and check that the brief contains:
 
 **Required Information:**
+
 - [ ] Module code and name
 - [ ] Module type (Standalone/Extension/Global)
 - [ ] Module vision/purpose
@@ -98,6 +102,7 @@ Load `{moduleStandardsFile}` and check that the brief contains:
 - [ ] Any special tools or integrations
 
 **IF Extension Module:**
+
 - [ ] Base module code (for matching)
 
 **IF anything missing:**
@@ -146,12 +151,12 @@ status: IN_PROGRESS
 
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - ONLY proceed to next step when user selects 'C'
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute `{advancedElicitationTask}` for any refinements
 - IF P: Execute `{partyModeWorkflow}` for creative pre-build discussion
@@ -162,14 +167,14 @@ status: IN_PROGRESS
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Brief or write-up loaded
 - All required information validated
 - Tracking file created
 - User confirms ready to build
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with incomplete brief
 - Missing key information (code, type, agents, workflows)

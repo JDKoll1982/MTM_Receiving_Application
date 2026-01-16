@@ -1,6 +1,6 @@
 # Market Research Step 2: Customer Insights
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -12,7 +12,7 @@
 - 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after customer insights content generation
@@ -20,18 +20,18 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from step-01 are available
 - Focus on customer behavior and needs analysis
 - Web search capabilities with source verification are enabled
 - May need to search for current customer behavior trends
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive customer insights analysis with emphasis on behavior patterns and needs.
 
-## CUSTOMER INSIGHTS SEQUENCE:
+## CUSTOMER INSIGHTS SEQUENCE
 
 ### 1. Begin Customer Insights Analysis
 
@@ -90,7 +90,7 @@ Search the web: "[product/service/market] customer decision process"
 
 Prepare customer analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -151,17 +151,17 @@ Show the generated customer insights and present continue option:
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Load: `./step-05-competitive-analysis.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the research document using the structure from step 4.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Customer behavior patterns identified with current citations
 ✅ Pain points and challenges clearly documented
@@ -171,7 +171,7 @@ When user selects 'C', append the content directly to the research document usin
 ✅ [C] continue option presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -185,7 +185,7 @@ When user selects 'C', append the content directly to the research document usin
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## CUSTOMER RESEARCH PROTOCOLS:
+## CUSTOMER RESEARCH PROTOCOLS
 
 - Search for customer behavior studies and surveys
 - Use market research firm and industry association sources
@@ -193,7 +193,7 @@ When user selects 'C', append the content directly to the research document usin
 - Note generational and cultural customer variations
 - Research customer satisfaction methodologies
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-05-competitive-analysis.md` to focus on competitive landscape analysis.
 

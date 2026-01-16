@@ -1,6 +1,6 @@
 # Market Research Step 6: Research Completion
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -12,7 +12,7 @@
 - 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after completion content generation
@@ -21,7 +21,7 @@
 - 🚫 FORBIDDEN to complete workflow until C is selected
 - 📚 GENERATE COMPLETE DOCUMENT STRUCTURE with intro, TOC, and summary
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - comprehensive market analysis
@@ -30,11 +30,11 @@
 - Web search capabilities with source verification are enabled
 - This is the final synthesis step producing the complete market research document
 
-## YOUR TASK:
+## YOUR TASK
 
 Produce a comprehensive, authoritative market research document on **{{research_topic}}** with compelling narrative introduction, detailed TOC, and executive summary based on exhaustive market research.
 
-## MARKET RESEARCH COMPLETION SEQUENCE:
+## MARKET RESEARCH COMPLETION SEQUENCE
 
 ### 1. Begin Strategic Synthesis
 
@@ -79,7 +79,7 @@ Search the web: "market research risk assessment frameworks"
 
 Prepare comprehensive market research document with full structure:
 
-#### Complete Document Structure:
+#### Complete Document Structure
 
 ```markdown
 # [Compelling Title]: Comprehensive {{research_topic}} Market Research
@@ -387,17 +387,17 @@ _This comprehensive market research document serves as an authoritative market r
 
 ### 6. Handle Complete Selection
 
-#### If 'C' (Complete Research):
+#### If 'C' (Complete Research)
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Complete the market research workflow
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the research document using the structure from step 4.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Compelling market introduction with research significance
 ✅ Comprehensive market table of contents with complete document structure
@@ -409,7 +409,7 @@ When user selects 'C', append the content directly to the research document usin
 ✅ [C] complete option presented and handled correctly
 ✅ Market research workflow completed with comprehensive document
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not producing compelling market introduction
 ❌ Missing comprehensive market table of contents
@@ -424,7 +424,7 @@ When user selects 'C', append the content directly to the research document usin
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## STRATEGIC RESEARCH PROTOCOLS:
+## STRATEGIC RESEARCH PROTOCOLS
 
 - Search for current market strategy frameworks and best practices
 - Research successful market entry cases and approaches
@@ -432,7 +432,7 @@ When user selects 'C', append the content directly to the research document usin
 - Research implementation planning and execution strategies
 - Consider market timing and readiness factors
 
-## COMPREHENSIVE MARKET DOCUMENT STANDARDS:
+## COMPREHENSIVE MARKET DOCUMENT STANDARDS
 
 This step ensures the final market research document:
 
@@ -443,7 +443,7 @@ This step ensures the final market research document:
 - Delivers strategic market insights and actionable recommendations
 - Meets professional market research document quality standards
 
-## MARKET RESEARCH WORKFLOW COMPLETION:
+## MARKET RESEARCH WORKFLOW COMPLETION
 
 When 'C' is selected:
 
@@ -454,7 +454,7 @@ When 'C' is selected:
 - Market research workflow status updated to complete
 - Final comprehensive market research document delivered to user
 
-## FINAL MARKET DELIVERABLE:
+## FINAL MARKET DELIVERABLE
 
 Complete authoritative market research document on {{research_topic}} that:
 
@@ -463,7 +463,7 @@ Complete authoritative market research document on {{research_topic}} that:
 - Serves as market reference document for continued use
 - Maintains highest market research quality standards with current verification
 
-## NEXT STEPS:
+## NEXT STEPS
 
 Comprehensive market research workflow complete. User may:
 

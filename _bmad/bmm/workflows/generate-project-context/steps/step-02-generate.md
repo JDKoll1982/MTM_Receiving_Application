@@ -1,6 +1,6 @@
 # Step 2: Context Rules Generation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 - ✅ ALWAYS treat this as collaborative discovery between technical peers
@@ -10,7 +10,7 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 📝 Focus on specific, actionable rules rather than general advice
@@ -19,7 +19,7 @@
 - 📖 Update frontmatter with completed sections
 - 🚫 FORBIDDEN to load next step until all sections are complete
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices for each rule category:
 
@@ -27,25 +27,25 @@ This step will generate content and present choices for each rule category:
 - **P (Party Mode)**: Bring multiple perspectives to identify critical edge cases
 - **C (Continue)**: Save the current rules and proceed to next category
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Discovery results from step-1 are available
 - Technology stack and existing patterns are identified
 - Focus on rules that prevent implementation mistakes
 - Prioritize unobvious details that AI agents might miss
 
-## YOUR TASK:
+## YOUR TASK
 
 Collaboratively generate specific, critical rules that AI agents must follow when implementing code in this project.
 
-## CONTEXT GENERATION SEQUENCE:
+## CONTEXT GENERATION SEQUENCE
 
 ### 1. Technology Stack & Versions
 
@@ -214,7 +214,7 @@ Are there other 'gotchas' agents should know about?"
 
 For each category, prepare lean content for the project context file:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Technology Stack & Versions
@@ -265,7 +265,7 @@ After each category, show the generated rules and present choices:
 
 ### 10. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute advanced-elicitation.xml with current category rules
 - Process enhanced rules that come back
@@ -273,7 +273,7 @@ After each category, show the generated rules and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute party-mode workflow with category rules context
 - Process collaborative insights on implementation patterns
@@ -281,17 +281,17 @@ After each category, show the generated rules and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Save the current category content to project context file
 - Update frontmatter: `sections_completed: [...]`
 - Proceed to next category or step-03 if complete
 
-## APPEND TO PROJECT CONTEXT:
+## APPEND TO PROJECT CONTEXT
 
 When user selects 'C' for a category, append the content directly to `{output_folder}/project-context.md` using the structure from step 8.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All critical technology versions accurately documented
 ✅ Language-specific rules cover unobvious patterns
@@ -302,7 +302,7 @@ When user selects 'C' for a category, append the content directly to `{output_fo
 ✅ Content is lean and optimized for LLM context
 ✅ A/P/C menu presented and handled correctly for each category
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Including obvious rules that agents already know
 ❌ Making content too verbose for LLM context efficiency
@@ -311,7 +311,7 @@ When user selects 'C' for a category, append the content directly to `{output_fo
 ❌ Not documenting exact versions and configurations
 ❌ Not presenting A/P/C menu after content generation
 
-## NEXT STEP:
+## NEXT STEP
 
 After completing all rule categories and user selects 'C' for the final category, load `./step-03-complete.md` to finalize the project context file.
 

@@ -3,7 +3,9 @@
 ## MVVM Architecture (NON-NEGOTIABLE)
 
 ### Layer Separation Rules
+
 **ViewModels SHALL NOT:**
+
 - Directly instantiate or call DAO classes (`Dao_*`)
 - Access database helpers (`Helper_Database_*`)
 - Use connection strings or database configuration
@@ -12,6 +14,7 @@
 **Correct Flow:** View → ViewModel → Service → DAO → Database
 
 ### Example of Violations
+
 ```csharp
 // ❌ FORBIDDEN - ViewModel calling DAO
 var result = await Dao_ReceivingLine.InsertAsync(line);
@@ -140,6 +143,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 ## Pre-Commit Validation
 
 ALWAYS verify before committing:
+
 - ✅ No ViewModel→DAO dependencies
 - ✅ No Service→Database direct access
 - ✅ All DAOs are instance-based and registered in DI

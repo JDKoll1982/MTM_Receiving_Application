@@ -52,6 +52,7 @@ private void OnTimeout()
 ```
 
 ## Testing
+
 Mock `IDispatcherService` in unit tests to execute the action immediately, avoiding threading issues in tests.
 
 ```csharp

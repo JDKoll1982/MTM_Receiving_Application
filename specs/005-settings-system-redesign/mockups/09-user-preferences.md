@@ -11,6 +11,7 @@
 ### 1. **Appearance Section**
 
 #### Theme - `ComboBox`
+
 ```xml
 <ComboBox
     Header="Theme"
@@ -23,6 +24,7 @@
 ```
 
 #### Font Size - `NumberBox`
+
 ```xml
 <NumberBox
     Header="Font Size"
@@ -34,6 +36,7 @@
 ```
 
 #### Use Compact Mode - `ToggleSwitch`
+
 ```xml
 <ToggleSwitch
     Header="Use Compact Mode"
@@ -45,6 +48,7 @@
 ### 2. **Behavior Section**
 
 #### Enable Sound Effects - `ToggleSwitch`
+
 ```xml
 <ToggleSwitch
     Header="Enable Sound Effects"
@@ -52,6 +56,7 @@
 ```
 
 #### Confirm Destructive Actions - `ToggleSwitch`
+
 ```xml
 <ToggleSwitch
     Header="Confirm Destructive Actions"
@@ -63,6 +68,7 @@
 ### 3. **Data Display Section**
 
 #### Date Format - `ComboBox`
+
 ```xml
 <ComboBox
     Header="Date Format"
@@ -75,6 +81,7 @@
 ```
 
 #### Time Format - `ComboBox`
+
 ```xml
 <ComboBox
     Header="Time Format"
@@ -86,6 +93,7 @@
 ```
 
 #### Rows Per Page - `NumberBox`
+
 ```xml
 <NumberBox
     Header="Rows Per Page"
@@ -97,6 +105,7 @@
 ```
 
 #### Show Tooltips - `ToggleSwitch`
+
 ```xml
 <ToggleSwitch
     Header="Show Tooltips"
@@ -238,4 +247,5 @@ CREATE TABLE settings_dunnage_personal (
 ---
 
 ## References
+
 - [WinUI 3 Gallery - Theme Resources](https://github.com/microsoft/WinUI-Gallery/blob/main/WinUIGallery/Samples/ControlPages/ThemeResourcesPage.xaml)

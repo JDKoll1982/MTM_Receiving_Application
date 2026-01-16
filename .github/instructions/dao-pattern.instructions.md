@@ -11,10 +11,12 @@ The Data Access Object (DAO) pattern provides an abstract interface to the datab
 **CONSTITUTIONAL MANDATE**: All DAOs must be **Instance-Based** and registered in the Dependency Injection container. Static DAOs are strictly prohibited.
 
 ### Deprecated: Static DAO Pattern
+
 The legacy pattern of using `public static class Dao_Name` is **DEPRECATED**.
--   Do NOT create new static DAOs.
--   Refactor existing static DAOs to instance-based when modifying them.
--   Static DAOs cannot be injected and make unit testing difficult.
+
+- Do NOT create new static DAOs.
+- Refactor existing static DAOs to instance-based when modifying them.
+- Static DAOs cannot be injected and make unit testing difficult.
 
 ### Benefits
 
@@ -42,15 +44,18 @@ Data/
 ## Naming Conventions
 
 ### File Names
+
 - Format: `Dao_<EntityName>.cs`
 - Examples: `Dao_ReceivingLine.cs`, `Dao_User.cs`
 
 ### Class Names
+
 - Format: `Dao_<EntityName>`
 - Must be **public class** (NOT static)
 - Example: `public class Dao_ReceivingLine`
 
 ### Method Names
+
 - Format: `<Action><Entity>Async` or generic `<Action>Async`
 - Actions: Insert, Update, Delete, Get, GetAll, GetBy<Criteria>
 - Always suffix with `Async`
@@ -167,18 +172,22 @@ private void ConfigureServices(HostBuilderContext context, IServiceCollection se
 ## Method Signatures
 
 ### Return Type
+
 All DAO methods MUST return `Task<Model_Dao_Result<T>>` or `Task<Model_Dao_Result>`:
+
 ```csharp
 public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 public async Task<Model_Dao_Result<List<Model_ReceivingLine>>> GetAllAsync()
 ```
 
 ### Parameters
+
 - Accept strongly-typed model objects
 - Use nullable types for optional fields (`int?`, `string?`)
 - For queries, accept specific criteria parameters
 
 ### Async/Await
+
 - All methods must be async
 - Use `await` for all database operations
 - Don't use `.Result` or `.Wait()` (causes deadlocks)
@@ -207,6 +216,7 @@ public class Dao_InforVisualPO
 ## Error Handling
 
 ### DAO Level
+
 Catches exceptions, logs errors (optional), and returns `Model_Dao_Result.Failure`.
 **NEVER throw exceptions from a DAO.**
 
@@ -223,7 +233,9 @@ catch (Exception ex)
 ## Testing
 
 ### Unit Tests
+
 Mock the DAO when testing Services:
+
 ```csharp
 // Service Test
 [Fact]
@@ -239,7 +251,9 @@ public async Task Insert_ValidatesInput()
 ```
 
 ### Integration Tests
+
 Test against real database with test connection string:
+
 ```csharp
 [Fact]
 public async Task Insert_ReturnsNewId()
@@ -260,20 +274,24 @@ public async Task Insert_ReturnsNewId()
 ## Performance Guidelines
 
 ### Connection Management
+
 - Helper_Database_StoredProcedure manages connections automatically
 - For Infor Visual (direct SQL), use `using` statements for `SqlConnection`
 
 ### Query Optimization
+
 - Use indexes on frequently-queried columns
 - Avoid SELECT * (specify columns)
 - Use stored procedures for MySQL
 - Use parameterized queries for Infor Visual
 
 ### Monitoring
+
 Check `Model_Dao_Result.ExecutionTimeMs` in Service layer logging.
 
 ## Examples
 
 See existing implementations:
+
 - `Data/Receiving/Dao_ReceivingLoad.cs` - Instance-based MySQL DAO
 - `Data/InforVisual/Dao_InforVisualPO.cs` - Instance-based READ-ONLY SQL Server DAO

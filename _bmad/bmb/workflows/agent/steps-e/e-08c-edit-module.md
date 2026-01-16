@@ -21,25 +21,25 @@ criticalActions: ../data/critical-actions.md
 
 # Edit Step 8c: Edit Module Agent
 
-## STEP GOAL:
+## STEP GOAL
 
 Apply all planned edits to the Module agent YAML file and manage workflow integration and sidecar structure.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 🛑 ALWAYS create backup before modifying agent file
 - 📖 CRITICAL: Read template and architecture files first
 - 🔄 CRITICAL: Load editPlan and agentFile
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load all reference files before applying edits
 - 📊 Manage workflow integration paths for Module agents
 - 💾 Validate YAML and workflow paths after edits
 - ➡️ Auto-advance to post-edit validation when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load template, architecture, and data files
 - 📊 Read editPlan to get all planned changes
@@ -55,6 +55,7 @@ Apply all planned edits to the Module agent YAML file and manage workflow integr
 ### 1. Load Reference Documents
 
 Read all files before editing - these are RULES that must be followed when editing agents:
+
 - `{expertTemplate}` - Module uses expert as baseline
 - `{expertArch}`, `{moduleArch}` - Architecture references
 - `{agentCompilation}`, `{agentMetadata}`, `{personaProperties}`, `{principlesCrafting}`
@@ -73,20 +74,24 @@ ALWAYS backup before editing:
 ### 4. Apply Edits in Sequence
 
 **Type Conversion TO Module:**
+
 - Set `module` to module code (e.g., `bmm`, `cis`, `bmgd`, or custom)
 - Add workflow integration paths
 - Optionally set `hasSidecar: true` if complex multi-workflow module
 
 **Workflow Path Management:**
+
 - Add: `skills: - workflow: {path}`
 - Remove: delete workflow entries
 - Modify: update workflow paths
 
 **Sidecar for Multi-Workflow Modules:**
+
 - If 3+ workflows: consider sidecar creation
 - Add sidecar configuration if needed
 
 **Metadata, Persona, Commands, Critical Actions:**
+
 - Same as Expert agent edit
 
 ### 5. Validate Workflow Paths

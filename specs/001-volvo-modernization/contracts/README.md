@@ -17,6 +17,7 @@ This document defines the command and query contracts (request/response DTOs) fo
 **Purpose**: Adds a part to the current shipment (in-memory, not persisted until save/complete).
 
 **Request**:
+
 ```csharp
 public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
 {
@@ -32,6 +33,7 @@ public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
 **Response**: `Model_Dao_Result` (success/failure with error message)
 
 **Validation**:
+
 - PartNumber: Required, must exist in volvo_master_data
 - ReceivedSkidCount: > 0
 - If HasDiscrepancy = true: ExpectedSkidCount and DiscrepancyNote required
@@ -43,6 +45,7 @@ public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
 **Purpose**: Removes a part from the current shipment (in-memory operation).
 
 **Request**:
+
 ```csharp
 public record RemovePartFromShipmentCommand : IRequest<Model_Dao_Result>
 {
@@ -53,6 +56,7 @@ public record RemovePartFromShipmentCommand : IRequest<Model_Dao_Result>
 **Response**: `Model_Dao_Result`
 
 **Validation**:
+
 - PartNumber: Required, must exist in current shipment part list
 
 ---
@@ -62,6 +66,7 @@ public record RemovePartFromShipmentCommand : IRequest<Model_Dao_Result>
 **Purpose**: Saves shipment as pending (allows resuming later).
 
 **Request**:
+
 ```csharp
 public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
 {
@@ -76,6 +81,7 @@ public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
 **Response**: `Model_Dao_Result<int>` (ShipmentId)
 
 **Validation**:
+
 - ShipmentDate: Required, <= DateTimeOffset.Now
 - Parts: At least one part required
 
@@ -86,6 +92,7 @@ public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
 **Purpose**: Finalizes shipment, generates labels, sends email.
 
 **Request**:
+
 ```csharp
 public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
 {
@@ -101,6 +108,7 @@ public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
 **Response**: `Model_Dao_Result<int>` (ShipmentId)
 
 **Validation**:
+
 - ShipmentDate: Required, <= DateTimeOffset.Now
 - Parts: At least one part required
 - All parts validated per AddPartToShipmentCommand rules
@@ -112,6 +120,7 @@ public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
 **Purpose**: Updates existing shipment (edit from history view).
 
 **Request**:
+
 ```csharp
 public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
 {
@@ -127,6 +136,7 @@ public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
 **Response**: `Model_Dao_Result`
 
 **Validation**:
+
 - ShipmentId: > 0
 - Parts: At least one part required
 
@@ -137,6 +147,7 @@ public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
 **Purpose**: Adds new part to master data.
 
 **Request**:
+
 ```csharp
 public record AddVolvoPartCommand : IRequest<Model_Dao_Result<int>>
 {
@@ -148,6 +159,7 @@ public record AddVolvoPartCommand : IRequest<Model_Dao_Result<int>>
 **Response**: `Model_Dao_Result<int>` (PartId)
 
 **Validation**:
+
 - PartNumber: Required, unique
 - QuantityPerSkid: > 0
 
@@ -158,6 +170,7 @@ public record AddVolvoPartCommand : IRequest<Model_Dao_Result<int>>
 **Purpose**: Updates existing part in master data.
 
 **Request**:
+
 ```csharp
 public record UpdateVolvoPartCommand : IRequest<Model_Dao_Result>
 {
@@ -170,6 +183,7 @@ public record UpdateVolvoPartCommand : IRequest<Model_Dao_Result>
 **Response**: `Model_Dao_Result`
 
 **Validation**:
+
 - PartId: > 0
 - PartNumber: Required
 - QuantityPerSkid: > 0
@@ -181,6 +195,7 @@ public record UpdateVolvoPartCommand : IRequest<Model_Dao_Result>
 **Purpose**: Deactivates part in master data.
 
 **Request**:
+
 ```csharp
 public record DeactivateVolvoPartCommand : IRequest<Model_Dao_Result>
 {
@@ -191,6 +206,7 @@ public record DeactivateVolvoPartCommand : IRequest<Model_Dao_Result>
 **Response**: `Model_Dao_Result`
 
 **Validation**:
+
 - PartId: > 0
 - Cannot deactivate if referenced by pending shipments
 
@@ -201,6 +217,7 @@ public record DeactivateVolvoPartCommand : IRequest<Model_Dao_Result>
 **Purpose**: Bulk imports parts from CSV file.
 
 **Request**:
+
 ```csharp
 public record ImportPartsCsvCommand : IRequest<Model_Dao_Result<ImportPartsCsvResult>>
 {
@@ -218,6 +235,7 @@ public record ImportPartsCsvResult
 **Response**: `Model_Dao_Result<ImportPartsCsvResult>`
 
 **Validation**:
+
 - CsvFilePath: Required, must exist
 - CSV format: PartNumber, QuantityPerSkid (validated per-row)
 
@@ -230,6 +248,7 @@ public record ImportPartsCsvResult
 **Purpose**: Gets initial data for new shipment entry (current date + next shipment number).
 
 **Request**:
+
 ```csharp
 public record GetInitialShipmentDataQuery : IRequest<Model_Dao_Result<InitialShipmentData>>
 {
@@ -251,6 +270,7 @@ public record InitialShipmentData
 **Purpose**: Retrieves pending shipment for current user (to resume entry).
 
 **Request**:
+
 ```csharp
 public record GetPendingShipmentQuery : IRequest<Model_Dao_Result<Model_VolvoShipment>>
 {
@@ -267,6 +287,7 @@ public record GetPendingShipmentQuery : IRequest<Model_Dao_Result<Model_VolvoShi
 **Purpose**: Autocomplete search for part numbers.
 
 **Request**:
+
 ```csharp
 public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPart>>>
 {
@@ -284,6 +305,7 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 **Purpose**: Generates CSV label file for shipment.
 
 **Request**:
+
 ```csharp
 public record GenerateLabelCsvQuery : IRequest<Model_Dao_Result<string>>
 {
@@ -300,6 +322,7 @@ public record GenerateLabelCsvQuery : IRequest<Model_Dao_Result<string>>
 **Purpose**: Formats email notification data (HTML + plain text).
 
 **Request**:
+
 ```csharp
 public record FormatEmailDataQuery : IRequest<Model_Dao_Result<Model_VolvoEmailData>>
 {
@@ -316,6 +339,7 @@ public record FormatEmailDataQuery : IRequest<Model_Dao_Result<Model_VolvoEmailD
 **Purpose**: Gets recent shipments for history view.
 
 **Request**:
+
 ```csharp
 public record GetRecentShipmentsQuery : IRequest<Model_Dao_Result<List<Model_VolvoShipment>>>
 {
@@ -332,6 +356,7 @@ public record GetRecentShipmentsQuery : IRequest<Model_Dao_Result<List<Model_Vol
 **Purpose**: Gets filtered shipment history.
 
 **Request**:
+
 ```csharp
 public record GetShipmentHistoryQuery : IRequest<Model_Dao_Result<List<Model_VolvoShipment>>>
 {
@@ -350,6 +375,7 @@ public record GetShipmentHistoryQuery : IRequest<Model_Dao_Result<List<Model_Vol
 **Purpose**: Gets shipment with line items for detail/edit view.
 
 **Request**:
+
 ```csharp
 public record GetShipmentDetailQuery : IRequest<Model_Dao_Result<ShipmentDetail>>
 {
@@ -372,6 +398,7 @@ public record ShipmentDetail
 **Purpose**: Gets all parts for settings grid.
 
 **Request**:
+
 ```csharp
 public record GetAllVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPart>>>
 {
@@ -388,6 +415,7 @@ public record GetAllVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 **Purpose**: Gets BOM components for a part.
 
 **Request**:
+
 ```csharp
 public record GetPartComponentsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPartComponent>>>
 {
@@ -404,6 +432,7 @@ public record GetPartComponentsQuery : IRequest<Model_Dao_Result<List<Model_Volv
 **Purpose**: Exports parts master data to CSV.
 
 **Request**:
+
 ```csharp
 public record ExportPartsCsvQuery : IRequest<Model_Dao_Result<string>>
 {
@@ -420,6 +449,7 @@ public record ExportPartsCsvQuery : IRequest<Model_Dao_Result<string>>
 **Purpose**: Exports shipments to CSV.
 
 **Request**:
+
 ```csharp
 public record ExportShipmentsQuery : IRequest<Model_Dao_Result<string>>
 {

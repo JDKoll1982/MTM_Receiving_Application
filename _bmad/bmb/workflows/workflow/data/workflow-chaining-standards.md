@@ -15,6 +15,7 @@ brainstorming → research → brief → PRD → UX → architecture → epics �
 ```
 
 Each workflow:
+
 1. Checks for required inputs from prior workflows
 2. Validates inputs are complete
 3. Produces output for next workflow
@@ -27,12 +28,14 @@ Each workflow:
 ### Output Contract (What Each Workflow Produces)
 
 **Every workflow should:**
+
 1. Create output document with predictable filename
 2. Include `workflowType` in frontmatter for identification
 3. Mark `stepsCompleted: [all steps]` when complete
 4. Store in known location (`{module_output_folder}`)
 
 **Example frontmatter:**
+
 ```yaml
 ---
 workflowType: 'prd'
@@ -47,6 +50,7 @@ previousWorkflow: 'create-brief'
 ### Input Contract (What Each Workflow Consumes)
 
 **Every workflow should:**
+
 1. Define required inputs in Step 1
 2. Search in `{module_output_folder}` for prior outputs
 3. Validate inputs are complete
@@ -91,6 +95,7 @@ Would you like to:
 ```
 
 **Update output frontmatter:**
+
 ```yaml
 nextWorkflow: 'create-ux'
 nextWorkflowRecommended: true
@@ -121,6 +126,7 @@ outputs:
 ```
 
 **Workflow checks this file to:**
+
 - Validate sequence (don't run UX before PRD)
 - Find output locations
 - Track overall progress
@@ -152,6 +158,7 @@ Which workflow would you like to run next?
 ## Required vs Optional Sequences
 
 ### Required Sequence
+
 **PRD must come before Architecture:**
 
 ```yaml
@@ -167,6 +174,7 @@ ELSE:
 ```
 
 ### Optional Sequence
+
 **UX research helps Architecture but isn't required:**
 
 ```yaml
@@ -196,6 +204,7 @@ ELSE:
 | epics | `epics-{project_name}.md` |
 
 **Predictable filenames enable:**
+
 - Automatic discovery
 - Clear dependencies
 - Easy validation
@@ -235,6 +244,7 @@ workflows:
 ```
 
 **Workflows read this to:**
+
 - Know what outputs exist
 - Know valid next steps
 - Know output filenames
@@ -262,6 +272,7 @@ workflows:
 ## Validation Checklist
 
 For workflow chaining:
+
 - [ ] Output filename follows convention
 - [ ] Frontmatter includes `workflowType`
 - [ ] `stepsCompleted` marked complete when done

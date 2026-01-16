@@ -3,26 +3,32 @@
 ## Completed Files (11 files)
 
 ### Shared Foundation
+
 ✅ `Shared/winui3-theme.css` - Fluent Design theme variables
 ✅ `Shared/styles.css` - Complete WinUI3-inspired styles  
 ✅ `Shared/mock-data.js` - Sample data for all modules
 
 ### Login Module
+
 ✅ `Login/login.html` - Badge + PIN authentication
 
 ### Operator Module  
+
 ✅ `Operator/waitlist.html` - Waitlist with request wizard
 
 ### Material Handler Module
+
 ✅ `MaterialHandler/waitlist.html` - Unified task list (4 types)
 ✅ `MaterialHandler/my-tasks.html` - Active tasks with timers
 ✅ `MaterialHandler/recent.html` - Completed task history
 ✅ `MaterialHandler/floor-plan.html` - SVG facility map
 
 ### Material Handler Lead Module
+
 ✅ `MaterialHandlerLead/waitlist.html` - Split view with live analytics panel
 
 ### Documentation
+
 ✅ `index.html` - Navigation hub
 ✅ `README.md` - Comprehensive documentation (21KB)
 
@@ -33,17 +39,20 @@
 The README.md contains complete specifications for these files. All follow the same architectural patterns established in the created samples:
 
 ### Material Handler Lead (3 more files)
+
 - **analytics.html**: Full-screen dashboard with SVG charts (task volume, handler performance, wait times)
 - **team-management.html**: Handler roster table with zone assignments, status, reassignment
 - **controls.html**: Zone Mode and Auto-Assign toggle switches with descriptions
 
 ### Operator Lead (4 files)
+
 - **waitlist.html**: Press floor waitlist (all presses, not single operator)
 - **press-analytics.html**: Press utilization SVG charts (uptime/downtime, jobs per press)
 - **operator-management.html**: Operator roster with press assignments, clock-in status
 - **trends.html**: Historical trend analysis with line/bar charts
 
 ### Plant Manager (5 files)
+
 - **dashboard.html**: Unified tabbed dashboard (Overview, MH Summary, Press Summary)
 - **mh-analytics.html**: Material handling metrics (same as MH Lead + cross-site comparison)
 - **press-analytics.html**: Press floor metrics (same as Operator Lead + multi-shift)
@@ -51,6 +60,7 @@ The README.md contains complete specifications for these files. All follow the s
 - **user-management.html**: User administration table (badge ID, role, site, actions)
 
 ### Operator Module (2 more files)
+
 - **active-jobs.html**: Currently running jobs from Visual ERP
 - **recent.html**: Completed request history with date filter
 
@@ -61,6 +71,7 @@ The README.md contains complete specifications for these files. All follow the s
 All remaining files use these established patterns:
 
 ### Navigation Pane Structure
+
 ```html
 <nav class="nav-pane">
     <div class="nav-pane-header">
@@ -74,6 +85,7 @@ All remaining files use these established patterns:
 ```
 
 ### Command Bar Pattern
+
 ```html
 <div class="command-bar">
     <div class="command-bar-left">
@@ -86,6 +98,7 @@ All remaining files use these established patterns:
 ```
 
 ### SVG Chart Template (Analytics)
+
 ```html
 <div class="chart-container">
     <h3>[Chart Title]</h3>
@@ -105,6 +118,7 @@ All remaining files use these established patterns:
 ```
 
 ### Toggle Switch Pattern (Controls)
+
 ```html
 <div style="margin-bottom: 24px;">
     <label class="toggle-switch">
@@ -121,6 +135,7 @@ All remaining files use these established patterns:
 ```
 
 ### Table Pattern
+
 ```html
 <table class="winui-table">
     <thead>
@@ -145,18 +160,21 @@ All remaining files use these established patterns:
 ## Chart Types for Analytics Files
 
 ### Material Handler Lead Analytics
+
 - **Bar Chart**: Task volume by type (Receiving, Dunnage, Routing, Press)
 - **Bar Chart**: Handler performance comparison (tasks completed, avg time)
 - **Line Chart**: Wait time trends over time
 - **Pie Chart**: Zone distribution
 
 ### Operator Lead Analytics  
+
 - **Pie Chart**: Press utilization (uptime vs downtime)
 - **Bar Chart**: Jobs completed per press
 - **Line Chart**: Average cycle time trends
 - **Stacked Bar Chart**: Downtime reasons
 
 ### Plant Manager Dashboard
+
 - **Combined Bar Chart**: Task volume by department
 - **Line Chart**: Plant-wide efficiency score
 - **Comparison Charts**: Expo Drive vs VITS Drive
@@ -180,17 +198,20 @@ All remaining files can use data from `mock-data.js`:
 ## Color Coding Reference
 
 ### Task Types (Material Handler)
+
 - **Receiving**: `#0078D4` (Blue) - `.task-receiving`
 - **Dunnage**: `#107C10` (Green) - `.task-dunnage`
 - **Routing**: `#FF8C00` (Orange) - `.task-routing`
 - **Press Floor**: `#E81123` (Red) - `.task-press`
 
 ### Priority Levels
+
 - **High**: `#E81123` (Red) - `.priority-high`
 - **Medium**: `#FFC83D` (Amber) - `.priority-medium`
 - **Low**: `#107C10` (Green) - `.priority-low`
 
 ### Wait Time Status
+
 - **Normal**: `#107C10` (Green) - `.wait-normal`
 - **Warning**: `#FFC83D` (Amber) - `.wait-warning`
 - **Critical**: `#E81123` (Red) - `.wait-critical`
@@ -200,6 +221,7 @@ All remaining files can use data from `mock-data.js`:
 ## Accessibility Reminders
 
 All new files should include:
+
 - `aria-label` on icon buttons
 - `role` attributes on custom controls
 - Keyboard navigation (`tabindex`)
@@ -211,6 +233,7 @@ All new files should include:
 ## WinUI3 Control Comments
 
 Add these comments above major UI elements:
+
 ```html
 <!-- WinUI3 Equivalent: NavigationView -->
 <!-- WinUI3 Equivalent: ListView with GridView ItemTemplate -->

@@ -13,6 +13,7 @@
 ## Service_ErrorHandler Usage
 
 ### In ViewModels
+
 ```csharp
 [RelayCommand]
 private async Task SaveAsync()
@@ -51,6 +52,7 @@ private async Task SaveAsync()
 ```
 
 ### In DAOs
+
 ```csharp
 public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 {
@@ -80,6 +82,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 ## User-Facing Error Messages
 
 ### Good Messages
+
 - Clear and concise
 - Explain what happened
 - Suggest next steps
@@ -92,6 +95,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 ```
 
 ### Bad Messages (Avoid)
+
 ```
 "NullReferenceException in Dao_ReceivingLine.InsertReceivingLineAsync()"
 "Error: 0x80004005"
@@ -101,6 +105,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 ## Logging Standards
 
 ### ILoggingService Usage
+
 ```csharp
 // Log successful operations
 await _logger.LogInfoAsync("Receiving line created successfully", "Dao_ReceivingLine");
@@ -113,6 +118,7 @@ await _logger.LogErrorAsync(
 ```
 
 ### What to Log
+
 - ✅ All exceptions
 - ✅ Database operations (with execution time)
 - ✅ User actions
@@ -120,6 +126,7 @@ await _logger.LogErrorAsync(
 - ✅ Configuration changes
 
 ### What NOT to Log
+
 - ❌ Passwords or credentials
 - ❌ Credit card numbers
 - ❌ Full connection strings (mask passwords)
@@ -127,12 +134,15 @@ await _logger.LogErrorAsync(
 ## Error Recovery Patterns
 
 ### Automatic Retry
+
 Helper_Database_StoredProcedure automatically retries transient errors:
+
 - 3 attempts max
 - Delays: 100ms, 200ms, 400ms
 - Only for transient error codes (1205, 1213, 2006, 2013)
 
 ### Graceful Degradation
+
 ```csharp
 try
 {
@@ -146,6 +156,7 @@ catch (Exception ex)
 ```
 
 ### User Retry Dialog
+
 ```csharp
 var dialog = new ContentDialog
 {

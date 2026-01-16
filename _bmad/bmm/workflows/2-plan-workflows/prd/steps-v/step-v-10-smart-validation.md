@@ -11,13 +11,13 @@ advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitati
 
 # Step 10: SMART Requirements Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate Functional Requirements meet SMART quality criteria (Specific, Measurable, Attainable, Relevant, Traceable), ensuring high-quality requirements.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Validate Functional Requirements meet SMART quality criteria (Specific, Measurab
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -33,14 +33,14 @@ Validate Functional Requirements meet SMART quality criteria (Specific, Measurab
 - ✅ You bring requirements engineering expertise and quality assessment
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on FR quality assessment using SMART framework
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Score each FR on SMART criteria (1-5 scale)
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Extract all FRs from PRD
 - 🎯 Score each FR on SMART criteria (Specific, Measurable, Attainable, Relevant, Traceable)
@@ -49,7 +49,7 @@ Validate Functional Requirements meet SMART quality criteria (Specific, Measurab
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file, validation report
 - Focus: FR quality assessment only using SMART framework
@@ -63,6 +63,7 @@ Validate Functional Requirements meet SMART quality criteria (Specific, Measurab
 ### 1. Extract All Functional Requirements
 
 From the PRD's Functional Requirements section, extract:
+
 - All FRs with their FR numbers (FR-001, FR-002, etc.)
 - Count total FRs
 
@@ -77,36 +78,43 @@ From the PRD's Functional Requirements section, extract:
 **For each FR, score on SMART criteria (1-5 scale):**
 
 **Specific (1-5):**
+
 - 5: Clear, unambiguous, well-defined
 - 3: Somewhat clear but could be more specific
 - 1: Vague, ambiguous, unclear
 
 **Measurable (1-5):**
+
 - 5: Quantifiable metrics, testable
 - 3: Partially measurable
 - 1: Not measurable, subjective
 
 **Attainable (1-5):**
+
 - 5: Realistic, achievable with constraints
 - 3: Probably achievable but uncertain
 - 1: Unrealistic, technically infeasible
 
 **Relevant (1-5):**
+
 - 5: Clearly aligned with user needs and business objectives
 - 3: Somewhat relevant but connection unclear
 - 1: Not relevant, doesn't align with goals
 
 **Traceable (1-5):**
+
 - 5: Clearly traces to user journey or business objective
 - 3: Partially traceable
 - 1: Orphan requirement, no clear source
 
 **For each FR with score < 3 in any category:**
+
 - Provide specific improvement suggestions
 
 Return scoring table with all FR scores and improvement suggestions for low-scoring FRs."
 
 **Graceful degradation (if no Task tool):**
+
 - Manually score each FR on SMART criteria
 - Note FRs with low scores
 - Provide improvement suggestions
@@ -114,6 +122,7 @@ Return scoring table with all FR scores and improvement suggestions for low-scor
 ### 3. Build Scoring Table
 
 For each FR:
+
 - FR number
 - Specific score (1-5)
 - Measurable score (1-5)
@@ -124,6 +133,7 @@ For each FR:
 - Flag if any category < 3
 
 **Calculate overall FR quality:**
+
 - Percentage of FRs with all scores ≥ 3
 - Percentage of FRs with all scores ≥ 4
 - Average score across all FRs and categories
@@ -185,7 +195,7 @@ Immediately load and execute {nextStepFile} (step-v-11-holistic-quality-validati
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All FRs extracted from PRD
 - Each FR scored on all 5 SMART criteria (1-5 scale)
@@ -197,7 +207,7 @@ Immediately load and execute {nextStepFile} (step-v-11-holistic-quality-validati
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not scoring all FRs on all SMART criteria
 - Missing improvement suggestions for low-scoring FRs

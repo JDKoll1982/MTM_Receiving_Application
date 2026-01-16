@@ -1,6 +1,6 @@
 # Market Research Step 3: Customer Pain Points and Needs
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after pain points content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Customer behavior analysis completed in previous step
@@ -31,11 +31,11 @@
 - **Research topic = "{{research_topic}}"** - established from initial discussion
 - **Research goals = "{{research_goals}}"** - established from initial discussion
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct customer pain points and needs analysis with emphasis on challenges and frustrations.
 
-## CUSTOMER PAIN POINTS ANALYSIS SEQUENCE:
+## CUSTOMER PAIN POINTS ANALYSIS SEQUENCE
 
 ### 1. Begin Customer Pain Points Analysis
 
@@ -96,7 +96,7 @@ Search the web: "{{research_topic}} customer barriers to adoption"
 
 Prepare customer pain points analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -186,17 +186,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
 - Load: `./step-04-customer-decisions.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Customer challenges and frustrations clearly documented
 ✅ Unmet needs and solution gaps identified
@@ -208,7 +208,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (customer decisions)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -223,7 +223,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## CUSTOMER PAIN POINTS RESEARCH PROTOCOLS:
+## CUSTOMER PAIN POINTS RESEARCH PROTOCOLS
 
 - Research customer satisfaction surveys and reviews
 - Use customer feedback and complaint data
@@ -233,7 +233,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## PAIN POINTS ANALYSIS STANDARDS:
+## PAIN POINTS ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative customer research sources
@@ -242,7 +242,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable pain point insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-04-customer-decisions.md` to analyze customer decision processes, journey mapping, and decision factors for {{research_topic}}.
 

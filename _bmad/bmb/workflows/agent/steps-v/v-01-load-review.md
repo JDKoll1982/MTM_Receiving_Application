@@ -12,22 +12,22 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Validate Step 1: Load Agent for Review
 
-## STEP GOAL:
+## STEP GOAL
 
 Load the existing agent file and initialize a validation report to track all findings.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load the complete agent file
 - 📊 Create validation report tracking document
 - 🚫 FORBIDDEN to proceed without user confirming correct agent
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load the complete agent YAML file
 - 📊 Parse and display agent summary
@@ -100,14 +100,14 @@ Write to `{validationReport}`.
 
 Display: "**Is this the correct agent to validate and is it identified as the proper type?** [A] Advanced Elicitation [P] Party Mode [C] Yes, Begin Validation"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Save to {validationReport}, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#4-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -121,13 +121,13 @@ ONLY WHEN [C continue option] is selected and [agent loaded and report created],
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Agent file loaded successfully
 - Validation report created
 - User confirmed correct agent
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Failed to load agent file
 - Report not created

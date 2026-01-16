@@ -17,27 +17,32 @@ This document outlines non-code documentation files that should exist within Mod
 # Module_Receiving
 
 ## Purpose
-Handles all receiving workflow operations including PO entry, line item management, 
+
+Handles all receiving workflow operations including PO entry, line item management,
 package type selection, heat lot tracking, and final review before database commit.
 
 ## Architecture Overview
+
 - **Pattern:** MVVM with CQRS (MediatR)
 - **Data Access:** Instance-based DAOs via Service layer
 - **Validation:** FluentValidation
 - **Logging:** Serilog
 
 ## Key Components
+
 - **ViewModels:** 9 workflow step ViewModels
 - **Services:** ReceivingWorkflow orchestration, validation
 - **DAOs:** ReceivingLine, ReceivingLoad, PackageTypePreference
 - **Models:** ReceivingLine, ReceivingLoad, ReceivingSession, etc.
 
 ## Dependencies
+
 - Module_Core (IService_ErrorHandler, IService_LoggingUtility)
 - MySQL Database (mtm_receiving_application)
 - SQL Server (Infor Visual - READ ONLY)
 
 ## Quick Start
+
 See `Preparation/04_Implementation_Order.md` for development workflow.
 
 **Location:** `Module_Receiving/README.md`
@@ -118,35 +123,41 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 # Clarification Questions for Module_Receiving Rebuild
 
 ## Architecture Decisions
+
 1. Should we adopt MediatR for CQRS, or keep service layer pattern?
 2. Which navigation library (Uno.Extensions, Mvvm.Navigation, or custom)?
 3. Keep `Service_ErrorHandler` in Module_Core or move to Module_Receiving?
 
 ## Database
+
 4. Can we modify stored procedures, or are they locked?
-5. Are there existing integration tests for database operations?
-6. What is the migration strategy for existing data?
+2. Are there existing integration tests for database operations?
+3. What is the migration strategy for existing data?
 
 ## Dependencies
+
 7. Which Module_Core services must remain shared vs. moved to Module_Receiving?
-8. Can we introduce new NuGet packages (MediatR, Serilog, FluentValidation)?
+2. Can we introduce new NuGet packages (MediatR, Serilog, FluentValidation)?
 
 ## Validation
+
 9. Should validation happen in ViewModel, Service, or DAO layer?
-10. Are there existing validation rules documented?
+2. Are there existing validation rules documented?
 
 ## Testing
+
 11. Required test coverage percentage?
-12. Prefer unit tests (mocked DAOs) or integration tests (test database)?
+2. Prefer unit tests (mocked DAOs) or integration tests (test database)?
 
 ## UI/UX
+
 13. Can navigation flow be changed, or must it match current exactly?
-14. Are there performance requirements (e.g., load time < X seconds)?
+2. Are there performance requirements (e.g., load time < X seconds)?
 
 ## Deployment
-15. What is the deployment process for Module_Receiving changes?
-16. Are there backward compatibility requirements?
 
+15. What is the deployment process for Module_Receiving changes?
+2. Are there backward compatibility requirements?
 
 **Location:** `Module_Receiving/Preparation/03_Clarification_Questions.md`
 
@@ -161,57 +172,71 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 # Implementation Order for Module_Receiving Rebuild
 
 ## Phase 1: Foundation (Week 1)
+
 ### 1.1 Project Setup
+
 - [ ] Create Defaults folder with default models
 - [ ] Install NuGet packages (MediatR, Serilog, FluentValidation, CsvHelper)
 - [ ] Update App.xaml.cs DI registration
 - [ ] Create Module_Receiving-specific service interfaces
 
 ### 1.2 Models & Validation
+
 - [ ] Review and update Models (ReceivingLine, ReceivingLoad, etc.)
 - [ ] Create FluentValidation validators for each model
 - [ ] Unit test validators
 
 ### 1.3 Logging Setup
+
 - [ ] Configure Serilog in App.xaml.cs
 - [ ] Create structured logging patterns for Module_Receiving
 - [ ] Replace IService_LoggingUtility with ILogger<T> in one ViewModel (POC)
 
 ## Phase 2: Data Layer Refactor (Week 2)
+
 ### 2.1 DAOs
+
 - [ ] Verify instance-based pattern in existing DAOs
 - [ ] Ensure all DAOs return Model_Dao_Result
 - [ ] Add XML documentation to all DAO methods
 - [ ] Create integration tests for each DAO
 
 ### 2.2 CQRS with MediatR (Optional)
+
 - [ ] Create Handlers folder
 - [ ] Migrate Service_MySQL_ReceivingLine methods to MediatR handlers
 - [ ] Implement pipeline behaviors (logging, validation)
 - [ ] Update ViewModels to use IMediator
 
 ## Phase 3: ViewModels & Navigation (Week 3)
+
 ### 3.1 ViewModels
+
 - [ ] Refactor ViewModel_Receiving_POEntry (pilot ViewModel)
 - [ ] Test with new validation, logging, and MediatR
 - [ ] Apply pattern to remaining 8 ViewModels
 
 ### 3.2 Navigation
+
 - [ ] Implement chosen navigation library (Uno.Extensions or custom)
 - [ ] Update Service_ReceivingWorkflow to use new navigation
 - [ ] Test navigation flow end-to-end
 
 ## Phase 4: Services Cleanup (Week 4)
+
 ### 4.1 Service Consolidation
+
 - [ ] Remove redundant services from Module_Core
 - [ ] Move Receiving-specific services to Module_Receiving/Services
 - [ ] Update DI registrations
 
 ### 4.2 CSV Export
+
 - [ ] Replace Service_CSVWriter with CsvHelper
 - [ ] Create typed export services in Module_Receiving
 
 ## Phase 5: Testing & Documentation (Week 5)
+
 - [ ] Achieve 80% unit test coverage
 - [ ] Create integration test suite
 - [ ] Update all documentation (README, ARCHITECTURE, etc.)
@@ -219,10 +244,10 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Performance benchmarking
 
 ## Phase 6: Deployment (Week 6)
+
 - [ ] Merge to development branch
 - [ ] QA testing
 - [ ] Production deployment
-
 
 **Location:** `Module_Receiving/Preparation/04_Implementation_Order.md`
 
@@ -237,6 +262,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 # Task Checklist for Module_Receiving Rebuild
 
 ## Setup Tasks
+
 - [ ] Install MediatR package
 - [ ] Install Serilog packages (Core, File sink, Extensions.Logging)
 - [ ] Install FluentValidation package
@@ -247,6 +273,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Create Validators folder
 
 ## Model Tasks
+
 - [ ] Review Model_ReceivingLine
 - [ ] Review Model_ReceivingLoad
 - [ ] Review Model_ReceivingSession
@@ -256,12 +283,14 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Create missing models (if any)
 
 ## Validator Tasks
+
 - [ ] Create ReceivingLineValidator
 - [ ] Create ReceivingLoadValidator
 - [ ] Create ReceivingSessionValidator
 - [ ] Unit test all validators
 
 ## DAO Tasks
+
 - [ ] Verify Dao_ReceivingLine instance pattern
 - [ ] Verify Dao_ReceivingLoad instance pattern
 - [ ] Verify Dao_PackageTypePreference instance pattern
@@ -270,6 +299,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Integration test Dao_ReceivingLoad
 
 ## ViewModel Tasks
+
 - [ ] Refactor ViewModel_Receiving_ModeSelection
 - [ ] Refactor ViewModel_Receiving_POEntry
 - [ ] Refactor ViewModel_Receiving_ManualEntry
@@ -281,6 +311,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Refactor ViewModel_Receiving_Workflow
 
 ## Service Tasks
+
 - [ ] Create IService_ReceivingWorkflow interface
 - [ ] Implement Service_ReceivingWorkflow
 - [ ] Create IService_ReceivingValidation interface (if keeping)
@@ -289,6 +320,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Implement Service_CSVExport with CsvHelper
 
 ## MediatR Tasks (Optional)
+
 - [ ] Create GetReceivingLinesQuery handler
 - [ ] Create InsertReceivingLineCommand handler
 - [ ] Create UpdateReceivingLineCommand handler
@@ -298,6 +330,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Create transaction pipeline behavior
 
 ## Navigation Tasks
+
 - [ ] Choose navigation library
 - [ ] Create INavigationService interface
 - [ ] Implement NavigationService
@@ -305,6 +338,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Test navigation flow
 
 ## Testing Tasks
+
 - [ ] Create test project (if not exists)
 - [ ] Unit test all ViewModels
 - [ ] Unit test all Services
@@ -312,6 +346,7 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] End-to-end test receiving workflow
 
 ## Documentation Tasks
+
 - [ ] Write README.md
 - [ ] Write ARCHITECTURE.md
 - [ ] Write DATA_MODEL.md
@@ -320,11 +355,11 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 - [ ] Update .github/copilot-instructions.md
 
 ## Code Review Tasks
+
 - [ ] Self-review code
 - [ ] Peer review by team
 - [ ] Address review feedback
 - [ ] Final approval
-
 
 **Location:** `Module_Receiving/Preparation/05_Task_Checklist.md`
 
@@ -335,7 +370,6 @@ See `Preparation/04_Implementation_Order.md` for development workflow.
 **Purpose:** Visual diagrams and schematics
 
 **Suggested Content:**
-
 
 # Module_Receiving - Schematic Diagrams
 
@@ -803,14 +837,14 @@ public async Task InsertLineAsync_ValidData_ReturnsSuccess()
 
 ### Should-Have (Medium Priority)
 
-6. ✅ `DATA_MODEL.md` - Database schema reference
+1. ✅ `DATA_MODEL.md` - Database schema reference
 2. ✅ `WORKFLOWS.md` - User workflows documentation
 3. ✅ `Preparation/06_Schematic_File.md` - Visual diagrams
 4. ✅ `TROUBLESHOOTING.md` - Common issues guide
 
 ### Nice-to-Have (Low Priority)
 
-10. ✅ `DEFAULTS.md` - Default values reference
+1. ✅ `DEFAULTS.md` - Default values reference
 2. ✅ `CHANGELOG.md` - Version history
 3. ✅ `TESTING.md` - Testing strategy
 4. ✅ `Preparation/07_Research_Archive.md` - Research notes

@@ -1,6 +1,6 @@
 # Step 4: Core Architectural Decisions
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -13,7 +13,7 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 🌐 Search the web to verify technology versions and options
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices for each decision category:
 
@@ -30,14 +30,14 @@ This step will generate content and present choices for each decision category:
 - **P (Party Mode)**: Bring multiple perspectives to evaluate decision trade-offs
 - **C (Continue)**: Save the current decisions and proceed to next decision category
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Project context from step 2 is available
 - Starter template choice from step 3 is available
@@ -46,11 +46,11 @@ This step will generate content and present choices for each decision category:
 - Focus on decisions not already made by starter template or existing preferences
 - Collaborative decision making, not recommendations
 
-## YOUR TASK:
+## YOUR TASK
 
 Facilitate collaborative architectural decision making, leveraging existing technical preferences and starter template decisions, focusing on remaining choices critical to the project's success.
 
-## DECISION MAKING SEQUENCE:
+## DECISION MAKING SEQUENCE
 
 ### 1. Load Decision Framework & Check Existing Preferences
 
@@ -200,7 +200,7 @@ After each major decision, identify related decisions:
 
 After facilitating all decision categories, prepare the content to append:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Core Architectural Decisions
@@ -262,7 +262,7 @@ Show the generated decisions content and present choices:
 
 ### 7. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with specific decision categories
 - Process enhanced insights about particular decisions
@@ -270,7 +270,7 @@ Show the generated decisions content and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with architectural decisions context
 - Process collaborative insights about decision trade-offs
@@ -278,17 +278,17 @@ Show the generated decisions content and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Load `./step-05-patterns.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All critical architectural decisions made collaboratively
 ✅ Technology versions verified using web search
@@ -298,7 +298,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly for each category
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Making recommendations instead of facilitating decisions
 ❌ Not verifying technology versions with web search
@@ -311,7 +311,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-05-patterns.md` to define implementation patterns that ensure consistency across AI agents.
 

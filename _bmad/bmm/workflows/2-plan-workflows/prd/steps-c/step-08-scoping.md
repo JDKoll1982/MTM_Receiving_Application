@@ -15,7 +15,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 8 of 11** - Next: Functional Requirements
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -27,7 +27,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 EMPHASIZE lean MVP thinking while preserving long-term vision
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 📚 Review the complete PRD document built so far
@@ -36,23 +36,23 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete PRD document built so far is available for review
 - User journeys, success criteria, and domain requirements are documented
 - Focus on strategic scope decisions, not feature details
 - Balance between user value and implementation feasibility
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive scoping exercise to define MVP boundaries and prioritize features across development phases.
 
-## SCOPING SEQUENCE:
+## SCOPING SEQUENCE
 
 ### 1. Review Current PRD State
 
 Analyze everything documented so far:
+
 - Present synthesis of established vision, success criteria, journeys
 - Assess domain and innovation focus
 - Evaluate scope implications: simple MVP, medium, or complex project
@@ -61,6 +61,7 @@ Analyze everything documented so far:
 ### 2. Define MVP Strategy
 
 Facilitate strategic MVP decisions:
+
 - Explore MVP philosophy options: problem-solving, experience, platform, or revenue MVP
 - Ask critical questions:
   - What's the minimum that would make users say 'this is useful'?
@@ -73,6 +74,7 @@ Facilitate strategic MVP decisions:
 Use structured decision-making for scope:
 
 **Must-Have Analysis:**
+
 - Guide identification of absolute MVP necessities
 - For each journey and success criterion, ask:
   - Without this, does the product fail?
@@ -81,6 +83,7 @@ Use structured decision-making for scope:
 - Analyze journeys for MVP essentials
 
 **Nice-to-Have Analysis:**
+
 - Identify what could be added later:
   - Features that enhance but aren't essential
   - User types that can be added later
@@ -90,6 +93,7 @@ Use structured decision-making for scope:
 ### 4. Progressive Feature Roadmap
 
 Create phased development approach:
+
 - Guide mapping of features across development phases
 - Structure as Phase 1 (MVP), Phase 2 (Growth), Phase 3 (Vision)
 - Ensure clear progression and dependencies
@@ -139,7 +143,7 @@ Identify and mitigate scoping risks:
 
 Prepare comprehensive scoping section:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Project Scoping & Phased Development
@@ -175,6 +179,7 @@ Prepare comprehensive scoping section:
 ### 7. Present MENU OPTIONS
 
 Present the scoping decisions for review, then display menu:
+
 - Show strategic scoping plan (using structure from step 6)
 - Highlight MVP boundaries and phased roadmap
 - Ask if they'd like to refine further, get other perspectives, or proceed
@@ -182,22 +187,24 @@ Present the scoping decisions for review, then display menu:
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Functional Requirements (Step 9 of 11)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
+
 - IF A: Execute {advancedElicitationTask} with the current scoping analysis, process the enhanced insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
 - IF P: Execute {partyModeWorkflow} with the scoping context, process the collaborative insights on MVP and roadmap decisions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
 - IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Complete PRD document analyzed for scope implications
 ✅ Strategic MVP approach defined and justified
@@ -208,7 +215,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not analyzing the complete PRD before making scoping decisions
 ❌ Making scope decisions without strategic rationale
@@ -221,7 +228,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load {nextStepFile}.
 

@@ -1,6 +1,6 @@
 # Market Research Step 5: Competitive Analysis
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -12,7 +12,7 @@
 - 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after competitive analysis content generation
@@ -20,18 +20,18 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before completing workflow
 - 🚫 FORBIDDEN to complete workflow until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Focus on competitive landscape and market positioning analysis
 - Web search capabilities with source verification are enabled
 - May need to search for specific competitor information
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive competitive analysis with emphasis on market positioning.
 
-## COMPETITIVE ANALYSIS SEQUENCE:
+## COMPETITIVE ANALYSIS SEQUENCE
 
 ### 1. Begin Competitive Analysis
 
@@ -52,7 +52,7 @@ Start with competitive research approach:
 
 Prepare competitive analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -113,17 +113,17 @@ Show the generated competitive analysis and present complete option:
 
 ### 4. Handle Complete Selection
 
-#### If 'C' (Complete Research):
+#### If 'C' (Complete Research)
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
 - Complete the market research workflow
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the research document using the structure from step 2.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Key market players identified
 ✅ Market share analysis completed with source verification
@@ -134,7 +134,7 @@ When user selects 'C', append the content directly to the research document usin
 ✅ Content properly appended to document when C selected
 ✅ Market research workflow completed successfully
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -148,7 +148,7 @@ When user selects 'C', append the content directly to the research document usin
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## COMPETITIVE RESEARCH PROTOCOLS:
+## COMPETITIVE RESEARCH PROTOCOLS
 
 - Search for industry reports and competitive intelligence
 - Use competitor company websites and annual reports
@@ -156,7 +156,7 @@ When user selects 'C', append the content directly to the research document usin
 - Note competitive advantages and disadvantages
 - Search for recent market developments and disruptions
 
-## MARKET RESEARCH COMPLETION:
+## MARKET RESEARCH COMPLETION
 
 When 'C' is selected:
 
@@ -166,7 +166,7 @@ When 'C' is selected:
 - Market research workflow status updated
 - Final recommendations provided to user
 
-## NEXT STEPS:
+## NEXT STEPS
 
 Market research workflow complete. User may:
 

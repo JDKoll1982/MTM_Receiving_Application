@@ -102,6 +102,7 @@ Then load, read completely, and execute `steps-v/v-01-load-review.md`
 ## MODE-SPECIFIC NOTES
 
 ### Create Mode
+
 - Starts with optional brainstorming
 - Progresses through discovery, metadata, persona, commands, activation
 - Builds agent based on type (Simple/Expert/Module)
@@ -109,6 +110,7 @@ Then load, read completely, and execute `steps-v/v-01-load-review.md`
 - Celebrates completion with installation guidance
 
 ### Edit Mode
+
 - Loads existing agent first
 - Discovers what user wants to change
 - Validates current agent before editing
@@ -117,6 +119,7 @@ Then load, read completely, and execute `steps-v/v-01-load-review.md`
 - Celebrates successful edit
 
 ### Validate Mode
+
 - Loads existing agent
 - Runs systematic validation (metadata, persona, menu, structure, sidecar)
 - Generates comprehensive validation report

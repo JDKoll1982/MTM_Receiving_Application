@@ -11,47 +11,47 @@ All markdown documentation in this repository should follow these standards to e
 
 ## When to Use PlantUML
 
-### ✅ ALWAYS Use PlantUML For:
+### ✅ ALWAYS Use PlantUML For
 
 1. **Database Schemas / ERDs**
    - Entity relationship diagrams
    - Table structures with foreign keys
    - Database constraints visualization
-   
+
 2. **File/Directory Structures**
    - Project layouts
    - Folder hierarchies
    - Component organization
-   
+
 3. **System Architecture**
    - Component diagrams
    - Service dependencies
    - Integration flows
-   
+
 4. **Workflows & Processes**
    - Sequence diagrams
    - Activity diagrams
    - State machines
-   
+
 5. **Class/Object Relationships**
    - Class diagrams
    - Inheritance hierarchies
    - Design patterns
 
-### ❌ Use Plain Text/Code Blocks For:
+### ❌ Use Plain Text/Code Blocks For
 
 1. **Linear Content**
    - Installation steps
    - Command sequences
    - Checklists
    - Bulleted lists
-   
+
 2. **Code Examples**
    - C# code snippets
    - SQL queries
    - PowerShell commands
    - XAML markup
-   
+
 3. **Simple Tables**
    - Configuration options
    - Comparison matrices
@@ -240,6 +240,7 @@ Always specify language for syntax highlighting:
 ' PlantUML diagram here
 @enduml
 ```
+
 ```
 
 ### Lists
@@ -274,6 +275,7 @@ Use GitHub Flavored Markdown tables with alignment:
 ```
 
 Alignment:
+
 - `:---` = Left-aligned
 - `:---:` = Center-aligned
 - `---:` = Right-aligned

@@ -1,6 +1,6 @@
 # Market Research Step 1: Market Research Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate research content in init step
 - ✅ ALWAYS confirm understanding of user's research goals
@@ -11,7 +11,7 @@
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Confirm research understanding before proceeding
 - ⚠️ Present [C] continue option after scope clarification
@@ -19,7 +19,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from main workflow discovery are available
 - Research type = "market" is already set
@@ -28,11 +28,11 @@
 - Focus on market research scope clarification
 - Web search capabilities are enabled for later steps
 
-## YOUR TASK:
+## YOUR TASK
 
 Initialize market research by confirming understanding of {{research_topic}} and establishing clear research scope.
 
-## MARKET RESEARCH INITIALIZATION:
+## MARKET RESEARCH INITIALIZATION
 
 ### 1. Confirm Research Understanding
 
@@ -61,7 +61,7 @@ Start with research confirmation:
 
 Gather any clarifications needed:
 
-#### Scope Clarification Questions:
+#### Scope Clarification Questions
 
 - "Are there specific customer segments or aspects of {{research_topic}} we should prioritize?"
 - "Should we focus on specific geographic regions or global market?"
@@ -134,19 +134,19 @@ Show initial scope document and present continue option:
 
 ### 5. Handle User Response
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Update frontmatter: `stepsCompleted: [1]`
 - Add confirmation note to document: "Scope confirmed by user on {{date}}"
 - Load: `./step-02-customer-insights.md`
 
-#### If 'Modify':
+#### If 'Modify'
 
 - Gather user changes to scope
 - Update document with modifications
 - Re-present updated scope for confirmation
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Research topic and goals accurately understood
 ✅ Market research scope clearly defined
@@ -155,7 +155,7 @@ Show initial scope document and present continue option:
 ✅ [C] continue option presented and handled correctly
 ✅ Document properly updated with scope confirmation
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not confirming understanding of research topic and goals
 ❌ Generating research content instead of just scope clarification
@@ -166,7 +166,7 @@ Show initial scope document and present continue option:
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## INITIALIZATION PRINCIPLES:
+## INITIALIZATION PRINCIPLES
 
 This step ensures:
 
@@ -175,7 +175,7 @@ This step ensures:
 - Immediate documentation for user review
 - User control over research direction before detailed work begins
 
-## NEXT STEP:
+## NEXT STEP
 
 After user confirmation and scope finalization, load `./step-02-customer-insights.md` to begin detailed market research with customer insights analysis.
 

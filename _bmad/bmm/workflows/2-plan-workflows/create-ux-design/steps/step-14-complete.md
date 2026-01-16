@@ -1,6 +1,6 @@
 # Step 14: Workflow Completion
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ THIS IS A FINAL STEP - Workflow completion required
 
@@ -12,14 +12,14 @@
 - 🎯 UPDATE workflow status files with completion information
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Update the main workflow status file with completion information
 - 📖 Suggest potential next workflow steps for the user
 - 🚫 DO NOT load additional steps after this one
 
-## TERMINATION STEP PROTOCOLS:
+## TERMINATION STEP PROTOCOLS
 
 - This is a FINAL step - workflow completion required
 - 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted to indicate all is finished..
@@ -28,18 +28,18 @@
 - Suggest potential next workflow steps for the user
 - Mark workflow as complete in status tracking
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete UX design specification is available from all previous steps
 - Workflow frontmatter shows all completed steps
 - All collaborative content has been generated and saved
 - Focus on completion, validation, and next steps
 
-## YOUR TASK:
+## YOUR TASK
 
 Complete the UX design workflow, update status files, and suggest next steps for the project.
 
-## WORKFLOW COMPLETION SEQUENCE:
+## WORKFLOW COMPLETION SEQUENCE
 
 ### 1. Announce Workflow Completion
 
@@ -147,7 +147,7 @@ Confirm completion with user:
 
 [UX Design Workflow Complete]"
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ UX design specification contains all required sections
 ✅ All collaborative content properly saved to document
@@ -156,7 +156,7 @@ Confirm completion with user:
 ✅ Document quality validation completed
 ✅ User acknowledges completion and understands next options
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not updating workflow status file with completion information
 ❌ Missing clear next step guidance for user
@@ -168,9 +168,9 @@ Confirm completion with user:
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## WORKFLOW COMPLETION CHECKLIST:
+## WORKFLOW COMPLETION CHECKLIST
 
-### Design Specification Complete:
+### Design Specification Complete
 
 - [ ] Executive summary and project understanding
 - [ ] Core experience and emotional response definition
@@ -184,7 +184,7 @@ Confirm completion with user:
 - [ ] UX consistency patterns documentation
 - [ ] Responsive design and accessibility strategy
 
-### Process Complete:
+### Process Complete
 
 - [ ] All steps completed with user confirmation
 - [ ] All content saved to specification document
@@ -192,7 +192,7 @@ Confirm completion with user:
 - [ ] Workflow status file updated with completion
 - [ ] Next steps clearly communicated
 
-## NEXT STEPS GUIDANCE:
+## NEXT STEPS GUIDANCE
 
 **Immediate Options:**
 
@@ -208,14 +208,14 @@ For technical teams: Architecture → Epic Creation → Development
 
 Consider team capacity, timeline, and whether user validation is needed before implementation.
 
-## WORKFLOW FINALIZATION:
+## WORKFLOW FINALIZATION
 
 - Set `lastStep = 14` in document frontmatter
 - Update workflow status file with completion timestamp
 - Provide completion summary to user
 - Do NOT load any additional steps
 
-## FINAL REMINDER:
+## FINAL REMINDER
 
 This UX design workflow is now complete. The specification serves as the foundation for all visual and development work. All design decisions, patterns, and requirements are documented to ensure consistent, accessible, and user-centered implementation.
 

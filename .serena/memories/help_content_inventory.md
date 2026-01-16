@@ -3,16 +3,19 @@
 ## Dunnage Workflow Help Content
 
 ### ModeSelection
+
 - **Current**: User chooses between Guided Wizard, Manual Entry, or Edit Mode
 - **Tooltips**: "Skip mode selection and go directly to [Mode]" for each quick-access button
 - **Need**: Explanation of when to use each mode
 
 ### TypeSelection  
+
 - **Current**: Grid of dunnage types with icons, pagination controls
 - **Tooltips**: First/Previous/Next/Last Page navigation
 - **Need**: Explanation of dunnage types, how to add new types
 
 ### PartSelection
+
 - **Current Tip**: None
 - **InfoBar**: Inventory warning when part not in inventory list
 - **Placeholders**: "Choose a part..."
@@ -20,22 +23,26 @@
 - **Need**: Explanation of part selection, how to add new parts, inventory vs non-inventory
 
 ### QuantityEntry
+
 - **Current Tip**: "You can adjust the quantity later if needed. The system will generate individual labels for each item."
 - **Placeholder**: "Enter quantity..."
 - **Need**: Explain quantity limits, label generation process
 
 ### DetailsEntry
+
 - **InfoBar**: Location requirement warning
 - **Placeholders**: "Enter PO number (optional)...", "Enter location..."
 - **Need**: Explain PO number format, location codes, when fields are required
 
 ### Review
+
 - **InfoBar**: Success message after save
 - **Current**: Single view and table view toggle
 - **Need**: Explain review process, what happens after save, how to edit before saving
 
 ### ManualEntry
-- **Tooltips**: 
+
+- **Tooltips**:
   - "Add multiple rows at once (up to 100)"
   - "Auto-fill from last entry for this Part ID"
   - "Copy PO, Location, and specs from last row to empty fields"
@@ -43,7 +50,8 @@
 - **Need**: Detailed explanation of each bulk operation
 
 ### EditMode
-- **Tooltips**: 
+
+- **Tooltips**:
   - "Load unsaved loads from current session"
   - "Load from most recent CSV export"
   - "Load historical loads from database"
@@ -54,37 +62,45 @@
 ## Receiving Workflow Help Content
 
 ### ModeSelection
+
 - **Tooltips**: Quick-access tooltips for each mode
 - **Need**: When to use Guided vs Manual vs Edit
 
 ### POEntry
+
 - **Placeholders**: "Enter PO (e.g., 66868 or PO-066868)", "Enter Part ID (e.g., MMC-001, MMF-456)"
 - **Need**: PO number format rules, part ID format, Infor Visual integration explanation
 
 ### WeightQuantityEntry
+
 - **InfoBar**: Weight vs quantity selection warning
 - **Placeholder**: "Enter whole number"
 - **Need**: When to use weight vs quantity, unit of measure explanation
 
 ### HeatLotEntry
+
 - **Placeholder**: "Enter heat/lot number or leave blank"
 - **Need**: What is heat/lot, when it's required, format requirements
 
 ### ManualEntry
+
 - **Tooltips**: Auto-fill, bulk operations
 - **Need**: Same as dunnage manual entry
 
 ### EditMode
+
 - **Tooltips**: Same pagination/filtering as dunnage
 - **Need**: Historical data editing explanation
 
 ### Review
+
 - **Need**: Final review explanation, CSV export process, label printing
 
 ## Admin Views
 
 ### AdminTypesView
-- **Tooltips**: 
+
+- **Tooltips**:
   - "Create a new dunnage type (coming soon)"
   - "Edit selected type"
   - "Delete selected type with impact analysis"
@@ -92,16 +108,19 @@
 - **Need**: Type management explanation, impact of deleting types
 
 ### AdminPartsView
+
 - **Tooltips**: CRUD operation tooltips
 - **Placeholders**: Search and filter fields
 - **Need**: Part management explanation, search capabilities
 
 ### AdminInventoryView
+
 - **Need**: Inventory management explanation
 
 ## Quick Add Dialogs
 
 ### Dunnage_QuickAddTypeDialog
+
 - **Tooltips**: Extensive tooltips for every field
   - "Click for help about dunnage types"
   - "Enter a unique descriptive name for this dunnage type"
@@ -111,19 +130,22 @@
 - **Need**: Comprehensive type creation guide
 
 ### Dunnage_QuickAddPartDialog
+
 - **Placeholders**: Dimension fields, notes field
 - **Need**: Part creation guide, dimension requirements
 
 ## Workflow Views
 
 ### Dunnage_WorkflowView
+
 - **InfoBar**: Global workflow status messages
-- **Tooltips**: 
+- **Tooltips**:
   - "Return to mode selection (clears current work)" (multiple instances for different steps)
   - "Click for help about the current step"
 - **Need**: Context-sensitive help for each workflow step
 
 ### Receiving_WorkflowView
+
 - **InfoBar**: Global workflow status
 - **Tooltips**: "Click for help about current step", "Return to mode selection"
 - **Need**: Context-sensitive help for each workflow step

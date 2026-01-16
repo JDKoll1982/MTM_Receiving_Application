@@ -3,11 +3,13 @@
 ## Existing Dialog Infrastructure
 
 ### Dialog Types
+
 The application uses WinUI 3 `ContentDialog` for all modal interactions.
 
 ### Existing Dialog Examples
 
 **Simple ContentDialogs (No ViewModel)**:
+
 - `AddMultipleRowsDialog` - Simple input dialog with NumberBox
   - Location: `Views/Dunnage/Dialogs/`
   - Pattern: Inherits ContentDialog, uses code-behind for simple logic
@@ -15,7 +17,8 @@ The application uses WinUI 3 `ContentDialog` for all modal interactions.
   - PrimaryButtonClick event handler in code-behind
 
 **Complex ContentDialogs (With ViewModel)**:
-- `Shared_SharedTerminalLoginDialog` 
+
+- `Shared_SharedTerminalLoginDialog`
   - Has dedicated ViewModel: `Shared_SharedTerminalLoginViewModel`
   - ViewModel injected via `App.GetService<T>()`
   - Location: `Views/Shared/`
@@ -36,6 +39,7 @@ The application uses WinUI 3 `ContentDialog` for all modal interactions.
 All ContentDialogs must have `XamlRoot` set before showing.
 
 **Current Pattern**:
+
 ```csharp
 var dialog = new ContentDialog
 {
@@ -51,10 +55,12 @@ var result = await dialog.ShowAsync();
 
 **Window Service**:
 `IService_Window` provides `GetXamlRoot()` method:
+
 - Returns `App.MainWindow?.Content?.XamlRoot`
 - Returns nullable `XamlRoot?`
 
 ### Button Handlers
+
 - `PrimaryButtonClick` event for primary action
 - `CloseButtonClick` event for cancel/close
 - `ContentDialogClosing` event for validation before close
@@ -63,21 +69,25 @@ var result = await dialog.ShowAsync();
 ## Registration Requirements
 
 ### DI Registration Pattern
+
 Dialogs are registered in `App.xaml.cs`:
 
 **Transient Registration** (New instance each time):
+
 ```csharp
 services.AddTransient<Views.Shared.Shared_SharedTerminalLoginDialog>();
 services.AddTransient<Views.Dunnage.Dialogs.AddToInventoriedListDialog>();
 ```
 
 **ViewModel Registration** (if dialog has ViewModel):
+
 ```csharp
 services.AddTransient<Shared_SharedTerminalLoginViewModel>();
 services.AddTransient<Dunnage_AddTypeDialogViewModel>();
 ```
 
 ### Dialog Creation Pattern
+
 ```csharp
 // In consuming code (ViewModel or code-behind)
 var dialog = App.GetService<MyDialog>();
@@ -88,6 +98,7 @@ var result = await dialog.ShowAsync();
 ## Help System Implications
 
 For a centralized help dialog:
+
 1. Must inherit from `ContentDialog`
 2. Should have dedicated ViewModel (`HelpDialogViewModel`)
 3. Must be registered as Transient in DI

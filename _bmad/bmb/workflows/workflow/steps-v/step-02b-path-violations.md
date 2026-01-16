@@ -9,13 +9,13 @@ validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 
 # Validation Step 2b: Critical Path Violations
 
-## STEP GOAL:
+## STEP GOAL
 
 CRITICAL path checks that step-02's frontmatter validation MISSES. This catches violations in CONTENT (not frontmatter), dead links, and module path unawareness using grep/bash (ideally in a subprocess that can update the report or return all results to parent).
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - CHECK EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -23,20 +23,20 @@ CRITICAL path checks that step-02's frontmatter validation MISSES. This catches 
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction in this file references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the instructed outcome in your main context thread and available toolset
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Perform systematic bash/grep checks using subprocess optimization - single subprocess for grep/regex across many files
 - 🚫 DO NOT skip any file or violation type - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This catches what step-02 misses - CONTENT violations, dead links, module awareness, links in code and not in front matter
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Perform systematic checks using subprocess optimization when available - single subprocess for grep/regex across many files, separate subprocess per file for deep analysis, subprocess for data file operations
 - 💾 Subprocesses must either update validation report OR return findings for parent aggregation
 - 📖 Save report before continuing to {nextStepFile}
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Step-02 validated frontmatter (variables, relative paths)
 - This step validates CONTENT and file existence with a Focus on: hardcoded paths in body, dead links, module awareness in every file found under {targetWorkflowPath}
@@ -53,12 +53,14 @@ CRITICAL path checks that step-02's frontmatter validation MISSES. This catches 
 **SUBPROCESS EXECUTION PATTERN:**
 
 For EACH file in the workflow being validated, launch a subprocess that:
+
 1. Loads any reference files it needs (to avoid bloating parent context)
 2. Performs all required checks on that file
 3. **EITHER** updates the validation report directly with its findings
 4. **OR** returns structured findings to parent for aggregation
 
 **DO NOT BE LAZY - Use appropriate subprocess pattern for each check:**
+
 - **Single subprocess for grep/regex**: Run one command across many files, return matches
 - **Separate subprocess per file**: When deep analysis of each file's content is required
 - **Subprocess for data operations**: Load reference data, find matches, summarize key findings
@@ -75,6 +77,7 @@ grep -A 20 "Configuration Loading" {targetWorkflowPath}/workflow.md | grep -E "^
 **Store these as KNOWN_CONFIG_VARIABLES for reference in later checks.**
 
 These are EXCEPTIONS - paths using these variables are VALID even if not relative:
+
 - Example: `{output_folder}/doc.md` - VALID (uses config variable)
 - Example: `{planning_artifacts}/prd.md` - VALID (uses config variable)
 - These paths won't exist during validation (workflow not running yet)
@@ -99,6 +102,7 @@ done
 ```
 
 **What we're catching:**
+
 - Content like: `Load {project-root}/_bmad/foo/workflows/.../file.csv`
 - Should be: `Load {dataFile}` (frontmatter variable with a relative path like ../data/file.csv)
 
@@ -115,6 +119,7 @@ done
 3. Returns all dead link findings to parent for aggregation
 
 **CRITICAL DISTINCTION:**
+
 - **Output files using config variables:** Skip (won't exist yet - workflow not installed/running)
   - Example: `{output_folder}/my-doc.md` - SKIP
   - Example: `{planning_artifacts}/prd.md` - SKIP
@@ -127,6 +132,7 @@ done
   - Example: `{partyModeWorkflow}` - MUST EXIST
 
 **Bash execution pattern:**
+
 ```bash
 # Extract all frontmatter path references from all files
 for file in steps-c/*.md; do
@@ -146,6 +152,7 @@ done
 ```
 
 **What we're catching:**
+
 - Dead links to any files that don't exist that the workflow needs during execution
 
 ---
@@ -244,7 +251,7 @@ Halt process once all files have been checked and aggregated - and share the sev
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Config variables identified from workflow.md FIRST
 - Known config variables used as exceptions in later checks
@@ -255,7 +262,7 @@ Halt process once all files have been checked and aggregated - and share the sev
 - CRITICAL violations halt validation
 - Clean workflows proceed to step-03
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not identifying config variables first
 - Not skipping output files during existence checks

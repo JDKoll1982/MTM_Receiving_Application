@@ -27,7 +27,7 @@ From previous steps:
 
 Build complete diff of all changes since workflow started.
 
-### If `{baseline_commit}` is a Git commit hash:
+### If `{baseline_commit}` is a Git commit hash
 
 **Tracked File Changes:**
 
@@ -40,7 +40,7 @@ Only include untracked files that YOU created during this workflow (steps 2-4).
 Do not include pre-existing untracked files.
 For each new file created, include its full content as a "new file" addition.
 
-### If `{baseline_commit}` is "NO_GIT":
+### If `{baseline_commit}` is "NO_GIT"
 
 Use best-effort diff construction:
 

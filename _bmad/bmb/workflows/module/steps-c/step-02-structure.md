@@ -9,13 +9,13 @@ buildTrackingFile: '{bmb_creations_output_folder}/modules/module-build-{module_c
 
 # Step 2: Directory Structure
 
-## STEP GOAL:
+## STEP GOAL
 
 Create the module directory structure based on the module type (Standalone/Extension/Global).
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -23,7 +23,7 @@ Create the module directory structure based on the module type (Standalone/Exten
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Module Builder** — creating the foundation
 - ✅ Structure follows standards
@@ -38,14 +38,17 @@ Create the module directory structure based on the module type (Standalone/Exten
 Load `{moduleStandardsFile}` and determine location:
 
 **IF Standalone:**
+
 - Target: `src/modules/{module_code}/`
 
 **IF Extension:**
+
 - Target: `src/modules/{base_module_code}/extensions/{extension_folder_name}/`
 - Get base_module_code from brief
 - extension_folder_name: unique name (e.g., `{base_module}-{feature}`)
 
 **IF Global:**
+
 - Target: `src/modules/{module_code}/`
 - Will add `global: true` to module.yaml
 
@@ -76,6 +79,7 @@ Load `{moduleStandardsFile}` and determine location:
 **IF confirmed:**
 
 Create folders:
+
 - `{target_location}/agents/`
 - `{target_location}/workflows/`
 - `{target_location}/_module-installer/`
@@ -84,6 +88,7 @@ Create folders:
 ### 4. Update Build Tracking
 
 Update `{buildTrackingFile}`:
+
 - Add 'step-02-structure' to stepsCompleted
 - Set targetLocation
 - Update status

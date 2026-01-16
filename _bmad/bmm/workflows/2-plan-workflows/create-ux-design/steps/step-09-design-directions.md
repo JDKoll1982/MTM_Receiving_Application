@@ -1,6 +1,6 @@
 # Step 9: Design Direction Mockups
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -12,7 +12,7 @@
 - 🎯 COLLABORATIVE exploration, not assumption-based design
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating design direction content
@@ -20,7 +20,7 @@
 - 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted.
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -28,25 +28,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to evaluate design directions
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Visual foundation from step 8 provides design tokens
 - Core experience from step 7 informs layout and interaction design
 - Focus on exploring different visual design directions
 
-## YOUR TASK:
+## YOUR TASK
 
 Generate comprehensive design direction mockups showing different visual approaches for the product.
 
-## DESIGN DIRECTIONS SEQUENCE:
+## DESIGN DIRECTIONS SEQUENCE
 
 ### 1. Generate Design Direction Variations
 
@@ -127,7 +127,7 @@ This will become our design foundation moving forward. Are we ready to lock this
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -167,7 +167,7 @@ Show the generated design direction content and present choices:
 
 ### 8. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current design direction content
 - Process the enhanced design insights that come back
@@ -175,7 +175,7 @@ Show the generated design direction content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current design direction
 - Process the collaborative design insights that come back
@@ -183,17 +183,17 @@ Show the generated design direction content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: append step to end of stepsCompleted array
 - Load `./step-10-user-journeys.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Multiple design direction variations generated
 ✅ HTML showcase created with interactive elements
@@ -203,7 +203,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not creating enough variation in design directions
 ❌ Design directions not aligned with established foundation
@@ -217,7 +217,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-10-user-journeys.md` to design user journey flows.
 

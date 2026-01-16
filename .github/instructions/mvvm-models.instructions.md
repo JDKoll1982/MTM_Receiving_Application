@@ -6,6 +6,7 @@ applyTo: 'Models/**/*.cs'
 # Model Development Guidelines
 
 ## Purpose
+
 This file provides guidelines for creating and working with Model classes that represent data entities.
 
 ## Core Principles
@@ -18,6 +19,7 @@ This file provides guidelines for creating and working with Model classes that r
 ## Model Structure
 
 ### Basic Model Template
+
 ```csharp
 namespace MTM_Receiving_Application.Models.FeatureName;
 
@@ -54,6 +56,7 @@ public class Model_EntityName
 ## Property Guidelines
 
 ### Data Types
+
 - **Strings**: Initialize with `string.Empty` (not null)
 - **Numbers**: Use appropriate type (int, decimal, double)
 - **Dates**: Use `DateTime`, initialize with `DateTime.Now` if applicable
@@ -61,6 +64,7 @@ public class Model_EntityName
 - **Nullable**: Use `?` suffix when value can be null (e.g., `int?`)
 
 ### Examples
+
 ```csharp
 public string PartID { get; set; } = string.Empty;
 public int Quantity { get; set; }
@@ -75,6 +79,7 @@ public int? CoilsOnSkid { get; set; } // Nullable - optional field
 The application already has these models:
 
 ### Receiving
+
 - `Model_ReceivingLine` - Receiving label data
 - `Model_DunnageLine` - Dunnage label data
 - `Model_RoutingLabel` - Internal routing label data
@@ -82,6 +87,7 @@ The application already has these models:
 - `Model_Application_Variables` - Application-wide settings
 
 ### Enums
+
 - `Enum_ErrorSeverity` - Error severity levels (Low, Medium, High, Critical)
 - `Enum_LabelType` - Label type classifications
 
@@ -99,6 +105,7 @@ public class Model_Dao_Result<T>
 ```
 
 ### Usage in DAO
+
 ```csharp
 public static async Task<Model_Dao_Result<Model_ReceivingLine>> InsertReceivingLineAsync(Model_ReceivingLine line)
 {
@@ -123,6 +130,7 @@ public static async Task<Model_Dao_Result<Model_ReceivingLine>> InsertReceivingL
 ```
 
 ### Usage in ViewModel
+
 ```csharp
 var result = await Dao_ReceivingLine.InsertReceivingLineAsync(line);
 
@@ -141,21 +149,25 @@ else
 ## Naming Conventions
 
 ### Files
+
 - Format: `Model_[EntityName].cs`
 - Examples: `Model_ReceivingLine.cs`, `Model_DunnageLine.cs`
 
 ### Classes
+
 - Format: `Model_[EntityName]`
 - Pascal case for multi-word names
 - Examples: `Model_ReceivingLine`, `Model_RoutingLabel`
 
 ### Properties
+
 - Pascal case: `PartID`, `EmployeeNumber`, `InitialLocation`
 - Be descriptive but concise
 
 ## Documentation
 
 Always include XML documentation:
+
 ```csharp
 /// <summary>
 /// Represents a receiving label line item
@@ -177,6 +189,7 @@ public class Model_ReceivingLine
 ## Validation
 
 Models should be simple POCOs. Put validation in:
+
 - **ViewModel**: For UI validation
 - **DAO**: For database constraints
 - **Service**: For business rule validation
@@ -191,6 +204,7 @@ Models should be simple POCOs. Put validation in:
 ## Common Patterns
 
 ### Database Entity
+
 ```csharp
 public class Model_ReceivingLine
 {
@@ -203,6 +217,7 @@ public class Model_ReceivingLine
 ```
 
 ### Lookup/Reference Data
+
 ```csharp
 public class Model_Location
 {
@@ -213,6 +228,7 @@ public class Model_Location
 ```
 
 ### Configuration/Settings
+
 ```csharp
 public class Model_Application_Variables
 {
@@ -235,6 +251,7 @@ public class Model_Application_Variables
 ## Testing Models
 
 Models should be simple enough that they don't need extensive unit tests, but verify:
+
 - Default values are correct
 - Properties can be set and retrieved
 - Constructors initialize properly
@@ -242,6 +259,7 @@ Models should be simple enough that they don't need extensive unit tests, but ve
 ## Serialization
 
 Keep models serialization-friendly:
+
 - Use simple types
 - Avoid circular references
 - Use public properties (not fields)

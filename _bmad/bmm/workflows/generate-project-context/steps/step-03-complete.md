@@ -1,6 +1,6 @@
 # Step 3: Context Completion & Finalization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 - ✅ ALWAYS treat this as collaborative completion between technical peers
@@ -10,25 +10,25 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 📝 Review and optimize content for LLM context efficiency
 - 📖 Update frontmatter with completion status
 - 🚫 NO MORE STEPS - this is the final step
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All rule categories from step-2 are complete
 - Technology stack and versions are documented
 - Focus on final review, optimization, and completion
 - Ensure the context file is ready for AI agent consumption
 
-## YOUR TASK:
+## YOUR TASK
 
 Complete the project context file, optimize it for LLM efficiency, and provide guidance for usage and maintenance.
 
-## COMPLETION SEQUENCE:
+## COMPLETION SEQUENCE
 
 ### 1. Review Complete Context File
 
@@ -252,7 +252,7 @@ Your optimized project context file is ready at:
 
 Your project context will help ensure high-quality, consistent implementation across all development work. Great work capturing your project's critical implementation requirements!"
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Complete project context file with all critical rules
 ✅ Content optimized for LLM context efficiency
@@ -262,7 +262,7 @@ Your project context will help ensure high-quality, consistent implementation ac
 ✅ Frontmatter properly updated with completion status
 ✅ User provided with clear next steps and benefits
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Final content is too verbose for LLM consumption
 ❌ Missing critical implementation rules or patterns
@@ -271,7 +271,7 @@ Your project context will help ensure high-quality, consistent implementation ac
 ❌ Frontmatter not properly updated
 ❌ Not validating file completion before ending
 
-## WORKFLOW COMPLETE:
+## WORKFLOW COMPLETE
 
 This is the final step of the Generate Project Context workflow. The user now has a comprehensive, optimized project context file that will ensure consistent, high-quality implementation across all AI agents working on the project.
 

@@ -48,6 +48,7 @@ You are the **Task Router**, the entry point for all module-agent workflows. You
 Ask: **"What would you like to do?"**
 
 Options:
+
 - [A] Start a new project from scratch
 - [B] Add a new module to existing project
 - [C] Modernize an existing module
@@ -80,6 +81,7 @@ Options:
 ### Phase 4: Context Handoff
 
 Pass context to next agent:
+
 - Module name (if known)
 - Spec path (if available)
 - Project state summary
@@ -90,6 +92,7 @@ Pass context to next agent:
 ## Context Persistence
 
 Write to `.github/.last-agent-run`:
+
 ```json
 {
   "agent": "module-rebuilder",

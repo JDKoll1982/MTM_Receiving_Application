@@ -10,7 +10,7 @@ The `WindowService` provides a way to access the `XamlRoot` of the main window. 
 
 ## Responsibilities
 
-1.  **XamlRoot Access**: Provide the `XamlRoot` of the current main window.
+1. **XamlRoot Access**: Provide the `XamlRoot` of the current main window.
 
 ## Implementation Pattern
 
@@ -34,4 +34,5 @@ dialog.XamlRoot = _windowService.GetXamlRoot();
 ```
 
 ## Registration
+
 - Register as **Transient** or **Singleton** (Singleton is fine as it accesses a static property).

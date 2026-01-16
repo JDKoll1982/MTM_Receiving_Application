@@ -12,13 +12,13 @@ projectTypesData: '../data/project-types.csv'
 
 # Step 9: Project-Type Compliance Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate project-type specific requirements are properly documented - different project types (api_backend, web_app, mobile_app, etc.) have different required and excluded sections.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -26,7 +26,7 @@ Validate project-type specific requirements are properly documented - different 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -34,14 +34,14 @@ Validate project-type specific requirements are properly documented - different 
 - ✅ You bring project type expertise and architectural knowledge
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on project-type compliance
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Validate required sections present, excluded sections absent
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Check classification.projectType from PRD frontmatter
 - 🎯 Validate required sections for that project type are present
@@ -50,7 +50,7 @@ Validate project-type specific requirements are properly documented - different 
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file with frontmatter classification, validation report
 - Focus: Project-type compliance only
@@ -67,6 +67,7 @@ Load and read the complete file at:
 `{projectTypesData}` (../data/project-types.csv)
 
 This CSV contains:
+
 - Detection signals for each project type
 - Required sections for each project type
 - Skip/excluded sections for each project type
@@ -77,9 +78,11 @@ Internalize this data - it drives what sections must be present or absent for ea
 ### 2. Extract Project Type Classification
 
 From PRD frontmatter, extract:
+
 - `classification.projectType` - what type of project is this?
 
 **Common project types:**
+
 - api_backend
 - web_app
 - mobile_app
@@ -104,6 +107,7 @@ These MUST be present in the PRD
 These MUST NOT be present in the PRD
 
 **Example mappings from CSV:**
+
 - api_backend: Required=[endpoint_specs, auth_model, data_schemas], Skip=[ux_ui, visual_design]
 - mobile_app: Required=[platform_reqs, device_permissions, offline_mode], Skip=[desktop_features, cli_commands]
 - cli_tool: Required=[command_structure, output_formats, config_schema], Skip=[visual_design, ux_principles, touch_interactions]
@@ -114,34 +118,42 @@ These MUST NOT be present in the PRD
 **Based on project type, determine:**
 
 **api_backend:**
+
 - Required: Endpoint Specs, Auth Model, Data Schemas, API Versioning
 - Excluded: UX/UI sections, mobile-specific sections
 
 **web_app:**
+
 - Required: User Journeys, UX/UI Requirements, Responsive Design
 - Excluded: None typically
 
 **mobile_app:**
+
 - Required: Mobile UX, Platform specifics (iOS/Android), Offline mode
 - Excluded: Desktop-specific sections
 
 **desktop_app:**
+
 - Required: Desktop UX, Platform specifics (Windows/Mac/Linux)
 - Excluded: Mobile-specific sections
 
 **data_pipeline:**
+
 - Required: Data Sources, Data Transformation, Data Sinks, Error Handling
 - Excluded: UX/UI sections
 
 **ml_system:**
+
 - Required: Model Requirements, Training Data, Inference Requirements, Model Performance
 - Excluded: UX/UI sections (unless ML UI)
 
 **library_sdk:**
+
 - Required: API Surface, Usage Examples, Integration Guide
 - Excluded: UX/UI sections, deployment sections
 
 **infrastructure:**
+
 - Required: Infrastructure Components, Deployment, Monitoring, Scaling
 - Excluded: Feature requirements (this is infrastructure, not product)
 
@@ -158,12 +170,14 @@ For each: Is it present in PRD? Is it adequately documented?
 For each: Is it absent from PRD? (Should not be present)
 
 Build compliance table showing:
+
 - Required sections: [Present/Missing/Incomplete]
 - Excluded sections: [Absent/Present] (Present = violation)
 
 Return compliance table with findings."
 
 **Graceful degradation (if no Task tool):**
+
 - Manually check PRD for required sections
 - Manually check PRD for excluded sections
 - Build compliance table
@@ -171,14 +185,17 @@ Return compliance table with findings."
 ### 5. Build Compliance Table
 
 **Required sections check:**
+
 - For each required section: Present / Missing / Incomplete
 - Count: Required sections present vs total required
 
 **Excluded sections check:**
+
 - For each excluded section: Absent / Present (violation)
 - Count: Excluded sections present (violations)
 
 **Total compliance score:**
+
 - Required: {present}/{total}
 - Excluded violations: {count}
 
@@ -240,7 +257,7 @@ Immediately load and execute {nextStepFile} (step-v-10-smart-validation.md)
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Project type extracted correctly (or default assumed)
 - Required sections validated for presence and completeness
@@ -251,7 +268,7 @@ Immediately load and execute {nextStepFile} (step-v-10-smart-validation.md)
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking project type before proceeding
 - Missing required section checks

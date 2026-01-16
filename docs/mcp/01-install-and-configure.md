@@ -3,6 +3,7 @@
 This guide is **project-agnostic**. It shows how to install/configure MCP servers in VS Code and how to validate they are working.
 
 ## What you need
+
 - VS Code **1.102+** (newer is better)
 - GitHub Copilot access (for Copilot Chat + Agent mode)
 - For local servers:
@@ -11,11 +12,14 @@ This guide is **project-agnostic**. It shows how to install/configure MCP server
   - Python/uv/uvx (only if you use Python-based servers like Serena)
 
 ## Where MCP configuration lives
+
 VS Code supports MCP servers at:
+
 - **Workspace** config: `.vscode/mcp.json` (checked into your repo)
 - **User** config: Command Palette → **MCP: Open User Configuration**
 
 ### Basic format
+
 ```jsonc
 {
   "servers": {
@@ -41,11 +45,13 @@ VS Code supports MCP servers at:
 ## Installing MCP servers (recommended order)
 
 ### Option A (Recommended): Install from the MCP registry in VS Code
+
 1. Settings: enable `chat.mcp.gallery.enabled`
 2. Extensions view → search `@mcp`
 3. Install in workspace or user profile
 
 ### Option B: Manual config (works for any MCP server)
+
 1. Create/edit `.vscode/mcp.json`
 2. Add the server config under `servers`
 3. Restart it: Command Palette → **MCP: List Servers** → Start/Restart
@@ -53,6 +59,7 @@ VS Code supports MCP servers at:
 ## Common MCP server types
 
 ### 1) Remote (HTTP) servers
+
 Use when the server is hosted (no local install). Example: GitHub hosted MCP.
 
 ```jsonc
@@ -67,9 +74,11 @@ Use when the server is hosted (no local install). Example: GitHub hosted MCP.
 ```
 
 ### 2) Local stdio servers
+
 These run on your machine and talk via stdin/stdout.
 
 #### Node-based (NPX)
+
 ```jsonc
 {
   "servers": {
@@ -83,6 +92,7 @@ These run on your machine and talk via stdin/stdout.
 ```
 
 #### Docker-based
+
 ```jsonc
 {
   "servers": {
@@ -113,7 +123,9 @@ These run on your machine and talk via stdin/stdout.
 ## Server-specific install guides (copy/paste)
 
 ### GitHub MCP — hosted (no PAT; simplest)
+
 Use when your VS Code + Copilot supports remote MCP.
+
 ```jsonc
 {
   "servers": {
@@ -126,7 +138,9 @@ Use when your VS Code + Copilot supports remote MCP.
 ```
 
 ### GitHub MCP — local via Docker (PAT required)
+
 Use when you need local control or your environment blocks remote MCP.
+
 ```jsonc
 {
   "inputs": [
@@ -155,7 +169,9 @@ Use when you need local control or your environment blocks remote MCP.
 ```
 
 ### Playwright MCP (browser automation)
+
 Prereq: Node.js 18+
+
 ```jsonc
 {
   "servers": {
@@ -169,7 +185,9 @@ Prereq: Node.js 18+
 ```
 
 ### Filesystem MCP (safe, scoped access)
+
 Prereq: Node.js 18+
+
 ```jsonc
 {
   "servers": {
@@ -187,7 +205,9 @@ Prereq: Node.js 18+
 ```
 
 ### Serena (codebase analysis/navigation)
+
 Prereq: `uvx` available
+
 ```jsonc
 {
   "servers": {
@@ -210,6 +230,7 @@ Prereq: `uvx` available
 ```
 
 ## How to start/restart and validate servers
+
 1. Command Palette → **MCP: List Servers**
 2. Pick a server → **Start**
 3. Open Chat → Tools picker → ensure the server’s tools are enabled
@@ -219,6 +240,7 @@ Prereq: `uvx` available
    - playwright: “Open example.com and extract heading text”
 
 ## Security checklist (do this in every project)
+
 - Prefer **scoped filesystem roots** (only workspace folders)
 - Use `inputs` for secrets; never hardcode tokens
 - Prefer short-lived tokens (30–90 days)

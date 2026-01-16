@@ -20,24 +20,28 @@ This document captures research findings and architectural decisions made during
 **Research Findings**:
 
 MediatR 12.4.1 is already installed in Module_Core with pipeline behaviors configured:
+
 - `LoggingBehavior`: Logs execution time for all requests
 - `ValidationBehavior`: Automatically validates commands using FluentValidation
 - `AuditBehavior`: Captures user context from IService_UserSessionManager
 
-**Decision**: 
+**Decision**:
+
 - Use MediatR `IRequest<TResponse>` pattern for all queries and commands
 - Commands return `Model_Dao_Result` or `Model_Dao_Result<T>` to maintain DAO contract consistency
 - Queries return `Model_Dao_Result<TData>` where TData is the query result (e.g., `List<Model_VolvoShipment>`, `Model_VolvoEmailData`)
 - Request/Response DTOs in `Module_Volvo/Requests/Commands/` and `Module_Volvo/Requests/Queries/`
 - Handlers in `Module_Volvo/Handlers/Commands/` and `Module_Volvo/Handlers/Queries/`
 
-**Rationale**: 
+**Rationale**:
+
 - Maintains constitutional compliance (Principle III: CQRS + Mediator First)
 - Leverages existing Module_Core infrastructure (no duplication)
 - Consistent error handling via Model_Dao_Result pattern across all layers
 - Pipeline behaviors provide automatic logging, validation, and auditing
 
 **Alternatives Considered**:
+
 - Custom command/query infrastructure: Rejected (violates Principle VII: Library-First Reuse)
 - Returning void/bool from commands: Rejected (loses error context needed for IService_ErrorHandler)
 
@@ -52,12 +56,14 @@ MediatR 12.4.1 is already installed in Module_Core with pipeline behaviors confi
 Current validation logic is embedded in services (Service_Volvo.ValidateShipmentAsync) and ViewModels (CanAddPart, CanEditPart methods). FluentValidation 11.10.0 is installed with ValidationBehavior configured to run automatically before command handlers.
 
 **Existing Validation Rules** (extracted from code analysis):
+
 - Shipment validation: At least one part required, shipment date not in future
 - Part validation: Part number required, quantity per skid > 0, no duplicate parts in shipment
 - Discrepancy validation: If HasDiscrepancy = true, ExpectedSkidCount and DiscrepancyNote required
 - CSV import validation: Valid part number format, numeric quantity per skid
 
 **Decision**:
+
 - Create AbstractValidator<TCommand> for each of the 8 commands
 - Validators in `Module_Volvo/Validators/` folder
 - Use Ardalis.GuardClauses for common null/empty checks (cleaner syntax per Principle VII)
@@ -65,6 +71,7 @@ Current validation logic is embedded in services (Service_Volvo.ValidateShipment
 - Failed validation returns `Model_Dao_Result.Failure()` with concatenated error messages
 
 **Example Pattern**:
+
 ```csharp
 public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipmentCommand>
 {
@@ -94,12 +101,14 @@ public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipme
 ```
 
 **Rationale**:
+
 - Centralizes validation logic (removes duplication from services/ViewModels)
 - Automatic execution via pipeline behavior (constitutional compliance)
 - Declarative syntax improves maintainability and testability
 - Preserves all existing validation rules with no functional regression
 
 **Alternatives Considered**:
+
 - Manual validation in handlers: Rejected (loses pipeline behavior benefits, code duplication)
 - Data annotations on models: Rejected (less flexible, no complex rule support)
 
@@ -112,6 +121,7 @@ public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipme
 **Research Findings**:
 
 Current ViewModels inject services directly:
+
 - `ViewModel_Volvo_ShipmentEntry`: Injects `IService_Volvo`, `IService_Window`, `IService_UserSessionManager`
 - `ViewModel_Volvo_History`: Injects `IService_Volvo`
 - `ViewModel_Volvo_Settings`: Injects `IService_VolvoMasterData`
@@ -119,6 +129,7 @@ Current ViewModels inject services directly:
 All ViewModels are already `partial` classes with `[ObservableProperty]` and `[RelayCommand]` attributes (constitutional compliance Principle I).
 
 **Decision**:
+
 - Replace service injections with `IMediator` injection
 - Keep `IService_ErrorHandler`, `IService_LoggingUtility`, `IService_Window`, `IService_UserSessionManager` (UI/infrastructure services)
 - Convert business logic methods to `await _mediator.Send(new QueryOrCommand())`
@@ -126,6 +137,7 @@ All ViewModels are already `partial` classes with `[ObservableProperty]` and `[R
 - Keep legacy services temporarily with `[Obsolete]` attribute for gradual rollback capability
 
 **Migration Pattern**:
+
 ```csharp
 // BEFORE (Legacy - Principle III Violation)
 public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
@@ -161,12 +173,14 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 ```
 
 **Rationale**:
+
 - Maintains UI contract (RelayCommand signatures unchanged, no XAML updates needed for command binding)
 - Eliminates Principle III violation (no direct service calls)
 - Gradual migration path (keep legacy services during transition)
 - Easier testing (mock IMediator instead of multiple services)
 
 **Alternatives Considered**:
+
 - Big-bang service removal: Rejected (high risk, no rollback path)
 - Keeping both services and IMediator: Rejected (violates zero deviations policy post-migration)
 
@@ -179,17 +193,20 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 **Research Findings**:
 
 Current implementation:
+
 - CSV label generation: `Service_Volvo.GenerateLabelCsvAsync()` creates CSV with specific column order (Part Number, Qty Per Skid, Skids Received, Total Pieces, etc.)
 - Email formatting: `Service_Volvo.FormatEmailAsHtml()` and `FormatEmailTextAsync()` generate HTML + plain text emails
 - Component explosion: `Service_Volvo.CalculateComponentExplosionAsync()` computes piece counts from skids × qty/skid × components
 
 **Decision**:
+
 - **Golden File Tests**: Capture current CSV/email outputs before refactoring, store in `Module_Volvo.Tests/GoldenFiles/`
 - **Property-Based Tests**: Use FsCheck.Xunit or similar to generate 1000+ random test cases for component explosion calculations
 - **Integration Tests**: Full pipeline tests (ViewModel → Handler → Service → DAO → DB → Verify output)
 - **Diff Verification**: Byte-for-byte comparison of refactored outputs against golden files
 
 **Golden File Test Pattern**:
+
 ```csharp
 [Fact]
 public async Task GenerateLabelCsv_ProducesIdenticalOutput()
@@ -208,6 +225,7 @@ public async Task GenerateLabelCsv_ProducesIdenticalOutput()
 ```
 
 **Property-Based Test Pattern**:
+
 ```csharp
 [Property(Arbitrary = new[] { typeof(VolvoArbitraries) })]
 public Property ComponentExplosion_AlwaysProducesConsistentResults(
@@ -234,12 +252,14 @@ public Property ComponentExplosion_AlwaysProducesConsistentResults(
 ```
 
 **Rationale**:
+
 - Golden files provide definitive reference for exact output matching (SC-005, SC-006)
 - Property-based tests catch edge cases in calculations (SC-007)
 - Integration tests verify full pipeline correctness (SC-009)
 - Automated verification prevents manual comparison errors
 
 **Alternatives Considered**:
+
 - Manual testing only: Rejected (not scalable, error-prone, no regression protection)
 - Unit tests only: Rejected (misses integration issues, no end-to-end validation)
 
@@ -252,6 +272,7 @@ public Property ComponentExplosion_AlwaysProducesConsistentResults(
 **Research Findings**:
 
 Current violations (identified via grep search):
+
 - `View_Volvo_ShipmentEntry.xaml`: 6 `{Binding}` occurrences in DataGridTextColumn and DataGridTemplateColumn
 - `View_Volvo_History.xaml`: 6 `{Binding}` occurrences in DataGrid columns
 - `View_Volvo_Settings.xaml`: 2 `{Binding}` occurrences in DataGrid columns
@@ -260,6 +281,7 @@ Current violations (identified via grep search):
 All are in DataGrid column definitions binding to properties of list item models (e.g., `{Binding PartNumber}`, `{Binding ShipmentDate}`).
 
 **Decision**:
+
 - Migrate View-by-View (not all at once) to reduce risk
 - Use `x:Bind` with `x:DataType` attribute on DataTemplate for compile-time type safety
 - Add `Mode=OneWay` explicitly for read-only bindings
@@ -267,6 +289,7 @@ All are in DataGrid column definitions binding to properties of list item models
 - Test each View after migration before proceeding to next
 
 **Migration Pattern**:
+
 ```xml
 <!-- BEFORE (Legacy - Principle I Violation) -->
 <controls:DataGridTextColumn 
@@ -293,16 +316,19 @@ All are in DataGrid column definitions binding to properties of list item models
 ```
 
 **Rationale**:
+
 - Compile-time binding catches errors early (constitutional Principle VI)
 - Performance improvement (x:Bind is faster than runtime Binding)
 - Type safety prevents runtime binding errors
 - Gradual migration reduces risk of breaking multiple Views simultaneously
 
 **Alternatives Considered**:
+
 - Keep `{Binding}` for DataGrid columns: Rejected (violates Principle I, loses type safety)
 - Big-bang XAML migration: Rejected (high risk, hard to isolate binding errors)
 
 **Known Limitation**:
+
 - CommunityToolkit.WinUI DataGrid `DataGridTextColumn.Binding` property does NOT support `x:Bind` directly
 - **Workaround**: Convert `DataGridTextColumn` to `DataGridTemplateColumn` with `x:DataType` and `x:Bind` in CellTemplate
 
@@ -315,23 +341,27 @@ All are in DataGrid column definitions binding to properties of list item models
 **Research Findings**:
 
 Current test setup:
+
 - xUnit framework already configured
 - FluentAssertions for assertions
 - Moq for mocking (likely - verify in existing test projects)
 - Integration test database connection configured via appsettings.Test.json
 
 **Additional Requirements**:
+
 - Property-based testing framework (FsCheck.Xunit)
 - Golden file storage and comparison utilities
 - Test data generators (Bogus recommended by Principle VII)
 
 **Decision**:
+
 - **NuGet Packages to Add**:
   - `Bogus` 35.6.1 (test data generation)
   - `FsCheck.Xunit` 2.16.6 (property-based testing)
   - `Verify.Xunit` 26.0.0 (snapshot testing for golden files)
   
 - **Test Project Structure**:
+
 ```text
 Module_Volvo.Tests/
 ├── Handlers/
@@ -366,12 +396,14 @@ Module_Volvo.Tests/
   - ViewModels: 70%+ (mostly IMediator.Send calls)
 
 **Rationale**:
+
 - Comprehensive coverage (unit + integration + property-based + golden file)
 - Automated verification (no manual testing for parity checks)
 - Constitutional compliance (Principle VIII: 80% minimum coverage)
 - Regression protection (golden files catch unintended changes)
 
 **Alternatives Considered**:
+
 - Manual testing for CSV/email verification: Rejected (not repeatable, error-prone)
 - Lower coverage target: Rejected (violates constitutional minimum 80%)
 
@@ -422,18 +454,22 @@ Module_Volvo.Tests/
 ## Open Questions / Future Considerations
 
 **Q1: Should we add optimistic concurrency for shipment editing?**
+
 - **Status**: Out of scope for MVP (Assumption: Single-user workflow)
 - **Future**: Consider adding RowVersion/Timestamp column to volvo_label_data if concurrent editing becomes requirement
 
 **Q2: Should we implement real-time notifications for shipment status changes?**
+
 - **Status**: Out of scope (specification: "No SignalR or real-time updates")
 - **Future**: Could leverage SignalR for multi-user scenarios
 
 **Q3: Should we add caching for master data queries?**
+
 - **Status**: Not required for MVP (Performance Goals: <500ms database operations)
 - **Future**: Consider IMemoryCache for GetAllVolvoPartsQuery if performance degrades
 
 **Q4: Should we create a separate DTO layer for request/response models?**
+
 - **Status**: Yes - Requests/ folder structure includes Commands/ and Queries/ subdirectories
 - **Decision**: Use separate request DTOs to avoid polluting domain models with MediatR interfaces
 

@@ -71,6 +71,7 @@ Generate comprehensive tests for:
    - Maximum length string values
 
 ### Test Structure (Integration Tests)
+
 ```csharp
 public class Dao_[DaoName]Tests :  IDisposable
 {
@@ -142,6 +143,7 @@ public class Dao_[DaoName]Tests :  IDisposable
 ```
 
 ### Test Structure (Unit Tests with Mocking)
+
 ```csharp
 public class Dao_[DaoName]Tests
 {
@@ -251,7 +253,6 @@ public class Dao_[DaoName]Tests
 
 ### Common Patterns to Test
 
-
 ## Output Requirements
 
 Generate a complete xUnit test class with:
@@ -281,4 +282,3 @@ Generate a complete xUnit test class with:
 **Note:** If the DAO class uses static methods or hardcoded connection strings, recommend refactoring to instance-based pattern before generating tests.
 
 **Constitutional Compliance:** All generated tests must follow MVVM architecture principles and never directly instantiate DAOs in ViewModels.
-

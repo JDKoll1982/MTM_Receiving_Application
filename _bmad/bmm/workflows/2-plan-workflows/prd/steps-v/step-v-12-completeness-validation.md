@@ -11,13 +11,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 12: Completeness Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Final comprehensive completeness check - validate no template variables remain, each section has required content, section-specific completeness, and frontmatter is properly populated.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Final comprehensive completeness check - validate no template variables remain, 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -33,14 +33,14 @@ Final comprehensive completeness check - validate no template variables remain, 
 - ✅ You bring attention to detail and completeness verification
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on completeness verification
 - 🚫 FORBIDDEN to validate quality (done in step 11) or other aspects
 - 💬 Approach: Systematic checklist-style verification
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Check template completeness (no variables remaining)
 - 🎯 Validate content completeness (each section has required content)
@@ -50,7 +50,7 @@ Final comprehensive completeness check - validate no template variables remain, 
 - 📖 Display "Proceeding to final step..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete PRD file, frontmatter, validation report
 - Focus: Completeness verification only (final gate)
@@ -68,11 +68,13 @@ Final comprehensive completeness check - validate no template variables remain, 
 "Perform completeness validation on this PRD - final gate check:
 
 **1. Template Completeness:**
+
 - Scan PRD for any remaining template variables
 - Look for: {variable}, {{variable}}, {placeholder}, [placeholder], etc.
 - List any found with line numbers
 
 **2. Content Completeness:**
+
 - Executive Summary: Has vision statement? ({key content})
 - Success Criteria: All criteria measurable? ({metrics present})
 - Product Scope: In-scope and out-of-scope defined? ({both present})
@@ -83,12 +85,14 @@ Final comprehensive completeness check - validate no template variables remain, 
 For each section: Is required content present? (Yes/No/Partial)
 
 **3. Section-Specific Completeness:**
+
 - Success Criteria: Each has specific measurement method?
 - User Journeys: Cover all user types?
 - Functional Requirements: Cover MVP scope?
 - Non-Functional Requirements: Each has specific criteria?
 
 **4. Frontmatter Completeness:**
+
 - stepsCompleted: Populated?
 - classification: Present (domain, projectType)?
 - inputDocuments: Tracked?
@@ -97,6 +101,7 @@ For each section: Is required content present? (Yes/No/Partial)
 Return completeness matrix with status for each check."
 
 **Graceful degradation (if no Task tool):**
+
 - Manually scan for template variables
 - Manually check each section for required content
 - Manually verify frontmatter fields
@@ -105,10 +110,12 @@ Return completeness matrix with status for each check."
 ### 2. Build Completeness Matrix
 
 **Template Completeness:**
+
 - Template variables found: count
 - List if any found
 
 **Content Completeness by Section:**
+
 - Executive Summary: Complete / Incomplete / Missing
 - Success Criteria: Complete / Incomplete / Missing
 - Product Scope: Complete / Incomplete / Missing
@@ -118,18 +125,21 @@ Return completeness matrix with status for each check."
 - Other sections: [List completeness]
 
 **Section-Specific Completeness:**
+
 - Success criteria measurable: All / Some / None
 - Journeys cover all users: Yes / Partial / No
 - FRs cover MVP scope: Yes / Partial / No
 - NFRs have specific criteria: All / Some / None
 
 **Frontmatter Completeness:**
+
 - stepsCompleted: Present / Missing
 - classification: Present / Missing
 - inputDocuments: Present / Missing
 - date: Present / Missing
 
 **Overall completeness:**
+
 - Sections complete: X/Y
 - Critical gaps: [list if any]
 
@@ -218,7 +228,7 @@ Immediately load and execute {nextStepFile} (step-v-13-report-complete.md)
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Scanned for template variables systematically
 - Validated each section for required content
@@ -230,7 +240,7 @@ Immediately load and execute {nextStepFile} (step-v-13-report-complete.md)
 - Auto-proceeds to final step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not scanning for template variables
 - Missing section-specific completeness checks

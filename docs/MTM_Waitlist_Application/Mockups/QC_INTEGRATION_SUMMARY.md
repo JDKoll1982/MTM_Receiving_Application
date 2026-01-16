@@ -16,6 +16,7 @@ The initial implementation only had **3 categories** (Material Handler, Setup Te
 4. Production Lead ✅
 
 Additionally, role-based visibility was not properly enforced:
+
 - Quality Control users should ONLY see Quality tasks
 - Material Handlers should ONLY see Material Handler tasks
 - Material Handler Leads should see MH + Quality tasks (not Setup Tech or Production Lead)
@@ -195,6 +196,7 @@ Changed from **3-column** to **2x2 grid**:
 ```
 
 **Color Scheme Summary:**
+
 - Material Handler: Blue (#0078D4)
 - Setup Technician: Orange (#F7630C)
 - Quality Control: Green (#107C10) ⭐ NEW
@@ -205,12 +207,14 @@ Changed from **3-column** to **2x2 grid**:
 ### 6. ✅ Documentation Updates
 
 **Created:** `ROLE_VISIBILITY_MATRIX.md`
+
 - Complete role-based visibility matrix
 - Filter dropdown specifications for each role
 - JavaScript implementation examples
 - Testing checklist
 
 **Updated:** `MOCKUPDATA_INTEGRATION.md`
+
 - Changed from "3 Total Categories" to "4 Total Categories"
 - Added Quality Control section
 
@@ -230,6 +234,7 @@ Changed from **3-column** to **2x2 grid**:
 | **Plant Manager** | All 4 | MH / ST / QC / PL / All |
 
 **Key Principles:**
+
 1. **Quality Control users CANNOT see Material Handler, Setup Tech, or Production Lead requests**
 2. **Material Handlers CANNOT see Quality, Setup Tech, or Production Lead requests**
 3. **Material Handler Leads can see MH + Quality but NOT Setup Tech or Production Lead**
@@ -271,7 +276,8 @@ Changed from **3-column** to **2x2 grid**:
 
 ## Next Steps (Implementation Required)
 
-### Immediate:
+### Immediate
+
 1. **Create Quality Control Mockup Views**
    - `Quality/waitlist.html` (similar to MaterialHandler/waitlist.html)
    - Show ONLY Quality Control tasks
@@ -292,7 +298,8 @@ Changed from **3-column** to **2x2 grid**:
    - Default to "All"
    - Show metrics for all 4 categories
 
-### Testing:
+### Testing
+
 5. **Role Isolation Testing**
    - Verify Quality users CANNOT see MH/ST/PL tasks
    - Verify MH users CANNOT see QC/ST/PL tasks
@@ -303,6 +310,7 @@ Changed from **3-column** to **2x2 grid**:
 ## Verification Checklist
 
 ### Mock Data
+
 - [x] Quality Control request types added (3 types)
 - [x] `fulfiller` property added to all request types
 - [x] `getCategoriesForRole()` function implemented
@@ -310,20 +318,24 @@ Changed from **3-column** to **2x2 grid**:
 - [x] `filterByCategory()` enforces role visibility
 
 ### Operator Wizard
+
 - [x] Quality Control category card added
 - [x] 4-card layout (2x2 grid)
 - [x] Quality Control request types show when selected
 
 ### Styling
+
 - [x] Category cards grid updated to 2 columns
 - [x] Quality Control task type color added (green)
 
 ### Documentation
+
 - [x] Role visibility matrix documented
 - [x] Filter implementation guide provided
 - [x] Integration summary created
 
 ### Pending Mockups
+
 - [ ] Quality/waitlist.html (NEW)
 - [ ] MaterialHandlerLead/waitlist.html (add filter)
 - [ ] ProductionLead/waitlist.html (add filter)
@@ -334,12 +346,14 @@ Changed from **3-column** to **2x2 grid**:
 ## Impact Summary
 
 **Before:**
+
 - 3 categories (missing Quality Control)
 - No role-based filtering
 - All users saw all request types
 - Quality Control requests didn't exist
 
 **After:**
+
 - 4 categories (Quality Control added)
 - Strict role-based filtering enforced
 - Users only see requests relevant to their role

@@ -13,13 +13,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 3: Target Users Discovery
 
-## STEP GOAL:
+## STEP GOAL
 
 Define target users with rich personas and map their key interactions with the product through collaborative user research and journey mapping.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -27,7 +27,7 @@ Define target users with rich personas and map their key interactions with the p
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -35,21 +35,21 @@ Define target users with rich personas and map their key interactions with the p
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative discovery tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on defining who this product serves and how they interact with it
 - 🚫 FORBIDDEN to create generic user profiles without specific details
 - 💬 Approach: Systematic persona development with journey mapping
 - 📋 COLLABORATIVE persona development, not assumption-based user creation
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Generate user personas and journeys collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to proceed without user confirmation through menu
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Current document and frontmatter from previous steps, product vision and problem already defined
 - Focus: Creating vivid, actionable user personas that align with product vision
@@ -157,14 +157,14 @@ Prepare the following structure for document append:
 
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} with current user content to dive deeper into personas and journeys
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to validate user understanding
 - IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3], then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#6-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -179,7 +179,7 @@ ONLY WHEN [C continue option] is selected and [user personas finalized and saved
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Rich, believable user personas with clear motivations
 - Clear distinction between primary and secondary users
@@ -189,7 +189,7 @@ ONLY WHEN [C continue option] is selected and [user personas finalized and saved
 - Content properly appended to document when C selected
 - Frontmatter updated with stepsCompleted: [1, 2, 3]
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Creating generic user profiles without specific details
 - Missing key user segments that are important to success

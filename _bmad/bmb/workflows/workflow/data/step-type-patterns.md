@@ -7,6 +7,7 @@
 ## Core Step Structure
 
 All steps share this skeleton:
+
 ```markdown
 ---
 name: 'step-[N]-[name]'
@@ -72,6 +73,7 @@ description: '[what it does]'
 **Use:** Single-session workflow
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-01-init'
@@ -83,6 +85,7 @@ templateFile: '../templates/[template].md'
 ```
 
 **Characteristics:**
+
 - No continuation detection
 - Auto-proceeds to step 2
 - No A/P menu
@@ -95,11 +98,13 @@ templateFile: '../templates/[template].md'
 **Use:** Multi-session workflow
 
 **Frontmatter:** Add `continueFile` reference
+
 ```yaml
 continueFile: './step-01b-continue.md'
 ```
 
 **Logic:**
+
 ```markdown
 ## 1. Check for Existing Workflow
 - Look for {outputFile}
@@ -114,6 +119,7 @@ continueFile: './step-01b-continue.md'
 **Use:** Paired with continuable init
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-01b-continue'
@@ -124,6 +130,7 @@ workflowFile: '{workflow_path}/workflow.md'
 ```
 
 **Logic:**
+
 1. Read `stepsCompleted` array from output
 2. Read last completed step file to find nextStep
 3. Welcome user back
@@ -136,6 +143,7 @@ workflowFile: '{workflow_path}/workflow.md'
 **Use:** Collaborative content generation
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-[N]-[name]'
@@ -159,6 +167,7 @@ partyModeWorkflow: '{project-root}/.../party-mode/workflow.md'
 **Use:** User choice determines next path
 
 **Frontmatter:**
+
 ```yaml
 nextStepFile: './step-[default].md'
 altStepFile: './step-[alternate].md'
@@ -173,6 +182,7 @@ altStepFile: './step-[alternate].md'
 **Menu:** Auto-proceed to next validation
 
 **Pattern:**
+
 ```markdown
 ## 1. Perform validation check
 [Check logic]
@@ -190,6 +200,7 @@ Display: "**Proceeding to next check...**"
 **Use:** Workflow that requires documents from prior workflows or external sources
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-01-init'
@@ -204,6 +215,7 @@ inputFilePatterns:
 ```
 
 **Characteristics:**
+
 - Discovers documents from prior workflows
 - Searches by folder, pattern, or user-provided paths
 - Validates inputs are complete
@@ -211,6 +223,7 @@ inputFilePatterns:
 - Auto-proceeds when required inputs found
 
 **Logic:**
+
 ```markdown
 ## 1. Discover Required Inputs
 Search {moduleInputFolder} for {inputFilePatterns}
@@ -239,6 +252,7 @@ If missing → Error with guidance
 **Use:** Optimizes document built section-by-section
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-[N]-polish'
@@ -248,6 +262,7 @@ outputFile: '{output_folder}/[document].md'
 ```
 
 **Characteristics:**
+
 - Loads entire document
 - Reviews for flow and coherence
 - Reduces duplication
@@ -256,6 +271,7 @@ outputFile: '{output_folder}/[document].md'
 - Keeps general order but optimizes readability
 
 **Logic:**
+
 ```markdown
 ## 1. Load Complete Document
 Read {outputFile} entirely
@@ -288,6 +304,7 @@ Mark workflow complete
 **Frontmatter:** No `nextStepFile`
 
 **Logic:**
+
 - Update frontmatter to mark workflow complete
 - Provide final summary
 - No next step

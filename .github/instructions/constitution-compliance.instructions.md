@@ -17,6 +17,7 @@ This document provides practical guidance for writing code that complies with th
 ### ViewModels
 
 **MUST**:
+
 - ✅ Inherit from `BaseViewModel` or use `ObservableObject` from CommunityToolkit.Mvvm
 - ✅ Use `[ObservableProperty]` attribute for bindable properties (creates backing field automatically)
 - ✅ Use `[RelayCommand]` attribute for commands (creates ICommand implementation automatically)
@@ -25,11 +26,13 @@ This document provides practical guidance for writing code that complies with th
 - ✅ Be registered in `App.xaml.cs` ConfigureServices as Transient
 
 **MUST NOT**:
+
 - ❌ Contain any UI code (no WinUI controls, no XAML manipulation)
 - ❌ Use static service access (use DI constructor injection only)
 - ❌ Access Views directly (use data binding and commands)
 
 **Example**:
+
 ```csharp
 public partial class MyFeatureViewModel : BaseViewModel
 {
@@ -78,17 +81,20 @@ public partial class MyFeatureViewModel : BaseViewModel
 ### Views (XAML)
 
 **MUST**:
+
 - ✅ Use `x:Bind` for all data binding (compile-time, performant)
 - ✅ Bind to ViewModel properties and commands only
 - ✅ Specify `Mode=TwoWay` when user input is expected
 - ✅ Use `ObservableCollection` for dynamic lists
 
 **MUST NOT**:
+
 - ❌ Use `{Binding}` syntax (runtime binding - slower, error-prone)
 - ❌ Contain business logic in code-behind
 - ❌ Access ViewModels via static references
 
 **Example**:
+
 ```xml
 <Page
     x:Class="MyApp.Views.MyFeatureView"
@@ -114,16 +120,19 @@ public partial class MyFeatureViewModel : BaseViewModel
 ### Views (Code-Behind .xaml.cs)
 
 **MUST**:
+
 - ✅ Keep minimal - only UI-specific code
 - ✅ Resolve ViewModel via constructor injection
 - ✅ Set DataContext in constructor if needed for x:Bind
 
 **MUST NOT**:
+
 - ❌ Contain business logic
 - ❌ Access database or services directly
 - ❌ Manipulate data (let ViewModel handle it)
 
 **Example**:
+
 ```csharp
 public sealed partial class MyFeatureView : Page
 {
@@ -149,16 +158,19 @@ public sealed partial class MyFeatureView : Page
 ### Models
 
 **MUST**:
+
 - ✅ Implement `INotifyPropertyChanged` (use `ObservableObject` from CommunityToolkit.Mvvm)
 - ✅ Be pure data classes with properties only
 - ✅ Use `[ObservableProperty]` for automatic property change notifications
 
 **MUST NOT**:
+
 - ❌ Contain business logic or service calls
 - ❌ Reference ViewModels or Views
 - ❌ Perform validation (validation goes in services or ViewModels)
 
 **Example**:
+
 ```csharp
 public partial class Model_MyEntity : ObservableObject
 {
@@ -183,6 +195,7 @@ public partial class Model_MyEntity : ObservableObject
 ### DAO Classes
 
 **MUST**:
+
 - ✅ ALL methods return `Task<Model_Dao_Result<T>>` or `Task<Model_Dao_Result>`
 - ✅ Be async (`async Task<...>`)
 - ✅ Use stored procedures ONLY (via `Helper_Database_StoredProcedure`)
@@ -190,11 +203,13 @@ public partial class Model_MyEntity : ObservableObject
 - ✅ Return `Model_Dao_Result.Success(data, message, rowsAffected)` on success
 
 **MUST NOT**:
+
 - ❌ Throw exceptions (catch and return failure result instead)
 - ❌ Write direct SQL in C# code
 - ❌ Use Entity Framework or ORMs
 
 **Example**:
+
 ```csharp
 public static async Task<Model_Dao_Result<List<MyEntity>>> GetEntitiesAsync(int userId)
 {
@@ -242,12 +257,14 @@ public static async Task<Model_Dao_Result<List<MyEntity>>> GetEntitiesAsync(int 
 ### Service Classes (Database Access)
 
 **MUST**:
+
 - ✅ Use stored procedures via Helper classes
 - ✅ Provide async methods
 - ✅ Handle errors gracefully (catch, log, return failure)
 - ✅ For Infor Visual: Include `ApplicationIntent=ReadOnly` in connection string
 
 **MUST NOT**:
+
 - ❌ Write to Infor Visual database (READ ONLY)
 - ❌ Use direct SQL queries
 - ❌ Return generic exceptions to callers (wrap in domain-specific errors)
@@ -259,12 +276,14 @@ public static async Task<Model_Dao_Result<List<MyEntity>>> GetEntitiesAsync(int 
 ### Service Registration (App.xaml.cs)
 
 **MUST**:
+
 - ✅ Register ALL services in `ConfigureServices` method
 - ✅ Use Singleton lifetime for stateless/stateful shared services
 - ✅ Use Transient lifetime for ViewModels (new instance per navigation)
 - ✅ Register interface → implementation pairs
 
 **Example**:
+
 ```csharp
 .ConfigureServices((context, services) =>
 {
@@ -286,16 +305,19 @@ public static async Task<Model_Dao_Result<List<MyEntity>>> GetEntitiesAsync(int 
 ### Constructor Injection
 
 **MUST**:
+
 - ✅ Inject ALL dependencies via constructor
 - ✅ Store injected services in `private readonly` fields
 - ✅ Validate dependencies (throw ArgumentNullException if null)
 
 **MUST NOT**:
+
 - ❌ Use service locator pattern
 - ❌ Access static service instances (except backward-compatible wrappers)
 - ❌ Use `new` to instantiate services
 
 **Example**:
+
 ```csharp
 public class MyService : IMyService
 {
@@ -319,17 +341,20 @@ public class MyService : IMyService
 ### Error Handling
 
 **MUST**:
+
 - ✅ Use `IService_ErrorHandler` for ALL exceptions
 - ✅ Specify severity: Low, Medium, High, Critical, Fatal
 - ✅ Log ALL errors (even if not shown to user)
 - ✅ Provide user-friendly error messages
 
 **MUST NOT**:
+
 - ❌ Let exceptions bubble up unhandled
 - ❌ Use generic error messages like "An error occurred"
 - ❌ Show technical stack traces to users
 
 **Example**:
+
 ```csharp
 try
 {
@@ -351,11 +376,13 @@ catch (Exception ex)
 ### Logging
 
 **MUST**:
+
 - ✅ Use `ILoggingService` for ALL logging
 - ✅ Log at appropriate levels (Debug, Information, Warning, Error, Critical)
 - ✅ Include context (user, action, parameters)
 
 **Example**:
+
 ```csharp
 await _logger.LogInformationAsync($"User {userId} accessed feature X");
 await _logger.LogErrorAsync($"Failed to load data for user {userId}: {ex.Message}");
@@ -368,18 +395,21 @@ await _logger.LogErrorAsync($"Failed to load data for user {userId}: {ex.Message
 ### Infor Visual Database (STRICTLY READ ONLY)
 
 **MUST**:
+
 - ✅ Include `ApplicationIntent=ReadOnly` in connection string
 - ✅ Use `SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED` in stored procedures
 - ✅ Query ONLY: PURCHASE_ORDER, PURC_ORDER_LINE, PART, INVENTORY_TRANS tables
 - ✅ Handle connection failures gracefully (Infor Visual may be offline)
 
 **MUST NOT**:
+
 - ❌ Execute INSERT, UPDATE, DELETE, MERGE statements
 - ❌ Create, alter, or drop database objects
 - ❌ Use transactions that lock tables
 - ❌ Assume Infor Visual is always available
 
 **Connection String**:
+
 ```csharp
 Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=True;ApplicationIntent=ReadOnly;
 ```
@@ -389,12 +419,14 @@ Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=
 ### MySQL 5.7.24 Compatibility
 
 **MUST NOT**:
+
 - ❌ Use JSON functions (`JSON_EXTRACT`, `JSON_TABLE`)
 - ❌ Use CTEs (Common Table Expressions / `WITH` clause)
 - ❌ Use window functions (`ROW_NUMBER()`, `RANK()`, `PARTITION BY`)
 - ❌ Use `CHECK` constraints
 
 **USE INSTEAD**:
+
 - ✅ Temporary tables for complex queries
 - ✅ Stored procedure variables
 - ✅ Subqueries
@@ -404,12 +436,14 @@ Server=VISUAL;Database=MTMFG;User Id=SHOP2;Password=SHOP;TrustServerCertificate=
 ### Async/Await
 
 **MUST**:
+
 - ✅ Use async/await for ALL I/O operations (database, file, network)
 - ✅ Return `Task<T>` or `Task` from async methods
 - ✅ Suffix async methods with `Async`
 - ✅ Use `ConfigureAwait(false)` in library code
 
 **MUST NOT**:
+
 - ❌ Use `.Result` or `.Wait()` (causes deadlocks)
 - ❌ Mix sync and async code patterns
 

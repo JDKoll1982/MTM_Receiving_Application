@@ -1,6 +1,6 @@
 # Technical Research Step 3: Integration Patterns
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after integration patterns content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on APIs, protocols, and system interoperability
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct integration patterns analysis focusing on APIs, communication protocols, and system interoperability. Search the web to verify and supplement current facts.
 
-## INTEGRATION PATTERNS ANALYSIS SEQUENCE:
+## INTEGRATION PATTERNS ANALYSIS SEQUENCE
 
 ### 1. Begin Integration Patterns Analysis
 
@@ -95,7 +95,7 @@ Search the web: "{{research_topic}} microservices integration patterns"
 
 Prepare integration patterns analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -185,17 +185,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
 - Load: `./step-04-architectural-patterns.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ API design patterns and protocols thoroughly analyzed
 ✅ Communication protocols and data formats evaluated
@@ -207,7 +207,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (architectural patterns)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -222,7 +222,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## INTEGRATION PATTERNS RESEARCH PROTOCOLS:
+## INTEGRATION PATTERNS RESEARCH PROTOCOLS
 
 - Research API design guides and best practices documentation
 - Use communication protocol specifications and standards
@@ -232,7 +232,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## INTEGRATION PATTERNS ANALYSIS STANDARDS:
+## INTEGRATION PATTERNS ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative integration research sources
@@ -241,7 +241,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable integration insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-04-architectural-patterns.md` to analyze architectural patterns, design decisions, and system structures for {{research_topic}}.
 

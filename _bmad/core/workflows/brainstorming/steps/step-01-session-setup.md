@@ -1,6 +1,6 @@
 # Step 1: Session Setup and Continuation Detection
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 - ✅ ALWAYS treat this as collaborative facilitation
@@ -9,25 +9,25 @@
 - 🚪 DETECT existing workflow state and handle continuation properly
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Brain techniques loaded on-demand from CSV when needed
 
-## YOUR TASK:
+## YOUR TASK
 
 Initialize the brainstorming workflow by detecting continuation state and setting up session context.
 
-## INITIALIZATION SEQUENCE:
+## INITIALIZATION SEQUENCE
 
 ### 1. Check for Existing Workflow
 
@@ -132,7 +132,7 @@ _[If context file provided, summarize key context and focus areas]_
 _[Content based on conversation about session parameters and facilitator approach]_
 ```
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects approach, append the session overview content directly to `{output_folder}/analysis/brainstorming-session-{{date}}.md` using the structure from above.
 
@@ -150,7 +150,7 @@ Which approach appeals to you most? (Enter 1-4)"
 
 ### 4. Handle User Selection and Initial Document Append
 
-#### When user selects approach number:
+#### When user selects approach number
 
 - **Append initial session overview to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
 - **Update frontmatter:** `stepsCompleted: [1]`, `selected_approach: '[selected approach]'`
@@ -165,7 +165,7 @@ After user selects approach number:
 - **If 3:** Load `./step-02c-random-selection.md`
 - **If 4:** Load `./step-02d-progressive-flow.md`
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing workflow detected and continuation handled properly
 ✅ Fresh workflow initialized with correct document structure
@@ -174,7 +174,7 @@ After user selects approach number:
 ✅ Frontmatter properly updated with session state
 ✅ Document initialized with session overview section
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not checking for existing document before creating new one
 ❌ Missing continuation detection leading to duplicate work
@@ -182,7 +182,7 @@ After user selects approach number:
 ❌ Not properly routing user's approach selection
 ❌ Frontmatter not updated with session parameters
 
-## SESSION SETUP PROTOCOLS:
+## SESSION SETUP PROTOCOLS
 
 - Always verify document existence before initialization
 - Load brain techniques CSV only when needed for technique presentation
@@ -190,7 +190,7 @@ After user selects approach number:
 - Maintain psychological safety for creative exploration
 - Clear next-step routing based on user preferences
 
-## NEXT STEPS:
+## NEXT STEPS
 
 Based on user's approach selection, load the appropriate step-02 file for technique selection and facilitation.
 

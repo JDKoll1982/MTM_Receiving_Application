@@ -12,23 +12,23 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Edit Step 6: Commands Menu
 
-## STEP GOAL:
+## STEP GOAL
 
 Review the agent's command menu and plan any additions, modifications, or removals.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Load agentMenuPatterns first
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load agentMenuPatterns before discussing menu edits
 - 📊 Follow A/P/C convention for menu structure
 - 💬 Focus on commands that user wants to add/modify/remove
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load agentMenuPatterns.md
 - 📊 Review current commands from editPlan
@@ -46,6 +46,7 @@ Read `{agentMenuPatterns}` to understand menu structure requirements.
 ### 2. Review Current Commands
 
 From `{editPlan}`, display current commands with:
+
 - trigger
 - description
 - handler/action
@@ -53,15 +54,18 @@ From `{editPlan}`, display current commands with:
 ### 3. Discuss Command Edits
 
 **For additions:**
+
 - Define trigger (clear, intuitive, following conventions)
 - Define description (concise, one line)
 - Define handler/action (references capability)
 
 **For modifications:**
+
 - Update trigger, description, or handler
 - Ensure still follows menu patterns
 
 **For removals:**
+
 - Identify commands to remove
 - Confirm impact on agent functionality
 
@@ -86,14 +90,14 @@ commandEdits:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Activation"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Save to {editPlan}, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -107,13 +111,13 @@ ONLY WHEN [C continue option] is selected and [command changes documented], will
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - agentMenuPatterns loaded
 - Command changes documented with trigger/description/handler
 - A/P/C convention followed
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeded without loading reference documents
 - Commands missing required elements

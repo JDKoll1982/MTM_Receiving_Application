@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Volvo - Code Inventory
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Volvo.md](../docent-sidecar/knowledge/Module_Volvo.md)
 
 ## Pages (Views)

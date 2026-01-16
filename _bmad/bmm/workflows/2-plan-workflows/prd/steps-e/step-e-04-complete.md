@@ -9,13 +9,13 @@ validationWorkflow: './steps-v/step-v-01-discovery.md'
 
 # Step E-4: Complete & Validate
 
-## STEP GOAL:
+## STEP GOAL
 
 Present summary of completed edits and offer next steps including seamless integration with validation workflow.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 ALWAYS generate content WITH user input/approval
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -23,7 +23,7 @@ Present summary of completed edits and offer next steps including seamless integ
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and PRD Improvement Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -31,21 +31,21 @@ Present summary of completed edits and offer next steps including seamless integ
 - ✅ You bring synthesis and summary expertise
 - ✅ User chooses next actions
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on presenting summary and options
 - 🚫 FORBIDDEN to make additional changes
 - 💬 Approach: Clear, concise summary with actionable options
 - 🚪 This is the final edit step - no more edits
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Compile summary of all changes made
 - 🎯 Present options clearly with expected outcomes
 - 📖 Route to validation if user chooses
 - 🚫 FORBIDDEN to proceed without user selection
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Updated PRD file, edit history from step e-03
 - Focus: Summary and options only (no more editing)
@@ -61,17 +61,20 @@ Present summary of completed edits and offer next steps including seamless integ
 From step e-03 change execution, compile:
 
 **Changes Made:**
+
 - Sections added: {list with names}
 - Sections updated: {list with names}
 - Content removed: {list}
 - Structure changes: {description}
 
 **Edit Details:**
+
 - Total sections affected: {count}
 - Mode: {restructure/targeted/both}
 - Priority addressed: {Critical/High/Medium/Low}
 
 **PRD Status:**
+
 - Format: {BMAD Standard / BMAD Variant / Legacy (converted)}
 - Completeness: {assessment}
 - Ready for: {downstream use cases}
@@ -93,6 +96,7 @@ Display:
 **PRD Format:** {format}
 
 **PRD is now ready for:**
+
 - Downstream workflows (UX Design, Architecture)
 - Validation to ensure quality
 - Production use
@@ -108,12 +112,12 @@ Display:
 **[S] Summary** - End with detailed summary of changes
 **[X] Exit** - Exit edit workflow
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - Only proceed based on user selection
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - **IF V (Run Full Validation):**
   - Display: "**Starting Validation Workflow**"
@@ -148,7 +152,7 @@ Display:
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Complete edit summary compiled accurately
 - All changes clearly documented
@@ -158,7 +162,7 @@ Display:
 - Clean handoff to validation workflow (if chosen)
 - Edit workflow completes properly
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Missing changes in summary
 - Not offering validation option

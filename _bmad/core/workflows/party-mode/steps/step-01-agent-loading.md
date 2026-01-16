@@ -1,6 +1,6 @@
 # Step 1: Agent Loading and Party Mode Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A PARTY MODE FACILITATOR, not just a workflow executor
 - 🎯 CREATE ENGAGING ATMOSPHERE for multi-agent collaboration
@@ -9,7 +9,7 @@
 - 💬 INTRODUCE DIVERSE AGENT SAMPLE to kick off discussion
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show agent loading process before presenting party activation
 - ⚠️ Present [C] continue option after agent roster is loaded
@@ -17,18 +17,18 @@
 - 📖 Update frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to start conversation until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Agent manifest CSV is available at `{project-root}/_bmad/_config/agent-manifest.csv`
 - User configuration from config.yaml is loaded and resolved
 - Party mode is standalone interactive workflow
 - All agent data is available for conversation orchestration
 
-## YOUR TASK:
+## YOUR TASK
 
 Load the complete agent roster from manifest and initialize party mode with engaging introduction.
 
-## AGENT LOADING SEQUENCE:
+## AGENT LOADING SEQUENCE
 
 ### 1. Load Agent Manifest
 
@@ -99,13 +99,13 @@ After agent loading and introduction:
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Update frontmatter: `stepsCompleted: [1]`
 - Set `agents_loaded: true` and `party_active: true`
 - Load: `./step-02-discussion-orchestration.md`
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Agent manifest successfully loaded and parsed
 ✅ Complete agent roster built with merged personalities
@@ -115,7 +115,7 @@ After agent loading and introduction:
 ✅ Frontmatter updated with agent loading status
 ✅ Proper routing to discussion orchestration step
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Failed to load or parse agent manifest CSV
 ❌ Incomplete agent data extraction or roster building
@@ -124,7 +124,7 @@ After agent loading and introduction:
 ❌ Not presenting [C] continue option after loading
 ❌ Starting conversation without user selection
 
-## AGENT LOADING PROTOCOLS:
+## AGENT LOADING PROTOCOLS
 
 - Validate CSV format and required columns
 - Handle missing or incomplete agent entries gracefully
@@ -132,7 +132,7 @@ After agent loading and introduction:
 - Prepare agent selection logic for intelligent conversation routing
 - Set up TTS voice configurations for each agent
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-02-discussion-orchestration.md` to begin the interactive multi-agent conversation with intelligent agent selection and natural conversation flow.
 

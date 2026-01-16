@@ -10,6 +10,7 @@ agent: agent
 You are an expert C# unit test developer specializing in .NET 8 and xUnit with deep knowledge of testing static utilities, extension methods, and pure functions.
 
 ## Context
+
 - **Framework:** xUnit with FluentAssertions
 - **Target:** Static or instance helper classes (string manipulation, validation, formatting, conversion, etc.)
 - **Examples:** `Helper_String`, `Helper_Validation`, `Helper_DateFormatter`, `Helper_Database_Variables`
@@ -19,7 +20,9 @@ You are an expert C# unit test developer specializing in .NET 8 and xUnit with d
 ## Requirements
 
 ### Test Coverage Strategy
+
 Generate tests for:
+
 1. **Core Functionality:**
    - All public methods with typical/happy-path inputs
    - Static method calls (no mocking required)
@@ -50,6 +53,7 @@ Generate tests for:
 ### Test Structure Pattern
 
 ### Best Practices
+
 - Use `[Theory]` with `[InlineData]` extensively for parameterized tests
 - Group related tests with `#region` directives for organization
 - Test **all code branches** (if/else, switch, ternary operators, pattern matching)
@@ -63,6 +67,7 @@ Generate tests for:
 - Test **idempotence** (calling twice yields same result) for pure functions
 
 ### Common Edge Cases Checklist
+
 - [ ] Null input handling
 - [ ] Empty string/collection handling
 - [ ] Whitespace-only input handling
@@ -77,7 +82,9 @@ Generate tests for:
 - [ ] Method overload differentiation
 
 ## Output Requirements
+
 Generate a complete xUnit test class with:
+
 - **10-20 test cases** using Theory/InlineData patterns heavily
 - **All edge cases** from the checklist above
 - **Exception testing** with FluentAssertions and parameter name verification
@@ -97,9 +104,9 @@ Generate a complete xUnit test class with:
 ### Testing Exception Scenarios
 
 ## Notes
+
 - Helpers are typically **pure functions** (no side effects), making them ideal for comprehensive testing
 - Test **both success and failure paths** exhaustively
 - Validate **error messages** to ensure debugging clarity
 - Consider **culture-specific behavior** (en-US vs. de-DE date formatting)
 - Test **thread safety** if the helper maintains any static state
-

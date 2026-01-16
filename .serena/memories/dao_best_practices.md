@@ -3,6 +3,7 @@
 ## Instance-Based Pattern (MANDATORY)
 
 ### Class Structure
+
 ```csharp
 public class Dao_EntityName
 {
@@ -18,6 +19,7 @@ public class Dao_EntityName
 ```
 
 ### ❌ Legacy Static Pattern (Deprecated)
+
 ```csharp
 // DO NOT USE - Static DAOs are prohibited
 public static class Dao_EntityName
@@ -30,6 +32,7 @@ public static class Dao_EntityName
 ## Method Signatures
 
 ### Return Type
+
 ALL methods must return `Task<Model_Dao_Result<T>>` or `Task<Model_Dao_Result>`
 
 ```csharp
@@ -44,6 +47,7 @@ public List<Model_Entity> GetAll() // Not async
 ```
 
 ### Naming Convention
+
 - Format: `<Action><Entity>Async` or `<Action>Async`
 - Actions: Insert, Update, Delete, Get, GetAll, GetBy<Criteria>
 - Always suffix with `Async`
@@ -51,6 +55,7 @@ public List<Model_Entity> GetAll() // Not async
 ## Using Helper_Database_StoredProcedure
 
 ### For MySQL Operations
+
 ```csharp
 public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 {
@@ -79,6 +84,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 ```
 
 ### Parameter Naming
+
 - C# parameter names match stored procedure parameters
 - NO `p_` prefix in C# (added automatically by helper)
 - Example: C# `"part_id"` → SQL `@p_part_id`
@@ -86,6 +92,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_ReceivingLine line)
 ## Error Handling in DAOs
 
 ### NEVER Throw Exceptions
+
 ```csharp
 // ❌ WRONG - Throwing exception
 public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
@@ -112,6 +119,7 @@ public async Task<Model_Dao_Result<int>> InsertAsync(Model_Entity entity)
 ```
 
 ### Using DaoResultFactory
+
 ```csharp
 // Success
 return DaoResultFactory.Success(data, affectedRows: 1);
@@ -123,6 +131,7 @@ return DaoResultFactory.Failure<T>("Error message", exception);
 ## DI Registration Pattern
 
 ### In App.xaml.cs
+
 ```csharp
 private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 {
@@ -143,6 +152,7 @@ private void ConfigureServices(HostBuilderContext context, IServiceCollection se
 ## MySQL vs Infor Visual
 
 ### MySQL Pattern (Stored Procedures)
+
 ```csharp
 public async Task<Model_Dao_Result<List<Model_ReceivingLine>>> GetAllAsync()
 {
@@ -155,6 +165,7 @@ public async Task<Model_Dao_Result<List<Model_ReceivingLine>>> GetAllAsync()
 ```
 
 ### Infor Visual Pattern (Direct SQL - READ ONLY)
+
 ```csharp
 public class Dao_InforVisualPO
 {
@@ -191,6 +202,7 @@ public class Dao_InforVisualPO
 ## Testing DAOs
 
 ### Integration Tests (Preferred)
+
 ```csharp
 [Fact]
 public async Task InsertAsync_ValidEntity_ReturnsNewId()

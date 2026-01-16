@@ -374,6 +374,6 @@ gantt
     Module rebuilt successfully  :milestone, p7m1, 2026-02-26, 0d
 ```
 
-</div> 
+</div>
 
 ---

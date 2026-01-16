@@ -10,23 +10,23 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Validate Step 3: Validation Summary
 
-## STEP GOAL:
+## STEP GOAL
 
 Display the complete validation report to the user and offer options for fixing issues or improving the agent.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Read validationReport to display findings
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Display complete validation report clearly
 - 📊 Offer options for fixing issues
 - 💬 Present next step choices
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Read validation report to collect all findings
 - 📊 Display organized summary
@@ -67,7 +67,7 @@ Read `{validationReport}` to collect all validation findings.
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [E] Edit Agent [S] Save & Exit [R] Retry Validation"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
@@ -77,7 +77,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [E] Edit
 - IF R: Restart validation from step v-01
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#4-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - User can chat or ask questions - always respond and then end with display again of the menu options
@@ -90,13 +90,13 @@ The validation workflow is complete when user selects [S] to save the report, or
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Complete validation report displayed
 - All findings clearly organized
 - User offered clear next steps
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Findings not displayed to user
 - No clear next steps offered

@@ -1,6 +1,6 @@
 # Step 5: Implementation Patterns & Consistency Rules
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -13,7 +13,7 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 🎯 Focus on consistency, not implementation details
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -30,25 +30,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to identify potential conflict points
 - **C (Continue)**: Save the patterns and proceed to project structure
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Core architectural decisions from step 4 are complete
 - Technology stack is decided and versions are verified
 - Focus on HOW agents should implement, not WHAT they should implement
 - Consider what could vary between different AI agents
 
-## YOUR TASK:
+## YOUR TASK
 
 Define implementation patterns and consistency rules that ensure multiple AI agents write compatible, consistent code that works together seamlessly.
 
-## PATTERNS DEFINITION SEQUENCE:
+## PATTERNS DEFINITION SEQUENCE
 
 ### 1. Identify Potential Conflict Points
 
@@ -210,7 +210,7 @@ Which approach makes the most sense for our project?"
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Implementation Patterns & Consistency Rules
@@ -303,7 +303,7 @@ Show the generated patterns content and present choices:
 
 ### 6. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with current patterns
 - Process enhanced consistency rules that come back
@@ -311,7 +311,7 @@ Show the generated patterns content and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with implementation patterns context
 - Process collaborative insights about potential conflicts
@@ -319,17 +319,17 @@ Show the generated patterns content and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
 - Load `./step-06-structure.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 4.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All potential AI agent conflict points identified and addressed
 ✅ Comprehensive patterns defined for naming, structure, and communication
@@ -339,7 +339,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Missing potential conflict points that could cause agent conflicts
 ❌ Being too prescriptive about implementation details instead of focusing on consistency
@@ -352,7 +352,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-06-structure.md` to define the complete project structure.
 

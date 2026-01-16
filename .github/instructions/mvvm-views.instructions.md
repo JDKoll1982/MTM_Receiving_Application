@@ -6,6 +6,7 @@ applyTo: 'Views/**/*.xaml'
 # View (XAML) Development Guidelines
 
 ## Purpose
+
 This file provides guidelines for creating WinUI 3 XAML pages following MVVM pattern.
 
 ## Core Principles
@@ -18,6 +19,7 @@ This file provides guidelines for creating WinUI 3 XAML pages following MVVM pat
 ## XAML Page Structure
 
 ### Basic Page Template
+
 ```xml
 <Page
     x:Class="MTM_Receiving_Application.Views.FeatureName.MyPage"
@@ -33,6 +35,7 @@ This file provides guidelines for creating WinUI 3 XAML pages following MVVM pat
 ```
 
 ### Code-Behind Template
+
 ```csharp
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.ViewModels.FeatureName;
@@ -55,7 +58,9 @@ public sealed partial class MyPage : Page
 ## Data Binding
 
 ### Use x:Bind (Compiled Binding)
+
 ✅ Preferred:
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.PartID, Mode=TwoWay}"/>
 <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"/>
@@ -63,11 +68,13 @@ public sealed partial class MyPage : Page
 ```
 
 ❌ Avoid (slower):
+
 ```xml
 <TextBox Text="{Binding PartID, Mode=TwoWay}"/>
 ```
 
 ### Binding Modes
+
 - `Mode=TwoWay` - For input controls (TextBox, ComboBox, etc.)
 - `Mode=OneWay` - For display (TextBlock, ListViews, etc.)
 - `Mode=OneTime` - For static values that don't change
@@ -75,6 +82,7 @@ public sealed partial class MyPage : Page
 ## Common Controls
 
 ### TextBox
+
 ```xml
 <TextBox 
     Header="Part ID"
@@ -83,6 +91,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### Buttons
+
 ```xml
 <Button 
     Content="Save"
@@ -91,6 +100,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### ListView/DataGrid
+
 ```xml
 <ListView ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}">
     <ListView.ItemTemplate>
@@ -102,6 +112,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### DatePicker
+
 ```xml
 <CalendarDatePicker 
     Header="Date"
@@ -109,6 +120,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### ComboBox
+
 ```xml
 <ComboBox 
     Header="Location"
@@ -119,6 +131,7 @@ public sealed partial class MyPage : Page
 ## Layout
 
 ### Grid with Spacing
+
 ```xml
 <Grid ColumnSpacing="12" RowSpacing="12">
     <Grid.ColumnDefinitions>
@@ -130,6 +143,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### StackPanel
+
 ```xml
 <StackPanel Spacing="8" Orientation="Vertical">
     <!-- Vertical stack of controls -->
@@ -139,12 +153,14 @@ public sealed partial class MyPage : Page
 ## Status Display
 
 ### Show Busy Indicator
+
 ```xml
 <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" 
               Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}"/>
 ```
 
 ### Status Message
+
 ```xml
 <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
            Foreground="{ThemeResource SystemAccentColor}"/>
@@ -153,6 +169,7 @@ public sealed partial class MyPage : Page
 ## Command Buttons
 
 ### CommandBar
+
 ```xml
 <CommandBar DefaultLabelPosition="Right">
     <AppBarButton 
@@ -169,6 +186,7 @@ public sealed partial class MyPage : Page
 ## Styling
 
 ### Use Theme Resources
+
 ```xml
 <TextBlock Style="{StaticResource TitleTextBlockStyle}"/>
 <TextBlock Style="{StaticResource BodyTextBlockStyle}"/>
@@ -176,6 +194,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### Margins and Padding
+
 ```xml
 <StackPanel Margin="0,12,0,0" Padding="24">
     <!-- Margin: Top Right Bottom Left -->
@@ -185,6 +204,7 @@ public sealed partial class MyPage : Page
 ## Registration in DI
 
 Add Views to `App.xaml.cs`:
+
 ```csharp
 services.AddTransient<MyPage>();
 ```
@@ -198,6 +218,7 @@ services.AddTransient<MyPage>();
 ## Common Patterns
 
 ### Form Grid Layout
+
 ```xml
 <Grid ColumnSpacing="12" RowSpacing="12">
     <Grid.ColumnDefinitions>
@@ -213,6 +234,7 @@ services.AddTransient<MyPage>();
 ```
 
 ### Header Section
+
 ```xml
 <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,0,0,24">
     <TextBlock Text="Page Title" Style="{StaticResource TitleTextBlockStyle}"/>
@@ -234,6 +256,7 @@ services.AddTransient<MyPage>();
 ## Accessibility
 
 Always include:
+
 ```xml
 <TextBox 
     Header="Part ID"

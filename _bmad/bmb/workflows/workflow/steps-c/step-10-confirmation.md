@@ -10,20 +10,20 @@ validationWorkflow: '{targetWorkflowPath}/steps-v/step-01-validate.md'
 
 # Step 10: Confirmation
 
-## STEP GOAL:
+## STEP GOAL
 
 Confirm the workflow build is complete by checking plan metadata. If this is a conversion, verify all original workflow elements are covered. If new, validate all plan requirements were met.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER skip reading the plan file completely
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous converter
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow quality assurance specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -31,21 +31,21 @@ Confirm the workflow build is complete by checking plan metadata. If this is a c
 - ✅ You bring thorough review expertise
 - ✅ User confirms everything is complete
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on confirmation and verification
 - 🚫 FORBIDDEN to skip checking plan metadata
 - 💬 MUST read the entire plan to verify completion
 - 📋 Different paths for conversion vs new workflows
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and read workflow plan completely
 - 💾 Check for conversionFrom metadata field
 - 📖 Route to appropriate confirmation path
 - 🚫 FORBIDDEN to proceed without verification
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All build steps are complete
 - This is the final verification before completion
@@ -61,6 +61,7 @@ Confirm the workflow build is complete by checking plan metadata. If this is a c
 **Load the workflowPlanFile completely:**
 
 Read `{workflowPlanFile}` entirely to extract:
+
 - Frontmatter metadata (check for `conversionFrom`)
 - Discovery notes
 - All requirements from classification, design, tools sections
@@ -91,6 +92,7 @@ Route to [New Workflow Confirmation](#4-new-workflow-confirmation-path)
 "**This is a workflow conversion. Verifying all original elements are covered...**"
 
 **Load the original workflow from conversionFrom path:**
+
 - Read EVERY file from the source workflow
 - Extract original goal, steps, instructions
 
@@ -272,6 +274,7 @@ Proceed to [Validation Offer](#6-validation-offer).
 **Before using your workflow, I recommend running extensive validation.**
 
 The validation phase will systematically check:
+
 - File structure & size
 - Frontmatter compliance
 - Menu handling patterns
@@ -284,7 +287,7 @@ The validation phase will systematically check:
 
 Display: **Build Confirmed! Select an Option:** [V] Start Validation [S] Skip - Complete Now
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF V: "Loading validation phase..." → Save confirmation status, update frontmatter, then load, read entire file, then execute {validationWorkflow}
 - IF S: "Skipping validation. Proceeding to completion..." → Load, read entire file, then execute {nextStepFile}
@@ -298,7 +301,7 @@ ALWAYS check plan metadata for conversionFrom field. Route to appropriate confir
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Plan file loaded completely
 - ConversionFrom metadata checked
@@ -308,7 +311,7 @@ ALWAYS check plan metadata for conversionFrom field. Route to appropriate confir
 - Coverage/completion report presented clearly
 - User confirms and proceeds
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading plan file completely
 - Not checking conversionFrom metadata

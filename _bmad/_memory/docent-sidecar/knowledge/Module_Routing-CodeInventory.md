@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Routing - Code Inventory
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Routing.md](../docent-sidecar/knowledge/Module_Routing.md)
 
 ## Views (XAML pages)

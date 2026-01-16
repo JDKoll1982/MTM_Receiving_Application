@@ -1,28 +1,35 @@
 # XAML Binding Patterns
 
 ## Overview
+
 This memory documents the standard XAML binding patterns used throughout the MTM Receiving Application, with emphasis on the help system integration and best practices.
 
 ## Fundamental Binding Rules
 
 ### 1. Always Use x:Bind (Compile-Time Binding)
+
 ✅ **CORRECT** - Compile-time binding with type safety:
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.PropertyName, Mode=TwoWay}"/>
 ```
 
 ❌ **WRONG** - Runtime binding (slower, no compile-time checking):
+
 ```xml
 <TextBox Text="{Binding PropertyName, Mode=TwoWay}"/>
 ```
 
 ### 2. Always Specify Mode
+
 Required modes:
+
 - `Mode=OneWay` - Read-only display (default for most properties)
 - `Mode=TwoWay` - User input fields
 - `Mode=OneTime` - Static content that never changes
 
 ✅ **CORRECT**:
+
 ```xml
 <TextBlock Text="{x:Bind ViewModel.Title, Mode=OneWay}"/>
 <TextBox Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"/>
@@ -30,12 +37,15 @@ Required modes:
 ```
 
 ### 3. No Business Logic in Code-Behind
+
 Code-behind should only:
+
 - Inject ViewModel via constructor
 - Call ViewModel methods in event handlers
 - Handle pure UI concerns (animations, scrolling)
 
 ✅ **CORRECT**:
+
 ```csharp
 public MyPage()
 {
@@ -45,6 +55,7 @@ public MyPage()
 ```
 
 ❌ **WRONG** - Business logic in code-behind:
+
 ```csharp
 private void Button_Click(object sender, RoutedEventArgs e)
 {
@@ -55,9 +66,11 @@ private void Button_Click(object sender, RoutedEventArgs e)
 ## Help System Binding Patterns
 
 ### Pattern 1: Tooltips (Static Content)
+
 **Use Case**: Button and control tooltips that never change
 
 **Implementation**:
+
 ```xml
 <Button 
     Content="Save"
@@ -69,19 +82,23 @@ private void Button_Click(object sender, RoutedEventArgs e)
 ```
 
 **ViewModel Method**:
+
 ```csharp
 public string GetTooltip(string name) => _helpService.GetTooltip($"Tooltip.{name}");
 ```
 
 **Key Points**:
+
 - Use `Mode=OneTime` for performance (content never changes)
 - Prefix convention: `Tooltip.Button.<ActionName>` or `Tooltip.Field.<FieldName>`
 - Method returns string directly (no async, no null checks in XAML)
 
 ### Pattern 2: Placeholders (Static Content)
+
 **Use Case**: TextBox placeholder text
 
 **Implementation**:
+
 ```xml
 <TextBox 
     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneTime}"
@@ -93,19 +110,23 @@ public string GetTooltip(string name) => _helpService.GetTooltip($"Tooltip.{name
 ```
 
 **ViewModel Method**:
+
 ```csharp
 public string GetPlaceholder(string name) => _helpService.GetPlaceholder($"Placeholder.{name}");
 ```
 
 **Key Points**:
+
 - Use `Mode=OneTime` (static content)
 - Prefix convention: `Placeholder.Field.<FieldName>`
 - Keep placeholder text short and actionable
 
 ### Pattern 3: Contextual Tips (Dynamic Content)
+
 **Use Case**: Tips that change based on workflow step or user state
 
 **Implementation**:
+
 ```xml
 <InfoBar
     IsOpen="{x:Bind ViewModel.ShowTip, Mode=OneWay}"
@@ -118,6 +139,7 @@ public string GetPlaceholder(string name) => _helpService.GetPlaceholder($"Place
 ```
 
 **ViewModel Properties**:
+
 ```csharp
 [ObservableProperty]
 private bool _showTip = true;
@@ -133,14 +155,17 @@ private void DismissTip()
 ```
 
 **Key Points**:
+
 - Use `Mode=OneWay` for reactive updates
 - Computed property pattern for dynamic content
 - Leverage `[ObservableProperty]` for reactive state
 
 ### Pattern 4: Help Dialog (Command Binding)
+
 **Use Case**: Contextual help dialog triggered by user action
 
 **Implementation**:
+
 ```xml
 <Button 
     Command="{x:Bind ViewModel.ShowHelpCommand}"
@@ -150,6 +175,7 @@ private void DismissTip()
 ```
 
 **ViewModel Command**:
+
 ```csharp
 [RelayCommand]
 private async Task ShowHelpAsync()
@@ -159,14 +185,17 @@ private async Task ShowHelpAsync()
 ```
 
 **Key Points**:
+
 - Use `RelayCommand` for async operations
 - Service handles dialog creation and display
 - No XAML for dialog content (handled by service)
 
 ### Pattern 5: InfoBar Messages (Dynamic Binding)
+
 **Use Case**: Status messages, validation errors, warnings
 
 **Implementation**:
+
 ```xml
 <InfoBar
     IsOpen="{x:Bind ViewModel.ShowInfoBar, Mode=OneWay}"
@@ -176,6 +205,7 @@ private async Task ShowHelpAsync()
 ```
 
 **ViewModel Properties**:
+
 ```csharp
 [ObservableProperty]
 private bool _showInfoBar;
@@ -210,6 +240,7 @@ private void ShowWarning(string messageKey)
 ## Common XAML Patterns
 
 ### Loading States
+
 ```xml
 <ProgressRing 
     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
@@ -221,6 +252,7 @@ private void ShowWarning(string messageKey)
 ```
 
 ### Button Enable/Disable
+
 ```xml
 <Button 
     Content="Save"
@@ -229,6 +261,7 @@ private void ShowWarning(string messageKey)
 ```
 
 **ViewModel**:
+
 ```csharp
 [RelayCommand(CanExecute = nameof(CanSave))]
 private async Task SaveAsync() { }
@@ -242,6 +275,7 @@ partial void OnRequiredFieldChanged(string value)
 ```
 
 ### ListView/GridView Binding
+
 ```xml
 <ListView
     ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
@@ -258,11 +292,13 @@ partial void OnRequiredFieldChanged(string value)
 ```
 
 **Key Points**:
+
 - Use `ObservableCollection<T>` in ViewModel
 - Specify `x:DataType` in DataTemplate for compile-time binding
 - `SelectedItem` uses `TwoWay` for user selection tracking
 
 ### Visibility Converters
+
 ```xml
 xmlns:converters="using:MTM_Receiving_Application.Converters"
 
@@ -283,6 +319,7 @@ xmlns:converters="using:MTM_Receiving_Application.Converters"
 ## DataTemplate Patterns
 
 ### Inline DataTemplates (Small Content)
+
 ```xml
 <ComboBox ItemsSource="{x:Bind ViewModel.Options, Mode=OneWay}">
     <ComboBox.ItemTemplate>
@@ -294,6 +331,7 @@ xmlns:converters="using:MTM_Receiving_Application.Converters"
 ```
 
 ### Resource DataTemplates (Reusable)
+
 ```xml
 <Page.Resources>
     <DataTemplate x:Key="ItemCardTemplate" x:DataType="models:Model_Item">
@@ -314,13 +352,17 @@ xmlns:converters="using:MTM_Receiving_Application.Converters"
 ## Event Handling Patterns
 
 ### Command Binding (Preferred)
+
 ✅ **CORRECT** - Use commands for all user actions:
+
 ```xml
 <Button Command="{x:Bind ViewModel.SaveCommand}" Content="Save"/>
 ```
 
 ### Event Handler (Only for UI-Specific Logic)
+
 ✅ **ACCEPTABLE** - For scroll, loaded, size changed events:
+
 ```xml
 <Page Loaded="OnPageLoaded">
 ```
@@ -333,6 +375,7 @@ private async void OnPageLoaded(object sender, RoutedEventArgs e)
 ```
 
 ❌ **AVOID** - Don't use events for business logic:
+
 ```xml
 <Button Click="Button_Click"/> <!-- Use Command instead -->
 ```
@@ -340,6 +383,7 @@ private async void OnPageLoaded(object sender, RoutedEventArgs e)
 ## Performance Best Practices
 
 ### 1. Use OneTime for Static Content
+
 ```xml
 <!-- Static content that never changes -->
 <TextBlock Text="{x:Bind ViewModel.AppName, Mode=OneTime}"/>
@@ -347,6 +391,7 @@ private async void OnPageLoaded(object sender, RoutedEventArgs e)
 ```
 
 ### 2. Use OneWay for Read-Only Display
+
 ```xml
 <!-- Display-only properties -->
 <TextBlock Text="{x:Bind ViewModel.Title, Mode=OneWay}"/>
@@ -354,6 +399,7 @@ private async void OnPageLoaded(object sender, RoutedEventArgs e)
 ```
 
 ### 3. Use TwoWay Only for User Input
+
 ```xml
 <!-- User input fields only -->
 <TextBox Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"/>
@@ -361,6 +407,7 @@ private async void OnPageLoaded(object sender, RoutedEventArgs e)
 ```
 
 ### 4. Avoid Unnecessary Updates
+
 ```csharp
 // Good - Update multiple properties then notify once
 private void UpdateState()
@@ -380,6 +427,7 @@ partial void OnLastNameChanged(string value) => OnPropertyChanged(nameof(FullNam
 ## Common Mistakes to Avoid
 
 ### ❌ Missing Mode
+
 ```xml
 <!-- WRONG - Mode not specified -->
 <TextBox Text="{x:Bind ViewModel.Name}"/>
@@ -389,6 +437,7 @@ partial void OnLastNameChanged(string value) => OnPropertyChanged(nameof(FullNam
 ```
 
 ### ❌ Using Binding Instead of x:Bind
+
 ```xml
 <!-- WRONG - Runtime binding -->
 <TextBlock Text="{Binding Title}"/>
@@ -398,6 +447,7 @@ partial void OnLastNameChanged(string value) => OnPropertyChanged(nameof(FullNam
 ```
 
 ### ❌ Business Logic in Code-Behind
+
 ```csharp
 // WRONG
 private void Button_Click(object sender, RoutedEventArgs e)
@@ -414,6 +464,7 @@ private void Button_Click(object sender, RoutedEventArgs e)
 ```
 
 ### ❌ Not Using x:DataType in DataTemplates
+
 ```xml
 <!-- WRONG - Runtime binding in template -->
 <DataTemplate>
@@ -456,6 +507,7 @@ When migrating hard-coded help content to the service:
    - Ensure no null reference exceptions
 
 ## Related Memories
+
 - `help_system_architecture` - Help system design and components
 - `service_infrastructure` - Service registration and DI patterns
 - `mvvm-viewmodels.instructions` - ViewModel patterns and best practices

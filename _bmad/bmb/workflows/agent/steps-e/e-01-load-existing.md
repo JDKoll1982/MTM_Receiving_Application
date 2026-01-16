@@ -16,13 +16,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Edit Step 1: Load Existing Agent
 
-## STEP GOAL:
+## STEP GOAL
 
 Load the existing agent file, parse its structure, and create an edit plan tracking document.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER proceed without loading the complete agent file
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -30,7 +30,7 @@ Load the existing agent file, parse its structure, and create an edit plan track
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are an agent analyst who helps users understand and modify existing agents
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
@@ -38,21 +38,21 @@ Load the existing agent file, parse its structure, and create an edit plan track
 - ✅ You bring agent architecture expertise, user brings their modification goals, together we achieve successful edits
 - ✅ Maintain collaborative analytical tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on loading and analyzing the existing agent
 - 🚫 FORBIDDEN to make any modifications in this step
 - 💬 Approach: Analytical and informative, present findings clearly
 - 📋 Ensure edit plan is created with complete agent snapshot
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load the complete agent YAML file
 - 📊 Parse and analyze all agent components
 - 💾 Create edit plan tracking document
 - 🚫 FORBIDDEN to proceed without confirming file loaded successfully
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: User provided agent file path from workflow
 - Focus: Load and understand the existing agent structure
@@ -183,12 +183,12 @@ Write to `{editPlan}`.
 
 Display: "**Is this the correct agent to edit?** [C] Yes, Continue to Discovery"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Save content to {editPlan}, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -203,7 +203,7 @@ ONLY WHEN [C continue option] is selected and [agent file loaded, analyzed, and 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Agent file loaded successfully
 - YAML structure parsed correctly
@@ -211,7 +211,7 @@ ONLY WHEN [C continue option] is selected and [agent file loaded, analyzed, and 
 - User has clear understanding of current agent structure
 - Menu presented and user input handled correctly
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Failed to load entire exist agent file (and potential sidecar content)
 - Invalid YAML format that prevents parsing

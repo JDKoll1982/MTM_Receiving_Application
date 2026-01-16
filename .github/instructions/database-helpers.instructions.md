@@ -12,18 +12,18 @@ Direct usage of `MySqlConnection` and `MySqlCommand` in DAOs is **prohibited**. 
 
 ### Key Methods
 
-1.  **`ExecuteStoredProcedureAsync<T>`**
-    *   **Use Case**: Fetching a list of records.
-    *   **Returns**: `Model_Dao_Result<List<T>>`
-    *   **Mapping**: Automatically maps columns to properties of `T` by name.
+1. **`ExecuteStoredProcedureAsync<T>`**
+    * **Use Case**: Fetching a list of records.
+    * **Returns**: `Model_Dao_Result<List<T>>`
+    * **Mapping**: Automatically maps columns to properties of `T` by name.
 
-2.  **`ExecuteStoredProcedureSingleAsync<T>`**
-    *   **Use Case**: Fetching a single record (e.g., GetById).
-    *   **Returns**: `Model_Dao_Result<T>`
+2. **`ExecuteStoredProcedureSingleAsync<T>`**
+    * **Use Case**: Fetching a single record (e.g., GetById).
+    * **Returns**: `Model_Dao_Result<T>`
 
-3.  **`ExecuteNonQueryAsync`**
-    *   **Use Case**: Insert, Update, Delete operations.
-    *   **Returns**: `Model_Dao_Result` (Success/Failure).
+3. **`ExecuteNonQueryAsync`**
+    * **Use Case**: Insert, Update, Delete operations.
+    * **Returns**: `Model_Dao_Result` (Success/Failure).
 
 ### Usage Example
 
@@ -46,12 +46,13 @@ if (result.IsSuccess)
 ```
 
 ## Parameter Naming
-- **C# Side**: Use dictionary keys matching the stored procedure parameter names (usually with `p_` prefix, e.g., `p_part_id`).
-- **SQL Side**: Stored procedure parameters must match the dictionary keys.
+* **C# Side**: Use dictionary keys matching the stored procedure parameter names (usually with `p_` prefix, e.g., `p_part_id`).
+* **SQL Side**: Stored procedure parameters must match the dictionary keys.
 
 ## Connection Strings
-- Access via `Helper_Database_Variables.GetConnectionString()`.
-- Never hardcode connection strings in DAOs.
+* Access via `Helper_Database_Variables.GetConnectionString()`.
+* Never hardcode connection strings in DAOs.
 
 ## Error Handling
+
 The helper automatically catches exceptions, logs them, and returns a `Model_Dao_Result` with `IsSuccess = false`. DAOs generally do not need try-catch blocks around helper calls unless specific logic is needed.

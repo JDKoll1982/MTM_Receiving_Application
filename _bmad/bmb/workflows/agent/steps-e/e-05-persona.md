@@ -14,23 +14,23 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Edit Step 5: Persona
 
-## STEP GOAL:
+## STEP GOAL
 
 Review the agent's persona and plan any changes using the four-field persona system.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Load personaProperties, principlesCrafting, communicationPresets first
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load reference documents before discussing persona edits
 - 📊 Maintain four-field system purity
 - 💬 Focus on persona fields that user wants to change
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load personaProperties.md, principlesCrafting.md, communicationPresets.csv
 - 📊 Review current persona from editPlan
@@ -48,6 +48,7 @@ Read `{personaProperties}`, `{principlesCrafting}`, `{communicationPresets}` to 
 ### 2. Review Current Persona
 
 From `{editPlan}`, display current persona:
+
 - **role:** What they do
 - **identity:** Who they are
 - **communication_style:** How they speak
@@ -58,18 +59,22 @@ From `{editPlan}`, display current persona:
 For each field the user wants to change:
 
 **Role edits:**
+
 - Ensure functional definition (not personality)
 - Define expertise domain and capabilities
 
 **Identity edits:**
+
 - Ensure personality definition (not job description)
 - Define character, attitude, worldview
 
 **Communication_style edits:**
+
 - Ensure speech pattern definition (not expertise)
 - Define tone, formality, voice
 
 **Principles edits:**
+
 - First principle must activate expert knowledge
 - Other principles guide decision-making
 - Follow principlesCrafting.md guidance
@@ -98,14 +103,14 @@ personaEdits:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Commands Menu"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Save to {editPlan}, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -119,13 +124,13 @@ ONLY WHEN [C continue option] is selected and [persona changes documented with f
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Reference documents loaded
 - Four-field system purity maintained
 - Persona changes documented
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeded without loading reference documents
 - Field purity violated (mixed concepts)

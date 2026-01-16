@@ -10,34 +10,34 @@ planValidationStep: './step-11-plan-validation.md'
 
 # Validation Step 10: Report Complete
 
-## STEP GOAL:
+## STEP GOAL
 
 To check if a plan file exists (and run plan validation if it does), then summarize all validation findings and present to the user.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 This is the final validation step - present findings
 - 🚫 DO NOT modify the workflow without user request
 - 💬 Present summary and ask what changes are needed
 - 🚪 This ends validation - user decides next steps
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load the complete validation report
 - 💾 Summarize ALL findings
 - 📖 Update report status to COMPLETE
 - 🚫 DO NOT proceed without user review
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All 10 previous validation steps have completed
 - Report contains findings from all checks
@@ -53,6 +53,7 @@ To check if a plan file exists (and run plan validation if it does), then summar
 Before finalizing the report, check if a plan file exists:
 
 **Check if {workflowPlanFile} exists:**
+
 - **IF YES:** Run plan validation first
   - Load, read entire file, then execute {planValidationStep}
   - The plan validation will append its findings to the report
@@ -101,12 +102,12 @@ Present this information in a natural, conversational way - the exact format doe
 
 Display: **Validation Complete! Select an Option:** [R] Review Detailed Findings [F] Fix Issues [X] Exit Validation
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - User chooses their next action
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF R: Walk through the validation report section by section, explaining findings, then redisplay menu
 - IF F: "What issues would you like to fix?" → Discuss specific changes needed → User can make edits manually OR you can help edit files
@@ -135,7 +136,7 @@ This is the final validation step. User reviews findings and decides whether to 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All validation findings summarized
 - Complete report presented to user
@@ -144,7 +145,7 @@ This is the final validation step. User reviews findings and decides whether to 
 - User can review findings and decide on changes
 - Plan updated with validation status
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not summarizing all findings
 - Not presenting complete report to user

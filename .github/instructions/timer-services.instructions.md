@@ -10,8 +10,8 @@ The `DispatcherTimerWrapper` wraps the WinUI 3 `DispatcherQueueTimer` to make it
 
 ## Responsibilities
 
-1.  **Abstraction**: Hide `DispatcherQueueTimer` implementation details.
-2.  **Testability**: Allow mocking of timer events in unit tests.
+1. **Abstraction**: Hide `DispatcherQueueTimer` implementation details.
+2. **Testability**: Allow mocking of timer events in unit tests.
 
 ## Implementation Pattern
 
@@ -40,5 +40,6 @@ public MyViewModel(ITimer timer)
 ```
 
 ## Registration
+
 - Register as **Transient**. Each usage typically requires a distinct timer instance.
 - **Note**: Since `DispatcherQueueTimer` requires a `DispatcherQueue`, the registration might need a factory delegate or the service needs to be created on the UI thread. Ensure the DI container can resolve it correctly in the context of the UI thread.

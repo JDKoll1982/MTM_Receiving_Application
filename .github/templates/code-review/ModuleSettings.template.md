@@ -9,6 +9,7 @@
 ## 📋 Settings Categories
 
 {{#each categories}}
+
 ### {{category_number}}. {{category_name}}
 
 | Setting Name | Current Value | Type | Description | Validation |
@@ -21,6 +22,7 @@
 {{category_implementation_notes}}
 
 **Current Code Location{{#if (gt settings.length 1)}}s{{/if}}:**
+
 ```csharp
 {{#each settings}}
 // {{file_path}}:{{line_number}}
@@ -36,18 +38,21 @@
 ## 🔧 Implementation Strategy
 
 ### Phase 1: Core Settings Infrastructure
+
 1. Create `Model_{{module_name}}Settings.cs` with all properties
 2. Create `Dao_{{module_name}}Settings` for database persistence
 3. Create settings table in MySQL database
 4. Add settings singleton to DI container
 
 ### Phase 2: Settings Service
+
 1. Create `IService_{{module_name}}Settings` interface
 2. Implement `Service_{{module_name}}Settings` with validation
 3. Add default settings initialization on first run
 4. Implement import/export for backup
 
 ### Phase 3: Settings UI
+
 1. Create `SettingsPage.xaml` in Module_Settings
 2. Group settings by category with ExpanderControls
 3. Add validation with real-time feedback
@@ -55,6 +60,7 @@
 5. **Icon Selection**: Integrate `Module_Shared\Views\View_Shared_IconSelectorWindow.xaml` for icon settings
 
 ### Phase 4: Integration
+
 1. Refactor hardcoded values to use settings service
 2. Add settings change notifications (INotifyPropertyChanged)
 3. Update documentation with setting descriptions

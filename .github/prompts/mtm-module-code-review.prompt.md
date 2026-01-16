@@ -51,6 +51,7 @@ or
 **Command:** `[I]init` or `[A]analyze`
 
 **What happens:**
+
 - Agent scans all Services, DAOs, ViewModels, Views, Models in target module
 - Applies 10+ severity categories (🔴 CRITICAL → 🟤 LOGGING/DOCS)
 - Detects hardcoded values for settings
@@ -59,6 +60,7 @@ or
 - Creates `{Module}Settings.md` in Documentation/FutureEnhancements/Module_Settings/
 
 **Output:**
+
 ```
 ✅ Analysis Complete for Module_Volvo
 
@@ -79,6 +81,7 @@ Next: Review CODE_REVIEW.md and amend checkboxes
 **Open:** `{Module}/CODE_REVIEW.md`
 
 **Amend checkboxes:**
+
 - `✅` = Apply this fix automatically
 - `⬜` = Skip this fix (I'll handle manually or ignore)
 
@@ -89,6 +92,7 @@ Next: Review CODE_REVIEW.md and amend checkboxes
 **Command:** `[F]fix`
 
 **What happens:**
+
 - Agent reads your amended CODE_REVIEW.md
 - Groups fixes by dependencies (smart ordering)
 - Applies fixes one by one
@@ -98,17 +102,20 @@ Next: Review CODE_REVIEW.md and amend checkboxes
 - Tracks progress in memories
 
 **Flags:**
+
 - `--skip-maintain` - Skip 🔧 MAINTAIN issues
 - `--skip-logging` - Skip 🟤 LOGGING/DOCS issues
 - `--only-critical` - Apply only 🔴 CRITICAL issues
 - `--only-security` - Apply only 🟡 SECURITY issues
 
 **Example:**
+
 ```
 @code-reviewer fix --only-critical
 ```
 
 **Output:**
+
 ```
 [1/26] Applying fix #2: Create stored procedure sp_volvo_shipment_update
 ✅ Build succeeded (3.2s)
@@ -129,6 +136,7 @@ Time: 54 minutes
 **Command:** `[D]docs`
 
 **What happens:**
+
 - Analyzes all Services in module
 - Checks for existing `.github/instructions/service-{name}.instructions.md`
 - Compares service methods with documentation
@@ -137,6 +145,7 @@ Time: 54 minutes
 - Updates {Module}Settings.md with hardcoded values
 
 **Output:**
+
 ```
 ✅ Documentation Generation Complete
 
@@ -155,6 +164,7 @@ Settings Documentation:
 **When:** All checkboxes are ✅ (review complete)
 
 **What happens:**
+
 - Verifies all issues fixed
 - Creates `Archived_Code_Reviews/` folder in module
 - Moves `CODE_REVIEW.md` → `Archived_Code_Reviews/CODE_REVIEW_V1_20260105_143000.md`
@@ -300,6 +310,7 @@ Proceed? [y/n]
 ### File Access Boundaries
 
 Agent can **READ/WRITE**:
+
 - Target `Module_*/` directory
 - `Database/StoredProcedures/{Module}/`
 - `Database/Migrations/`
@@ -308,6 +319,7 @@ Agent can **READ/WRITE**:
 - `Documentation/FutureEnhancements/Module_Settings/`
 
 Agent **CANNOT** access:
+
 - Other modules (unless explicitly analyzing)
 - User data or external files
 - System files
@@ -322,6 +334,7 @@ Agent **CANNOT** access:
 ### Memory Persistence
 
 Agent remembers across sessions:
+
 - Current module and version
 - Fix progress (completed/remaining)
 - Module-specific patterns
@@ -337,6 +350,7 @@ Located: `_bmad/_memory/code-reviewer-sidecar/memories.md`
 ### "Build failed after fix"
 
 **Agent will:**
+
 1. Analyze error message
 2. Attempt automatic fix (missing using, syntax, etc.)
 3. Rebuild to confirm
@@ -345,6 +359,7 @@ Located: `_bmad/_memory/code-reviewer-sidecar/memories.md`
 ### "Fix marked ✅ but not applied"
 
 **Possible causes:**
+
 - Fix has dependencies (must fix #2 before #1)
 - File changed since analysis (re-analyze)
 - Build error prevented continuation
@@ -355,6 +370,7 @@ Run `[S]status` to see what's blocking
 ### "Agent created wrong fix"
 
 **Steps:**
+
 1. Review git diff
 2. Revert the specific file: `git checkout -- {file}`
 3. Mark issue as ⬜ in CODE_REVIEW.md
@@ -366,6 +382,7 @@ Run `[S]status` to see what's blocking
 Ensure module folder exists and follows naming: `Module_{Name}`
 
 List available modules:
+
 ```powershell
 Get-ChildItem -Directory -Filter "Module_*"
 ```
@@ -377,6 +394,7 @@ Get-ChildItem -Directory -Filter "Module_*"
 ### Custom Severity Analysis
 
 Analyze only specific severity:
+
 ```
 @code-reviewer analyze Module_Routing --only-critical
 ```

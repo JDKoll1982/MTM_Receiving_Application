@@ -1,6 +1,6 @@
 # Step 1: Architecture Workflow Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
@@ -12,25 +12,25 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Input document discovery happens in this step
 
-## YOUR TASK:
+## YOUR TASK
 
 Initialize the Architecture workflow by detecting continuation state, discovering input documents, and setting up the document for collaborative architectural decision making.
 
-## INITIALIZATION SEQUENCE:
+## INITIALIZATION SEQUENCE
 
 ### 1. Check for Existing Workflow
 
@@ -55,6 +55,7 @@ If no document exists or no `stepsCompleted` in frontmatter:
 #### A. Input Document Discovery
 
 Discover and load context documents using smart discovery. Documents can be in the following locations:
+
 - {planning_artifacts}/**
 - {output_folder}/**
 - {product_knowledge}/**
@@ -63,6 +64,7 @@ Discover and load context documents using smart discovery. Documents can be in t
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
 Try to discover the following:
+
 - Product Brief (`*brief*.md`)
 - Product Requirements Document (`*prd*.md`)
 - UX Design (`*ux-design*.md`) and other
@@ -124,7 +126,7 @@ Ready to begin architectural decision making. Do you have any other documents yo
 
 [C] Continue to project context analysis
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing workflow detected and handed off to step-01b correctly
 ✅ Fresh workflow initialized with template and frontmatter
@@ -133,7 +135,7 @@ Ready to begin architectural decision making. Do you have any other documents yo
 ✅ PRD requirement validated and communicated
 ✅ User confirmed document setup and can proceed
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Proceeding with fresh initialization when existing workflow exists
 ❌ Not updating frontmatter with discovered input documents
@@ -146,7 +148,7 @@ Ready to begin architectural decision making. Do you have any other documents yo
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects [C] to continue, only after ensuring all the template output has been created, then load `./step-02-context.md` to analyze the project context and begin architectural decision making.
 

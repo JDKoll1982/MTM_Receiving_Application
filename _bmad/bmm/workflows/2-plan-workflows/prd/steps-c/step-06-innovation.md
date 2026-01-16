@@ -18,7 +18,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 6 of 11** - Next: Project Type Analysis
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -30,7 +30,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 OPTIONAL STEP: Only proceed if innovation signals are detected
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating innovation content
@@ -38,14 +38,14 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Project type from step-02 is available for innovation signal matching
 - Project-type CSV data will be loaded in this step
 - Focus on detecting genuine innovation, not forced creativity
 
-## OPTIONAL STEP CHECK:
+## OPTIONAL STEP CHECK
 
 Before proceeding with this step, scan for innovation signals:
 
@@ -54,11 +54,11 @@ Before proceeding with this step, scan for innovation signals:
 - Look for novel approaches or unique combinations
 - If no innovation detected, skip this step
 
-## YOUR TASK:
+## YOUR TASK
 
 Detect and explore innovation patterns in the product, focusing on what makes it truly novel and how to validate the innovative aspects.
 
-## INNOVATION DISCOVERY SEQUENCE:
+## INNOVATION DISCOVERY SEQUENCE
 
 ### 1. Load Project-Type Innovation Data
 
@@ -73,7 +73,7 @@ Load innovation signals specific to this project type:
 
 Monitor conversation for both general and project-type-specific innovation signals:
 
-#### General Innovation Language:
+#### General Innovation Language
 
 - "Nothing like this exists"
 - "We're rethinking how [X] works"
@@ -81,7 +81,7 @@ Monitor conversation for both general and project-type-specific innovation signa
 - "Novel approach to [problem]"
 - "No one has done [concept] before"
 
-#### Project-Type-Specific Signals (from CSV):
+#### Project-Type-Specific Signals (from CSV)
 
 Match user descriptions against innovation_signals for their project_type:
 
@@ -93,6 +93,7 @@ Match user descriptions against innovation_signals for their project_type:
 ### 3. Initial Innovation Screening
 
 Ask targeted innovation discovery questions:
+
 - Guide exploration of what makes the product innovative
 - Explore if they're challenging existing assumptions
 - Ask about novel combinations of technologies/approaches
@@ -103,14 +104,15 @@ Ask targeted innovation discovery questions:
 
 If innovation signals are found, explore deeply:
 
-#### Innovation Discovery Questions:
+#### Innovation Discovery Questions
+
 - What makes it unique compared to existing solutions?
 - What assumption are you challenging?
 - How do we validate it works?
 - What's the fallback if it doesn't?
 - Has anyone tried this before?
 
-#### Market Context Research:
+#### Market Context Research
 
 If relevant innovation detected, consider web search for context:
 Use `web_search_triggers` from project-type CSV:
@@ -120,7 +122,7 @@ Use `web_search_triggers` from project-type CSV:
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -147,6 +149,7 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 6. Present MENU OPTIONS (Only if Innovation Detected)
 
 Present the innovation content for review, then display menu:
+
 - Show identified innovative aspects (using structure from section 5)
 - Highlight differentiation from existing solutions
 - Ask if they'd like to refine further, get other perspectives, or proceed
@@ -154,39 +157,44 @@ Present the innovation content for review, then display menu:
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Project Type Analysis (Step 7 of 11)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
+
 - IF A: Execute {advancedElicitationTask} with the current innovation content, process the enhanced innovation insights that come back, ask user "Accept these improvements to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF P: Execute {partyModeWorkflow} with the current innovation content, process the collaborative innovation exploration and ideation, ask user "Accept these changes to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-## NO INNOVATION DETECTED:
+## NO INNOVATION DETECTED
 
 If no genuine innovation signals are found after exploration:
+
 - Acknowledge that no clear innovation signals were found
 - Note this is fine - many successful products are excellent executions of existing concepts
 - Ask if they'd like to try finding innovative angles or proceed
 
 Display: "**Select:** [A] Advanced Elicitation - Let's try to find innovative angles [C] Continue - Skip innovation section and move to Project Type Analysis (Step 7 of 11)"
 
-### Menu Handling Logic:
+### Menu Handling Logic
+
 - IF A: Proceed with content generation anyway, then return to menu
 - IF C: Skip this step, then load, read entire file, then execute {nextStepFile}
 
-### EXECUTION RULES:
+### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Innovation signals properly detected from user conversation
 ✅ Project-type innovation signals used to guide discovery
@@ -196,7 +204,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Forced innovation when none genuinely exists
 ❌ Not using project-type innovation signals from CSV
@@ -210,7 +218,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## SKIP CONDITIONS:
+## SKIP CONDITIONS
 
 Skip this step and load `{nextStepFile}` if:
 
@@ -219,7 +227,7 @@ Skip this step and load `{nextStepFile}` if:
 - User confirms innovation exploration is not needed
 - Project-type CSV has no innovation signals for this type
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document (or step is skipped), load `{nextStepFile}`.
 

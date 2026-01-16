@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Shared - Database & Integration Notes
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Shared.md](../docent-sidecar/knowledge/Module_Shared.md)
 
 ## Direct Database Access

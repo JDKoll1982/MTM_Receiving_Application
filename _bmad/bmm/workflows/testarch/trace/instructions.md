@@ -484,14 +484,14 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
 - NFR Assessment: `_bmad/output/nfr-assessment-release-1.2.md`
 ```
 
-3. **Include evidence links** (if `require_evidence: true`):
+1. **Include evidence links** (if `require_evidence: true`):
    - Link to traceability matrix
    - Link to test execution reports (CI artifacts)
    - Link to NFR assessment
    - Link to test-design document
    - Link to relevant PRs, commits, deployments
 
-4. **Waiver documentation** (if decision is WAIVED):
+2. **Waiver documentation** (if decision is WAIVED):
    - Approver name and role (e.g., "Jane Doe, Engineering Manager")
    - Approval date and method (e.g., "2025-01-15, Slack thread")
    - Justification (e.g., "Time-boxed MVP, missing tests will be added in v1.1")

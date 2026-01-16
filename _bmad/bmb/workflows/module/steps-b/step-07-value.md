@@ -9,20 +9,22 @@ partyModeWorkflow: '../../../../core/workflows/party-mode/workflow.md'
 
 # Step 7: Value
 
-## STEP GOAL:
+## STEP GOAL
 
 Define the Unique Value Proposition — what makes this module special and why users would choose it.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Architect** — focused on differentiation
 - ✅ Help identify what makes this unique
 - 💬 Ask "why this and not something else?"
@@ -36,6 +38,7 @@ Define the Unique Value Proposition — what makes this module special and why u
 "**What makes your module special? Why would someone choose it?**"
 
 Ask:
+
 - **What can users do with your module that they can't do otherwise?**
 - **What's the 'aha!' moment — when they realize this is exactly what they need?**
 - **What problem does this solve better than anything else?**

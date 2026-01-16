@@ -10,13 +10,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 7: Implementation Leakage Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Ensure Functional Requirements and Non-Functional Requirements don't include implementation details - they should specify WHAT, not HOW.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Ensure Functional Requirements and Non-Functional Requirements don't include imp
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -32,14 +32,14 @@ Ensure Functional Requirements and Non-Functional Requirements don't include imp
 - ✅ You bring analytical rigor and separation of concerns expertise
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on implementation leakage detection
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Systematic scanning for technology and implementation terms
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Scan FRs and NFRs for implementation terms
 - 💾 Distinguish capability-relevant vs leakage
@@ -47,7 +47,7 @@ Ensure Functional Requirements and Non-Functional Requirements don't include imp
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file, validation report
 - Focus: Implementation leakage detection only
@@ -65,6 +65,7 @@ Ensure Functional Requirements and Non-Functional Requirements don't include imp
 "Perform implementation leakage validation on this PRD:
 
 **Scan for:**
+
 1. Technology names (React, Vue, Angular, PostgreSQL, MongoDB, AWS, GCP, Azure, Docker, Kubernetes, etc.)
 2. Library names (Redux, axios, lodash, Express, Django, Rails, Spring, etc.)
 3. Data structures (JSON, XML, CSV) unless relevant to capability
@@ -72,6 +73,7 @@ Ensure Functional Requirements and Non-Functional Requirements don't include imp
 5. Protocol names (HTTP, REST, GraphQL, WebSockets) - check if capability-relevant
 
 **For each term found:**
+
 - Is this capability-relevant? (e.g., 'API consumers can access...' - API is capability)
 - Or is this implementation detail? (e.g., 'React component for...' - implementation)
 
@@ -107,6 +109,7 @@ Redux, Zustand, axios, fetch, lodash, jQuery, etc.
 JSON, XML, YAML, CSV (unless capability-relevant)
 
 **For each term found in FRs/NFRs:**
+
 - Determine if it's capability-relevant or implementation leakage
 - Example: "API consumers can access data via REST endpoints" - API/REST is capability
 - Example: "React components fetch data using Redux" - implementation leakage
@@ -116,6 +119,7 @@ JSON, XML, YAML, CSV (unless capability-relevant)
 ### 3. Tally Implementation Leakage
 
 **By category:**
+
 - Frontend framework leakage: count
 - Backend framework leakage: count
 - Database leakage: count
@@ -184,7 +188,7 @@ Immediately load and execute {nextStepFile} (step-v-08-domain-compliance-validat
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Scanned FRs and NFRs for all implementation term categories
 - Distinguished capability-relevant from implementation leakage
@@ -194,7 +198,7 @@ Immediately load and execute {nextStepFile} (step-v-08-domain-compliance-validat
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not scanning all implementation term categories
 - Not distinguishing capability-relevant from leakage

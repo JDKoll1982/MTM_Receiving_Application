@@ -13,12 +13,14 @@ This quickstart guide helps developers begin implementing the Module_Volvo CQRS 
 ## Prerequisites
 
 ### Required Software
+
 - ✅ Visual Studio 2022 17.8+ or VS Code with C# Dev Kit
 - ✅ .NET 8.0 SDK
 - ✅ MySQL 8.0+ (mtm_receiving_application database)
 - ✅ Git (for branch management)
 
 ### Required Knowledge
+
 - C# 12 and .NET 8
 - MediatR CQRS pattern
 - FluentValidation
@@ -26,6 +28,7 @@ This quickstart guide helps developers begin implementing the Module_Volvo CQRS 
 - CommunityToolkit.Mvvm
 
 ### Recommended Reading
+
 - [specs/001-volvo-modernization/spec.md](spec.md) - Feature specification
 - [specs/001-volvo-modernization/research.md](research.md) - Research decisions
 - [specs/001-volvo-modernization/data-model.md](data-model.md) - Data model
@@ -60,6 +63,7 @@ dotnet list package | Select-String "MediatR|FluentValidation"
 ```
 
 **Expected Output**:
+
 ```
    > MediatR                               12.4.1
    > MediatR.Extensions.Microsoft.DependencyInjection    12.4.1
@@ -126,6 +130,7 @@ Test-Path "Module_Volvo\Validators" # Should be False
 ```
 
 **Expected Counts**:
+
 - Violation 1: ~3 service injections
 - Violation 2: ~20 binding occurrences
 - Violation 3: Validators folder doesn't exist
@@ -340,6 +345,7 @@ dotnet test --filter "FullyQualifiedName~GetInitialShipmentDataQueryHandlerTests
 **File**: `Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs`
 
 **BEFORE**:
+
 ```csharp
 private readonly IService_Volvo _volvoService;
 
@@ -356,6 +362,7 @@ public ViewModel_Volvo_ShipmentEntry(
 ```
 
 **AFTER**:
+
 ```csharp
 private readonly IMediator _mediator;
 // Keep for gradual migration:
@@ -379,6 +386,7 @@ public ViewModel_Volvo_ShipmentEntry(
 ### 5.2 Refactor InitializeAsync Method
 
 **BEFORE**:
+
 ```csharp
 public async Task InitializeAsync()
 {
@@ -397,6 +405,7 @@ public async Task InitializeAsync()
 ```
 
 **AFTER**:
+
 ```csharp
 public async Task InitializeAsync()
 {
@@ -474,6 +483,7 @@ dotnet run --project MTM_Receiving_Application.csproj
 ```
 
 **Expected Log Output**:
+
 ```
 [INFO] Executing GetInitialShipmentDataQuery
 [INFO] Getting initial shipment data
@@ -549,25 +559,25 @@ public async Task GenerateLabelCsv_MatchesGoldenFile_BasicShipment()
 
 ### Medium-Term (Phase 3 - View Migration)
 
-4. **Migrate XAML Bindings**
+1. **Migrate XAML Bindings**
    - Convert DataGridTextColumn to DataGridTemplateColumn
    - Replace `{Binding}` with `x:Bind` + `x:DataType`
    - Test each View after migration
 
-5. **Remove Service Dependencies**
+2. **Remove Service Dependencies**
    - Move business logic from Service_Volvo to handlers
    - Mark services as [Obsolete]
    - Remove service registrations from App.xaml.cs
 
 ### Long-Term (Phase 4 - Testing & Validation)
 
-6. **Comprehensive Testing**
+1. **Comprehensive Testing**
    - Property-based tests for component explosion
    - Golden file tests for all CSV/email outputs
    - Integration tests for full pipelines
    - Achieve 80%+ code coverage
 
-7. **Performance Validation**
+2. **Performance Validation**
    - Benchmark MediatR overhead (<10ms target)
    - Verify database operation times (<500ms constitutional target)
    - Compare shipment completion time to legacy

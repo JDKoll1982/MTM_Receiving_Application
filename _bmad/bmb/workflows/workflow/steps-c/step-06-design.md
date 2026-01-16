@@ -20,13 +20,13 @@ subprocessPatterns: '../data/subprocess-optimization-patterns.md'
 
 # Step 6: Workflow Structure Design
 
-## STEP GOAL:
+## STEP GOAL
 
 To collaboratively design the workflow structure, step sequence, and interaction patterns based on the approved plan and output format requirements.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -34,7 +34,7 @@ To collaboratively design the workflow structure, step sequence, and interaction
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -42,21 +42,21 @@ To collaboratively design the workflow structure, step sequence, and interaction
 - ✅ You bring workflow design patterns and architectural expertise
 - ✅ User brings their domain requirements and workflow preferences
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on designing structure, not implementation details
 - 🚫 FORBIDDEN to write actual step content or code in this step
 - 💬 Collaboratively design the flow and sequence
 - 🚫 DO NOT finalize design without user agreement
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Guide collaborative design process
 - 💾 After completing design, append to {workflowPlanFile}
 - 📖 Update frontmatter stepsCompleted to add this step when completed.
 - 🚫 FORBIDDEN to load next step until user selects 'C' and design is saved
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved plan from step 4 is available and should inform design
 - Output format design from step 5 (if completed) guides structure
@@ -65,7 +65,7 @@ To collaboratively design the workflow structure, step sequence, and interaction
 - Don't implement actual files in this step
 - This is about designing the blueprint, not building
 
-## DESIGN REFERENCE MATERIALS:
+## DESIGN REFERENCE MATERIALS
 
 When designing, you will load these data standards as needed (ideally within subprocesses that can return the relevant insights during the design step):
 
@@ -89,6 +89,7 @@ Example [Workflow.md](../workflow.md) for reference of a perfect workflow.md wit
 Load {stepTypePatterns} for available step type templates:
 
 This shows the standard structure for all step types:
+
 - Init Step (Continuable)
 - Continuation Step (01b)
 - Middle Step (Standard/Simple)
@@ -130,6 +131,7 @@ If **YES** to any of these, we should include continuation support using step-01
 Load {menuHandlingStandards} for menu pattern options:
 
 Design how users will interact with the workflow:
+
 - Where should users provide input vs where the AI works autonomously?
 - What menu pattern does each step need? (Standard A/P/C, Auto-proceed, Custom, Conditional)
 - Should there be Advanced Elicitation or Party Mode options?
@@ -193,6 +195,7 @@ If **YES** to any of these, we should design those steps with subprocess optimiz
 **If subprocess optimization is applicable:**
 
 For each step that could benefit from subprocesses:
+
 - Identify which pattern(s) apply (Pattern 1, 2, 3, or 4)
 - Design what the subprocess should return (findings only, not full content)
 - Plan graceful fallback for LLMs without subprocess capability
@@ -210,6 +213,7 @@ For each step that could benefit from subprocesses:
 **Document in the plan:**
 
 For each step identified for subprocess optimization, record:
+
 - Step number and name
 - Pattern type(s) to apply
 - What the subprocess will analyze
@@ -228,6 +232,7 @@ Identify unique requirements:
 **Input Discovery:**
 
 If this workflow depends on documents from prior workflows, load {inputDiscoveryStandards}:
+
 - What prior workflow outputs does this workflow need?
 - Are these required or optional inputs?
 - How will the workflow discover these documents?
@@ -235,6 +240,7 @@ If this workflow depends on documents from prior workflows, load {inputDiscovery
 **Workflow Chaining:**
 
 If this workflow is part of a sequence, load {workflowChainingStandards}:
+
 - What workflow comes before this one?
 - What workflow comes after this one?
 - What outputs does this workflow produce for the next?
@@ -248,7 +254,7 @@ Present the design for review:
 - Ensure all requirements are addressed
 - Get user agreement on the design
 
-## DESIGN PRINCIPLES TO APPLY:
+## DESIGN PRINCIPLES TO APPLY
 
 ### Micro-File Architecture
 
@@ -288,7 +294,7 @@ Append to {workflowPlanFile}:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -296,7 +302,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -311,7 +317,7 @@ ONLY WHEN C is selected and design is saved will you load {nextStepFile} to begi
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Workflow structure designed collaboratively
 - All steps clearly defined and sequenced
@@ -319,7 +325,7 @@ ONLY WHEN C is selected and design is saved will you load {nextStepFile} to begi
 - File structure planned
 - User agreement on design
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Designing without user collaboration
 - Skipping design principles

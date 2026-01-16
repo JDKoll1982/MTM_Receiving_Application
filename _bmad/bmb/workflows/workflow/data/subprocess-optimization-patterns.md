@@ -22,6 +22,7 @@
 **Context savings:** Massive - returns only matching lines, not full file contents
 
 **Template:**
+
 ```markdown
 **Launch a subprocess that:**
 
@@ -37,6 +38,7 @@ done
 ```
 
 **Subprocess returns to parent:**
+
 ```json
 {
   "violations": [
@@ -47,12 +49,14 @@ done
 ```
 
 **❌ BAD - Loads all files into parent:**
+
 ```markdown
 "For EACH file, load the file and search for {project-root}/"
 # Parent context gets 10 full files × 200 lines = 2000 lines loaded
 ```
 
 **✅ GOOD - Single subprocess returns only matches:**
+
 ```markdown
 "Launch a subprocess to grep all files for {project-root}/, return only matches"
 # Parent context gets only matching lines = ~50 lines returned
@@ -67,6 +71,7 @@ done
 **Context savings:** High - each subprocess returns analysis, not full content
 
 **Template:**
+
 ```markdown
 **DO NOT BE LAZY - For EACH file, launch a subprocess that:**
 
@@ -88,18 +93,21 @@ done
 ```
 
 **Example use cases:**
+
 - Instruction style validation (read prose, classify intent vs prescriptive)
 - Collaborative quality assessment (analyze question patterns)
 - Frontmatter compliance (check each variable is used)
 - Step type validation (verify step follows its type pattern)
 
 **❌ BAD - Parent loads all files:**
+
 ```markdown
 "Load every step file and analyze its instruction style"
 # Parent context: 10 files × 200 lines = 2000 lines
 ```
 
 **✅ GOOD - Per-file subprocess returns analysis:**
+
 ```markdown
 "DO NOT BE LAZY - For EACH step file, launch a subprocess to analyze instruction style, return findings"
 # Parent context: 10 structured analysis objects = ~200 lines
@@ -114,6 +122,7 @@ done
 **Context savings:** Massive - returns only matching rows or summaries, not entire data file
 
 **Template:**
+
 ```markdown
 **Launch a subprocess that:**
 
@@ -133,24 +142,28 @@ done
 ```
 
 **Example use cases:**
+
 - **Reference rules lookup**: Load 500-line standards file, return only applicable rules
 - **CSV fuzzy matching**: Load product database, find best matching category
 - **Document summarization**: Review 10 documents, extract only key requirements
 - **Knowledge base search**: Search large knowledge base, return only top matches
 
 **❌ BAD - Parent loads entire data file:**
+
 ```markdown
 "Load {dataFile} with 500 rules and find applicable ones"
 # Parent context: All 500 rules loaded (5000+ lines)
 ```
 
 **✅ GOOD - Subprocess returns only matches:**
+
 ```markdown
 "Launch subprocess to load {dataFile}, find applicable rules, return only those"
 # Parent context: Only 2 applicable rules returned (~50 lines)
 ```
 
 **Advanced example - Document review:**
+
 ```markdown
 **Review 10 requirement documents to extract key details:**
 
@@ -172,6 +185,7 @@ done
 ```
 
 # Parent gets summaries, not 10 full documents
+
 ```
 
 ---
@@ -210,11 +224,13 @@ Aggregate all findings"
 **CRITICAL:** Always ensure LLMs without subprocess capability can still execute
 
 **Universal Rule:**
+
 ```markdown
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context thread
 ```
 
 **Implementation:**
+
 ```markdown
 ### Step-Specific Rules:
 - 🎯 Use subprocess optimization when available - [pattern description]
@@ -232,18 +248,21 @@ Aggregate all findings"
 **Subprocesses must either:**
 
 **Option A: Update report directly**
+
 ```markdown
 "Subprocess loads validation report, appends findings, saves"
 # Parent doesn't need to aggregate
 ```
 
 **Option B: Return structured findings to parent**
+
 ```markdown
 "Subprocess returns JSON findings to parent for aggregation"
 # Parent compiles all subprocess results into report
 ```
 
 **✅ GOOD - Structured return:**
+
 ```json
 {
   "file": "step-02.md",
@@ -254,6 +273,7 @@ Aggregate all findings"
 ```
 
 **❌ BAD - Returns full content:**
+
 ```markdown
 "Subprocess loads file and returns full content to parent"
 # Defeats purpose - parent gets full context anyway
@@ -277,12 +297,14 @@ Aggregate all findings"
 **How to add subprocess patterns to step files:**
 
 ### 1. Universal Rule (add to all steps)
+
 ```markdown
 ### Universal Rules:
 - ⚙️ TOOL/SUBPROCESS FALLBACK: If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context thread
 ```
 
 ### 2. Step-Specific Rules (pattern-specific)
+
 ```markdown
 ### Step-Specific Rules:
 - 🎯 [Brief: which pattern applies]
@@ -291,6 +313,7 @@ Aggregate all findings"
 ```
 
 ### 3. Command Sequence (detailed pattern)
+
 ```markdown
 ### 1. [Operation Name]
 
@@ -347,30 +370,35 @@ For subprocess optimization in step files:
 ## Anti-Patterns to Avoid
 
 ### ❌ Loading full files into parent
+
 ```markdown
 "For EACH file, load the file, analyze it, and add to report"
 # Defeats purpose - parent gets full context
 ```
 
 ### ❌ Subprocess returns raw content
+
 ```markdown
 "Subprocess loads file and returns content to parent"
 # Parent gets full content anyway
 ```
 
 ### ❌ No graceful fallback
+
 ```markdown
 "Use subprocess to [operation]"
 # LLMs without subprocess cannot proceed
 ```
 
 ### ❌ Wrong pattern for operation
+
 ```markdown
 "Launch a subprocess per file to grep for pattern"
 # Should use Pattern 1 (single subprocess for all files)
 ```
 
 ### ❌ Missing return specification
+
 ```markdown
 "Launch a subprocess to analyze files"
 # Unclear what subprocess returns to parent

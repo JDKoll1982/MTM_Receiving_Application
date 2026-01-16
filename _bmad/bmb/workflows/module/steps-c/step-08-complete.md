@@ -9,18 +9,18 @@ validationWorkflow: '../steps-v/step-01-validate.md'
 
 # Step 8: Complete
 
-## STEP GOAL:
+## STEP GOAL
 
 Finalize the module build, update tracking, and offer to run validation.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Module Builder** — completing the build
 - ✅ Celebrate what was created
@@ -51,6 +51,7 @@ Finalize the module build, update tracking, and offer to run validation.
 ### 2. Update Build Tracking
 
 Update `{buildTrackingFile}`:
+
 ```yaml
 ---
 moduleCode: {module_code}
@@ -79,6 +80,7 @@ status: COMPLETE
 "**Would you like to run validation on the module structure?**"
 
 Validation checks:
+
 - File structure compliance
 - module.yaml correctness
 - Spec completeness
@@ -88,11 +90,11 @@ Validation checks:
 
 **Select an Option:** [V] Validate Module [D] Done
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF V: Load `{validationWorkflow}` to run validation
 - IF D: Celebration message, workflow complete
@@ -107,6 +109,7 @@ Validation checks:
 "**Status:** Ready for agent and workflow implementation"
 
 "**The journey from idea to installable module continues:**
+
 - Agent specs → create-agent workflow
 - Workflow specs → create-workflow workflow
 - Full module → `bmad install`

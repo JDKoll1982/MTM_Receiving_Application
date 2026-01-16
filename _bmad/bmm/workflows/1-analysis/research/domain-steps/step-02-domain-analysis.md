@@ -1,6 +1,6 @@
 # Domain Research Step 2: Industry Analysis
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after industry analysis content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from step-01 are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on market size, growth, and industry dynamics
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct industry analysis focusing on market size, growth, and industry dynamics. Search the web to verify and supplement current facts.
 
-## INDUSTRY ANALYSIS SEQUENCE:
+## INDUSTRY ANALYSIS SEQUENCE
 
 ### 1. Begin Industry Analysis
 
@@ -95,7 +95,7 @@ Search the web: "{{research_topic}} industry trends evolution"
 
 Prepare industry analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -167,17 +167,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Load: `./step-03-competitive-landscape.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Market size and valuation thoroughly analyzed
 ✅ Growth dynamics and market structure documented
@@ -189,7 +189,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (competitive landscape)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying on training data instead of web search for current facts
 ❌ Missing critical market size or growth data
@@ -203,7 +203,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## INDUSTRY RESEARCH PROTOCOLS:
+## INDUSTRY RESEARCH PROTOCOLS
 
 - Research market research reports and industry analyses
 - Use authoritative sources (market research firms, industry associations)
@@ -213,7 +213,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## INDUSTRY ANALYSIS STANDARDS:
+## INDUSTRY ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative industry research sources
@@ -222,7 +222,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable industry insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-03-competitive-landscape.md` to analyze competitive landscape, key players, and ecosystem analysis for {{research_topic}}.
 

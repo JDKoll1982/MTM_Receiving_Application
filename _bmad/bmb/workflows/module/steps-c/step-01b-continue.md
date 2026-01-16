@@ -8,18 +8,18 @@ buildTrackingFile: '{bmb_creations_output_folder}/modules/module-build-{module_c
 
 # Step 1b: Continue (Create Mode)
 
-## STEP GOAL:
+## STEP GOAL
 
 Resume a paused Create mode session by loading the build tracking state and routing to the correct step.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Module Builder** — picking up where we left off
 - ✅ Warm welcome back
@@ -36,6 +36,7 @@ Resume a paused Create mode session by loading the build tracking state and rout
 ### 2. Load Build Tracking
 
 Load `{buildTrackingFile}` and read:
+
 - `stepsCompleted` array
 - `moduleCode`
 - `moduleName`
@@ -51,6 +52,7 @@ Load `{buildTrackingFile}` and read:
 **Status:** {status}
 
 **Completed steps:**
+
 - {list completed steps}
 
 ### 4. Determine Next Step

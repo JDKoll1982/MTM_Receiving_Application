@@ -11,13 +11,13 @@ customWorkflowLocation: '{custom_workflow_location}'
 
 # Step 2: Workflow Classification
 
-## STEP GOAL:
+## STEP GOAL
 
 To determine the 4 key structural decisions that define how the workflow will be built: module affiliation, continuable vs single-session, tri-modal vs create-only, and document output.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,28 +25,28 @@ To determine the 4 key structural decisions that define how the workflow will be
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect helping classify their workflow
 - ✅ Explain the trade-offs of each decision clearly
 - ✅ Help them make informed choices
 - ✅ These 4 decisions affect the entire workflow structure
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on the 4 key structural decisions
 - 🚫 FORBIDDEN to skip any of the 4 decisions
 - 💬 Explain each decision in plain language before asking
 - 🚪 These decisions determine file structure, naming, and location
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load workflowTypeCriteria for the decision framework
 - 💾 Document each decision in the plan
 - 📖 Update frontmatter stepsCompleted when complete
 - 🚫 FORBIDDEN to load next step until all 4 decisions are made
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Discovery from Step 1 informs these decisions
 - These are STRUCTURAL decisions that affect everything else
@@ -74,11 +74,13 @@ Based on your idea from discovery, let me clarify:"
 Present the two options:
 
 **A. Document-Producing**
+
 - Creates a persistent output file
 - Examples: reports, plans, stories, checklists, forms
 - Uses templates for structure
 
 **B. Non-Document**
+
 - Performs actions without creating a document
 - Examples: refactoring code, running tests, orchestrating tools
 - May produce temporary files but no persistent output
@@ -88,6 +90,7 @@ Present the two options:
 **Think about their response before continuing...**
 
 Once decided:
+
 - Document: `workflowProducesDocuments: true`
 - Non-document: `workflowProducesDocuments: false`
 
@@ -98,21 +101,25 @@ Once decided:
 Workflows can be standalone or part of a module:"
 
 **Standalone:**
+
 - NOT part of any module
 - Stored in your custom location
 - Only standard variables available
 
 **Module-Based (BMB, BMM, CIS, BMGD, etc.):**
+
 - Part of a specific module
 - Has access to module-specific variables
 - Stored in that module's workflows directory
 
 "Is this workflow:
+
 - **A)** Standalone - just for you/custom use
 - **B)** Part of a module - which one?"
 
 **If they don't know modules:**
 "Modules are specialized areas:
+
 - **BMB** - Module building workflows
 - **BMM** - Software development workflows (PRDs, architecture, etc.)
 - **CIS** - Innovation and creative workflows
@@ -130,21 +137,25 @@ Document the result.
 Think about: Will this workflow consume many tokens or take a long time? Might users need to pause and come back later?"
 
 **Single-Session:**
+
 - Quick, focused workflows (15-30 minutes)
 - Simpler structure
 - No continuation logic needed
 
 **Continuable:**
+
 - Can span multiple sessions
 - Complex, many steps
 - Saves progress, can resume later
 - Needs `step-01b-continue.md`
 
 "Is your workflow:
+
 - **A)** Single-session - quick and focused
 - **B)** Continuable - could take multiple sessions"
 
 **Help them think:**
+
 - "Walk me through how long you think this would take..."
 - "What happens if someone gets halfway through and has to stop?"
 
@@ -157,17 +168,20 @@ Document the result.
 Some workflows are simple - you create them once and use them. Others need full lifecycle support:**
 
 **Create-Only:**
+
 - Just `steps-c/` (create steps)
 - Simpler, faster to build
 - Good for: experimental workflows, one-off use, simple tools
 
 **Tri-Modal (Create + Edit + Validate):**
+
 - Has `steps-c/`, `steps-e/` (edit), and `steps-v/` (validate)
 - Full lifecycle support
 - Can be modified and validated after creation
 - Good for: complex workflows, maintained workflows, team use
 
 "Do you envision:
+
 - **A)** Create-only - build it and use it
 - **B)** Tri-modal - create, edit, AND validate capabilities"
 
@@ -183,6 +197,7 @@ Document the result.
 Based on everything we've discovered, what would you call this?
 
 Some guidance:
+
 - Use kebab-case: `my-workflow-name`
 - Be descriptive but concise
 - Think: What would someone search for to find this?
@@ -190,6 +205,7 @@ Some guidance:
 [Offer suggestions based on their vision]"
 
 **Check for uniqueness:**
+
 - Look for folder at `{bmb_creationsOutputFolder}/workflows/{proposed-name}/`
 - If exists: "That name is taken. Want to try a variant like...?"
 - Loop until unique name confirmed
@@ -201,10 +217,12 @@ Document the final name.
 Based on module decision, confirm and document the target path:
 
 **For standalone/custom:**
+
 - Target: `{customWorkflowLocation}/{workflow-name}/`
 - Typically: `_bmad/custom/src/workflows/{workflow-name}/`
 
 **For modules:**
+
 - Check module's workflow location from module.yaml
 - Confirm path with user
 
@@ -234,13 +252,13 @@ Update `{workflowPlanFile}`:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - ONLY proceed to next step when user selects 'C'
 - User can chat or ask questions - always respond and redisplay menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - IF P: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
@@ -251,7 +269,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All 4 key decisions made and documented
 - Workflow named appropriately
@@ -259,7 +277,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Structural implications understood
 - Plan updated with classification
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping any of the 4 key decisions
 - Naming before understanding (old pattern)

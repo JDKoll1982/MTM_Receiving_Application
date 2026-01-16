@@ -12,13 +12,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 3: Requirements Gathering
 
-## STEP GOAL:
+## STEP GOAL
 
 To gather comprehensive requirements through conversation, building on the classification decisions, and document them in a standardized format for the design phase.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -26,28 +26,28 @@ To gather comprehensive requirements through conversation, building on the class
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect gathering requirements
 - ✅ Build on what we discovered and classified
 - ✅ Ask 1-2 questions at a time, think about responses
 - ✅ We already know the 4 key decisions - now we get details
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on requirements gathering
 - 🚫 FORBIDDEN to propose workflow designs yet
 - 💬 Ask conversationally, not like a form
 - 📋 Use the standardized template (below) for consistent storage
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load references as needed
 - 💾 Store to standardized template in plan document
 - 📖 Update frontmatter stepsCompleted when complete
 - 🚫 FORBIDDEN to load next step until requirements are complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Discovery (Step 1) gave us the vision
 - Classification (Step 2) gave us the 4 key decisions
@@ -63,6 +63,7 @@ To gather comprehensive requirements through conversation, building on the class
 "**Let's gather the requirements for your workflow.**
 
 We already know:
+
 - [Summarize vision from discovery]
 - [Summarize 4 key decisions from classification]
 
@@ -77,12 +78,14 @@ Load `{workflowExamples}` to reference diverse patterns.
 From our examples, workflows can be structured differently:"
 
 **Flow Patterns:**
+
 - **Linear:** Step 1 → Step 2 → Step 3 → Finish
 - **Looping:** Generate → Review → Generate more... until done
 - **Branching:** Different paths based on user choices
 - **Repeating:** Same steps, new content each session
 
 "Think about your workflow:
+
 - Should it go straight through, or loop/branch?
 - How many logical phases does it need?
 - What are the major milestones?"
@@ -146,12 +149,15 @@ Since your workflow produces a document, let's decide the format:"
 "Which format fits your workflow best?"
 
 **If Free-form (most common):**
+
 - "We'll use a minimal template with basic frontmatter. The workflow will build the document section by section, with a final polish step to optimize flow."
 
 **If Structured/Semi-structured:**
+
 - "What sections are required? Any optional sections?"
 
 **If Strict:**
+
 - "Do you have an existing template to follow, or should we design one?"
 
 Document the output format decision.
@@ -174,6 +180,7 @@ Document what the workflow produces.
 "**How will we know this workflow succeeded?**
 
 Think about the end result:
+
 - What does 'done' look like?
 - What would make a user satisfied?
 - Are there quality criteria?
@@ -188,17 +195,20 @@ Think about the end result:
 "**How should the AI executing this workflow behave?**"
 
 **Intent-Based (Recommended for most):**
+
 - Steps describe goals and principles
 - AI adapts conversation naturally
 - More flexible and responsive
 - Example: "Guide user to define requirements through open-ended discussion"
 
 **Prescriptive:**
+
 - Steps provide exact instructions
 - More controlled and predictable
 - Example: "Ask: 'What is your primary goal? A) Growth B) Efficiency C) Quality'"
 
 **Mixed:**
+
 - Some steps prescriptive, others intent-based
 - Use prescriptive for critical/required steps
 - Use intent-based for creative/facilitative steps
@@ -245,13 +255,13 @@ Update `{workflowPlanFile}` with the requirements section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - ONLY proceed when user selects 'C'
 - User can chat or ask questions - always respond and redisplay menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -262,7 +272,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Requirements gathered through conversation (not interrogation)
 - Flow structure clearly understood
@@ -272,7 +282,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Instruction style determined
 - All stored in standardized template
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Asking for instruction style before understanding the workflow
 - Skipping output format discussion

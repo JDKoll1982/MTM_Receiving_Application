@@ -10,13 +10,13 @@ menuHandlingStandards: '../data/menu-handling-standards.md'
 
 # Validation Step 3: Menu Handling Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate that EVERY step file's menus follow the menu handling standards - proper handlers, execution rules, appropriate menu types.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,21 +24,21 @@ To validate that EVERY step file's menus follow the menu handling standards - pr
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate EVERY step file's menus using subprocess optimization - per-file deep analysis pattern (Pattern 2)
 - 🚫 DO NOT skip any files or checks - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough, leveraging per-file subprocess for menu structure analysis
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load menu standards first
 - 💾 Check EVERY file's menu structure using subprocess optimization when available - per-file deep analysis for menu structure validation
 - 📖 Append findings to validation report (subprocesses either update report OR return findings for parent aggregation)
 - 🚫 DO NOT halt for user input - validation runs to completion
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All step files in steps-c/ must be validated
 - Load {menuHandlingStandards} for validation criteria
@@ -55,11 +55,13 @@ Load {menuHandlingStandards} to understand validation criteria:
 **Reserved Letters:** A (Advanced Elicitation), P (Party Mode), C (Continue/Accept), X (Exit/Cancel)
 
 **Required Structure:**
+
 1. Display section
 2. Handler section (MANDATORY)
 3. Execution Rules section
 
 **When To Include A/P:**
+
 - DON'T: Step 1 (init), validation sequences, simple data gathering
 - DO: Collaborative content creation, user might want alternatives, quality gates
 
@@ -76,29 +78,35 @@ Load {menuHandlingStandards} to understand validation criteria:
 **SUBPROCESS VALIDATION PATTERN - Each subprocess checks for:**
 
 **Check 1: Handler Section Exists**
+
 - ✅ Handler section immediately follows Display
 - ❌ If missing: mark as violation
 
 **Check 2: Execution Rules Section Exists**
+
 - ✅ "EXECUTION RULES" section present
 - ✅ Contains "halt and wait" instruction
 - ❌ If missing: mark as violation
 
 **Check 3: Non-C Options Redisplay Menu**
+
 - ✅ A/P options specify "redisplay menu"
 - ❌ If missing: mark as violation
 
 **Check 4: C Option Sequence**
+
 - ✅ C option: save → update frontmatter → load next step
 - ❌ If sequence wrong: mark as violation
 
 **Check 5: A/P Only Where Appropriate**
+
 - Step 01 should NOT have A/P (inappropriate for init)
 - Validation sequences should auto-proceed, not have menus
 - ❌ If A/P in wrong place: mark as violation
 
 **RETURN FORMAT:**
 Each subprocess should return validation findings for its assigned file including:
+
 - File name
 - Whether a menu is present
 - Results of all 5 checks (handler section, execution rules, redisplay menu, C sequence, A/P appropriateness)
@@ -144,7 +152,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Menu standards loaded and understood
 - EVERY step file's menus validated via subprocess (per-file deep analysis) OR main context
@@ -153,7 +161,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Report saved before proceeding
 - Next validation step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking every file's menus
 - Skipping menu structure checks

@@ -89,7 +89,7 @@ Please select: [C]reate / [V]alidate / [E]dit"
 
 Please select: [F]rom scratch / [C]onvert existing"
 
-#### Create Mode Routing:
+#### Create Mode Routing
 
 - **IF F:** Load, read completely, then execute `steps-c/step-01-discovery.md`
 - **IF C:** Ask for workflow path: "Please provide the path to the workflow you want to convert."

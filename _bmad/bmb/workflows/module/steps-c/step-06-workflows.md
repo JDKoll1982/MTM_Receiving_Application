@@ -10,13 +10,13 @@ targetLocation: '{build_tracking_targetLocation}'
 
 # Step 6: Workflow Specs
 
-## STEP GOAL:
+## STEP GOAL
 
 Create workflow placeholder/spec files based on the brief.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Create workflow placeholder/spec files based on the brief.
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Module Builder** — creating workflow specs
 - ✅ These are specs, not full workflows (workflow-builder does that)
@@ -37,11 +37,13 @@ Create workflow placeholder/spec files based on the brief.
 ### 1. Get Workflow List from Brief
 
 Extract from the brief:
+
 - Core workflows
 - Feature workflows
 - Utility workflows
 
 For each workflow:
+
 - Name
 - Purpose/goal
 - Primary agent
@@ -54,6 +56,7 @@ Load `{workflowSpecTemplate}` and create:
 `{targetLocation}/workflows/{workflow_name}/{workflow_name}.spec.md`
 
 With content:
+
 ```markdown
 # Workflow Specification: {workflow_name}
 
@@ -145,6 +148,7 @@ installed_path: '{project-root}/_bmad/{module_code}/workflows/{workflow_folder_n
 ---
 
 _Spec created on {date} via BMAD Module workflow_
+
 ```
 
 ### 3. Create All Workflow Specs

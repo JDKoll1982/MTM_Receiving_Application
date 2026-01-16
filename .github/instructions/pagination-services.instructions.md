@@ -10,10 +10,10 @@ The `Service_Pagination` provides in-memory pagination logic for collections. It
 
 ## Responsibilities
 
-1.  **State Management**: Track `CurrentPage`, `PageSize`, `TotalItems`, `TotalPages`.
-2.  **Navigation Logic**: `NextPage`, `PreviousPage`, `FirstPage`, `LastPage`, `GoToPage`.
-3.  **Data Slicing**: Return the subset of items for the current page.
-4.  **Events**: Notify when the page changes via `PageChanged` event.
+1. **State Management**: Track `CurrentPage`, `PageSize`, `TotalItems`, `TotalPages`.
+2. **Navigation Logic**: `NextPage`, `PreviousPage`, `FirstPage`, `LastPage`, `GoToPage`.
+3. **Data Slicing**: Return the subset of items for the current page.
+4. **Events**: Notify when the page changes via `PageChanged` event.
 
 ## Implementation Pattern
 
@@ -38,10 +38,10 @@ public IEnumerable<T> GetCurrentPageItems<T>()
 
 ## Usage in ViewModels
 
-1.  Inject `IService_Pagination`.
-2.  Expose `PagedItems` (ObservableCollection) in the ViewModel.
-3.  Subscribe to `PageChanged` event to update `PagedItems`.
-4.  Bind UI commands (Next/Prev) to ViewModel commands that call Service methods.
+1. Inject `IService_Pagination`.
+2. Expose `PagedItems` (ObservableCollection) in the ViewModel.
+3. Subscribe to `PageChanged` event to update `PagedItems`.
+4. Bind UI commands (Next/Prev) to ViewModel commands that call Service methods.
 
 ```csharp
 // ViewModel Setup
@@ -57,4 +57,5 @@ private void UpdatePagedItems()
 ```
 
 ## Registration
+
 - Register as **Transient**. Each ViewModel needing pagination should get its own instance.

@@ -14,6 +14,7 @@ status: needs_followup
 **Validation Date:** 2026-01-09
 
 This VD run focuses on:
+
 - Unimplemented Settings experiences reachable from the Settings hub
 - Settings implemented outside `Module_Settings` (boundary violations)
 - Unsafe / inconsistent patterns in settings-related code (DI, service locator, hardcoded defaults)

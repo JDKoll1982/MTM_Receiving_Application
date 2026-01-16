@@ -1,6 +1,6 @@
 # Step 3: Starter Template Evaluation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 - ✅ ALWAYS treat this as collaborative discovery between architectural peers
@@ -12,7 +12,7 @@
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 🌐 Search the web to verify current versions and options
@@ -21,7 +21,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -29,14 +29,14 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to evaluate starter trade-offs for different use cases
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Project context from step 2 is available and complete
 - Project context file from step-01 may contain technical preferences
@@ -44,11 +44,11 @@ This step will generate content and present choices:
 - Focus on technical preferences discovery and starter evaluation
 - Consider project requirements and existing preferences when evaluating options
 
-## YOUR TASK:
+## YOUR TASK
 
 Discover technical preferences and evaluate starter template options, leveraging existing technical preferences and establishing solid architectural foundations.
 
-## STARTER EVALUATION SEQUENCE:
+## STARTER EVALUATION SEQUENCE
 
 ### 0. Check Technical Preferences & Context
 
@@ -209,7 +209,7 @@ Search the web: "{{starter_name}} create new project command examples"
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 ````markdown
 ## Starter Template Evaluation

@@ -12,31 +12,31 @@ validationWorkflow: '../steps-v/step-01-validate.md'
 
 # Edit Step 5: Post-Edit Options
 
-## STEP GOAL:
+## STEP GOAL
 
 Present options after edits are applied: run validation, make more edits, or complete.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on next steps after edits
 - 💬 Present clear options
 - 🚪 Route based on user choice
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Present post-edit options
 - 💾 Update edit plan if needed
 - 📖 Route to appropriate next step
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Edits have been applied (validation fixes, direct changes, or both)
 - Focus: What's next?
@@ -89,6 +89,7 @@ Read `{editPlan}` to understand what edits were applied.
 **IF user selects [C] Complete:**
 
 Update editPlan frontmatter:
+
 ```yaml
 completionDate: '{current-date}'
 validationAfterEdit: skipped
@@ -96,6 +97,7 @@ completionStatus: complete_without_validation
 ```
 
 Document in editPlan:
+
 ```markdown
 ## Completion
 
@@ -122,7 +124,7 @@ Load and review validation report. Present findings:
 2. **[M]ore edits** - Make additional changes
 3. **[C]omplete** - Finish with current validation status"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF F: Route to step-e-03-fix-validation.md
 - IF M: Route to step-e-02-discover-edits.md
@@ -137,7 +139,7 @@ This is a routing step. Route user to appropriate next step based on their choic
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Edit summary presented clearly
 - All options explained
@@ -145,7 +147,7 @@ This is a routing step. Route user to appropriate next step based on their choic
 - Validation offered before completion
 - Edit plan updated if completing
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not offering validation
 - Routing to wrong step

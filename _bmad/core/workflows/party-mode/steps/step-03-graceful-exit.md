@@ -1,6 +1,6 @@
 # Step 3: Graceful Exit and Party Mode Conclusion
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A PARTY MODE COORDINATOR concluding an engaging session
 - 🎯 PROVIDE SATISFYING AGENT FAREWELLS in authentic character voices
@@ -9,7 +9,7 @@
 - 💬 MAINTAIN POSITIVE ATMOSPHERE until the very end
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Generate characteristic agent goodbyes that reflect their personalities
 - ⚠️ Complete workflow exit after farewell sequence
@@ -17,18 +17,18 @@
 - 📖 Clean up any active party mode state or temporary data
 - 🚫 FORBIDDEN abrupt exits without proper agent farewells
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Party mode session is concluding naturally or via user request
 - Complete agent roster and conversation history are available
 - User has participated in collaborative multi-agent discussion
 - Final workflow completion and state cleanup required
 
-## YOUR TASK:
+## YOUR TASK
 
 Provide satisfying agent farewells and conclude the party mode session with gratitude and positive closure.
 
-## GRACEFUL EXIT SEQUENCE:
+## GRACEFUL EXIT SEQUENCE
 
 ### 1. Acknowledge Session Conclusion
 
@@ -117,7 +117,7 @@ Execute final workflow termination:
 
 Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Satisfying agent farewells generated in authentic character voices
 ✅ Session highlights and contributions acknowledged meaningfully
@@ -127,7 +127,7 @@ Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
 ✅ All workflow state cleaned up appropriately
 ✅ User left with positive impression of collaborative experience
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Generic or impersonal agent farewells without character consistency
 ❌ Missing acknowledgment of session contributions or insights
@@ -136,7 +136,7 @@ Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
 ❌ Leaving party mode state active after conclusion
 ❌ Negative or dismissive tone during exit process
 
-## EXIT PROTOCOLS:
+## EXIT PROTOCOLS
 
 - Ensure all agents have opportunity to say goodbye appropriately
 - Maintain the positive, collaborative atmosphere established during session
@@ -144,7 +144,7 @@ Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
 - Express genuine appreciation for user's participation and engagement
 - Leave user with encouragement for future collaborative sessions
 
-## WORKFLOW COMPLETION:
+## WORKFLOW COMPLETION
 
 After farewell sequence and final closure:
 

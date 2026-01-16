@@ -10,6 +10,7 @@
 ### New Request Type Categories (4 Total)
 
 **1. Material Handler Requests (15 types)**
+
 - Coils: Bring to Press / Return to Storage
 - Flatstock: Bring to Press / Return to Storage  
 - Needs: Component Parts / Dunnage / Finished Goods
@@ -20,6 +21,7 @@
 - Other (freeform text)
 
 **2. Setup Technician Requests (6 types)**
+
 - Die Protection (Die Pro) Alarm
 - Die Issue: Material Stuck
 - Die Issue: Misalignment
@@ -28,16 +30,19 @@
 - Other (freeform text)
 
 **3. Quality Control Requests (3 types)** ⭐ NEW
+
 - Inspection Request
 - Quality Question
 - Other (freeform text)
 
 **4. Production Lead Requests (3 types)**
+
 - Production Question (freeform)
 - Report Injury or Safety Concern (🚨 **ALERTS PLANT MANAGER**)
 - Other (freeform text)
 
 ### Sample Data Added
+
 - **Coil Part Numbers:** MMC0001000, MMC0000651, MMC0000352, MMC0000789
 - **Flatstock Part Numbers:** MMF0005500, MMF0001234, MMF0009876
 - **Component Part Numbers:** 23-23415-006, 45-67890-123, 67-89012-345
@@ -57,7 +62,8 @@
 **Current State:** Single-step form with 6 basic request types  
 **Target State:** Multi-step wizard with category selection and conditional fields
 
-#### Wizard Flow:
+#### Wizard Flow
+
 ```
 Step 1: Select Category
 ├─ Material Handler (green icon)
@@ -82,7 +88,8 @@ Step 4: Review & Submit
 └─ Submit button
 ```
 
-#### Required Form Fields:
+#### Required Form Fields
+
 ```javascript
 {
   category: "Material Handler | Setup Technician | Quality Control | Production Lead",
@@ -98,8 +105,10 @@ Step 4: Review & Submit
 }
 ```
 
-#### Wizard UI Enhancements Needed:
+#### Wizard UI Enhancements Needed
+
 1. **Category Selection Cards** (Step 1)
+
    ```html
    <div class="wizard-step" id="step1-category">
      <div class="category-cards">
@@ -128,6 +137,7 @@ Step 4: Review & Submit
    ```
 
 2. **Request Type List** (Step 2)
+
    ```html
    <div class="wizard-step hidden" id="step2-type">
      <div class="request-type-list">
@@ -148,6 +158,7 @@ Step 4: Review & Submit
    ```
 
 3. **Conditional Details Form** (Step 3)
+
    ```html
    <div class="wizard-step hidden" id="step3-details">
      <!-- Part Number (conditional) -->
@@ -200,6 +211,7 @@ Step 4: Review & Submit
    ```
 
 4. **Review Step** (Step 4)
+
    ```html
    <div class="wizard-step hidden" id="step4-review">
      <div class="review-summary">
@@ -221,7 +233,8 @@ Step 4: Review & Submit
    </div>
    ```
 
-#### JavaScript Logic Needed:
+#### JavaScript Logic Needed
+
 ```javascript
 let wizardState = {
   currentStep: 1,
@@ -271,6 +284,7 @@ function toggleField(fieldId, shouldShow) {
 **Changes Needed:**
 
 1. **Add NCM Filter** (separate from standard MH tasks)
+
    ```html
    <select class="form-select" id="categoryFilter">
      <option value="All">All Tasks</option>
@@ -282,6 +296,7 @@ function toggleField(fieldId, shouldShow) {
    ```
 
 2. **NCM Visual Indicator**
+
    ```html
    <!-- For NCM tasks, add warning badge -->
    <tr class="ncm-task">
@@ -296,6 +311,7 @@ function toggleField(fieldId, shouldShow) {
    ```
 
 3. **Safety Alert Banner** (for Production Lead safety reports)
+
    ```html
    <div class="info-bar info-bar-error mb-lg" id="safetyAlert" style="display:none;">
      <span class="info-bar-icon fluent-icon">&#xE7BA;</span>
@@ -310,6 +326,7 @@ function toggleField(fieldId, shouldShow) {
    ```
 
 4. **Die Location Display** (for die requests)
+
    ```html
    <td>
      <strong>Die FGT-2045</strong>
@@ -320,6 +337,7 @@ function toggleField(fieldId, shouldShow) {
    ```
 
 5. **Scrap Type Display** (for scrap container requests)
+
    ```html
    <td>
      <strong>Empty Scrap Container</strong>
@@ -336,6 +354,7 @@ function toggleField(fieldId, shouldShow) {
 **Changes Needed:**
 
 1. **NCM Task Count Card**
+
    ```html
    <div class="card">
      <div class="card-content">
@@ -346,6 +365,7 @@ function toggleField(fieldId, shouldShow) {
    ```
 
 2. **Category Breakdown Chart**
+
    ```html
    <!-- Replace task type chart with category breakdown -->
    <div class="chart-container">
@@ -361,6 +381,7 @@ function toggleField(fieldId, shouldShow) {
 **Changes Needed:**
 
 1. **Critical Safety Alert Banner** (top of dashboard)
+
    ```html
    <div class="info-bar info-bar-error mb-lg" id="plantManagerSafetyAlert">
      <span class="info-bar-icon fluent-icon" style="font-size: 24px;">&#xE7BA;</span>
@@ -375,6 +396,7 @@ function toggleField(fieldId, shouldShow) {
    ```
 
 2. **Safety Dashboard Card**
+
    ```html
    <div class="card" style="border-left: 4px solid var(--error-color);">
      <div class="card-header">
@@ -560,6 +582,7 @@ function toggleField(fieldId, shouldShow) {
 ## 📋 Implementation Checklist
 
 ### Phase 1: Mock Data (✅ COMPLETE)
+
 - [x] Add 3 request type categories
 - [x] Add sample part numbers
 - [x] Add die numbers and locations
@@ -567,6 +590,7 @@ function toggleField(fieldId, shouldShow) {
 - [x] Update utility functions
 
 ### Phase 2: Operator Waitlist (🔄 IN PROGRESS)
+
 - [ ] Implement multi-step wizard
 - [ ] Add category selection (Step 1)
 - [ ] Add request type selection (Step 2)
@@ -577,6 +601,7 @@ function toggleField(fieldId, shouldShow) {
 - [ ] Update table to show new request types
 
 ### Phase 3: Material Handler Waitlist (🔄 PENDING)
+
 - [ ] Add category filter dropdown
 - [ ] Add NCM visual indicators
 - [ ] Add die location display
@@ -585,18 +610,21 @@ function toggleField(fieldId, shouldShow) {
 - [ ] Update task assignment logic
 
 ### Phase 4: Lead Dashboards (🔄 PENDING)
+
 - [ ] Add NCM task count cards
 - [ ] Update analytics charts for new categories
 - [ ] Add safety incident tracking
 - [ ] Update performance metrics
 
 ### Phase 5: Plant Manager Dashboard (🔄 PENDING)
+
 - [ ] Add critical safety alert banner
 - [ ] Add safety incidents dashboard card
 - [ ] Update plant-wide metrics
 - [ ] Add NCM tracking summary
 
 ### Phase 6: Styling (🔄 PENDING)
+
 - [ ] Add new CSS classes for NCM, Setup Tech, Production Lead
 - [ ] Add wizard styling
 - [ ] Add category card styling

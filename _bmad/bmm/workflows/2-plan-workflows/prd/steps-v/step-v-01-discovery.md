@@ -11,13 +11,13 @@ prdPurpose: '../data/prd-purpose.md'
 
 # Step 1: Document Discovery & Confirmation
 
-## STEP GOAL:
+## STEP GOAL
 
 Handle fresh context validation by confirming PRD path, discovering and loading input documents from frontmatter, and initializing the validation report.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Handle fresh context validation by confirming PRD path, discovering and loading 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -33,21 +33,21 @@ Handle fresh context validation by confirming PRD path, discovering and loading 
 - ✅ You bring systematic validation expertise and analytical rigor
 - ✅ User brings domain knowledge and specific PRD context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on discovering PRD and input documents, not validating yet
 - 🚫 FORBIDDEN to perform any validation checks in this step
 - 💬 Approach: Systematic discovery with clear reporting to user
 - 🚪 This is the setup step - get everything ready for validation
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Discover and confirm PRD to validate
 - 💾 Load PRD and all input documents from frontmatter
 - 📖 Initialize validation report next to PRD
 - 🚫 FORBIDDEN to load next step until user confirms setup
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD path (user-specified or discovered), workflow configuration
 - Focus: Document discovery and setup only
@@ -68,6 +68,7 @@ This file contains the BMAD PRD philosophy, standards, and validation criteria t
 ### 2. Discover PRD to Validate
 
 **If PRD path provided as invocation parameter:**
+
 - Use provided path
 
 **If no PRD path provided:**
@@ -106,6 +107,7 @@ For each document listed in `inputDocuments`:
 - Note any documents that fail to load
 
 **Build list of loaded input documents:**
+
 - Product Brief (if present)
 - Research documents (if present)
 - Other reference materials (if present)
@@ -119,6 +121,7 @@ For each document listed in `inputDocuments`:
 **Are there any additional reference documents you'd like me to include in this validation?**
 
 These could include:
+
 - Additional research or context documents
 - Project documentation not tracked in frontmatter
 - Standards or compliance documents
@@ -133,6 +136,7 @@ Please provide paths to any additional documents, or type 'none' to proceed."
 Create validation report at: `{validationReportPath}`
 
 **Initialize with frontmatter:**
+
 ```yaml
 ---
 validationTarget: '{prd_path}'
@@ -144,6 +148,7 @@ validationStatus: IN_PROGRESS
 ```
 
 **Initial content:**
+
 ```markdown
 # PRD Validation Report
 
@@ -166,6 +171,7 @@ validationStatus: IN_PROGRESS
 **PRD to Validate:** {prd_path}
 
 **Input Documents Loaded:**
+
 - PRD: {prd_name} ✓
 - Product Brief: {count} {if count > 0}✓{else}(none found){/if}
 - Research: {count} {if count > 0}✓{else}(none found){/if}
@@ -179,13 +185,13 @@ validationStatus: IN_PROGRESS
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Format Detection
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - User can ask questions or add more documents - always respond and redisplay menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
@@ -197,7 +203,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - PRD path discovered and confirmed
 - PRD file exists and loads successfully
@@ -207,7 +213,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User clearly informed of setup status
 - Menu presented and user input handled correctly
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with non-existent PRD file
 - Not loading input documents from frontmatter

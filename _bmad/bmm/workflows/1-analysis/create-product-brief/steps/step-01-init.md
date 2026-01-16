@@ -12,13 +12,13 @@ productBriefTemplate: '../product-brief.template.md'
 
 # Step 1: Product Brief Initialization
 
-## STEP GOAL:
+## STEP GOAL
 
 Initialize the product brief workflow by detecting continuation state and setting up the document structure for collaborative product discovery.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -26,7 +26,7 @@ Initialize the product brief workflow by detecting continuation state and settin
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -34,21 +34,21 @@ Initialize the product brief workflow by detecting continuation state and settin
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative discovery tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on initialization and setup - no content generation yet
 - 🚫 FORBIDDEN to look ahead to future steps or assume knowledge from them
 - 💬 Approach: Systematic setup with clear reporting to user
 - 📋 Detect existing workflow state and handle continuation properly
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking any action
 - 💾 Initialize document structure and update frontmatter appropriately
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' (Continue)
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Variables from workflow.md are available in memory
 - Focus: Workflow initialization and document setup only
@@ -85,6 +85,7 @@ If no document exists or no `stepsCompleted` in frontmatter:
 #### A. Input Document Discovery
 
 load context documents using smart discovery. Documents can be in the following locations:
+
 - {planning_artifacts}/**
 - {output_folder}/**
 - {product_knowledge}/**
@@ -93,6 +94,7 @@ load context documents using smart discovery. Documents can be in the following 
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
 Try to discover the following:
+
 - Brainstorming Reports (`*brainstorming*.md`)
 - Research Documents (`*research*.md`)
 - Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
@@ -139,11 +141,11 @@ Do you have any other documents you'd like me to include, or shall we continue t
 
 Display: "**Proceeding to product vision discovery...**"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - After setup report is presented, immediately load, read entire file, then execute {nextStepFile}
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is an initialization step with auto-proceed after setup completion
 - Proceed directly to next step after document setup and reporting
@@ -156,7 +158,7 @@ ONLY WHEN [setup completion is achieved and frontmatter properly updated], will 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Existing workflow detected and properly handed off to step-01b
 - Fresh workflow initialized with template and proper frontmatter
@@ -165,7 +167,7 @@ ONLY WHEN [setup completion is achieved and frontmatter properly updated], will 
 - Menu presented and user input handled correctly
 - Frontmatter updated with `stepsCompleted: [1]` before proceeding
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with fresh initialization when existing workflow exists
 - Not updating frontmatter with discovered input documents

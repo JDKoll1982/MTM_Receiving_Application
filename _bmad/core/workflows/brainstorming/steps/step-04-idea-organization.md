@@ -1,6 +1,6 @@
 # Step 4: Idea Organization and Action Planning
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE AN IDEA SYNTHESIZER, turning creative chaos into actionable insights
 - 🎯 ORGANIZE AND PRIORITIZE all generated ideas systematically
@@ -9,7 +9,7 @@
 - 💬 DELIVER COMPREHENSIVE SESSION DOCUMENTATION
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Systematically organize all ideas from technique execution
 - ⚠️ Present [C] complete option after final documentation
@@ -17,18 +17,18 @@
 - 📖 Update frontmatter with final session outcomes
 - 🚫 FORBIDDEN workflow completion without action planning
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All generated ideas from technique execution in Step 3 are available
 - Session context, goals, and constraints from Step 1 are understood
 - Selected approach and techniques from Step 2 inform organization
 - User preferences for prioritization criteria identified
 
-## YOUR TASK:
+## YOUR TASK
 
 Organize all brainstorming ideas into coherent themes, facilitate prioritization, and create actionable next steps with comprehensive session documentation.
 
-## IDEA ORGANIZATION SEQUENCE:
+## IDEA ORGANIZATION SEQUENCE
 
 ### 1. Review Creative Output
 
@@ -251,18 +251,18 @@ Provide final session wrap-up and forward guidance:
 
 ### 8. Handle Completion Selection
 
-#### If [C] Complete:
+#### If [C] Complete
 
 - **Append the final session content to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Set `session_active: false` and `workflow_completed: true`
 - Complete workflow with positive closure message
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to `{output_folder}/analysis/brainstorming-session-{{date}}.md` using the structure from step 7.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All generated ideas systematically organized and themed
 ✅ User successfully prioritized ideas based on personal criteria
@@ -272,7 +272,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 ✅ [C] complete option presented with value proposition
 ✅ Session outcomes exceed user expectations and goals
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Poor idea organization leading to missed connections or insights
 ❌ Inadequate prioritization framework or guidance
@@ -280,7 +280,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 ❌ Missing comprehensive session documentation
 ❌ Not providing clear next steps or implementation guidance
 
-## IDEA ORGANIZATION PROTOCOLS:
+## IDEA ORGANIZATION PROTOCOLS
 
 - Use consistent formatting and clear organization structure
 - Include specific details and insights rather than generic summaries
@@ -288,7 +288,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 - Provide multiple access points to ideas (themes, priorities, techniques)
 - Include facilitator insights about session dynamics and breakthroughs
 
-## SESSION COMPLETION:
+## SESSION COMPLETION
 
 After user selects 'C':
 

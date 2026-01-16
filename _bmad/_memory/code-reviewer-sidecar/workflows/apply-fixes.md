@@ -19,11 +19,13 @@
 **Read file:** `{Module}/CODE_REVIEW_V{#}.md`
 
 **Extract:**
+
 - All rows with ✅ checkbox
 - Issue number, severity, file, method, lines, fix description
 - Count total fixes to apply
 
 **Report to user:**
+
 ```
 Loaded CODE_REVIEW_V{#}.md
 Found {count} fixes to apply:
@@ -51,12 +53,14 @@ Dependencies detected:
 ```
 
 **Build fix graph:**
+
 1. Group fixes by file (reduces context switching)
 2. Within file, order by dependencies
 3. Critical fixes first (unless dependency blocks)
 4. Smart grouping overrides strict severity order
 
 **Present execution plan:**
+
 ```
 Fix Execution Order:
 Phase 1: Database Foundation
@@ -100,16 +104,19 @@ File: {path}
 **Based on fix type:**
 
 **For code changes:**
+
 - Use `replace_string_in_file` or `multi_replace_string_in_file`
 - Include 3-5 lines context before/after
 - Preserve whitespace and indentation
 
 **For new files (stored procs, constants, migrations):**
+
 - Use `create_file`
 - Follow naming conventions
 - Validate SQL syntax for database files
 
 **For deletions:**
+
 - Use `replace_string_in_file` to remove method
 - Ensure no orphaned references
 
@@ -122,12 +129,14 @@ dotnet build MTM_Receiving_Application.csproj
 **Parse build output:**
 
 **If SUCCESS:**
+
 ```
 ✅ Build succeeded (X.X seconds)
 Fix #{issue_num} applied successfully
 ```
 
 **If FAILED:**
+
 ```
 ❌ Build failed with {count} errors
 
@@ -141,6 +150,7 @@ Analyzing error...
 #### Step 3.5: Handle Build Errors
 
 **Error analysis:**
+
 1. Read error message carefully
 2. Identify error type:
    - Missing using statement
@@ -152,30 +162,35 @@ Analyzing error...
 **Auto-fix common errors:**
 
 **Missing using:**
+
 ```csharp
 // Error: "The type or namespace name 'MySqlConnection' could not be found"
 // Fix: Add "using MySql.Data.MySqlClient;"
 ```
 
 **Orphaned code blocks:**
+
 ```csharp
 // Error: "Invalid token '}' in a member declaration"
 // Fix: Remove orphaned } or add missing {
 ```
 
 **Null reference:**
+
 ```csharp
 // Error: "Use of possibly unassigned field '_variable'"
 // Fix: Initialize variable or add null check
 ```
 
 **Type mismatch:**
+
 ```csharp
 // Error: "Cannot convert int to string"
 // Fix: Add .ToString() or correct type
 ```
 
 **Apply error fix:**
+
 - Make correction
 - Rebuild immediately
 - If still fails, try different approach
@@ -184,6 +199,7 @@ Analyzing error...
 #### Step 3.6: Update Checkbox
 
 **Once build succeeds:**
+
 - Update CODE_REVIEW.md
 - Change ⬜ → ✅ for issue #{num}
 - Save file
@@ -197,11 +213,13 @@ Analyzing error...
 **Path:** `Database/StoredProcedures/{Module}/sp_{name}.sql`
 
 **Validate:**
+
 - Check if proc already exists (grep search)
 - Confirm parameters match DAO call
 - Test DELIMITER syntax
 
 **Template:**
+
 ```sql
 DELIMITER $$
 
@@ -223,11 +241,13 @@ DELIMITER ;
 **Path:** `Database/Migrations/{###}_{description}.sql`
 
 **Auto-increment migration number:**
+
 - List existing migrations
 - Find highest number
 - Increment by 1 (pad to 3 digits)
 
 **Template:**
+
 ```sql
 -- Migration: {###}_{description}
 -- Created: {date}
@@ -246,6 +266,7 @@ ADD CONSTRAINT {constraint_name} ...;
 **Path:** `{Module}/Models/{Name}Status.cs`
 
 **Template:**
+
 ```csharp
 namespace MTM_Receiving_Application.{Module}.Models;
 
@@ -263,11 +284,13 @@ public static class {Entity}Status
 #### 4d. Service Method Addition
 
 **Validation:**
+
 - Check if method already exists in interface
 - Update interface first, then implementation
 - Ensure XML docs match
 
 **Order:**
+
 1. Add to `IService_{Name}.cs`
 2. Implement in `Service_{Name}.cs`
 3. Build
@@ -280,6 +303,7 @@ public static class {Entity}Status
 **After each fix:**
 
 Update memories.md:
+
 ```
 Last Fix Applied: Issue #{num} - {title}
 Timestamp: {datetime}
@@ -288,6 +312,7 @@ Build Status: Success/Failed
 ```
 
 **Every 5 fixes, report progress:**
+
 ```
 Progress Update:
 {completed}/{total} fixes applied ({percent}%)
@@ -301,6 +326,7 @@ Next: Issue #{next_num} - {title}
 ### 6. Handle User Flags
 
 **--skip-{type}:**
+
 ```
 Flag detected: --skip-maintain
 Skipping all 🔧 MAINTAIN issues
@@ -308,6 +334,7 @@ Remaining: {count} fixes
 ```
 
 **--only-{type}:**
+
 ```
 Flag detected: --only-critical
 Applying only 🔴 CRITICAL issues
@@ -356,11 +383,13 @@ Remaining Unchecked (⬜): {count}
 ```
 
 **Update CODE_REVIEW.md:**
+
 - All ✅ issues have checkmarks
 - All ⬜ issues remain unchecked
 - Save file
 
 **Update memories.md:**
+
 ```
 Module: {name}
 CODE_REVIEW Version: V{#}
@@ -378,6 +407,7 @@ Ready for Archive: {yes/no}
 
 1. **Stop immediately**
 2. **Document state in memories.md:**
+
    ```
    ERROR STATE
    Last successful fix: Issue #{num}
@@ -388,6 +418,7 @@ Ready for Archive: {yes/no}
    ```
 
 3. **Report to user:**
+
    ```
    ⚠️ Critical error encountered
    
@@ -416,11 +447,13 @@ Ready for Archive: {yes/no}
 **Attempt limit:** 3 tries per fix
 
 **Strategy per attempt:**
+
 1. **First attempt:** Standard fix application
 2. **Second attempt:** Alternative approach (if known)
 3. **Third attempt:** Ask user for guidance
 
 **If all attempts fail:**
+
 - Mark fix as ❌ in memories.md
 - Continue with remaining fixes
 - Report failed fix in summary

@@ -31,6 +31,7 @@
 **Path:** `.github/instructions/service-{name}.instructions.md`
 
 **Search pattern:** Lowercase service name, with hyphens
+
 - Example: `Service_Volvo` → `service-volvo.instructions.md`
 - Example: `Service_VolvoMasterData` → `service-volvo-masterdata.instructions.md`
 
@@ -39,6 +40,7 @@
 **If documentation exists:**
 
 **Read both files and compare:**
+
 1. Extract method signatures from `Service_{Name}.cs`
 2. Extract documented methods from `.instructions.md`
 3. Detect changes:
@@ -48,6 +50,7 @@
    - Constructor dependencies changed
 
 **If changes detected:**
+
 ```
 ⚠️ Service_{Name} has changed since last documentation:
 - Added methods: {list}
@@ -59,10 +62,12 @@ Version will increment: v{current} → v{next}
 ```
 
 **Archive old version:**
+
 - Rename: `service-{name}.instructions.md` → `service-{name}_v{#}.instructions.md`
 - Create new: `service-{name}.instructions.md` (updated content)
 
 **If no changes:**
+
 ```
 ✅ Service_{Name} documentation is current
 No update needed
@@ -102,6 +107,7 @@ Reference: `https://docs.github.com/en/copilot/how-tos/configure-custom-instruct
 ```
 
 **Registration** (App.xaml.cs):
+
 ```csharp
 {Show DI registration code}
 ```
@@ -113,23 +119,28 @@ Reference: `https://docs.github.com/en/copilot/how-tos/configure-custom-instruct
 {For each public method:}
 
 ### {MethodName}
+
 **Purpose:** {What it does}
 
 **Parameters:**
+
 - `{param}` - {description}
 
 **Returns:** `{type}` - {description}
 
 **Business Rules:**
+
 - {Rule 1}
 - {Rule 2}
 
 **Example:**
+
 ```csharp
 {Usage example}
 ```
 
 **Error Handling:**
+
 - {Error scenario 1}
 - {Error scenario 2}
 
@@ -162,6 +173,7 @@ Reference: `https://docs.github.com/en/copilot/how-tos/configure-custom-instruct
 **Version:** {version}
 **Last Updated:** {date}
 **Maintained By:** Development Team
+
 ```
 
 **Save to:** `.github/instructions/service-{name}.instructions.md`
@@ -232,6 +244,7 @@ Reference: `https://docs.github.com/en/copilot/how-tos/configure-custom-instruct
 **Created:** {date}
 **Last Updated:** {date}
 **Status:** Proposed for Implementation
+
 ```
 
 **Categories to include:**
@@ -330,6 +343,7 @@ Next Steps:
 ## Service Documentation Best Practices
 
 **Always include:**
+
 - Constructor dependencies with purpose
 - DI registration example
 - Each public method with:
@@ -345,12 +359,14 @@ Next Steps:
 - Related documentation links
 
 **Format:**
+
 - Use markdown headers for structure
 - Code blocks with language hints
 - Tables for parameter lists
 - Bullet points for rules/checklists
 
 **Version control:**
+
 - Track changes across versions
 - Archive old versions with timestamp
 - Maintain version number in file
@@ -360,6 +376,7 @@ Next Steps:
 ## Settings Documentation Best Practices
 
 **Always include:**
+
 - Current hardcoded value with location
 - Proposed type and validation
 - Implementation notes
@@ -368,6 +385,7 @@ Next Steps:
 - Category grouping
 
 **Categories standard:**
+
 - File System Paths
 - Limits & Thresholds
 - Validation Rules
@@ -383,16 +401,19 @@ Next Steps:
 ## Error Handling
 
 **If service file missing:**
+
 - Warn user
 - Skip that service
 - Continue with others
 
 **If template missing:**
+
 - Use built-in template
 - Generate basic structure
 - Note in output
 
 **If permissions error:**
+
 - Report error
 - Suggest alternative location
 - Ask user to fix permissions

@@ -1,6 +1,6 @@
 # Technical Research Step 4: Implementation Research
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -12,7 +12,7 @@
 - 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after implementation research content generation
@@ -20,18 +20,18 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before completing workflow
 - 🚫 FORBIDDEN to complete workflow until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Focus on implementation approaches and technology adoption strategies
 - Web search capabilities with source verification are enabled
 - This is the final step in the technical research workflow
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive implementation research with emphasis on practical implementation approaches and technology adoption.
 
-## IMPLEMENTATION RESEARCH SEQUENCE:
+## IMPLEMENTATION RESEARCH SEQUENCE
 
 ### 1. Begin Implementation Research
 
@@ -88,7 +88,7 @@ Search the web: "DevOps operations best practices"
 
 Prepare implementation analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -174,17 +174,17 @@ Show the generated implementation research and present complete option:
 
 ### 7. Handle Complete Selection
 
-#### If 'C' (Complete Research):
+#### If 'C' (Complete Research)
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Complete the technical research workflow
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the research document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Technology adoption strategies identified with current citations
 ✅ Development workflows and tooling thoroughly analyzed
@@ -195,7 +195,7 @@ When user selects 'C', append the content directly to the research document usin
 ✅ Content properly appended to document when C selected
 ✅ Technical research workflow completed successfully
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -209,7 +209,7 @@ When user selects 'C', append the content directly to the research document usin
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## IMPLEMENTATION RESEARCH PROTOCOLS:
+## IMPLEMENTATION RESEARCH PROTOCOLS
 
 - Search for implementation case studies and success stories
 - Research technology migration patterns and lessons learned
@@ -217,7 +217,7 @@ When user selects 'C', append the content directly to the research document usin
 - Research development tooling ecosystem evaluations
 - Analyze operational excellence frameworks and maturity models
 
-## TECHNICAL RESEARCH WORKFLOW COMPLETION:
+## TECHNICAL RESEARCH WORKFLOW COMPLETION
 
 When 'C' is selected:
 
@@ -227,7 +227,7 @@ When 'C' is selected:
 - Technical research workflow status updated
 - Final implementation recommendations provided to user
 
-## NEXT STEPS:
+## NEXT STEPS
 
 Technical research workflow complete. User may:
 

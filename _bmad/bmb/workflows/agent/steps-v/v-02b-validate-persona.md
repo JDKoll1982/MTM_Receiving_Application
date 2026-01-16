@@ -23,7 +23,7 @@ Validate the agent's persona against BMAD standards as defined in personaPropert
 - 🚫 NO MENU - append findings and auto-advance
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate persona against personaProperties.md rules
 - 📊 Append findings to validation report

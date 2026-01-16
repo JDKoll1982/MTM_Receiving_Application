@@ -13,13 +13,13 @@ stepFileRules: '../data/step-file-rules.md'
 
 # Validation Step 1: File Structure & Size
 
-## STEP GOAL:
+## STEP GOAL
 
 To create the validation report that all parallel tasks that this will kick off will be able to report to.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -27,14 +27,14 @@ To create the validation report that all parallel tasks that this will kick off 
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Create validation report with header structure using subprocess optimization when available
 - 🚫 DO NOT skip checking any file - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and check EVERY file in the workflow using subprocess optimization when available - single subprocess for bash/grep operations, separate subprocess per file for size analysis
 - 💾 Subprocesses must either update validation report OR return findings for parent aggregation
@@ -76,7 +76,7 @@ validationStatus: IN_PROGRESS
 
 Save the file (without the handlebars output of course) before proceeding.
 
-### 2. Launch Mass Parallelization and consolidate results!
+### 2. Launch Mass Parallelization and consolidate results
 
 Utilizing a subprocess for each step file in {parallel-steps} - complete all of these - with the caveat indication to the subprocess that at the end of the specific step it will not on its own proceed to the nextStep file!
 
@@ -84,7 +84,7 @@ Critically - instruct that instructions to write out or return results within ea
 
 Once every process has completed - there should be a separate validation file for each given step. Also - each step should return JUST its results and recommendations to you also.
 
-### 3. CRITICAL WRITES to the report.
+### 3. CRITICAL WRITES to the report
 
 You MUST now ensure that all results are added to the final cohesive {validationReportFile} following the indicated handlebars sequence - and then after appending each subprocess report to a level 2 section - and the TOC to accurately reflect the documents state using proper markdown linking conventions to the actual heading names you created.
 
@@ -98,12 +98,12 @@ ONLY after ensuring all has been written to the final report, let the user know 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Validation report created with header structure
 - EVERY section of the template is filled in with content from a subprocess that added the results of its area of expertise
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Output Report does not exist with content all filled in
 - EVERY step listed in {parallel-steps} was not executed in a subprocess and completed with its results captured in output

@@ -11,6 +11,7 @@ Model Context Protocol (MCP) is an open protocol that enables seamless integrati
 ## Documentation Files
 
 ### Installation & Configuration
+
 - [01-install-and-configure.md](01-install-and-configure.md)
   - How to install and configure MCP servers in VS Code
   - Workspace vs user configuration
@@ -18,6 +19,7 @@ Model Context Protocol (MCP) is an open protocol that enables seamless integrati
   - Prerequisites and setup steps
 
 ### Tool Catalog
+
 - [02-tool-catalog.md](02-tool-catalog.md)
   - Complete catalog of all available MCP tools
   - Detailed descriptions, use cases, and safety notes
@@ -25,12 +27,14 @@ Model Context Protocol (MCP) is an open protocol that enables seamless integrati
   - Example prompts for each tool
 
 ### Recipes & Quick Reference
+
 - [03-recipes-cheat-sheet.md](03-recipes-cheat-sheet.md)
   - Common task patterns mapped to specific tools
   - Quick "how-to" recipes for frequent operations
   - Best practices for repo discovery, code search, and safe editing
 
 ### Automation
+
 - [automation-prompt.md](automation-prompt.md)
   - Reusable prompt template for setting up new MCP servers
   - Can generate instruction files for all configured servers

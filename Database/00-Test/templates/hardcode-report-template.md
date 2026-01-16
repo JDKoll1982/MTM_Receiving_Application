@@ -36,6 +36,7 @@ These queries access the read-only Infor Visual ERP database.
 ---
 
 **Recommendations:**
+
 1. Convert MySQL queries to stored procedures for better security and maintainability
 2. Ensure Infor Visual queries are read-only (SELECT statements only)
 3. Review unknown queries for proper database targeting

@@ -86,6 +86,7 @@ installed_path: '{project-root}/_bmad/{module_code}/workflows/{workflow_folder_n
 **Use the create-workflow workflow to build this workflow.**
 
 Inputs needed:
+
 - Workflow name and description
 - Step structure and sequence
 - Input/output specifications

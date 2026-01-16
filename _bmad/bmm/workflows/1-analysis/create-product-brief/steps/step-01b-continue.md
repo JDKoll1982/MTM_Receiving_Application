@@ -8,13 +8,13 @@ outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Step 1B: Product Brief Continuation
 
-## STEP GOAL:
+## STEP GOAL
 
 Resume the product brief workflow from where it was left off, ensuring smooth continuation with full context restoration.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -22,7 +22,7 @@ Resume the product brief workflow from where it was left off, ensuring smooth co
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -30,21 +30,21 @@ Resume the product brief workflow from where it was left off, ensuring smooth co
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative continuation tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on understanding where we left off and continuing appropriately
 - 🚫 FORBIDDEN to modify content completed in previous steps
 - 💬 Approach: Systematic state analysis with clear progress reporting
 - 📋 Resume workflow from exact point where it was interrupted
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking any action
 - 💾 Keep existing frontmatter `stepsCompleted` values
 - 📖 Only load documents that were already tracked in `inputDocuments`
 - 🚫 FORBIDDEN to discover new input documents during continuation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Current document and frontmatter are already loaded
 - Focus: Workflow state analysis and continuation logic only
@@ -123,12 +123,12 @@ Display: "Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
 
 **Select an Option:** [C] Continue to Step {nextStepNumber}"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Load, read entire file, then execute the appropriate next step file based on `lastStep`
 - IF Any other comments or queries: respond and redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -142,7 +142,7 @@ ONLY WHEN [C continue option] is selected and [current state confirmed], will yo
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All previous input documents successfully reloaded
 - Current workflow state accurately analyzed and presented
@@ -150,7 +150,7 @@ ONLY WHEN [C continue option] is selected and [current state confirmed], will yo
 - Correct next step identified and prepared for loading
 - Proper continuation path determined based on `lastStep`
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Discovering new input documents instead of reloading existing ones
 - Modifying content from already completed steps

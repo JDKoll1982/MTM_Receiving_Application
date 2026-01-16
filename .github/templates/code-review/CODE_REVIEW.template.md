@@ -12,6 +12,7 @@
 **Files Analyzed:** {{files_analyzed}}  
 **Total Issues Found:** {{total_issues}}  
 **Severity Breakdown:**
+
 - 🔴 CRITICAL: {{critical_count}}
 - 🟡 SECURITY: {{security_count}}
 - 🟠 DATA: {{data_count}}
@@ -89,9 +90,11 @@
 ## Detailed Issue Descriptions
 
 {{#each severity_groups}}
+
 ### {{severity_icon}} {{severity_name}} Issues ({{issue_count}})
 
 {{#each issues}}
+
 #### Issue #{{issue_number}}: {{title}}
 
 **Severity:** {{severity_icon}} {{severity_name}}  
@@ -103,6 +106,7 @@
 {{description}}
 
 **Current Code:**
+
 ```{{code_language}}
 {{current_code}}
 ```
@@ -111,12 +115,14 @@
 {{recommended_fix}}
 
 **Proposed Code:**
+
 ```{{code_language}}
 {{proposed_code}}
 ```
 
 {{#if dependencies}}
 **Dependencies:**
+
 - {{#each dependencies}}Issue #{{dependency_number}} must be fixed first{{/each}}
 {{/if}}
 
@@ -137,6 +143,7 @@
 The following hardcoded values should be moved to a settings system:
 
 {{#each settings_categories}}
+
 ### {{category_name}}
 
 | Setting Name | Current Value | Location | Type | Recommended Range |
@@ -154,6 +161,7 @@ The following hardcoded values should be moved to a settings system:
 ## Service Documentation Status
 
 {{#each services}}
+
 | Service | Documentation Exists | Status | Action Required |
 |---------|----------------------|--------|-----------------|
 | {{service_name}} | {{has_docs}} | {{status}} | {{action}} |
@@ -168,6 +176,7 @@ The following hardcoded values should be moved to a settings system:
 **Code Quality Score:** {{quality_score}}/100
 
 **Breakdown:**
+
 - Security: {{security_score}}/100
 - Maintainability: {{maintainability_score}}/100
 - Performance: {{performance_score}}/100

@@ -1,9 +1,11 @@
 {{#if comment}}
 ------------------------------------------------------------------------------
+
 Expert Agent Handlebars Template
 Used by: step-06-build.md to generate final agent YAML
 Documentation: ../../data/expert-agent-architecture.md
 ------------------------------------------------------------------------------
+
 {{/if}}
 agent:
   metadata:

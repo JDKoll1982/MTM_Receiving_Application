@@ -80,12 +80,14 @@ description: '[what this step does]'
 ## Critical Rules (Quick Reference)
 
 ### Frontmatter
+
 - ✅ Only variables USED in the step body
 - ✅ All file references use `{variable}` format
 - ✅ Relative paths within workflow folder
 - See: `frontmatter-standards.md`
 
 ### Menus
+
 - ✅ Handler section MUST follow display
 - ✅ "Halt and wait" in execution rules
 - ✅ A/P options only when appropriate
@@ -93,11 +95,13 @@ description: '[what this step does]'
 - See: `menu-handling-standards.md`
 
 ### Progressive Disclosure
+
 - ✅ Only load next step when user selects 'C'
 - ✅ Read entire step file before execution
 - ✅ Don't create mental todos from future steps
 
 ### Continuable Workflows
+
 - ✅ Append step number to `stepsCompleted`
 - ✅ Don't hardcode full array
 - See: `workflow-type-criteria.md`
@@ -137,6 +141,7 @@ See: `step-type-patterns.md`
 ## Frontmatter Variables
 
 ### Standard (Always Available)
+
 - `{project-root}`
 - `{project_name}`
 - `{output_folder}`
@@ -145,9 +150,11 @@ See: `step-type-patterns.md`
 - `{document_output_language}`
 
 ### Module-Specific (e.g., BMB)
+
 - `{bmb_creations_output_folder}`
 
 ### User-Defined
+
 - New variables can be defined in steps for future steps
 
 See: `frontmatter-standards.md`
@@ -212,12 +219,14 @@ Display: "**Select:** [A] [action A] [P] [action P] [C] Continue"
 ## When to Extract to Data Files
 
 Extract step content to `/data/` when:
+
 - Step file exceeds 200 lines
 - Content is reference material
 - Content is reused across steps
 - Content is domain-specific (examples, patterns)
 
 **Data file types:**
+
 - `.md` - Reference documentation
 - `.csv` - Structured data for lookup
 - `examples/` - Reference implementations
@@ -227,6 +236,7 @@ Extract step content to `/data/` when:
 ## Tri-Modal Workflow Note
 
 For Create/Edit/Validate workflows:
+
 - Each mode has its own `steps-c/`, `steps-e/`, `steps-v/` folder
 - NO shared step files (`s-*.md`) between modes
 - All modes share `/data/` folder

@@ -10,13 +10,13 @@ brainstormWorkflow: '{project-root}/_bmad/core/workflows/brainstorming/workflow.
 
 # Step 1: Optional Brainstorming
 
-## STEP GOAL:
+## STEP GOAL
 
 Optional creative exploration to generate agent ideas through structured brainstorming before proceeding to agent discovery and development.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Optional creative exploration to generate agent ideas through structured brainst
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a creative facilitator who helps users explore agent possibilities
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
@@ -32,14 +32,14 @@ Optional creative exploration to generate agent ideas through structured brainst
 - ✅ You bring creative brainstorming expertise, user brings their goals and domain knowledge, together we explore innovative agent concepts
 - ✅ Maintain collaborative inspiring tone throughout
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Present brainstorming as optional first step with clear benefits
 - 💾 Preserve brainstorming output for reference in subsequent steps
 - 📖 Use brainstorming workflow when user chooses to participate
 - 🚫 FORBIDDEN to proceed without clear user choice
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: User is starting agent creation workflow
 - Focus: Offer optional creative exploration before formal discovery
@@ -89,11 +89,11 @@ Wait for clear user response (yes/no or y/n).
 
 Display: "Are you ready to [C] Continue to Discovery?"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Load, read entire file, then execute {nextStepFile}
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -108,7 +108,7 @@ ONLY WHEN [C continue option] is selected and [user choice regarding brainstormi
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - User understands brainstorming is optional
 - User choice (yes/no) clearly obtained and respected
@@ -117,7 +117,7 @@ ONLY WHEN [C continue option] is selected and [user choice regarding brainstormi
 - Menu presented and user input handled correctly
 - Smooth transition to agent discovery phase
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Making brainstorming mandatory or pressuring user
 - Proceeding without clear user choice on brainstorming

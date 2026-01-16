@@ -13,6 +13,7 @@ Startup services orchestrate application initialization, authentication flows, a
 ### 1. Single Responsibility
 
 The startup service (`Service_OnStartup_AppLifecycle`) has ONE clear purpose:
+
 - Coordinate application initialization sequence
 - Detect workstation type and route to appropriate authentication flow
 - Create user session upon successful authentication
@@ -21,12 +22,14 @@ The startup service (`Service_OnStartup_AppLifecycle`) has ONE clear purpose:
 ### 2. Dependency Injection
 
 Startup services MUST:
+
 - Define corresponding interfaces in `Contracts/Services/`
 - Accept all required services via constructor injection
 - Use `IServiceProvider` to resolve transient services (e.g., Windows, Views)
 - Be registered as transient or scoped (not singleton)
 
 Example:
+
 ```csharp
 public class Service_OnStartup_AppLifecycle : IService_OnStartup_AppLifecycle
 {
@@ -96,23 +99,27 @@ public async Task StartAsync()
 ### Phase 1: Initialization (0-20%)
 
 **Responsibilities**:
+
 - Show splash screen (optional)
 - Initialize logging services
 - Load configuration
 - Report progress: "Initializing services..."
 
 **Error Handling**:
+
 - Critical errors → Show dialog and exit
 - Non-critical → Log and continue with defaults
 
 ### Phase 2: Workstation Detection (20-40%)
 
 **Responsibilities**:
+
 - Call `DetectWorkstationTypeAsync()`
 - Determine authentication flow
 - Report progress: "Detecting workstation configuration..."
 
 **Logic**:
+
 ```csharp
 var workstationConfig = await _authService.DetectWorkstationTypeAsync();
 if (workstationConfig.IsPersonalWorkstation)
@@ -128,6 +135,7 @@ else if (workstationConfig.IsSharedTerminal)
 ### Phase 3: Authentication (40-80%)
 
 **Personal Workstation Flow**:
+
 1. Get Windows username: `Environment.UserName`
 2. Call `AuthenticateByWindowsUsernameAsync(windowsUser)`
 3. Handle results:
@@ -136,6 +144,7 @@ else if (workstationConfig.IsSharedTerminal)
    - Error → Show error dialog with retry option
 
 **Shared Terminal Flow**:
+
 1. Show PIN login dialog
 2. Call `AuthenticateByPinAsync(username, pin)`
 3. Handle results:
@@ -145,6 +154,7 @@ else if (workstationConfig.IsSharedTerminal)
    - Error → Show error dialog
 
 **Progress Reporting**:
+
 - 45%: "Authenticating Windows user..."
 - 60%: "Validating credentials..."
 - 80%: "Welcome, [User Name]"
@@ -152,12 +162,14 @@ else if (workstationConfig.IsSharedTerminal)
 ### Phase 4: Session Creation (80-90%)
 
 **Responsibilities**:
+
 - Create session: `_sessionManager.CreateSession(user, workstation, authMethod)`
 - Start timeout monitoring: `_sessionManager.StartTimeoutMonitoring()`
 - Log login event
 - Report progress: "Creating user session..."
 
 **Session Properties**:
+
 - Set appropriate timeout (30 min personal, 5 min shared)
 - Record authentication method ("windows_auto", "pin_manual")
 - Initialize last activity timestamp
@@ -165,6 +177,7 @@ else if (workstationConfig.IsSharedTerminal)
 ### Phase 5: Main Window Presentation (90-100%)
 
 **Responsibilities**:
+
 - Resolve MainWindow from DI container
 - Set `App.MainWindow` property
 - Activate main window
@@ -172,6 +185,7 @@ else if (workstationConfig.IsSharedTerminal)
 - Report progress: "Starting application..."
 
 **Example**:
+
 ```csharp
 var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
 App.MainWindow = mainWindow;
@@ -186,11 +200,13 @@ _splashScreen?.Close();
 ### Critical Errors
 
 **Definition**: Errors that prevent application startup
+
 - Database connection failure
 - Missing configuration
 - Unhandled exceptions in core services
 
 **Response**:
+
 1. Log error with `Enum_ErrorSeverity.Critical`
 2. Show user-friendly error dialog
 3. Close splash screen
@@ -211,10 +227,12 @@ catch (Exception ex)
 ### Non-Critical Errors
 
 **Definition**: Errors that allow degraded functionality
+
 - Splash screen display failure
 - Non-essential service initialization failure
 
 **Response**:
+
 1. Log error with `Enum_ErrorSeverity.Warning`
 2. Continue with default/fallback behavior
 3. Don't show dialogs (would interrupt startup)
@@ -254,6 +272,7 @@ private void UpdateSplash(double percentage, string message)
 ```
 
 **Progress Milestones**:
+
 - 20%: "Initializing services..."
 - 40%: "Detecting workstation configuration..."
 - 45%: "Authenticating Windows user..." / "Waiting for login..."
@@ -265,6 +284,7 @@ private void UpdateSplash(double percentage, string message)
 ### Without Splash Screen
 
 If splash screen fails or is not available:
+
 - Continue startup silently
 - Don't block on progress updates
 - Log milestones for diagnostics
@@ -276,11 +296,13 @@ If splash screen fails or is not available:
 **Common Problem**: WinUI 3 XAML compiler can be fragile with certain patterns
 
 **Symptoms**:
+
 - `MSB3073: XamlCompiler.exe exited with code 1`
 - No specific error details in build output
 - Random failures with valid XAML
 
 **Solutions**:
+
 1. **Simplify XAML**: Start with minimal structure
 2. **Avoid namespace issues**: Keep Window classes in simple namespaces
 3. **Test incrementally**: Add features one at a time
@@ -288,6 +310,7 @@ If splash screen fails or is not available:
 5. **Fallback gracefully**: Make splash screen optional
 
 **Template**:
+
 ```xml
 <Window
     x:Class="MTM_Receiving_Application.Views.SplashScreenWindow"
@@ -393,6 +416,7 @@ private async void OnMainWindowClosed(object sender, WindowEventArgs args)
 ### Manual Testing
 
 **Personal Workstation Scenario**:
+
 1. Launch app on personal workstation
 2. Verify auto-login with Windows username
 3. Verify main window shows with user info in header
@@ -400,6 +424,7 @@ private async void OnMainWindowClosed(object sender, WindowEventArgs args)
 5. Verify app closes on timeout
 
 **Shared Terminal Scenario**:
+
 1. Launch app on shared terminal (SHOP2, MTMDC)
 2. Verify PIN login dialog appears
 3. Test valid credentials → successful login
@@ -410,6 +435,7 @@ private async void OnMainWindowClosed(object sender, WindowEventArgs args)
 ### Integration Testing
 
 Create tests for:
+
 - Successful Windows authentication flow
 - Successful PIN authentication flow
 - Database connection failure handling
@@ -419,6 +445,7 @@ Create tests for:
 ### Unit Testing
 
 Test startup service methods independently:
+
 - Workstation detection logic
 - Authentication flow routing
 - Session creation
@@ -437,6 +464,7 @@ Test startup service methods independently:
 ## Common Pitfalls
 
 ❌ **Don't**:
+
 - Block UI thread during initialization
 - Show multiple dialogs during startup
 - Continue startup after critical errors
@@ -444,6 +472,7 @@ Test startup service methods independently:
 - Ignore splash screen display failures
 
 ✅ **Do**:
+
 - Use fully asynchronous initialization
 - Show single error dialog for critical errors
 - Route authentication based on workstation type

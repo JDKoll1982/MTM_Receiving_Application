@@ -14,13 +14,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 7: Foundation Build
 
-## STEP GOAL:
+## STEP GOAL
 
 To create the workflow folder structure, the main workflow.md file, and the primary output template(s) that step files will reference.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -28,7 +28,7 @@ To create the workflow folder structure, the main workflow.md file, and the prim
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -36,21 +36,21 @@ To create the workflow folder structure, the main workflow.md file, and the prim
 - ✅ You bring implementation expertise and best practices
 - ✅ User brings their specific requirements and design approvals
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on creating foundation elements (folder, workflow.md, main template)
 - 🚫 FORBIDDEN to create step files yet - that comes next
 - 💬 Get confirmation before creating each foundation element
 - 🚪 CREATE files in the correct target location
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Create foundation systematically from approved design
 - 💾 Document what was created in the plan
 - 📖 Update frontmatter stepsCompleted to add this step when completed
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved plan from step 6 guides implementation
 - Design specifies: workflow name, continuable or not, document output type, step count
@@ -103,6 +103,7 @@ Create the folders and confirm structure.
 Load {workflowTemplate} and create workflow.md with:
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: '{workflow-name-from-design}'
@@ -112,6 +113,7 @@ web_bundle: true
 ```
 
 **Content:**
+
 - Workflow name and description
 - Goal statement
 - Role definition
@@ -121,6 +123,7 @@ web_bundle: true
 
 **If tri-modal (Create + Edit + Validate):**
 Add mode routing logic to workflow.md:
+
 - IF invoked with -c: Load ./steps-c/step-01-init.md
 - IF invoked with -v: Load ./steps-v/step-01-validate.md
 - IF invoked with -e: Load ./steps-e/step-01-edit.md
@@ -130,6 +133,7 @@ Add mode routing logic to workflow.md:
 **Load {outputFormatStandards} to determine template type.**
 
 **From the design, determine:**
+
 - Free-form (recommended) - Minimal frontmatter + progressive append
 - Structured - Required sections with flexible content
 - Semi-structured - Core sections + optional additions
@@ -138,6 +142,7 @@ Add mode routing logic to workflow.md:
 **For Free-form (most common):**
 
 Create `templates/output-template.md`:
+
 ```yaml
 ---
 stepsCompleted: []
@@ -148,6 +153,7 @@ user_name: ''
 ```
 
 If the workflow produces a document with sections:
+
 ```markdown
 # {{document_title}}
 
@@ -157,6 +163,7 @@ If the workflow produces a document with sections:
 **For Structured/Semi-structured:**
 
 Create template with section placeholders based on design:
+
 ```markdown
 # {{title}}
 
@@ -198,14 +205,14 @@ Append to {workflowPlanFile}:
 
 Display: **Foundation Complete - Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Step 01 Build
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 - User can chat or ask questions - always respond and then redisplay menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
@@ -220,7 +227,7 @@ ONLY WHEN C is selected and foundation is saved to plan will you load {nextStepF
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Folder structure created in correct location
 - workflow.md created with proper frontmatter and initialization
@@ -228,7 +235,7 @@ ONLY WHEN C is selected and foundation is saved to plan will you load {nextStepF
 - Foundation documented in {workflowPlanFile}
 - Frontmatter updated with stepsCompleted
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Creating folders without user confirmation
 - Missing mode routing for tri-modal workflows

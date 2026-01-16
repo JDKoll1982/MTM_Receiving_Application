@@ -6,6 +6,7 @@ applyTo: '**/*ViewModel.cs'
 # ViewModel Development Guidelines
 
 ## Purpose
+
 This file provides guidelines for creating ViewModels following the MVVM pattern with CommunityToolkit.Mvvm.
 
 ## Core Principles
@@ -27,6 +28,7 @@ This file provides guidelines for creating ViewModels following the MVVM pattern
 ## Property Guidelines
 
 ### Observable Properties
+
 ```csharp
 [ObservableProperty]
 private string _partID = string.Empty;
@@ -34,6 +36,7 @@ private string _partID = string.Empty;
 ```
 
 ### Collections
+
 ```csharp
 // Initialize in constructor
 public ObservableCollection<Model_ReceivingLine> ReceivingLines { get; }
@@ -47,6 +50,7 @@ public MyViewModel(...)
 ## Command Guidelines
 
 ### Synchronous Commands
+
 ```csharp
 [RelayCommand]
 private void SortData()
@@ -66,6 +70,7 @@ private void SortData()
 ```
 
 ### Asynchronous Commands
+
 ```csharp
 [RelayCommand]
 private async Task SaveDataAsync()
@@ -104,12 +109,14 @@ private async Task SaveDataAsync()
 ## Error Handling
 
 ### User-Facing Errors
+
 ```csharp
 // For validation errors or expected failures
 _errorHandler.ShowUserError("Part ID is required", "Validation Error", nameof(AddLineAsync));
 ```
 
 ### Exception Handling
+
 ```csharp
 catch (Exception ex)
 {
@@ -125,6 +132,7 @@ catch (Exception ex)
 ## Database Operations
 
 ### All database calls must be async
+
 ```csharp
 var result = await Dao_ReceivingLine.InsertReceivingLineAsync(line);
 
@@ -141,6 +149,7 @@ else
 ## Status Messages
 
 Update `StatusMessage` to provide feedback:
+
 ```csharp
 StatusMessage = "Loading data...";
 // ... perform operation ...
@@ -150,6 +159,7 @@ StatusMessage = "Data loaded successfully";
 ## Registration in DI Container
 
 Add ViewModels to `App.xaml.cs`:
+
 ```csharp
 services.AddTransient<MyViewModel>();
 ```
@@ -163,12 +173,14 @@ services.AddTransient<MyViewModel>();
 ## Common Patterns
 
 ### Resetting Forms
+
 ```csharp
 CurrentLine = new Model_ReceivingLine();
 OnPropertyChanged(nameof(CurrentLine));
 ```
 
 ### Collection Updates
+
 ```csharp
 ReceivingLines.Add(newLine);
 TotalRows = ReceivingLines.Count;

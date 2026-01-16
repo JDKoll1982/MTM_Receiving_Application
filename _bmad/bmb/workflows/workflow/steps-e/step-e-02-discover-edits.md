@@ -12,34 +12,34 @@ validationReport: '{targetWorkflowPath}/validation-report-{workflow_name}.md'
 
 # Edit Step 2: Discover Edits
 
-## STEP GOAL:
+## STEP GOAL
 
 Discover what the user wants to do: fix validation issues, make specific changes, or both. Document edit goals in the edit plan.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER assume what edits are needed
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on understanding edit goals
 - 🚫 FORBIDDEN to make any modifications yet
 - 💬 Ask clarifying questions
 - 🚪 CATEGORIZE edits by type
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Guide discovery conversation
 - 💾 Document edit goals in edit plan
 - 📖 Determine which next step to load
 - 🚫 FORBIDDEN to proceed without user confirmation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Edit plan from previous step provides context
 - Validation report (if exists) provides issues to fix
@@ -74,6 +74,7 @@ Present direct change options (step 3b)
 "**I found an existing validation report for this workflow.**
 
 **Validation Summary:**
+
 - Status: {status from report}
 - Critical Issues: {count}
 - Warnings: {count}
@@ -85,7 +86,7 @@ Present direct change options (step 3b)
 **[B]oth** - Fix validation issues, then make a change
 **[R]eview Report** - See detailed validation findings first
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF F: Proceed to [Document Fix Goals](#4-document-fix-goals), then route to {nextStepFile}
 - IF C: Proceed to [Document Change Goals](#3b-discovery-for-direct-change)
@@ -112,9 +113,10 @@ I can help you modify:
 
 Which areas would you like to edit?"
 
-#### For Each Selected Category:
+#### For Each Selected Category
 
 **If Workflow.md selected:**
+
 - "What aspects need change?"
   - Goal or description?
   - Role definition?
@@ -122,6 +124,7 @@ Which areas would you like to edit?"
   - Initialization/routing?
 
 **If Step Files selected:**
+
 - "What type of step changes?"
   - Add new step?
   - Remove existing step?
@@ -129,21 +132,25 @@ Which areas would you like to edit?"
   - Reorder steps?
 
 **If Data Files selected:**
+
 - "What data changes?"
   - Add new data file?
   - Modify existing data?
   - Add/remove data entries?
 
 **If Templates selected:**
+
 - "What template changes?"
   - Add new template?
   - Modify template structure?
   - Change variable references?"
 
 **If Multiple selected:**
+
 - Walk through each area systematically
 
 **If Other selected:**
+
 - "Describe what you'd like to change..."
 
 ---
@@ -203,7 +210,7 @@ Which areas would you like to edit?"
 - [M] Modify the plan
 - [X] Cancel"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Update editPlan stepsCompleted, then route based on goals:
   - **If Fix goals only**: Load, read entirely, then execute {nextStepFile} (fix-validation)
@@ -217,7 +224,7 @@ Which areas would you like to edit?"
 
 Display: "**Edit Goals Confirmed. Select an Option:** [C] Continue to Edits"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Save editPlan with confirmed goals, then load appropriate next step based on [Route Based on Goals](#6-confirm-and-route)
 - IF Any other: help user respond, then redisplay menu
@@ -230,7 +237,7 @@ ONLY WHEN user confirms goals and routing is determined, will you then load and 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Edit goals clearly documented
 - User confirmed the plan
@@ -238,7 +245,7 @@ ONLY WHEN user confirms goals and routing is determined, will you then load and 
 - Edit plan updated with goals
 - Appropriate next step selected
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not documenting edit goals
 - Routing to wrong next step

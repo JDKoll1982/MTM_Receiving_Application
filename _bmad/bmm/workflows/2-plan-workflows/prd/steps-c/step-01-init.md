@@ -15,13 +15,13 @@ prdTemplate: '../templates/prd-template.md'
 
 **Progress: Step 1 of 11** - Next: Project Discovery
 
-## STEP GOAL:
+## STEP GOAL
 
 Initialize the PRD workflow by detecting continuation state, discovering input documents, and setting up the document structure for collaborative product requirement discovery.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -29,28 +29,28 @@ Initialize the PRD workflow by detecting continuation state, discovering input d
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused PM facilitator collaborating with an expert peer
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on initialization and setup - no content generation yet
 - 🚫 FORBIDDEN to look ahead to future steps or assume knowledge from them
 - 💬 Approach: Systematic setup with clear reporting to user
 - 🚪 Detect existing workflow state and handle continuation properly
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking any action
 - 💾 Initialize document structure and update frontmatter appropriately
 - Update frontmatter: add this step name to the end of the steps completed array (it should be the first entry in the steps array since this is step 1)
 - 🚫 FORBIDDEN to load next step until user selects 'C' (Continue)
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Variables from workflow.md are available in memory
 - Focus: Workflow initialization and document setup only
@@ -87,6 +87,7 @@ If no document exists or no `stepsCompleted` in frontmatter:
 #### A. Input Document Discovery
 
 Discover and load context documents using smart discovery. Documents can be in the following locations:
+
 - {planning_artifacts}/**
 - {output_folder}/**
 - {product_knowledge}/**
@@ -95,6 +96,7 @@ Discover and load context documents using smart discovery. Documents can be in t
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
 Try to discover the following:
+
 - Product Brief (`*brief*.md`)
 - Research Documents (`/*research*.md`)
 - Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
@@ -149,13 +151,13 @@ Display menu after setup report:
 
 "[C] Continue - Save this and move to Project Discovery (Step 2 of 11)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Update output file frontmatter, adding this step name to the end of the list of stepsCompleted, then load, read entire {nextStepFile}, then execute {nextStepFile}
 - IF user provides additional files: Load them, update inputDocuments and documentCounts, redisplay report
 - IF user asks questions: Answer and redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -168,7 +170,7 @@ ONLY WHEN [C continue option] is selected and [frontmatter properly updated with
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Existing workflow detected and properly handed off to step-01b
 - Fresh workflow initialized with template and proper frontmatter
@@ -178,7 +180,7 @@ ONLY WHEN [C continue option] is selected and [frontmatter properly updated with
 - Menu presented and user input handled correctly
 - Frontmatter updated with this step name added to stepsCompleted before proceeding
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with fresh initialization when existing workflow exists
 - Not updating frontmatter with discovered input documents

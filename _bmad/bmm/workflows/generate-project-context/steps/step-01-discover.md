@@ -1,6 +1,6 @@
 # Step 1: Context Discovery & Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 - ✅ ALWAYS treat this as collaborative discovery between technical peers
@@ -10,25 +10,25 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 📖 Read existing project files to understand current context
 - 💾 Initialize document and update frontmatter
 - 🚫 FORBIDDEN to load next step until discovery is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Focus on existing project files and architecture decisions
 - Look for patterns, conventions, and unique requirements
 - Prioritize rules that prevent implementation mistakes
 
-## YOUR TASK:
+## YOUR TASK
 
 Discover the project's technology stack, existing patterns, and critical implementation rules that AI agents must follow when writing code.
 
-## DISCOVERY SEQUENCE:
+## DISCOVERY SEQUENCE
 
 ### 1. Check for Existing Project Context
 
@@ -160,7 +160,7 @@ Ready to create/update your project context. This will help AI agents implement 
 
 [C] Continue to context generation"
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing project context properly detected and handled
 ✅ Technology stack accurately identified with versions
@@ -169,7 +169,7 @@ Ready to create/update your project context. This will help AI agents implement 
 ✅ Discovery findings clearly presented to user
 ✅ User ready to proceed with context generation
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not checking for existing project context before creating new one
 ❌ Missing critical technology versions or configurations
@@ -177,7 +177,7 @@ Ready to create/update your project context. This will help AI agents implement 
 ❌ Not initializing frontmatter properly
 ❌ Not presenting clear discovery summary to user
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects [C] to continue, load `./step-02-generate.md` to collaboratively generate the specific project context rules.
 

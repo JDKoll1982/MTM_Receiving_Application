@@ -11,8 +11,9 @@ The application exports data to CSV for integration with external systems (e.g.,
 ## Dual-Write Strategy
 
 To ensure reliability while supporting shared access:
-1.  **Local Write (Mandatory)**: Always write to `%APPDATA%\MTM_Receiving_Application\`. This ensures the user can continue working even if the network is down.
-2.  **Network Write (Best-Effort)**: Attempt to write to the network share. If it fails, log the error but **do not fail the operation**.
+
+1. **Local Write (Mandatory)**: Always write to `%APPDATA%\MTM_Receiving_Application\`. This ensures the user can continue working even if the network is down.
+2. **Network Write (Best-Effort)**: Attempt to write to the network share. If it fails, log the error but **do not fail the operation**.
 
 ## Implementation Pattern
 
@@ -51,5 +52,6 @@ public async Task<Model_CSVWriteResult> WriteToCSVAsync(List<Data> data)
 - **Escaping**: Handle commas, quotes, and newlines in data fields automatically via the library.
 
 ## File Paths
+
 - **Local**: `Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)`
 - **Network**: Configurable path, often user-specific (e.g., `.../User CSV Files/{Username}/`).

@@ -11,13 +11,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 4: Product Brief Coverage Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate that PRD covers all content from Product Brief (if brief was used as input), mapping brief content to PRD sections and identifying gaps.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Validate that PRD covers all content from Product Brief (if brief was used as in
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -33,14 +33,14 @@ Validate that PRD covers all content from Product Brief (if brief was used as in
 - ✅ You bring analytical rigor and traceability expertise
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on Product Brief coverage (conditional on brief existence)
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Systematic mapping and gap analysis
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Check if Product Brief exists in input documents
 - 💬 If no brief: Skip this check and report "N/A - No Product Brief"
@@ -49,7 +49,7 @@ Validate that PRD covers all content from Product Brief (if brief was used as in
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file, input documents from step 1, validation report
 - Focus: Product Brief coverage only (conditional)
@@ -66,6 +66,7 @@ Check if Product Brief was loaded in step 1's inputDocuments:
 
 **IF no Product Brief found:**
 Append to validation report:
+
 ```markdown
 ## Product Brief Coverage
 
@@ -106,6 +107,7 @@ Return structured coverage map with classifications."
 If Task tool unavailable, perform analysis directly:
 
 **Extract from Product Brief:**
+
 - Vision: What is this product?
 - Users: Who is it for?
 - Problem: What problem does it solve?
@@ -114,6 +116,7 @@ If Task tool unavailable, perform analysis directly:
 - Differentiators: What makes it unique?
 
 **For each item, search PRD:**
+
 - Scan Executive Summary for vision
 - Check User Journeys or user personas
 - Look for problem statement
@@ -122,6 +125,7 @@ If Task tool unavailable, perform analysis directly:
 - Search for differentiators
 
 **Classify coverage:**
+
 - **Fully Covered:** Content present and complete
 - **Partially Covered:** Content present but incomplete
 - **Not Found:** Content missing from PRD
@@ -130,6 +134,7 @@ If Task tool unavailable, perform analysis directly:
 ### 4. Assess Coverage and Severity
 
 **For each gap (Partially Covered or Not Found):**
+
 - Is this Critical? (Core vision, primary users, main features)
 - Is this Moderate? (Secondary features, some goals)
 - Is this Informational? (Nice-to-have features, minor details)
@@ -192,7 +197,7 @@ Immediately load and execute {nextStepFile} (step-v-05-measurability-validation.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Checked for Product Brief existence correctly
 - If no brief: Reported "N/A" and skipped gracefully
@@ -203,7 +208,7 @@ Immediately load and execute {nextStepFile} (step-v-05-measurability-validation.
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking for brief existence before attempting validation
 - If brief exists: not mapping all key content areas

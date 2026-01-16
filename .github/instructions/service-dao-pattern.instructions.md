@@ -1,6 +1,7 @@
 # Service-DAO Pattern Instructions
 
 ## Purpose
+
 This document defines the standard pattern for interaction between the Service Layer and the Data Access Layer (DAOs).
 
 ## The Pattern
@@ -10,10 +11,10 @@ The application follows a strict layering:
 
 ### Rules
 
-1.  **Services Own Business Logic**: Services are responsible for orchestration, validation, logging, and error handling.
-2.  **DAOs Own Data Access**: DAOs are responsible for executing database queries and mapping results to Models.
-3.  **No Direct DB Access in Services**: Services must NOT use `MySqlConnection`, `SqlCommand`, or `Helper_Database_StoredProcedure` directly. They must delegate to a DAO.
-4.  **Dependency Injection**: Services must receive DAOs via constructor injection.
+1. **Services Own Business Logic**: Services are responsible for orchestration, validation, logging, and error handling.
+2. **DAOs Own Data Access**: DAOs are responsible for executing database queries and mapping results to Models.
+3. **No Direct DB Access in Services**: Services must NOT use `MySqlConnection`, `SqlCommand`, or `Helper_Database_StoredProcedure` directly. They must delegate to a DAO.
+4. **Dependency Injection**: Services must receive DAOs via constructor injection.
 
 ## Implementation Example
 
@@ -71,6 +72,7 @@ public class Service_Example : IService_Example
 ```
 
 ## Benefits
--   **Testability**: Services can be unit tested by mocking the DAO.
--   **Separation of Concerns**: Database logic is isolated from business logic.
--   **Maintainability**: Changes to database schema only affect the DAO.
+
+- **Testability**: Services can be unit tested by mocking the DAO.
+- **Separation of Concerns**: Database logic is isolated from business logic.
+- **Maintainability**: Changes to database schema only affect the DAO.

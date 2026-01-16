@@ -213,5 +213,6 @@ VALUES
 ---
 
 ## References
+
 - [AES Encryption in .NET](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes)
 - [Data Protection API (DPAPI)](https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-use-data-protection)

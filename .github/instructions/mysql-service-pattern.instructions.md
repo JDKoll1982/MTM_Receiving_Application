@@ -10,10 +10,10 @@ MySQL Services act as a facade over the Data Access Objects (DAOs). They provide
 
 ## Responsibilities
 
-1.  **Validation**: Check inputs before calling DAO (Fail Fast).
-2.  **DAO Orchestration**: Call one or more DAO methods to complete a business operation.
-3.  **Error Handling**: Catch exceptions, log them using `ILoggingService`, and return user-friendly `Model_Dao_Result`.
-4.  **Data Transformation**: Convert DAO results if necessary (though usually they return Models directly).
+1. **Validation**: Check inputs before calling DAO (Fail Fast).
+2. **DAO Orchestration**: Call one or more DAO methods to complete a business operation.
+3. **Error Handling**: Catch exceptions, log them using `ILoggingService`, and return user-friendly `Model_Dao_Result`.
+4. **Data Transformation**: Convert DAO results if necessary (though usually they return Models directly).
 
 ## Pattern
 
@@ -50,5 +50,6 @@ public async Task<Model_Dao_Result> DeleteItemAsync(int id)
 ```
 
 ## Dependency Injection
+
 - Register as **Transient** (usually stateless) or **Singleton** (if caching is involved, though rare for these services).
 - Inject `ILoggingService` and connection strings.

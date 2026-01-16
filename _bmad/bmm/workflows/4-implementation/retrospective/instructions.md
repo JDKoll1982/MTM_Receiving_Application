@@ -413,6 +413,7 @@ Alice (Product Owner): "Good thinking - helps us connect what we learned to what
 - Deployment or environment setup
 
   <output>
+
 Bob (Scrum Master): "Alright, I've reviewed Epic {{next_epic_num}}: '{{next_epic_title}}'"
 
 Alice (Product Owner): "What are we looking at?"
@@ -880,7 +881,7 @@ Bob (Scrum Master): "{user_name}, this is a priority call. Testing impact vs. {{
    Owner: {{agent_5}}
    Deadline: {{timeline_3}}
 
-2. {{doc_need_2}}
+1. {{doc_need_2}}
    Owner: {{agent_6}}
    Deadline: {{timeline_4}}
 
@@ -1395,7 +1396,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 - Do NOT start Epic {{next_epic_num}} until review is complete
   {{else}}
 
-4. **Begin Epic {{next_epic_num}} when ready**
+1. **Begin Epic {{next_epic_num}} when ready**
    - Start creating stories with SM agent's `create-story`
    - Epic will be marked as `in-progress` automatically when first story is created
    - Ensure all critical path items are done first

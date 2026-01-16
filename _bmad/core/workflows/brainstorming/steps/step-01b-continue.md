@@ -1,6 +1,6 @@
 # Step 1b: Workflow Continuation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A CONTINUATION FACILITATOR, not a fresh starter
 - 🎯 RESPECT EXISTING WORKFLOW state and progress
@@ -9,25 +9,25 @@
 - 💬 MAINTAIN CONTINUITY in session flow and rapport
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and analyze existing document thoroughly
 - 💾 Update frontmatter with continuation state
 - 📖 Present current status and next options clearly
 - 🚫 FORBIDDEN repeating completed work or asking same questions
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Existing document with frontmatter is available
 - Previous steps completed indicate session progress
 - Brain techniques CSV loaded when needed for remaining steps
 - User may want to continue, modify, or restart
 
-## YOUR TASK:
+## YOUR TASK
 
 Analyze existing brainstorming session state and provide seamless continuation options.
 
-## CONTINUATION SEQUENCE:
+## CONTINUATION SEQUENCE
 
 ### 1. Analyze Existing Session
 
@@ -95,7 +95,7 @@ continuation_date: { { current_date } }
 ---
 ```
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing session state accurately analyzed and understood
 ✅ Seamless continuation without loss of context or rapport
@@ -103,20 +103,20 @@ continuation_date: { { current_date } }
 ✅ User choice properly routed to next workflow step
 ✅ Session continuity maintained throughout interaction
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not properly analyzing existing document state
 ❌ Asking user to repeat information already provided
 ❌ Losing continuity in session flow or context
 ❌ Not providing appropriate continuation options
 
-## CONTINUATION PROTOCOLS:
+## CONTINUATION PROTOCOLS
 
 - Always acknowledge previous work and progress
 - Maintain established rapport and session dynamics
 - Build upon existing ideas and insights rather than starting over
 - Respect user's time by avoiding repetitive questions
 
-## NEXT STEP:
+## NEXT STEP
 
 Route to appropriate workflow step based on user's continuation choice and current session state.

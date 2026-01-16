@@ -34,16 +34,19 @@ All PlantUML diagrams start and end with:
 ### Rendering Options
 
 **In GitHub Markdown** (with PlantUML server):
+
 ```markdown
 ![Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/user/repo/main/diagrams/mydiagram.puml)
 ```
 
 **In VS Code** (with PlantUML extension):
+
 - Install "PlantUML" extension
 - Create `.puml` file
 - Press `Alt+D` to preview
 
 **Command Line**:
+
 ```bash
 java -jar plantuml.jar diagram.puml
 ```
@@ -53,10 +56,12 @@ java -jar plantuml.jar diagram.puml
 ## Diagram Types Overview
 
 ### 1. Sequence Diagram
+
 **Purpose**: Show interactions between objects/actors over time
 **Best For**: API flows, user interactions, workflow steps, message passing
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 actor User
@@ -74,6 +79,7 @@ Web --> User: Dashboard
 ```
 
 **Arrow Types**:
+
 - `->` Solid arrow (synchronous call)
 - `-->` Dotted arrow (return/response)
 - `->>` Solid arrow with open head
@@ -82,6 +88,7 @@ Web --> User: Dashboard
 - `<->` Bidirectional
 
 **Advanced Features**:
+
 ```plantuml
 @startuml
 ' Activation boxes
@@ -117,6 +124,7 @@ end
 ```
 
 **When to Use**:
+
 - ✅ API request/response flows
 - ✅ User authentication workflows
 - ✅ Service-to-service communication
@@ -128,10 +136,12 @@ end
 ---
 
 ### 2. Class Diagram
+
 **Purpose**: Show static structure of classes, attributes, methods, and relationships
 **Best For**: Object-oriented design, data models, inheritance hierarchies
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 class Model_DunnageType {
@@ -159,20 +169,23 @@ Dao_DunnageType ..> Model_DunnageType : "uses"
 ```
 
 **Relationship Types**:
+
 - `-->` Association (solid arrow, "has a")
 - `<|--` Inheritance/Extends (closed arrow)
-- `<|.. ` Interface Implementation (dotted closed arrow)
+- `<|..` Interface Implementation (dotted closed arrow)
 - `o--` Aggregation (hollow diamond, "has, can exist independently")
 - `*--` Composition (filled diamond, "has, cannot exist independently")
 - `..>` Dependency (dotted arrow, "uses")
 
 **Visibility Modifiers**:
+
 - `-` Private
 - `#` Protected
 - `~` Package
 - `+` Public
 
 **When to Use**:
+
 - ✅ C# class hierarchies (models, services, DAOs)
 - ✅ Database table relationships (logical model)
 - ✅ Design patterns (Factory, Strategy, Observer)
@@ -183,10 +196,12 @@ Dao_DunnageType ..> Model_DunnageType : "uses"
 ---
 
 ### 3. Use Case Diagram
+
 **Purpose**: Show user interactions with a system
 **Best For**: Requirements gathering, feature mapping, stakeholder communication
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 left to right direction
@@ -214,12 +229,14 @@ UC2 ..> UC5 : <<includes>>
 ```
 
 **Relationship Types**:
+
 - `-->` Association (actor to use case)
 - `..>` Include (<<include>>)
 - `..|>` Extend (<<extend>>)
 - `--|>` Generalization
 
 **When to Use**:
+
 - ✅ Feature specification documents
 - ✅ User story mapping
 - ✅ Stakeholder presentations
@@ -230,10 +247,12 @@ UC2 ..> UC5 : <<includes>>
 ---
 
 ### 4. Activity Diagram
+
 **Purpose**: Show step-by-step workflows with decisions and parallel paths
 **Best For**: Business processes, algorithms, user workflows, approval flows
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 start
@@ -268,6 +287,7 @@ stop
 ```
 
 **Advanced Features**:
+
 ```plantuml
 @startuml
 start
@@ -300,6 +320,7 @@ stop
 ```
 
 **When to Use**:
+
 - ✅ Wizard workflow logic
 - ✅ Data processing pipelines
 - ✅ Decision trees
@@ -310,10 +331,12 @@ stop
 ---
 
 ### 5. Component Diagram
+
 **Purpose**: Show high-level system components and their dependencies
 **Best For**: System architecture, module dependencies, layer separation
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 package "Presentation Layer" {
@@ -348,6 +371,7 @@ database "MySQL Database" {
 ```
 
 **Component Types**:
+
 - `[]` Component
 - `()` Interface (lollipop notation)
 - `package` Grouping
@@ -356,6 +380,7 @@ database "MySQL Database" {
 - `cloud` Cloud service
 
 **When to Use**:
+
 - ✅ Software architecture documentation
 - ✅ Layer separation (MVVM, MVC, Clean Architecture)
 - ✅ Microservice boundaries
@@ -366,10 +391,12 @@ database "MySQL Database" {
 ---
 
 ### 6. State Diagram
+
 **Purpose**: Show state transitions of an object or system
 **Best For**: Workflow states, entity lifecycle, validation states
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 [*] --> ModeSelection
@@ -399,6 +426,7 @@ state Review {
 ```
 
 **Advanced Features**:
+
 ```plantuml
 @startuml
 [*] --> Active
@@ -417,6 +445,7 @@ Active --> [*] : Cancel
 ```
 
 **When to Use**:
+
 - ✅ Workflow state machines (wizard steps)
 - ✅ Entity status tracking (Draft → Published → Archived)
 - ✅ Connection states (Disconnected → Connecting → Connected)
@@ -427,10 +456,12 @@ Active --> [*] : Cancel
 ---
 
 ### 7. Entity-Relationship Diagram (ER)
+
 **Purpose**: Show database table relationships and schema
 **Best For**: Database design, data modeling, schema documentation
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 entity "dunnage_types" {
@@ -465,6 +496,7 @@ dunnage_history }o--|| dunnage_types : "classified by"
 ```
 
 **Cardinality Notation**:
+
 - `||--||` One to one
 - `}|--||` Many to one
 - `||--|{` One to many
@@ -473,6 +505,7 @@ dunnage_history }o--|| dunnage_types : "classified by"
 - `||--o{` One to zero or many
 
 **When to Use**:
+
 - ✅ Database schema documentation
 - ✅ Data model design
 - ✅ Foreign key relationships
@@ -483,10 +516,12 @@ dunnage_history }o--|| dunnage_types : "classified by"
 ---
 
 ### 8. Deployment Diagram
+
 **Purpose**: Show physical deployment of artifacts on nodes
 **Best For**: Infrastructure, server topology, network architecture
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 node "Client Workstation" {
@@ -513,6 +548,7 @@ app --> csv : SMB
 ```
 
 **When to Use**:
+
 - ✅ Infrastructure documentation
 - ✅ Deployment topology
 - ✅ Network architecture
@@ -523,10 +559,12 @@ app --> csv : SMB
 ---
 
 ### 9. Timing Diagram
+
 **Purpose**: Show timing constraints and state changes over time
 **Best For**: Real-time systems, protocol timing, performance analysis
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 robust "User Action" as USER
@@ -565,6 +603,7 @@ API is Idle
 ```
 
 **When to Use**:
+
 - ✅ Performance analysis
 - ✅ Real-time system timing
 - ✅ Protocol specifications
@@ -575,10 +614,12 @@ API is Idle
 ---
 
 ### 10. Gantt Chart
+
 **Purpose**: Show project timeline and task dependencies
 **Best For**: Project planning, milestone tracking, resource allocation
 
 **Basic Syntax**:
+
 ```plantuml
 @startgantt
 [Database Foundation] lasts 3 days
@@ -601,6 +642,7 @@ API is Idle
 ```
 
 **When to Use**:
+
 - ✅ Project schedules
 - ✅ Implementation roadmaps
 - ✅ Dependency tracking
@@ -611,10 +653,12 @@ API is Idle
 ---
 
 ### 11. Mind Map
+
 **Purpose**: Show hierarchical breakdown of concepts
 **Best For**: Brainstorming, feature decomposition, knowledge organization
 
 **Basic Syntax**:
+
 ```plantuml
 @startmindmap
 * Dunnage Receiving System
@@ -640,6 +684,7 @@ API is Idle
 ```
 
 **When to Use**:
+
 - ✅ Feature brainstorming
 - ✅ Concept organization
 - ✅ Documentation structure
@@ -650,10 +695,12 @@ API is Idle
 ---
 
 ### 12. JSON/YAML Diagram
+
 **Purpose**:  Visualize JSON/YAML data structures
 **Best For**: API payload documentation, configuration schemas
 
 **Basic Syntax**:
+
 ```plantuml
 @startjson
 {
@@ -669,6 +716,7 @@ API is Idle
 ```
 
 **When to Use**:
+
 - ✅ API documentation
 - ✅ Configuration examples
 - ✅ Data structure visualization
@@ -679,10 +727,12 @@ API is Idle
 ---
 
 ### 13. WBS (Work Breakdown Structure)
+
 **Purpose**: Show hierarchical task decomposition
 **Best For**: Project planning, task organization, deliverable tracking
 
 **Basic Syntax**:
+
 ```plantuml
 @startwbs
 * Dunnage Feature Implementation
@@ -707,6 +757,7 @@ API is Idle
 ```
 
 **When to Use**:
+
 - ✅ Project breakdown
 - ✅ Deliverable organization
 - ✅ Task hierarchy
@@ -717,10 +768,12 @@ API is Idle
 ---
 
 ### 14. Network Diagram (nwdiag)
+
 **Purpose**: Show network topology and connections
 **Best For**: Network architecture, infrastructure documentation
 
 **Basic Syntax**:
+
 ```plantuml
 @startuml
 nwdiag {
@@ -740,6 +793,7 @@ nwdiag {
 ```
 
 **When to Use**:
+
 - ✅ Network topology documentation
 - ✅ VLAN design
 - ✅ Firewall rules
@@ -750,10 +804,12 @@ nwdiag {
 ---
 
 ### 15. Salt (UI Mockup/Wireframe)
+
 **Purpose**: Show UI layout and form structure
 **Best For**:  Wireframes, form design, UI specifications
 
 **Basic Syntax**:
+
 ```plantuml
 @startsalt
 {+
@@ -779,6 +835,7 @@ nwdiag {
 ```
 
 **UI Elements**:
+
 - `[]` Button
 - `()` Radio button
 - `^` Dropdown
@@ -788,6 +845,7 @@ nwdiag {
 - `{#}` Table
 
 **When to Use**:
+
 - ✅ UI specifications in feature docs
 - ✅ Wireframe mockups
 - ✅ Form layout design

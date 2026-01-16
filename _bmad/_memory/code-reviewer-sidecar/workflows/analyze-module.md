@@ -17,6 +17,7 @@
 ### 1. Module Discovery
 
 **Scan module structure:**
+
 ```
 Module_{Name}/
 ├── Services/*.cs
@@ -31,6 +32,7 @@ Module_{Name}/
 
 **Count files per category and report to user:**
 "Found in Module_{Name}:
+
 - X Services
 - Y DAOs
 - Z ViewModels
@@ -44,21 +46,25 @@ Module_{Name}/
 **Scan for:**
 
 **SQL Injection (in DAOs):**
+
 - Raw SQL with string concatenation
 - CommandText with non-parameterized values
 - Missing stored procedure usage for MySQL operations
 
 **Path Injection:**
+
 - File paths constructed from user input
 - Missing Path.GetInvalidFileNameChars() validation
 - No sanitization before Path.Combine()
 
 **Transaction Management:**
+
 - Multi-insert operations without MySqlTransaction
 - No rollback logic on failures
 - Shipment + lines without atomic writes
 
 **Record each finding:**
+
 ```
 Issue #: {auto-increment}
 Severity: 🔴 CRITICAL
@@ -76,16 +82,19 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Input Validation:**
+
 - ReceivedSkidCount without range check (1-99)
 - User input not validated before database ops
 - Missing null/empty checks on required fields
 
 **Hardcoded Values:**
+
 - Employee numbers = empty string or hardcoded
 - API keys, passwords, connection strings (warn if found)
 - Look for pattern: `= "some_constant"` or `= 123`
 
 **Authorization:**
+
 - Service methods with no role checks
 - Operations without user permission validation
 - Missing audit trail (who did what)
@@ -97,16 +106,19 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Race Conditions:**
+
 - "Only one pending allowed" checks without DB constraint
 - Concurrent access to shared resources
 - Missing optimistic concurrency
 
 **Cascade Delete Protection:**
+
 - Deactivate operations without reference checks
 - Foreign key relationships not validated
 - Orphaned records possible
 
 **Duplicate Prevention:**
+
 - AddPart without checking Parts.Any()
 - No unique constraints mentioned
 - Duplicate entries possible
@@ -118,21 +130,25 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Magic Strings:**
+
 - Status values like "pending_po", "completed"
 - Repeated string literals
 - No constants class
 
 **Dead Code:**
+
 - Unused methods (search for references)
 - Commented-out code blocks
 - FilterParts-style orphaned methods
 
 **Code Duplication:**
+
 - Repeated Clear() logic
 - Similar validation in multiple places
 - Extract to helper method candidates
 
 **Null Checks:**
+
 - Optional parameters without default values
 - Dictionary/List access without null check
 - Missing `?.` or `??` operators
@@ -144,11 +160,13 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **N+1 Queries:**
+
 - Loops with await _dao.GetByIdAsync()
 - Individual queries instead of batch
 - GetComponentsByParentAsync in loop
 
 **Inefficient Collections:**
+
 - ObservableCollection.Clear() + foreach Add
 - LINQ Where().Count() instead of Any()
 - Take(20) hardcoded without filtering first
@@ -160,16 +178,19 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Missing Documentation:**
+
 - Public methods without /// <summary>
 - Complex algorithms without comments
 - UpdatePartSuggestions-style methods
 
 **Complex Validation:**
+
 - ValidateShipment() in ViewModel (should be in Service)
 - Business logic in wrong layer
 - God methods > 100 lines
 
 **Inconsistent Naming:**
+
 - Model_Dao_Result.Success vs .IsSuccess
 - Mixed conventions across files
 
@@ -180,16 +201,19 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Zero/Negative Values:**
+
 - QuantityPerSkid <= 0
 - ReceivedSkidCount = 0
 - Division without zero check
 
 **Large Data:**
+
 - CSV generation without row limit
 - File operations without size check
 - Memory allocation without bounds
 
 **Missing Properties:**
+
 - QuantityPerSkid not stored in line
 - Calculated fields not persisted
 
@@ -200,11 +224,13 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Workflow Improvements:**
+
 - Multi-step processes that could be streamlined
 - Redundant user actions
 - Missing shortcuts or quick actions
 
 **Form Usability:**
+
 - Long forms without sections
 - Poor tab order
 - Missing default values
@@ -216,11 +242,13 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **User Feedback:**
+
 - Long operations without progress indicators
 - Error messages too technical
 - No success confirmations
 
 **Navigation:**
+
 - Hard to find features
 - Unclear next steps
 - Missing breadcrumbs
@@ -232,11 +260,13 @@ Recommended Fix: {specific action}
 **Scan for:**
 
 **Missing Logging:**
+
 - Catch blocks without logger calls
 - User actions not logged
 - No audit trail
 
 **Exception Details:**
+
 - HandleErrorAsync without prior LogErrorAsync
 - Generic error messages
 - Stack traces not logged
@@ -248,6 +278,7 @@ Recommended Fix: {specific action}
 **Hardcoded Values to Extract:**
 
 Scan for patterns and record:
+
 ```
 Setting Category: {File System Paths|Validation Rules|etc}
 Setting Name: {MaxCsvLines}
@@ -258,6 +289,7 @@ Recommended Range: {100-100000}
 ```
 
 **Track:**
+
 - File paths (Path.Combine patterns)
 - Numeric constants (> 10)
 - String literals in validation
@@ -285,6 +317,7 @@ Recommended Range: {100-100000}
 **Use template:** `.github/templates/code-review/CODE_REVIEW.template.md`
 
 **Structure:**
+
 ```markdown
 # {Module} - Code Review Report
 
@@ -325,6 +358,7 @@ Recommended Range: {100-100000}
 ### 16. Update Memories
 
 **Record in memories.md:**
+
 - Module analyzed
 - CODE_REVIEW version (V1)
 - Total issues count
@@ -338,6 +372,7 @@ Recommended Range: {100-100000}
 ### 17. Present Results to User
 
 **Report:**
+
 ```
 ✅ Analysis Complete for {Module}
 
@@ -371,14 +406,17 @@ Run [D]ocs command to generate service instruction files.
 ## Error Handling
 
 **If module not found:**
+
 - List available Module_* folders
 - Ask user to confirm module name
 
 **If module empty:**
+
 - Report "No analyzable code found"
 - Ask if user wants to analyze anyway (Views/Models only)
 
 **If analysis fails:**
+
 - Log error to memories.md
 - Report specific failure to user
 - Offer to retry or skip problematic file

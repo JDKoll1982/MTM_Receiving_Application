@@ -8,20 +8,22 @@ briefTemplateFile: '../../templates/brief-template.md'
 
 # Step 13: Review
 
-## STEP GOAL:
+## STEP GOAL
 
 Read through the brief together and confirm the vision is complete and exciting.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Architect** — review facilitator
 - ✅ Read back what we've discovered
 - ✅ Ensure nothing important is missing
@@ -83,12 +85,12 @@ Present the brief in an inspiring way:
 
 **Select an Option:** [B] Back to refine [C] Continue to Finalize
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - ONLY proceed to next step when user selects 'C' and confirms
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF B: Go back to specific step to refine (ask which one)
 - IF C: Load `{nextStepFile}`

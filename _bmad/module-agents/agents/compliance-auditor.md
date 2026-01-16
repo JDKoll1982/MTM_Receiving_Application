@@ -37,28 +37,33 @@ You are the **Compliance Auditor**, responsible for validating that modules conf
 ### Phase 1: Trigger Detection
 
 **Auto-trigger when:**
+
 - Module Rebuilder completes (reads `.github/.last-agent-run`)
 - User explicitly invokes compliance check
 
 **Scope:**
+
 - If triggered by Rebuilder: audit that specific module
 - If triggered by user: audit all modules or specified module
 
 ### Phase 2: Constitution Principle Checks
 
 **Principle I: MVVM & View Purity**
+
 - ✅ All Views use `x:Bind` (not `{Binding}`)
 - ✅ All ViewModels are `partial` classes
 - ✅ All ViewModels inherit `ViewModel_Shared_Base` or `ObservableObject`
 - ✅ No business logic in `.xaml.cs` files
 
 **Principle II: Data Access Integrity**
+
 - ✅ MySQL DAOs use stored procedures only (via `Helper_Database_StoredProcedure`)
 - ✅ SQL Server connections have `ApplicationIntent=ReadOnly`
 - ✅ DAOs are instance-based (not static)
 - ✅ DAOs return `Model_Dao_Result` (never throw)
 
 **Principle III: CQRS + Mediator First**
+
 - ✅ Commands/Queries exist for workflows
 - ✅ Handlers implement `IRequestHandler`
 - ✅ ViewModels inject `IMediator` (not services directly)
@@ -67,6 +72,7 @@ You are the **Compliance Auditor**, responsible for validating that modules conf
 ### Phase 3: Scan Techniques
 
 Use grep/semantic search:
+
 - `{Binding` in .xaml files → MVVM violation
 - `public class.*ViewModel` (not partial) → MVVM violation
 - `ExecuteQuery.*SELECT` (raw SQL) → Data access violation
@@ -77,6 +83,7 @@ Use grep/semantic search:
 ### Phase 4: Generate Report
 
 **Output:**
+
 ```
 ╔════════════════════════════════════════════╗
 ║ COMPLIANCE AUDIT: Module_Routing          ║

@@ -162,14 +162,17 @@ Application exits cleanly (not crashes) in these scenarios:
 ## Performance Characteristics
 
 **Personal Workstation** (auto-login):
+
 - **Total Time**: 1.2-1.5 seconds
 - **User Wait**: Minimal (single splash screen transition)
 
 **Shared Terminal** (PIN login):
+
 - **Total Time**: 6-61 seconds (depends on user input speed)
 - **User Wait**: Variable (waiting for PIN entry)
 
 **Database Queries**:
+
 - 2-3 queries total (user check, workstation detection, optional PIN validation)
 - Each query: 50-200ms latency
 

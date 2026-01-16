@@ -13,13 +13,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 2: Product Vision Discovery
 
-## STEP GOAL:
+## STEP GOAL
 
 Conduct comprehensive product vision discovery to define the core problem, solution, and unique value proposition through collaborative analysis.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -27,7 +27,7 @@ Conduct comprehensive product vision discovery to define the core problem, solut
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -35,21 +35,21 @@ Conduct comprehensive product vision discovery to define the core problem, solut
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative discovery tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on product vision, problem, and solution discovery
 - 🚫 FORBIDDEN to generate vision without real user input and collaboration
 - 💬 Approach: Systematic discovery from problem to solution
 - 📋 COLLABORATIVE discovery, not assumption-based vision crafting
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Generate vision content collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to proceed without user confirmation through menu
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Current document and frontmatter from step 1, input documents already loaded in memory
 - Focus: This will be the first content section appended to the document
@@ -154,14 +154,14 @@ Prepare the following structure for document append:
 
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} with current vision content to dive deeper and refine
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to positioning and differentiation
 - IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2], then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -176,7 +176,7 @@ ONLY WHEN [C continue option] is selected and [vision content finalized and save
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Clear problem statement that resonates with target users
 - Compelling solution vision that addresses the core problem
@@ -186,7 +186,7 @@ ONLY WHEN [C continue option] is selected and [vision content finalized and save
 - Content properly appended to document when C selected
 - Frontmatter updated with stepsCompleted: [1, 2]
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Accepting vague problem statements without pushing for specificity
 - Creating solution vision without fully understanding the problem

@@ -19,6 +19,7 @@
 ### Examples by Severity
 
 **Info**:
+
 ```csharp
 "Receiving label created successfully"
 "Database connection established"
@@ -26,6 +27,7 @@
 ```
 
 **Warning**:
+
 ```csharp
 "Database operation took 2.5 seconds (threshold: 1 second)"
 "Vendor name not found, using default: 'Unknown'"
@@ -33,6 +35,7 @@
 ```
 
 **Error**:
+
 ```csharp
 "Failed to insert receiving line: Part ID is required"
 "Database connection failed: Server not responding"
@@ -40,6 +43,7 @@
 ```
 
 **Critical**:
+
 ```csharp
 "Database schema version mismatch: Expected 1.2, Found 1.0"
 "Configuration file corrupted or missing"
@@ -47,6 +51,7 @@
 ```
 
 **Fatal**:
+
 ```csharp
 "Out of memory: Cannot allocate buffer"
 "Critical system resource unavailable"
@@ -58,12 +63,14 @@
 ### User-Facing Messages
 
 Messages shown in dialogs MUST:
+
 1. **Be clear and concise**: Avoid technical jargon
 2. **Explain what happened**: "Unable to save receiving label"
 3. **Suggest next steps**: "Please check all required fields and try again"
 4. **Avoid blame**: "An error occurred" not "You entered invalid data"
 
 **Good Examples**:
+
 ```
 "Unable to connect to database. Please check your network connection and try again."
 "The Part ID field is required. Please enter a valid Part ID."
@@ -71,6 +78,7 @@ Messages shown in dialogs MUST:
 ```
 
 **Bad Examples**:
+
 ```
 "NullReferenceException in Dao_ReceivingLine.InsertReceivingLineAsync()"
 "Error: 0x80004005"
@@ -80,12 +88,14 @@ Messages shown in dialogs MUST:
 ### Log Messages
 
 Messages in log files SHOULD:
+
 1. **Include technical details**: Exception types, stack traces
 2. **Provide context**: PartID, PONumber, employee number
 3. **Include timestamps**: Automatic in LoggingUtility
 4. **Show severity**: Automatic in LoggingUtility
 
 **Example Log Entry**:
+
 ```
 [2025-12-15 16:30:45.123] [ERROR] [Dao_ReceivingLine.InsertReceivingLineAsync]
 Message: Failed to insert receiving line: Part ID is required
@@ -138,6 +148,7 @@ catch (Exception ex)
 ### Never Swallow Exceptions
 
 ❌ **Bad**:
+
 ```csharp
 try
 {
@@ -150,6 +161,7 @@ catch
 ```
 
 ✅ **Good**:
+
 ```csharp
 try
 {
@@ -187,6 +199,7 @@ catch (TransientException ex)
 ### What to Log
 
 **Always Log**:
+
 - All exceptions (Error, Critical, Fatal)
 - Database operations (with execution time)
 - User actions (Info level)
@@ -194,6 +207,7 @@ catch (TransientException ex)
 - Configuration changes (Info)
 
 **Optionally Log**:
+
 - Successful operations (Info)
 - Performance metrics (Warning if slow)
 - Debug information (only in Development)
@@ -201,6 +215,7 @@ catch (TransientException ex)
 ### What NOT to Log
 
 **Never Log**:
+
 - Passwords or sensitive credentials
 - Credit card numbers
 - Personal Identification Numbers (SSNs, etc.)
@@ -219,6 +234,7 @@ catch (TransientException ex)
 ### When to Show ContentDialog
 
 Show dialogs for:
+
 - Validation errors (user needs to correct input)
 - Operation failures requiring user acknowledgment
 - Confirmation prompts
@@ -227,6 +243,7 @@ Show dialogs for:
 ### When NOT to Show Dialog
 
 Don't show dialogs for:
+
 - Background operation failures (log only)
 - Automatic retry attempts (log only)
 - Info-level messages (use status bar or notifications)
@@ -250,6 +267,7 @@ await dialog.ShowAsync();
 ### Automatic Retry
 
 For transient errors (network, database locks):
+
 ```csharp
 // Helper_Database_StoredProcedure automatically retries:
 // - 3 attempts max
@@ -260,6 +278,7 @@ For transient errors (network, database locks):
 ### Graceful Degradation
 
 When optional features fail:
+
 ```csharp
 try
 {
@@ -275,6 +294,7 @@ catch (Exception ex)
 ### User Retry
 
 For user-correctable errors:
+
 ```csharp
 var dialog = new ContentDialog
 {
@@ -297,6 +317,7 @@ if (result == ContentDialogResult.Primary)
 ### Required Test Cases
 
 For each operation, test:
+
 1. **Happy path**: Everything works
 2. **Validation errors**: Required fields missing, invalid data
 3. **Database unavailable**: Connection fails
@@ -306,6 +327,7 @@ For each operation, test:
 ### Manual Test Procedures
 
 See `Tests/Phase1_Manual_Tests.cs` for:
+
 - Valid data insertion
 - Invalid data handling
 - Database unavailable scenarios
@@ -314,6 +336,7 @@ See `Tests/Phase1_Manual_Tests.cs` for:
 ## Examples
 
 See existing implementations:
+
 - `Services/Database/Service_ErrorHandler.cs` - Error handling
 - `Services/Database/LoggingUtility.cs` - Logging implementation
 - `Data/Receiving/Dao_ReceivingLine.cs` - DAO error patterns

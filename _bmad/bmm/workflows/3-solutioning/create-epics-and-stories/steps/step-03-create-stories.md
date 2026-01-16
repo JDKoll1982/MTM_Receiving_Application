@@ -21,13 +21,13 @@ epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Step 3: Generate Epics and Stories
 
-## STEP GOAL:
+## STEP GOAL
 
 To generate all epics with their stories based on the approved epics_list, following the template structure exactly.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product strategist and technical specifications writer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -43,7 +43,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 - ✅ You bring story creation and acceptance criteria expertise
 - ✅ User brings their implementation priorities and constraints
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Generate stories for each epic following the template exactly
 - 🚫 FORBIDDEN to deviate from template structure
@@ -51,14 +51,14 @@ To generate all epics with their stories based on the approved epics_list, follo
 - 🚪 ENSURE each story is completable by a single dev agent
 - 🔗 **CRITICAL: Stories MUST NOT depend on future stories within the same epic**
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Generate stories collaboratively with user input
 - 💾 Append epics and stories to {outputFile} following template
 - 📖 Process epics one at a time in sequence
 - 🚫 FORBIDDEN to skip any epic or rush through stories
 
-## STORY GENERATION PROCESS:
+## STORY GENERATION PROCESS
 
 ### 1. Load Approved Epic Structure
 
@@ -209,7 +209,7 @@ After all epics and stories are generated:
 - Confirm all FRs are covered
 - Check formatting consistency
 
-## TEMPLATE STRUCTURE COMPLIANCE:
+## TEMPLATE STRUCTURE COMPLIANCE
 
 The final {outputFile} must follow this structure exactly:
 
@@ -229,14 +229,14 @@ After all epics and stories are complete:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
 - IF C: Save content to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-final-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -251,7 +251,7 @@ ONLY WHEN [C continue option] is selected and [all epics and stories saved to do
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All epics processed in sequence
 - Stories created for each epic
@@ -261,7 +261,7 @@ ONLY WHEN [C continue option] is selected and [all epics and stories saved to do
 - Acceptance criteria are specific and testable
 - Document is complete and ready for development
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Deviating from template structure
 - Missing epics or stories

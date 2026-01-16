@@ -8,6 +8,7 @@
 ## Quick Validation Steps
 
 ### Step 1: Verify Build Success
+
 ```powershell
 dotnet build MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 ```
@@ -19,6 +20,7 @@ dotnet build MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csp
 ---
 
 ### Step 2: Run All Tests
+
 ```powershell
 dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter "FullyQualifiedName~Dao_ReceivingLine_Tests"
 ```
@@ -26,6 +28,7 @@ dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.cspr
 **Expected:** 30 tests passed, 0 failed
 
 **Test Breakdown:**
+
 - Constructor Tests: 3
 - Database Connection Failure Tests: 1
 - Parameter Handling Tests: 6
@@ -43,6 +46,7 @@ dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.cspr
 **Convention:** `[MethodName]_[Scenario]_[ExpectedBehavior]`
 
 **Examples:**
+
 - ✅ `Constructor_ValidConnectionString_CreatesInstance`
 - ✅ `InsertReceivingLineAsync_InvalidConnectionString_ReturnsFailureResult`
 - ✅ `InsertReceivingLineAsync_NullPartID_ReturnsResult`
@@ -54,6 +58,7 @@ dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.cspr
 ### Step 4: Verify Assertions Are Strong
 
 **Check for weak assertions:**
+
 ```csharp
 // ❌ BAD - Only checks not null
 result.Should().NotBeNull();
@@ -65,6 +70,7 @@ result.ErrorMessage.Should().NotBeNullOrEmpty();
 ```
 
 **Key Tests with Strong Assertions:**
+
 - ✅ `InsertReceivingLineAsync_InvalidConnectionString_ReturnsFailureResult`
   - Checks `Success = false`
   - Checks `ErrorMessage` populated
@@ -86,7 +92,9 @@ result.ErrorMessage.Should().NotBeNullOrEmpty();
 > DAOs MUST NEVER throw exceptions (return failure results)"
 
 **Tests Validating This:**
+
 - ✅ `InsertReceivingLineAsync_DatabaseException_ReturnsFailureNotThrow`
+
   ```csharp
   await act.Should().NotThrowAsync("DAO must return failure result instead of throwing exception");
   ```
@@ -98,6 +106,7 @@ result.ErrorMessage.Should().NotBeNullOrEmpty();
 ### Step 6: Verify No Real Database Required
 
 **Check connection strings used:**
+
 - `"Server=localhost;Database=test_db;User Id=test;Password=test;"` - For valid constructor test
 - `"Server=invalid;Database=nonexistent;"` - For failure tests
 - `"Server=invalid;"` - For parameter tests
@@ -112,11 +121,13 @@ result.ErrorMessage.Should().NotBeNullOrEmpty();
 ### Step 7: Verify Test Independence
 
 **Requirements:**
+
 - Tests don't share state
 - Tests can run in any order
 - Tests can run in parallel
 
 **Validation:**
+
 - ✅ No static fields used
 - ✅ Each test creates its own DAO instance
 - ✅ Each test uses isolated test data (via `CreateValidReceivingLine()`)
@@ -131,6 +142,7 @@ result.ErrorMessage.Should().NotBeNullOrEmpty();
 **Arrange-Act-Assert pattern in all tests:**
 
 **Example:**
+
 ```csharp
 [Fact]
 public async Task InsertReceivingLineAsync_NullPartID_ReturnsResult()
@@ -155,6 +167,7 @@ public async Task InsertReceivingLineAsync_NullPartID_ReturnsResult()
 ### Step 9: Verify Parameter Coverage
 
 **DAO Parameters from Implementation:**
+
 ```csharp
 new MySqlParameter("@p_Quantity", line.Quantity),
 new MySqlParameter("@p_PartID", line.PartID ?? string.Empty),
@@ -169,6 +182,7 @@ new MySqlParameter("@p_PartDescription", line.PartDescription ?? string.Empty),
 ```
 
 **Test Coverage:**
+
 - ✅ Quantity - `InsertReceivingLineAsync_DifferentQuantities_HandlesAllValues`
 - ✅ PartID - `InsertReceivingLineAsync_NullPartID_ReturnsResult`
 - ✅ PONumber - `InsertReceivingLineAsync_DifferentPONumbers_HandlesAllValues`
@@ -187,6 +201,7 @@ new MySqlParameter("@p_PartDescription", line.PartDescription ?? string.Empty),
 ### Step 10: Verify Edge Cases
 
 **Edge cases tested:**
+
 - ✅ Null values for optional parameters
 - ✅ Empty string connection
 - ✅ Invalid connection string
@@ -274,23 +289,28 @@ Duration: < 1 second
 ### If Tests Fail
 
 **Check 1: Build Errors**
+
 ```powershell
 dotnet build MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 ```
+
 - Ensure FluentAssertions package is installed
 - Ensure project references main application
 
 **Check 2: Test Discovery**
+
 - Open Test Explorer in Visual Studio
 - Click refresh icon
 - Ensure tests appear in tree
 
 **Check 3: Individual Test Failure**
+
 - Run failing test in isolation
 - Check error message
 - Verify DAO implementation hasn't changed
 
 **Check 4: All Tests Skipped**
+
 - Verify test project configuration in Configuration Manager
 - Ensure "Build" checkbox is checked for Debug|x64
 - See TESTFIX.md for detailed resolution
@@ -300,22 +320,28 @@ dotnet build MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csp
 ## Next Steps
 
 ### 1. Run Tests in CI/CD
+
 Add to your CI pipeline:
+
 ```yaml
 - name: Run Unit Tests
   run: dotnet test --filter "FullyQualifiedName~Dao_ReceivingLine_Tests" --logger "console;verbosity=detailed"
 ```
 
 ### 2. Add Integration Tests
+
 Create `Dao_ReceivingLine_IntegrationTests.cs` with real database tests (see TEST_FIX_SUMMARY.md for guidance).
 
 ### 3. Monitor Test Coverage
+
 ```powershell
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
 ### 4. Apply Same Pattern to Other DAOs
+
 Use this test file as a template for:
+
 - `Dao_ReceivingLoad_Tests.cs`
 - `Dao_User_Tests.cs`
 - `Dao_VolvoPart_Tests.cs`

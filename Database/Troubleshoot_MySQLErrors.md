@@ -4,6 +4,7 @@
 
 **Symptoms:**
 When running deployment scripts (e.g., `Deploy-Database-GUI.ps1` or `Deploy-Database.ps1`), you encounter an error like:
+
 ```
 ERROR 1062 (23000) at line X in file: '.../Database/TestData/XX_seed_data.sql': Duplicate entry 'VALUE' for key 'idx_unique_key_name'
 ```
@@ -19,15 +20,18 @@ Use `INSERT IGNORE INTO` or `ON DUPLICATE KEY UPDATE` instead of simple `INSERT 
 **Example Fix:**
 
 Change:
+
 ```sql
 INSERT INTO table_name (code, description) VALUES ('VAL', 'Value');
 ```
 
 To:
+
 ```sql
 INSERT IGNORE INTO table_name (code, description) VALUES ('VAL', 'Value');
 ```
 
 **Affected Files:**
+
 - `Database/TestData/*.sql`
 - `Database/Schemas/*.sql` (if they contain initialization data)

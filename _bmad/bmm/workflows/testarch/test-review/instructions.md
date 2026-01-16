@@ -361,7 +361,7 @@ Bonus Points:
 Quality Score: max(0, min(100, Starting Score - Violations + Bonus))
 ```
 
-3. **Quality Grade**:
+1. **Quality Grade**:
    - **90-100**: Excellent (A+)
    - **80-89**: Good (A)
    - **70-79**: Acceptable (B)

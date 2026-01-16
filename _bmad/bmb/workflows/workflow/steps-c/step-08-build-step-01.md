@@ -18,13 +18,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 8: Build Step 01 (and 01b if Continuable)
 
-## STEP GOAL:
+## STEP GOAL
 
 To build the first step file(s) for the new workflow - step-01-init.md and step-01b-continue.md if the workflow is continuable - including any supporting files these steps need.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -32,7 +32,7 @@ To build the first step file(s) for the new workflow - step-01-init.md and step-
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -40,21 +40,21 @@ To build the first step file(s) for the new workflow - step-01-init.md and step-
 - ✅ You bring implementation expertise and best practices
 - ✅ User brings their specific requirements and design approvals
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on building step-01 (and 01b if continuable)
 - 🚫 FORBIDDEN to build other steps yet - use step-09 for those
 - 💬 Generate step content collaboratively based on approved design
 - 🚪 CREATE files in the correct target location
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load standards to understand step type patterns
 - 💾 Document what was created in the plan
 - 📖 Update frontmatter stepsCompleted to add this step when completed
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved design from step 6 specifies step-01's purpose and type
 - Load step type patterns to understand init step structure
@@ -68,6 +68,7 @@ To build the first step file(s) for the new workflow - step-01-init.md and step-
 ### 1. Load Standards for Init Steps
 
 **Load {stepTypePatterns}** to understand the init step patterns:
+
 - Init Step (Non-Continuable) - For single-session workflows
 - Init Step (Continuable) - For multi-session workflows
 - Init Step (With Input Discovery) - If workflow needs prior documents
@@ -81,10 +82,12 @@ To build the first step file(s) for the new workflow - step-01-init.md and step-
 From the approved design, determine:
 
 **Is the workflow continuable?**
+
 - **YES:** Use Init Step (Continuable) pattern
 - **NO:** Use Init Step (Non-Continuable) pattern
 
 **Does the workflow need input discovery?**
+
 - **YES:** Use Init Step (With Input Discovery) pattern
 - **NO:** Standard init pattern
 
@@ -97,6 +100,7 @@ Confirm with user: "Based on your design, step-01 will be [continuable/non-conti
 Create `steps-c/step-01-init.md` with:
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-01-init'
@@ -123,6 +127,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ```
 
 **Content Structure:**
+
 ```markdown
 # Step 1: [Step Name From Design]
 
@@ -194,6 +199,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ```
 
 **Customize content based on:**
+
 - The step's goal from the design
 - The workflow's role and persona
 - Whether it's continuable
@@ -205,6 +211,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 **If workflow is continuable**, create `steps-c/step-01b-continue.md`:
 
 **Frontmatter:**
+
 ```yaml
 ---
 name: 'step-01b-continue'
@@ -220,6 +227,7 @@ nextStepOptions:
 ```
 
 **Content:**
+
 ```markdown
 # Step 1b: Continue Workflow
 
@@ -282,6 +290,7 @@ Load {subprocessPatterns} and implement the subprocess optimization:
    - Pattern 4: Parallel execution of independent operations
 
 2. **Add subprocess-specific Step-Specific Rules:**
+
    ```markdown
    ### Step-Specific Rules:
    - 🎯 [Brief description of which pattern applies]
@@ -335,13 +344,13 @@ Append to {workflowPlanFile}:
 
 Display: **Step 01 Complete - Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Next Step Build
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
@@ -356,7 +365,7 @@ ONLY WHEN C is selected and build is saved to plan will you load {nextStepFile} 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - step-01-init.md created with proper structure
 - step-01b-continue.md created (if continuable)
@@ -366,7 +375,7 @@ ONLY WHEN C is selected and build is saved to plan will you load {nextStepFile} 
 - Supporting files created (if needed)
 - Build documented in plan
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Creating step without following template
 - Missing continuation support for continuable workflow

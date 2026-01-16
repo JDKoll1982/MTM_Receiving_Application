@@ -7,9 +7,11 @@
 ## Discovery Patterns
 
 ### Pattern 1: Prior Workflow Output
+
 **Use when:** Workflow is part of a sequence (e.g., PRD → Architecture → Epics)
 
 **Example:** BMM module pipeline - each of these are a workflow with many steps:
+
 ```
 brainstorming → research → brief → PRD → UX → architecture → epics → sprint-planning
 ```
@@ -17,16 +19,19 @@ brainstorming → research → brief → PRD → UX → architecture → epics �
 Each workflow checks for output from prior workflow(s).
 
 ### Pattern 2: Module Folder Search
+
 **Use when:** Documents stored in known project location
 
 **Example:** Manager review workflow searches `{project_folder}/employee-notes/`
 
 ### Pattern 3: User-Specified Paths
+
 **Use when:** User provides document locations
 
 **Example:** Tax workflow asks for financial statement paths
 
 ### Pattern 4: Pattern-Based Discovery
+
 **Use when:** Search by file naming pattern
 
 **Example:** Find all `*-brief.md` files in `{planning_artifacts}/`
@@ -38,6 +43,7 @@ Each workflow checks for output from prior workflow(s).
 **When:** Step 1 (init) or Step 2 (discovery)
 
 **Frontmatter:**
+
 ```yaml
 ---
 # Input discovery variables
@@ -52,6 +58,7 @@ inputFilePatterns:           # File patterns to match
 ```
 
 **Discovery Logic:**
+
 ```markdown
 ## 1. Check for Known Prior Workflow Outputs
 
@@ -88,6 +95,7 @@ Add to {inputDocuments} array in output frontmatter
 ## Required vs Optional Inputs
 
 ### Required Inputs
+
 Workflow cannot proceed without these.
 
 **Example:** Architecture workflow requires PRD
@@ -110,6 +118,7 @@ Please provide the path to your PRD, or run the PRD workflow first."
 ```
 
 ### Optional Inputs
+
 Workflow can proceed without these, but user may include.
 
 **Example:** UX workflow can use research docs if available
@@ -137,6 +146,7 @@ Include any? (None required to proceed)"
 **For modules with sequential workflows:**
 
 **Frontmatter in workflow.md:**
+
 ```yaml
 ---
 ## INPUT FROM PRIOR WORKFLOFS
@@ -151,6 +161,7 @@ Include any? (None required to proceed)"
 ```
 
 **Step 1 discovery:**
+
 ```markdown
 ## 1. Discover Prior Workflow Outputs
 
@@ -209,6 +220,7 @@ Selected: prd-my-project.md, ux-research.md"
 ```
 
 **Track in frontmatter:**
+
 ```yaml
 ---
 inputDocuments:
@@ -260,6 +272,7 @@ inputFilePatterns:
 ## Validation Checklist
 
 For input discovery:
+
 - [ ] Required inputs defined in step frontmatter
 - [ ] Search paths defined (module variables or patterns)
 - [ ] User confirmation before using documents

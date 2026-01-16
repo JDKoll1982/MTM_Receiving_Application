@@ -10,9 +10,9 @@ The `IService_UserSessionManager` handles the current user's context, including 
 
 ## Key Responsibilities
 
-1.  **Current User**: Stores the `Model_User` object for the currently logged-in employee.
-2.  **Session Timeout**: Monitors idle time and automatically logs out the user after a configured period (e.g., 15 minutes).
-3.  **Activity Tracking**: Resets the timeout timer on user interaction (mouse/keyboard).
+1. **Current User**: Stores the `Model_User` object for the currently logged-in employee.
+2. **Session Timeout**: Monitors idle time and automatically logs out the user after a configured period (e.g., 15 minutes).
+3. **Activity Tracking**: Resets the timeout timer on user interaction (mouse/keyboard).
 
 ## Usage
 

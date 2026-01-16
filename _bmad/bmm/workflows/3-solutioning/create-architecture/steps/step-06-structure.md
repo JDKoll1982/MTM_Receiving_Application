@@ -1,6 +1,6 @@
 # Step 6: Project Structure & Boundaries
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -13,7 +13,7 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 🗺️ Create complete project tree, not generic placeholders
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -30,25 +30,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to evaluate project structure trade-offs
 - **C (Continue)**: Save the project structure and proceed to validation
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All previous architectural decisions are complete
 - Implementation patterns and consistency rules are defined
 - Focus on physical project structure and component boundaries
 - Map requirements to specific files and directories
 
-## YOUR TASK:
+## YOUR TASK
 
 Define the complete project structure and architectural boundaries based on all decisions made, creating a concrete implementation guide for AI agents.
 
-## PROJECT STRUCTURE SEQUENCE:
+## PROJECT STRUCTURE SEQUENCE
 
 ### 1. Analyze Requirements Mapping
 
@@ -235,7 +235,7 @@ Create explicit mapping from project requirements to specific files/directories:
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Project Structure & Boundaries
@@ -323,7 +323,7 @@ Show the generated project structure content and present choices:
 
 ### 8. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with current project structure
 - Process enhanced organizational insights that come back
@@ -331,7 +331,7 @@ Show the generated project structure content and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with project structure context
 - Process collaborative insights about organization trade-offs
@@ -339,17 +339,17 @@ Show the generated project structure content and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6]`
 - Load `./step-07-validation.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Complete project tree defined with all files and directories
 ✅ All architectural boundaries clearly documented
@@ -359,7 +359,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Creating generic placeholder structure instead of specific, complete tree
 ❌ Not mapping requirements to specific files and directories
@@ -372,7 +372,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-07-validation.md` to validate architectural coherence and completeness.
 

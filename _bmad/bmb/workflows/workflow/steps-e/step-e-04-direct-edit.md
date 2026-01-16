@@ -22,34 +22,34 @@ intentVsPrescriptive: '../data/intent-vs-prescriptive-spectrum.md'
 
 # Edit Step 4: Direct Edit
 
-## STEP GOAL:
+## STEP GOAL
 
 Apply direct user-requested changes to the workflow, loading relevant standards and checking for non-compliance during editing.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER make changes without user approval
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on user-requested changes
 - 🚫 FORBIDDEN to make changes without approval
 - 💬 Check for non-compliance while editing
 - 📋 Load relevant standards for each change type
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Work through each requested change
 - 💾 Document each change in edit plan
 - 📖 Load appropriate standards for each change type
 - 🚫 IF non-compliance found: offer to fix before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Edit plan contains direct change goals
 - Focus: Apply user's requested changes
@@ -71,29 +71,37 @@ Read `{editPlan}` to review direct change goals from step 2.
 #### A. Identify Change Type and Load Standards
 
 **For workflow.md changes:**
+
 - Load {architecture}
 
 **For step file changes:**
+
 - Load {stepFileRules}
 - Load {stepTypePatterns}
 - Load {intentVsPrescriptive}
 
 **For frontmatter changes:**
+
 - Load {frontmatterStandards}
 
 **For menu changes:**
+
 - Load {menuHandlingStandards}
 
 **For output/template changes:**
+
 - Load {outputFormatStandards}
 
 **For data file changes:**
+
 - Load {csvDataFileStandards}
 
 **For workflow type changes:**
+
 - Load {workflowTypeCriteria}
 
 **For discovery/input changes:**
+
 - Load {inputDiscoveryStandards}
 
 #### B. Load Target File and Check Compliance
@@ -121,7 +129,7 @@ Before I apply your change, I noticed this file is not fully compliant with {sta
 2. **[C]ontinue anyway** - Apply your change without fixing
 3. **[E]xplain more** - More details about the issue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF F: Fix compliance first, then proceed to apply change
 - IF C: Document user accepted risk, proceed with change
@@ -165,6 +173,7 @@ Wait for user approval.
 ```
 
 **Update editPlan:**
+
 ```markdown
 ### Direct Changes Applied
 
@@ -229,10 +238,12 @@ Wait for user approval.
 **Modified:** {count}
 
 **Compliance Issues Found During Editing:** {count}
+
 - Fixed: {count}
 - User accepted risk: {count}
 
 **Files Modified:**
+
 - {file1}
 - {file2}
 - etc."
@@ -241,7 +252,7 @@ Wait for user approval.
 
 Display: "**Direct Edits Applied. Select an Option:** [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Update editPlan stepsCompleted, then load, read entirely, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
@@ -254,7 +265,7 @@ ONLY WHEN all direct changes are applied (or documented) and user confirms, will
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All requested changes presented to user
 - Relevant standards loaded for each change
@@ -264,7 +275,7 @@ ONLY WHEN all direct changes are applied (or documented) and user confirms, will
 - Changes applied correctly
 - Edit plan updated
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading relevant standards
 - Not checking compliance before editing

@@ -1,6 +1,6 @@
 # Step 1B: UX Design Workflow Continuation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -12,25 +12,25 @@
 - 🚪 RESUME workflow from exact point where it was interrupted
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking action
 - 💾 Keep existing frontmatter `stepsCompleted` values
 - 📖 Only load documents that were already tracked in `inputDocuments`
 - 🚫 FORBIDDEN to modify content completed in previous steps
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter are already loaded
 - Previous context = complete document + existing frontmatter
 - Input documents listed in frontmatter were already processed
 - Last completed step = `lastStep` value from frontmatter
 
-## YOUR TASK:
+## YOUR TASK
 
 Resume the UX design workflow from where it was left off, ensuring smooth continuation.
 
-## CONTINUATION SEQUENCE:
+## CONTINUATION SEQUENCE
 
 ### 1. Analyze Current State
 
@@ -85,14 +85,14 @@ After presenting current progress, ask:
 
 [C] Continue to Step {nextStepNumber}"
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All previous input documents successfully reloaded
 ✅ Current workflow state accurately analyzed and presented
 ✅ User confirms understanding of progress
 ✅ Correct next step identified and prepared for loading
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Discovering new input documents instead of reloading existing ones
 ❌ Modifying content from already completed steps
@@ -120,7 +120,7 @@ Would you like me to:
 
 What would be most helpful?"
 
-## NEXT STEP:
+## NEXT STEP
 
 After user confirms they're ready to continue, load the appropriate next step file based on the `lastStep` value from frontmatter.
 

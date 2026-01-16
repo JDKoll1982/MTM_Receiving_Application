@@ -65,10 +65,12 @@ Generated: 2026-01-11
 ## Summary of Naming Conventions
 
 ### Prefixes
+
 - **Old Convention**: Mixed (`label_table_`, `vw_`, no prefix)
 - **New Convention**: Consistent module-based naming
 
 ### Table Naming Pattern
+
 - **Format**: `{module}_{purpose}` or `{module}_{entity}_{qualifier}`
 - **Examples**:
   - `auth_users` (module: auth, entity: users)
@@ -76,10 +78,12 @@ Generated: 2026-01-11
   - `settings_routing_personal` (module: settings, scope: routing, level: personal)
 
 ### View Naming Pattern
+
 - **Old**: `vw_{module}_{purpose}`
 - **New**: `view_{module}_{purpose}`
 
 ### Key Changes
+
 1. **Module-first naming**: All tables now start with their module name
 2. **Consistent suffixes**:
    - `_data` for transactional tables
@@ -94,12 +98,14 @@ Generated: 2026-01-11
 ⚠️ **Important**: Any stored procedures, application code, or queries referencing the old table names must be updated to use the new names.
 
 ### Files to Check
+
 - `Database/StoredProcedures/**/*.sql`
 - `Module_*/Data/Dao_*.cs`
 - `Module_*/Models/Model_*.cs`
 - Any direct SQL queries in the application
 
 ### Verification Query
+
 ```sql
 -- Check for references to old table names in stored procedures
 SELECT ROUTINE_NAME, ROUTINE_DEFINITION

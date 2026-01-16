@@ -12,13 +12,13 @@ domainComplexityData: '../data/domain-complexity.csv'
 
 # Step 8: Domain Compliance Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate domain-specific requirements are present for high-complexity domains (Healthcare, Fintech, GovTech, etc.), ensuring regulatory and compliance requirements are properly documented.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -26,7 +26,7 @@ Validate domain-specific requirements are present for high-complexity domains (H
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -34,14 +34,14 @@ Validate domain-specific requirements are present for high-complexity domains (H
 - ✅ You bring domain expertise and compliance knowledge
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on domain-specific compliance requirements
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Conditional validation based on domain classification
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Check classification.domain from PRD frontmatter
 - 💬 If low complexity (general): Skip detailed checks
@@ -50,7 +50,7 @@ Validate domain-specific requirements are present for high-complexity domains (H
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file with frontmatter classification, validation report
 - Focus: Domain compliance only (conditional on domain complexity)
@@ -67,6 +67,7 @@ Load and read the complete file at:
 `{domainComplexityData}` (../data/domain-complexity.csv)
 
 This CSV contains:
+
 - Domain classifications and complexity levels (high/medium/low)
 - Required special sections for each domain
 - Key concerns and requirements for regulated industries
@@ -76,6 +77,7 @@ Internalize this data - it drives which domains require special compliance secti
 ### 2. Extract Domain Classification
 
 From PRD frontmatter, extract:
+
 - `classification.domain` - what domain is this PRD for?
 
 **If no domain classification found:**
@@ -84,12 +86,14 @@ Treat as "general" (low complexity) and proceed to step 4
 ### 2. Determine Domain Complexity
 
 **Low complexity domains (skip detailed checks):**
+
 - General
 - Consumer apps (standard e-commerce, social, productivity)
 - Content websites
 - Business tools (standard)
 
 **High complexity domains (require special sections):**
+
 - Healthcare / Healthtech
 - Fintech / Financial services
 - GovTech / Public sector
@@ -106,6 +110,7 @@ Treat as "general" (low complexity) and proceed to step 4
 Based on {domain} requirements, check PRD for:
 
 **Healthcare:**
+
 - Clinical Requirements section
 - Regulatory Pathway (FDA, HIPAA, etc.)
 - Safety Measures
@@ -113,6 +118,7 @@ Based on {domain} requirements, check PRD for:
 - Patient safety considerations
 
 **Fintech:**
+
 - Compliance Matrix (SOC2, PCI-DSS, GDPR, etc.)
 - Security Architecture
 - Audit Requirements
@@ -120,17 +126,20 @@ Based on {domain} requirements, check PRD for:
 - Financial transaction handling
 
 **GovTech:**
+
 - Accessibility Standards (WCAG 2.1 AA, Section 508)
 - Procurement Compliance
 - Security Clearance requirements
 - Data residency requirements
 
 **Other regulated domains:**
+
 - Check for domain-specific regulatory sections
 - Compliance requirements
 - Special considerations
 
 For each required section:
+
 - Is it present in PRD?
 - Is it adequately documented?
 - Note any gaps
@@ -138,6 +147,7 @@ For each required section:
 Return compliance matrix with presence/adequacy assessment."
 
 **Graceful degradation (if no Task tool):**
+
 - Manually check for required sections based on domain
 - List present sections and missing sections
 - Assess adequacy of documentation
@@ -145,6 +155,7 @@ Return compliance matrix with presence/adequacy assessment."
 ### 5. For Low-Complexity Domains: Skip Detailed Checks
 
 Append to validation report:
+
 ```markdown
 ## Domain Compliance Validation
 
@@ -219,7 +230,7 @@ Immediately load and execute {nextStepFile} (step-v-09-project-type-validation.m
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Domain classification extracted correctly
 - Complexity assessed appropriately
@@ -231,7 +242,7 @@ Immediately load and execute {nextStepFile} (step-v-09-project-type-validation.m
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking domain classification before proceeding
 - Performing detailed checks on low complexity domains

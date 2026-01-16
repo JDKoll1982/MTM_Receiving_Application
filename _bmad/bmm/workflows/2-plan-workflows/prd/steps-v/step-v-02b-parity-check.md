@@ -10,13 +10,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 2B: Document Parity Check
 
-## STEP GOAL:
+## STEP GOAL
 
 Analyze non-standard PRD and identify gaps to achieve BMAD PRD parity, presenting user with options for how to proceed.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Analyze non-standard PRD and identify gaps to achieve BMAD PRD parity, presentin
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -32,21 +32,21 @@ Analyze non-standard PRD and identify gaps to achieve BMAD PRD parity, presentin
 - ✅ You bring BMAD PRD standards expertise and gap analysis
 - ✅ User brings domain knowledge and PRD context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on analyzing gaps and estimating parity effort
 - 🚫 FORBIDDEN to perform other validation checks in this step
 - 💬 Approach: Systematic gap analysis with clear recommendations
 - 🚪 This is an optional branch step - user chooses next action
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze each BMAD PRD section for gaps
 - 💾 Append parity analysis to validation report
 - 📖 Present options and await user decision
 - 🚫 FORBIDDEN to proceed without user selection
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Non-standard PRD from step 2, validation report in progress
 - Focus: Parity analysis only - what's missing, what's needed
@@ -62,33 +62,39 @@ Analyze non-standard PRD and identify gaps to achieve BMAD PRD parity, presentin
 For each of the 6 BMAD PRD core sections, analyze:
 
 **Executive Summary:**
+
 - Does PRD have vision/overview?
 - Is problem statement clear?
 - Are target users identified?
 - Gap: [What's missing or incomplete]
 
 **Success Criteria:**
+
 - Are measurable goals defined?
 - Is success clearly defined?
 - Gap: [What's missing or incomplete]
 
 **Product Scope:**
+
 - Is scope clearly defined?
 - Are in-scope items listed?
 - Are out-of-scope items listed?
 - Gap: [What's missing or incomplete]
 
 **User Journeys:**
+
 - Are user types/personas identified?
 - Are user flows documented?
 - Gap: [What's missing or incomplete]
 
 **Functional Requirements:**
+
 - Are features/capabilities listed?
 - Are requirements structured?
 - Gap: [What's missing or incomplete]
 
 **Non-Functional Requirements:**
+
 - Are quality attributes defined?
 - Are performance/security/etc. requirements documented?
 - Gap: [What's missing or incomplete]
@@ -98,11 +104,13 @@ For each of the 6 BMAD PRD core sections, analyze:
 For each missing or incomplete section, estimate:
 
 **Effort Level:**
+
 - Minimal - Section exists but needs minor enhancements
 - Moderate - Section missing but content exists elsewhere in PRD
 - Significant - Section missing, requires new content creation
 
 **Total Parity Effort:**
+
 - Based on individual section estimates
 - Classify overall: Quick / Moderate / Substantial effort
 
@@ -173,12 +181,12 @@ Your PRD is missing {count} of 6 core BMAD PRD sections. The overall effort to r
 **[E] Exit & Review** - Exit validation and review parity report
 **[S] Save & Exit** - Save parity report and exit
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - Only proceed based on user selection
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C (Continue): Display "Proceeding with validation..." then load, read entire file, then execute {nextStepFile}
 - IF E (Exit): Display parity summary and exit validation
@@ -189,7 +197,7 @@ Your PRD is missing {count} of 6 core BMAD PRD sections. The overall effort to r
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All 6 BMAD PRD sections analyzed for gaps
 - Effort estimates provided for each gap
@@ -198,7 +206,7 @@ Your PRD is missing {count} of 6 core BMAD PRD sections. The overall effort to r
 - Clear summary presented to user
 - User can choose to continue validation, exit, or save report
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not analyzing all 6 sections systematically
 - Missing effort estimates

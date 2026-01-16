@@ -114,6 +114,7 @@ end note
 **Purpose**: Represents a Volvo shipment header record in the volvo_label_data table.
 
 **Properties**:
+
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | ShipmentID | int | Yes | Primary key (auto-increment) |
@@ -129,6 +130,7 @@ end note
 | ModifiedDate | DateTime | No | Timestamp of last modification |
 
 **Validation Rules** (enforced by FluentValidation):
+
 - ShipmentDate cannot be in the future
 - At least one line item required for completion
 - ShipmentNumber must be unique per ShipmentDate
@@ -142,6 +144,7 @@ end note
 **Purpose**: Represents individual parts in a shipment (volvo_label_parts_data table).
 
 **Properties**:
+
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | LineID | int | Yes | Primary key (auto-increment) |
@@ -156,6 +159,7 @@ end note
 | PieceDifference | int | No | CalculatedPieceCount - ExpectedPieceCount (computed) |
 
 **Validation Rules**:
+
 - PartNumber must exist in volvo_master_data
 - ReceivedSkidCount > 0
 - If HasDiscrepancy = true, then ExpectedSkidCount and DiscrepancyNote required
@@ -170,6 +174,7 @@ end note
 **Purpose**: Master data for Volvo parts (volvo_master_data table).
 
 **Properties**:
+
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | PartID | int | Yes | Primary key (auto-increment) |
@@ -182,6 +187,7 @@ end note
 | ModifiedDate | DateTime | No | Timestamp of last modification |
 
 **Validation Rules**:
+
 - PartNumber must be unique
 - QuantityPerSkid > 0
 - Cannot deactivate part if referenced by pending shipments
@@ -195,6 +201,7 @@ end note
 **Purpose**: Bill-of-materials (BOM) components for parts (volvo_master_data_components table).
 
 **Properties**:
+
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | ComponentID | int | Yes | Primary key (auto-increment) |
@@ -204,6 +211,7 @@ end note
 | IsActive | bool | Yes | Active/inactive flag (default true) |
 
 **Validation Rules**:
+
 - PartID must exist in volvo_master_data
 - QuantityPerParent > 0
 - ComponentPartNumber + PartID must be unique (no duplicate components per part)
@@ -217,6 +225,7 @@ end note
 **Purpose**: Email notification data structure (not persisted to database).
 
 **Properties**:
+
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | Recipients | List<Model_EmailRecipient> | Yes | Email recipient list (from settings) |
@@ -233,6 +242,7 @@ end note
 ### VolvoShipmentStatus (Enum)
 
 **Values**:
+
 - `Pending` (0): Shipment is in progress, can be edited
 - `Completed` (1): Shipment is finalized, generates labels and email
 
@@ -243,6 +253,7 @@ end note
 ### Command DTOs
 
 #### AddPartToShipmentCommand
+
 ```csharp
 public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
 {
@@ -256,6 +267,7 @@ public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
 ```
 
 #### CompleteShipmentCommand
+
 ```csharp
 public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
 {
@@ -278,6 +290,7 @@ public record ShipmentLineDto
 ```
 
 #### SavePendingShipmentCommand
+
 ```csharp
 public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
 {
@@ -290,6 +303,7 @@ public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
 ```
 
 #### UpdateShipmentCommand
+
 ```csharp
 public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
 {
@@ -303,6 +317,7 @@ public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
 ```
 
 #### AddVolvoPartCommand
+
 ```csharp
 public record AddVolvoPartCommand : IRequest<Model_Dao_Result<int>>
 {
@@ -312,6 +327,7 @@ public record AddVolvoPartCommand : IRequest<Model_Dao_Result<int>>
 ```
 
 #### UpdateVolvoPartCommand
+
 ```csharp
 public record UpdateVolvoPartCommand : IRequest<Model_Dao_Result>
 {
@@ -322,6 +338,7 @@ public record UpdateVolvoPartCommand : IRequest<Model_Dao_Result>
 ```
 
 #### DeactivateVolvoPartCommand
+
 ```csharp
 public record DeactivateVolvoPartCommand : IRequest<Model_Dao_Result>
 {
@@ -330,6 +347,7 @@ public record DeactivateVolvoPartCommand : IRequest<Model_Dao_Result>
 ```
 
 #### ImportPartsCsvCommand
+
 ```csharp
 public record ImportPartsCsvCommand : IRequest<Model_Dao_Result<ImportPartsCsvResult>>
 {
@@ -349,6 +367,7 @@ public record ImportPartsCsvResult
 ### Query DTOs
 
 #### GetInitialShipmentDataQuery
+
 ```csharp
 public record GetInitialShipmentDataQuery : IRequest<Model_Dao_Result<InitialShipmentData>>
 {
@@ -362,6 +381,7 @@ public record InitialShipmentData
 ```
 
 #### GetPendingShipmentQuery
+
 ```csharp
 public record GetPendingShipmentQuery : IRequest<Model_Dao_Result<Model_VolvoShipment>>
 {
@@ -370,6 +390,7 @@ public record GetPendingShipmentQuery : IRequest<Model_Dao_Result<Model_VolvoShi
 ```
 
 #### SearchVolvoPartsQuery
+
 ```csharp
 public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPart>>>
 {
@@ -379,6 +400,7 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 ```
 
 #### GenerateLabelCsvQuery
+
 ```csharp
 public record GenerateLabelCsvQuery : IRequest<Model_Dao_Result<string>>
 {
@@ -387,6 +409,7 @@ public record GenerateLabelCsvQuery : IRequest<Model_Dao_Result<string>>
 ```
 
 #### FormatEmailDataQuery
+
 ```csharp
 public record FormatEmailDataQuery : IRequest<Model_Dao_Result<Model_VolvoEmailData>>
 {
@@ -395,6 +418,7 @@ public record FormatEmailDataQuery : IRequest<Model_Dao_Result<Model_VolvoEmailD
 ```
 
 #### GetRecentShipmentsQuery
+
 ```csharp
 public record GetRecentShipmentsQuery : IRequest<Model_Dao_Result<List<Model_VolvoShipment>>>
 {
@@ -403,6 +427,7 @@ public record GetRecentShipmentsQuery : IRequest<Model_Dao_Result<List<Model_Vol
 ```
 
 #### GetShipmentHistoryQuery
+
 ```csharp
 public record GetShipmentHistoryQuery : IRequest<Model_Dao_Result<List<Model_VolvoShipment>>>
 {
@@ -413,6 +438,7 @@ public record GetShipmentHistoryQuery : IRequest<Model_Dao_Result<List<Model_Vol
 ```
 
 #### GetShipmentDetailQuery
+
 ```csharp
 public record GetShipmentDetailQuery : IRequest<Model_Dao_Result<ShipmentDetail>>
 {
@@ -427,6 +453,7 @@ public record ShipmentDetail
 ```
 
 #### GetAllVolvoPartsQuery
+
 ```csharp
 public record GetAllVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPart>>>
 {
@@ -435,6 +462,7 @@ public record GetAllVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 ```
 
 #### GetPartComponentsQuery
+
 ```csharp
 public record GetPartComponentsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPartComponent>>>
 {
@@ -443,6 +471,7 @@ public record GetPartComponentsQuery : IRequest<Model_Dao_Result<List<Model_Volv
 ```
 
 #### ExportPartsCsvQuery
+
 ```csharp
 public record ExportPartsCsvQuery : IRequest<Model_Dao_Result<string>>
 {
@@ -451,6 +480,7 @@ public record ExportPartsCsvQuery : IRequest<Model_Dao_Result<string>>
 ```
 
 #### ExportShipmentsQuery
+
 ```csharp
 public record ExportShipmentsQuery : IRequest<Model_Dao_Result<string>>
 {
@@ -528,18 +558,21 @@ deactivate ViewModel
 ## Migration Strategy
 
 ### Phase 1: Request/Response DTOs
+
 1. Create `Module_Volvo/Requests/Commands/` folder
 2. Create `Module_Volvo/Requests/Queries/` folder
 3. Implement all command/query record classes
 4. Unit test DTO serialization/deserialization
 
 ### Phase 2: Validators
+
 1. Create `Module_Volvo/Validators/` folder
 2. Implement AbstractValidator<TCommand> for each of 8 commands
 3. Map existing validation rules from services/ViewModels
 4. Unit test all validation rules with edge cases
 
 ### Phase 3: Handlers
+
 1. Create `Module_Volvo/Handlers/Commands/` folder
 2. Create `Module_Volvo/Handlers/Queries/` folder
 3. Implement handlers delegating to legacy services initially
@@ -547,12 +580,14 @@ deactivate ViewModel
 5. Integration test full pipeline (handler → service → DAO → DB)
 
 ### Phase 4: ViewModel Refactoring
+
 1. Inject `IMediator` instead of services
 2. Replace service calls with `_mediator.Send(command/query)`
 3. Keep legacy services with [Obsolete] attribute
 4. Test ViewModel commands with mocked IMediator
 
 ### Phase 5: Service Deprecation
+
 1. Move business logic from services to handlers
 2. Mark Service_Volvo and Service_VolvoMasterData as [Obsolete]
 3. Remove service registrations from App.xaml.cs (after full migration)
@@ -562,12 +597,14 @@ deactivate ViewModel
 ## Data Integrity Constraints
 
 **Database Constraints** (enforced by stored procedures):
+
 - `volvo_label_data.ShipmentNumber` + `ShipmentDate` = UNIQUE
 - `volvo_master_data.PartNumber` = UNIQUE
 - `volvo_label_parts_data.ShipmentID` + `PartNumber` = UNIQUE
 - `volvo_master_data_components.PartID` + `ComponentPartNumber` = UNIQUE
 
 **Application Constraints** (enforced by FluentValidation):
+
 - ShipmentDate <= DateTimeOffset.Now
 - ReceivedSkidCount > 0
 - QuantityPerSkid > 0
@@ -575,6 +612,7 @@ deactivate ViewModel
 - Cannot deactivate part if referenced by pending shipments
 
 **Referential Integrity** (enforced by stored procedures):
+
 - ShipmentLine.PartNumber must exist in volvo_master_data
 - PartComponent.PartID must exist in volvo_master_data
 
@@ -583,11 +621,13 @@ deactivate ViewModel
 ## Performance Considerations
 
 **Query Optimization**:
+
 - `GetAllVolvoPartsQuery`: Add index on `IsActive` column if not exists (verify with DBA)
 - `SearchVolvoPartsQuery`: Use `LIKE 'searchText%'` (left-anchored) for index utilization
 - `GetShipmentHistoryQuery`: Use date range indexes on `ShipmentDate`
 
 **Caching Opportunities** (future enhancement):
+
 - `GetAllVolvoPartsQuery`: Cache active parts for 5 minutes (IMemoryCache)
 - `GetInitialShipmentDataQuery`: Cache next shipment number for 1 minute
 
@@ -596,20 +636,24 @@ deactivate ViewModel
 ## Compliance Verification
 
 ✅ **Principle II (Data Access Integrity)**:
+
 - All database operations via stored procedures (sp_volvo_*)
 - DAOs return Model_Dao_Result<T>
 - No schema changes
 
 ✅ **Principle III (CQRS/MediatR)**:
+
 - All read operations = Query handlers
 - All write operations = Command handlers
 - IRequest<Model_Dao_Result<T>> pattern
 
 ✅ **Principle V (Validation)**:
+
 - FluentValidation validators for all commands
 - ValidationBehavior executes automatically
 
 ✅ **Principle VII (Library-First)**:
+
 - MediatR for CQRS
 - FluentValidation for validation
 - Mapster for DTO mapping (recommended)

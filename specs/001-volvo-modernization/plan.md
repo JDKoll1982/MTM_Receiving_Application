@@ -28,6 +28,7 @@ Refactor Module_Volvo from legacy service-based architecture to CQRS pattern usi
 **Initial Check (Pre-Research):**
 
 ✅ **MVVM Purity** (Principle I):
+
 - ViewModels are partial ✅ (all 3 ViewModels verified)
 - ViewModels inherit ViewModel_Shared_Base ✅
 - [ObservableProperty] and [RelayCommand] used ✅
@@ -35,38 +36,45 @@ Refactor Module_Volvo from legacy service-based architecture to CQRS pattern usi
 - ✅ No business logic in code-behind detected
 
 ✅ **Data Access Integrity** (Principle II):
+
 - All DAOs instance-based ✅ (Dao_VolvoShipment, Dao_VolvoShipmentLine, Dao_VolvoPart, Dao_VolvoPartComponent, Dao_VolvoSettings verified)
 - All DAOs return Model_Dao_Result<T> ✅
 - MySQL operations use stored procedures only ✅ (sp_volvo_* verified)
 - No Infor Visual write operations N/A (module uses MySQL only)
 
 ❌ **CQRS/MediatR Usage** (Principle III) - **PRIMARY VIOLATION**:
+
 - ViewModels inject IService_Volvo and IService_VolvoMasterData directly ❌
 - No IMediator injection found ❌
 - No query/command handlers exist (Handlers/Commands/ and Handlers/Queries/ folders empty) ❌
 - **This is the core violation this modernization addresses**
 
 ✅ **DI Registration** (Principle IV):
+
 - Services registered in App.xaml.cs ✅
 - Constructor injection pattern used ✅
 - Module boundaries respected ✅
 
 ❌ **Validation/Logging/Error Handling** (Principle V):
+
 - IService_ErrorHandler used ✅
 - Serilog structured logging via Module_Core ✅
 - ❌ VIOLATION: No FluentValidation validators exist (validation embedded in services/ViewModels)
 
 ✅ **Security/Session Discipline** (Principle VI):
+
 - Authentication patterns followed ✅ (IService_UserSessionManager injected)
 - No secrets in code ✅
 
 ✅ **Library-First Approach** (Principle VII):
+
 - Uses approved libraries (MediatR, FluentValidation already in Module_Core) ✅
 - Ready to leverage Mapster, Ardalis.GuardClauses, Bogus for modernization ✅
 
 **GATE RESULT: ❌ FAIL - 3 violations identified (expected for modernization)**
 
 **Violations to Resolve:**
+
 1. Principle III: Refactor ViewModels to use IMediator (11 query handlers + 8 command handlers)
 2. Principle I: Migrate 20 `{Binding}` occurrences to `x:Bind`
 3. Principle V: Create 8 FluentValidation validators for command handlers
@@ -80,17 +88,20 @@ Refactor Module_Volvo from legacy service-based architecture to CQRS pattern usi
 - **Principle V (Validation)**: 8 FluentValidation validators designed (one per command) ✅
 
 **Contracts Defined**:
+
 - ✅ 9 command DTOs (requests/responses)
 - ✅ 12 query DTOs (requests/responses)
 - ✅ Shared DTOs (ShipmentLineDto, InitialShipmentData, ShipmentDetail, ImportPartsCsvResult)
 
 **Data Model Documented**:
+
 - ✅ Entity Relationship Diagram (PlantUML)
 - ✅ 6 domain entities with validation rules
 - ✅ Data flow diagrams for CQRS pipeline
 - ✅ Migration strategy (5 phases)
 
 **Quickstart Guide Created**:
+
 - ✅ Step-by-step implementation guide
 - ✅ First query handler example (GetInitialShipmentDataQuery)
 - ✅ ViewModel refactoring example

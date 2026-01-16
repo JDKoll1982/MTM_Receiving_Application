@@ -10,13 +10,13 @@ subprocessPatterns: '../data/subprocess-optimization-patterns.md'
 
 # Validation Step 8b: Subprocess Optimization Analysis
 
-## STEP GOAL:
+## STEP GOAL
 
 To identify opportunities for subprocess optimization throughout the workflow - reducing context load, improving performance, and enabling massive operations that would otherwise exceed context limits.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - ANALYZE EVERY FILE IN ITS OWN SUBPROCESS
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,20 +24,20 @@ To identify opportunities for subprocess optimization throughout the workflow - 
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess/subagent/tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Analyze EVERY step file for subprocess optimization - each file in its own subprocess
 - 🚫 DO NOT skip any file - DO NOT BE LAZY
 - 💬 Load {subprocessPatterns} in subprocess performing some action required to understand patterns deeply with examples (if subprocess available), else load in main context
 - 🚪 This identifies context-saving and performance-optimizing opportunities
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze each step file in its own subprocess - deep analysis of subprocess potential
 - 💾 Subprocesses must identify optimization patterns and return findings to parent for aggregation
 - 📖 Aggregate findings into validation report before loading next step
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Three patterns: grep/regex across files, per-file deep analysis, data file operations, parallel execution
 - **Context-saving goal**: Return ONLY key findings to parent, not full file contents
@@ -51,6 +51,7 @@ To identify opportunities for subprocess optimization throughout the workflow - 
 **First, understand the subprocess optimization patterns by loading {subprocessPatterns}:**
 
 **If subprocess capability available:**
+
 ```markdown
 Launch a subprocess that:
 1. Loads {subprocessPatterns}
@@ -59,6 +60,7 @@ Launch a subprocess that:
 ```
 
 **If subprocess unavailable:**
+
 ```markdown
 Load {subprocessPatterns} in main context
 # Larger context but still functional - demonstrates graceful fallback
@@ -78,6 +80,7 @@ Load {subprocessPatterns} in main context
 4. Returns specific, actionable suggestions to parent
 
 **Subprocess gets full context:**
+
 - The step file being analyzed
 - The subprocess-optimization-patterns.md reference (all examples and patterns)
 - Returns only findings to parent (context savings!)
@@ -93,6 +96,7 @@ Load {subprocessPatterns} in main context
 **Pattern 4: Parallel execution** - Independent operations that could run simultaneously. Suggest: "Run in parallel subprocesses to reduce execution time"
 
 **RETURN FORMAT (example structure, adapt as needed):**
+
 ```json
 {
   "step_file": "step-02-*.md",
@@ -160,7 +164,7 @@ Then load, read entire file, execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - EVERY step file analyzed in its own subprocess
 - ALL optimization opportunities identified
@@ -168,7 +172,7 @@ Then load, read entire file, execute {nextStepFile}.
 - Prioritized recommendations with context savings
 - Report saved, next step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not analyzing every file
 - Skipping opportunity identification

@@ -11,6 +11,7 @@
 The Routing Module enables receiving personnel to generate internal routing labels for packages and materials. Labels direct items to specific recipients (employees/departments) and are exported to CSV files for printing or external system integration.
 
 **Key Features:**
+
 - Wizard-based label creation (3-step process)
 - PO validation via Infor Visual ERP integration
 - Manual entry for non-PO packages ("OTHER" workflow)
@@ -46,6 +47,7 @@ The Routing Module enables receiving personnel to generate internal routing labe
 ### 🗄️ Database Integration
 
 **MySQL (`mtm_receiving_application`)** - Full CRUD:
+
 - `routing_label_data` - Label master data
 - `routing_recipients` - Recipient directory
 - `routing_history` - Edit audit trail
@@ -53,6 +55,7 @@ The Routing Module enables receiving personnel to generate internal routing labe
 - `routing_po_alternatives` - Non-PO package types
 
 **SQL Server (Infor Visual - `MTMFG`)** - READ ONLY:
+
 - `po` - Purchase order validation
 - `po_detail` - PO line items
 - Warehouse: `'002'`
@@ -119,9 +122,11 @@ Step 3: Review & Create
 ## Data Models
 
 ### Model_RoutingLabel
+
 Primary entity representing a routing label.
 
 **Key Properties:**
+
 - `PONumber` - PO number or "OTHER"
 - `LineNumber` - Line item or "0" for OTHER
 - `RecipientId` - FK to routing_recipients
@@ -129,18 +134,22 @@ Primary entity representing a routing label.
 - `CsvExported` - Export status flag
 
 ### Model_RoutingRecipient
+
 Employee/department receiving packages.
 
 **Key Properties:**
+
 - `Name` - Full name or department name
 - `Location` - Physical location (e.g., "Building 2")
 - `Department` - Organizational unit
 - `IsActive` - Soft delete flag
 
 ### Model_RoutingOtherReason
+
 Reasons for non-PO packages.
 
 **Examples:**
+
 - RETURNED (customer returns)
 - SAMPLE (vendor samples)
 - REWORK (internal rework items)
@@ -150,12 +159,14 @@ Reasons for non-PO packages.
 ## CSV Export
 
 ### File Format
+
 ```csv
 PO,Line,Part,Quantity,Recipient,Location,Date
 12345,001,WIDGET-A,5,John Doe,Building 2,2026-01-06 14:30:00
 ```
 
 ### Export Logic
+
 1. Try network path (configurable in `appsettings.json`)
 2. Retry up to 3 times with 500ms delay
 3. Fallback to local path if network fails
@@ -163,6 +174,7 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 5. **Concurrency Safety**: Semaphore-based file locking (Issue #3 fix)
 
 ### Configuration
+
 ```json
 {
   "RoutingModule": {
@@ -183,26 +195,31 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 ## Key ViewModels
 
 ### RoutingWizardContainerViewModel
+
 - Orchestrates 3-step wizard
 - Holds shared state (selected PO line, recipient)
 - Navigation between steps
 
 ### RoutingWizardStep1ViewModel
+
 - PO validation via Infor Visual
 - OTHER mode toggle
 - PO line selection
 
 ### RoutingWizardStep2ViewModel
+
 - Quick Add recipient buttons (personalized)
 - Real-time search/filter
 - Recipient selection
 
 ### RoutingWizardStep3ViewModel
+
 - Review selected data
 - Final confirmation
 - Trigger label creation
 
 ### RoutingEditModeViewModel
+
 - Label list (paginated)
 - Inline editing
 - History viewing
@@ -213,12 +230,14 @@ PO,Line,Part,Quantity,Recipient,Location,Date
 ## Integration Points
 
 ### Infor Visual (SQL Server)
+
 **Purpose**: PO validation and line item retrieval
 **Access**: Read-only (`ApplicationIntent=ReadOnly`)
 **Tables**: `po`, `po_detail`
 **Warehouse Filter**: `site_ref = '002'`
 
 **Example Query:**
+
 ```sql
 SELECT po_num, po_line, part_id, qty_ordered, qty_received
 FROM po_detail
@@ -226,8 +245,10 @@ WHERE po_num = @PoNumber AND site_ref = '002'
 ```
 
 ### Usage Tracking
+
 **Purpose**: Personalize Quick Add buttons based on employee history
 **Logic**:
+
 - If employee has 20+ labels: Show their top 5 recipients
 - Otherwise: Show system-wide top 5 recipients
 - Increments on every label creation
@@ -237,16 +258,19 @@ WHERE po_num = @PoNumber AND site_ref = '002'
 ## Error Handling
 
 ### DAO Layer
+
 - Returns `Model_Dao_Result` or `Model_Dao_Result<T>`
 - Never throws exceptions
 - Wraps database errors in result objects
 
 ### Service Layer
+
 - Catches DAO exceptions
 - Logs via `IService_LoggingUtility`
 - Returns `Model_Dao_Result` to ViewModels
 
 ### ViewModel Layer
+
 - Try/catch around service calls
 - Uses `IService_ErrorHandler` for user-facing errors
 - Sets `StatusMessage` for UI feedback
@@ -259,14 +283,17 @@ WHERE po_num = @PoNumber AND site_ref = '002'
 See [CODE_REVIEW.md](CODE_REVIEW.md) for complete list.
 
 ### High Priority
+
 - **Issue #2**: Transaction handling for label creation + CSV export (data consistency)
 - **Issue #7**: Remove hardcoded employee number placeholders (security risk)
 
 ### Medium Priority
+
 - **Issue #13**: Implement TODO features (GetOtherReasonsAsync, session service)
 - **Issue #18**: Batch insert for label history (performance)
 
 ### Planned Features (Not Yet Implemented)
+
 - Label printing integration
 - Barcode generation
 - Batch label creation
@@ -316,16 +343,19 @@ See [CODE_REVIEW.md](CODE_REVIEW.md) for complete list.
 ## Testing
 
 ### Unit Tests
+
 - Service layer validation logic
 - ViewModel command logic
 - Model validation
 
 ### Integration Tests
+
 - DAO database operations
 - CSV file export
 - Infor Visual connectivity
 
 ### Manual Test Scenarios
+
 1. Create label with valid PO
 2. Create OTHER label
 3. Edit existing label
@@ -338,6 +368,7 @@ See [CODE_REVIEW.md](CODE_REVIEW.md) for complete list.
 ## Dependencies
 
 ### NuGet Packages
+
 - `CommunityToolkit.Mvvm` - MVVM helpers
 - `Microsoft.Extensions.DependencyInjection` - DI container
 - `Microsoft.Extensions.Configuration` - Settings management
@@ -345,6 +376,7 @@ See [CODE_REVIEW.md](CODE_REVIEW.md) for complete list.
 - `Microsoft.Data.SqlClient` - SQL Server access (Infor Visual)
 
 ### Module Dependencies
+
 - `Module_Core` - Shared services (logging, error handling, base classes)
 - `Module_Shared` - Shared models and enums
 
@@ -398,6 +430,7 @@ Module_Routing/
 **Issue Tracking**: CODE_REVIEW.md (current findings)
 
 **For Questions:**
+
 - Review inline XML documentation in source files
 - Check `specs/001-routing-module/` for original specifications
 - See `.github/instructions/` for coding standards

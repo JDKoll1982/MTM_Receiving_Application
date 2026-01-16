@@ -1,10 +1,12 @@
 # GitHub MCP — Instructions (Any Project)
 
 This covers both:
+
 - **Remote GitHub MCP** (hosted): easiest
 - **Local GitHub MCP via Docker**: maximum control
 
 ## Remote GitHub MCP (recommended)
+
 ```jsonc
 {
   "servers": {
@@ -17,6 +19,7 @@ This covers both:
 ```
 
 ## Local GitHub MCP via Docker (PAT required)
+
 ```jsonc
 {
   "inputs": [
@@ -45,16 +48,20 @@ This covers both:
 ```
 
 ## Safe defaults
+
 - Use fine-grained PATs, short expirations
 - Prefer read-only permissions unless automation is required
 
 ## Common use cases
+
 - Repo browsing, file retrieval, history/commit audit
 - Issue/PR automation
 - Assigning Copilot to issues
 
 ## Tools in this environment
+
 Local:
+
 - `mcp_githublocal_get_file_contents`
 - `mcp_githublocal_create_or_update_file`
 - `mcp_githublocal_list_commits`
@@ -64,10 +71,12 @@ Local:
 - `mcp_githublocal_add_comment_to_pending_review`
 
 Remote:
+
 - `mcp_githubremote_create_or_update_file`
 - `mcp_githubremote_assign_copilot_to_issue`
 
 ## Example prompts
+
 - “List my open PRs and summarize what changed.”
 - “Create a branch, update docs, and open a PR.”
 - “Assign Copilot to issue #123.”

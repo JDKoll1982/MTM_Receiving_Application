@@ -23,7 +23,7 @@ The application includes a set of standard converters in the `Converters/` names
 
 ## Usage in XAML
 
-1.  **Resource Definition**: Converters are typically defined as global resources in `App.xaml` or local resources in the Page/Window.
+1. **Resource Definition**: Converters are typically defined as global resources in `App.xaml` or local resources in the Page/Window.
 
     ```xml
     <Application.Resources>
@@ -32,7 +32,7 @@ The application includes a set of standard converters in the `Converters/` names
     </Application.Resources>
     ```
 
-2.  **Binding**: Use the `Converter` property in `x:Bind` or `Binding`.
+2. **Binding**: Use the `Converter` property in `x:Bind` or `Binding`.
 
     ```xml
     <StackPanel Visibility="{x:Bind ViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -44,10 +44,10 @@ The application includes a set of standard converters in the `Converters/` names
 
 ## Creating New Converters
 
-1.  Implement `IValueConverter`.
-2.  Implement `Convert` (Source -> Target).
-3.  Implement `ConvertBack` (Target -> Source) if TwoWay binding is needed (often `NotImplementedException` for OneWay).
-4.  Add `[ValueConversion(typeof(Source), typeof(Target))]` attribute (optional but good practice).
+1. Implement `IValueConverter`.
+2. Implement `Convert` (Source -> Target).
+3. Implement `ConvertBack` (Target -> Source) if TwoWay binding is needed (often `NotImplementedException` for OneWay).
+4. Add `[ValueConversion(typeof(Source), typeof(Target))]` attribute (optional but good practice).
 
 ```csharp
 public class MyConverter : IValueConverter

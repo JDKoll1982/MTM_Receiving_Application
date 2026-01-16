@@ -142,6 +142,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 ### 2. Major Containers & Modules
 
 #### 2.1. Application Core Container
+
 - **Main Application (`App.xaml.cs`)**:
   - Uses `HostBuilder` to configure dependency injection.
   - Registers core services (`IService_ErrorHandler`, `IService_LoggingUtility`, `IService_Dispatcher`, `IService_Window`, etc.).
@@ -150,6 +151,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
   - Registers ViewModels for main window, shared components, and module-specific views.
 
 #### 2.2. Modules
+
 - **Module_Core**:
   - Contains shared utilities, converters, base view models, and core services.
   - Provides infrastructure for UI focus management, logging, dispatching, and configuration.
@@ -170,12 +172,14 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 ### 3. Core Components & Their Responsibilities
 
 #### 3.1. Dependency Injection & Service Registry
+
 - **`Host.CreateDefaultBuilder()`** in `App.xaml.cs`:
   - Registers singleton services for data access, core utilities, and domain workflows.
   - Uses factory methods to inject dependencies (e.g., DAOs with connection strings).
   - Ensures singleton, stateless data access objects for efficiency.
 
 #### 3.2. Data Access Layer (DAO)
+
 - **DAO Classes** (e.g., `Dao_DunnageType`, `Dao_ReceivingLine`, `Dao_VolvoShipment`):
   - Encapsulate database interactions via stored procedures.
   - Use `Helper_Database_StoredProcedure` for executing commands.
@@ -183,6 +187,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
   - Follow a consistent pattern: parameter validation, stored procedure execution, error handling.
 
 #### 3.3. Business Logic & Workflow Services
+
 - **Workflow Services** (e.g., `IService_DunnageWorkflow`, `IService_Receiving`, `IRoutingService`):
   - Manage multi-step processes, state transitions, and validation.
   - Expose methods like `AdvanceToNextStepAsync()`, `GoToStep()`, `StartWorkflowAsync()`.
@@ -194,6 +199,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
   - Enable decoupled, testable interactions with UI and threading.
 
 #### 3.4. ViewModels
+
 - **MVVM Pattern**:
   - Each view (Page/UserControl) has a corresponding ViewModel.
   - ViewModels contain observable properties (`[ObservableProperty]`) for data binding.
@@ -207,6 +213,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
   - ViewModels implement `IResettableViewModel` for resettable UI states.
 
 #### 3.5. Views
+
 - **XAML Views** (Page/UserControl):
   - Bind to ViewModels via DataContext.
   - Use event handlers for lifecycle events (`OnLoaded`, `OnNavigatedTo`).
@@ -216,12 +223,14 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 ### 4. Data Flow & Control Flow
 
 #### 4.1. Initialization
+
 - Application startup (`App.xaml.cs`) configures DI container.
 - Main window initializes, sets up navigation.
 - Main ViewModel (`Main_CarrierDeliveryLabelViewModel`) manages top-level navigation.
 - Module-specific ViewModels load data via services (e.g., `LoadTypesAsync`, `LoadPartsAsync`).
 
 #### 4.2. User Interaction & Workflow
+
 - User navigates via `NavigationView` or buttons.
 - Commands trigger service methods, e.g., `IRoutingService`, `IService_DunnageWorkflow`.
 - Workflow services manage state transitions, raise `StepChanged` events.
@@ -230,18 +239,21 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 - UI updates dynamically based on ViewModel properties, e.g., current step title, validation messages.
 
 #### 4.3. Data Persistence & External Systems
+
 - Data access layer interacts with MySQL via stored procedures.
 - External systems (InforVisual, Volvo) accessed via dedicated DAOs.
 - Data validation, error handling, and transaction management ensure data integrity.
 - CSV export/import handled via `CsvHelper` and dedicated services (`IService_DunnageCSVWriter`).
 
 #### 4.4. User Feedback & Notifications
+
 - `Service_Notification` displays status messages.
 - Error handling via `IService_ErrorHandler`.
 - Focus management via `IService_Focus`.
 - User preferences stored in database (`Dao_DunnageUserPreference`) and loaded at startup.
 
 ### 5. External Dependencies & Integrations
+
 - **Database**:
   - MySQL for core data (dunnage, receiving, routing, Volvo).
   - Stored procedures for CRUD, validation, and reporting.
@@ -256,6 +268,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
   - Dependency injection via `Microsoft.Extensions.Hosting`.
 
 ### 6. Extensibility & Maintainability
+
 - Modular architecture allows independent module updates.
 - DI facilitates mocking/testing.
 - Consistent pattern for DAOs, services, and view models.
@@ -265,22 +278,26 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 ## Technology Stack
 
 ### Core Framework
+
 - **.NET 8**: Modern cross-platform framework (Windows-targeted)
 - **WinUI 3**: Native Windows UI framework (Windows App SDK 1.8+)
 - **C# 12**: Modern language features with nullable reference types enabled
 
 ### MVVM Framework
+
 - **CommunityToolkit.Mvvm 8.2.2**: Source generators for MVVM patterns
   - `[ObservableProperty]` for bindable properties
   - `[RelayCommand]` for command methods
   - Replaces manual `INotifyPropertyChanged` implementation
 
 ### Dependency Injection
+
 - **Microsoft.Extensions.DependencyInjection 8.0**: Built-in .NET DI container
 - **Microsoft.Extensions.Hosting 8.0**: Application lifetime management
 - All services registered in `App.xaml.cs`
 
 ### Database Access
+
 - **MySql.Data 9.4.0**: MySQL ADO.NET provider
   - Server: localhost:3306
   - Database: `mtm_receiving_application`
@@ -293,10 +310,12 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
   - Used for PO and Part lookups from Infor Visual ERP
 
 ### UI Components
+
 - **CommunityToolkit.WinUI.UI.Controls 7.1.2**: Extended WinUI controls
 - **Material.Icons.WinUI3 2.4.1**: Material Design icon library
 - **Custom Controls**: Touch-optimized inputs for manufacturing terminals
 
 ### Utilities
+
 - **CsvHelper 33.0.1**: CSV generation for LabelView label printing
 - **OpenTelemetry 1.14.0**: Observability and tracing (future use)

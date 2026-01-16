@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Reporting - Database Schema Details
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Reporting.md](../docent-sidecar/knowledge/Module_Reporting.md)
 
 ## MySQL Views (Reporting)

@@ -32,6 +32,7 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 Verify alignment with the constitution:
+
 - MVVM purity (partial ViewModels, x:Bind only, no code-behind business logic).
 - Data access integrity (MySQL stored procedures only; Infor Visual read-only; instance DAOs returning Model_Dao_Result; no static DAOs).
 - CQRS/MediatR usage with pipeline behaviors (validation/logging/audit) and mediator-first ViewModels.

@@ -3,12 +3,14 @@
 ## ViewModel Requirements
 
 ### Must-Have Attributes
+
 - `partial` class (required for CommunityToolkit.Mvvm)
 - Inherit from `BaseViewModel`
 - `[ObservableProperty]` for all bindable properties
 - `[RelayCommand]` for all commands
 
 ### ViewModel Template
+
 ```csharp
 public partial class MyFeatureViewModel : BaseViewModel
 {
@@ -63,6 +65,7 @@ public partial class MyFeatureViewModel : BaseViewModel
 ## View (XAML) Requirements
 
 ### Use x:Bind (Compile-Time Binding)
+
 ```xml
 <!-- ✅ CORRECT - x:Bind -->
 <TextBox Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -72,11 +75,13 @@ public partial class MyFeatureViewModel : BaseViewModel
 ```
 
 ### Binding Modes
+
 - `OneWay` - Display data (VM → View)
 - `TwoWay` - User input (View ↔ VM)
 - `OneTime` - Set once, never updates
 
 ### View Template
+
 ```xml
 <Page
     x:Class="MTM_Receiving_Application.Views.Receiving.MyFeatureView"
@@ -132,16 +137,19 @@ public sealed partial class MyFeatureView : Page
 ## Common Mistakes
 
 ### ❌ Non-partial ViewModel
+
 ```csharp
 public class MyViewModel : BaseViewModel { } // Won't compile with [ObservableProperty]
 ```
 
 ### ❌ Missing Mode=TwoWay
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.SearchText}"/> <!-- Won't update ViewModel -->
 ```
 
 ### ❌ Business Logic in Code-Behind
+
 ```csharp
 private void Button_Click(object sender, RoutedEventArgs e)
 {

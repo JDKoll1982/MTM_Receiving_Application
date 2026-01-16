@@ -6,6 +6,7 @@ applyTo: 'App.xaml.cs'
 # Dependency Injection Guidelines
 
 ## Purpose
+
 This file provides guidelines for configuring and using dependency injection in the WinUI 3 application.
 
 ## Setup Location
@@ -15,6 +16,7 @@ All DI configuration is in `App.xaml.cs`
 ## Service Lifetimes
 
 ### Singleton
+
 - **One instance for the entire application**
 - Use for: Services, logging, configuration, MainWindow
 
@@ -25,6 +27,7 @@ services.AddSingleton<MainWindow>();
 ```
 
 ### Transient
+
 - **New instance every time it's requested**
 - Use for: ViewModels, Views, short-lived operations
 
@@ -34,6 +37,7 @@ services.AddTransient<ReceivingLabelPage>();
 ```
 
 ### Scoped
+
 - **Not typically used in WinUI 3** (no web request scope)
 - Avoid unless you have a specific scoped lifetime need
 
@@ -66,6 +70,7 @@ _host = Host.CreateDefaultBuilder()
 ## Adding New Services
 
 ### Step 1: Create the Interface
+
 ```csharp
 // In Contracts/Services/IMyService.cs
 public interface IMyService
@@ -75,6 +80,7 @@ public interface IMyService
 ```
 
 ### Step 2: Create the Implementation
+
 ```csharp
 // In Services/MyService.cs
 public class MyService : IMyService
@@ -95,6 +101,7 @@ public class MyService : IMyService
 ```
 
 ### Step 3: Register in DI Container
+
 ```csharp
 // In App.xaml.cs ConfigureServices
 services.AddSingleton<IMyService, MyService>();
@@ -103,6 +110,7 @@ services.AddSingleton<IMyService, MyService>();
 ## Adding New ViewModels/Views
 
 ### Step 1: Create ViewModel
+
 ```csharp
 // ViewModels/MyFeature/MyViewModel.cs
 public partial class MyViewModel : BaseViewModel
@@ -119,6 +127,7 @@ public partial class MyViewModel : BaseViewModel
 ```
 
 ### Step 2: Create View
+
 ```csharp
 // Views/MyFeature/MyPage.xaml.cs
 public sealed partial class MyPage : Page
@@ -135,6 +144,7 @@ public sealed partial class MyPage : Page
 ```
 
 ### Step 3: Register Both
+
 ```csharp
 // In App.xaml.cs ConfigureServices
 services.AddTransient<MyViewModel>();
@@ -144,12 +154,14 @@ services.AddTransient<MyPage>();
 ## Retrieving Services
 
 ### From App (Static Method)
+
 ```csharp
 var viewModel = App.GetService<MyViewModel>();
 var service = App.GetService<IMyService>();
 ```
 
 ### Via Constructor Injection (Preferred)
+
 ```csharp
 public class MyViewModel : BaseViewModel
 {
@@ -189,6 +201,7 @@ public class DatabaseService : IDatabaseService
 ## Circular Dependency Prevention
 
 ❌ **Avoid circular dependencies:**
+
 ```csharp
 // BAD: A depends on B, B depends on A
 public class ServiceA
@@ -203,6 +216,7 @@ public class ServiceB
 ```
 
 ✅ **Solution: Extract shared logic to a third service:**
+
 ```csharp
 public class ServiceA
 {
@@ -264,6 +278,7 @@ public void TestViewModel()
 ## Common Patterns
 
 ### Service with Configuration
+
 ```csharp
 public class DatabaseService
 {
@@ -281,6 +296,7 @@ public class DatabaseService
 ```
 
 ### Factory Pattern
+
 ```csharp
 public interface IViewModelFactory
 {
@@ -315,12 +331,14 @@ public class ViewModelFactory : IViewModelFactory
 ## When to Add a New Service
 
 Add a new service when:
+
 - ✅ Logic is shared across multiple ViewModels
 - ✅ Logic involves external resources (database, API, files)
 - ✅ Logic is complex and needs isolation for testing
 - ✅ Logic has state that should be shared
 
 Don't create a service when:
+
 - ❌ Logic is specific to one ViewModel
 - ❌ Logic is simple property manipulation
 - ❌ You're just trying to reduce ViewModel size
@@ -328,6 +346,7 @@ Don't create a service when:
 ## Service Interface Benefits
 
 Always use interfaces for services:
+
 - ✅ Enables mocking in unit tests
 - ✅ Allows swapping implementations
 - ✅ Enforces contract
@@ -362,6 +381,7 @@ public MyViewModel(IDatabaseService database)
 ## Debugging DI Issues
 
 If service not found:
+
 1. Check service is registered in `App.xaml.cs`
 2. Check using correct lifetime (Singleton/Transient)
 3. Check all constructor dependencies are registered

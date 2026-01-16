@@ -11,13 +11,13 @@ trimodalWorkflowStructure: '../data/trimodal-workflow-structure.md'
 
 # Validation Step 6: Validation Design Check
 
-## STEP GOAL:
+## STEP GOAL
 
 To check if the workflow has proper validation steps when validation is critical - validation steps should load from validation data and perform systematic checks.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,14 +25,14 @@ To check if the workflow has proper validation steps when validation is critical
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Check if workflow needs validation steps - use subprocess optimization (per-file deep analysis for Pattern 2)
 - 🚫 DO NOT skip any validation step reviews - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report directly OR return findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Determine if validation is critical for this workflow - use subprocess optimization when available
 - 💾 Check validation steps exist and are well-designed - launch subprocess for per-file deep analysis (Pattern 2)
@@ -40,7 +40,7 @@ To check if the workflow has proper validation steps when validation is critical
 - 📖 Append findings to validation report
 - 🚫 DO NOT halt for user input - validation runs to completion
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Some workflows need validation (compliance, safety, quality gates)
 - Others don't (creative, exploratory)
@@ -57,12 +57,14 @@ From {workflowPlanFile}, check:
 **Does this workflow NEED validation?**
 
 **YES - Validation Critical If:**
+
 - Compliance/regulatory requirements (tax, legal, medical)
 - Safety-critical outputs
 - Quality gates required
 - User explicitly requested validation steps
 
 **NO - Validation Not Critical If:**
+
 - Creative/exploratory workflow
 - User-driven without formal requirements
 - Output is user's responsibility to validate
@@ -78,6 +80,7 @@ From {workflowPlanFile}, check:
 **SUBPROCESS ANALYSIS PATTERN - Check each validation step file for:**
 
 **Proper Validation Step Design:**
+
 - ✅ Loads validation data/standards from `data/` folder
 - ✅ Has systematic check sequence (not hand-wavy)
 - ✅ Auto-proceeds through checks (not stopping for each)
@@ -85,12 +88,14 @@ From {workflowPlanFile}, check:
 - ✅ Reports findings to user
 
 **"DO NOT BE LAZY" Language Check:**
+
 - ✅ Step includes "DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE" or similar mandate
 - ✅ Step instructs to "Load and review EVERY file" not "sample files"
 - ✅ Step has "DO NOT SKIP" or "DO NOT SHORTCUT" language
 - ⚠️ WARNING if validation step lacks anti-lazy language
 
 **Critical Flow Check:**
+
 - ✅ For critical flows (compliance, safety, quality gates): validation steps are in steps-v/ folder (tri-modal)
 - ✅ Validation steps are segregated from create flow
 - ✅ Validation can be run independently
@@ -99,6 +104,7 @@ From {workflowPlanFile}, check:
 
 **RETURN FORMAT:**
 Return a structured analysis containing:
+
 - Step file name
 - Proper design checklist (loads data, systematic checks, auto-proceeds, clear criteria, reports findings)
 - Anti-lazy language check (has mandate, mandate text, comprehensive coverage)
@@ -113,6 +119,7 @@ Return a structured analysis containing:
 After all validation step files have been analyzed in subprocesses, aggregate findings:
 
 **Process subprocess results:**
+
 - Compile all structured analysis findings
 - Identify patterns across validation steps
 - Note any critical issues or warnings
@@ -138,6 +145,7 @@ Document the following information:
 **List of validation steps found:** Provide the names/paths of all validation step files in the workflow
 
 **Validation step quality assessment:** For each validation step, document:
+
 - Whether it loads validation data/standards from the data/ folder
 - Whether it has a systematic check sequence
 - Whether it auto-proceeds through checks (vs. stopping for user input)
@@ -148,6 +156,7 @@ Document the following information:
 **"DO NOT BE LAZY" language presence:** For each validation step, note whether anti-lazy language is present and what it says
 
 **Critical flow segregation:** For workflows requiring validation, document:
+
 - The workflow domain type
 - Whether validation steps are in the steps-v/ folder (tri-modal structure) or inline with create steps
 - Whether this segregation is appropriate for the workflow type
@@ -175,7 +184,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Determined if validation is critical
 - If critical: checked all validation steps
@@ -185,7 +194,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Report saved before proceeding
 - Next validation step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking validation steps when critical
 - Missing validation data files

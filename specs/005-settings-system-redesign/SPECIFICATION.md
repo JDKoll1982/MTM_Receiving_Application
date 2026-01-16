@@ -149,6 +149,7 @@ Master list of package types for CRUD operations (from Receiving Settings).
 - `created_at`, `updated_at`
 
 **Constraints:**
+
 - `UNIQUE (name)`
 - `UNIQUE (code)`
 
@@ -167,6 +168,7 @@ Auto-routing rules with pattern matching (from Routing Settings).
 - `created_at`, `updated_at`
 
 **Constraints:**
+
 - `UNIQUE (match_type, pattern)`
 - `INDEX (priority)`
 
@@ -186,6 +188,7 @@ Scheduled report configurations (from Reporting Settings).
 - `created_at`, `updated_at`
 
 **Constraints:**
+
 - `INDEX (next_run_date)`
 - `INDEX (is_active)`
 
@@ -562,21 +565,25 @@ All inherit from template pattern (see `SettingsPageTemplate.xaml`).
 All modals documented in `mockups/MODAL_INDEX.md` with complete implementation guides:
 
 **CRUD Dialogs:**
+
 - `PackageTypeDialog.xaml` - Add/edit package types with validation
 - `RoutingRuleDialog.xaml` - Add/edit routing rules with pattern matching
 - `ScheduleReportDialog.xaml` - Configure scheduled reports
 
 **Confirmation Dialogs:**
+
 - Standard delete confirmations (with usage validation)
 - Reset preferences confirmation
 - Encryption key rotation warning (critical operation)
 
 **Informational Dialogs:**
+
 - Database connection test results (MySQL)
 - ERP connection test results (SQL Server with ApplicationIntent=ReadOnly)
 - Manual sync progress with IProgress<T>
 
 **WinUI 3 Controls Used:**
+
 - `ContentDialog` - All modal dialogs
 - `TextBox` - Text input with validation
 - `NumberBox` - Numeric input with spin buttons and min/max
@@ -589,6 +596,7 @@ All modals documented in `mockups/MODAL_INDEX.md` with complete implementation g
 - `ProgressBar` - Sync operations
 
 **Validation Patterns:**
+
 - Required field validation
 - Pattern validation (regex for codes, emails, wildcards)
 - Range validation (min/max for NumberBox)
@@ -597,6 +605,7 @@ All modals documented in `mockups/MODAL_INDEX.md` with complete implementation g
 - Usage validation before deletion
 
 **Service Implementations:**
+
 - Connection testing with friendly error messages
 - Encryption key rotation with re-encryption workflow
 - Master data synchronization with progress reporting
@@ -605,6 +614,7 @@ All modals documented in `mockups/MODAL_INDEX.md` with complete implementation g
 - Package type usage counting
 
 **Error Handling:**
+
 - SQL Server error code mapping (2, 4060, 18456, etc.)
 - MySQL error code mapping (0, 1042, 1045, 1049, 2002, 2003)
 - Friendly user messages for common errors

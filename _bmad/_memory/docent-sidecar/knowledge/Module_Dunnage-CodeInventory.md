@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Dunnage - Code Inventory
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Dunnage.md](../docent-sidecar/knowledge/Module_Dunnage.md)
 
 ## Primary Views (Label Entry)

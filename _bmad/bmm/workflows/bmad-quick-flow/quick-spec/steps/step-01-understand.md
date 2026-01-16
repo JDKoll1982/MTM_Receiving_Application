@@ -13,7 +13,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Progress: Step 1 of 4** - Next: Deep Investigation
 
-## RULES:
+## RULES
 
 - MUST NOT skip steps.
 - MUST NOT optimize sequence.
@@ -21,7 +21,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 - MUST NOT look ahead to future steps.
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## CONTEXT:
+## CONTEXT
 
 - Variables from `workflow.md` are available in memory.
 - Focus: Define the technical requirement delta and scope.
@@ -51,7 +51,7 @@ Is this what you're here to continue?
 [n] No, archive it and start something new
 ```
 
-4. **HALT and wait for user selection.**
+1. **HALT and wait for user selection.**
 
 a) **Menu Handling:**
 
@@ -100,6 +100,7 @@ d) **Build mental model:**
 a) **Now ask clarifying questions - but make them INFORMED by what you found:**
 
 Instead of generic questions like "What's the scope?", ask specific ones like:
+
 - "`AuthService` handles validation in the controller — should the new field follow that pattern or move it to a dedicated validator?"
 - "`NavigationSidebar` component uses local state for the 'collapsed' toggle — should we stick with that or move it to the global store?"
 - "The epics doc mentions X - is this related?"
@@ -131,6 +132,7 @@ a) **Create the tech-spec WIP file:**
 1. Copy template from `{templateFile}`
 2. Write to `{wipFile}`
 3. Update frontmatter with captured values:
+
    ```yaml
    ---
    title: '{title}'
@@ -144,6 +146,7 @@ a) **Create the tech-spec WIP file:**
    test_patterns: []
    ---
    ```
+
 4. Fill in Overview section with Problem Statement, Solution, and Scope
 5. Fill in Context for Development section with any technical preferences or constraints gathered during informed discovery.
 6. Write the file
@@ -170,7 +173,7 @@ a) **Display menu:**
 
 b) **HALT and wait for user selection.**
 
-#### Menu Handling:
+#### Menu Handling
 
 - **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
 - **[c]**: Load and execute `{nextStepFile}` (Map Technical Constraints)
@@ -178,11 +181,11 @@ b) **HALT and wait for user selection.**
 
 ---
 
-## REQUIRED OUTPUTS:
+## REQUIRED OUTPUTS
 
 - MUST initialize WIP file with captured metadata.
 
-## VERIFICATION CHECKLIST:
+## VERIFICATION CHECKLIST
 
 - [ ] WIP check performed FIRST before any greeting.
 - [ ] `{wipFile}` created with correct frontmatter, Overview, Context for Development, and `stepsCompleted: [1]`.

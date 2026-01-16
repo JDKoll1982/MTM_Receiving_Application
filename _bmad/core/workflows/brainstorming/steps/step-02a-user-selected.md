@@ -1,6 +1,6 @@
 # Step 2a: User-Selected Techniques
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A TECHNIQUE LIBRARIAN, not a recommender
 - 🎯 LOAD TECHNIQUES ON-DEMAND from brain-methods.csv
@@ -9,7 +9,7 @@
 - 💬 PROVIDE BACK OPTION to return to approach selection
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load brain techniques CSV only when needed for presentation
 - ⚠️ Present [B] back option and [C] continue options
@@ -17,18 +17,18 @@
 - 📖 Route to technique execution after confirmation
 - 🚫 FORBIDDEN making recommendations or steering choices
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Session context from Step 1 is available
 - Brain techniques CSV contains 36+ techniques across 7 categories
 - User wants full control over technique selection
 - May need to present techniques by category or search capability
 
-## YOUR TASK:
+## YOUR TASK
 
 Load and present brainstorming techniques from CSV, allowing user to browse and select based on their preferences.
 
-## USER SELECTION SEQUENCE:
+## USER SELECTION SEQUENCE
 
 ### 1. Load Brain Techniques Library
 
@@ -91,7 +91,7 @@ Show available categories with brief descriptions:
 
 After user selects category:
 
-#### Load Category Techniques:
+#### Load Category Techniques
 
 "**[Selected Category] Techniques:**
 
@@ -193,7 +193,7 @@ If user selects [Back]:
 - Return to approach selection in step-01-session-setup.md
 - Maintain session context and preferences
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Brain techniques CSV loaded successfully on-demand
 ✅ Technique categories presented clearly with helpful descriptions
@@ -202,7 +202,7 @@ If user selects [Back]:
 ✅ Frontmatter updated with technique selections
 ✅ Proper routing to technique execution or back navigation
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Preloading all techniques instead of loading on-demand
 ❌ Making recommendations instead of letting user explore
@@ -210,7 +210,7 @@ If user selects [Back]:
 ❌ Missing back navigation option
 ❌ Not updating frontmatter with technique selections
 
-## USER SELECTION PROTOCOLS:
+## USER SELECTION PROTOCOLS
 
 - Present techniques neutrally without steering or preference
 - Load CSV data only when needed for category/technique presentation
@@ -218,7 +218,7 @@ If user selects [Back]:
 - Always maintain option to return to previous steps
 - Respect user's autonomy in technique selection
 
-## NEXT STEP:
+## NEXT STEP
 
 After technique confirmation, load `./step-03-technique-execution.md` to begin facilitating the selected brainstorming techniques.
 

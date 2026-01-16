@@ -8,12 +8,14 @@ applyTo: '**/*Window.xaml.cs, **/*Dialog.xaml.cs, **/Views/**/*.xaml'
 ## Window Dimensions Standards
 
 ### Splash Screen Window
+
 - **Size**: 500px × 450px
 - **Resizable**: No (use OverlappedPresenter.IsResizable = false)
 - **Centered**: Yes (use CenterWindow() method)
 - **Title Bar**: Custom transparent with hidden buttons
 
 ### Main Application Window
+
 - **Size**: 1200px × 800px (recommended initial size)
 - **Resizable**: Yes
 - **Title Bar**: Standard with branding
@@ -21,11 +23,13 @@ applyTo: '**/*Window.xaml.cs, **/*Dialog.xaml.cs, **/Views/**/*.xaml'
 ### ContentDialog Sizing
 
 #### NewUserSetupDialog
+
 - **Width**: 600px (set in XAML)
 - **Max Height**: 500px (use ScrollViewer)
 - **Layout**: Two-column form with Grid
 
 #### SharedTerminalLoginDialog
+
 - **Width**: 400px
 - **Max Height**: 300px
 - **Layout**: Single column, compact
@@ -111,16 +115,19 @@ if (presenter != null)
 ## Display Size Targets
 
 ### Primary Target: 1920×1080 (Full HD)
+
 - Main window: 1200×800
 - Dialogs: 600px max width
 - Splash: 500×450
 
 ### Minimum Target: 1366×768 (HD)
+
 - Main window: 1024×768
 - Dialogs: 500px max width
 - Splash: 450×400
 
 ### DPI Scaling
+
 - Test with 100%, 150%, and 200% scaling
 - Use XamlRoot.RasterizationScale for scale-aware calculations
 

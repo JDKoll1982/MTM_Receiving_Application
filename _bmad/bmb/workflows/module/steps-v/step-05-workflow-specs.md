@@ -11,17 +11,18 @@ targetPath: '{validation_target_path}'
 
 # Step 5: Workflow Specs Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate workflow specifications and/or built workflows, distinguishing between placeholder specs and fully implemented workflows.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Quality Assurance** — dual-mode checking
 - ✅ Specs are expected, built workflows are great
@@ -34,6 +35,7 @@ Validate workflow specifications and/or built workflows, distinguishing between 
 ### 1. Load Workflow Files
 
 Find all workflow files in `{targetPath}/workflows/`:
+
 - `.spec.md` files (placeholder specs)
 - `workflow.md` files (built workflows)
 
@@ -42,14 +44,17 @@ Find all workflow files in `{targetPath}/workflows/`:
 For each workflow found, determine status:
 
 **Built Workflows (workflow.md with steps/ folder):**
+
 - Full implementation with step files, data, templates
 - Can be validated in-depth via workflow validation workflow
 
 **Spec Workflows (.spec.md):**
+
 - High-level placeholder/blueprint
 - Awaiting creation via workflow-builder workflow
 
 Track counts:
+
 - Total workflows: {count}
 - Built workflows: {count}
 - Spec workflows: {count}
@@ -59,6 +64,7 @@ Track counts:
 For each spec workflow, check:
 
 **Required Sections:**
+
 - [ ] Workflow goal defined
 - [ ] Description present
 - [ ] Workflow type indicated
@@ -66,10 +72,12 @@ For each spec workflow, check:
 - [ ] Agent association clear
 
 **Inputs/Outputs:**
+
 - [ ] Input requirements documented
 - [ ] Output format specified
 
 **Agent Integration:**
+
 - [ ] Primary agent identified
 - [ ] Multi-agent collaboration noted (if applicable)
 
@@ -80,11 +88,13 @@ For each spec workflow, check:
 For each built workflow, check:
 
 **Workflow Structure:**
+
 - [ ] workflow.md exists with proper frontmatter
 - [ ] steps/ folder exists (steps-c/, steps-e/, steps-v/ as appropriate)
 - [ ] Step files follow naming conventions
 
 **Step File Compliance:**
+
 - [ ] Each step has proper frontmatter
 - [ ] Step files within size limits
 - [ ] Menu handling follows standards

@@ -66,4 +66,3 @@ This report lists **settable objects** (configuration, tunables, and hardcoded v
 - Credentials and connection strings embedded in code (`Helper_Database_Variables`, `Model_InforVisualConnection`).
 - Infor Visual site/warehouse value `"002"` duplicated across multiple models/DAOs.
 - Retry/backoff constants for database calls (`MaxRetries`, `RetryDelaysMs`).
-

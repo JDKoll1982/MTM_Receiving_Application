@@ -9,13 +9,13 @@ workflowPlanFile: '{bmb_creations_output_folder}/workflows/{new_workflow_name}/w
 
 # Step 1: Discovery
 
-## STEP GOAL:
+## STEP GOAL
 
 To understand the user's workflow idea through open-ended conversation, showing them what's possible, and discovering their vision before making any structural decisions.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -23,7 +23,7 @@ To understand the user's workflow idea through open-ended conversation, showing 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -31,21 +31,21 @@ To understand the user's workflow idea through open-ended conversation, showing 
 - ✅ You bring workflow design expertise, user brings their vision
 - ✅ Together we will discover what they need
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on understanding their idea
 - 🚫 FORBIDDEN to ask for name, module, or technical decisions in this step
 - 💬 Ask 1-2 questions at a time, think about their response before probing deeper
 - 🚪 DON'T rush to classification - understand first
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load examples FIRST to show what's possible
 - 💬 Start with open-ended "Tell me about your idea..."
 - 📖 Update frontmatter stepsCompleted when complete
 - 🚫 FORBIDDEN to load next step until we understand their vision
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - This is pure discovery - no decisions yet
@@ -63,6 +63,7 @@ Load `{workflowExamples}` BEFORE talking to the user.
 **Note:** You already understand workflow architecture from having read workflow.md to get here. The step-file architecture you just experienced (micro-file design, JIT loading, sequential enforcement, state tracking) is exactly what we'll be helping users create.
 
 **From workflowExamples**, you now know 10 diverse workflow examples across domains:
+
 - Health & Fitness (Meal Plan)
 - Finance (Tax Organizer)
 - Legal/HR (Termination Checklist)
@@ -91,6 +92,7 @@ Let me start by sharing what's possible: Workflows can help with everything from
 As they describe their idea:
 
 **DO:**
+
 - Listen carefully
 - Ask 1-2 follow-up questions at a time
 - Think about their response before asking more
@@ -98,6 +100,7 @@ As they describe their idea:
 - Use "Think about their response before..." pattern
 
 **DON'T:**
+
 - Ask about module, name, or technical details
 - Rapid-fire questions
 - Jump to solutions
@@ -162,13 +165,13 @@ status: DISCOVERY
 
 Display: **Proceeding to workflow classification...**
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is a discovery step with no user choices at the end
 - Proceed directly to next step after discovery is complete
 - Always halt if user wants to continue discussing their idea
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - After discovery complete and plan document created, immediately load and execute `{nextStepFile}` to begin classification
 - IF user wants to keep discussing their idea: continue conversation, then repeat menu check
@@ -177,14 +180,14 @@ Display: **Proceeding to workflow classification...**
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - User's vision clearly understood
 - Discovery notes captured in plan document
 - User feels heard and understood
 - Ready to proceed to classification
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Rushing to technical decisions before understanding
 - Asking for name/module in this step

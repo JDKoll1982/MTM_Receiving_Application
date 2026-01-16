@@ -7,6 +7,7 @@
 ## Overview
 
 The `_module-installer` folder contains optional installation logic for your module. It runs AFTER the IDE installations and can:
+
 - Create directories specified in module.yaml
 - Copy assets or templates
 - Configure IDE-specific settings
@@ -16,14 +17,14 @@ The `_module-installer` folder contains optional installation logic for your mod
 
 ## When Do You Need an Installer?
 
-### Use an Installer When:
+### Use an Installer When
 
 - Creating directories based on user configuration
 - Copying template files to the user's project
 - IDE-specific setup (Claude Code, Windsurf, Cursor, etc.)
 - Platform-specific integrations
 
-### Skip the Installer When:
+### Skip the Installer When
 
 - Module only provides agents and workflows
 - No file operations needed
@@ -298,14 +299,16 @@ module.exports = { install };
 
 ## Best Practices
 
-### DO:
+### DO
+
 - Return `true` for success, `false` for failure
 - Use chalk for colored output
 - Log what you're doing (create, copy, configure)
 - Handle errors gracefully with try/catch
 - Validate paths before creating directories
 
-### DON'T:
+### DON'T
+
 - Assume paths exist — check with `fs.pathExists()`
 - Overwrite user files without asking
 - Fail silently — log errors
@@ -316,6 +319,7 @@ module.exports = { install };
 ## Available Platform Codes
 
 Common IDE codes:
+
 - `claude-code` — Anthropic's Claude Code
 - `windsurf` — Windsurf IDE
 - `cursor` — Cursor AI IDE

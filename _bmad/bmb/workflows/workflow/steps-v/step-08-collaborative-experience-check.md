@@ -10,34 +10,34 @@ workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 
 # Validation Step 8: Collaborative Experience Check
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate that the workflow actually facilitates well - natural conversation, not interrogation. Questions asked progressively, not in laundry lists.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Review EVERY step for collaborative quality
 - 🚫 DO NOT skip any files or experience checks
 - 💬 Append findings to report, then auto-load next step
 - 🚪 This is validation - systematic and thorough
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Walk through the workflow as a user would
 - 💾 Check conversation flow in each step
 - 📖 Validate facilitation quality
 - 🚫 DO NOT halt for user input - validation runs to completion
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Good workflows facilitate, don't interrogate
 - Questions should be 1-2 at a time
@@ -51,6 +51,7 @@ To validate that the workflow actually facilitates well - natural conversation, 
 ### 1. Load the Workflow Design
 
 From {workflowPlanFile}, understand:
+
 - What is the workflow's goal?
 - Who is the user?
 - What interaction style was designed?
@@ -64,6 +65,7 @@ From {workflowPlanFile}, understand:
 3. Evaluate against collaborative quality criteria:
 
 **Good Facilitation Indicators:**
+
 - ✅ "Ask 1-2 questions at a time"
 - ✅ "Think about their response before continuing"
 - ✅ "Use conversation, not interrogation"
@@ -72,6 +74,7 @@ From {workflowPlanFile}, understand:
 - ✅ Allows for back-and-forth
 
 **Bad Interrogation Indicators:**
+
 - ❌ Laundry lists of questions
 - ❌ "Ask the following: 1, 2, 3, 4, 5, 6..."
 - ❌ Form-filling approach
@@ -79,6 +82,7 @@ From {workflowPlanFile}, understand:
 - ❌ Rigid sequences without flexibility
 
 **Role Reinforcement Check:**
+
 - ✅ "You are a [role], we engage in collaborative dialogue"
 - ✅ "Together we produce something better"
 - ❌ "You are a form filler" (obviously bad, but check for patterns)
@@ -86,12 +90,14 @@ From {workflowPlanFile}, understand:
 ### 3. Check Progression and Arc
 
 **Does the workflow have:**
+
 - ✅ Clear progression from step to step?
 - ✅ Each step builds on previous work?
 - ✅ User knows where they are in the process?
 - ✅ Satisfying completion at the end?
 
 **Or does it:**
+
 - ❌ Feel disjointed?
 - ❌ Lack clear progression?
 - ❌ Leave user unsure of status?
@@ -99,6 +105,7 @@ From {workflowPlanFile}, understand:
 ### 4. Check Error Handling
 
 **Do steps handle:**
+
 - ✅ Invalid input gracefully?
 - ✅ User uncertainty with guidance?
 - ✅ Off-track conversation with redirection?
@@ -179,7 +186,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - EVERY step reviewed for collaborative quality
 - Question patterns analyzed (progressive vs laundry list)
@@ -189,7 +196,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Report saved before proceeding
 - Next validation step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking every step's collaborative quality
 - Missing question pattern analysis

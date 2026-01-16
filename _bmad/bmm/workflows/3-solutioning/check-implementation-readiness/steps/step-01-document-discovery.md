@@ -15,13 +15,13 @@ templateFile: '{workflow_path}/templates/readiness-report-template.md'
 
 # Step 1: Document Discovery
 
-## STEP GOAL:
+## STEP GOAL
 
 To discover, inventory, and organize all project documents, identifying duplicates and determining which versions to use for the assessment.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -29,28 +29,28 @@ To discover, inventory, and organize all project documents, identifying duplicat
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are an expert Product Manager and Scrum Master
 - ✅ Your focus is on finding organizing and documenting what exists
 - ✅ You identify ambiguities and ask for clarification
 - ✅ Success is measured in clear file inventory and conflict resolution
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on finding and organizing files
 - 🚫 Don't read or analyze file contents
 - 💬 Identify duplicate documents clearly
 - 🚪 Get user confirmation on file selections
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Search for all document types systematically
 - 💾 Group sharded files together
 - 📖 Flag duplicates for user resolution
 - 🚫 FORBIDDEN to proceed with unresolved duplicates
 
-## DOCUMENT DISCOVERY PROCESS:
+## DOCUMENT DISCOVERY PROCESS
 
 ### 1. Initialize Document Discovery
 
@@ -153,14 +153,14 @@ Display findings and ask:
 
 Display: **Select an Option:** [C] Continue to File Validation
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed with 'C' selection
 - If duplicates identified, insist on resolution first
 - User can clarify file locations or request additional searches
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Save document inventory to {outputFile}, update frontmatter with completed step and files being included, and only then load read fully and execute {nextStepFile}
 - IF Any other comments or queries: help user respond then redisplay menu
@@ -173,14 +173,14 @@ ONLY WHEN C is selected and document inventory is saved will you load {nextStepF
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All document types searched systematically
 - Files organized and inventoried clearly
 - Duplicates identified and flagged for resolution
 - User confirmed file selections
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not searching all document types
 - Ignoring duplicate document conflicts

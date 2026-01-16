@@ -7,11 +7,13 @@
 ## Connection Requirements
 
 ### Connection String MUST Include
+
 ```csharp
 ApplicationIntent=ReadOnly
 ```
 
 ### Connection Details
+
 - Server: VISUAL
 - Database: MTMFG
 - Warehouse ID: 002 (fixed, always)
@@ -59,11 +61,13 @@ public class Dao_InforVisualPO
 ## Allowed Operations
 
 ### ✅ SELECT Queries Only
+
 - Query PURCHASE_ORDER, PURC_ORDER_LINE, PART, INVENTORY_TRANS tables
 - SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED (performance)
 - Graceful handling when Infor Visual is unavailable
 
 ### Common Queries
+
 ```sql
 -- PO Lookup
 SELECT po.ID, po.VENDOR_ID, po.STATUS, po.ORDER_DATE
@@ -89,6 +93,7 @@ WHERE it.TYPE = 'R' AND it.CLASS = '1'
 ## Forbidden Operations
 
 ### ❌ NEVER ALLOWED
+
 - Any INSERT statements
 - Any UPDATE statements
 - Any DELETE statements
@@ -99,6 +104,7 @@ WHERE it.TYPE = 'R' AND it.CLASS = '1'
 ## Error Handling
 
 ### Graceful Offline Handling
+
 ```csharp
 public async Task<Model_Dao_Result<Model_InforVisualPO>> GetPOAsync(string poNumber)
 {
@@ -131,6 +137,7 @@ services.AddSingleton(sp => new Dao_InforVisualPart(inforConnectionString));
 ## Pre-Commit Validation
 
 Before committing Infor Visual code:
+
 - [ ] Connection string includes `ApplicationIntent=ReadOnly`
 - [ ] Constructor validates read-only intent
 - [ ] Only SELECT queries used

@@ -8,20 +8,20 @@ workflowPlanFile: '{bmb_creations_output_folder}/workflows/{new_workflow_name}/w
 
 # Step 0: Workflow Conversion
 
-## STEP GOAL:
+## STEP GOAL
 
 Convert an existing workflow (any format) to BMAD compliant format by fully reading and understanding every instruction, extracting the essence, and creating a plan document.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER skip reading the entire source workflow
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous converter
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow analyst and conversion specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -29,21 +29,21 @@ Convert an existing workflow (any format) to BMAD compliant format by fully read
 - ✅ You bring workflow architecture expertise, user brings their existing workflow
 - ✅ Together we will extract the essence and rebuild compliantly
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on understanding the COMPLETE existing workflow
 - 🚫 FORBIDDEN to skip any instruction or file
 - 💬 Read EVERYTHING - instructions.md, workflow.yaml, step files, templates
 - 📋 Document the essence succinctly
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and read the ENTIRE source workflow
 - 💾 Extract: goal, steps, output, input requirements
 - 📖 Create plan with conversionFrom metadata
 - 🚫 FORBIDDEN to proceed without complete understanding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - User provides existing workflow path (from routing or direct)
 - This REPLACES step-01-discovery - we skip to step-02-classification
@@ -56,6 +56,7 @@ Convert an existing workflow (any format) to BMAD compliant format by fully read
 ### 1. Get Source Workflow Path
 
 **If path was passed from routing (e.g., from edit workflow):**
+
 - Use `{sourceWorkflowPath}` provided
 
 **If no path was passed:**
@@ -65,6 +66,7 @@ Convert an existing workflow (any format) to BMAD compliant format by fully read
 **Please provide the path to the workflow you want to convert:**
 
 This could be:
+
 - A folder containing workflow.md
 - A folder with workflow.yaml (legacy format)
 - A folder with instructions.md
@@ -81,23 +83,27 @@ This could be:
 **Load these files based on what exists:**
 
 **If workflow.md exists:**
+
 - Load workflow.md completely
 - Load all step files (steps/*, steps-c/*, steps-v/*, steps-e/*)
 - Load all data files (data/*)
 - Load all templates (templates/*)
 
 **If workflow.yaml exists (legacy XML format):**
+
 - Load workflow.yaml completely
 - Load instructions.md completely
 - Load all step files, templates, data
 
 **If other format:**
+
 - Load every file that exists
 - Read everything to understand the structure
 
 **⚠️ DO NOT BE LAZY - Load and READ COMPLETELY:**
 
 For each step file, read:
+
 - The STEP GOAL
 - All MANDATORY EXECUTION RULES
 - All instructions in EXECUTION PROTOCOLS
@@ -228,7 +234,7 @@ Even though this is a conversion, we need to understand some things:
 
 **Ready to proceed?** [C] Continue to Classification"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Update workflowPlanFile with conversion notes, then load, read entirely, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
@@ -241,7 +247,7 @@ ONLY WHEN the entire source workflow has been read and analyzed, and the plan do
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - ENTIRE source workflow loaded and read
 - Every step documented in plan
@@ -250,7 +256,7 @@ ONLY WHEN the entire source workflow has been read and analyzed, and the plan do
 - User confirms understanding
 - Proceeding to classification
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading all files in source workflow
 - Skipping step files

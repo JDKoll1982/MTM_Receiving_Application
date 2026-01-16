@@ -5,6 +5,7 @@ Modern WinUI 3 desktop application for manufacturing receiving operations with i
 ## Overview
 
 The MTM Receiving Application streamlines the receiving process for manufacturing facilities by providing:
+
 - **Multi-tier authentication system** with automatic workstation detection
 - **Label generation** for receiving, dunnage, and routing operations
 - **Database integration** with MySQL for data persistence and audit trails
@@ -26,17 +27,20 @@ This repo includes a curated Copilot configuration to encourage MCP-first workfl
 The application implements a comprehensive authentication system that automatically adapts to the workstation type:
 
 #### Personal Workstation (Auto-Login)
+
 - Automatic Windows username authentication
 - No credentials required for office/supervisor computers
 - 30-minute inactivity timeout
 
 #### Shared Terminal (PIN Login)
+
 - Username + 4-digit PIN authentication
 - Designed for shop floor communal computers
 - 15-minute inactivity timeout
 - 3-attempt lockout security
 
 #### New User Creation
+
 - Self-service account creation for new employees
 - Department and shift assignment
 - Optional Visual/Infor ERP credential storage
@@ -54,6 +58,7 @@ The application implements a comprehensive authentication system that automatica
 ### Receiving Workflow
 
 A guided, step-by-step workflow for receiving materials:
+
 - **PO Entry**: Validate PO numbers against Infor Visual ERP.
 - **Part Selection**: Select parts from PO or enter non-PO items.
 - **Load Entry**: Specify number of loads/pallets.
@@ -66,6 +71,7 @@ A guided, step-by-step workflow for receiving materials:
 ### Label Generation
 
 _(Coming soon)_
+
 - Receiving labels with barcode integration
 - Dunnage/packing material labels
 - Internal routing labels
@@ -75,6 +81,7 @@ _(Coming soon)_
 The application includes a centralized, context-sensitive help system:
 
 #### Features
+
 - **Contextual Help Dialogs**: Step-by-step guidance for each workflow step
 - **Tooltips**: Informative button and field tooltips throughout the UI
 - **Placeholders**: Dynamic placeholder text for input fields
@@ -85,16 +92,19 @@ The application includes a centralized, context-sensitive help system:
 #### Using the Help System
 
 **In Workflow Views**:
+
 - Click the **Help** button (❓) in any workflow to see context-specific guidance
 - Hover over buttons and fields for tooltips
 - Look for tip icons (💡) for workflow-specific advice
 
 **Help Content Categories**:
+
 - **Dunnage Workflow**: Complete guidance for dunnage receiving process
 - **Receiving Workflow**: PO-based receiving with Infor Visual integration
 - **Admin**: Dunnage type and part management instructions
 
 **Keyboard Shortcuts** _(coming soon)_:
+
 - `F1` - Context-sensitive help for current screen
 
 #### For Developers
@@ -117,6 +127,7 @@ string placeholder = _helpService.GetPlaceholder("Field.PONumber");
 ```
 
 **Architecture**:
+
 - **Service**: `Services/Help/Service_Help.cs` (Singleton)
 - **Dialog**: `Views/Shared/Shared_HelpDialog.xaml` (Transient)
 - **Model**: `Models/Core/Model_HelpContent.cs`
@@ -140,6 +151,7 @@ This project follows a formal constitution that defines core principles and deve
 📋 **[Project Constitution](.specify/memory/constitution.md)** - Required reading for all contributors
 
 **Key Principles**:
+
 1. **MVVM Architecture** - Strict separation of concerns (ViewModels, Views, Models, Services)
 2. **Database Layer Consistency** - Model_Dao_Result pattern, stored procedures only, async operations
 3. **Dependency Injection** - All services registered with interfaces, constructor injection
@@ -149,6 +161,7 @@ This project follows a formal constitution that defines core principles and deve
 7. **Specification-Driven Development** - Speckit workflow for all features
 
 **Critical Constraints**:
+
 - ⚠️ **Infor Visual Database is STRICTLY READ ONLY** - No writes allowed
 - MySQL 5.7.24+ compatibility required (no JSON functions, CTEs, window functions)
 - See constitution for complete guidelines
@@ -209,12 +222,14 @@ Or open `MTM_Receiving_Application.slnx` in Visual Studio 2022 and press F5.
 Configure workstations in the database:
 
 **Personal Workstation** (Windows auto-login):
+
 ```sql
 -- Computer defaults to personal workstation if not in config
 -- No configuration needed unless changing to shared terminal
 ```
 
 **Shared Terminal** (PIN login):
+
 ```sql
 INSERT INTO auth_workstation_config (computer_name, workstation_type, description)
 VALUES ('SHOP2', 'shared_terminal', 'Shop floor terminal - Receiving area');
@@ -293,6 +308,7 @@ MTM_Receiving_Application/
 ### Creating New Users
 
 On personal workstations, new users can create accounts:
+
 1. Launch application with unknown Windows username
 2. New User Setup dialog appears automatically
 3. Fill required fields (full name, department, shift, PIN)
@@ -327,6 +343,7 @@ See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
 ### Application Won't Start
 
 **Check**:
+
 1. .NET 8.0 runtime installed
 2. MySQL service running
 3. Database connection string correct
@@ -335,6 +352,7 @@ See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
 ### Authentication Fails
 
 **Check**:
+
 1. User exists in database: `SELECT * auth_users WHERE windows_username = 'username';`
 2. Account is active: `SELECT is_active auth_users WHERE ...;`
 3. Workstation configured correctly: `SELECT * FROM auth_workstation_config WHERE ...;`
@@ -342,6 +360,7 @@ See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
 ### Database Connection Errors
 
 **Check**:
+
 1. MySQL service running: `services.msc` → MySQL80
 2. Connection string correct in `Helper_Database_Variables.cs`
 3. Database exists: `SHOW DATABASES;`
@@ -431,6 +450,7 @@ dotnet build --configuration Release
 ## Support
 
 For issues, questions, or feature requests:
+
 - **GitHub Issues**: [Project Issues Page]
 - **Documentation**: See `Documentation/` folder
 - **Email**: [Contact Email]

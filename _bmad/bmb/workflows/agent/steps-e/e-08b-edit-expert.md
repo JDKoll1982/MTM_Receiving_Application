@@ -21,25 +21,25 @@ expertValidation: ../data/expert-agent-validation.md
 
 # Edit Step 8b: Edit Expert Agent
 
-## STEP GOAL:
+## STEP GOAL
 
 Apply all planned edits to the Expert agent YAML file and manage sidecar structure changes.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 🛑 ALWAYS create backup before modifying agent file
 - 📖 CRITICAL: Read template and architecture files first
 - 🔄 CRITICAL: Load editPlan and agentFile
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load all reference files before applying edits
 - 📊 Manage sidecar structure for Expert agents
 - 💾 Validate YAML and sidecar paths after edits
 - ➡️ Auto-advance to post-edit validation when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load template, architecture, and data files
 - 📊 Read editPlan to get all planned changes
@@ -55,6 +55,7 @@ Apply all planned edits to the Expert agent YAML file and manage sidecar structu
 ### 1. Load Reference Documents
 
 Read all files before editing:
+
 - `{expertTemplate}` - Expert YAML structure
 - `{expertArch}` - Expert agent architecture
 - `{agentCompilation}`, `{agentMetadata}`, `{personaProperties}`, `{principlesCrafting}`
@@ -73,16 +74,19 @@ ALWAYS backup before editing:
 ### 4. Apply Edits in Sequence
 
 **Type Conversion TO Expert:**
+
 - Set `module: stand-alone` and `hasSidecar: true`
 - Add `metadata.sidecar-folder` if not present
 - Create sidecar directory next to agent.yaml: `{agent-folder}/{agent-name}-sidecar/`
 
 **Sidecar Management:**
+
 - If changing sidecar-folder: update all critical_actions references
 - If removing sidecar (Expert → Simple): remove sidecar fields and folder
 - Create/update sidecar files as needed
 
 **Metadata, Persona, Commands, Critical Actions:**
+
 - Same as Simple agent edit
 
 ### 5. Validate Sidecar Paths

@@ -11,33 +11,33 @@ conversionStep: '../steps-c/step-00-conversion.md'
 
 # Edit Step 1: Assess Workflow
 
-## STEP GOAL:
+## STEP GOAL
 
 Load the target workflow, check if it follows BMAD step-file architecture, check for existing validation report, and offer to run validation if needed.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on assessment - no editing yet
 - 🚫 FORBIDDEN to proceed without loading workflow completely
 - 💬 Explain findings clearly and get user confirmation
 - 🚪 ROUTE non-compliant workflows to create flow
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and analyze target workflow
 - 💾 Create edit plan document
 - 📖 Check for validation report
 - 🚫 FORBIDDEN to proceed without user confirmation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - User provides workflow path from workflow.md routing
 - Focus: Assessment and routing
@@ -50,6 +50,7 @@ Load the target workflow, check if it follows BMAD step-file architecture, check
 ### 1. Get Workflow Path
 
 From the user input provided by workflow.md routing, extract:
+
 - `targetWorkflowPath` - path to workflow.md file
 - `workflowName` - derived from path
 
@@ -71,12 +72,14 @@ From the user input provided by workflow.md routing, extract:
 **Determine if workflow is BMAD-compliant:**
 
 **Compliant workflow has:**
+
 - ✅ workflow.md file exists at root
 - ✅ At least one step folder exists (steps-c/, steps-v/, or steps-e/)
 - ✅ Step files use markdown format (.md)
 - ✅ workflow.md has frontmatter (name, description)
 
 **Non-compliant workflow:**
+
 - ❌ No workflow.md file
 - ❌ Has workflow.yaml or instructions.md (legacy format)
 - ❌ No step folders
@@ -89,6 +92,7 @@ From the user input provided by workflow.md routing, extract:
 "**Workflow Assessment Result: Non-Compliant Format**
 
 I found that this workflow does not follow BMAD step-file architecture:
+
 - [Describe what was found - e.g., legacy format, missing workflow.md, etc.]
 
 **Recommendation:** This workflow should be converted using the create workflow process. The create workflow can use your existing workflow as input discovery material to build a new compliant workflow.
@@ -99,7 +103,7 @@ I found that this workflow does not follow BMAD step-file architecture:
 2. **[E]xplore manual conversion** - I can explain what needs to change
 3. **[X] Exit** - Cancel this operation
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Route to create workflow conversion mode → Load {conversionStep} with sourceWorkflowPath set to {targetWorkflowPath}
 - IF E: Explain conversion requirements, then redisplay menu
@@ -111,6 +115,7 @@ I found that this workflow does not follow BMAD step-file architecture:
 "**Workflow Assessment Result: Compliant Format**
 
 This workflow follows BMAD step-file architecture:
+
 - ✅ workflow.md found
 - ✅ Step folders: [list which ones exist]
 - ✅ Data folder: [yes/no]
@@ -121,6 +126,7 @@ Continue to step 5.
 ### 5. Check for Validation Report
 
 **Look for validation report:**
+
 - Check `{targetWorkflowPath}/validation-report-{workflow_name}.md`
 - Check if report exists and read completion status
 
@@ -133,7 +139,7 @@ Continue to step 5.
 1. **[V]alidate first** - Run comprehensive validation, then proceed with edits
 2. **[S]kip validation** - Proceed directly to editing
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF V: Load, read entirely, then execute {validationWorkflow}. After validation completes, return to this step and proceed to step 6.
 - IF S: Proceed directly to step 6 (Discover Edits)
@@ -142,6 +148,7 @@ Continue to step 5.
 **IF VALIDATION REPORT EXISTS:**
 
 Read the validation report and note:
+
 - Overall status (COMPLETE/INCOMPLETE)
 - Critical issues count
 - Warning issues count
@@ -204,7 +211,7 @@ Write to `{editPlan}`.
 
 Display: "**Assessment Complete. Select an Option:** [C] Continue to Discovery"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Update editPlan, then load, read entire file, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
@@ -217,7 +224,7 @@ ONLY WHEN user selects [C] and edit plan is created, will you then load and read
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Workflow loaded completely
 - Compliance status determined
@@ -226,7 +233,7 @@ ONLY WHEN user selects [C] and edit plan is created, will you then load and read
 - Validation report checked
 - User confirmed to proceed
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading workflow completely
 - Misclassifying non-compliant workflow as compliant

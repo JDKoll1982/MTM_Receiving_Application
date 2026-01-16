@@ -69,6 +69,7 @@ agent:
 **Use the create-agent workflow to build this agent.**
 
 Inputs needed:
+
 - Agent name and human name
 - Role and expertise area
 - Communication style preferences

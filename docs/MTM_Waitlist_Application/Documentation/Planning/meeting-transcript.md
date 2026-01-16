@@ -502,4 +502,4 @@ All right, I got to take a lap make sure this is all good, good to go.
 Speaker 1  33:10  
 So does anything have any anybody have anything else? Because I'm sure I've got like five trucks waiting on me. Nope, nope. Good. Great. Yeah. I.
 
-Transcribed by https://otter.ai
+Transcribed by <https://otter.ai>

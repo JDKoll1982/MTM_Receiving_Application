@@ -5,12 +5,14 @@
 ## Core Non-Negotiable Principles
 
 ### I. MVVM Architecture
+
 - ViewModels contain ALL business logic
 - Views contain ONLY UI markup (XAML)
 - **ViewModels SHALL NOT access DAOs directly**
 - ALL data access flows: ViewModel → Service → DAO → Database
 
 ### II. Database Layer Consistency
+
 - ALL DAOs must be **instance-based** (NOT static)
 - ALL DAO methods return `Model_Dao_Result<T>`
 - Services MUST delegate to DAOs (no direct database access)
@@ -18,51 +20,60 @@
 - Infor Visual: Only SELECT queries (READ ONLY)
 
 ### III. Dependency Injection Everywhere
+
 - ALL services registered in `App.xaml.cs`
 - Constructor injection only (NO service locators)
 - DAOs registered as Singletons
 - ViewModels registered as Transient
 
 ### IV. Error Handling & Logging
+
 - `IService_ErrorHandler` for ALL error displays
 - `ILoggingService` for ALL logging
 - DAOs return failure results (NEVER throw)
 - NO silent failures
 
 ### V. Security & Authentication
+
 - Multi-tier authentication (personal/shared terminals)
 - Session timeouts (30m personal, 15m shared)
 - Infor Visual: **READ ONLY ACCESS ONLY**
 
 ### VI. WinUI 3 Modern Practices
+
 - Use `x:Bind` (compile-time binding)
 - CommunityToolkit.Mvvm attributes
 - `partial` classes for ViewModels
 - Async/await for all I/O
 
 ### VII. Specification-Driven Development
+
 - Features start with specs
 - **All diagrams use PlantUML** (no ASCII art)
 - Task-based implementation
 - Update docs when behavior changes
 
 ### VIII. Testing & Quality Assurance
+
 - xUnit + Moq for testing
 - 80% minimum coverage for services/ViewModels
 - Integration tests for DAOs
 
 ### IX. Code Quality & Maintainability
+
 - PascalCase naming (no UPPER_SNAKE_CASE)
 - **Never block UI thread** - all I/O async
 - File operations: `await File.WriteAllTextAsync()`
 - Target: <500ms for database operations
 
 ### X. Infor Visual DAO Architecture
+
 - All Infor Visual operations in DAOs
 - Connection MUST include `ApplicationIntent=ReadOnly`
 - **ONLY SELECT queries** - NO writes
 
 ### XI. Architecture Validation
+
 - Dependency graph analysis before commits
 - Zero ViewModel→DAO dependencies
 - Zero circular dependencies
@@ -100,18 +111,21 @@
 ## Development Workflow
 
 ### Before Starting
+
 1. Read relevant `.github/instructions/` files
 2. Review spec and plan documents
 3. Verify database schema is current
 4. Check DI container registrations
 
 ### During Implementation
+
 1. Follow task checklist
 2. Use existing service patterns
 3. Test with development database
 4. Update documentation
 
 ### Quality Gates
+
 - ✅ No compilation errors
 - ✅ MVVM pattern adhered to
 - ✅ Services registered in DI

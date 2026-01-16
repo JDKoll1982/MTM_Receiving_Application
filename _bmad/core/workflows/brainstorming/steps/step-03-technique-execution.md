@@ -1,10 +1,11 @@
 # Step 3: Interactive Technique Execution and Facilitation
 
 ---
+
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 ---
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A CREATIVE FACILITATOR, engaging in genuine back-and-forth coaching
 - 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality (quality must grow as we progress)
@@ -19,14 +20,14 @@ advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitati
 - 💬 CREATE TRUE COLLABORATION, not question-answer sequences
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## IDEA FORMAT TEMPLATE:
+## IDEA FORMAT TEMPLATE
 
 Every idea you capture should follow this structure:
 **[Category #X]**: [Mnemonic Title]
 _Concept_: [2-3 sentence description]
 _Novelty_: [What makes this different from obvious solutions]
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Present one technique element at a time for deep exploration
 - ⚠️ Ask "Continue with current technique?" before moving to next technique
@@ -34,18 +35,18 @@ _Novelty_: [What makes this different from obvious solutions]
 - 📖 Follow user's creative energy and interests within technique structure
 - 🚫 FORBIDDEN rushing through technique elements without user engagement
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Selected techniques from Step 2 available in frontmatter
 - Session context from Step 1 informs technique adaptation
 - Brain techniques CSV provides structure, not rigid scripts
 - User engagement and energy guide technique pacing and depth
 
-## YOUR TASK:
+## YOUR TASK
 
 Facilitate brainstorming techniques through genuine interactive coaching, responding to user ideas and building creative momentum organically.
 
-## INTERACTIVE FACILITATION SEQUENCE:
+## INTERACTIVE FACILITATION SEQUENCE
 
 ### 1. Initialize Technique with Coaching Frame
 
@@ -294,13 +295,13 @@ After final technique element:
 
 ### 8. Handle Menu Selection
 
-#### If 'C' (Move to organization):
+#### If 'C' (Move to organization)
 
 - **Append the technique execution content to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
 - **Update frontmatter:** `stepsCompleted: [1, 2, 3]`
 - **Load:** `./step-04-idea-organization.md`
 
-#### If 'K', 'T', 'A', or 'B' (Continue Exploring):
+#### If 'K', 'T', 'A', or 'B' (Continue Exploring)
 
 - **Stay in Step 3** and restart the facilitation loop for the chosen path (or pause if break requested).
 - For option A, invoke Advanced Elicitation: `{advancedElicitationTask}`
@@ -354,11 +355,11 @@ _[Short narrative describing the user and AI collaboration journey - what made t
 **Energy Flow:** [Description of creative momentum and engagement]
 ```
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to `{output_folder}/analysis/brainstorming-session-{{date}}.md` using the structure from above.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Minimum 100 ideas generated before organization is offered
 ✅ User explicitly confirms readiness to conclude (not AI-initiated)
@@ -371,7 +372,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 ✅ User engagement and strengths recognized and built upon
 ✅ Documentation captures both ideas and facilitation insights
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Offering organization after only one technique or <20 ideas
 ❌ AI initiating conclusion without user explicitly requesting it
@@ -383,7 +384,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 ❌ Not checking for continuation interest before moving on
 ❌ Treating facilitation as script delivery rather than coaching
 
-## INTERACTIVE FACILITATION PROTOCOLS:
+## INTERACTIVE FACILITATION PROTOCOLS
 
 - Present one technique element at a time for depth over breadth
 - Build upon user's ideas with genuine creative contributions
@@ -392,7 +393,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 - Document both the "what" (ideas) and "how" (facilitation process)
 - Adapt coaching style based on user's creative preferences
 
-## NEXT STEP:
+## NEXT STEP
 
 After technique completion and user confirmation, load `./step-04-idea-organization.md` to organize all the collaboratively developed ideas and create actionable next steps.
 

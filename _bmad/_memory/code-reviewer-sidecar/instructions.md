@@ -20,6 +20,7 @@ When activated, ALWAYS execute in this order:
 ## File Access Boundaries
 
 **ALLOWED:**
+
 - Target `Module_*/` directory (all files)
 - `Database/StoredProcedures/{Module}/` (create/modify/delete)
 - `Database/Migrations/` (create migration SQL)
@@ -29,6 +30,7 @@ When activated, ALWAYS execute in this order:
 - Sidecar folder: `{project-root}/_bmad/_memory/code-reviewer-sidecar/` (full access)
 
 **FORBIDDEN:**
+
 - Other Module_* folders (unless explicitly analyzing)
 - App.xaml.cs (except for reviewing DI registration)
 - Database schemas (read-only for analysis)
@@ -39,8 +41,9 @@ When activated, ALWAYS execute in this order:
 ## Critical Behaviors
 
 ### Build Validation
+
 - **After EVERY fix**: Run `dotnet build MTM_Receiving_Application.csproj`
-- **On build error**: 
+- **On build error**:
   1. Read error message carefully
   2. Identify cause (syntax, missing using, logic error)
   3. Fix the error immediately
@@ -48,12 +51,14 @@ When activated, ALWAYS execute in this order:
   5. ONLY THEN continue with next fix
 
 ### Transaction Safety
+
 - When modifying SaveShipmentAsync or multi-insert operations:
   - ALWAYS wrap in MySqlTransaction
   - ALWAYS add rollback on any failure
   - ALWAYS test with varied data
 
 ### Stored Procedure Validation
+
 - Before creating stored proc:
   - Check if proc name already exists
   - Validate parameters match DAO call
@@ -63,7 +68,9 @@ When activated, ALWAYS execute in this order:
   - Confirm not used by other modules
 
 ### Dependency Ordering
+
 Common dependencies:
+
 - Stored proc creation → DAO update to use it
 - Constants class creation → Service/ViewModel usage
 - Model property addition → ViewModel/View binding
@@ -88,6 +95,7 @@ Common dependencies:
 ```
 
 **Checkbox States:**
+
 - ⬜ = NOT DONE / PENDING (initial state, ready to be fixed)
 - ✅ = COMPLETED (fix has been applied and build passed)
 - ❌ or ➖ = SKIP (user explicitly chose not to fix this issue)
@@ -113,14 +121,16 @@ Common dependencies:
 
 ## Memory Management
 
-### Update memories.md when:
+### Update memories.md when
+
 - Starting new module analysis
 - Completing fix batch
 - Archiving review
 - Discovering new module pattern
 - Encountering unusual architecture
 
-### Track in memories.md:
+### Track in memories.md
+
 - Current module name
 - CODE_REVIEW version number
 - Total issues / fixed / remaining
@@ -132,14 +142,16 @@ Common dependencies:
 
 ## Error Recovery
 
-### If I make a mistake:
+### If I make a mistake
+
 1. Acknowledge error clearly
 2. Revert the breaking change if possible
 3. Fix the issue properly
 4. Rebuild to confirm
 5. Update memories.md with lesson learned
 
-### If user reports issue:
+### If user reports issue
+
 1. Ask for specific file and line number
 2. Read the file carefully
 3. Explain the issue I see
@@ -150,21 +162,24 @@ Common dependencies:
 
 ## Communication Protocols
 
-### When presenting findings:
+### When presenting findings
+
 - Use severity emojis consistently
 - Reference constitution files when applicable
 - Provide file paths as markdown links
 - Include line numbers for issues
 - Show code snippets for context
 
-### When applying fixes:
+### When applying fixes
+
 - Announce fix number and description
 - Show old vs new code (brief)
 - Report build result
 - Update checkbox status
 - Estimate remaining time
 
-### When blocked:
+### When blocked
+
 - Explain why I'm blocked
 - Show what I need from user
 - Suggest alternatives
@@ -175,12 +190,14 @@ Common dependencies:
 ## Workflow File Loading
 
 When executing workflows, always:
+
 1. Read ENTIRE workflow file first
 2. Execute steps sequentially
 3. Update state in memories.md
 4. Return to menu when complete
 
 Workflow paths:
+
 - `{project-root}/_bmad/_memory/code-reviewer-sidecar/workflows/*.md`
 
 ---
@@ -188,6 +205,7 @@ Workflow paths:
 ## Quality Standards
 
 Before marking any fix as ✅ (changing ⬜ to ✅):
+
 - Build succeeds without errors
 - Fix addresses root cause (not symptom)
 - No new issues introduced
@@ -197,20 +215,24 @@ Before marking any fix as ✅ (changing ⬜ to ✅):
 ## Checkbox Workflow Details
 
 **Initial Analysis:**
+
 - Generate CODE_REVIEW.md with all issues marked ⬜ (not done/pending)
 
 **User Review Phase:**
+
 - User reviews issues
 - Can mark ⬜ as ❌ or ➖ to explicitly skip
 - Items left as ⬜ are candidates for fixing
 
 **Fix Application Phase ([F] command):**
+
 - Read CODE_REVIEW.md and find all ⬜ items (not done)
 - Apply fixes in dependency-aware order
 - Change ⬜ to ✅ after successful fix and build
 - Leave ❌/➖ items untouched (explicitly skipped)
 
 **Interpretation:**
+
 - ✅ in review = Fix completed successfully
 - ⬜ in review = Not yet fixed (pending)
 - ❌/➖ in review = User chose to skip

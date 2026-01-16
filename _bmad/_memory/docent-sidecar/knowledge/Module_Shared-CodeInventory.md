@@ -8,6 +8,7 @@ analyst: Docent v1.0.0
 # Module_Shared - Code Inventory
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Shared.md](../docent-sidecar/knowledge/Module_Shared.md)
 
 ## Views (XAML)

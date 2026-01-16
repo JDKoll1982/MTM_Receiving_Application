@@ -1,4 +1,5 @@
 # Infor Visual Queries Report
+>
 > **Last Generated:** 2026-01-13
 > **Database Target:** VISUAL.MTMFG (Infor Visual)
 > **Access Level:** READ ONLY
@@ -27,6 +28,7 @@ Connection string is managed by `Helper_Database_Variables`.
 - **SQL Scripts**: [Database/InforVisualScripts/Queries](../../../../Database/InforVisualScripts/Queries)
 
 ## Verification Log
+
 **Date:** 2026-01-13
 **Tester:** Automated Console App
 
@@ -45,6 +47,7 @@ Connection string is managed by `Helper_Database_Variables`.
 | Correction Verification | PO-067381 | ✅ PASS | Validated with `STATUS` check removed completely |
 
 ### Tested Queries
+
 All queries (01-04) executed successfully against the live database without SQL errors.
 READ ONLY intent was respected.
 
@@ -59,12 +62,14 @@ READ ONLY intent was respected.
 > **Note:** These queries appear to use incorrect column names (e.g. `PO_ID` vs `ID`, `SITE_REF` vs `SITE_ID`) and are expected to fail.
 
 ### Findings & Recommendations
+
 The `Module_Routing` DAO (`Dao_InforVisualPO`) contains severely broken SQL that does not match the live schema.
 **Action Required:**
 **Global Updates Applied (2026-01-13):**
 Refactored `Module_Routing\Data\Dao_InforVisualPO.cs` to use corrected column names and aliases matching the C# model.
 Verified against live database.
 Mismatches resolved:
+
 - `PO_ID` -> `PURC_ORDER_ID` (aliased as PO_ID)
 - `SITE_REF` -> `SITE_ID`
 - `QTY_RECEIVED` -> `TOTAL_RECEIVED_QTY` (aliased as QTY_RECEIVED)

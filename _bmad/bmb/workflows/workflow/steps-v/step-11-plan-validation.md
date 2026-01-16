@@ -9,34 +9,34 @@ workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 
 # Validation Step 11: Plan Quality Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate that a workflow plan (if it exists) has been fully implemented - all user intent captured, all requirements met with high quality.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ This validation step only runs if a plan file exists
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context thread
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate plan requirements using subprocess optimization - separate subprocess per requirement area for deep analysis
 - 🚫 DO NOT skip checking any requirement from the plan - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This ensures the build actually delivered what was planned
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load plan and extract all requirements/intent using subprocess optimization when available - separate subprocess per requirement area for deep analysis
 - 💾 Subprocesses validate implementation against plan requirements and return findings for aggregation
 - 📖 Document gaps and quality issues
 - 🚫 Only run this step if workflowPlanFile exists
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - This step runs AFTER the workflow is built
 - Compares what was planned vs what was implemented
@@ -51,10 +51,12 @@ To validate that a workflow plan (if it exists) has been fully implemented - all
 First, check if {workflowPlanFile} exists:
 
 **IF plan file does NOT exist:**
+
 - Skip this validation step
 - Proceed to summary with note: "No plan file found - workflow may have been built without BMAD create-workflow process"
 
 **IF plan file exists:**
+
 - Load the complete plan file
 - Proceed with validation
 
@@ -65,6 +67,7 @@ First, check if {workflowPlanFile} exists:
 **SUBPROCESS EXECUTION PATTERN:**
 
 Launch a subprocess that:
+
 1. Loads {workflowPlanFile}
 2. Extracts all requirements from each section (Discovery, Classification, Requirements, Design, Tools)
 3. Returns structured requirements list to parent
@@ -95,6 +98,7 @@ Each subprocess gets full context to deeply understand that requirement area and
 **SUBPROCESS 1: Discovery Validation**
 
 **Subprocess analyzes:**
+
 - ✅ Built workflow addresses the original problem?
 - ✅ Vision from discovery is reflected in final workflow?
 
@@ -106,6 +110,7 @@ Discovery validation results indicating whether the original problem and vision 
 **SUBPROCESS 2: Classification Validation**
 
 **Subprocess analyzes:**
+
 - ✅ Document output matches plan (yes/no)?
 - ✅ Module affiliation correct?
 - ✅ Continuable support as specified?
@@ -119,6 +124,7 @@ Classification validation results for each classification attribute (document ou
 **SUBPROCESS 3: Requirements Validation**
 
 **Subprocess analyzes:**
+
 - ✅ Flow structure matches plan?
 - ✅ User interaction style as specified?
 - ✅ All required inputs configured?
@@ -133,6 +139,7 @@ Requirements validation results for flow structure, interaction style, inputs, o
 **SUBPROCESS 4: Design Validation**
 
 **Subprocess analyzes:**
+
 - ✅ All steps from design present in workflow?
 - ✅ Step purposes match design?
 - ✅ Flow follows design diagram?
@@ -146,6 +153,7 @@ Design validation results for each step from the plan checking if it exists in t
 **SUBPROCESS 5: Tools Validation**
 
 **Subprocess analyzes:**
+
 - ✅ Specified tools configured in workflow?
 - ✅ Data files created as specified?
 
@@ -165,12 +173,14 @@ After ALL requirement area subprocesses complete, aggregate findings into valida
 Document the following information:
 
 **Plan Information:**
+
 - Plan file location
 - Whether a plan was found
 - Total number of requirements extracted from the plan
 
 **Implementation Coverage:**
 For each requirement area from the plan (Discovery/Vision, Classification attributes, Requirements specifications, Design elements, Tools):
+
 - What was specified in the plan
 - Whether it was implemented in the workflow
 - Quality assessment (High/Medium/Low)
@@ -186,16 +196,19 @@ List any requirements that are implemented but with quality concerns
 Describe where the built workflow doesn't match what was planned
 
 **Overall Assessment:**
+
 - Plan implementation score (percentage)
 - Overall status (Fully Implemented/Partially Implemented/Poorly Implemented/Missing Critical Items)
 
 **Quality Assessment Framework:**
 For each implemented requirement, assess quality:
+
 - **High Quality**: Implementation follows best practices, would facilitate effectively
 - **Medium Quality**: Functional but has issues or gaps
 - **Low Quality**: Minimal/barely working, would not facilitate well
 
 Examples:
+
 - Plan specifies "Highly collaborative, intent-based facilitation" and implementation has A/P menus with intent-based language = High Quality
 - Plan specifies "Continuable workflow with session resume" and implementation has step-01b-continue.md tracking stepsCompleted = High Quality
 
@@ -214,7 +227,7 @@ Save the validation report. This is the final validation step.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Plan file loaded completely (in subprocess or main context)
 - Every requirement extracted and validated using subprocess optimization when available
@@ -224,7 +237,7 @@ Save the validation report. This is the final validation step.
 - Findings aggregated and appended to report
 - Context saved via subprocess pattern (return only findings, not full file contents)
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading complete plan
 - Skipping requirement checks

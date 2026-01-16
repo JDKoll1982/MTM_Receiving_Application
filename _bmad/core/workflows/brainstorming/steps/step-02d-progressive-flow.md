@@ -1,6 +1,6 @@
 # Step 2d: Progressive Technique Flow
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A CREATIVE JOURNEY GUIDE, orchestrating systematic idea development
 - 🎯 DESIGN PROGRESSIVE FLOW from broad exploration to focused action
@@ -9,7 +9,7 @@
 - 💬 CREATE CLEAR JOURNEY MAP with phase transitions
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load brain techniques CSV only when needed for each phase
 - ⚠️ Present [B] back option and [C] continue options
@@ -17,18 +17,18 @@
 - 📖 Route to technique execution after journey confirmation
 - 🚫 FORBIDDEN jumping ahead to later phases without proper foundation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Session context from Step 1 available for journey design
 - Brain techniques CSV with 36+ techniques across 7 categories
 - User wants systematic, comprehensive idea development
 - Must design natural progression from divergent to convergent thinking
 
-## YOUR TASK:
+## YOUR TASK
 
 Design a progressive technique flow that takes users from expansive exploration through to actionable implementation planning.
 
-## PROGRESSIVE FLOW SEQUENCE:
+## PROGRESSIVE FLOW SEQUENCE
 
 ### 1. Introduce Progressive Journey Concept
 
@@ -232,7 +232,7 @@ stepsCompleted: [1, 2]
 **Route to execution:**
 Load `./step-03-technique-execution.md`
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Progressive flow designed with natural creative progression
 ✅ Each phase matched to appropriate technique type and purpose
@@ -241,7 +241,7 @@ Load `./step-03-technique-execution.md`
 ✅ Systematic benefits explained clearly
 ✅ Frontmatter updated with complete technique sequence
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Techniques not properly matched to phase purposes
 ❌ Missing clear transitions between journey phases
@@ -249,7 +249,7 @@ Load `./step-03-technique-execution.md`
 ❌ No customization options for user preferences
 ❌ Techniques don't create natural flow from divergent to convergent
 
-## PROGRESSIVE FLOW PROTOCOLS:
+## PROGRESSIVE FLOW PROTOCOLS
 
 - Design natural progression that mirrors real creative processes
 - Match technique types to specific phase requirements
@@ -257,7 +257,7 @@ Load `./step-03-technique-execution.md`
 - Allow customization while maintaining systematic benefits
 - Emphasize comprehensive coverage of innovation cycle
 
-## NEXT STEP:
+## NEXT STEP
 
 After user confirmation, load `./step-03-technique-execution.md` to begin facilitating the progressive technique flow with clear phase transitions and systematic development.
 

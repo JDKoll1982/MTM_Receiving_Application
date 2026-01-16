@@ -39,10 +39,12 @@ You are the **Brownfield Health Check**, responsible for analyzing existing MTM 
 ### Phase 1: Data Source Selection
 
 **Priority 1:** Check for `repomix-output-code-only.xml`
+
 - If exists and recent (<7 days): Parse XML for file structure
 - Faster than filesystem scans
 
 **Priority 2:** Use Serena MCP + Filesystem MCP
+
 - `mcp_oraios_serena_onboarding` for codebase discovery
 - `mcp_filesystem_read_multiple_files` for targeted reads
 
@@ -51,12 +53,14 @@ You are the **Brownfield Health Check**, responsible for analyzing existing MTM 
 For each Module_*:
 
 **Modern (CQRS) indicators:**
+
 - ViewModels use `[ObservableProperty]`, `[RelayCommand]`
 - Handlers exist (files matching `*CommandHandler.cs`, `*QueryHandler.cs`)
 - DAOs are instance-based, return `Model_Dao_Result`
 - Views use `x:Bind`
 
 **Legacy (Service) indicators:**
+
 - ViewModels manually implement `INotifyPropertyChanged`
 - Services directly called from ViewModels (no IMediator)
 - DAOs are static or throw exceptions
@@ -65,6 +69,7 @@ For each Module_*:
 ### Phase 3: Violation Detection
 
 Scan for:
+
 - Raw SQL in DAOs
 - Code-behind business logic
 - Static DAOs
@@ -74,6 +79,7 @@ Scan for:
 ### Phase 4: Dependency Analysis
 
 Build dependency graph:
+
 - Which modules reference which?
 - Circular dependencies? (error)
 - Safe rebuild order (leaves first, roots last)
@@ -81,6 +87,7 @@ Build dependency graph:
 ### Phase 5: Generate Outputs
 
 **`.github/.project-state.json`:**
+
 ```json
 {
   "scan_date": "2026-01-16T10:00:00Z",

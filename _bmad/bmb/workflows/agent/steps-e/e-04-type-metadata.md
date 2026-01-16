@@ -13,23 +13,23 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Edit Step 4: Type and Metadata
 
-## STEP GOAL:
+## STEP GOAL
 
 Review the agent's type and metadata, and plan any changes. If edits involve type conversion, identify the implications.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Load agentMetadata and agentTypesDoc first
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Load reference documents before discussing edits
 - 📊 Document type conversion requirements if applicable
 - 💬 Focus on metadata that user wants to change
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load agentMetadata.md and agentTypesDoc.md
 - 📊 Review current metadata from editPlan
@@ -47,6 +47,7 @@ Read `{agentMetadata}` and `{agentTypesDoc}` to understand validation rules and 
 ### 2. Review Current Metadata
 
 From `{editPlan}`, display current:
+
 - agentType (simple/expert/module)
 - All metadata fields: id, name, title, icon, module, hasSidecar
 
@@ -55,11 +56,13 @@ From `{editPlan}`, display current:
 If user wants metadata changes:
 
 **For type conversion:**
+
 - "Converting from {current} to {target}"
 - Explain implications (e.g., Simple → Expert requires sidecar)
 - Update editPlan with type conversion
 
 **For metadata field changes:**
+
 - id: kebab-case requirements
 - name: display name conventions
 - title: function description format
@@ -87,14 +90,14 @@ metadataEdits:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Persona"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Save to {editPlan}, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -108,14 +111,14 @@ ONLY WHEN [C continue option] is selected and [metadata changes documented], wil
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Reference documents loaded
 - Metadata changes discussed and documented
 - Type conversion implications understood
 - Edit plan updated
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeded without loading reference documents
 - Type conversion without understanding implications

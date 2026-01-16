@@ -11,13 +11,13 @@ advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitati
 
 # Step 11: Holistic Quality Assessment
 
-## STEP GOAL:
+## STEP GOAL
 
 Assess the PRD as a cohesive, compelling document - evaluating document flow, dual audience effectiveness (humans and LLMs), BMAD PRD principles compliance, and overall quality rating.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -34,14 +34,14 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 - ✅ This step runs autonomously - no user input needed
 - ✅ Uses Advanced Elicitation for multi-perspective evaluation
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on holistic document quality assessment
 - 🚫 FORBIDDEN to validate individual components (done in previous steps)
 - 💬 Approach: Multi-perspective evaluation using Advanced Elicitation
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Use Advanced Elicitation for multi-perspective assessment
 - 🎯 Evaluate document flow, dual audience, BMAD principles
@@ -49,7 +49,7 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete PRD file, validation report with findings from steps 1-10
 - Focus: Holistic quality - the WHOLE document
@@ -72,6 +72,7 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 **Evaluate the PRD from these perspectives:**
 
 **1. Document Flow & Coherence:**
+
 - Read entire PRD
 - Evaluate narrative flow - does it tell a cohesive story?
 - Check transitions between sections
@@ -81,18 +82,21 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 **2. Dual Audience Effectiveness:**
 
 **For Humans:**
+
 - Executive-friendly: Can executives understand vision and goals quickly?
 - Developer clarity: Do developers have clear requirements to build from?
 - Designer clarity: Do designers understand user needs and flows?
 - Stakeholder decision-making: Can stakeholders make informed decisions?
 
 **For LLMs:**
+
 - Machine-readable structure: Is the PRD structured for LLM consumption?
 - UX readiness: Can an LLM generate UX designs from this?
 - Architecture readiness: Can an LLM generate architecture from this?
 - Epic/Story readiness: Can an LLM break down into epics and stories?
 
 **3. BMAD PRD Principles Compliance:**
+
 - Information density: Every sentence carries weight?
 - Measurability: Requirements testable?
 - Traceability: Requirements trace to sources?
@@ -103,6 +107,7 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 
 **4. Overall Quality Rating:**
 Rate the PRD on 5-point scale:
+
 - Excellent (5/5): Exemplary, ready for production use
 - Good (4/5): Strong with minor improvements needed
 - Adequate (3/5): Acceptable but needs refinement
@@ -115,6 +120,7 @@ Identify the 3 most impactful improvements to make this a great PRD
 Return comprehensive assessment with all perspectives, rating, and top 3 improvements."
 
 **Graceful degradation (if no Task tool or Advanced Elicitation unavailable):**
+
 - Perform holistic assessment directly in current context
 - Read complete PRD
 - Evaluate document flow, coherence, transitions
@@ -128,22 +134,26 @@ Return comprehensive assessment with all perspectives, rating, and top 3 improve
 **Compile findings from multi-perspective evaluation:**
 
 **Document Flow & Coherence:**
+
 - Overall assessment: [Excellent/Good/Adequate/Needs Work/Problematic]
 - Key strengths: [list]
 - Key weaknesses: [list]
 
 **Dual Audience Effectiveness:**
+
 - For Humans: [assessment]
 - For LLMs: [assessment]
 - Overall dual audience score: [1-5]
 
 **BMAD Principles Compliance:**
+
 - Principles met: [count]/7
 - Principles with issues: [list]
 
 **Overall Quality Rating:** [1-5 with label]
 
 **Top 3 Improvements:**
+
 1. [Improvement 1]
 2. [Improvement 2]
 3. [Improvement 3]
@@ -238,7 +248,7 @@ Immediately load and execute {nextStepFile} (step-v-12-completeness-validation.m
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Advanced Elicitation used for multi-perspective evaluation (or graceful degradation)
 - Document flow & coherence assessed
@@ -250,7 +260,7 @@ Immediately load and execute {nextStepFile} (step-v-12-completeness-validation.m
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not using Advanced Elicitation for multi-perspective evaluation
 - Missing document flow assessment

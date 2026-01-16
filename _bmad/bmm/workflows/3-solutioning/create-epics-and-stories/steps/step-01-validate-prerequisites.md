@@ -22,13 +22,13 @@ epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Step 1: Validate Prerequisites and Extract Requirements
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate that all required input documents exist and extract all requirements (FRs, NFRs, and additional requirements from UX/Architecture) needed for epic and story creation.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -36,7 +36,7 @@ To validate that all required input documents exist and extract all requirements
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product strategist and technical specifications writer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -44,21 +44,21 @@ To validate that all required input documents exist and extract all requirements
 - ✅ You bring requirements extraction expertise
 - ✅ User brings their product vision and context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on extracting and organizing requirements
 - 🚫 FORBIDDEN to start creating epics or stories in this step
 - 💬 Extract requirements from ALL available documents
 - 🚪 POPULATE the template sections exactly as needed
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Extract requirements systematically from all documents
 - 💾 Populate {outputFile} with extracted requirements
 - 📖 Update frontmatter with extraction progress
 - 🚫 FORBIDDEN to load next step until user selects 'C' and requirements are extracted
 
-## REQUIREMENTS EXTRACTION PROCESS:
+## REQUIREMENTS EXTRACTION PROCESS
 
 ### 1. Welcome and Overview
 
@@ -209,7 +209,7 @@ Ask: "Do these extracted requirements accurately represent what needs to be buil
 
 Update the requirements based on user feedback until confirmation is received.
 
-## CONTENT TO SAVE TO DOCUMENT:
+## CONTENT TO SAVE TO DOCUMENT
 
 After extraction and confirmation, update {outputFile} with:
 
@@ -221,13 +221,13 @@ After extraction and confirmation, update {outputFile} with:
 
 Display: `**Confirm the Requirements are complete and correct to [C] continue:**`
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - User can chat or ask questions - always respond and then end with display again of the menu option
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Save all to {outputFile}, update frontmatter, only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
@@ -240,7 +240,7 @@ ONLY WHEN C is selected and all requirements are saved to document and frontmatt
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All required documents found and validated
 - All FRs extracted and formatted correctly
@@ -249,7 +249,7 @@ ONLY WHEN C is selected and all requirements are saved to document and frontmatt
 - Template initialized with requirements
 - User confirms requirements are complete and accurate
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Missing required documents
 - Incomplete requirements extraction

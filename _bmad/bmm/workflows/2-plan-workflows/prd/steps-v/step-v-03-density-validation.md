@@ -10,13 +10,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 3: Information Density Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate PRD meets BMAD information density standards by scanning for conversational filler, wordy phrases, and redundant expressions that violate conciseness principles.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Validate PRD meets BMAD information density standards by scanning for conversati
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -32,21 +32,21 @@ Validate PRD meets BMAD information density standards by scanning for conversati
 - ✅ You bring analytical rigor and attention to detail
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on information density anti-patterns
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Systematic scanning and categorization
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Scan PRD for density anti-patterns systematically
 - 💾 Append density findings to validation report
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file, validation report with format findings
 - Focus: Information density validation only
@@ -78,6 +78,7 @@ Return structured findings with counts and examples."
 If Task tool unavailable, perform analysis directly:
 
 **Scan for conversational filler patterns:**
+
 - "The system will allow users to..."
 - "It is important to note that..."
 - "In order to"
@@ -86,6 +87,7 @@ If Task tool unavailable, perform analysis directly:
 - Count occurrences and note line numbers
 
 **Scan for wordy phrases:**
+
 - "Due to the fact that" (use "because")
 - "In the event of" (use "if")
 - "At this point in time" (use "now")
@@ -93,6 +95,7 @@ If Task tool unavailable, perform analysis directly:
 - Count occurrences and note line numbers
 
 **Scan for redundant phrases:**
+
 - "Future plans" (just "plans")
 - "Past history" (just "history")
 - "Absolutely essential" (just "essential")
@@ -102,12 +105,14 @@ If Task tool unavailable, perform analysis directly:
 ### 3. Classify Severity
 
 **Calculate total violations:**
+
 - Conversational filler count
 - Wordy phrases count
 - Redundant phrases count
 - Total = sum of all categories
 
 **Determine severity:**
+
 - **Critical:** Total > 10 violations
 - **Warning:** Total 5-10 violations
 - **Pass:** Total < 5 violations
@@ -154,7 +159,7 @@ Immediately load and execute {nextStepFile} (step-v-04-brief-coverage-validation
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - PRD scanned for all three anti-pattern categories
 - Violations counted with line numbers
@@ -163,7 +168,7 @@ Immediately load and execute {nextStepFile} (step-v-04-brief-coverage-validation
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not scanning all anti-pattern categories
 - Missing severity classification

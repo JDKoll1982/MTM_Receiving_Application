@@ -8,11 +8,13 @@ analyst: Docent v1.0.0
 # Module_Routing - Database Schema Details
 
 Companion to:
+
 - [_bmad/_memory/docent-sidecar/knowledge/Module_Routing.md](../docent-sidecar/knowledge/Module_Routing.md)
 
 ## MySQL Schema (Application Database)
 
 Schema script:
+
 - `Database/Schemas/10_schema_routing.sql`
 
 Tables:
@@ -53,9 +55,11 @@ Note: Some routing stored procedure scripts also exist under `Database/StoredPro
 ## Reporting View Integration
 
 The reporting view `view_routing_history` (used by Module_Reporting) is defined in:
+
 - `Database/Schemas/views_01_create_reporting_views.sql`
 
 It reads from:
+
 - `routing_label_data` joined to `routing_recipients` and `routing_po_alternatives`.
 
 ## SQL Server (Infor Visual) - READ ONLY
@@ -68,4 +72,5 @@ Module_Routing integrates with Infor Visual ERP for PO validation and line retri
 - Required warehouse/site filter: `SITE_REF = '002'`
 
 Operational note:
+
 - Service uses a connection check and will “gracefully degrade” by allowing the workflow to proceed even when Infor Visual is unavailable.

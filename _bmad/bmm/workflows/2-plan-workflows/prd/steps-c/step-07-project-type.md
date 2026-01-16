@@ -18,7 +18,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 7 of 11** - Next: Scoping
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -30,7 +30,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 DATA-DRIVEN: Use CSV configuration to guide discovery
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating project-type content
@@ -38,18 +38,18 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Project type from step-02 is available for configuration loading
 - Project-type CSV data will be loaded in this step
 - Focus on technical and functional requirements specific to this project type
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct project-type specific discovery using CSV-driven guidance to define technical requirements.
 
-## PROJECT-TYPE DISCOVERY SEQUENCE:
+## PROJECT-TYPE DISCOVERY SEQUENCE
 
 ### 1. Load Project-Type Configuration Data
 
@@ -58,6 +58,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 "Your task: Lookup data in {projectTypesCSV}
 
 **Search criteria:**
+
 - Find row where project_type matches {{projectTypeFromStep02}}
 
 **Return format:**
@@ -67,6 +68,7 @@ project_type, key_questions, required_sections, skip_sections, innovation_signal
 **Do NOT return the entire CSV - only the matching row.**"
 
 **Graceful degradation (if Task tool unavailable):**
+
 - Load the CSV file directly
 - Find the matching row manually
 - Extract required fields:
@@ -79,7 +81,7 @@ project_type, key_questions, required_sections, skip_sections, innovation_signal
 
 Parse `key_questions` from CSV and explore each:
 
-#### Question-Based Discovery:
+#### Question-Based Discovery
 
 For each question in `key_questions` from CSV:
 
@@ -100,7 +102,7 @@ Ask naturally:
 
 Based on user answers to key_questions, synthesize comprehensive requirements:
 
-#### Requirement Categories:
+#### Requirement Categories
 
 Cover the areas indicated by `required_sections` from CSV:
 
@@ -108,7 +110,7 @@ Cover the areas indicated by `required_sections` from CSV:
 - Document specific requirements, constraints, and decisions
 - Connect to product differentiator when relevant
 
-#### Skip Irrelevant Sections:
+#### Skip Irrelevant Sections
 
 Skip areas indicated by `skip_sections` from CSV to avoid wasting time on irrelevant aspects.
 
@@ -116,7 +118,7 @@ Skip areas indicated by `skip_sections` from CSV to avoid wasting time on irrele
 
 Parse `required_sections` list from the matched CSV row. For each section name, generate corresponding content:
 
-#### Common CSV Section Mappings:
+#### Common CSV Section Mappings
 
 - "endpoint_specs" or "endpoint_specification" → API endpoints documentation
 - "auth_model" or "authentication_model" → Authentication approach
@@ -125,7 +127,7 @@ Parse `required_sections` list from the matched CSV row. For each section name, 
 - "tenant_model" → Multi-tenancy approach
 - "rbac_matrix" or "permission_matrix" → Permission structure
 
-#### Template Variable Strategy:
+#### Template Variable Strategy
 
 - For sections matching common template variables: generate specific content
 - For sections without template matches: include in main project_type_requirements
@@ -135,7 +137,7 @@ Parse `required_sections` list from the matched CSV row. For each section name, 
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -171,22 +173,24 @@ Present the project-type content for review, then display menu:
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Scoping (Step 8 of 11)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
+
 - IF A: Execute {advancedElicitationTask} with the current project-type content, process the enhanced technical insights that come back, ask user "Accept these improvements to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF P: Execute {partyModeWorkflow} with the current project-type requirements, process the collaborative technical expertise and validation, ask user "Accept these changes to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from previous steps.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Project-type configuration loaded and used effectively
 ✅ All key questions from CSV explored with user input
@@ -196,7 +200,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not loading or using project-type CSV configuration
 ❌ Missing key questions from CSV in discovery process
@@ -210,7 +214,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## PROJECT-TYPE EXAMPLES:
+## PROJECT-TYPE EXAMPLES
 
 **For api_backend:**
 
@@ -230,7 +234,7 @@ When user selects 'C', append the content directly to the document using the str
 - Skip mobile-first considerations unless relevant
 - Generate enterprise-specific requirements
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `{nextStepFile}` to define project scope.
 

@@ -5,6 +5,7 @@ This directory contains SQL query files for **testing and validating** Infor Vis
 ## Purpose
 
 These query files serve as a **testing sandbox** where you can:
+
 - ✅ Verify query syntax and logic against live Infor Visual data
 - ✅ Test with actual PO numbers and part IDs before writing C# code
 - ✅ Troubleshoot SQL errors without rebuilding the application
@@ -46,7 +47,8 @@ ORDER BY [sort];
 -- - [Column descriptions and expected outputs]
 ```
 
-### Format Guidelines:
+### Format Guidelines
+
 1. **Header Block**: Query name, description, connection details (lines 1-8)
 2. **Test Status**: Document whether query passed testing (line 9)
 3. **Database Context**: `USE [MTMFG]` and `SET TRANSACTION ISOLATION LEVEL` (lines 10-13)
@@ -68,11 +70,13 @@ ORDER BY [sort];
 ## Query Files
 
 ### 01_GetPOWithParts.sql
+
 Retrieves purchase order details with all associated line items and parts.
 
 **Use Case**: Validating PO data during receiving workflow
 
 **Parameters**:
+
 - `@PoNumber` - 6-digit purchase order number
 
 **Returns**: All lines from the PO with part details, quantities, vendor info
@@ -80,11 +84,13 @@ Retrieves purchase order details with all associated line items and parts.
 ---
 
 ### 02_ValidatePONumber.sql
+
 Checks if a purchase order number exists in the system.
 
 **Use Case**: Quick validation before attempting to retrieve PO details
 
 **Parameters**:
+
 - `@PoNumber` - Purchase order number to validate
 
 **Returns**: Count (1 if exists, 0 if not found)
@@ -92,11 +98,13 @@ Checks if a purchase order number exists in the system.
 ---
 
 ### 03_GetPartByNumber.sql
+
 Retrieves detailed information for a specific part including inventory levels.
 
 **Use Case**: Non-PO item receiving, inventory lookup
 
 **Parameters**:
+
 - `@PartNumber` - Part ID to lookup
 
 **Returns**: Part details including on-hand, allocated, and available quantities
@@ -104,11 +112,13 @@ Retrieves detailed information for a specific part including inventory levels.
 ---
 
 ### 04_SearchPartsByDescription.sql
+
 Searches for parts by description pattern (prefix match).
 
 **Use Case**: Finding parts when part number is unknown
 
 **Parameters**:
+
 - `@SearchTerm` - Text to search for (matches start of description)
 - `@MaxResults` - Maximum number of results (default: 50)
 
@@ -119,6 +129,7 @@ Searches for parts by description pattern (prefix match).
 ## Testing Workflow
 
 ### Step 1: Test Query in SSMS
+
 1. Open SQL Server Management Studio (SSMS)
 2. Connect to server **VISUAL** using credentials above
 3. Open desired `.sql` file from this directory
@@ -128,18 +139,22 @@ Searches for parts by description pattern (prefix match).
 7. Update test status comment at top of file
 
 ### Step 2: Document Results
+
 - Add `-- Test Passed` or `-- Test Failed: [reason]` comment after header
 - Document any discovered table name differences (e.g., `PURCHASE_ORDER` vs `po`)
 - Note any unexpected behaviors or edge cases
 
 ### Step 3: Implement in Application
+
 - Once query is validated, it's automatically loaded by the application
 - The `Helper_SqlQueryLoader` class reads these files at runtime
 - DAOs call `Helper_SqlQueryLoader.LoadAndPrepareQuery("01_GetPOWithParts.sql")`
 - DECLARE statements are automatically stripped out before execution
 
 ### Step 4: Troubleshoot Failures
+
 If a query fails in the application:
+
 1. Copy failing query parameters from application logs
 2. Open corresponding `.sql` file in SSMS
 3. Update DECLARE statements with failing parameter values
@@ -150,16 +165,19 @@ If a query fails in the application:
 ## Important Notes
 
 ⚠️ **READ-ONLY ACCESS ONLY**
+
 - These queries are for testing and validation purposes only
 - Never modify data in the Infor Visual database
 - All production data writes happen through Infor Visual's native interface
 
 🔍 **Site Filter**
+
 - All queries include `site_id = '002'` filter
 - This restricts results to warehouse 002
 - Do not remove this filter unless specifically needed
 
 📊 **Performance**
+
 - Queries are optimized with appropriate indexes
 - Search queries use TOP clause to limit results
 - Add additional WHERE clauses as needed for performance
@@ -169,18 +187,21 @@ If a query fails in the application:
 ### Query Execution Issues
 
 **Connection Issues**:
+
 - Verify server name is exactly **VISUAL**
 - Ensure SQL Server Authentication is selected
 - Check that you can ping the VISUAL server
 - Verify SHOP2 account has read permissions
 
 **No Results**:
+
 - Verify parameter values are correct (check actual PO numbers in Infor Visual)
 - Check that PO/Part exists for site 002
 - Note: Site filter commented out in test files for flexibility
 - Try `SELECT TOP 10 * FROM PURCHASE_ORDER` to see available data
 
 **Table/Column Not Found**:
+
 - Infor Visual may use different table names (PURCHASE_ORDER vs po view)
 - Check actual table names: `SELECT * FROM INFORMATION_SCHEMA.TABLES`
 - Update query file with correct table names
@@ -203,6 +224,7 @@ To add a new query for testing:
 7. **Rebuild**: Embedded resources update automatically
 
 **Example New Query**:
+
 ```sql
 -- ========================================
 -- Query: Get Open PO Count by Vendor
@@ -233,6 +255,7 @@ ORDER BY OpenPOCount DESC;
 -- - VendorName: Vendor name
 -- - OpenPOCount: Number of open POs for this vendor
 ```
+
 - Ensure SHOP2 account has SELECT permissions on all referenced tables
 - Contact DBA if permissions need to be granted
 - Never request INSERT/UPDATE/DELETE permissions (READ-ONLY only)
@@ -240,11 +263,13 @@ ORDER BY OpenPOCount DESC;
 ### Application Integration Issues
 
 **Query Loads but Returns Wrong Data**:
+
 - Verify DECLARE parameters match actual DAO parameter names
 - Check that `Helper_SqlQueryLoader.ExtractQueryFromFile()` strips DECLAREs correctly
 - Ensure DAO passes correct parameter values to `SqlCommand.Parameters.AddWithValue()`
 
 **Embedded Resource Not Found**:
+
 - Verify file is in `Database/InforVisualTest/` directory
 - Check `.csproj` includes: `<EmbeddedResource Include="Database\InforVisualTest\*.sql" />`
 - Rebuild solution to update embedded resources

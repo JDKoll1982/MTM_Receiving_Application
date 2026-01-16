@@ -34,6 +34,7 @@ Helpers/Database/
 ## Architecture Layers
 
 ### 1. **SQL Query Files** (`Database/InforVisualScripts/Queries/`)
+
 - **Purpose**: Store all SQL queries as separate `.sql` files
 - **Benefits**:
   - Easy to test in SQL Server Management Studio
@@ -42,18 +43,21 @@ Helpers/Database/
   - Can be edited without recompiling
 
 ### 2. **Models** (`Models/InforVisual/`)
+
 - **Model_InforVisualConnection**: Configuration for connection strings
 - **Model_InforVisualPO**: Flat representation of PO line items (DAO layer)
 - **Model_InforVisualPart**: Part information from Infor Visual
 
 ### 3. **Data Access Layer** (`Data/InforVisual/`)
-- **Dao_InforVisualConnection**: 
+
+- **Dao_InforVisualConnection**:
   - Loads SQL queries using `Helper_SqlQueryLoader`
   - Executes queries against Infor Visual (SQL Server)
   - Returns `Model_Dao_Result` types
   - **READ-ONLY** - No write operations permitted
 
 ### 4. **Service Layer** (`Services/Database/`)
+
 - **Service_InforVisualConnect**:
   - Implements `IService_InforVisual` interface
   - Converts flat DAO models to hierarchical service models
@@ -76,6 +80,7 @@ services.AddSingleton<IService_InforVisual>(sp =>
 ```
 
 **Benefits**:
+
 - No `#if DEBUG` preprocessor directives
 - Can be toggled at runtime via configuration
 - Test application without Infor Visual server access
@@ -84,12 +89,14 @@ services.AddSingleton<IService_InforVisual>(sp =>
 
 1. **Create/Edit Query** in `Database/InforVisualTest/`
 2. **Test in SSMS**:
+
    ```sql
    -- Update DECLARE parameters with test values
    DECLARE @PoNumber VARCHAR(20) = 'PO-067101';
    
    -- Execute and verify results
    ```
+
 3. **Document Results** in SQL file comments
 4. **Copy to Production** `Database/InforVisualScripts/Queries/`
 5. **Rebuild Application** - files embedded as resources
@@ -147,11 +154,13 @@ public class MyViewModel
 ## Migration from Old Code
 
 **Old** (`Service_InforVisual.cs`):
+
 - Mixed SQL strings in C# code
 - `#if DEBUG` preprocessor directives
 - Hardcoded connection logic
 
 **New** (`Service_InforVisualConnect.cs`):
+
 - SQL in separate `.sql` files
 - Runtime mock data toggle
 - Proper DAO/Model/Service layers

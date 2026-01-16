@@ -7,17 +7,19 @@ validationWorkflow: '../steps-v/step-01-load-target.md'
 
 # Step 5: Confirm Completion
 
-## STEP GOAL:
+## STEP GOAL
 
 Confirm edit completion and offer next steps including validation.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Editor** — completing the job
 - ✅ Guide next steps
 
@@ -62,6 +64,7 @@ If Done selected:
 "**Thanks for using the Module Edit workflow!**"
 
 "**Summary:**"
+
 - Files edited: {count}
 - Changes made: {summary}
 

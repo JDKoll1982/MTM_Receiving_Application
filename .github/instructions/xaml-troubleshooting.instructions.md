@@ -8,7 +8,9 @@ applyTo: '**/*.xaml, **/*.xaml.cs'
 ## The Silent XAML Compiler Problem
 
 ### Symptom
+
 The build fails with a cryptic error:
+
 ```
 error MSB3073: The command "XamlCompiler.exe" exited with code 1
 ```
@@ -16,6 +18,7 @@ error MSB3073: The command "XamlCompiler.exe" exited with code 1
 No additional details are provided about what's actually wrong with your XAML.
 
 ### Why This Happens
+
 The Windows App SDK XAML compiler (`XamlCompiler.exe`) is a .NET Framework 4.7.2 tool that sometimes fails silently when run through the `dotnet` CLI, especially with .NET 8+ SDK. It crashes without outputting error details to the console.
 
 ---
@@ -23,6 +26,7 @@ The Windows App SDK XAML compiler (`XamlCompiler.exe`) is a .NET Framework 4.7.2
 ## Solution: Use Visual Studio Build Tool
 
 ### Prerequisites
+
 - Visual Studio 2022 installed (Community edition is free)
 - Includes `.NET Desktop Development` workload
 - Includes `Windows App SDK` components
@@ -42,11 +46,13 @@ $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.
 ### What You'll Get
 
 Instead of:
+
 ```
 ❌ error MSB3073: XamlCompiler.exe exited with code 1
 ```
 
 You'll see:
+
 ```
 ✅ LoadEntryView.xaml(13,20): error WMC1110: Invalid binding path 'ViewModel.SelectedPartInfo'
    Property 'SelectedPartInfo' not found on type 'LoadEntryViewModel'
@@ -59,12 +65,14 @@ You'll see:
 ### 1. Missing StepData in Binding Path
 
 ❌ **Wrong:**
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay}" />
 <TextBlock Text="{x:Bind ViewModel.SelectedPartInfo, Mode=OneWay}" />
 ```
 
 ✅ **Correct:**
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.StepData.NumberOfLoads, Mode=TwoWay}" />
 <TextBlock Text="{x:Bind ViewModel.StepData.SelectedPartInfo, Mode=OneWay}" />
@@ -75,11 +83,13 @@ You'll see:
 ### 2. Property Name Casing Mismatch
 
 ❌ **Wrong:**
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.StepData.PoNumber}" />
 ```
 
 ✅ **Correct:**
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.StepData.PONumber}" />
 ```
@@ -89,6 +99,7 @@ You'll see:
 ### 3. Binding to Protected Methods
 
 ❌ **Wrong (in code-behind):**
+
 ```csharp
 private void OnLoaded(object sender, RoutedEventArgs e)
 {
@@ -97,6 +108,7 @@ private void OnLoaded(object sender, RoutedEventArgs e)
 ```
 
 ✅ **Correct:**
+
 ```csharp
 // Don't call OnNavigatedToAsync manually - it's called automatically by BaseStepViewModel
 private void OnLoaded(object sender, RoutedEventArgs e)
@@ -110,11 +122,13 @@ private void OnLoaded(object sender, RoutedEventArgs e)
 ### 4. Wrong Collection Property Name
 
 ❌ **Wrong:**
+
 ```xml
 <ComboBox ItemsSource="{x:Bind ViewModel.StepData.PackageTypes}" />
 ```
 
 ✅ **Correct:**
+
 ```xml
 <ComboBox ItemsSource="{x:Bind ViewModel.StepData.AvailablePackageTypes}" />
 ```
@@ -126,6 +140,7 @@ private void OnLoaded(object sender, RoutedEventArgs e)
 ## Troubleshooting Workflow
 
 ### Step 1: Quick VS Code Check
+
 1. Look for red squiggles in XAML files
 2. Hover over binding expressions to see IntelliSense warnings
 3. Check the Problems panel (Ctrl+Shift+M)
@@ -133,6 +148,7 @@ private void OnLoaded(object sender, RoutedEventArgs e)
 **Note:** VS Code IntelliSense for XAML is not always reliable. If no errors show but build fails, proceed to Step 2.
 
 ### Step 2: Build with Visual Studio CLI
+
 ```powershell
 # Get detailed XAML errors
 $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
@@ -140,24 +156,29 @@ $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 ```
 
 ### Step 3: Read the Error Output
+
 Look for lines like:
+
 ```
 File.xaml(LINE,COL): XamlCompiler error WMCXXXX: [Description]
 ```
 
 This tells you:
+
 - **File:** Which XAML file has the problem
 - **LINE,COL:** Exact location in the file
 - **Error Code:** Type of error (WMC1110 = property not found, etc.)
 - **Description:** What's actually wrong
 
 ### Step 4: Fix the Binding
+
 1. Open the XAML file mentioned in the error
 2. Go to the line number specified
 3. Check the binding path against the ViewModel/StepData class
 4. Correct the property name or add missing `StepData.` prefix
 
 ### Step 5: Verify the Fix
+
 ```powershell
 # Clean build to ensure all XAML is recompiled
 dotnet clean
@@ -169,14 +190,17 @@ dotnet build /p:Platform=x64
 ## Environment Setup for XAML Debugging
 
 ### Required .NET SDK Version
+
 This project uses **.NET 8 SDK** due to compatibility with Windows App SDK 1.8.
 
 Check your SDK version:
+
 ```powershell
 dotnet --version
 ```
 
 If you see 10.x or higher, create a `global.json` file:
+
 ```json
 {
   "sdk": {
@@ -187,6 +211,7 @@ If you see 10.x or higher, create a `global.json` file:
 ```
 
 ### Install .NET 8 SDK
+
 ```powershell
 winget install Microsoft.DotNet.SDK.8
 ```
@@ -196,6 +221,7 @@ winget install Microsoft.DotNet.SDK.8
 ## Quick Reference Commands
 
 ### Full Clean and Rebuild
+
 ```powershell
 # Kill any stuck processes
 Get-Process | Where-Object { $_.ProcessName -match 'XamlCompiler|MSBuild' } | Stop-Process -Force -ErrorAction SilentlyContinue
@@ -210,11 +236,13 @@ dotnet build /p:Platform=x64
 ```
 
 ### Build and Show Only Errors
+
 ```powershell
 dotnet build /p:Platform=x64 2>&1 | Select-String "error"
 ```
 
 ### Visual Studio Rebuild with Filtered Output
+
 ```powershell
 $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
 & "$vs\Common7\IDE\devenv.com" MTM_Receiving_Application.slnx /Rebuild "Debug|x64" 2>&1 | Select-String "error|warning" | Select-Object -Last 20
@@ -225,19 +253,23 @@ $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 ## Preventing XAML Errors
 
 ### 1. Use Strong Typing
+
 Always use `x:Bind` (compile-time binding) instead of `Binding` (runtime binding):
 
 ✅ **Good:** Compile-time error if property doesn't exist
+
 ```xml
 <TextBox Text="{x:Bind ViewModel.StepData.MyProperty, Mode=TwoWay}" />
 ```
 
 ❌ **Bad:** No compile error, fails at runtime
+
 ```xml
 <TextBox Text="{Binding MyProperty, Mode=TwoWay}" />
 ```
 
 ### 2. Verify ViewModel Structure
+
 Before creating XAML bindings, check the ViewModel:
 
 ```csharp
@@ -259,14 +291,18 @@ public partial class MyViewModel : BaseViewModel
 ```
 
 ### 3. Use Find-in-Files for Property Names
+
 Before binding to a property, verify it exists:
+
 ```powershell
 # In VS Code: Ctrl+Shift+F
 # Search for: "public.*MyPropertyName"
 ```
 
 ### 4. Enable IntelliSense in XAML
+
 In VS Code, install:
+
 - **XAML Styler** extension
 - **C# Dev Kit** extension
 
@@ -287,11 +323,13 @@ These provide basic XAML IntelliSense, though not as robust as Visual Studio.
 ## Common File Lock Issues
 
 ### Symptom
+
 ```
 error: The process cannot access the file 'File.g.cs' because it is being used by another process
 ```
 
 ### Solution
+
 ```powershell
 # Kill all related processes
 Get-Process | Where-Object { $_.ProcessName -match 'XamlCompiler|MSBuild|devenv|dotnet' } | Stop-Process -Force -ErrorAction SilentlyContinue
@@ -309,6 +347,7 @@ dotnet build /p:Platform=x64
 ## When All Else Fails
 
 ### Nuclear Option: Complete Reset
+
 ```powershell
 # 1. Close VS Code
 # 2. Kill processes

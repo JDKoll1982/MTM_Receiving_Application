@@ -3,13 +3,16 @@
 ## Database Architecture
 
 ### Dual-Database Strategy
+
 The application uses two databases:
+
 1. **MySQL (mtm_receiving_application)**: Primary operational store - READ/WRITE
 2. **SQL Server (Infor Visual ERP - VISUAL/MTMFG)**: Source of truth for POs and Parts - READ ONLY
 
 ## MySQL Schema (Application Data)
 
 ### Authentication Schema
+
 - **users**: User credentials, PINs, and preferences
   - Stores Windows username mappings
   - Department associations
@@ -17,6 +20,7 @@ The application uses two databases:
 - **departments**: Department definitions
 
 ### Receiving Schema
+
 - **receiving_history**: Header-level receiving transactions
   - PO number, carrier, packing slip
   - Created by user and timestamp
@@ -27,6 +31,7 @@ The application uses two databases:
 - **receiving_package_types**: User-defined package configurations
 
 ### Dunnage Schema
+
 - **dunnage_types**: Categories of returnable packaging (bins, racks, pallets)
   - Icon associations (Material Design)
 - **dunnage_parts**: Specific part numbers within each type
@@ -41,6 +46,7 @@ The application uses two databases:
 ## SQL Server Schema (Infor Visual ERP - READ ONLY)
 
 ### Core Tables (Read-Only Access)
+
 - **po_detail**: Purchase Order line items
   - Site reference: '002' (MTM warehouse)
 - **part**: Part master data
@@ -48,6 +54,7 @@ The application uses two databases:
 - **vendor**: Vendor information
 
 ### Integration Points
+
 - PO validation via `Dao_InforVisualPO`
 - Part lookups via `Dao_InforVisualPart`
 - **CRITICAL**: All queries include `ApplicationIntent=ReadOnly` in connection string
@@ -55,6 +62,7 @@ The application uses two databases:
 ## C# Models
 
 ### Module_Receiving Models
+
 - `Model_ReceivingLoad`: Header for receiving transaction
 - `Model_ReceivingLine`: Line-item details
 - `Model_ReceivingSession`: Workflow state management
@@ -65,6 +73,7 @@ The application uses two databases:
 - `Model_CSVWriteResult`: Label generation results
 
 ### Module_Dunnage Models
+
 - `Model_DunnageLoad`: Dunnage transaction header
 - `Model_DunnageLine`: Transaction line items
 - `Model_DunnageType`: Packaging categories
@@ -75,21 +84,25 @@ The application uses two databases:
 - `Model_DunnageSession`: Workflow state management
 
 ### Module_Core Models
+
 - `Model_User`: Authenticated user data
 - `Model_Department`: Department definitions
 - `Model_Application_Variables`: App-wide configuration
 
 ### Module_Shared Models
+
 - Result wrappers for service operations
 - Common enumerations
 
 ## Migration Strategy
+
 - **MySQL**: Versioned SQL scripts in `Database/Schemas/`
   - Executed sequentially (01_, 02_, 03_...)
   - Migrations tracked in `Database/Migrations/`
 - **SQL Server**: No migrations (Read-Only ERP system)
 
 ## Data Flow
+
 1. User enters PO number → Validated against Infor Visual (Read-Only)
 2. Part details retrieved from Infor Visual
 3. Receiving data captured and stored in MySQL

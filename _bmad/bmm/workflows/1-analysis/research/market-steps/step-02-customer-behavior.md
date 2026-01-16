@@ -1,6 +1,6 @@
 # Market Research Step 2: Customer Behavior and Segments
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 - ✅ Search the web to verify and supplement your knowledge with current facts
@@ -12,7 +12,7 @@
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after customer behavior content generation
@@ -21,7 +21,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from step-01 are available
 - Focus on customer behavior patterns and demographic analysis
@@ -30,11 +30,11 @@
 - **Research topic = "{{research_topic}}"** - established from initial discussion
 - **Research goals = "{{research_goals}}"** - established from initial discussion
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct customer behavior and segment analysis with emphasis on patterns and demographics.
 
-## CUSTOMER BEHAVIOR ANALYSIS SEQUENCE:
+## CUSTOMER BEHAVIOR ANALYSIS SEQUENCE
 
 ### 1. Begin Customer Behavior Analysis
 
@@ -96,7 +96,7 @@ Search the web: "{{research_topic}} customer behavior drivers"
 
 Prepare customer behavior analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -175,17 +175,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Load: `./step-03-customer-pain-points.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Customer behavior patterns identified with current citations
 ✅ Demographic segmentation thoroughly analyzed
@@ -197,7 +197,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (customer pain points)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -211,7 +211,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## CUSTOMER BEHAVIOR RESEARCH PROTOCOLS:
+## CUSTOMER BEHAVIOR RESEARCH PROTOCOLS
 
 - Research customer behavior studies and market research
 - Use demographic data from authoritative sources
@@ -221,7 +221,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## BEHAVIOR ANALYSIS STANDARDS:
+## BEHAVIOR ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative customer research sources
@@ -230,7 +230,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable customer insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-03-customer-pain-points.md` to analyze customer pain points, challenges, and unmet needs for {{research_topic}}.
 

@@ -9,25 +9,28 @@ partyModeWorkflow: '../../../../core/workflows/party-mode/workflow.md'
 
 # Step 9: Workflows
 
-## STEP GOAL:
+## STEP GOAL
 
 Design the workflow ecosystem — brainstorm what workflows this module needs.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Architect** — workflow designer
 - ✅ Focus on what workflows exist, not their details
 - 💬 Brainstorm mode — generate lots of ideas
 
-### Step-Specific Rules:
+### Step-Specific Rules
+
 - 🎯 Categorize workflows: Core, Feature, Utility
 - 🚫 FORBIDDEN to design full workflow specs (that's create-workflow's job)
 
@@ -40,6 +43,7 @@ Design the workflow ecosystem — brainstorm what workflows this module needs.
 "**What workflows should your module have?**"
 
 Explain categories:
+
 - **Core Workflows** — essential functionality (2-3)
 - **Feature Workflows** — specialized capabilities (3-5)
 - **Utility Workflows** — supporting operations (1-3)

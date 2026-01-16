@@ -20,6 +20,7 @@
 ## Required Structure
 
 ### Section 1: Display
+
 ```markdown
 ### N. Present MENU OPTIONS
 
@@ -27,6 +28,7 @@ Display: "**Select:** [A] [action] [P] [action] [C] Continue"
 ```
 
 ### Section 2: Handler (MANDATORY)
+
 ```markdown
 #### Menu Handling Logic:
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
@@ -36,6 +38,7 @@ Display: "**Select:** [A] [action] [P] [action] [C] Continue"
 ```
 
 ### Section 3: Execution Rules
+
 ```markdown
 #### EXECUTION RULES:
 - ALWAYS halt and wait for user input after presenting menu
@@ -47,13 +50,15 @@ Display: "**Select:** [A] [action] [P] [action] [C] Continue"
 
 ## When To Include A/P
 
-### DON'T Include A/P:
+### DON'T Include A/P
+
 - Step 1 (init) - no content to refine yet
 - Step 2 if only loading documents
 - Validation sequences - auto-flow instead
 - Simple data gathering
 
-### DO Include A/P:
+### DO Include A/P
+
 - Collaborative content creation
 - User might want alternatives
 - Quality gate before proceeding
@@ -64,6 +69,7 @@ Display: "**Select:** [A] [action] [P] [action] [C] Continue"
 ## Menu Patterns
 
 ### Pattern 1: Standard A/P/C
+
 ```markdown
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
@@ -80,6 +86,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 ```
 
 ### Pattern 2: C Only (No A/P)
+
 ```markdown
 Display: "**Select:** [C] Continue"
 
@@ -95,6 +102,7 @@ Display: "**Select:** [C] Continue"
 **Use for:** Step 1, document discovery, simple progression
 
 ### Pattern 3: Auto-Proceed (No Menu)
+
 ```markdown
 Display: "**Proceeding to [next step]...**"
 
@@ -109,6 +117,7 @@ Display: "**Proceeding to [next step]...**"
 **Use for:** Init steps, validation sequences
 
 ### Pattern 4: Branching
+
 ```markdown
 Display: "**Select:** [L] Load Existing [N] Create New [C] Continue"
 
@@ -127,7 +136,8 @@ Display: "**Select:** [L] Load Existing [N] Create New [C] Continue"
 
 ## Critical Violations
 
-### ❌ DON'T:
+### ❌ DON'T
+
 ```markdown
 # Missing Handler Section
 Display: "**Select:** [C] Continue"
@@ -146,7 +156,8 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 # MISSING: "ALWAYS halt and wait for user input after presenting menu"
 ```
 
-### ✅ DO:
+### ✅ DO
+
 - Handler section immediately follows Display
 - "Halt and wait" in EXECUTION RULES
 - Non-C options specify "redisplay menu"
@@ -157,6 +168,7 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 ## Validation Checklist
 
 For every menu:
+
 - [ ] Display section present
 - [ ] Handler section immediately follows
 - [ ] EXECUTION RULES section present

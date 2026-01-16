@@ -1,6 +1,6 @@
 # Step 2: Project Context Analysis
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -13,7 +13,7 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating project context analysis
@@ -21,7 +21,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -29,25 +29,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to analyze project requirements from different architectural angles
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from step 1 are available
 - Input documents already loaded are in memory (PRD, epics, UX spec, etc.)
 - Focus on architectural implications of requirements
 - No technology decisions yet - pure analysis phase
 
-## YOUR TASK:
+## YOUR TASK
 
 Fully read and Analyze the loaded project documents to understand architectural scope, requirements, and constraints before beginning decision making.
 
-## CONTEXT ANALYSIS SEQUENCE:
+## CONTEXT ANALYSIS SEQUENCE
 
 ### 1. Review Project Requirements
 
@@ -122,7 +122,7 @@ Does this match your understanding of the project scope and requirements?"
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Project Context Analysis
@@ -168,7 +168,7 @@ Show the generated content and present choices:
 
 ### 6. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current context analysis
 - Process the enhanced architectural insights that come back
@@ -176,7 +176,7 @@ Show the generated content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current project context
 - Process the collaborative improvements to architectural understanding
@@ -184,17 +184,17 @@ Show the generated content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Load `./step-03-starter.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 4.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All input documents thoroughly analyzed for architectural implications
 ✅ Project scope and complexity clearly assessed and validated
@@ -204,7 +204,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Skimming documents without deep architectural analysis
 ❌ Missing or misinterpreting critical NFRs
@@ -217,7 +217,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-03-starter.md` to evaluate starter template options.
 

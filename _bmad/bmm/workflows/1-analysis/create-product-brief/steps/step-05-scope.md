@@ -13,13 +13,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 5: MVP Scope Definition
 
-## STEP GOAL:
+## STEP GOAL
 
 Define MVP scope with clear boundaries and outline future vision through collaborative scope negotiation that balances ambition with realism.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -27,7 +27,7 @@ Define MVP scope with clear boundaries and outline future vision through collabo
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -35,21 +35,21 @@ Define MVP scope with clear boundaries and outline future vision through collabo
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative discovery tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on defining minimum viable scope and future vision
 - 🚫 FORBIDDEN to create MVP scope that's too large or includes non-essential features
 - 💬 Approach: Systematic scope negotiation with clear boundary setting
 - 📋 COLLABORATIVE scope definition that prevents scope creep
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Generate MVP scope collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before loading next step
 - 🚫 FORBIDDEN to proceed without user confirmation through menu
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Current document and frontmatter from previous steps, product vision, users, and success metrics already defined
 - Focus: Defining what's essential for MVP vs. future enhancements
@@ -174,14 +174,14 @@ Prepare the following structure for document append:
 
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} with current scope content to optimize scope definition
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to validate MVP scope
 - IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5], then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -196,7 +196,7 @@ ONLY WHEN [C continue option] is selected and [MVP scope finalized and saved to 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - MVP features that solve the core problem effectively
 - Clear out-of-scope boundaries that prevent scope creep
@@ -206,7 +206,7 @@ ONLY WHEN [C continue option] is selected and [MVP scope finalized and saved to 
 - Content properly appended to document when C selected
 - Frontmatter updated with stepsCompleted: [1, 2, 3, 4, 5]
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - MVP scope too large or includes non-essential features
 - Missing clear boundaries leading to scope creep

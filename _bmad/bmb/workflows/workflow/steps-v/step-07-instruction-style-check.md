@@ -11,13 +11,13 @@ workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 
 # Validation Step 7: Instruction Style Check
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate that workflow instructions use appropriate style - intent-based for creative/facilitative workflows, prescriptive only where absolutely required (compliance, legal).
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,14 +25,14 @@ To validate that workflow instructions use appropriate style - intent-based for 
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Review EVERY step's instruction style using subprocess optimization - separate subprocess per file for deep analysis
 - 🚫 DO NOT skip any files or style checks - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report OR return structured findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load intent vs prescriptive standards
 - 💾 Check EACH step's instruction style using subprocess optimization - each file in its own subprocess
@@ -40,7 +40,7 @@ To validate that workflow instructions use appropriate style - intent-based for 
 - 🚫 DO NOT halt for user input - validation runs to completion
 - 💬 Subprocesses must either update validation report OR return findings for parent aggregation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Instruction style should match domain
 - Creative/facilitative → Intent-based (default)
@@ -56,6 +56,7 @@ To validate that workflow instructions use appropriate style - intent-based for 
 Load {intentVsPrescriptive} to understand:
 
 **Intent-Based (Default):**
+
 - Use for: Most workflows - creative, exploratory, collaborative
 - Step instruction describes goals and principles
 - AI adapts conversation naturally
@@ -63,6 +64,7 @@ Load {intentVsPrescriptive} to understand:
 - Example: "Guide user to define requirements through open-ended discussion"
 
 **Prescriptive (Exception):**
+
 - Use for: Compliance, safety, legal, medical, regulated industries
 - Step provides exact instructions
 - More controlled and predictable
@@ -73,12 +75,14 @@ Load {intentVsPrescriptive} to understand:
 From {workflowPlanFile}, identify the workflow domain:
 
 **Intent-Based Domains (Default):**
+
 - Creative work (writing, design, brainstorming)
 - Personal development (planning, goals, reflection)
 - Exploration (research, discovery)
 - Collaboration (facilitation, coaching)
 
 **Prescriptive Domains (Exception):**
+
 - Legal/Compliance (contracts, regulations)
 - Medical (health assessments, triage)
 - Financial (tax, regulatory compliance)
@@ -99,6 +103,7 @@ From {workflowPlanFile}, identify the workflow domain:
 Each subprocess performs deep analysis of instruction prose to classify style:
 
 **Intent-Based Indicators:**
+
 - ✅ Describes goals/outcomes, not exact wording
 - ✅ Uses "think about" language
 - ✅ Multi-turn conversation encouraged
@@ -107,17 +112,20 @@ Each subprocess performs deep analysis of instruction prose to classify style:
 - ✅ Flexible: "guide user through..." not "say exactly..."
 
 **Prescriptive Indicators:**
+
 - Exact questions specified
 - Specific wording required
 - Sequence that must be followed precisely
 - "Say exactly:" or "Ask precisely:"
 
 **Mixed Style:**
+
 - Some steps prescriptive (critical/required)
 - Others intent-based (creative/facilitative)
 
 **RETURN FORMAT:**
 Each subprocess should return findings including:
+
 - Step file identifier
 - Instruction style classification (Intent-based/Prescriptive/Mixed)
 - Style indicators observed
@@ -130,10 +138,12 @@ Each subprocess should return findings including:
 ### 4. Validate Appropriateness
 
 **For Intent-Based Domains:**
+
 - ✅ Instructions should be intent-based
 - ❌ Prescriptive instructions inappropriate (unless specific section requires it)
 
 **For Prescriptive Domains:**
+
 - ✅ Instructions should be prescriptive where compliance matters
 - ⚠️ May have intent-based sections for creative elements
 
@@ -144,26 +154,31 @@ After ALL subprocesses have analyzed their respective step files, aggregate find
 Document the following:
 
 **Workflow Domain Assessment:**
+
 - Document the domain type (creative/interactive vs compliance/legal)
 - State the appropriate instruction style for this domain
 
 **Instruction Style Findings:**
+
 - List each step and its instruction style classification (intent-based/prescriptive/mixed)
 - Note whether the style is appropriate for the domain
 - Document specific examples of instruction language that demonstrate the style
 - Identify any steps with inappropriate style (e.g., prescriptive in creative domain)
 
 **Issues Identified:**
+
 - List any steps that are overly prescriptive for their domain
 - List any steps that should be more prescriptive (for compliance domains)
 - Note any style inconsistencies across steps
 
 **Positive Findings:**
+
 - Highlight steps with excellent instruction style
 - Note effective use of intent-based facilitation language
 - Identify appropriate use of prescriptive instructions (if applicable)
 
 **Overall Status:**
+
 - Provide final assessment (PASS/FAIL/WARN)
 - Summarize key findings
 
@@ -186,7 +201,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - EVERY step's instruction style reviewed via subprocess optimization (Pattern 2: per-file deep analysis)
 - Each step analyzed in its own subprocess for style classification
@@ -197,7 +212,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Report saved before proceeding
 - Next validation step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not checking every step's style via subprocess
 - Not analyzing each file in its own subprocess

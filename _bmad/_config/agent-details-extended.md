@@ -3,6 +3,7 @@
 ## Comprehensive Agent Catalog with Use Cases and Custom Prompts
 
 ### 1. Setup & Core (1 agent)
+
 **System initialization and BMad framework setup.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -10,6 +11,7 @@
 | `setup-bmad-master.agent.md` | `bmd-custom-core-bmad-master.agent.md` | `_bmad/core/agents/bmad-master.md` | Starting a new project and need to initialize BMad framework | Master orchestrator - lists available tasks/workflows, executes any BMad operation |
 
 **Custom Prompts** (`.github/prompts/setup-prompts.md`):
+
 - Initialize BMad in existing project
 - Configure BMad for new greenfield project
 - List all available BMad tasks and workflows
@@ -17,6 +19,7 @@
 - Troubleshoot BMad configuration issues
 
 ### 2. Development Agents (4 agents)
+
 **Hands-on code implementation, testing, and documentation.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -27,6 +30,7 @@
 | `dev-tech-writer.agent.md` | `bmd-custom-bmm-tech-writer.agent.md` | `_bmad/bmm/agents/tech-writer.md` | Documenting existing brownfield project or creating API docs | Generate project documentation, create Mermaid/Excalidraw diagrams, validate docs |
 
 **Custom Prompts** (`.github/prompts/dev-prompts.md`):
+
 - Implement feature with TDD approach
 - Debug failing tests and fix implementation
 - Refactor code while maintaining test coverage
@@ -42,6 +46,7 @@
 - Validate documentation against standards
 
 ### 3. Planning & Architecture (3 agents)
+
 **High-level design, requirements analysis, and project planning.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -51,6 +56,7 @@
 | `plan-project-manager.agent.md` | `bmd-custom-bmm-pm.agent.md` | `_bmad/bmm/agents/pm.md` | Creating a PRD from stakeholder interviews and user feedback | Create PRDs through user interviews, generate epics/stories, course correction analysis |
 
 **Custom Prompts** (`.github/prompts/plan-prompts.md`):
+
 - Design scalable system architecture
 - Create architecture decision records (ADRs)
 - Evaluate technology stack options
@@ -65,6 +71,7 @@
 - Analyze and correct off-track implementation
 
 ### 4. Agile/Scrum (1 agent)
+
 **Helps organize team tasks and run effective meetings.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -72,6 +79,7 @@
 | `agile-scrum-master.agent.md` | `bmd-custom-bmm-sm.agent.md` | `_bmad/bmm/agents/sm.md` | Planning next sprint and preparing developer-ready stories | Sprint planning, create developer-ready stories, run retrospectives, course correction |
 
 **Custom Prompts** (`.github/prompts/agile-prompts.md`):
+
 - Generate sprint plan from epic backlog
 - Create developer-ready user stories
 - Prepare story with acceptance criteria
@@ -82,6 +90,7 @@
 - Run sprint planning session
 
 ### 5. UI/UX Design (1 agent)
+
 **User interface design, user experience optimization, and interaction patterns.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -89,6 +98,7 @@
 | `ui-ux-designer.agent.md` | `bmd-custom-bmm-ux-designer.agent.md` | `_bmad/bmm/agents/ux-designer.md` | Designing user interface and user flows for new mobile app feature | Generate UX design from PRD, create wireframes, design interaction patterns |
 
 **Custom Prompts** (`.github/prompts/ui-prompts.md`):
+
 - Create UX design from product requirements
 - Generate wireframes for web/mobile app
 - Design user flow diagrams
@@ -99,6 +109,7 @@
 - Validate design against UX best practices
 
 ### 6. Build/Scaffold Agents (3 agents)
+
 **Automated scaffolding and code generation for new components.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -108,6 +119,7 @@
 | `build-workflow-creator.agent.md` | `bmd-custom-bmb-workflow-builder.agent.md` | `_bmad/bmb/agents/workflow-builder.md` | Creating a custom workflow for automated deployment pipeline | Create/edit BMad workflows, validate workflow structure |
 
 **Custom Prompts** (`.github/prompts/build-prompts.md`):
+
 - Create new BMad agent with persona
 - Edit existing agent while maintaining compliance
 - Validate agent against BMad standards
@@ -119,6 +131,7 @@
 - Generate workflow from requirements
 
 ### 7. Creative/Innovation (6 agents)
+
 **Ideation, problem-solving, and strategic innovation.**
 
 | New Name | Old Name | Links To | Real-World Use | In-App Purpose |
@@ -131,6 +144,7 @@
 | `creative-storytelling.agent.md` | `bmd-custom-cis-storyteller.agent.md` | `_bmad/cis/agents/storyteller/` | Crafting product narrative for marketing campaign | Create compelling narratives and stories |
 
 **Custom Prompts** (`.github/prompts/creative-prompts.md`):
+
 - Facilitate brainstorming session
 - Generate wild ideas with structured prompts
 - Apply SCAMPER technique to innovation
@@ -146,6 +160,7 @@
 - Create customer success stories
 
 ### 8. Specification Agents (8 agents - Keep existing names)
+
 **Feature specification, requirements documentation, and implementation planning.**
 
 | Name | Real-World Use | In-App Purpose |
@@ -161,6 +176,7 @@
 | `spec-tasks-to-issues.agent.md` | Converting task list to GitHub issues for team tracking | Convert tasks to GitHub issues automatically |
 
 **Custom Prompts** (`.github/prompts/spec-prompts.md`):
+
 - Analyze feature requirements
 - Identify technical dependencies
 - Assess implementation risks

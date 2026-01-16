@@ -10,13 +10,13 @@ frontmatterStandards: '../data/frontmatter-standards.md'
 
 # Validation Step 2: Frontmatter Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate that EVERY step file's frontmatter follows the frontmatter standards - correct variables, proper relative paths, NO unused variables.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - VALIDATE EVERY FILE'S FRONTMATTER
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,21 +24,21 @@ To validate that EVERY step file's frontmatter follows the frontmatter standards
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context thread
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate EVERY step file's frontmatter using subprocess optimization - each file in its own subprocess
 - 🚫 DO NOT skip any files or checks - DO NOT BE LAZY
 - 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough using per-file deep analysis (Pattern 2)
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load frontmatter standards first, then validate each file in its own subprocess for deep analysis
 - 💾 Subprocesses must either update validation report OR return findings for parent aggregation
 - 📖 Aggregate all findings into validation report before loading next step
 - 🚫 DO NOT halt for user input - validation runs to completion
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All step files in the workflow must be validated
 - Load {frontmatterStandards} for validation criteria
@@ -53,11 +53,13 @@ To validate that EVERY step file's frontmatter follows the frontmatter standards
 Load {frontmatterStandards} to understand validation criteria.
 
 **Key Rules:**
+
 1. Only variables USED in the step may be in frontmatter
 2. All file references MUST use `{variable}` format
 3. Paths within workflow folder MUST be relative - NO `workflow_path` allowed
 
 **Forbidden Patterns:**
+
 - `workflow_path: '...'` - use relative paths instead
 - `thisStepFile: '...'` - remove unless actually referenced in body
 - `workflowFile: '...'` - remove unless actually referenced in body
@@ -89,6 +91,7 @@ For each file, the subprocess performs the following deep analysis:
 ```
 
 Example frontmatter:
+
 ```yaml
 ---
 # File References
@@ -112,6 +115,7 @@ for each variable in extracted_variables:
 ```
 
 **Example:**
+
 - Variable `nextStepFile`: Search body for `{nextStepFile}` → Found in line 166 ✅
 - Variable `thisStepFile`: Search body for `{thisStepFile}` → Not found ❌ VIOLATION
 
@@ -145,6 +149,7 @@ Check ALL files systematically. Return findings for compilation and appendage to
 ### 3. Aggregate Findings and Document Results
 
 Document frontmatter validation results in the validation report showing:
+
 - Which files were checked
 - Frontmatter compliance status for each file
 - Unused variables found in each file
@@ -154,6 +159,7 @@ Document frontmatter validation results in the validation report showing:
 ### 4. List All Violations
 
 Document all violations found in the validation report, including:
+
 - Specific files with violations
 - Unused variable names and why they're unused
 - Forbidden patterns detected with explanation
@@ -177,7 +183,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - EVERY step file validated using subprocess optimization (Pattern 2: per-file deep analysis)
 - Each subprocess validates frontmatter, checks variable usage, validates paths
@@ -187,7 +193,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Report saved before proceeding
 - Next validation step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not validating every file using subprocess optimization
 - Not systematically checking each variable for usage in subprocess

@@ -1,6 +1,6 @@
 # Domain Research Step 1: Domain Research Scope Confirmation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user confirmation
 
@@ -12,7 +12,7 @@
 - 🔍 This is SCOPE CONFIRMATION ONLY - no web research yet
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present [C] continue option after scope confirmation
@@ -20,7 +20,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Research type = "domain" is already set
 - **Research topic = "{{research_topic}}"** - discovered from initial discussion
@@ -28,11 +28,11 @@
 - Focus on industry/domain analysis with web research
 - Web search is required to verify and supplement your knowledge with current facts
 
-## YOUR TASK:
+## YOUR TASK
 
 Confirm domain research scope and approach for **{{research_topic}}** with the user's goals in mind.
 
-## DOMAIN SCOPE CONFIRMATION:
+## DOMAIN SCOPE CONFIRMATION
 
 ### 1. Begin Scope Confirmation
 
@@ -74,13 +74,13 @@ For **{{research_topic}}**, I will research:
 
 ### 3. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Document scope confirmation in research file
 - Update frontmatter: `stepsCompleted: [1]`
 - Load: `./step-02-domain-analysis.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append scope confirmation:
 
@@ -108,7 +108,7 @@ When user selects 'C', append scope confirmation:
 **Scope Confirmed:** {{date}}
 ```
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Domain research scope clearly confirmed with user
 ✅ All domain analysis areas identified and explained
@@ -117,7 +117,7 @@ When user selects 'C', append scope confirmation:
 ✅ Scope confirmation documented when user proceeds
 ✅ Proper routing to next domain research step
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not clearly confirming domain research scope with user
 ❌ Missing critical domain analysis areas
@@ -130,7 +130,7 @@ When user selects 'C', append scope confirmation:
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-02-domain-analysis.md` to begin industry analysis.
 

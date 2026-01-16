@@ -1,7 +1,7 @@
 Module-Based App Development Meeting
 Transcript
 
-https://otter.ai/u/X72N1XefzoSKYrd36Uzm9QCyAHM?view=summary
+<https://otter.ai/u/X72N1XefzoSKYrd36Uzm9QCyAHM?view=summary>
 
 The meeting focused on the development of a module-based app for managing work orders and material handling. Key points included the app's integration with MySQL and Visual servers, the creation of self-contained modules for different tasks (e.g., receiving, dunnage labels), and a guided wizard for operators. The app will feature a login module, a guided wizard for operators, and a quality task module. Material handlers will have a favorites tab and auto-assignment based on zones. The app will also include a quick add feature for non-wait list tasks and a data trail for project management. Training programs will be developed for new press operators.
 

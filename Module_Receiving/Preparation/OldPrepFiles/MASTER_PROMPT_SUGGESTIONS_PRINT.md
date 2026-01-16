@@ -90,7 +90,7 @@ Create AuditBehavior that automatically logs:
 
 ## Important Additions (Medium Impact)
 
-###4. Exception Handling Strategy for MediatR
+### 4. Exception Handling Strategy for MediatR
 
 **What's Missing:** No guidance on how to handle exceptions in handlers
 
@@ -101,6 +101,7 @@ Create AuditBehavior that automatically logs:
 Each handler wraps its logic in try-catch block and returns failure result instead of throwing exceptions.
 
 **Implementation Details:**
+
 - Fine-grained control per handler
 - Catch specific exception types (DbException, ValidationException, etc.)
 - Create user-friendly error messages for each case
@@ -108,6 +109,7 @@ Each handler wraps its logic in try-catch block and returns failure result inste
 - Log all exceptions with full context for debugging
 
 **Benefits:**
+
 - Explicit error handling tailored to each operation
 - No unhandled exceptions bubbling to UI
 - Consistent error format for ViewModels
@@ -207,18 +209,21 @@ When creating or modifying any file within a module, follow these rules:
 # Code Review Checklist - [Module Name]
 
 **General Code Quality:**
+
 - [ ] Code follows .editorconfig formatting rules
 - [ ] No compiler warnings present
 - [ ] XML documentation on all public APIs
 - [ ] No TODO comments without corresponding task tracking
 
 **MVVM Architecture Compliance:**
+
 - [ ] ViewModels are partial classes
 - [ ] ViewModels use ObservableProperty and RelayCommand attributes
 - [ ] Views use x:Bind (compile-time binding)
 - [ ] No business logic in XAML code-behind files
 
 **MediatR Handler Standards:**
+
 - [ ] Handler has single responsibility (one query OR one command)
 - [ ] Handler includes structured logging
 - [ ] Handler returns appropriate result type
@@ -226,23 +231,25 @@ When creating or modifying any file within a module, follow these rules:
 - [ ] Handler name follows naming pattern (VerbEntityHandler)
 
 **FluentValidation Standards:**
+
 - [ ] Validator exists for all command/query parameters
 - [ ] Validator rules are comprehensive
 - [ ] Validator includes meaningful error messages
 - [ ] Validator is registered in dependency injection
 
 **Testing Standards:**
+
 - [ ] Unit tests exist for handler logic (with mocked dependencies)
 - [ ] Unit tests exist for validator rules
 - [ ] Integration tests for Data Access Object if new stored procedure
 - [ ] Test coverage exceeds 80% for new code
 
 **Documentation Standards:**
+
 - [ ] Module README updated if public API changed
 - [ ] Architecture document updated if design decision made
 - [ ] End-user guide updated if user-facing features changed
 - [ ] Changelog entry added for this change
-
 
 ---
 
@@ -423,13 +430,13 @@ When creating or modifying any file within a module, follow these rules:
 
 ### Phase 1-6 (During Implementation)
 
-4. Implement exception handling strategy
+1. Implement exception handling strategy
 2. Add feature flags for safe rollout
 3. Configure observability and monitoring
 
 ### Post-Implementation
 
-7. Set up CI/CD pipeline
+1. Set up CI/CD pipeline
 2. Create developer onboarding guide
 3. Establish code review process
 

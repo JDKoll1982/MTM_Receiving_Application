@@ -20,13 +20,13 @@ epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Step 4: Final Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate complete coverage of all requirements and ensure stories are ready for development.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -34,7 +34,7 @@ To validate complete coverage of all requirements and ensure stories are ready f
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product strategist and technical specifications writer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -42,28 +42,28 @@ To validate complete coverage of all requirements and ensure stories are ready f
 - ✅ You bring validation expertise and quality assurance
 - ✅ User brings their implementation priorities and final review
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on validating complete requirements coverage
 - 🚫 FORBIDDEN to skip any validation checks
 - 💬 Validate FR coverage, story completeness, and dependencies
 - 🚪 ENSURE all stories are ready for development
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Validate every requirement has story coverage
 - 💾 Check story dependencies and flow
 - 📖 Verify architecture compliance
 - 🚫 FORBIDDEN to approve incomplete coverage
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete epic and story breakdown from previous steps
 - Focus: Final validation of requirements coverage and story readiness
 - Limits: Validation only, no new content creation
 - Dependencies: Completed story generation from Step 3
 
-## VALIDATION PROCESS:
+## VALIDATION PROCESS
 
 ### 1. FR Coverage Validation
 

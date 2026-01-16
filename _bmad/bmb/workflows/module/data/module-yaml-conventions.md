@@ -7,6 +7,7 @@
 ## Overview
 
 `module.yaml` is the configuration file for a BMAD module. It:
+
 - Defines module metadata (code, name, description)
 - Collects user input via prompts during installation
 - Makes those inputs available to agents and workflows as variables
@@ -343,14 +344,16 @@ primary_platform:
 
 ## Best Practices
 
-### DO:
+### DO
+
 - Keep prompts clear and concise
 - Provide sensible defaults
 - Use `result: "{project-root}/{value}"` for paths
 - Use single/multi-select for structured choices
 - Group related variables logically
 
-### DON'T:
+### DON'T
+
 - Overwhelm users with too many questions
 - Ask for information that could be inferred
 - Use technical jargon in prompts

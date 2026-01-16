@@ -11,6 +11,7 @@
 **Use when:** One persona can handle the module's purpose.
 
 **Characteristics:**
+
 - Simpler, focused
 - Clear single point of contact
 - Good for narrow domains
@@ -24,11 +25,13 @@
 **Use when:** Different expertise areas justify specialized personas.
 
 **Characteristics:**
+
 - Each agent has a distinct role and expertise
 - Agents form a cohesive team around the module's theme
 - Menus coordinate to guide users to the right agent
 
 **Why multi-agent?**
+
 - Different workflows need different expert perspectives
 - Users expect to talk to "the right expert" for each task
 - The module covers a domain too broad for one persona
@@ -70,7 +73,7 @@ Every agent serves this theme — they're a complete team working together.
 
 ## Planning Your Agents
 
-### For Each Agent, Document:
+### For Each Agent, Document
 
 1. **Role** — What is this agent responsible for?
 2. **Workflows** — Which workflows will this agent trigger/own?
@@ -90,11 +93,13 @@ That's it! The agent-builder workflow will handle the detailed implementation.
 **Use when:** The agent needs to remember context across sessions.
 
 **Characteristics:**
+
 - Has a sidecar file that persists between conversations
 - Learns from user interactions
 - Remembers project details, preferences, past work
 
 **Examples:**
+
 - An agent that tracks project decisions over time
 - An agent that learns user preferences
 - An agent that maintains ongoing project context
@@ -104,6 +109,7 @@ That's it! The agent-builder workflow will handle the detailed implementation.
 **Use when:** The agent doesn't need persistent memory.
 
 **Characteristics:**
+
 - Each conversation starts fresh
 - Relies on shared context files (like project-context.md)
 - Simpler, more predictable
@@ -145,12 +151,14 @@ The agent-builder workflow will convert this into the proper format.
 ## When to Use Multiple Agents
 
 **Consider multiple agents when:**
+
 - Different workflows require different expertise
 - The domain has clear specialization areas
 - Users would expect to talk to different "experts"
 - The module covers a broad process (like software development)
 
 **Use a single agent when:**
+
 - The domain is focused and narrow
 - One expertise area covers all workflows
 - Simplicity is preferred

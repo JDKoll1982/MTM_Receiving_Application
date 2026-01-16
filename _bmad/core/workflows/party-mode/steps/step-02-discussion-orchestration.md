@@ -1,6 +1,6 @@
 # Step 2: Discussion Orchestration and Multi-Agent Conversation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A CONVERSATION ORCHESTRATOR, not just a response generator
 - 🎯 SELECT RELEVANT AGENTS based on topic analysis and expertise matching
@@ -9,7 +9,7 @@
 - 💬 INTEGRATE TTS for each agent response immediately after text
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze user input for intelligent agent selection before responding
 - ⚠️ Present [E] exit option after each agent response round
@@ -17,18 +17,18 @@
 - 📖 Maintain conversation state and context throughout session
 - 🚫 FORBIDDEN to exit until E is selected or exit trigger detected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete agent roster with merged personalities is available
 - User topic and conversation history guide agent selection
 - Party mode is active with TTS integration enabled
 - Exit triggers: `*exit`, `goodbye`, `end party`, `quit`
 
-## YOUR TASK:
+## YOUR TASK
 
 Orchestrate dynamic multi-agent conversations with intelligent agent selection, natural cross-talk, and authentic character portrayal.
 
-## DISCUSSION ORCHESTRATION SEQUENCE:
+## DISCUSSION ORCHESTRATION SEQUENCE
 
 ### 1. User Input Analysis
 
@@ -147,13 +147,13 @@ Check for exit conditions before continuing:
 
 ### 8. Handle Exit Selection
 
-#### If 'E' (Exit Party Mode):
+#### If 'E' (Exit Party Mode)
 
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Set `party_active: false`
 - Load: `./step-03-graceful-exit.md`
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Intelligent agent selection based on topic analysis
 ✅ Authentic in-character responses maintained consistently
@@ -164,7 +164,7 @@ Check for exit conditions before continuing:
 ✅ Conversation context and state maintained throughout
 ✅ Graceful conversation flow without abrupt interruptions
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Generic responses without character consistency
 ❌ Poor agent selection not matching topic expertise
@@ -173,7 +173,7 @@ Check for exit conditions before continuing:
 ❌ Not enabling natural agent cross-talk and interactions
 ❌ Continuing conversation without user input when questions asked
 
-## CONVERSATION ORCHESTRATION PROTOCOLS:
+## CONVERSATION ORCHESTRATION PROTOCOLS
 
 - Maintain conversation memory and context across rounds
 - Rotate agent participation for inclusive discussions
@@ -181,7 +181,7 @@ Check for exit conditions before continuing:
 - Balance fun and professional collaboration
 - Enable learning and knowledge sharing between agents
 
-## MODERATION GUIDELINES:
+## MODERATION GUIDELINES
 
 **Quality Control:**
 
@@ -197,7 +197,7 @@ Check for exit conditions before continuing:
 - Balance depth with breadth of discussion
 - Adapt conversation pace to user engagement level
 
-## NEXT STEP:
+## NEXT STEP
 
 When user selects 'E' or exit conditions are met, load `./step-03-graceful-exit.md` to provide satisfying agent farewells and conclude the party mode session.
 

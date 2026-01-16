@@ -35,6 +35,7 @@ Transform discovered capabilities into structured menu commands following BMAD m
 ## Load Menu Patterns
 
 Read agentMenuPatterns file to understand:
+
 - Command structure requirements
 - YAML formatting standards
 - Handler/action patterns
@@ -43,12 +44,14 @@ Read agentMenuPatterns file to understand:
 ## Capability Discovery Conversation
 
 Guide collaborative conversation to:
+
 1. Review capabilities from previous step
 2. Identify which capabilities become commands
 3. Group related capabilities
 4. Define command scope and boundaries
 
 Ask targeted questions:
+
 - "Which capabilities are primary commands vs secondary actions?"
 - "Can related capabilities be grouped under single commands?"
 - "What should each command accomplish?"
@@ -99,16 +102,19 @@ menu:
 ## Menu [A][P][C] Verification
 
 **[A]ccuracy**
+
 - All commands match defined capabilities
 - Triggers are clear and intuitive
 - Handlers reference actual capabilities
 
 **[P]attern Compliance**
+
 - Follows agent-menu-patterns.md structure
 - YAML formatting is correct
 - No help/exit commands included
 
 **[C]ompleteness**
+
 - All primary capabilities have commands
 - Commands cover agent's core functions
 - Menu is ready for next step
@@ -139,14 +145,14 @@ menu:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-### Menu Handling Logic:
+### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Save content to {agentPlan}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
 
-### EXECUTION RULES:
+### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'

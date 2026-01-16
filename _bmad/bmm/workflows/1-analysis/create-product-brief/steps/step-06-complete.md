@@ -8,13 +8,13 @@ outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Step 6: Product Brief Completion
 
-## STEP GOAL:
+## STEP GOAL
 
 Complete the product brief workflow, update status files, and provide guidance on logical next steps for continued product development.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -22,7 +22,7 @@ Complete the product brief workflow, update status files, and provide guidance o
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused Business Analyst facilitator
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -30,21 +30,21 @@ Complete the product brief workflow, update status files, and provide guidance o
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 - ✅ Maintain collaborative completion tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on completion, next steps, and project guidance
 - 🚫 FORBIDDEN to generate new content for the product brief
 - 💬 Approach: Systematic completion with quality validation and next step recommendations
 - 📋 FINALIZE document and update workflow status appropriately
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Update the main workflow status file with completion information
 - 📖 Suggest potential next workflow steps for the user
 - 🚫 DO NOT load additional steps after this one (this is final)
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete product brief document from all previous steps, workflow frontmatter shows all completed steps
 - Focus: Completion validation, status updates, and next step guidance
@@ -144,14 +144,14 @@ The brief captures everything needed to guide subsequent product development:
 
 **Product Brief Complete**"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - Since this is a completion step, no continuation to other workflow steps
 - User can ask questions or request review of the completed brief
 - Provide guidance on next workflow options when requested
 - End workflow session gracefully after completion confirmation
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is a final step with completion focus
 - No additional workflow steps to load after this
@@ -166,7 +166,7 @@ ONLY WHEN [completion confirmation is provided and workflow status updated], wil
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Product brief contains all essential sections with collaborative content
 - All collaborative content properly saved to document with proper frontmatter
@@ -176,7 +176,7 @@ ONLY WHEN [completion confirmation is provided and workflow status updated], wil
 - User acknowledges completion and understands next available options
 - Workflow properly marked as complete in status tracking
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not updating workflow status file with completion information
 - Missing clear next step guidance for user

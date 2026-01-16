@@ -76,6 +76,7 @@ Mockups/
 **Purpose**: Authenticate users via Badge + PIN
 
 **Features**:
+
 - Barcode scanner support (keyboard wedge simulation)
 - Role auto-detection from badge
 - Manual role override option
@@ -93,6 +94,7 @@ Mockups/
 **Target Users**: Press operators, setup technicians
 
 **Key Features**:
+
 - **Simple workflow**: Minimal typing, dropdown-driven
 - **Guided wizard**: Step-by-step request creation
 - **Favorites/Recents**: Quick repeat requests (future phase)
@@ -102,6 +104,7 @@ Mockups/
 **Views**:
 
 #### waitlist.html
+
 - Table of operator's active requests
 - Columns: Position, Request Type, Details, Wait Time, Status, Actions
 - Action buttons: Edit, Cancel
@@ -109,16 +112,19 @@ Mockups/
 - Floating Action Button (FAB) when items exist
 
 #### active-jobs.html
+
 - Currently running jobs on operator's press
 - Work order details from Visual ERP
 - Material requirements display
 
 #### recent.html
+
 - Completed request history
 - Filter by date range
 - Completion time tracking
 
 **WinUI3 Equivalents**:
+
 - NavigationView (sidebar)
 - ListView with GridView (tables)
 - CommandBar (top actions)
@@ -134,6 +140,7 @@ Mockups/
 **Target Users**: Material handlers, forklift operators
 
 **Key Features**:
+
 - **Unified waitlist**: Tasks from Receiving, Dunnage, Routing, Press Floor
 - **Color-coded task types**: Blue (Receiving), Green (Dunnage), Orange (Routing), Red (Press)
 - **Zone filtering**: View tasks by assigned zone
@@ -144,6 +151,7 @@ Mockups/
 **Views**:
 
 #### waitlist.html
+
 - Unified task list from all departments
 - Columns: Task Type, Location, Load #, Priority, Wait Time, Requester, Actions
 - Task type badges with color coding
@@ -151,21 +159,25 @@ Mockups/
 - Action buttons: Accept Task, Need Help
 
 #### my-tasks.html
+
 - Currently assigned tasks
 - Task timer tracking
 - Mark complete button
 
 #### recent.html
+
 - Completed task log
 - Duration tracking
 - Handler credit accounting
 
 #### floor-plan.html
+
 - Facility map with zone overlays
 - Active task locations highlighted
 - Handler current positions (future: real-time)
 
 **Unique Features**:
+
 - Aggregates from 4 different department workflows
 - Zone-based task filtering
 - Priority escalation (green → yellow → red)
@@ -179,6 +191,7 @@ Mockups/
 **Target Users**: Material handling leads, supervisors
 
 **Key Features** (extends Material Handler):
+
 - **Analytics dashboard**: Real-time team performance metrics
 - **SVG placeholder charts**: Task volume, handler performance, wait times
 - **Zone Mode toggle**: Enable/disable zone-based assignment
@@ -189,11 +202,13 @@ Mockups/
 **Views**:
 
 #### waitlist.html
+
 - Same as Material Handler waitlist
 - **PLUS**: Analytics panel (collapsible sidebar or split view)
 - Shows: Avg wait time, tasks completed today, active handlers
 
 #### analytics.html
+
 - Full-screen analytics dashboard
 - Charts (SVG placeholders):
   - Task volume by type (bar chart)
@@ -203,12 +218,14 @@ Mockups/
 - Filter by date range, shift, zone
 
 #### team-management.html
+
 - Table of all material handlers
 - Columns: Name, Zone, Status, Tasks Today, Last Activity
 - Status indicators: Active, On Break, Offline
 - Reassign zone button
 
 #### controls.html
+
 - System settings (lead-only access)
 - **Zone Mode**: ON/OFF toggle with description
 - **Auto-Assign**: ON/OFF toggle with urgency threshold slider
@@ -216,6 +233,7 @@ Mockups/
 - Notification preferences
 
 **SVG Chart Example** (Task Volume by Type):
+
 ```html
 <svg viewBox="0 0 400 200" class="chart-svg">
   <!-- Bars representing Receiving, Dunnage, Routing, Press -->
@@ -234,6 +252,7 @@ Mockups/
 **Target Users**: Production leads, press floor supervisors
 
 **Key Features** (extends Operator):
+
 - **Press analytics dashboard**: Utilization, downtime, job completion
 - **SVG placeholder charts**: Press performance, operator metrics
 - **Operator management**: View all operator statuses
@@ -243,11 +262,13 @@ Mockups/
 **Views**:
 
 #### waitlist.html
+
 - Press floor waitlist (all presses, not just one operator)
 - Columns: Press, Operator, Request Type, Wait Time, Priority, Status
 - Filter by press, shift, priority
 
 #### press-analytics.html
+
 - Press utilization charts (SVG):
   - Uptime vs downtime (pie chart)
   - Jobs completed per press (bar chart)
@@ -255,12 +276,14 @@ Mockups/
 - Filter by date range, press
 
 #### operator-management.html
+
 - Table of all press operators
 - Columns: Name, Press, Status, Jobs Today, Current Job
 - Status: Running, Setup, Break, Offline
 - Clock-in/out times
 
 #### trends.html
+
 - Historical trend analysis
 - Charts (SVG):
   - Job completion trends (line chart)
@@ -276,6 +299,7 @@ Mockups/
 **Target Users**: Plant manager, operations director
 
 **Key Features**:
+
 - **Unified dashboard**: Both MH and Press analytics combined
 - **Master override controls**: All lead functions accessible
 - **User management**: Assign roles, manage permissions
@@ -285,6 +309,7 @@ Mockups/
 **Views**:
 
 #### dashboard.html
+
 - Tabbed interface:
   - **Overview**: Plant-wide KPIs
   - **Material Handling**: MH metrics summary
@@ -295,20 +320,24 @@ Mockups/
   - Overall efficiency score
 
 #### mh-analytics.html
+
 - Same as Material Handler Lead analytics
 - Additional: Cross-site comparison (Expo vs VITS)
 
 #### press-analytics.html
+
 - Same as Operator Lead analytics
 - Additional: Multi-shift trends
 
 #### reports.html
+
 - Report generation interface
 - Filters: Date range, department, site
 - Export options: CSV, PDF (mock buttons)
 - Scheduled reports configuration
 
 #### user-management.html
+
 - Table of all users
 - Columns: Badge ID, Name, Role, Site, Status, Last Login
 - Actions: Edit role, Reset PIN, Deactivate
@@ -347,6 +376,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 **Purpose**: Main stylesheet with WinUI3-inspired component styles
 
 **Key Sections**:
+
 1. **App Shell**: NavigationView layout grid
 2. **Navigation Pane**: Sidebar menu styles
 3. **Content Area**: Main page container
@@ -361,6 +391,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 12. **Utility Classes**: Spacing, flex, visibility
 
 **Design System Adherence**:
+
 - 4px spacing grid
 - Fluent Design corner radius (4px, 8px, 12px)
 - Acrylic backgrounds with blur
@@ -372,6 +403,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 **Purpose**: CSS custom properties for Fluent Design theme
 
 **Variables**:
+
 - **Accent Colors**: Default, Secondary, Tertiary, Disabled
 - **Status Colors**: Success, Warning, Error, Info
 - **Task Type Colors**: Receiving (Blue), Dunnage (Green), Routing (Orange), Press (Red)
@@ -382,6 +414,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 - **Corner Radius**: Small, Medium, Large
 
 **Dark Mode Support**:
+
 ```css
 @media (prefers-color-scheme: dark) {
   /* Override variables for dark theme */
@@ -389,6 +422,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 ```
 
 **Fluent UI Icons**:
+
 - Unicode character mappings
 - Common icon classes (`.icon-add`, `.icon-edit`, etc.)
 - Font: Segoe Fluent Icons / Segoe MDL2 Assets
@@ -398,6 +432,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 **Purpose**: Sample data for populating mockups
 
 **Data Objects**:
+
 1. **currentUser**: Session context (id, name, role, site)
 2. **sites**: Site list (Expo Drive, VITS Drive)
 3. **presses**: Press equipment list
@@ -413,6 +448,7 @@ This table shows how HTML/CSS mockup elements map to actual WinUI3 XAML controls
 13. **settings**: System configuration flags
 
 **Utility Functions** (`MockUtils`):
+
 - `getWaitTimeStatus(waitTime, standard)`: Calculate urgency (normal/warning/critical)
 - `formatWaitTime(minutes)`: Display format (e.g., "41 min", "1h 23m")
 - `formatTimestamp(dateString)`: Localized date/time
@@ -437,6 +473,7 @@ MockUtils.updateFABVisibility(waitlistItems.length);
 ```
 
 **CSS**:
+
 ```css
 .fab {
   position: fixed;
@@ -452,6 +489,7 @@ MockUtils.updateFABVisibility(waitlistItems.length);
 **Used in**: Lead and Manager modules
 
 **Example** (Bar Chart - Task Volume):
+
 ```html
 <div class="chart-container">
   <h3>Task Volume by Type</h3>
@@ -473,6 +511,7 @@ MockUtils.updateFABVisibility(waitlistItems.length);
 ```
 
 **Chart Types**:
+
 - **Bar Chart**: Task volume, handler performance
 - **Line Chart**: Wait time trends, completion trends
 - **Pie Chart**: Press utilization, zone distribution
@@ -494,6 +533,7 @@ Login (login.html)
 ```
 
 **Session Storage**:
+
 ```javascript
 sessionStorage.setItem('currentUser', JSON.stringify({
   badgeId, role, loginTime
@@ -508,6 +548,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 **Minimum**: 1366x768 (degraded but functional)
 
 **Breakpoints** (if needed for smaller screens):
+
 ```css
 @media (max-width: 1366px) {
   .nav-pane { width: 280px; }
@@ -520,16 +561,19 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ## Accessibility
 
 **ARIA Labels**:
+
 - All icon buttons have `aria-label`
 - Tables have `role="table"` attributes
 - Modals have `role="dialog"` and `aria-labelledby`
 
 **Keyboard Navigation**:
+
 - Tab order follows visual flow
 - Enter key submits forms
 - Escape key closes modals
 
 **High Contrast Mode**:
+
 - Borders remain visible
 - Focus indicators prominent
 - Color not sole indicator
@@ -541,6 +585,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### Viewing Mockups
 
 1. **Start at Login**:
+
    ```
    file:///path/to/Mockups/Login/login.html
    ```
@@ -559,6 +604,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### Testing Scenarios
 
 **Operator Workflow**:
+
 1. Login as Operator
 2. View waitlist → Click "New Request"
 3. Fill wizard → Submit
@@ -566,6 +612,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 5. Cancel request
 
 **Material Handler Workflow**:
+
 1. Login as Material Handler
 2. View unified waitlist (all task types)
 3. Filter by zone
@@ -573,6 +620,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 5. Mark complete
 
 **Lead Analytics Workflow**:
+
 1. Login as Material Handler Lead or Operator Lead
 2. View waitlist with analytics panel
 3. Navigate to full analytics dashboard
@@ -580,6 +628,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 5. Adjust controls (Zone Mode toggle)
 
 **Plant Manager Workflow**:
+
 1. Login as Plant Manager
 2. View unified dashboard (both departments)
 3. Navigate between MH and Press analytics tabs
@@ -593,6 +642,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### 1. Data Binding Patterns
 
 **HTML (Mock)**:
+
 ```html
 <span id="userName"></span>
 <script>
@@ -601,6 +651,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ```
 
 **XAML (WinUI3)**:
+
 ```xml
 <TextBlock Text="{x:Bind ViewModel.CurrentUser.Name, Mode=OneWay}" />
 ```
@@ -608,11 +659,13 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### 2. Navigation
 
 **HTML**:
+
 ```html
 <a href="waitlist.html" class="nav-item-link">Waitlist</a>
 ```
 
 **XAML**:
+
 ```xml
 <NavigationViewItem Content="Waitlist" Tag="WaitlistPage">
   <NavigationViewItem.Icon>
@@ -624,11 +677,13 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### 3. Commands
 
 **HTML**:
+
 ```html
 <button onclick="submitRequest()">Submit</button>
 ```
 
 **XAML**:
+
 ```xml
 <Button Content="Submit" Command="{x:Bind ViewModel.SubmitRequestCommand}" />
 ```
@@ -636,6 +691,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### 4. Tables/Lists
 
 **HTML**:
+
 ```html
 <table class="winui-table">
   <tr><td>Item 1</td></tr>
@@ -643,6 +699,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ```
 
 **XAML**:
+
 ```xml
 <ListView ItemsSource="{x:Bind ViewModel.WaitlistItems, Mode=OneWay}">
   <ListView.ItemTemplate>
@@ -656,6 +713,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ### 5. Modals
 
 **HTML**:
+
 ```html
 <div class="dialog-overlay">
   <div class="dialog">...</div>
@@ -663,6 +721,7 @@ sessionStorage.setItem('currentUser', JSON.stringify({
 ```
 
 **XAML**:
+
 ```xml
 <ContentDialog Title="New Request">
   <StackPanel>...</StackPanel>
@@ -743,10 +802,11 @@ Before converting to XAML, verify these mockup features:
 
 **Project Owner**: John Kollodge  
 **Business Stakeholders**:
-- Nick Wunsch (Production Lead) - NWunsch@mantoolmfg.com
-- Cristofer Muchowski (Production Lead) - CMuchowski@mantoolmfg.com
-- Brett Lusk (Production Lead) - blusk@mantoolmfg.com
-- Dan Smith (IT/Operations) - DSmith@mantoolmfg.com
+
+- Nick Wunsch (Production Lead) - <NWunsch@mantoolmfg.com>
+- Cristofer Muchowski (Production Lead) - <CMuchowski@mantoolmfg.com>
+- Brett Lusk (Production Lead) - <blusk@mantoolmfg.com>
+- Dan Smith (IT/Operations) - <DSmith@mantoolmfg.com>
 
 **Version**: 1.0.0  
 **Last Updated**: 2026-01-11  
@@ -756,9 +816,9 @@ Before converting to XAML, verify these mockup features:
 
 ## References
 
-- **Fluent UI Icons**: https://aka.ms/fluentui-system-icons
-- **WinUI3 Controls Gallery**: https://docs.microsoft.com/en-us/windows/apps/design/controls/
-- **Fluent Design System**: https://www.microsoft.com/design/fluent/
+- **Fluent UI Icons**: <https://aka.ms/fluentui-system-icons>
+- **WinUI3 Controls Gallery**: <https://docs.microsoft.com/en-us/windows/apps/design/controls/>
+- **Fluent Design System**: <https://www.microsoft.com/design/fluent/>
 - **Planning Documentation**: `docs/MTM_Waitlist_Application/Documentation/Planning/`
 - **Mockup Prompt**: `MockupPrompt.md`
 

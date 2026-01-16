@@ -1,6 +1,7 @@
 # Coding Standards & Conventions
 
 **MVVM Pattern:**
+
 - **ViewModels:**
   - Inherit from `BaseViewModel` (where applicable).
   - Use `[ObservableProperty]` for properties.
@@ -12,6 +13,7 @@
   - Code-behind only for UI-specific logic.
 
 **Data Access (DAO):**
+
 - **Naming:** `Dao_<EntityName>`.
 - **Pattern:**
   - `Dao_User` is an instance class registered in DI.
@@ -21,14 +23,17 @@
 - **Error Handling:** Use `Model_Dao_Result<T>` for return values to encapsulate success/failure and error messages.
 
 **Services:**
+
 - **Naming:** `Service_<Name>`, `IService_<Name>`.
 - **Pattern:** Interface-based design, registered in DI container.
 
 **Models:**
+
 - **Naming:** `Model_<EntityName>`.
 - **Structure:** Properties match database columns.
 
 **General:**
+
 - **Async:** Use `Async` suffix for async methods.
 - **Nullable:** Enable nullable reference types (`<Nullable>enable</Nullable>`).
 - **File Scoped Namespaces:** Preferred.

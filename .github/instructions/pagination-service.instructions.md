@@ -8,18 +8,18 @@
 
 When implementing pagination in ViewModels, follow these guidelines:
 
-1.  **Injection**: Always inject `IService_Pagination` via constructor injection.
-2.  **State Management**:
-    -   Maintain a "Master" collection (all items) and a "Display" collection (current page items).
-    -   The `IService_Pagination` manages the logic, but the ViewModel must update the `ObservableCollection` bound to the View.
-3.  **Event Handling**:
-    -   Subscribe to `PageChanged` event in the constructor.
-    -   Unsubscribe in `Dispose` or if the ViewModel is transient and not disposed, ensure no memory leaks (though transient VMs are usually fine).
-4.  **UI Binding**:
-    -   Expose `CurrentPage`, `TotalPages`, `HasNextPage`, `HasPreviousPage` properties in the ViewModel.
-    -   Update these properties in the `PageChanged` handler.
-5.  **Filtering**:
-    -   If filtering is applied, update the source of the `IService_Pagination` with the filtered list, then refresh the display.
+1. **Injection**: Always inject `IService_Pagination` via constructor injection.
+2. **State Management**:
+    - Maintain a "Master" collection (all items) and a "Display" collection (current page items).
+    - The `IService_Pagination` manages the logic, but the ViewModel must update the `ObservableCollection` bound to the View.
+3. **Event Handling**:
+    - Subscribe to `PageChanged` event in the constructor.
+    - Unsubscribe in `Dispose` or if the ViewModel is transient and not disposed, ensure no memory leaks (though transient VMs are usually fine).
+4. **UI Binding**:
+    - Expose `CurrentPage`, `TotalPages`, `HasNextPage`, `HasPreviousPage` properties in the ViewModel.
+    - Update these properties in the `PageChanged` handler.
+5. **Filtering**:
+    - If filtering is applied, update the source of the `IService_Pagination` with the filtered list, then refresh the display.
 
 ## Example
 

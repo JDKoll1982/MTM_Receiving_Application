@@ -16,6 +16,7 @@ Service_VolvoMasterData handles CRUD operations and business logic for the Volvo
 ## Architecture
 
 ### Dependencies (Constructor Injection)
+
 ```csharp
 private readonly Dao_VolvoPart _partDao;
 private readonly Dao_VolvoPartComponent _componentDao;
@@ -23,6 +24,7 @@ private readonly IService_LoggingUtility _logger;
 ```
 
 **Registration** (App.xaml.cs):
+
 ```csharp
 services.AddSingleton<IService_VolvoMasterData>(sp =>
 {
@@ -38,6 +40,7 @@ services.AddSingleton<IService_VolvoMasterData>(sp =>
 ## Core Responsibilities
 
 ### 1. Part Management
+
 - Get all active parts
 - Get part by part number (ID)
 - Add new parts
@@ -46,6 +49,7 @@ services.AddSingleton<IService_VolvoMasterData>(sp =>
 - Validate part data before save
 
 ### 2. Component Management
+
 - Get components for parent part (BOM explosion)
 - Add component relationships
 - Update component quantities
@@ -53,6 +57,7 @@ services.AddSingleton<IService_VolvoMasterData>(sp =>
 - Validate no circular dependencies
 
 ### 3. Data Validation
+
 - Part number format (uppercase, no spaces)
 - Quantity per skid > 0
 - Description not empty
@@ -64,11 +69,13 @@ services.AddSingleton<IService_VolvoMasterData>(sp =>
 ## Method Patterns
 
 ### GetAllActivePartsAsync
+
 **Purpose:** Retrieve all active (is_active=1) parts for catalog/dropdown lists
 
 **Returns:** `Model_Dao_Result<List<Model_VolvoPart>>`
 
 **Use Cases:**
+
 - Populate AutoSuggestBox in shipment entry
 - Display parts catalog in master data management
 - Export parts list for reporting
@@ -78,24 +85,29 @@ services.AddSingleton<IService_VolvoMasterData>(sp =>
 ---
 
 ### GetPartByNumberAsync
+
 **Purpose:** Retrieve single part by part number
 
 **Returns:** `Model_Dao_Result<Model_VolvoPart>`
 
 **Validation:**
+
 - ✅ partNumber not null/empty
 - ✅ Part exists in database
 
 **Error Handling:**
+
 - Return `Success=false` with "Part not found" if not exists
 - Do NOT throw exception
 
 ---
 
 ### SavePartAsync
+
 **Purpose:** Insert new or update existing part
 
 **Validation Rules:**
+
 ```csharp
 ✅ Part number required (not null/empty)
 ✅ Part number uppercase only
@@ -106,6 +118,7 @@ services.AddSingleton<IService_VolvoMasterData>(sp =>
 ```
 
 **Logic:**
+
 ```csharp
 if (part.Id == 0)
 {
@@ -120,6 +133,7 @@ else
 ```
 
 **Normalization:**
+
 - Trim whitespace from part number and description
 - Convert part number to uppercase
 - Set is_active = true for new parts
@@ -127,13 +141,16 @@ else
 ---
 
 ### DeactivatePartAsync
+
 **Purpose:** Soft delete part by setting is_active=0
 
 **Business Rule:** ⚠️ Cannot deactivate if part is used in:
+
 - Active shipments (status='pending_po' or recent completed)
 - Component relationships (as parent or component)
 
 **Validation Flow:**
+
 ```csharp
 1. Check if part used in active shipments
    - Query volvo_line_data WHERE part_number=X AND shipment.is_archived=0
@@ -149,11 +166,13 @@ Create stored procedure `sp_volvo_part_check_references` to perform checks atomi
 ---
 
 ### GetComponentsByParentAsync
+
 **Purpose:** Get all components for a parent part (BOM)
 
 **Returns:** `Model_Dao_Result<List<Model_VolvoPartComponent>>`
 
 **Example:**
+
 ```
 Parent: V-EMB-500
 Components:
@@ -166,9 +185,11 @@ Components:
 ---
 
 ### AddComponentAsync
+
 **Purpose:** Add component relationship to parent part
 
 **Validation:**
+
 ```csharp
 ✅ Parent part exists and is active
 ✅ Component part exists and is active
@@ -179,6 +200,7 @@ Components:
 ```
 
 **Circular Dependency Check:**
+
 ```
 INVALID:
   A → B → C → A (circular)
@@ -189,6 +211,7 @@ VALID:
 ```
 
 **Algorithm:**
+
 ```csharp
 1. Get all components of proposed component part
 2. Recursively check if parent part appears anywhere in tree
@@ -198,9 +221,11 @@ VALID:
 ---
 
 ### RemoveComponentAsync
+
 **Purpose:** Delete component relationship
 
 **Validation:**
+
 - ✅ Relationship exists
 - ⚠️ Optional: Check if used in recent shipments before removing
 
@@ -209,17 +234,20 @@ VALID:
 ## Data Integrity Rules
 
 ### Part Number Standards
+
 - **Format:** Uppercase letters, numbers, hyphens only
 - **Example:** `V-EMB-500`, `V-EMB-2`
 - **Validation:** `^[A-Z0-9-]+$` regex pattern
 - **Auto-normalize:** Convert to uppercase on save
 
 ### Quantity Validation
+
 - **QuantityPerSkid:** Must be > 0 (parts come in whole units)
 - **Component Quantity:** Integer ≥ 1 (how many components per parent)
 - **Component QuantityPerSkid:** Integer ≥ 1 (pieces per component skid)
 
 ### Soft Delete Policy
+
 - **Never** physically delete parts (breaks historical data)
 - Set `is_active=0` to hide from active catalogs
 - Keep deactivated parts in database for audit trail
@@ -232,6 +260,7 @@ VALID:
 ### Common Error Scenarios
 
 **"Part number already exists"**
+
 ```csharp
 var existingPart = await _partDao.GetByIdAsync(part.PartNumber);
 if (existingPart.Success && existingPart.Data != null && existingPart.Data.Id != part.Id)
@@ -241,6 +270,7 @@ if (existingPart.Success && existingPart.Data != null && existingPart.Data.Id !=
 ```
 
 **"Cannot deactivate part - used in active shipments"**
+
 ```csharp
 var shipmentsResult = await _partDao.GetActiveShipmentReferencesAsync(partNumber);
 if (shipmentsResult.Success && shipmentsResult.Data.Count > 0)
@@ -251,6 +281,7 @@ if (shipmentsResult.Success && shipmentsResult.Data.Count > 0)
 ```
 
 **"Circular dependency detected"**
+
 ```csharp
 if (await HasCircularDependencyAsync(parentPartNumber, componentPartNumber))
 {
@@ -264,6 +295,7 @@ if (await HasCircularDependencyAsync(parentPartNumber, componentPartNumber))
 ## Business Logic Examples
 
 ### Example 1: Save New Part
+
 ```csharp
 var newPart = new Model_VolvoPart
 {
@@ -282,6 +314,7 @@ if (result.Success)
 ```
 
 ### Example 2: Add Component to Assembly
+
 ```csharp
 var component = new Model_VolvoPartComponent
 {
@@ -295,6 +328,7 @@ var result = await _masterDataService.AddComponentAsync(component);
 ```
 
 ### Example 3: Deactivate Unused Part
+
 ```csharp
 var result = await _masterDataService.DeactivatePartAsync("V-EMB-OLD");
 
@@ -310,13 +344,17 @@ if (!result.Success)
 ## Performance Considerations
 
 ### Caching Strategy
+
 Consider caching frequently accessed data:
+
 - **Active parts list** - Reload on part add/update/deactivate
 - **Component relationships** - Cache per parent part
 - **Cache invalidation** - On any master data change
 
 ### Batch Operations
+
 For bulk imports:
+
 ```csharp
 // Instead of:
 foreach (var part in parts)
@@ -356,14 +394,17 @@ transaction.Commit();
 ## Common Issues & Solutions
 
 ### Issue: "Cannot deactivate part" even though no active shipments visible
+
 **Cause:** Part used in archived shipments or as component
 **Solution:** Check `volvo_part_components` table, implement proper reference check
 
 ### Issue: Circular dependency not detected
+
 **Cause:** Incomplete recursive check
 **Solution:** Implement breadth-first search through entire component tree
 
 ### Issue: Part number case mismatch causing duplicates
+
 **Cause:** Database collation case-sensitive
 **Solution:** Always normalize to uppercase before database operations
 

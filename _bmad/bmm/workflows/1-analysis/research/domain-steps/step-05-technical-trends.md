@@ -1,6 +1,6 @@
 # Domain Research Step 5: Technical Trends
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after technical trends content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on emerging technologies and innovation patterns in the domain
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive technical trends analysis using current web data with emphasis on innovations and emerging technologies impacting {{research_topic}}.
 
-## TECHNICAL TRENDS SEQUENCE:
+## TECHNICAL TRENDS SEQUENCE
 
 ### 1. Begin Technical Trends Analysis
 
@@ -93,7 +93,7 @@ Search the web: "{{research_topic}} future outlook trends"
 
 Prepare technical analysis with source citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -170,17 +170,17 @@ Show the generated technical analysis and present complete option:
 
 ### 7. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
 - Load: `./step-06-research-synthesis.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 5. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Emerging technologies identified with current data
 ✅ Digital transformation trends clearly documented
@@ -192,7 +192,7 @@ Content is already written to document when generated in step 5. No additional a
 ✅ Proper routing to next step (research synthesis)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 ❌ Missing critical emerging technologies in the domain
@@ -205,7 +205,7 @@ Content is already written to document when generated in step 5. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## TECHNICAL RESEARCH PROTOCOLS:
+## TECHNICAL RESEARCH PROTOCOLS
 
 - Search for cutting-edge technologies and innovations
 - Identify disruption patterns and game-changers
@@ -213,7 +213,7 @@ Content is already written to document when generated in step 5. No additional a
 - Consider regional technology variations
 - Analyze competitive technological advantages
 
-## RESEARCH WORKFLOW COMPLETION:
+## RESEARCH WORKFLOW COMPLETION
 
 When 'C' is selected:
 
@@ -223,7 +223,7 @@ When 'C' is selected:
 - Research workflow status updated
 - Final recommendations provided to user
 
-## NEXT STEPS:
+## NEXT STEPS
 
 Research workflow complete. User may:
 

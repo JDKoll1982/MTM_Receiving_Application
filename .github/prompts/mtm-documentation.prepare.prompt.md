@@ -1,9 +1,11 @@
 # Speckit Prepare - AI Agent Onboarding & Documentation Review
 
 ## Purpose
+
 This prompt guides an AI agent through a comprehensive familiarization process with the MTM Receiving Application codebase, ensuring full understanding of architectural patterns, constitutional rules, and development standards before undertaking any implementation tasks.
 
 ## Core Directive
+
 **Before proceeding with ANY implementation task, you must systematically read and internalize ALL project documentation, architectural guidelines, and constitutional principles.**
 
 ---
@@ -13,6 +15,7 @@ This prompt guides an AI agent through a comprehensive familiarization process w
 **Before reading any documentation, activate the Serena MCP server project to enable efficient semantic code navigation.**
 
 **Action Required:**
+
 ```
 # Activate the MTM Receiving Application project
 mcp_oraios_serena_activate_project("MTM_Receiving_Application")
@@ -25,6 +28,7 @@ mcp_oraios_serena_onboarding()
 ```
 
 **Why Serena First:**
+
 - **80-90% token savings** when exploring codebase
 - **Semantic navigation** - Read specific symbols instead of entire files
 - **Project memories** - Access architectural patterns without re-reading docs
@@ -37,6 +41,7 @@ mcp_oraios_serena_onboarding()
 **Serena creates project memories that contain distilled knowledge from core documents and instruction files. Read these FIRST to avoid redundant file reading.**
 
 **Available Memories:**
+
 - `project_overview` - Project purpose, features, architecture overview
 - `constitution_summary` - Constitutional principles v1.2.0, forbidden practices
 - `architectural_patterns` - MVVM layers, Service→DAO delegation, instance-based DAOs
@@ -51,6 +56,7 @@ mcp_oraios_serena_onboarding()
 - `suggested_commands` - Common PowerShell commands
 
 **Action Required:**
+
 ```
 # List all available memories
 mcp_oraios_serena_list_memories()
@@ -77,15 +83,18 @@ mcp_oraios_serena_read_memory("suggested_commands")
 ## Step 2: Read Instruction Files NOT Covered by Memories (Selective)
 
 **Most architectural patterns are already in Serena memories. Only read instruction files for:**
+
 - Task-specific guidance not in memories (e.g., window-sizing, XAML troubleshooting)
 - Detailed implementation examples needed for your specific task
 - Files referenced by user attachments or task requirements
 
 **Task-specific guidance not in memories (e.g., window-sizing, XAML troubleshooting)**
+
 - Detailed implementation examples needed for your specific task
 - Files referenced by user attachments or task requirements
 
 **Files Covered by Memories (DO NOT re-read):**
+
 - ✅ `.github/copilot-instructions.md` → In `project_overview`, `forbidden_practices`
 - ✅ `.specify/memory/constitution.md` → In `constitution_summary`
 - ✅ `AGENTS.md` → In `project_overview`, `tech_stack`
@@ -101,6 +110,7 @@ mcp_oraios_serena_read_memory("suggested_commands")
 - ✅ `.github/instructions/infor-visual-integration.instructions.md` → In `infor_visual_constraints`
 
 **Files to Read Only If Task-Relevant:**
+
 ```
 # List all instruction files to see what's available
 mcp_oraios_serena_list_dir(".github/instructions", recursive=false, skip_ignored_files=true)
@@ -117,7 +127,9 @@ read_file(".github/instructions/pagination-services.instructions.md", 1, -1)  # 
 ---
 
 ## Step 3: Read Linked Documentation & Referenced Files
+
  (using Serena):**
+
 ```
 # Example: If instruction file references Documentation/REUSABLE_SERVICES.md
 read_file("Documentation/REUSABLE_SERVICES.md", 1, -1)
@@ -132,15 +144,18 @@ mcp_oraios_serena_search_for_pattern(
 ```
 
 **Efficiency Steps:**
+
 1. Track all file references encountered in instructions (e.g., "See Documentation/REUSABLE_SERVICES.md")
 2. Read each referenced file completely using `read_file`
 **Common Referenced Documentation Locations:**
+
 - `Documentation/` - Business logic, workflows, API documentation, troubleshooting
 - `specs/` - Feature specifications, implementation plans, task lists
 - `Database/` - Schema documentation, stored procedure standards
 - `.specify/memory/` - Project memory files, architecture decisions
 
 **Action Required:**
+
 1. Track all file references encountered in instructions (e.g., "See Documentation/REUSABLE_SERVICES.md")
 2. Read each referenced file completely
 3. Follow any additional references found in those files (recursive documentation reading)
@@ -153,11 +168,13 @@ mcp_oraios_serena_search_for_pattern(
 When you receive a task via a `/{prompt}` command, the user may attach additional context files or folders.
 
 **Action Required:**
+
 1. Check foLeverage Serena Memories for Architectural Knowledge
 
 **After onboarding, Serena creates project memories containing architectural patterns. Read these to quickly understand the codebase without re-reading source files.**
 
 **Action Required:**
+
 ```
 # List available memories
 mcp_oraios_serena_list_memories()
@@ -180,6 +197,7 @@ After reading all documentation and memoriesd ALL files within that folder
 5. Identify any task-specific constraints or requirements from attachments
 
 **Examples of Attachments:**
+
 - `#file:spec.md` - Feature specification
 - `#file:plan.md` - Implementation plan
 - `#folder:specs/008-dunnage-wizard-ui/` - Entire feature specification folder
@@ -188,6 +206,7 @@ After reading all documentation and memoriesd ALL files within that folder
 **Use Serena to validate your understanding by exploring code examples without reading entire files.**
 
 **Validation Actions:**
+
 ```
 # 1. Explore a DAO to understand structure (200-300 tokens vs 5000+)
 mcp_oraios_serena_get_symbols_overview("Data/Receiving/Dao_ReceivingLine.cs", depth=1)
@@ -240,26 +259,34 @@ After reading all documentation, synthesize your understanding of:
 ### Non-Negotiable Constraints
 - **Infor Visual is READ ONLY:** No INSERT/UPDATE/DELETE on SQL Server database
 ```
+
 # Read specs efficiently
+
 read_file("specs/XXX-feature-name/spec.md", 1, -1)
 read_file("specs/XXX-feature-name/plan.md", 1, -1)
 
 # Explore related code using Serena
+
 mcp_oraios_serena_get_symbols_overview("Services/Receiving/Service_MyFeature.cs", depth=1)
 mcp_oraios_serena_find_symbol("Service_MyFeature/MyMethod", include_body=true)
+
 ```
 
 ### For Bug Fixes:
 ```
+
 # Read troubleshooting docs
+
 read_file("Documentation/Troubleshooting/COMMON_ISSUES.md", 1, -1)
 
 # Find error patterns in code
+
 mcp_oraios_serena_search_for_pattern(
     substring_pattern=r"Service_ErrorHandler\.HandleException",
     context_lines_before=3,
     context_lines_after=3
 )
+
 ```
 10: Confirm Readiness to Proceed
 
@@ -283,41 +310,49 @@ mcp_oraios_serena_search_for_pattern(
 
 Based on your assigned task, identify which additional documentation you should prioritize:
 
-### For New Feature Implementation:
+### For New Feature Implementation
+
 - Read the feature specification in `specs/XXX-feature-name/spec.md`
 - Review the implementation plan in `specs/XXX-feature-name/plan.md`
 - Check task status in `specs/XXX-feature-name/tasks.md`
 - Review related service documentation in `Documentation/`
 
-### For Bug Fixes:
+### For Bug Fixes
+
 - Review troubleshooting guides in `Documentation/Troubleshooting/`
 - Check error handling standards in `.github/instructions/error-handling.instructions.md`
 - Review logging standards in `.github/instructions/logging-standards.instructions.md`
 
-### For Refactoring:
+### For Refactoring
+
 - Review architecture refactori (Using Serena MCP Server)
 
 ## Serena Setup
+
 - ✅ Project activated: MTM_Receiving_Application
 - ✅ Onboarding complete: [X] memories created
 - ✅ Memories read: architectural_patterns.md, dao_best_practices.md, mvvm_guide.md
 
 ## Documentation Read
+
 - ✅ Core project documents (copilot-instructions.md, constitution.md, AGENTS.md)
 - ✅ All [X] instruction files in .github/instructions/
 - ✅ [List any additional referenced documentation read]
 - ✅ [List any attached files/folders read]
 
 ## Serena Code Exploration (Token-Efficient Validation)
+
 - ✅ Explored [X] DAO files using get_symbols_overview (~300 tokens vs ~5000)
 - ✅ Validated Service_ErrorHandler usage patterns (~200 tokens)
 - ✅ Checked ViewModel structure (~400 tokens)
 - ✅ Searched for architectural violations (MessageBox.Show, static DAOs)
 
 ## Key Constraints Understood
+
 - [List 3-5 most relevant constraints for the task]
 
 ## Token EfficiSerena activation** - Must activate project FIRST to enable semantic tools
+
 ❌ **DON'T skip onboarding** - Creates critical project memories for efficient navigation
 ❌ **DON'T read entire files when exploring code** - Use `get_symbols_overview` and `find_symbol` instead
 ❌ **DON'T skip instruction files** - Even seemingly unrelated files may contain critical constraints

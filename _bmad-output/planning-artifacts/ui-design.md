@@ -12,6 +12,7 @@ date: '2026-01-04'
 This document defines the visual layout and flow for the **Routing Module**, based on the decisions in `architecture.md`.
 
 ## 1. Application Shell (MainWindow)
+
 The Routing Module lives within the main application shell, accessible via the navigation pane. A global bottom bar provides access to session-wide settings like Validation.
 
 **Implementation Note:** The `View_Routing_Workflow.xaml` acts as the shell for the module. It contains all child views (Mode Selection, Wizard Steps, Manual Entry) in a single Grid, toggling their visibility based on the current workflow state. This matches the pattern used in `Module_Receiving` and `Module_Dunnage`.
@@ -55,6 +56,7 @@ The Routing Module lives within the main application shell, accessible via the n
 ## 2. Wizard Workflow
 
 ### Step 1: PO & Line Selection
+
 Focus on data entry. `IService_Focus` ensures cursor starts in "PO Number".
 
 ```text
@@ -79,6 +81,7 @@ Focus on data entry. `IService_Focus` ensures cursor starts in "PO Number".
 ```
 
 ### Step 2: Recipient Selection
+
 Features "Quick Add" buttons for top recipients and a search filter.
 
 ```text
@@ -103,6 +106,7 @@ Features "Quick Add" buttons for top recipients and a search filter.
 ```
 
 ### Step 3: Review & Print
+
 Final verification before committing to the database.
 
 ```text
@@ -127,6 +131,7 @@ Final verification before committing to the database.
 ```
 
 ## 3. Manual Entry (Grid View)
+
 Designed for power users. Uses `CommunityToolkit.WinUI.UI.Controls.DataGrid` with a standard Toolbar.
 
 ```text
@@ -151,6 +156,7 @@ Designed for power users. Uses `CommunityToolkit.WinUI.UI.Controls.DataGrid` wit
 ## 4. Dialogs
 
 ### "Other" Reason Prompt
+
 Triggered when a user enters a custom reason in the "PO Issue" field (if applicable) or similar dropdowns.
 
 ```text
@@ -172,15 +178,17 @@ Triggered when a user enters a custom reason in the "PO Issue" field (if applica
 ## 5. Implementation Notes
 
 ### Global Bottom Bar
-*   **Location:** `MainWindow.xaml` (inside the `NavigationView` grid).
-*   **Components:**
-    *   **Validation Toggle:** Checkbox bound to `ViewModel.IsValidationEnabled`.
-    *   **Visibility:** Should be visible when the Routing Module is active (or globally if appropriate).
-*   **Logic:**
-    *   The `IsValidationEnabled` property must be accessible to all Routing ViewModels (likely via a shared Service or the MainViewModel).
-    *   When unchecked, `CanExecute` checks on "Next/Print" commands should be relaxed.
+
+* **Location:** `MainWindow.xaml` (inside the `NavigationView` grid).
+* **Components:**
+  * **Validation Toggle:** Checkbox bound to `ViewModel.IsValidationEnabled`.
+  * **Visibility:** Should be visible when the Routing Module is active (or globally if appropriate).
+* **Logic:**
+  * The `IsValidationEnabled` property must be accessible to all Routing ViewModels (likely via a shared Service or the MainViewModel).
+  * When unchecked, `CanExecute` checks on "Next/Print" commands should be relaxed.
 
 ### Navigation Changes
-*   **Carrier Delivery:** Removed from `NavigationView.MenuItems` as per requirements.
+
+* **Carrier Delivery:** Removed from `NavigationView.MenuItems` as per requirements.
 
 ```

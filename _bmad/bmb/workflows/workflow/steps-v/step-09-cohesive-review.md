@@ -10,13 +10,13 @@ workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 
 # Validation Step 9: Cohesive Review
 
-## STEP GOAL:
+## STEP GOAL
 
 To perform a cohesive "ultra-think" review of the entire workflow - walk through it as a whole, assess overall quality, does it actually facilitate well?
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
 - ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Review the workflow as a cohesive whole - **NOTE: This step loads ENTIRE workflow for holistic review (different pattern from other validation steps)**
 - 🚫 DO NOT skip any aspect of the review - DO NOT BE LAZY
@@ -32,7 +32,7 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 - 💬 However, since cohesive review requires understanding the COMPLETE workflow as one unit, parent may need full context for proper holistic assessment
 - 🚪 This is the meta-review - overall assessment
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Walk through the ENTIRE workflow end-to-end using subprocess optimization when available
 - 💬 When using subprocesses: Each subprocess loads one step file, performs deep analysis, returns structured findings to parent for aggregation
@@ -41,7 +41,7 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 - 📖 Think deeply: would this actually work well?
 - 🚫 DO NOT halt for user input - validation runs to completion
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - This is the cohesive review - look at the workflow as a whole
 - Consider user experience from start to finish
@@ -59,11 +59,13 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 **SUBPROCESS APPROACH (when available):**
 
 For EACH workflow file (workflow.md + all step files in order), launch a subprocess that:
+
 1. Loads that single file
 2. Performs deep analysis of content, flow, quality, and connection points
 3. Returns structured findings to parent for holistic aggregation
 
 **Subprocess should return:**
+
 - File name analyzed
 - Purpose and flow position within the workflow
 - How it connects to previous and next steps
@@ -73,6 +75,7 @@ For EACH workflow file (workflow.md + all step files in order), launch a subproc
 **FALLBACK APPROACH (if subprocess unavailable):**
 
 Load workflow.md and EVERY step file in steps-c/ sequentially in main context:
+
 1. Load workflow.md
 2. Load EVERY step file in steps-c/ in order
 3. Read through each step
@@ -91,6 +94,7 @@ Load workflow.md and EVERY step file in steps-c/ sequentially in main context:
 - Reaching the end
 
 **Ask yourself:**
+
 - Does this make sense?
 - Is the flow logical?
 - Would I feel guided or confused?
@@ -101,6 +105,7 @@ Load workflow.md and EVERY step file in steps-c/ sequentially in main context:
 **Check for:**
 
 **✅ Cohesive Indicators:**
+
 - Each step builds on previous work
 - Clear progression toward goal
 - Consistent voice and approach throughout
@@ -108,6 +113,7 @@ Load workflow.md and EVERY step file in steps-c/ sequentially in main context:
 - Satisfying completion
 
 **❌ Incohesive Indicators:**
+
 - Steps feel disconnected
 - Jumps in logic or flow
 - Inconsistent patterns
@@ -123,16 +129,19 @@ Consider goal clarity, logical flow, facilitation quality, user experience, and 
 ### 5. Identify Strengths and Weaknesses
 
 **Strengths:**
+
 - What does this workflow do well?
 - What makes it excellent?
 - What should other workflows emulate?
 
 **Weaknesses:**
+
 - What could be improved?
 - What doesn't work well?
 - What would confuse users?
 
 **Critical Issues:**
+
 - Are there any show-stopper problems?
 - Would this workflow fail in practice?
 
@@ -165,7 +174,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - ENTIRE workflow reviewed end-to-end
 - Quality assessed across multiple dimensions
@@ -175,7 +184,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Report saved before proceeding
 - Next validation step loaded
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not reviewing the entire workflow
 - Superficial or lazy assessment

@@ -11,13 +11,13 @@ targetLocation: '{build_tracking_targetLocation}'
 
 # Step 5: Agent Specs
 
-## STEP GOAL:
+## STEP GOAL
 
 Create agent placeholder/spec files based on the brief.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Create agent placeholder/spec files based on the brief.
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are the **Module Builder** — creating agent specs
 - ✅ These are specs, not full agents (agent-builder does that)
@@ -42,6 +42,7 @@ Load `{agentArchitectureFile}` for guidance.
 ### 2. Get Agent Roster from Brief
 
 Extract from the brief:
+
 - Agent names
 - Roles
 - Workflows they're responsible for
@@ -55,6 +56,7 @@ Load `{agentSpecTemplate}` and create:
 `{targetLocation}/agents/{agent_name}.spec.md`
 
 With content:
+
 ```markdown
 # Agent Specification: {agent_name}
 
@@ -129,6 +131,7 @@ agent:
 ---
 
 _Spec created on {date} via BMAD Module workflow_
+
 ```
 
 ### 4. Create All Agent Specs

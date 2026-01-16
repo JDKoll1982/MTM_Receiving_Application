@@ -213,7 +213,6 @@
 - **sp_Volvo_Shipment_GetPending** - No parameters
 - **sp_Volvo_Shipment_Delete** - IN: 4
 
-
 ## Execution Order Groups
 
 | Order | Category | Count | Stored Procedures |
@@ -338,4 +337,3 @@
 | Fixed | SP Name | Missing Column/Table | Schema File | Table Name | Expected Column | Current Status | SQL Fix Required | Priority | Fix Notes |
 |-------|---------|----------------------|-------------|------------|-----------------|----------------|------------------|----------|-----------|
 | - | *No schema issues detected - run 02-Test-StoredProcedures.ps1 first* | - | - | - | - | - | - | - | - |
-

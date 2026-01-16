@@ -15,6 +15,7 @@ The End-of-Day Reporting module has been successfully implemented as a cross-cut
 **File**: `Database/Schemas/10_create_reporting_views.sql`
 
 Created four database views for unified reporting:
+
 - `view_receiving_history` - Aggregates receiving loads with PO numbers, parts, quantities, weights, heat/lot numbers
 - `view_dunnage_history` - Aggregates dunnage loads with types, parts, specs (concatenated), quantities
 - `view_routing_history` - Aggregates routing labels with delivery info, departments, package descriptions
@@ -25,11 +26,13 @@ Created four database views for unified reporting:
 ### Phase 2: Core Models & Data Access ✅
 
 **Model**: `Module_Core/Models/Reporting/Model_ReportRow.cs`
+
 - Unified data structure supporting all module types
 - Properties for common fields (PO Number, Part, Description, Quantity, Date)
 - Module-specific properties (Routing: DeliverTo/Department, Dunnage: Type/Specs, Volvo: ShipmentNumber/Status)
 
 **DAO**: `Module_Reporting/Data/Dao_Reporting.cs`
+
 - `GetReceivingHistoryAsync(startDate, endDate)` - Queries view_receiving_history
 - `GetDunnageHistoryAsync(startDate, endDate)` - Queries view_dunnage_history
 - `GetRoutingHistoryAsync(startDate, endDate)` - Queries view_routing_history
@@ -39,12 +42,14 @@ Created four database views for unified reporting:
 ### Phase 3: Service Layer ✅
 
 **Interface**: `Module_Core/Contracts/Services/IService_Reporting.cs`
+
 - Defines contract for all reporting operations
 - Matches specification from `specs/003-reporting-module/contracts/IService_Reporting.cs`
 
 **Implementation**: `Module_Reporting/Services/Service_Reporting.cs`
 
 Key Features:
+
 1. **PO Number Normalization** (matching Google Sheets EndOfDayEmail.js algorithm):
    - "63150" → "PO-063150"
    - "063150B" → "PO-063150B"
@@ -69,6 +74,7 @@ Key Features:
 **ViewModel**: `Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs`
 
 Features:
+
 - Date range selection (StartDate/EndDate with DateTimeOffset)
 - Module checkboxes (Receiving, Dunnage, Routing, Volvo)
 - Availability checking (displays record counts, enables/disables checkboxes)
@@ -79,6 +85,7 @@ Features:
 - Status messages and busy indicators
 
 Commands Implemented:
+
 - `CheckAvailabilityCommand` - Queries database for record counts
 - `GenerateReceivingReportCommand` - Generates Receiving report
 - `GenerateDunnageReportCommand` - Generates Dunnage report
@@ -92,6 +99,7 @@ Commands Implemented:
 **View**: `Module_Reporting/Views/View_Reporting_Main.xaml`
 
 UI Components:
+
 - **Header Section**: Title and description
 - **Date Range Section**: Start/End CalendarDatePickers with "Check Availability" button
 - **Module Selection**: 4 columns with checkboxes, record counts, and individual "Generate Report" buttons
@@ -99,6 +107,7 @@ UI Components:
 - **Action Bar**: CommandBar with Export CSV and Copy Email Format buttons
 
 **Navigation**: `MainWindow.xaml` + `MainWindow.xaml.cs`
+
 - Added "End of Day Reports" navigation item with FontIcon (&#xE9F9; - report chart icon)
 - Navigation handler routes to `View_Reporting_Main`
 - Sets page title to "End of Day Reports"
@@ -108,6 +117,7 @@ UI Components:
 **Registration**: `App.xaml.cs`
 
 Registered Components:
+
 ```csharp
 // DAOs
 services.AddSingleton(sp => new Dao_Reporting(mySqlConnectionString));
@@ -160,11 +170,13 @@ MTM_Receiving_Application/
 ## Remaining Tasks
 
 ### Database Deployment
+
 - [ ] Execute `Database/Schemas/10_create_reporting_views.sql` on MySQL server
 - [ ] Verify views return correct data
 - [ ] Test with various date ranges
 
 ### Manual Testing
+
 - [ ] Navigate to "End of Day Reports" in application
 - [ ] Test date range selection
 - [ ] Test "Check Availability" button
@@ -177,6 +189,7 @@ MTM_Receiving_Application/
 ### Test Cases
 
 **PO Normalization Test Cases**:
+
 ```
 Input           → Expected Output
 "63150"         → "PO-063150"
@@ -188,12 +201,14 @@ Input           → Expected Output
 ```
 
 **CSV Export Test**:
+
 - Verify file saved to `%APPDATA%\MTM_Receiving_Application\Reports\`
 - Verify filename format: `EoD_Receiving_20260104_153045.csv`
 - Verify column headers match module type
 - Verify proper CSV escaping (quotes around text fields)
 
 **Email Format Test**:
+
 - Verify HTML table structure
 - Verify alternating row colors (#ffffff and #f9f9f9)
 - Verify date grouping (color changes when date changes)
@@ -230,6 +245,7 @@ Input           → Expected Output
 ### For Developers
 
 **Adding New Module Support**:
+
 1. Create database view in `Database/Schemas/` (e.g., `vw_newmodule_history`)
 2. Add method to `Dao_Reporting.cs`: `GetNewModuleHistoryAsync()`
 3. Add method to `IService_Reporting.cs` and `Service_Reporting.cs`
@@ -239,10 +255,12 @@ Input           → Expected Output
 7. Update CSV export and email formatting to handle new module
 
 **Modifying PO Normalization**:
+
 - Edit `Service_Reporting.NormalizePONumber()` method
 - Ensure it matches Google Sheets algorithm if that's the source of truth
 
 **Changing Export Location**:
+
 - Edit `Service_Reporting.ExportToCSVAsync()` method
 - Update `appDataPath` and `mtmFolder` variables
 
@@ -286,6 +304,7 @@ Based on specification SC-001 through SC-007:
 ## Contact
 
 For questions or issues with this implementation:
+
 - Review specification: `specs/003-reporting-module/spec.md`
 - Review task breakdown: `specs/003-reporting-module/tasks.md`
 - Review plan: `specs/003-reporting-module/plan.md`

@@ -22,7 +22,7 @@ Validate the agent's command menu structure against BMAD standards as defined in
 - 🚫 NO MENU - append findings and auto-advance
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate menu against agentMenuPatterns.md rules
 - 📊 Append findings to validation report

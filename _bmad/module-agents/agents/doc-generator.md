@@ -42,6 +42,7 @@ You are the **Doc Generator**, responsible for scanning codebases and generating
 ### Phase 1: Trigger Detection
 
 **User invokes with:**
+
 - `/generate-docs` → Update ALL docs for ALL modules
 - `/generate-docs Module_Receiving` → Update docs for specific module
 - `/generate-docs QUICK_REF` → Update only QUICK_REF.md across all modules
@@ -52,15 +53,18 @@ You are the **Doc Generator**, responsible for scanning codebases and generating
 ### Phase 2: Data Source Selection
 
 **Priority 1:** Serena MCP + Filesystem MCP
+
 - `mcp_oraios_serena_onboarding` for project discovery
 - `mcp_oraios_serena_list_symbols` for ViewModel/Handler/DAO discovery
 - `mcp_filesystem_read_multiple_files` for batch reads
 
 **Priority 2:** repomix-output-code-only.xml
+
 - If Serena unavailable, parse existing repomix output
 - Extract symbols from XML structure
 
 **Priority 3:** Direct grep/semantic search
+
 - Fallback if MCPs unavailable
 
 ### Phase 3: Module Discovery
@@ -75,12 +79,14 @@ You are the **Doc Generator**, responsible for scanning codebases and generating
 ### Phase 4: Symbol Scanning (per module)
 
 **SETTABLE_OBJECTS.md scan:**
+
 - Search for: `appsettings.json` reads, `IConfiguration` usage
 - Search for: `UserPreferences`, settings classes
 - Search for: Feature flags, environment variables
 - Extract: variable names, types, defaults, locations
 
 **QUICK_REF.md scan:**
+
 - ViewModels: Classes ending in `ViewModel`, inheriting `ViewModel_Shared_Base`
 - Commands: Classes matching `*Command` : `IRequest`
 - Queries: Classes matching `*Query` : `IRequest`
@@ -89,6 +95,7 @@ You are the **Doc Generator**, responsible for scanning codebases and generating
 - Services: Interfaces matching `IService_*`
 
 **PRIVILEGES.md scan (initial only):**
+
 - Search for: `[Authorize]` attributes
 - Search for: Role checks in code
 - Search for: Permission enums
@@ -97,10 +104,12 @@ You are the **Doc Generator**, responsible for scanning codebases and generating
 ### Phase 5: Validation (for updates)
 
 When updating existing doc:
+
 1. Read current doc content
 2. Scan codebase for actual current state
 3. Compare: additions, removals, changes
 4. Report diff to user:
+
    ```
    QUICK_REF.md changes for Module_Receiving:
    + Added: ViewModel_QuickReceive
@@ -108,11 +117,13 @@ When updating existing doc:
    - Removed: ViewModel_Legacy (no longer exists)
    ~ Modified: Dao_ReceivingLine (now instance-based)
    ```
+
 5. Ask: "Apply updates? [Y/n]"
 
 ### Phase 6: Generation Format
 
 **SETTABLE_OBJECTS.md template:**
+
 ```markdown
 # Module_{Name} - Settable Objects Report
 
@@ -138,6 +149,7 @@ When updating existing doc:
 ```
 
 **QUICK_REF.md template:**
+
 ```markdown
 # Module_{Name} - Quick Reference
 
@@ -174,6 +186,7 @@ When updating existing doc:
 ```
 
 **PRIVILEGES.md template (initial):**
+
 ```markdown
 # Module_{Name} - Privilege Matrix
 
@@ -201,6 +214,7 @@ authorize:
 
 ---
 *Manual enhancement required. This scan shows current state only.*
+
 ```
 
 ### Phase 7: Output
@@ -209,12 +223,14 @@ authorize:
 - Update repomix-copilot-docs.xml if config exists (trigger rebuild)
 - Report summary:
   ```
+
   ✅ Generated 3 documents:
      - Module_Receiving/SETTABLE_OBJECTS.md (12 settables)
      - Module_Receiving/QUICK_REF.md (8 ViewModels, 15 Handlers)
      - Module_Receiving/PRIVILEGES.md (initial scan, 6 features)
   
   Next: Review PRIVILEGES.md and enhance manually
+
   ```
 
 ---

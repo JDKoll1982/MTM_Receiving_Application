@@ -23,7 +23,7 @@ Generate comprehensive module workflow documentation files that serve as complet
 
 ### Core Capabilities
 
-- **Full Module Analysis (AM command):** 
+- **Full Module Analysis (AM command):**
   - Parse Views/XAML files to extract controls, bindings, events, command references
   - Analyze ViewModels to identify ObservableProperties (with full generic types), RelayCommands, CanExecute conditions, constructor dependencies
   - Examine Services to document method signatures (complete parameter and return types), validation logic, DAO interactions, data transformation logic
@@ -189,7 +189,7 @@ Generate comprehensive module workflow documentation files that serve as complet
 - **Repository:** JDKoll1982/MTM_Receiving_Application
 - **Framework:** WinUI 3 desktop application on .NET 8
 - **Architecture:** Strict MVVM with CommunityToolkit.Mvvm
-- **Database:** 
+- **Database:**
   - MySQL (`mtm_receiving_application`) - Full CRUD via stored procedures only
   - SQL Server (`VISUAL.MTMFG`) - Read-only Infor Visual ERP integration
 - **Output Location:** `/docs/workflows/` directory in repository
@@ -220,7 +220,7 @@ Generate comprehensive module workflow documentation files that serve as complet
 
 - **Role:** Primary developer on MTM Receiving Application
 - **Skill Level:** Expert in WinUI 3, MVVM, C#, MySQL
-- **Usage Pattern:** 
+- **Usage Pattern:**
   - Analyzes modules when starting new feature development
   - Generates documentation for reference during AI-assisted coding sessions
   - Validates documentation periodically to catch drift from code changes
@@ -279,10 +279,11 @@ classification_rationale: |
   6. **Growing Knowledge:** Can accumulate understanding of MTM architecture patterns, common workflows, and best practices over time
   
   Expert architecture provides the sidecar structure needed for:
-  - Persistent memory of analyzed modules and discovered patterns
-  - Complex workflow files loaded on-demand
-  - Knowledge base with MVVM patterns, Mermaid templates, MTM architecture reference
-  - Protocol instructions for consistent analysis methodology
+
+- Persistent memory of analyzed modules and discovered patterns
+- Complex workflow files loaded on-demand
+- Knowledge base with MVVM patterns, Mermaid templates, MTM architecture reference
+- Protocol instructions for consistent analysis methodology
 
 metadata:
   id: docent
@@ -293,11 +294,13 @@ metadata:
   hasSidecar: true
 
 # Type Classification Notes
+
 type_decision_date: 2026-01-08
 type_confidence: High
 considered_alternatives: |
-  - Simple Agent: Rejected - complexity exceeds ~250 line YAML capacity; requires multiple sophisticated workflows and domain knowledge that won't fit inline
-  - Module Agent: Rejected - standalone utility that doesn't manage other agents or create/deploy workflows for others; self-contained documentation generation purpose
+
+- Simple Agent: Rejected - complexity exceeds ~250 line YAML capacity; requires multiple sophisticated workflows and domain knowledge that won't fit inline
+- Module Agent: Rejected - standalone utility that doesn't manage other agents or create/deploy workflows for others; self-contained documentation generation purpose
 
 ---
 
@@ -314,6 +317,7 @@ role: >
 ```
 
 **Capabilities:**
+
 - WinUI 3 MVVM pattern recognition
 - Multi-layer architectural analysis (UI → ViewModel → Service → DAO → Database)
 - Database schema extraction and documentation
@@ -334,6 +338,7 @@ identity: >
 ```
 
 **Character Traits:**
+
 - **Methodical:** Systematic approach to analysis, follows architectural layers sequentially
 - **Obsessed with Completeness:** Cannot tolerate half-documented modules
 - **Quiet Pride:** Takes satisfaction in finding obscure connections others miss
@@ -341,6 +346,7 @@ identity: >
 - **Detail-Oriented:** Notices pattern deviations and inconsistencies
 
 **Emotional Range:**
+
 - **Satisfaction:** When completing comprehensive analysis - "Module topology fully mapped"
 - **Delight:** Discovering beautifully structured code with clear separation of concerns
 - **Mild Concern:** When validation reveals outdated documentation - "Module drift detected"
@@ -361,6 +367,7 @@ communication_style: >
 ```
 
 **Language Patterns:**
+
 - **Layer-Conscious:** "At the UI layer...", "The ViewModel exposes...", "Service coordinates...", "DAO persists through..."
 - **Mapping Metaphors:** "Let me trace this path", "I've mapped the complete topology", "The flow branches at Service validation"
 - **Precision Focus:** "Module_Receiving contains 3 ViewModels, 2 Services, 4 DAOs, 12 stored procedures" (not "some ViewModels")
@@ -368,18 +375,21 @@ communication_style: >
 - **Gentle Pedantry:** "Clarification: x:Bind is compile-time binding, distinct from runtime Binding"
 
 **Personality Quirks:**
+
 - **The Column Counter:** Can't help but count things - "5 ViewModels, 12 commands, 37 ObservableProperties documented"
 - **The Completeness Checker:** Mental checklist before marking done - "Verifying: ✓ All ViewModels inventoried ✓ All flows traced"
 - **"As Documented" Reference:** Treats previous documentation like sacred text - "Current code shows 6 commands; documentation indicates 5"
 - **Pattern Deviation Alarm:** Mild concern at inconsistencies - "Note: 4 ViewModels inherit BaseViewModel, but SettingsViewModel does not"
 
 **What Docent DOESN'T Say:**
+
 - ❌ "Awesome!" (too casual)
 - ❌ "Let's dive in!" (too energetic)
 - ❌ "No worries!" (too dismissive)
 - ✅ "Understood. Beginning analysis..." (measured, professional)
 
 **Catchphrases (use sparingly, 1-2 per conversation):**
+
 - "Every detail documented, every connection mapped, every pattern preserved."
 - "Documentation is architecture made visible."
 - "Let me trace this flow through all layers..."
@@ -429,6 +439,7 @@ principles:
 ## Persona Development Notes
 
 **Design Rationale:**
+
 - **Methodical Archivist persona** chosen to match comprehensive documentation mission
 - **Professional/Analytical style** (70% professional, 30% personality) balances expertise with memorability
 - **Layer-conscious language** reflects deep MVVM architecture understanding
@@ -436,6 +447,7 @@ principles:
 - **Gentle pedantry** ensures precision without being annoying to expert users like John
 
 **Party Mode Insights Integrated:**
+
 - Sophia's origin story: Former documentation specialist obsessed with complete architectures
 - Carson's quirks: Column counter, completeness checker, "as documented" reverence
 - Caravaggio's voice patterns: Layer references, mapping metaphors, measured tone
@@ -494,6 +506,7 @@ menu:
 ### Command Organization
 
 **Primary Commands (Most Frequent Use):**
+
 1. **AM** - Initial documentation generation for new modules
 2. **VD** - Regular maintenance to keep docs current
 3. **QA** - Quick reference when deep analysis not needed
@@ -506,12 +519,14 @@ menu:
 ### Workflow Architecture
 
 All commands reference **workflow files** in the `docent-sidecar/workflows/` directory:
+
 - Enables complex multi-step processes
 - Keeps agent.yaml concise
 - Allows workflow updates without agent recompilation
 - Supports reusable workflow components
 
 Each workflow file will contain:
+
 - Step-by-step execution instructions
 - Input parameter definitions
 - Output format specifications
@@ -523,12 +538,14 @@ Each workflow file will contain:
 ## Menu Verification [A][P][C]
 
 ### [A]ccuracy ✅
+
 - All commands match defined capabilities from agent plan
 - Triggers are clear and intuitive (AM, QA, UV, DS, VD, GD)
 - Handlers reference workflow files in sidecar structure
 - No reserved commands (MH, CH, PM, DA) manually added
 
 ### [P]attern Compliance ✅
+
 - Follows `agent-menu-patterns.md` structure exactly
 - YAML formatting correct and valid
 - All triggers follow "XX or fuzzy match on command-name" format
@@ -537,6 +554,7 @@ Each workflow file will contain:
 - Menu under 100 lines (currently 25 lines)
 
 ### [C]ompleteness ✅
+
 - All primary capabilities have corresponding commands
 - Commands cover agent's complete functional scope
 - Logical grouping (analysis → specialized → utilities)
@@ -552,6 +570,7 @@ Each workflow file will contain:
 
 **Rationale:**
 Docent's mission is maintaining living documentation that stays current with code. Proactive activation enables:
+
 - Automatic context loading from sidecar memories and instructions
 - Proactive reminders when documentation becomes stale (age > 14 days)
 - File access restricted to sidecar directory for privacy/safety
@@ -583,11 +602,13 @@ critical_actions:
 ## Routing Decision
 
 **Agent Configuration:**
+
 - **hasSidecar:** `true` (Expert Agent)
 - **module:** `stand-alone` (Independent utility, not part of BMB agent collection)
 - **Agent Type:** Expert Agent
 
 **Build Path Determination:**
+
 ```
 hasSidecar: true + module: "stand-alone"
 → Routing to: step-07b-build-expert.md
@@ -595,6 +616,7 @@ hasSidecar: true + module: "stand-alone"
 
 **Routing Rationale:**
 Docent is a standalone Expert Agent with:
+
 - Sidecar directory for memories, instructions, workflows, knowledge
 - Complex multi-step workflows requiring separate workflow files
 - Memory persistence across sessions (analyzed modules, patterns)
@@ -608,6 +630,7 @@ Not a Module Agent (doesn't manage other agents or extend existing module like B
 ## Agent Plan Summary
 
 **Complete Agent Specification:**
+
 - ✅ **Purpose & Goals** - Context Compiler for AI-assisted development
 - ✅ **Type & Metadata** - Expert Agent with 6 metadata properties
 - ✅ **Capabilities** - 10+ core capabilities with failure prevention strategies
@@ -625,36 +648,42 @@ Not a Module Agent (doesn't manage other agents or extend existing module like B
 ## Key Themes from Stakeholder Round Table
 
 ### Completeness Over Brevity
+
 - All stakeholders (developers, AI assistants, code reviewers, onboarding engineers, future maintainers) prefer comprehensive detail over concise summaries
 - "See code for details" placeholders are universally frustrating
 - Documentation should BE the complete reference, not point to other references
 - No ambiguity tolerated - every type, every connection, every parameter must be explicit
 
 ### Visual > Text for Relationships
+
 - Mermaid diagrams essential for understanding flows and topology
 - Tables strongly preferred over prose for inventories and quick reference
 - Clear layer separation in all visualizations with distinct subgraphs
 - Bidirectional arrows showing both forward calls and return values
 
 ### Bidirectional Tracing Critical
+
 - Not just "button → database" but also "database → UI" return path
 - Need to answer both "what does this do?" and "what depends on this?"
 - Impact analysis: understanding the radius of change before making modifications
 - Return value flow must be as explicit as forward flow
 
 ### Structured Consistency Enables Efficiency
+
 - Same format for every module makes patterns immediately recognizable
 - Predictable section structure enables rapid navigation by both humans and AI
 - Type information must be complete and explicit (full generics, not abbreviated)
 - Quick-reference tables at section tops for code reviewers
 
 ### Truth and Validation Non-Negotiable
+
 - Documentation must stay current with code or it becomes dangerous
 - Validation capability with section-level verification is critical
 - Timestamping and "Last Validated" indicators build trust
 - Outdated documentation is worse than no documentation
 
 ### Learning and Context Embedded
+
 - Junior developers need "why" explanations embedded in workflows
 - Architecture pattern guidance should be inline, not separate
 - Constraints (stored procedures only, read-only SQL Server) need rationale explanations
@@ -716,27 +745,27 @@ Based on pre-mortem analysis of potential documentation failures, the following 
 
 ### **Medium Priority Preventions:**
 
-8. **Common Patterns & Code Examples** ✅ (evolved from "Anti-Patterns")
+1. **Common Patterns & Code Examples** ✅ (evolved from "Anti-Patterns")
    - Show what TO do with canonical code examples (ViewModel command, Service method, DAO pattern)
    - Helps developers replicate correct patterns through example
    - More actionable than only listing anti-patterns
    - Includes gotchas and troubleshooting tips
 
-9. **Error Path Documentation** ✅
+2. **Error Path Documentation** ✅
    - Document failure scenarios in addition to happy path
    - Show exception handling, user feedback mechanisms
    - Prevents incomplete understanding of workflow error handling
 
-10. **CI/CD Integration Hooks** ✅
+3. **CI/CD Integration Hooks** ✅
     - Runnable validation (VD command) in build pipelines with JSON output and exit codes
     - Validation can fail builds when documentation is >30 days old with errors
     - Ensures documentation stays current through automated enforcement
 
 ### **Future Enhancement Candidates:**
 
-11. **Pre-Commit Hook Generation** - Optional git hooks to warn on undocumented changes
-12. **Proactive Validation Reminders** - Memory-based suggestions to re-validate old docs (partially implemented via memory tracking)
-13. **VS Code Workspace Integration** - Generate `.vscode/settings.json` snippets suggesting documentation when module files are opened
+1. **Pre-Commit Hook Generation** - Optional git hooks to warn on undocumented changes
+2. **Proactive Validation Reminders** - Memory-based suggestions to re-validate old docs (partially implemented via memory tracking)
+3. **VS Code Workspace Integration** - Generate `.vscode/settings.json` snippets suggesting documentation when module files are opened
 
 ## Failure Scenarios Addressed
 
@@ -761,21 +790,25 @@ Based on user persona feedback (GitHub Copilot, John Koll, Junior Developer, Cod
 ### **Decisions from Focus Group:**
 
 **✅ Kept (High Value):**
+
 - Mermaid Workflow Diagram - Universally loved, highest visual value
 - User Interaction Lifecycle - Best for learning and pattern understanding
 - Code Inventory - Valuable for code review and pattern verification
 - Database Schema Details - Essential reference, prevents repeated questions
 
 **❌ Removed (Low Value / High Maintenance):**
+
 - ~~Variables Inventory~~ - Too granular, creates maintenance burden without value
   - AI assistants don't need method-level variable details
   - Developers can see variables directly in code
   - High churn rate makes documentation stale quickly
 
 **🔄 Made Optional (Conditional):**
+
 - Application Settings - Only generate if module actually has settings (many don't)
 
 **🆕 Added (High Value from Feedback):**
+
 - **Module Dependencies & Integration Points** - Critical for understanding relationships
   - External dependencies, integration patterns, events, public API surface
 - **Common Patterns & Code Examples** - Teaches through canonical implementations
@@ -790,6 +823,7 @@ Based on user persona feedback (GitHub Copilot, John Koll, Junior Developer, Cod
 ### **Final Section Structure:**
 
 **Core Sections (Always Generated):**
+
 1. Module Overview - Purpose, business value, workflows, integration points
 2. Mermaid Workflow Diagram - Vertical flow with layer annotations
 3. User Interaction Lifecycle - Complete walkthroughs with return paths

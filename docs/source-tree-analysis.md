@@ -283,10 +283,12 @@ MTM_Receiving_Application/
 ## Entry Points
 
 ### Application Entry
+
 - **App.xaml.cs**: Application startup, DI container configuration
 - **MainWindow.xaml**: Root window, hosts navigation frame
 
 ### Module Entry Points
+
 - **Main_ReceivingLabelPage**: Entry to receiving workflow
 - **Main_DunnageLabelPage**: Entry to dunnage workflow
 - **Main_CarrierDeliveryLabelPage**: Entry to carrier label workflow
@@ -294,21 +296,25 @@ MTM_Receiving_Application/
 ## Critical Directories
 
 ### Core Infrastructure
+
 - **Module_Core/Services/**: Foundation services (auth, error handling, logging, navigation)
 - **Module_Core/Data/**: Core DAOs including ERP integration (READ-ONLY)
 - **Module_Core/Helpers/Database/**: Connection string management
 
 ### Business Logic
+
 - **Module_Receiving/Services/**: Receiving workflow orchestration
 - **Module_Dunnage/Services/**: Dunnage workflow and admin operations
 - **Database/StoredProcedures/**: All MySQL operations (NO raw SQL in C#)
 
 ### User Interface
+
 - **Module_Receiving/Views/**: 10 workflow views + 2 alternate modes
 - **Module_Dunnage/Views/**: 13+ views including admin dashboard
 - **Module_Shared/Views/**: 5 shared UI components (login, splash, help)
 
 ### Data Layer
+
 - **Database/Schemas/**: MySQL table definitions (versioned)
 - **Database/InforVisualScripts/**: SQL Server integration examples (READ-ONLY)
 - **Module_*/Data/**: Instance-based DAO classes
@@ -316,6 +322,7 @@ MTM_Receiving_Application/
 ## Modular Architecture Pattern
 
 Each business module follows the same structure:
+
 ```
 Module_{Name}/
 ├── Data/               # DAOs (database access)
@@ -328,6 +335,7 @@ Module_{Name}/
 ```
 
 This strict separation ensures:
+
 - **Testability**: Services can be mocked via interfaces
 - **Maintainability**: Clear boundaries between layers
 - **Scalability**: New modules follow established patterns
@@ -336,16 +344,19 @@ This strict separation ensures:
 ## Integration Points
 
 ### Database Access
+
 - **MySQL**: Via stored procedures only (Helper_Database_StoredProcedure)
 - **SQL Server**: Via Dao_InforVisualConnection with READ-ONLY intent
 - **Connection Strings**: Managed in Helper_Database_Variables
 
 ### Navigation
+
 - **IService_Navigation**: Centralized navigation service
 - **Workflow Containers**: Each module has a workflow coordinator
 - **View Registration**: ViewModels registered in App.xaml.cs DI
 
 ### State Management
+
 - **Session Services**: IService_SessionManager, IService_UserSessionManager
 - **Workflow State**: Model_ReceivingSession, Model_DunnageSession
 - **User Preferences**: Stored in MySQL users table

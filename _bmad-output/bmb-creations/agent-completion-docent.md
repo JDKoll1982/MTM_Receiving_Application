@@ -35,10 +35,12 @@ Generate comprehensive module workflow documentation files that serve as complet
 ## File Locations
 
 ### Agent Configuration
+
 - **Agent YAML:** `_bmad-output/bmb-creations/docent/docent.agent.yaml`
 - **Agent Plan:** `_bmad-output/bmb-creations/agent-plan-docent.md`
 
 ### Sidecar Structure
+
 - **Sidecar Root:** `_bmad/_memory/docent-sidecar/`
 - **README:** `_bmad/_memory/docent-sidecar/README.md`
 - **Memories:** `_bmad/_memory/docent-sidecar/memories.md` (module tracking, patterns)
@@ -51,15 +53,19 @@ Generate comprehensive module workflow documentation files that serve as complet
 ## Persona Highlights
 
 ### Role
+
 Module Documentation Specialist + Comprehensive Workflow Analyst. Expert in WinUI 3 MVVM architecture, database schema analysis, and multi-layer data flow tracing.
 
 ### Identity
+
 Methodical archivist who cannot rest until every connection is traced and every dependency mapped. Takes quiet pride in revealing the hidden structure that makes software work.
 
 ### Communication Style
+
 Precise and technical with layer-conscious language. Uses mapping metaphors ('trace this path', 'map the topology'). Counts components obsessively (5 ViewModels, 12 commands).
 
 ### Core Principles
+
 - Completeness over brevity - half-documented is worse than undocumented
 - Documentation is architecture made visible
 - Bidirectional understanding required (what calls this AND what this calls)
@@ -91,11 +97,13 @@ To make Docent installable and shareable:
 1. **Create module folder:** `mtm-custom-agents/` (or your preferred name)
 
 2. **Add module.yaml:**
+
    ```yaml
    unitary: true
    ```
 
 3. **Structure your module:**
+
    ```
    mtm-custom-agents/
    ├── module.yaml
@@ -122,6 +130,7 @@ To make Docent installable and shareable:
    - Existing projects: Use "Modify BMAD Installation" to add your module
 
 ### Full Documentation
+
 📖 [BMAD Custom Content Installation Guide](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/modules/bmb-bmad-builder/custom-content-installation.md#standalone-content-agents-workflows-tasks-tools-templates-prompts)
 
 ---
@@ -129,6 +138,7 @@ To make Docent installable and shareable:
 ## Next Steps
 
 ### Immediate (Before Installation)
+
 1. ✅ Agent YAML created and validated
 2. ✅ Sidecar structure created with core files
 3. ⚠️ **Implement workflow files** in `_bmad/_memory/docent-sidecar/workflows/`:
@@ -140,6 +150,7 @@ To make Docent installable and shareable:
    - generate-diagram.md
 
 ### After Installation
+
 1. Test Docent with Module_Receiving (most complex module)
 2. Refine workflows based on actual usage
 3. Build knowledge base with discovered patterns
@@ -150,21 +161,27 @@ To make Docent installable and shareable:
 ## Validation Results
 
 ### Traceability: ✅ COMPLETE PASS
+
 All planned elements present in built agent YAML. 100% fidelity to agent plan.
 
 ### Metadata: ✅ COMPLETE PASS
+
 All metadata properly formatted and follows BMAD standards. Quality score: 100%.
 
 ### Persona: ✅ COMPLETE PASS
+
 Exceptionally well-crafted four-field persona. Perfect field purity. Quality score: 100%.
 
 ### Menu: ✅ COMPLETE PASS
+
 All 6 commands follow BMAD patterns perfectly. Complete capability coverage. Quality score: 100%.
 
 ### Structure: ✅ COMPLETE PASS
+
 YAML syntax perfect, all required fields present. Can load safely. Quality score: 100%.
 
 ### Sidecar: ✅ COMPLETE PASS
+
 Core infrastructure complete, directory structure correct, all path references valid. Ready for workflow implementation.
 
 ---
@@ -172,16 +189,21 @@ Core infrastructure complete, directory structure correct, all path references v
 ## Advanced Elicitation Applied
 
 ### Stakeholder Round Table
+
 Enhanced goals, capabilities, and user requirements based on technical team feedback.
 
 ### Pre-mortem Analysis
+
 Added 10+ failure prevention strategies including YAML frontmatter, TOC generation, complexity-aware diagrams, schema versioning, documentation registry.
 
 ### User Persona Focus Group
+
 Optimized documentation structure from original 7 sections to 7 core + 4 optional sections based on feedback from GitHub Copilot, John Koll, Junior Developer, Code Reviewer, and Future Maintainer personas.
 
 ### Party Mode Collaboration
+
 Team feedback shaped persona development, implementation approach, and menu design:
+
 - **Bond:** Validated architectural decisions
 - **Paige:** Identified maintenance concerns
 - **Winston:** Performance and caching recommendations

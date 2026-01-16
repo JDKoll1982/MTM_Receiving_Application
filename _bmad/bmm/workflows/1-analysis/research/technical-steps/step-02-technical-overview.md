@@ -1,6 +1,6 @@
 # Technical Research Step 2: Technology Stack Analysis
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after technology stack content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from step-01 are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on languages, frameworks, tools, and platforms
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct technology stack analysis focusing on languages, frameworks, tools, and platforms. Search the web to verify and supplement current facts.
 
-## TECHNOLOGY STACK ANALYSIS SEQUENCE:
+## TECHNOLOGY STACK ANALYSIS SEQUENCE
 
 ### 1. Begin Technology Stack Analysis
 
@@ -95,7 +95,7 @@ Search the web: "{{research_topic}} cloud infrastructure platforms"
 
 Prepare technology stack analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -176,17 +176,17 @@ _Source: [URL]_
 
 ### 6. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Load: `./step-03-integration-patterns.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 4. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Programming languages and frameworks thoroughly analyzed
 ✅ Database and storage technologies evaluated
@@ -198,7 +198,7 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (integration patterns)
 ✅ Research goals alignment maintained
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -213,7 +213,7 @@ Content is already written to document when generated in step 4. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## TECHNOLOGY STACK RESEARCH PROTOCOLS:
+## TECHNOLOGY STACK RESEARCH PROTOCOLS
 
 - Research technology trend reports and developer surveys
 - Use technology documentation and best practices guides
@@ -223,7 +223,7 @@ Content is already written to document when generated in step 4. No additional a
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
-## TECHNOLOGY STACK ANALYSIS STANDARDS:
+## TECHNOLOGY STACK ANALYSIS STANDARDS
 
 - Always cite URLs for web search results
 - Use authoritative technology research sources
@@ -232,7 +232,7 @@ Content is already written to document when generated in step 4. No additional a
 - Apply confidence levels to uncertain data
 - Focus on actionable technology insights
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C', load `./step-03-integration-patterns.md` to analyze APIs, communication protocols, and system interoperability for {{research_topic}}.
 

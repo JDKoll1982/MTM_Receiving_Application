@@ -11,7 +11,7 @@ validationFlow: '../steps-v/step-v-01-discovery.md'
 
 **Final Step - Complete the PRD**
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ THIS IS A FINAL STEP - Workflow completion required
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action
@@ -21,36 +21,37 @@ validationFlow: '../steps-v/step-v-01-discovery.md'
 - 🎯 UPDATE workflow status files with completion information
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Update the main workflow status file with completion information (if exists)
 - 📖 Offer validation workflow options to user
 - 🚫 DO NOT load additional steps after this one
 
-## TERMINATION STEP PROTOCOLS:
+## TERMINATION STEP PROTOCOLS
 
 - This is a FINAL step - workflow completion required
 - Update workflow status file with finalized document
 - Suggest validation and next workflow steps
 - Mark workflow as complete in status tracking
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete and polished PRD document is available from all previous steps
 - Workflow frontmatter shows all completed steps including polish
 - All collaborative content has been generated, saved, and optimized
 - Focus on completion, validation options, and next steps
 
-## YOUR TASK:
+## YOUR TASK
 
 Complete the PRD workflow, update status files, offer validation options, and suggest next steps for the project.
 
-## WORKFLOW COMPLETION SEQUENCE:
+## WORKFLOW COMPLETION SEQUENCE
 
 ### 1. Announce Workflow Completion
 
 Inform user that the PRD is complete and polished:
+
 - Celebrate successful completion of comprehensive PRD
 - Summarize all sections that were created
 - Highlight that document has been polished for flow and coherence
@@ -72,6 +73,7 @@ Offer validation workflows to ensure PRD is ready for implementation:
 **Available Validation Workflows:**
 
 **Option 1: Check Implementation Readiness** (`{checkImplementationReadinessWorkflow}`)
+
 - Validates PRD has all information needed for development
 - Checks epic coverage completeness
 - Reviews UX alignment with requirements
@@ -81,6 +83,7 @@ Offer validation workflows to ensure PRD is ready for implementation:
 **When to use:** Before starting technical architecture or epic breakdown
 
 **Option 2: Skip for Now**
+
 - Proceed directly to next workflows (architecture, UX, epics)
 - Validation can be done later if needed
 - Some teams prefer to validate during architecture reviews
@@ -127,7 +130,7 @@ Provide guidance on logical next workflows - strongly suggesting any of these ch
 - Document now contains: Executive Summary, Success Criteria, User Journeys, Domain Requirements (if applicable), Innovation Analysis (if applicable), Project-Type Requirements, Functional Requirements (capability contract), Non-Functional Requirements, and has been polished for flow and coherence
 - Ask if they'd like to run validation workflow or proceed to next workflows
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ PRD document contains all required sections and has been polished
 ✅ All collaborative content properly saved and optimized
@@ -137,7 +140,7 @@ Provide guidance on logical next workflows - strongly suggesting any of these ch
 ✅ Document quality validation completed
 ✅ User acknowledges completion and understands next options
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not updating workflow status file with completion information (if exists)
 ❌ Not offering validation workflow options
@@ -149,9 +152,9 @@ Provide guidance on logical next workflows - strongly suggesting any of these ch
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## WORKFLOW COMPLETION CHECKLIST:
+## WORKFLOW COMPLETION CHECKLIST
 
-### Document Structure Complete:
+### Document Structure Complete
 
 - [ ] Executive Summary with vision and differentiator
 - [ ] Success Criteria with measurable outcomes
@@ -164,7 +167,7 @@ Provide guidance on logical next workflows - strongly suggesting any of these ch
 - [ ] Non-Functional Requirements
 - [ ] Document polished for flow and coherence
 
-### Process Complete:
+### Process Complete
 
 - [ ] All steps (including polish) completed with user confirmation
 - [ ] All content saved and optimized
@@ -173,7 +176,7 @@ Provide guidance on logical next workflows - strongly suggesting any of these ch
 - [ ] Validation options presented
 - [ ] Next steps clearly communicated
 
-## FINAL REMINDER to give the user:
+## FINAL REMINDER to give the user
 
 The polished PRD serves as the foundation for all subsequent product development activities. All design, architecture, and development work should trace back to the requirements and vision documented in this PRD - update it also as needed as you continue planning.
 

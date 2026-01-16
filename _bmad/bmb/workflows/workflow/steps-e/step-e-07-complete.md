@@ -10,31 +10,31 @@ validationReport: '{targetWorkflowPath}/validation-report-{workflow_name}.md'
 
 # Edit Step 7: Complete
 
-## STEP GOAL:
+## STEP GOAL
 
 Complete the edit session with a comprehensive summary of changes made and provide next steps guidance.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on summary and completion
 - 💬 Present clear change summary
 - 🚫 No more edits at this stage
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Generate comprehensive summary
 - 💾 Finalize edit plan document
 - 📖 Provide next steps guidance
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All edits are complete
 - Focus: Summary and closure
@@ -47,6 +47,7 @@ Complete the edit session with a comprehensive summary of changes made and provi
 ### 1. Read Edit Plan and Validation Report
 
 **Load both files:**
+
 1. `{editPlan}` - Full edit session history
 2. `{validationReport}` - Final validation status (if exists)
 
@@ -80,6 +81,7 @@ Complete the edit session with a comprehensive summary of changes made and provi
 **Status:** {status from report or 'Not run'}
 
 **Issues:**
+
 - Critical: {count}
 - Warnings: {count}
 
@@ -123,6 +125,7 @@ Your workflow has been successfully edited. Here's what was accomplished:
 4. **Re-validate periodically** - Run validation again after future changes
 
 **Resources:**
+
 - Edit this workflow again: Edit workflow mode
 - Run validation: Validate workflow mode
 - Build new workflow: Create workflow mode
@@ -141,7 +144,7 @@ Your edit session for **{workflow_name}** is complete. ✅"
 **[S]ave summary** - Save a copy of the edit summary to your output folder
 **[R]eview** - Review the full edit plan one more time"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF F: End the session
 - IF S: Save edit summary to output folder, then end
@@ -188,7 +191,7 @@ This is the final step. Ensure edit plan is complete, summary is presented, and 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Comprehensive summary presented
 - All changes documented clearly
@@ -196,7 +199,7 @@ This is the final step. Ensure edit plan is complete, summary is presented, and 
 - Next steps guidance provided
 - Session ended gracefully
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not summarizing all changes
 - Missing files from change list

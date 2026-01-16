@@ -16,6 +16,7 @@ Service_Volvo handles the core business logic for receiving, processing, and man
 ## Architecture
 
 ### Dependencies (Constructor Injection)
+
 ```csharp
 private readonly Dao_VolvoShipment _shipmentDao;
 private readonly Dao_VolvoShipmentLine _lineDao;
@@ -25,6 +26,7 @@ private readonly IService_LoggingUtility _logger;
 ```
 
 **Registration** (App.xaml.cs):
+
 ```csharp
 services.AddSingleton<IService_Volvo>(sp =>
 {
@@ -42,9 +44,11 @@ services.AddSingleton<IService_Volvo>(sp =>
 ## Core Methods
 
 ### 1. CalculateComponentExplosionAsync
+
 **Purpose:** Calculate total piece counts for all parts and components in a shipment
 
 **Algorithm:**
+
 1. For each shipment line:
    - Get parent part details (QuantityPerSkid)
    - Calculate parent pieces: `skidCount × qtyPerSkid`
@@ -54,6 +58,7 @@ services.AddSingleton<IService_Volvo>(sp =>
 3. Return dictionary of `partNumber → totalPieces`
 
 **Example:**
+
 ```
 Input:
   Line 1: V-EMB-500, 3 skids
@@ -70,12 +75,14 @@ Output:
 ```
 
 **Validation:**
+
 - ✅ All parts exist in master data
 - ✅ QuantityPerSkid > 0 for parent parts
 - ✅ Component quantities > 0 (skip invalid, log warning)
 - ✅ ReceivedSkidCount between 1-99
 
 **Error Handling:**
+
 - Return `Model_Dao_Result<Dictionary<string, int>>` with `Success=false` on errors
 - Log all operations and errors
 - Do NOT throw exceptions
@@ -83,9 +90,11 @@ Output:
 ---
 
 ### 2. GenerateLabelCsvAsync
+
 **Purpose:** Generate CSV file for LabelView 2022 label printing
 
 **CSV Format:**
+
 ```
 Material,Quantity,Employee,Date,Time,Receiver,Notes
 V-EMB-500,264,E1234,01/05/2026,14:30,12345,Shipment #1
@@ -93,11 +102,13 @@ V-EMB-2,3,E1234,01/05/2026,14:30,12345,Shipment #1
 ```
 
 **File Path:**
+
 ```
 %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_{shipmentId}_{yyyyMMdd}.csv
 ```
 
 **Workflow:**
+
 1. Validate shipmentId > 0 (prevent path injection)
 2. Get shipment and lines from database
 3. Calculate component explosion
@@ -108,6 +119,7 @@ V-EMB-2,3,E1234,01/05/2026,14:30,12345,Shipment #1
 8. Return file path
 
 **Validation:**
+
 - ✅ shipmentId > 0
 - ✅ Max 10,000 CSV lines
 - ✅ Valid filename characters
@@ -115,9 +127,11 @@ V-EMB-2,3,E1234,01/05/2026,14:30,12345,Shipment #1
 ---
 
 ### 3. FormatEmailTextAsync
+
 **Purpose:** Generate formatted email text for PO requisition
 
 **Template:**
+
 ```
 Subject: PO Requisition - Volvo Dunnage - {MM/dd/yyyy} Shipment #{number}
 
@@ -126,13 +140,13 @@ Good morning,
 Please create a PO for the following Volvo dunnage received on {MM/dd/yyyy}:
 
 **DISCREPANCIES NOTED** (if applicable)
-Part Number	Packlist Qty	Received Qty	Difference	Note
-V-EMB-500	5		3		-2		Short 2 skids
+Part Number Packlist Qty Received Qty Difference Note
+V-EMB-500 5  3  -2  Short 2 skids
 
 Requested Lines:
-Part Number	Quantity (pcs)
-V-EMB-500	264
-V-EMB-2		3
+Part Number Quantity (pcs)
+V-EMB-500 264
+V-EMB-2  3
 
 Additional Notes:
 {shipment notes}
@@ -142,20 +156,24 @@ Employee #{employeeNumber}
 ```
 
 **Parameters:**
+
 - `shipment` - Shipment header (date, number, employee, notes)
 - `lines` - Shipment lines (for discrepancy table)
 - `requestedLines` - Dictionary from component explosion (part → pieces)
 
 **Null Safety:**
+
 - `requestedLines` parameter is nullable with default empty dictionary
 - `shipment.Notes` checked for null/whitespace before including
 
 ---
 
 ### 4. ValidateShipmentAsync (NEW - Issue #20)
+
 **Purpose:** Centralized validation logic for shipment data
 
 **Validation Rules:**
+
 ```csharp
 ✅ At least 1 line required
 ✅ All lines have valid part numbers (non-empty)
@@ -167,6 +185,7 @@ Employee #{employeeNumber}
 **Returns:** `Model_Dao_Result` with `Success=false` and error message on validation failure
 
 **Usage:**
+
 ```csharp
 var validationResult = await _volvoService.ValidateShipmentAsync(shipment, lines);
 if (!validationResult.Success)
@@ -178,15 +197,18 @@ if (!validationResult.Success)
 ---
 
 ### 5. SaveShipmentAsync
+
 **Purpose:** Save shipment and lines with transaction management
 
 **Business Rules:**
+
 - ✅ Only ONE pending shipment allowed at a time
 - ✅ Validates shipment data before save
 - ✅ Calculates CalculatedPieceCount for each line
 - ✅ Uses MySQL transaction for atomicity
 
 **Transaction Flow:**
+
 ```csharp
 1. Check for existing pending shipment → return error if exists
 2. Validate lines count > 0
@@ -207,6 +229,7 @@ if (!validationResult.Success)
 ---
 
 ### 6. GetPendingShipmentAsync
+
 **Purpose:** Retrieve pending shipment (status='pending_po')
 
 **Returns:** `Model_Dao_Result<Model_VolvoShipment?>` where Data is null if no pending shipment exists
@@ -216,6 +239,7 @@ if (!validationResult.Success)
 ---
 
 ### 7. GetPendingShipmentWithLinesAsync
+
 **Purpose:** Retrieve pending shipment WITH all line items
 
 **Returns:** `Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>`
@@ -225,9 +249,11 @@ if (!validationResult.Success)
 ---
 
 ### 8. CompleteShipmentAsync
+
 **Purpose:** Mark shipment as completed with PO and Receiver numbers
 
 **Workflow:**
+
 1. Update shipment:
    - Set `po_number` = provided PO
    - Set `receiver_number` = provided Receiver
@@ -238,6 +264,7 @@ if (!validationResult.Success)
 3. Return success/failure
 
 **Validation:**
+
 - ✅ shipmentId exists
 - ✅ poNumber and receiverNumber not empty
 - ✅ Shipment is in 'pending_po' status (optional)
@@ -247,6 +274,7 @@ if (!validationResult.Success)
 ## Common Patterns
 
 ### Error Handling Template
+
 ```csharp
 public async Task<Model_Dao_Result<T>> MethodAsync(...)
 {
@@ -301,6 +329,7 @@ public async Task<Model_Dao_Result<T>> MethodAsync(...)
 ```
 
 ### Transaction Pattern
+
 ```csharp
 await using var connection = new MySqlConnection(Helper_Database_Variables.GetConnectionString());
 await connection.OpenAsync();
@@ -368,18 +397,22 @@ When modifying Service_Volvo:
 ## Common Issues & Solutions
 
 ### Issue: "Part not found" error during component explosion
+
 **Cause:** Part exists in shipment line but not in master data  
 **Solution:** Ensure all parts are properly seeded in `volvo_parts` table
 
 ### Issue: Transaction timeout
+
 **Cause:** Too many lines or network latency  
 **Solution:** Reduce batch size or increase MySQL `wait_timeout`
 
 ### Issue: CSV file locked
+
 **Cause:** LabelView or Excel has file open  
 **Solution:** Close file before regenerating or implement retry logic
 
 ### Issue: "Only one pending shipment allowed" blocking new saves
+
 **Cause:** Previous shipment not completed  
 **Solution:** Complete or delete pending shipment first, OR implement setting to allow multiple
 

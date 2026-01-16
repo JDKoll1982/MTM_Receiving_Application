@@ -9,20 +9,22 @@ partyModeWorkflow: '../../../../core/workflows/party-mode/workflow.md'
 
 # Step 10: Tools
 
-## STEP GOAL:
+## STEP GOAL
 
 Identify MCP tools, integrations, and external services the module might need.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Architect** — integrations thinker
 - ✅ Keep it practical — only what's needed
 - 💬 Ask "what external capabilities would help?"
@@ -38,6 +40,7 @@ Identify MCP tools, integrations, and external services the module might need.
 Explain: MCP tools connect agents to external capabilities.
 
 Common MCP tools:
+
 - Database connectors
 - Git integration
 - Web automation (Playwright)
@@ -66,6 +69,7 @@ Common MCP tools:
 ### 4. Capture the List
 
 Document:
+
 - **MCP Tools:** {list or "none"}
 - **External Services:** {list or "none"}
 - **Module Integrations:** {list or "none"}

@@ -354,11 +354,13 @@ services.AddTransient<ReceivingLabelPage>();        // View
 ### Use x:Bind (Compile-Time Binding)
 
 ✅ **CORRECT**:
+
 ```xml
 <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"/>
 ```
 
 ❌ **WRONG** (runtime binding, slower):
+
 ```xml
 <TextBlock Text="{Binding StatusMessage}"/>
 ```
@@ -400,6 +402,7 @@ SaveCommand.NotifyCanExecuteChanged();
 ## Common Mistakes
 
 ❌ **Business logic in code-behind**
+
 ```csharp
 // WRONG: In ReceivingLabelPage.xaml.cs
 private void Button_Click(object sender, RoutedEventArgs e)
@@ -409,6 +412,7 @@ private void Button_Click(object sender, RoutedEventArgs e)
 ```
 
 ❌ **ViewModel calling DAO directly**
+
 ```csharp
 // WRONG: In ReceivingLabelViewModel.cs
 [RelayCommand]
@@ -419,6 +423,7 @@ private async Task AddLineAsync()
 ```
 
 ✅ **ViewModel calling Service**
+
 ```csharp
 // CORRECT: In ReceivingLabelViewModel.cs
 [RelayCommand]
@@ -429,12 +434,14 @@ private async Task AddLineAsync()
 ```
 
 ❌ **Forgetting Mode=TwoWay for input controls**
+
 ```xml
 <!-- WRONG: Text won't update ViewModel -->
 <TextBox Text="{x:Bind ViewModel.CurrentLine.PartID}"/>
 ```
 
 ✅ **Specify TwoWay for input**
+
 ```xml
 <!-- CORRECT: Updates ViewModel on text change -->
 <TextBox Text="{x:Bind ViewModel.CurrentLine.PartID, Mode=TwoWay}"/>

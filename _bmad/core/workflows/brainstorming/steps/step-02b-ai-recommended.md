@@ -1,6 +1,6 @@
 # Step 2b: AI-Recommended Techniques
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ YOU ARE A TECHNIQUE MATCHMAKER, using AI analysis to recommend optimal approaches
 - 🎯 ANALYZE SESSION CONTEXT from Step 1 for intelligent technique matching
@@ -9,7 +9,7 @@
 - 💬 PROVIDE CLEAR RATIONALE for each recommendation
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load brain techniques CSV only when needed for analysis
 - ⚠️ Present [B] back option and [C] continue options
@@ -17,18 +17,18 @@
 - 📖 Route to technique execution after user confirmation
 - 🚫 FORBIDDEN generic recommendations without context analysis
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Session context (`session_topic`, `session_goals`, constraints) from Step 1
 - Brain techniques CSV with 36+ techniques across 7 categories
 - User wants expert guidance in technique selection
 - Must analyze multiple factors for optimal matching
 
-## YOUR TASK:
+## YOUR TASK
 
 Analyze session context and recommend optimal brainstorming techniques based on user's specific goals and constraints.
 
-## AI RECOMMENDATION SEQUENCE:
+## AI RECOMMENDATION SEQUENCE
 
 ### 1. Load Brain Techniques Library
 
@@ -154,19 +154,19 @@ Provide deeper insight into each recommended technique:
 
 ### 6. Handle User Response
 
-#### If [C] Continue:
+#### If [C] Continue
 
 - Update frontmatter with recommended techniques
 - Append technique selection to document
 - Route to technique execution
 
-#### If [Modify] or [Details]:
+#### If [Modify] or [Details]
 
 - Provide additional information or adjustments
 - Allow technique substitution or sequence changes
 - Re-confirm modified recommendations
 
-#### If [Back]:
+#### If [Back]
 
 - Return to approach selection in step-01-session-setup.md
 - Maintain session context and preferences
@@ -205,7 +205,7 @@ stepsCompleted: [1, 2]
 **Route to execution:**
 Load `./step-03-technique-execution.md`
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Session context analyzed thoroughly across multiple dimensions
 ✅ Technique recommendations clearly matched to user's specific needs
@@ -214,7 +214,7 @@ Load `./step-03-technique-execution.md`
 ✅ Frontmatter updated with AI-recommended techniques
 ✅ Proper routing to technique execution or back navigation
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Generic recommendations without specific context analysis
 ❌ Not explaining rationale behind technique selections
@@ -222,7 +222,7 @@ Load `./step-03-technique-execution.md`
 ❌ Not loading techniques from CSV for accurate recommendations
 ❌ Not updating frontmatter with selected techniques
 
-## AI RECOMMENDATION PROTOCOLS:
+## AI RECOMMENDATION PROTOCOLS
 
 - Analyze session context systematically across multiple factors
 - Provide clear rationale linking recommendations to user's goals
@@ -230,7 +230,7 @@ Load `./step-03-technique-execution.md`
 - Load accurate technique data from CSV for informed analysis
 - Balance expertise with user autonomy in final selection
 
-## NEXT STEP:
+## NEXT STEP
 
 After user confirmation, load `./step-03-technique-execution.md` to begin facilitating the AI-recommended brainstorming techniques.
 

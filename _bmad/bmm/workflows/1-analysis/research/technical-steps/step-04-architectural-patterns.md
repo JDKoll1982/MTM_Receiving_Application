@@ -1,6 +1,6 @@
 # Technical Research Step 4: Architectural Patterns
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after architectural patterns content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on architectural patterns and design decisions
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive architectural patterns analysis with emphasis on design decisions and implementation approaches for {{research_topic}}.
 
-## ARCHITECTURAL PATTERNS SEQUENCE:
+## ARCHITECTURAL PATTERNS SEQUENCE
 
 ### 1. Begin Architectural Patterns Analysis
 
@@ -91,7 +91,7 @@ Search the web: "scalability architecture patterns"
 
 Prepare architectural analysis with web search citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -152,17 +152,17 @@ Show the generated architectural patterns and present continue option:
 
 ### 7. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
 - Load: `./step-05-implementation-research.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the research document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ System architecture patterns identified with current citations
 ✅ Design principles clearly documented and analyzed
@@ -173,7 +173,7 @@ When user selects 'C', append the content directly to the research document usin
 ✅ Content properly appended to document when C selected
 ✅ Proper routing to implementation research step
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying solely on training data without web verification for current facts
 
@@ -187,7 +187,7 @@ When user selects 'C', append the content directly to the research document usin
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## ARCHITECTURAL RESEARCH PROTOCOLS:
+## ARCHITECTURAL RESEARCH PROTOCOLS
 
 - Search for architecture documentation and pattern catalogs
 - Use architectural conference proceedings and case studies
@@ -195,7 +195,7 @@ When user selects 'C', append the content directly to the research document usin
 - Note architectural decision records (ADRs) and rationales
 - Research architecture assessment and evaluation frameworks
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-05-implementation-research.md` to focus on implementation approaches and technology adoption.
 

@@ -10,6 +10,7 @@ agent: agent
 You are an expert C# unit test developer specializing in MVVM, WinUI 3, CommunityToolkit.Mvvm, and xUnit.
 
 ## Context
+
 - **Framework:** xUnit with FluentAssertions and Moq
 - **Target:** ViewModels using CommunityToolkit.Mvvm
 - **Pattern:** ViewModels inherit from `ViewModel_Shared_Base` or `ObservableObject`
@@ -19,7 +20,9 @@ You are an expert C# unit test developer specializing in MVVM, WinUI 3, Communit
 ## Requirements
 
 ### Test Coverage Priority (Ordered by Importance)
+
 Generate tests for:
+
 1. **Property Change Notifications:**
    - Setting properties raises `PropertyChanged` event with correct property name
    - Dependent properties trigger notifications (computed properties)
@@ -51,6 +54,7 @@ Generate tests for:
 ### Test Structure Template
 
 ### Best Practices (CRITICAL)
+
 - **Mock ALL services** - Never use real database, file system, or external dependencies
 - **Test PropertyChanged** for every `[ObservableProperty]` field
 - **Use `It.Is<T>()` predicates** for parameter verification instead of `It.IsAny<T>()`
@@ -63,6 +67,7 @@ Generate tests for:
 - **Verify cancellation token handling** for long-running async operations
 
 ### Forbidden Practices
+
 - ❌ Testing UI rendering or XAML binding (that's integration/UI testing)
 - ❌ Using real services or database connections
 - ❌ Asserting on mock internal state (use `.Verify()` instead)
@@ -71,7 +76,9 @@ Generate tests for:
 - ❌ Sharing mutable state between tests (each test must be isolated)
 
 ## Output
+
 Generate a complete xUnit test class with:
+
 - Constructor initializing all mocks and ViewModel
 - 15-25 test cases covering:
   - Constructor validation
@@ -83,4 +90,4 @@ Generate a complete xUnit test class with:
   - Data validation scenarios
 - XML documentation for complex MVVM patterns
 - Organized with `#region` blocks for readability
-	- Traits: `[Trait("Category", "Unit")]` and `[Trait("Layer", "ViewModel")]`
+ 	- Traits: `[Trait("Category", "Unit")]` and `[Trait("Layer", "ViewModel")]`

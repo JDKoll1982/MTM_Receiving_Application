@@ -54,15 +54,15 @@ I can help craft your story using these proven narrative frameworks:
 
 **Strategic Narratives:**
 
-5. **Brand Story** - Values, mission, and unique positioning
-6. **Pitch Narrative** - Persuasive problem-to-solution structure
-7. **Vision Narrative** - Future-focused aspirational story
-8. **Origin Story** - Foundational narrative of how it began
+1. **Brand Story** - Values, mission, and unique positioning
+2. **Pitch Narrative** - Persuasive problem-to-solution structure
+3. **Vision Narrative** - Future-focused aspirational story
+4. **Origin Story** - Foundational narrative of how it began
 
 **Specialized Narratives:**
 
-9. **Data Storytelling** - Transform insights into compelling narrative
-10. **Emotional Hooks** - Craft powerful opening and touchpoints
+1. **Data Storytelling** - Transform insights into compelling narrative
+2. **Emotional Hooks** - Craft powerful opening and touchpoints
 
 Which framework best fits your purpose? (Enter 1-10, or ask for my recommendation)
 </ask>

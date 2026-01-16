@@ -11,13 +11,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 2: Format Detection & Structure Analysis
 
-## STEP GOAL:
+## STEP GOAL
 
 Detect if PRD follows BMAD format and route appropriately - classify as BMAD Standard / BMAD Variant / Non-Standard, with optional parity check for non-standard formats.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,7 +25,7 @@ Detect if PRD follows BMAD format and route appropriately - classify as BMAD Sta
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -33,21 +33,21 @@ Detect if PRD follows BMAD format and route appropriately - classify as BMAD Sta
 - ✅ You bring systematic validation expertise and pattern recognition
 - ✅ User brings domain knowledge and PRD context
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on detecting format and classifying structure
 - 🚫 FORBIDDEN to perform other validation checks in this step
 - 💬 Approach: Analytical and systematic, clear reporting of findings
 - 🚪 This is a branch step - may route to parity check for non-standard PRDs
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze PRD structure systematically
 - 💾 Append format findings to validation report
 - 📖 Route appropriately based on format classification
 - 🚫 FORBIDDEN to skip format detection or proceed without classification
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file loaded in step 1, validation report initialized
 - Focus: Format detection and classification only
@@ -63,11 +63,13 @@ Detect if PRD follows BMAD format and route appropriately - classify as BMAD Sta
 Load the complete PRD file and extract:
 
 **All Level 2 (##) headers:**
+
 - Scan through entire PRD document
 - Extract all ## section headers
 - List them in order
 
 **PRD frontmatter:**
+
 - Extract classification.domain if present
 - Extract classification.projectType if present
 - Note any other relevant metadata
@@ -84,6 +86,7 @@ Check if the PRD contains the following BMAD PRD core sections:
 6. **Non-Functional Requirements** (or: ## Non-Functional Requirements, ## NFRs, ## Quality Attributes)
 
 **Count matches:**
+
 - How many of these 6 core sections are present?
 - Which specific sections are present?
 - Which are missing?
@@ -93,15 +96,18 @@ Check if the PRD contains the following BMAD PRD core sections:
 Based on core section count, classify:
 
 **BMAD Standard:**
+
 - 5-6 core sections present
 - Follows BMAD PRD structure closely
 
 **BMAD Variant:**
+
 - 3-4 core sections present
 - Generally follows BMAD patterns but may have structural differences
 - Missing some sections but recognizable as BMAD-style
 
 **Non-Standard:**
+
 - Fewer than 3 core sections present
 - Does not follow BMAD PRD structure
 - May be completely custom format, legacy format, or from another framework
@@ -154,12 +160,12 @@ Present MENU OPTIONS below for user selection
 **[B] Validate As-Is** - Proceed with validation using current structure
 **[C] Exit** - Exit validation and review format findings
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - Only proceed based on user selection
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A (Parity Check): Load, read entire file, then execute {altStepFile} (step-v-02b-parity-check.md)
 - IF B (Validate As-Is): Display "Proceeding with validation..." then load, read entire file, then execute {nextStepFile}
@@ -170,7 +176,7 @@ Present MENU OPTIONS below for user selection
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All ## Level 2 headers extracted successfully
 - BMAD core sections checked systematically
@@ -180,7 +186,7 @@ Present MENU OPTIONS below for user selection
 - Non-Standard PRDs pause and present options to user
 - User can choose parity check, validate as-is, or exit
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not extracting all headers before classification
 - Incorrect format classification

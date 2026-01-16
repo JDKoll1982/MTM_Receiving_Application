@@ -1,6 +1,6 @@
 # Domain Research Step 4: Regulatory Focus
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without web search verification
 
@@ -13,7 +13,7 @@
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] continue option after regulatory content generation
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - **Research topic = "{{research_topic}}"** - established from initial discussion
@@ -30,11 +30,11 @@
 - Focus on regulatory and compliance requirements for the domain
 - Web search capabilities with source verification are enabled
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct focused regulatory and compliance analysis with emphasis on requirements that impact {{research_topic}}. Search the web to verify and supplement current facts.
 
-## REGULATORY FOCUS SEQUENCE:
+## REGULATORY FOCUS SEQUENCE
 
 ### 1. Begin Regulatory Analysis
 
@@ -91,7 +91,7 @@ Search the web: "data privacy regulations {{research_topic}}"
 
 Prepare regulatory content with source citations:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -151,17 +151,17 @@ Show the generated regulatory analysis and present continue option:
 
 ### 7. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Load: `./step-05-technical-trends.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 Content is already written to document when generated in step 5. No additional append needed.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Applicable regulations identified with current citations
 ✅ Industry standards and best practices documented
@@ -171,7 +171,7 @@ Content is already written to document when generated in step 5. No additional a
 ✅ [C] continue option presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Relying on training data instead of web search for current facts
 ❌ Missing critical regulatory requirements for the domain
@@ -184,7 +184,7 @@ Content is already written to document when generated in step 5. No additional a
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## REGULATORY RESEARCH PROTOCOLS:
+## REGULATORY RESEARCH PROTOCOLS
 
 - Search for specific regulations by name and number
 - Identify regulatory bodies and enforcement agencies
@@ -192,14 +192,14 @@ Content is already written to document when generated in step 5. No additional a
 - Map industry standards to regulatory requirements
 - Consider regional and jurisdictional differences
 
-## SOURCE VERIFICATION:
+## SOURCE VERIFICATION
 
 - Always cite regulatory agency websites
 - Use official government and industry association sources
 - Note effective dates and implementation timelines
 - Present compliance requirement levels and obligations
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-05-technical-trends.md` to analyze technical trends and innovations in the domain.
 

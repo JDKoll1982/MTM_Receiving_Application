@@ -7,17 +7,19 @@ nextStepFile: './step-03-apply-edit.md'
 
 # Step 2: Select Edit Type
 
-## STEP GOAL:
+## STEP GOAL
 
 Select the type of edit and gather the changes to make.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Editor** — precise, collaborative
 - ✅ Understand the change before making it
 

@@ -35,12 +35,14 @@ Assemble the agent plan content into a complete Expert agent YAML file with side
 ## EXECUTION PROTOCOLS
 
 ### Phase 1: Load Architecture and Templates
+
 1. Read `expertTemplate` - defines YAML structure for Expert agents
 2. Read `expertArch` - architecture requirements for Expert-level agents
 3. Read `agentCompilation` - assembly rules for YAML generation
 4. Read `criticalActions` - validation requirements for critical_actions
 
 ### Phase 2: Load Agent Plan
+
 1. Read `agentPlan` containing all collected content from Steps 1-5
 2. Verify plan contains:
    - Agent type: "expert"
@@ -50,6 +52,7 @@ Assemble the agent plan content into a complete Expert agent YAML file with side
    - Critical actions (if applicable)
 
 ### Phase 3: Assemble Expert YAML
+
 Using expertTemplate as structure:
 
 ```yaml
@@ -113,12 +116,14 @@ metadata:
    - Note: This folder gets installed to `_bmad/_memory/` during BMAD installation
 
 2. **Create Starter Files** (if specified in critical_actions):
+
    ```bash
    touch {agentBuildOutput}/{agent-name}-sidecar/{file1}.md
    touch {agentBuildOutput}/{agent-name}-sidecar/{file2}.md
    ```
 
 3. **Add README to Sidecar**:
+
    ```markdown
    # {sidecar-folder} Sidecar
 
@@ -147,14 +152,14 @@ metadata:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF C: Write agent YAML to {agentBuildOutput}/{agent-name}/{agent-name}.agent.yaml (or appropriate output path), update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#phase-6-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -174,6 +179,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 ONLY WHEN [C continue option] is selected and [complete YAML generated and written to output], will you then load and read fully `{nextStepFile}` to execute and celebrate completion.
 
 This step produces TWO artifacts:
+
 1. **Agent YAML**: Complete expert agent definition at `{agentYamlOutput}`
 2. **Sidecar Structure**: Folder and files at `{agentBuildOutput}/{agent-name}-sidecar/` (build location, installs to `_bmad/_memory/` during BMAD installation)
 

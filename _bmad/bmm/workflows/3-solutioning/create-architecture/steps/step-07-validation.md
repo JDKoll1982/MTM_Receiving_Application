@@ -1,6 +1,6 @@
 # Step 7: Architecture Validation & Completion
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -13,7 +13,7 @@
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ✅ Run comprehensive validation checks on the complete architecture
@@ -22,7 +22,7 @@
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -30,25 +30,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to resolve validation concerns
 - **C (Continue)**: Save the validation results and complete the architecture
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete architecture document with all sections is available
 - All architectural decisions, patterns, and structure are defined
 - Focus on validation, gap analysis, and coherence checking
 - Prepare for handoff to implementation phase
 
-## YOUR TASK:
+## YOUR TASK
 
 Validate the complete architecture for coherence, completeness, and readiness to guide AI agents through consistent implementation.
 
-## VALIDATION SEQUENCE:
+## VALIDATION SEQUENCE
 
 ### 1. Coherence Validation
 
@@ -179,7 +179,7 @@ These are optional refinements. Would you like to address any of these?"
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Architecture Validation Results
@@ -303,7 +303,7 @@ Show the validation results and present choices:
 
 ### 8. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with validation issues
 - Process enhanced solutions for complex concerns
@@ -311,7 +311,7 @@ Show the validation results and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with validation context
 - Process collaborative insights on implementation readiness
@@ -319,17 +319,17 @@ Show the validation results and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]`
 - Load `./step-08-complete.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ All architectural decisions validated for coherence
 ✅ Complete requirements coverage verified
@@ -339,7 +339,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Skipping validation of decision compatibility
 ❌ Not verifying all requirements are architecturally supported
@@ -352,7 +352,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-08-complete.md` to complete the workflow and provide implementation guidance.
 

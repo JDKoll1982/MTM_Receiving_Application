@@ -10,13 +10,13 @@ validationReportPath: '{validation_report_path}'
 
 # Step 5: Measurability Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate that all Functional Requirements (FRs) and Non-Functional Requirements (NFRs) are measurable, testable, and follow proper format without implementation details.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,7 +24,7 @@ Validate that all Functional Requirements (FRs) and Non-Functional Requirements 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Validation Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -32,14 +32,14 @@ Validate that all Functional Requirements (FRs) and Non-Functional Requirements 
 - ✅ You bring analytical rigor and requirements engineering expertise
 - ✅ This step runs autonomously - no user input needed
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on FR and NFR measurability
 - 🚫 FORBIDDEN to validate other aspects in this step
 - 💬 Approach: Systematic requirement-by-requirement analysis
 - 🚪 This is a validation sequence step - auto-proceeds when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Extract all FRs and NFRs from PRD
 - 💾 Validate each for measurability and format
@@ -47,7 +47,7 @@ Validate that all Functional Requirements (FRs) and Non-Functional Requirements 
 - 📖 Display "Proceeding to next check..." and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: PRD file, validation report
 - Focus: FR and NFR measurability only
@@ -65,6 +65,7 @@ Validate that all Functional Requirements (FRs) and Non-Functional Requirements 
 "Perform measurability validation on this PRD:
 
 **Functional Requirements (FRs):**
+
 1. Extract all FRs from Functional Requirements section
 2. Check each FR for:
    - '[Actor] can [capability]' format compliance
@@ -74,6 +75,7 @@ Validate that all Functional Requirements (FRs) and Non-Functional Requirements 
 3. Document violations with line numbers
 
 **Non-Functional Requirements (NFRs):**
+
 1. Extract all NFRs from Non-Functional Requirements section
 2. Check each NFR for:
    - Specific metrics with measurement methods
@@ -92,19 +94,23 @@ If Task tool unavailable, perform analysis directly:
 Extract all FRs and check each for:
 
 **Format compliance:**
+
 - Does it follow "[Actor] can [capability]" pattern?
 - Is actor clearly defined?
 - Is capability actionable and testable?
 
 **No subjective adjectives:**
+
 - Scan for: easy, fast, simple, intuitive, user-friendly, responsive, quick, efficient (without metrics)
 - Note line numbers
 
 **No vague quantifiers:**
+
 - Scan for: multiple, several, some, many, few, various, number of
 - Note line numbers
 
 **No implementation details:**
+
 - Scan for: React, Vue, Angular, PostgreSQL, MongoDB, AWS, Docker, Kubernetes, Redux, etc.
 - Unless capability-relevant (e.g., "API consumers can access...")
 - Note line numbers
@@ -114,10 +120,12 @@ Extract all FRs and check each for:
 Extract all NFRs and check each for:
 
 **Specific metrics:**
+
 - Is there a measurable criterion? (e.g., "response time < 200ms", not "fast response")
 - Can this be measured or tested?
 
 **Template compliance:**
+
 - Criterion defined?
 - Metric specified?
 - Measurement method included?
@@ -126,6 +134,7 @@ Extract all NFRs and check each for:
 ### 3. Tally Violations
 
 **FR Violations:**
+
 - Format violations: count
 - Subjective adjectives: count
 - Vague quantifiers: count
@@ -133,6 +142,7 @@ Extract all NFRs and check each for:
 - Total FR violations: sum
 
 **NFR Violations:**
+
 - Missing metrics: count
 - Incomplete template: count
 - Missing context: count
@@ -207,7 +217,7 @@ Immediately load and execute {nextStepFile} (step-v-06-traceability-validation.m
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All FRs extracted and analyzed for measurability
 - All NFRs extracted and analyzed for measurability
@@ -217,7 +227,7 @@ Immediately load and execute {nextStepFile} (step-v-06-traceability-validation.m
 - Auto-proceeds to next validation step
 - Subprocess attempted with graceful degradation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not analyzing all FRs and NFRs
 - Missing line numbers for violations

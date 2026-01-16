@@ -15,7 +15,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 10 of 12** - Next: Polish Document
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -27,7 +27,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 SELECTIVE: Only document NFRs that actually apply to the product
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating NFR content
@@ -35,19 +35,18 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Functional requirements already defined and will inform NFRs
 - Domain and project-type context will guide which NFRs matter
 - Focus on specific, measurable quality criteria
 
-## YOUR TASK:
+## YOUR TASK
 
 Define non-functional requirements that specify quality attributes for the product, focusing only on what matters for THIS specific product.
 
-## NON-FUNCTIONAL REQUIREMENTS SEQUENCE:
+## NON-FUNCTIONAL REQUIREMENTS SEQUENCE
 
 ### 1. Explain NFR Purpose and Scope
 
@@ -76,40 +75,45 @@ Evaluate which NFR categories matter based on product context:
 
 For each relevant category, conduct targeted discovery:
 
-#### Performance NFRs (If relevant):
+#### Performance NFRs (If relevant)
 
 Explore performance requirements:
+
 - What parts of the system need to be fast for users to be successful?
 - Are there specific response time expectations?
 - What happens if performance is slower than expected?
 - Are there concurrent user scenarios we need to support?
 
-#### Security NFRs (If relevant):
+#### Security NFRs (If relevant)
 
 Explore security requirements:
+
 - What data needs to be protected?
 - Who should have access to what?
 - What are the security risks we need to mitigate?
 - Are there compliance requirements (GDPR, HIPAA, PCI-DSS)?
 
-#### Scalability NFRs (If relevant):
+#### Scalability NFRs (If relevant)
 
 Explore scalability requirements:
+
 - How many users do we expect initially? Long-term?
 - Are there seasonal or event-based traffic spikes?
 - What happens if we exceed our capacity?
 - What growth scenarios should we plan for?
 
-#### Accessibility NFRs (If relevant):
+#### Accessibility NFRs (If relevant)
 
 Explore accessibility requirements:
+
 - Are we serving users with visual, hearing, or motor impairments?
 - Are there legal accessibility requirements (WCAG, Section 508)?
 - What accessibility features are most important for our users?
 
-#### Integration NFRs (If relevant):
+#### Integration NFRs (If relevant)
 
 Explore integration requirements:
+
 - What external systems do we need to connect with?
 - Are there APIs or data formats we must support?
 - How reliable do these integrations need to be?
@@ -128,7 +132,7 @@ For each relevant NFR category, ensure criteria are testable:
 
 Prepare the content to append to the document:
 
-#### Content Structure (Dynamic based on relevance):
+#### Content Structure (Dynamic based on relevance)
 
 When saving to document, append these Level 2 and Level 3 sections (only include sections that are relevant):
 
@@ -159,6 +163,7 @@ When saving to document, append these Level 2 and Level 3 sections (only include
 ### 6. Present MENU OPTIONS
 
 Present the non-functional requirements for review, then display menu:
+
 - Show defined NFRs (using structure from step 5)
 - Note that only relevant categories were included
 - Emphasize NFRs specify how well the system needs to perform
@@ -167,22 +172,24 @@ Present the non-functional requirements for review, then display menu:
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Polish Document (Step 11 of 12)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
+
 - IF A: Execute {advancedElicitationTask} with the current NFR content, process the enhanced quality attribute insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
 - IF P: Execute {partyModeWorkflow} with the current NFR list, process the collaborative technical validation and additions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
 - IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
+
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Only relevant NFR categories documented (no requirement bloat)
 ✅ Each NFR is specific and measurable
@@ -192,7 +199,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Documenting NFR categories that don't apply to the product
 ❌ Leaving requirements vague and unmeasurable
@@ -206,7 +213,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NFR CATEGORY GUIDANCE:
+## NFR CATEGORY GUIDANCE
 
 **Include Performance When:**
 
@@ -235,7 +242,7 @@ When user selects 'C', append the content directly to the document using the str
 - Targeting users with disabilities
 - B2B customers with accessibility requirements
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load {nextStepFile} to finalize the PRD and complete the workflow.
 

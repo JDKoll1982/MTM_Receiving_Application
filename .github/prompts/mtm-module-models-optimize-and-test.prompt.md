@@ -3,20 +3,25 @@
 You are GitHub Copilot operating inside the current solution (WinUI 3, .NET 8, C# 12, MVVM). Start fresh: assume no prior changes.
 
 ## Input
+
 - Target module folder path: `<MODULE_FOLDER>` (example: `Module_Core`)
 
 ## Objective
+
 Read the current **Models** in `<MODULE_FOLDER>` and propose **incremental optimizations** that do **not** require refactoring the entire codebase.
 If `<MODULE_FOLDER>/SETTABLE_OBJECTS_REPORT.md` exists, incorporate it into the suggestions.
 Then implement these changes **iteratively, one model file at a time**, updating/adding tests for each changed file, and **verify tests pass** after each iteration before moving to the next file.
 
 ## Foldering rule for defaults
+
 If you create or centralize any default values (constants, small default-provider classes, etc.), place them under a dedicated defaults folder inside the module:
+
 - `<MODULE_FOLDER>/Defaults/`
 
 Do not place default-value files in `Models/` or scattered across multiple model files. Migrate duplicated literals toward these defaults incrementally.
 
 ## Non-negotiable constraints
+
 - Follow `.editorconfig` formatting + C# style rules.
 - Follow `.github/copilot-instructions.md` architecture rules.
 - Prefer MCP tooling per `.github/instructions/mcp-tooling.instructions.md`.
@@ -26,6 +31,7 @@ Do not place default-value files in `Models/` or scattered across multiple model
 - Keep changes small and reviewable: each iteration should touch **one model file** (plus any tiny supporting file(s) if strictly necessary).
 
 ## Step 0 — Load required context with tools
+
 1. Read `.github/copilot-instructions.md`.
 2. Read `.editorconfig`.
 3. If present, read `<MODULE_FOLDER>/SETTABLE_OBJECTS_REPORT.md`.
@@ -34,7 +40,9 @@ Do not place default-value files in `Models/` or scattered across multiple model
 6. Read each model file fully.
 
 ## Step 1 — Produce tips + task list (before editing code)
+
 Create:
+
 1. A concise list of actionable optimization tips for the module’s models, explicitly referencing items from `SETTABLE_OBJECTS_REPORT.md` when present.
 2. A prioritized task list (checkbox list) describing incremental changes to apply across the models. Each task must:
    - Name the exact file(s) targeted.
@@ -43,7 +51,9 @@ Create:
    - If the task introduces default values, specify the file(s) under `<MODULE_FOLDER>/Defaults/`.
 
 ## Step 2 — Iterate changes “one model at a time”
+
 For each iteration:
+
 1. Pick the next model file from the prioritized task list (start with the highest-impact + least-risk item).
 2. Explain the planned change briefly.
 3. Make the code change in that model file. Keep the public surface area stable wherever possible (add new constants/helpers/properties rather than removing existing ones).
@@ -58,11 +68,14 @@ For each iteration:
 7. Mark the iteration complete and move to the next model file.
 
 ## Step 3 — Completion criteria
+
 Stop when:
+
 - All high-priority model improvements from the task list are implemented **or**
 - You reach a point where the next change would require a broad refactor (in that case: stop and explain why, and propose a future refactor path).
 
 ## Output format requirements
+
 - Use Markdown.
 - Any Visual Studio command/setting names must be wrapped like `__CommandName__`.
 - For code blocks that belong in the codebase, use:

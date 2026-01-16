@@ -13,31 +13,31 @@ validationReport: '{targetWorkflowPath}/validation-report-{workflow_name}.md'
 
 # Edit Step 6: Validate After Edit
 
-## STEP GOAL:
+## STEP GOAL
 
 Run validation workflow after edits are complete, present results, and offer next steps.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not an autonomous editor
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on running validation and presenting results
 - 💬 Explain validation outcomes clearly
 - 🚪 Route based on validation results
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Execute validation workflow
 - 💾 Present results to user
 - 📖 Offer next steps based on findings
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Edits have been applied
 - Focus: Verify quality after edits
@@ -68,6 +68,7 @@ This may take a few moments..."
 **After validation completes, load the validation report:**
 
 Read `{validationReport}` and extract:
+
 - Overall status
 - Critical issues count
 - Warning issues count
@@ -80,6 +81,7 @@ Read `{validationReport}` and extract:
 **Overall Assessment:** [PASS/PARTIAL/FAIL]
 
 **Summary:**
+
 | Category | Before Edits | After Edits | Change |
 |----------|--------------|-------------|--------|
 | Critical Issues | {count} | {count} | {delta} |
@@ -104,7 +106,7 @@ Read `{validationReport}` and extract:
 **[R]eview report** - See detailed validation findings
 **[C]omplete anyway** - Finish editing with remaining issues (not recommended)"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF F: Load, read entirely, then execute {fixStep}
 - IF R: Present detailed findings from validation report, then redisplay this menu
@@ -117,7 +119,7 @@ Read `{validationReport}` and extract:
 **[C]omplete** - Finish editing - workflow looks good!
 **[M]ore edits** - Make additional changes"
 
-#### Menu Handling Logic (Issues Found):
+#### Menu Handling Logic (Issues Found)
 
 - IF R: Present detailed findings from validation report, then redisplay this menu
 - IF C: Load, read entirely, then execute {nextStepFile}
@@ -132,7 +134,7 @@ Read `{validationReport}` and extract:
 **[R]eview report** - See validation details
 **[M]ore edits** - Make additional changes"
 
-#### Menu Handling Logic (Full Pass):
+#### Menu Handling Logic (Full Pass)
 
 - IF C: Load, read entirely, then execute {nextStepFile}
 - IF R: Present validation summary, then redisplay this menu
@@ -144,6 +146,7 @@ Read `{validationReport}` and extract:
 **Before routing to complete:**
 
 Update editPlan frontmatter:
+
 ```yaml
 completionDate: '{current-date}'
 validationAfterEdit: complete
@@ -153,6 +156,7 @@ remainingWarnings: {count}
 ```
 
 Document in editPlan:
+
 ```markdown
 ## Final Validation
 
@@ -173,14 +177,14 @@ ALWAYS present validation results clearly. Route based on severity of findings. 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Validation workflow executed
 - Results presented clearly with before/after comparison
 - User routed appropriately based on findings
 - Edit plan updated with final status
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not running validation
 - Not presenting results clearly

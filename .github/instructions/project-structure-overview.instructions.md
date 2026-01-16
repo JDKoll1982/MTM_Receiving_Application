@@ -46,6 +46,6 @@ This document maps the project structure to the specific instruction files that 
 
 ## Key Principles
 
-1.  **Granularity**: We prefer many small, specific instruction files over one giant file.
-2.  **Context**: Agents should read the specific instruction file relevant to the task at hand.
-3.  **Validation**: Always verify your code against the standards in these files.
+1. **Granularity**: We prefer many small, specific instruction files over one giant file.
+2. **Context**: Agents should read the specific instruction file relevant to the task at hand.
+3. **Validation**: Always verify your code against the standards in these files.

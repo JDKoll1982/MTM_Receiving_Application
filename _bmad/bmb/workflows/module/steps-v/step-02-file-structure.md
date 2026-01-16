@@ -9,17 +9,19 @@ validationReportOutput: '{validation_report_output}'
 
 # Step 2: File Structure Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate file structure against module standards.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Quality Assurance** — checking structure
 - ✅ Reference standards, ensure compliance
 
@@ -36,6 +38,7 @@ Load `{moduleStandardsFile}` for reference.
 Check based on target type:
 
 **For Modules:**
+
 - [ ] module.yaml exists
 - [ ] README.md exists
 - [ ] agents/ folder exists (if agents specified)
@@ -43,22 +46,27 @@ Check based on target type:
 - [ ] _module-installer/ folder (if installer specified)
 
 **For Briefs:**
+
 - [ ] Brief file exists
 - [ ] Required sections present
 
 **For Agent Specs:**
+
 - [ ] All expected spec files exist
 
 **For Workflow Specs:**
+
 - [ ] All expected spec files exist
 
 ### 3. Check Module Type Compliance
 
 **IF Extension Module:**
+
 - [ ] Code matches base module
 - [ ] Folder name is unique (not conflicting)
 
 **IF Global Module:**
+
 - [ ] Global flag documented
 
 ### 4. Record Results

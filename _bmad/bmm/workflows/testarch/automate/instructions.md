@@ -827,6 +827,7 @@ Expands test automation coverage by generating comprehensive test suites at appr
    ````
 
    ## Priority Tags
+
    - **[P0]**: Critical paths, run every commit
    - **[P1]**: High priority, run on PR to main
    - **[P2]**: Medium priority, run nightly
@@ -949,6 +950,7 @@ Expands test automation coverage by generating comprehensive test suites at appr
    - ⚠️ Edge case: Password reset flow not yet covered (future story)
 
    ## Definition of Done
+
    - [x] All tests follow Given-When-Then format
    - [x] All tests use data-testid selectors
    - [x] All tests have priority tags
@@ -960,6 +962,7 @@ Expands test automation coverage by generating comprehensive test suites at appr
    - [x] package.json scripts updated
 
    ## Next Steps
+
    1. Review generated tests with team
    2. Run tests in CI pipeline: `npm run test:e2e`
    3. Integrate with quality gate: `bmad tea *gate`

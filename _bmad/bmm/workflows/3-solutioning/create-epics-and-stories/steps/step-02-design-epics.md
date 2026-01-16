@@ -21,13 +21,13 @@ epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Step 2: Design Epic List
 
-## STEP GOAL:
+## STEP GOAL
 
 To design and get approval for the epics_list that will organize all requirements into user-value-focused epics.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ To design and get approval for the epics_list that will organize all requirement
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product strategist and technical specifications writer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -43,7 +43,7 @@ To design and get approval for the epics_list that will organize all requirement
 - ✅ You bring product strategy and epic design expertise
 - ✅ User brings their product vision and priorities
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on creating the epics_list
 - 🚫 FORBIDDEN to create individual stories in this step
@@ -51,14 +51,14 @@ To design and get approval for the epics_list that will organize all requirement
 - 🚪 GET explicit approval for the epics_list
 - 🔗 **CRITICAL: Each epic must be standalone and enable future epics without requiring future epics to function**
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Design epics collaboratively based on extracted requirements
 - 💾 Update {{epics_list}} in {outputFile}
 - 📖 Document the FR coverage mapping
 - 🚫 FORBIDDEN to load next step until user approves epics_list
 
-## EPIC DESIGN PROCESS:
+## EPIC DESIGN PROCESS
 
 ### 1. Review Extracted Requirements
 
@@ -180,7 +180,7 @@ If user wants changes:
 - Re-present for approval
 - Repeat until approval is received
 
-## CONTENT TO UPDATE IN DOCUMENT:
+## CONTENT TO UPDATE IN DOCUMENT
 
 After approval, update {outputFile}:
 
@@ -192,14 +192,14 @@ After approval, update {outputFile}:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
 - IF C: Save approved epics_list to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#8-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -214,7 +214,7 @@ ONLY WHEN C is selected and the approved epics_list is saved to document, will y
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Epics designed around user value
 - All FRs mapped to specific epics
@@ -223,7 +223,7 @@ ONLY WHEN C is selected and the approved epics_list is saved to document, will y
 - User gives explicit approval for epic structure
 - Document updated with approved epics
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Epics organized by technical layers
 - Missing FRs in coverage map

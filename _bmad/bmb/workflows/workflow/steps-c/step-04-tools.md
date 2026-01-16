@@ -11,13 +11,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 4: Tools Configuration
 
-## STEP GOAL:
+## STEP GOAL
 
 To preview the workflow structure FIRST, then configure tools with clear context on where and how they'll be used.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -25,20 +25,20 @@ To preview the workflow structure FIRST, then configure tools with clear context
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect
 - ✅ Tools need context to be configured intelligently
 - ✅ We preview structure BEFORE deciding tool integration points
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Preview workflow structure BEFORE configuring tools
 - 🚫 FORBIDDEN to skip the preview - tools can't be configured without it
 - 💬 Use the preview to make tool discussions concrete
 - 🚫 Load tools from CSV, don't hardcode descriptions
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Present design preview based on requirements
 - 💬 Discuss tools WITHIN the context of the preview
@@ -46,7 +46,7 @@ To preview the workflow structure FIRST, then configure tools with clear context
 - 📖 Update frontmatter stepsCompleted when complete
 - 🚫 FORBIDDEN to load next step until tools are configured
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Discovery → Classification → Requirements are complete
 - We know the flow pattern, phases, interaction style
@@ -103,9 +103,11 @@ Load `{commonToolsCsv}` and present by category:
 "**Available BMAD Tools:**
 
 **Core Tools:**
+
 - [List from CSV with descriptions]
 
 **Optional Tools:**
+
 - [List from CSV with descriptions]"
 
 ### 4. Configure Core Tools WITH Context
@@ -115,6 +117,7 @@ Go through each core tool, referencing the preview:
 "**Party Mode** - For creative, unrestricted exploration
 
 Looking at your workflow structure, I see potential in:
+
 - [Specific phase from preview] for [specific reason]
 
 Should we include Party Mode? If so, where would it fit best?"
@@ -122,6 +125,7 @@ Should we include Party Mode? If so, where would it fit best?"
 "**Advanced Elicitation** - For deep exploration and quality
 
 This could work well in:
+
 - [Specific phase] for [specific reason]
 
 Should we include Advanced Elicitation? Where would you want quality gates or deeper exploration?"
@@ -129,6 +133,7 @@ Should we include Advanced Elicitation? Where would you want quality gates or de
 "**Brainstorming** - For idea generation
 
 In your workflow, this might fit in:
+
 - [Specific phase if applicable]
 
 Should we include Brainstorming?"
@@ -140,6 +145,7 @@ Should we include Brainstorming?"
 "**Web-Browsing** - For real-time information
 
 Would your workflow benefit from:
+
 - Current data/information
 - Research during execution
 - Live references
@@ -149,6 +155,7 @@ If yes, where in the structure would this be needed?"
 "**File I/O** - For reading/writing files
 
 Your workflow [will/won't] need file operations based on:
+
 - [Input requirements from requirements]
 - [Output specifications from requirements]
 
@@ -157,6 +164,7 @@ Any specific file operations needed?"
 "**Sub-Agents** - For delegating specialized tasks
 
 Could any part of your workflow benefit from:
+
 - Specialized expertise
 - Parallel processing
 - Focused sub-tasks
@@ -166,6 +174,7 @@ Looking at your structure, [specific phase] might benefit..."
 "**Sub-Processes** - For parallel workflows
 
 Would any phase benefit from:
+
 - Running multiple processes in parallel
 - Coordinating multiple workflows
 
@@ -179,6 +188,7 @@ If so, which phase?"
 "Since your workflow is continuable, it needs to track progress between sessions.
 
 We'll use:
+
 - `stepsCompleted` array in output frontmatter
 - `lastStep` tracking
 - `step-01b-continue.md` for resuming
@@ -193,6 +203,7 @@ Any additional state we need to track?"
 "**External Integrations** - MCP, databases, APIs
 
 Based on your workflow, are there any external systems it needs to connect to?
+
 - Databases?
 - APIs?
 - MCP servers?
@@ -207,6 +218,7 @@ If yes, note installation requirements.
 Some tools require additional setup.
 
 Based on what we've selected:
+
 - [List any tools requiring installation]
 - [Assess user comfort level]
 
@@ -246,13 +258,13 @@ Update `{workflowPlanFile}`:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input
 - ONLY proceed when user selects 'C'
 - User can chat or ask questions - always respond and redisplay menu
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -263,7 +275,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Design preview presented BEFORE tools discussion
 - Tools discussed WITHIN concrete context
@@ -271,7 +283,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can visualize where tools fit
 - All decisions documented in plan
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Configuring tools without design preview
 - Abstract tool discussions ("it could go somewhere")

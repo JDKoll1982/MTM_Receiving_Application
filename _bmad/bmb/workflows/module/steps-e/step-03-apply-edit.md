@@ -7,17 +7,19 @@ nextStepFile: './step-04-review.md'
 
 # Step 3: Apply Edit
 
-## STEP GOAL:
+## STEP GOAL
 
 Apply the confirmed edit to the target file and save.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
-### Universal Rules:
+### Universal Rules
+
 - 📖 CRITICAL: Read the complete step file before taking any action
 - ✅ Speak in `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
+
 - ✅ You are the **Module Editor** — making changes
 - ✅ Apply edits precisely
 
@@ -34,21 +36,25 @@ Read the complete target file.
 Based on the edit plan from step 2:
 
 **IF Modify:**
+
 - Locate the section
 - Apply the modification
 - Preserve surrounding context
 
 **IF Add:**
+
 - Find the insertion point
 - Insert new content
 - Maintain formatting
 
 **IF Delete:**
+
 - Locate the content
 - Remove it
 - Clean up any gaps
 
 **IF Replace:**
+
 - Locate the section
 - Replace with new content
 - Ensure proper formatting

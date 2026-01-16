@@ -24,6 +24,7 @@ The compiled output path after build.
 **Format:** `_bmad/agents/{agent-name}/{agent-name}.md`
 
 **Examples:**
+
 ```yaml
 id: _bmad/agents/commit-poet/commit-poet.md
 id: _bmad/agents/journal-keeper/journal-keeper.md
@@ -60,6 +61,7 @@ Professional role identifier.
 **Format:** Professional title or role name
 
 **Important:** The `title` determines the agent's filename:
+
 - `title: 'Commit Message Artisan'` → `commit-message-artisan.agent.yaml`
 - `title: 'Strategic Business Analyst'` → `strategic-business-analyst.agent.yaml`
 - `title: 'Code Review Specialist'` → `code-review-specialist.agent.yaml`
@@ -171,12 +173,14 @@ Use this to avoid mixing up the "name" properties:
 ### Issue: name = title
 
 **Wrong:**
+
 ```yaml
 name: 'Commit Message Artisan'
 title: 'Commit Message Artisan'
 ```
 
 **Fix:**
+
 ```yaml
 name: 'Inkwell Von Comitizen'
 title: 'Commit Message Artisan'
@@ -185,11 +189,13 @@ title: 'Commit Message Artisan'
 ### Issue: id path mismatch
 
 **Wrong:** Agent file is `my-agent.agent.yaml` but:
+
 ```yaml
 id: _bmad/agents/different-agent/different-agent.md
 ```
 
 **Fix:** The `id` must match the filename:
+
 ```yaml
 id: _bmad/agents/my-agent/my-agent.md
 ```
@@ -197,12 +203,14 @@ id: _bmad/agents/my-agent/my-agent.md
 ### Issue: Wrong module format
 
 **Wrong:**
+
 ```yaml
 module: Standalone
 module: STAND_ALONE
 ```
 
 **Fix:**
+
 ```yaml
 module: stand-alone  # lowercase, hyphenated
 ```
