@@ -1,0 +1,21 @@
+{
+    "agent": "module-rebuilder",
+    "module": "Module_Volvo",
+    "mode": "strict-constitutional-compliance",
+    "timestamp": "2026-01-16T00:00:00Z",
+    "status": "task-generation-complete",
+    "phase": "awaiting-approval",
+    "violations_found": 18,
+    "critical_violations": 8,
+    "tasks_generated": 97,
+    "tasks_file": "specs/module-volvo-modernization/tasks.md",
+    "template_used": "_bmad/module-agents/templates/tasktemplates/module-modernization-tasks.md",
+    "template_location_updated": true,
+    "task_format": "checklist-only",
+    "estimated_effort_hours": "34-44",
+    "estimated_duration_weeks": 1,
+    "parallelizable_tasks": 24,
+    "sequential_tasks": 73,
+    "next_action": "Review specs/module-volvo-modernization/tasks.md and respond with [EXECUTE]",
+    "approval_status": "waiting-for-user-review"
+}

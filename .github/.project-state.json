@@ -1,0 +1,150 @@
+{
+    "scan_date": "2026-01-16T00:00:00Z",
+    "scanner": "brownfield-health-check",
+    "project_name": "MTM_Receiving_Application",
+    "overall_health": "EXCELLENT",
+    "health_score": 92,
+    "modules": [
+        {
+            "name": "Module_Core",
+            "state": "modern",
+            "patterns": [
+                "CQRS",
+                "MediatR",
+                "DependencyInjection"
+            ],
+            "violations": [],
+            "test_coverage": "good",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Shared",
+            "state": "modern",
+            "patterns": [
+                "BaseClasses",
+                "ObservableProperty",
+                "Interfaces"
+            ],
+            "violations": [],
+            "test_coverage": "good",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Receiving",
+            "state": "modern",
+            "patterns": [
+                "MVVM",
+                "ObservableProperty",
+                "AsyncAwait"
+            ],
+            "violations": [],
+            "test_coverage": "very-high",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Routing",
+            "state": "modern",
+            "patterns": [
+                "MVVM",
+                "ObservableProperty",
+                "InstanceDAOs"
+            ],
+            "violations": [],
+            "test_coverage": "high",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Dunnage",
+            "state": "modern",
+            "patterns": [
+                "MVVM",
+                "ObservableProperty",
+                "InstanceDAOs"
+            ],
+            "violations": [],
+            "test_coverage": "high",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Settings",
+            "state": "modern",
+            "patterns": [
+                "MVVM",
+                "ObservableProperty",
+                "InstanceDAOs"
+            ],
+            "violations": [],
+            "test_coverage": "very-high",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Reporting",
+            "state": "modern",
+            "patterns": [
+                "MVVM",
+                "Services",
+                "AsyncAwait"
+            ],
+            "violations": [],
+            "test_coverage": "good",
+            "status": "production-ready"
+        },
+        {
+            "name": "Module_Volvo",
+            "state": "mixed",
+            "patterns": [
+                "MVVM",
+                "InstanceDAOs"
+            ],
+            "violations": [
+                "code-behind-logic",
+                "direct-click-handlers",
+                "mixed-patterns"
+            ],
+            "test_coverage": "medium",
+            "status": "needs-refactoring",
+            "recommendation": "Extract code-behind to ViewModels using RelayCommand pattern"
+        }
+    ],
+    "architecture_analysis": {
+        "mvvm_compliance": "90%",
+        "database_discipline": "98%",
+        "test_infrastructure": "85%",
+        "code_organization": "92%"
+    },
+    "recommendations": [
+        {
+            "priority": "OPTIONAL",
+            "task": "Module_Volvo Code-Behind Cleanup",
+            "effort_hours": 5,
+            "description": "Extract Click handlers and business logic from code-behind to ViewModel commands"
+        },
+        {
+            "priority": "READY",
+            "task": "Expand CQRS Implementation",
+            "effort_hours": "As needed",
+            "description": "MediatR + FluentValidation already configured, add handlers incrementally"
+        },
+        {
+            "priority": "MAINTENANCE",
+            "task": "Add E2E Integration Tests",
+            "effort_hours": 20,
+            "description": "Extend beyond DAO tests to service-level and UI integration tests"
+        }
+    ],
+    "build_system": {
+        "framework": ".NET 8 with Windows App SDK 1.6+",
+        "platforms": [
+            "x64",
+            "x86",
+            "ARM64"
+        ],
+        "ci_ready": true,
+        "package_type": "WinExe"
+    },
+    "next_steps": [
+        "Use Module Creator to add new features",
+        "Use Module Rebuilder for Module_Volvo refactoring (optional)",
+        "Use Core Maintainer for Module_Core enhancements"
+    ]
+}
