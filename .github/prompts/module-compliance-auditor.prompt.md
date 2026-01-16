@@ -1,0 +1,3 @@
+---
+agent: module-compliance-auditor
+---

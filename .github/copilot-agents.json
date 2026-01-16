@@ -164,6 +164,222 @@
                     "get_errors"
                 ]
             }
+        },
+        {
+            "name": "task-router",
+            "displayName": "Task Router",
+            "description": "Routes users to the correct agent based on project state and intent.",
+            "instructions": "file:_bmad/module-agents/agents/task-router.md",
+            "conversationStarters": [
+                "Help me decide which agent to use",
+                "What should I do with this project?",
+                "Analyze my project and recommend next steps"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "brownfield-health-check",
+            "displayName": "Brownfield Health Check",
+            "description": "Analyzes existing project state and generates modernization roadmap.",
+            "instructions": "file:_bmad/module-agents/agents/brownfield-health-check.md",
+            "conversationStarters": [
+                "Check my project health",
+                "Generate modernization roadmap",
+                "Classify my modules"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "compliance-auditor",
+            "displayName": "Compliance Auditor",
+            "description": "Validates constitution compliance post-rebuild with strict gates.",
+            "instructions": "file:_bmad/module-agents/agents/compliance-auditor.md",
+            "conversationStarters": [
+                "Audit Module_Routing for compliance",
+                "Check constitution violations",
+                "Validate MVVM patterns"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "doc-generator",
+            "displayName": "Doc Generator",
+            "description": "Auto-generates and updates module documentation from codebase analysis.",
+            "instructions": "file:_bmad/module-agents/agents/doc-generator.md",
+            "conversationStarters": [
+                "Generate all documentation",
+                "Update QUICK_REF for all modules",
+                "Generate docs for Module_Receiving",
+                "Validate documentation against codebase"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "test-generator",
+            "displayName": "Test Generator",
+            "description": "Generates unit and integration test scaffolds for modules.",
+            "instructions": "file:_bmad/module-agents/agents/test-generator.md",
+            "conversationStarters": [
+                "Generate unit tests for Module_Receiving",
+                "Create integration tests for workflows",
+                "Update handler tests across modules"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "privilege-code-generator",
+            "displayName": "Privilege Code Generator",
+            "description": "Generates authorization code from PRIVILEGES.md (RBAC).",
+            "instructions": "file:_bmad/module-agents/agents/privilege-code-generator.md",
+            "conversationStarters": [
+                "Generate RBAC from PRIVILEGES.md",
+                "Add authorize attributes to handlers",
+                "Sync privileges to code"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
+        },
+        {
+            "name": "integration-validator",
+            "displayName": "Integration Validator",
+            "description": "Validates cross-module workflows end-to-end (smoke tests).",
+            "instructions": "file:_bmad/module-agents/agents/integration-validator.md",
+            "conversationStarters": [
+                "Validate cross-module workflows",
+                "Run integration smoke tests",
+                "Check handler contracts across modules"
+            ],
+            "additionalInstructions": [
+                "file:_bmad/module-agents/config/module-development-guide.md",
+                "file:.specify/memory/constitution.md",
+                "file:.github/copilot-instructions.md"
+            ],
+            "model": "gpt-4o",
+            "tools": {
+                "enabled": [
+                    "create_file",
+                    "read_file",
+                    "list_dir",
+                    "file_search",
+                    "grep_search",
+                    "semantic_search",
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "list_code_usages",
+                    "get_errors"
+                ]
+            }
         }
     ]
 }

@@ -78,6 +78,21 @@ Process:
   4. List all Views in Module_{Feature}/Views/
 ```
 
+### Phase 4: Compliance Audit (AUTO-TRIGGER)
+
+Upon completion of migration and tests:
+
+1. Write context for downstream agents:
+   - Create/update `.github/.last-agent-run` with `{ agent: "module-rebuilder", module: "Module_{Feature}", status: "completed", timestamp }`.
+2. Automatically invoke the Compliance Auditor to validate MVVM, Data Access, and CQRS conformance for `Module_{Feature}`.
+3. If audit fails, report violations and recommended fixes; pause further actions until PASS.
+
+### Phase 5: Documentation Sync
+
+After passing compliance:
+1. Invoke Doc Generator to refresh QUICK_REF.md and SETTABLE_OBJECTS.md for `Module_{Feature}`.
+2. If PRIVILEGES.md exists, suggest running Privilege Code Generator to synchronize RBAC code.
+
 **Step 2: Extract User Workflows**
 
 Use Diagram 11 (Workflow Extraction Process) from module-rebuild-diagrams.md:

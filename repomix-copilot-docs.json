@@ -1,0 +1,44 @@
+{
+    "$schema": "https://repomix.com/schemas/latest/schema.json",
+    "output": {
+        "filePath": "repomix-output-copilot-docs.md",
+        "style": "markdown",
+        "compress": false,
+        "headerText": "MTM Receiving Application - Copilot Documentation Context",
+        "fileSummary": true,
+        "directoryStructure": true,
+        "includeFullDirectoryStructure": true,
+        "files": true,
+        "removeComments": false,
+        "removeEmptyLines": false,
+        "topFilesLength": 5,
+        "showLineNumbers": true,
+        "copyToClipboard": false
+    },
+    "include": [
+        "**/SETTABLE_OBJECTS_REPORT.md",
+        "**/QUICK_REF.md",
+        "**/PRIVILEGES.md",
+        "**/.github/copilot-instructions.md",
+        "**/.specify/memory/constitution.md",
+        "_bmad/module-agents/agents/**/*.md",
+        "_bmad/module-agents/config/**/*.md"
+    ],
+    "ignore": {
+        "useGitignore": false,
+        "useDotIgnore": false,
+        "useDefaultPatterns": false,
+        "customPatterns": [
+            "docs/user/**",
+            "docs/developer/**",
+            "**/*.cs",
+            "**/*.xaml"
+        ]
+    },
+    "security": {
+        "enableSecurityCheck": true
+    },
+    "tokenCount": {
+        "encoding": "o200k_base"
+    }
+}

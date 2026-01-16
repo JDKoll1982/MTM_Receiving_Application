@@ -4,37 +4,33 @@
         "maxFileSize": 50000000
     },
     "output": {
-        "filePath": "repomix-output-code-only.md",
+        "filePath": "repomix-output-full-context.md",
         "style": "markdown",
         "parsableStyle": false,
         "compress": false,
-        "headerText": "MTM Receiving Application - Core Project Code (Architecture & Implementation)",
+        "headerText": "MTM Receiving Application - Full Repository Context with Git",
         "fileSummary": true,
         "directoryStructure": true,
         "files": true,
         "removeComments": false,
         "removeEmptyLines": false,
         "topFilesLength": 10,
-        "showLineNumbers": false,
+        "showLineNumbers": true,
         "truncateBase64": true,
         "copyToClipboard": false,
         "includeEmptyDirectories": false,
-        "includeFullDirectoryStructure": false,
-        "tokenCountTree": false,
+        "includeFullDirectoryStructure": true,
+        "splitOutput": 2000000,
+        "tokenCountTree": true,
         "git": {
             "sortByChanges": true,
             "sortByChangesMaxCommits": 100,
-            "includeDiffs": false,
-            "includeLogs": false,
-            "includeLogsCount": 50
+            "includeDiffs": true,
+            "includeLogs": true,
+            "includeLogsCount": 100
         }
     },
-    "include": [
-        "**/*.cs",
-        "**/*.xaml",
-        "App.xaml.cs",
-        "MainWindow.xaml.cs"
-    ],
+    "include": [],
     "ignore": {
         "useGitignore": true,
         "useDotIgnore": true,
@@ -43,15 +39,7 @@
             "**/bin/**",
             "**/obj/**",
             "**/.vs/**",
-            "**/node_modules/**",
-            "**/*.md",
-            "docs/**",
-            "Documentation/**",
-            "Assets/**",
-            "Database/**",
-            "specs/**",
-            "_bmad-output/**",
-            "**/*REPORT.md"
+            "**/node_modules/**"
         ]
     },
     "security": {
