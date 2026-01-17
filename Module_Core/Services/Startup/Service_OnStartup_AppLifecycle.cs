@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Shared.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Startup
 {
@@ -251,6 +252,13 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     if (App.MainWindow is MainWindow mainWin)
                     {
                         mainWin.DispatcherQueue.TryEnqueue(() => mainWin.UpdateUserDisplay());
+                    }
+
+                    var settingsFacade = _serviceProvider.GetService<IService_SettingsCoreFacade>();
+                    if (settingsFacade != null)
+                    {
+                        UpdateSplash(95, "Initializing core settings...");
+                        await settingsFacade.InitializeDefaultsAsync(authenticatedUser.EmployeeNumber);
                     }
                 }
                 else

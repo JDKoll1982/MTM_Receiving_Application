@@ -39,8 +39,10 @@
         <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
         <Content Include="Assets\StoreLogo.png" />
         <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+        <Content Include="Module_Settings.Core\Defaults\settings.manifest.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
-
     <!-- Exclude test project files from compilation -->
     <ItemGroup>
         <Compile Remove="MTM_Receiving_Application.Tests\**" />
@@ -131,7 +133,8 @@
     Tools extension to be activated for this project even if the Windows App SDK Nuget
     package has not yet been restored.
   -->
-    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ItemGroup
+        Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <ProjectCapability Include="Msix" />
     </ItemGroup>
     <ItemGroup>
@@ -174,8 +177,8 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
     <!-- Analyzer Performance Optimizations -->
@@ -243,6 +246,6 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include=".github\instructions\" />
+        <Folder Include=".github\instructions\" />
     </ItemGroup>
 </Project>

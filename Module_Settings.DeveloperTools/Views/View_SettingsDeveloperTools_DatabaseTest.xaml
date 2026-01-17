@@ -1,0 +1,73 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.DeveloperTools.Views.View_SettingsDeveloperTools_DatabaseTest"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.DeveloperTools.Models">
+
+    <Grid Padding="20" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <TextBlock Text="Settings Database Test" Style="{StaticResource TitleTextBlockStyle}" />
+            <Button Content="Run Tests"
+                    Command="{x:Bind ViewModel.RunAllTestsCommand}" />
+        </StackPanel>
+
+        <Pivot Grid.Row="1">
+            <PivotItem Header="Summary">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Connection" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock Text="{x:Bind ViewModel.ConnectionStatus, Mode=OneWay}" />
+                    <TextBlock Text="Server Version:" />
+                    <TextBlock Text="{x:Bind ViewModel.ServerVersion, Mode=OneWay}" />
+                    <TextBlock Text="Tables Validated:" />
+                    <TextBlock Text="{x:Bind ViewModel.TablesValidated, Mode=OneWay}" />
+                    <TextBlock Text="Procedures Validated:" />
+                    <TextBlock Text="{x:Bind ViewModel.ProceduresValidated, Mode=OneWay}" />
+                    <TextBlock Text="DAOs Validated:" />
+                    <TextBlock Text="{x:Bind ViewModel.DaosValidated, Mode=OneWay}" />
+                </StackPanel>
+            </PivotItem>
+            <PivotItem Header="Tables">
+                <ItemsControl ItemsSource="{x:Bind ViewModel.TableResults, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_SettingsDbTableResult">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,4">
+                                <TextBlock Text="{x:Bind TableName}" Width="240" />
+                                <TextBlock Text="{x:Bind Details}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </PivotItem>
+            <PivotItem Header="Stored Procedures">
+                <ItemsControl ItemsSource="{x:Bind ViewModel.ProcedureResults, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_SettingsDbProcedureResult">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,4">
+                                <TextBlock Text="{x:Bind ProcedureName}" Width="320" />
+                                <TextBlock Text="{x:Bind Details}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </PivotItem>
+            <PivotItem Header="DAOs">
+                <ItemsControl ItemsSource="{x:Bind ViewModel.DaoResults, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_SettingsDbDaoResult">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,4">
+                                <TextBlock Text="{x:Bind DaoName}" Width="240" />
+                                <TextBlock Text="{x:Bind Details}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</Page>

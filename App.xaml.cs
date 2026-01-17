@@ -21,13 +21,20 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Routing.ViewModels;
-using MTM_Receiving_Application.Module_Settings.ViewModels;
-using MTM_Receiving_Application.Module_Settings.Services;
-using MTM_Receiving_Application.Module_Settings.Interfaces;
-using MTM_Receiving_Application.Module_Settings.Views;
+using MTM_Receiving_Application.Module_Settings.Core.Data;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Services;
+using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Core.Views;
+using MTM_Receiving_Application.Module_Settings.DeveloperTools.Data;
+using MTM_Receiving_Application.Module_Settings.DeveloperTools.Services;
+using MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels;
+using MTM_Receiving_Application.Module_Settings.DeveloperTools.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Views;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Services;
 
 using MTM_Receiving_Application.Module_Core.Services;
 
@@ -139,14 +146,13 @@ public partial class App : Application
                 services.AddSingleton(sp => new Dao_VolvoPart(mySqlConnectionString));
                 services.AddSingleton(sp => new Dao_VolvoPartComponent(mySqlConnectionString));
 
-                // Register Settings DAOs (Singleton)
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_SystemSettings(mySqlConnectionString));
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_UserSettings(mySqlConnectionString));
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_PackageType(mySqlConnectionString));
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_PackageTypeMappings(mySqlConnectionString));
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_RoutingRule(mySqlConnectionString));
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_ScheduledReport(mySqlConnectionString));
-                services.AddSingleton(sp => new Module_Settings.Data.Dao_SettingsAuditLog(mySqlConnectionString));
+                // Register Core Settings DAOs (Singleton)
+                services.AddSingleton(sp => new Dao_SettingsCoreSystem(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_SettingsCoreUser(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_SettingsCoreAudit(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_SettingsCoreRoles(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_SettingsCoreUserRoles(mySqlConnectionString));
+                services.AddSingleton(sp => new Dao_SettingsDiagnostics(mySqlConnectionString));
 
 
                 // Register NEW Routing Module Services (Phase 2 implementation)
@@ -270,8 +276,13 @@ public partial class App : Application
                     return new Service_Reporting(dao, logger);
                 });
 
-                // Settings Services
-                services.AddSingleton<IService_SettingsWorkflow, Service_SettingsWorkflow>();
+                // Settings Core Services
+                services.AddSingleton<ISettingsManifestProvider, Service_SettingsManifestProvider>();
+                services.AddSingleton<ISettingsMetadataRegistry, Service_SettingsMetadataRegistry>();
+                services.AddSingleton<ISettingsCache, Service_SettingsCache>();
+                services.AddSingleton<ISettingsEncryptionService, Service_SettingsEncryptionService>();
+                services.AddSingleton<IService_SettingsCoreFacade, Service_SettingsCoreFacade>();
+                services.AddSingleton<IService_SettingsWindowHost, Service_SettingsWindowHost>();
                 services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, Module_Core.Services.Navigation.Service_Navigation>();
                 services.AddSingleton<IService_ViewModelRegistry, Service_ViewModelRegistry>();
 
@@ -315,7 +326,14 @@ public partial class App : Application
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
                 services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
 
-                services.AddTransient<Module_Settings.ViewModels.ViewModel_Settings_DatabaseTest>();
+                services.AddTransient<ViewModel_SettingsWindow>();
+                services.AddTransient<ViewModel_Settings_System>();
+                services.AddTransient<ViewModel_Settings_Users>();
+                services.AddTransient<ViewModel_Settings_Theme>();
+                services.AddTransient<ViewModel_Settings_Database>();
+                services.AddTransient<ViewModel_Settings_Logging>();
+                services.AddTransient<ViewModel_Settings_SharedPaths>();
+                services.AddTransient<ViewModel_SettingsDeveloperTools_DatabaseTest>();
 
                 // Routing Workflow ViewModels
                 services.AddSingleton<RoutingWizardContainerViewModel>();
@@ -355,13 +373,9 @@ public partial class App : Application
                 // Routing Mode Selection View (Phase 6 implementation)
                 services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
 
-                // Settings Views - TODO: Re-add when implemented
-                /*
-                services.AddTransient<View_Settings_Workflow>();
-                services.AddTransient<View_Settings_ModeSelection>();
-                services.AddTransient<View_Settings_DunnageMode>();
-                services.AddTransient<View_Settings_Placeholder>();
-                */
+                // Core Settings Window
+                services.AddTransient<View_Settings_CoreWindow>();
+                services.AddTransient<View_SettingsDeveloperTools_DatabaseTest>();
 
                 // Reporting Views (003-reporting-module)
                 services.AddTransient<View_Reporting_Main>();

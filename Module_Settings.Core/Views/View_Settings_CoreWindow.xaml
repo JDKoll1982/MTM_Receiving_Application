@@ -1,0 +1,23 @@
+<Window
+    x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_CoreWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels"
+    xmlns:views="using:MTM_Receiving_Application.Module_Settings.Core.Views">
+
+    <Grid>
+        <NavigationView x:Name="SettingsNavView"
+                        IsSettingsVisible="False"
+                        SelectionChanged="OnSelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="System" Tag="System" Icon="Setting" />
+                <NavigationViewItem Content="Users &amp; Privileges" Tag="Users" Icon="Contact" />
+                <NavigationViewItem Content="UI Theme" Tag="Theme" Icon="Brush" />
+                <NavigationViewItem Content="Database" Tag="Database" Icon="Database" />
+                <NavigationViewItem Content="Logging" Tag="Logging" Icon="Document" />
+                <NavigationViewItem Content="Shared Paths" Tag="SharedPaths" Icon="Folder" />
+            </NavigationView.MenuItems>
+            <Frame x:Name="SettingsFrame" />
+        </NavigationView>
+    </Grid>
+</Window>

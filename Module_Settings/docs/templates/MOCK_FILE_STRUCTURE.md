@@ -47,3 +47,6 @@ This mock structure defines the required layout for the new Core Settings system
 - Module_Settings.{FeatureName} is the required pattern for feature-specific settings modules.
 - Each module must include the same subfolder schema for consistency.
 - Feature modules must own their settings UI and inventory documentation.
+- Use templates in this folder for new feature settings work:
+  - Feature Settings Implementation Guide
+  - Settable Objects Inventory Template

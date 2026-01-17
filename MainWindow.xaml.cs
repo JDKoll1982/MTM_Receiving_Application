@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using System;
 
 namespace MTM_Receiving_Application
@@ -14,6 +15,7 @@ namespace MTM_Receiving_Application
         public ViewModel_Shared_MainWindow ViewModel { get; }
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
+        private readonly IService_SettingsWindowHost _settingsWindowHost;
         private bool _hasNavigatedOnStartup = false;
 
         /// <summary>
@@ -24,12 +26,14 @@ namespace MTM_Receiving_Application
         public MainWindow(
             ViewModel_Shared_MainWindow viewModel,
             IService_UserSessionManager sessionManager,
-            IService_LoggingUtility logger)
+            IService_LoggingUtility logger,
+            IService_SettingsWindowHost settingsWindowHost)
         {
             InitializeComponent();
             ViewModel = viewModel;
             _sessionManager = sessionManager;
             _logger = logger;
+            _settingsWindowHost = settingsWindowHost;
 
             // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1450, 900));
@@ -97,8 +101,7 @@ namespace MTM_Receiving_Application
             if (args.IsSettingsSelected)
             {
                 PageTitleTextBlock.Text = "Settings";
-                // TODO: Restore when Settings Views are implemented
-                // ContentFrame.Navigate(typeof(Module_Settings.Views.View_Settings_Workflow));
+                _settingsWindowHost.ShowSettingsWindow();
             }
             else if (args.SelectedItem is NavigationViewItem item)
             {
@@ -143,7 +146,7 @@ namespace MTM_Receiving_Application
 
                             _logger.LogInfo($"ContentFrame state: IsLoaded={ContentFrame.IsLoaded}, BackStackDepth={ContentFrame.BackStackDepth}", "MainWindow");
 
-                            var viewType = typeof(Module_Settings.Views.View_Settings_DatabaseTest);
+                            var viewType = typeof(Module_Settings.DeveloperTools.Views.View_SettingsDeveloperTools_DatabaseTest);
                             _logger.LogInfo($"View type: {viewType.FullName}", "MainWindow");
 
                             PageTitleTextBlock.Text = "Settings Database Test";
@@ -278,35 +281,7 @@ namespace MTM_Receiving_Application
                     PageTitleTextBlock.Text = "Internal Routing";
                 });
             }
-            // TODO: Restore when Settings Views are implemented
-            /*
-            // If navigated to SettingsWorkflowView, subscribe to ViewModel changes to update header
-            else if (ContentFrame.Content is Module_Settings.Views.View_Settings_Workflow settingsView)
-            {
-                var viewModel = settingsView.ViewModel;
-                if (viewModel != null)
-                {
-                    // Update header with current step title (ensure UI thread)
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                    });
-
-                    // Subscribe to property changes to keep header updated
-                    viewModel.PropertyChanged += (s, args) =>
-                    {
-                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
-                        {
-                            // Ensure UI update happens on UI thread
-                            DispatcherQueue.TryEnqueue(() =>
-                            {
-                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                            });
-                        }
-                    };
-                }
-            }
-            */
+            // Settings Window runs in a separate window (no ContentFrame integration).
         }
 
         /// <summary>

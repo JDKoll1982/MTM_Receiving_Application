@@ -1,0 +1,72 @@
+{
+    "version": "1.0",
+    "generated": "2026-01-17",
+    "settings": [
+        {
+            "category": "System",
+            "key": "Core.Theme",
+            "displayName": "Application Theme",
+            "defaultValue": "System",
+            "dataType": "String",
+            "scope": "System",
+            "permissionLevel": "User",
+            "isSensitive": false,
+            "validationRules": "Allowed: Light, Dark, System"
+        },
+        {
+            "category": "System",
+            "key": "Core.Logging.Level",
+            "displayName": "Logging Level",
+            "defaultValue": "Information",
+            "dataType": "String",
+            "scope": "System",
+            "permissionLevel": "Admin",
+            "isSensitive": false,
+            "validationRules": "Allowed: Verbose, Debug, Information, Warning, Error, Fatal"
+        },
+        {
+            "category": "System",
+            "key": "Core.Database.StoredProcedureMaxRetries",
+            "displayName": "Stored Procedure Max Retries",
+            "defaultValue": "3",
+            "dataType": "Int",
+            "scope": "System",
+            "permissionLevel": "Developer",
+            "isSensitive": false,
+            "validationRules": "Range: 0-10"
+        },
+        {
+            "category": "User",
+            "key": "Core.UI.CompactMode",
+            "displayName": "Compact Mode",
+            "defaultValue": "false",
+            "dataType": "Bool",
+            "scope": "User",
+            "permissionLevel": "User",
+            "isSensitive": false,
+            "validationRules": "Boolean"
+        },
+        {
+            "category": "System",
+            "key": "Core.SharedPaths.ExportRoot",
+            "displayName": "Export Root Path",
+            "defaultValue": "C:/MTM/Exports",
+            "dataType": "String",
+            "scope": "System",
+            "permissionLevel": "Admin",
+            "isSensitive": false,
+            "validationRules": "Path"
+        },
+        {
+            "category": "System",
+            "key": "Core.Database.ConnectionSecret",
+            "displayName": "Database Connection Secret",
+            "defaultValue": "",
+            "dataType": "String",
+            "scope": "System",
+            "permissionLevel": "Admin",
+            "isSensitive": true,
+            "validationRules": "Sensitive"
+        }
+    ]
+}

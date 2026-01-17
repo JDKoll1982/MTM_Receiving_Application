@@ -1,0 +1,24 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_System"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models">
+
+    <Grid Padding="20">
+        <StackPanel Spacing="12">
+            <TextBlock Text="System Settings" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Core system defaults registered in the settings manifest." />
+            <ItemsControl ItemsSource="{x:Bind ViewModel.Definitions, Mode=OneWay}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_SettingsDefinition">
+                        <StackPanel Spacing="2" Margin="0,6,0,6">
+                            <TextBlock Text="{x:Bind DisplayName}" FontWeight="SemiBold" />
+                            <TextBlock Text="{x:Bind Key}" Style="{StaticResource CaptionTextBlockStyle}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid>
+</Page>
