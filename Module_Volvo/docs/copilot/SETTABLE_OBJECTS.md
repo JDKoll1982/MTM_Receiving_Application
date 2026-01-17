@@ -9,6 +9,7 @@
 This document catalogs all configuration objects, settings, and environment-dependent values used by Module_Volvo. These objects are settable/configurable at runtime and should be externalized from code.
 
 **Purpose:**  
+
 - Document all configuration reads for Copilot awareness
 - Identify hardcoded values that should be moved to configuration
 - Track database-backed settings vs. app settings
@@ -20,10 +21,12 @@ This document catalogs all configuration objects, settings, and environment-depe
 Module_Volvo uses a dedicated database table for runtime-configurable settings accessed via `Dao_VolvoSettings`.
 
 ### Setting: email_to_recipients
+
 **Key:** `email_to_recipients`  
 **Type:** JSON Array of `Model_EmailRecipient`  
 **Purpose:** TO recipients for PO requisition emails  
 **Default Value:**  
+
 ```json
 [
   {"Name": "Jose Rosas", "Email": "jrosas@mantoolmfg.com"},
@@ -33,20 +36,25 @@ Module_Volvo uses a dedicated database table for runtime-configurable settings a
 ```
 
 **Fallback Value (if setting not found):**  
-```
+
+```text
 "Jose Rosas" <jrosas@mantoolmfg.com>; "Sandy Miller" <smiller@mantoolmfg.com>; "Steph Wittmus" <swittmus@mantoolmfg.com>
 ```
 
 **Read Location:**  
+
 - `ViewModel_Volvo_ShipmentEntry.ShowEmailPreviewDialogAsync()` (Line 679-681)
 
 **Stored Procedure:**  
+
 - `sp_Volvo_Settings_Get`
 
 **DAO Method:**  
+
 - `Dao_VolvoSettings.GetSettingAsync("email_to_recipients")`
 
 **Usage Example:**
+
 ```csharp
 var settingsDao = new Dao_VolvoSettings(connectionString);
 var toResult = await settingsDao.GetSettingAsync("email_to_recipients");
@@ -58,6 +66,7 @@ string toRecipients = FormatRecipientsFromJson(
 
 **Modification:**  
 Via UI in Volvo Settings screen or direct database update:
+
 ```sql
 CALL sp_Volvo_Settings_Upsert(
     'email_to_recipients', 
@@ -69,10 +78,12 @@ CALL sp_Volvo_Settings_Upsert(
 ---
 
 ### Setting: email_cc_recipients
+
 **Key:** `email_cc_recipients`  
 **Type:** JSON Array of `Model_EmailRecipient`  
 **Purpose:** CC recipients for PO requisition emails  
 **Default Value:**  
+
 ```json
 [
   {"Name": "Debra Alexander", "Email": "dalexander@mantoolmfg.com"},
@@ -81,20 +92,25 @@ CALL sp_Volvo_Settings_Upsert(
 ```
 
 **Fallback Value (if setting not found):**  
+
 ```
 "Debra Alexander" <dalexander@mantoolmfg.com>; "Michelle Laurin" <mlaurin@mantoolmfg.com>
 ```
 
 **Read Location:**  
+
 - `ViewModel_Volvo_ShipmentEntry.ShowEmailPreviewDialogAsync()` (Line 681)
 
 **Stored Procedure:**  
+
 - `sp_Volvo_Settings_Get`
 
 **DAO Method:**  
+
 - `Dao_VolvoSettings.GetSettingAsync("email_cc_recipients")`
 
 **Usage Example:**
+
 ```csharp
 var settingsDao = new Dao_VolvoSettings(connectionString);
 var ccResult = await settingsDao.GetSettingAsync("email_cc_recipients");
@@ -106,6 +122,7 @@ string ccRecipients = FormatRecipientsFromJson(
 
 **Modification:**  
 Via UI in Volvo Settings screen or direct database update:
+
 ```sql
 CALL sp_Volvo_Settings_Upsert(
     'email_cc_recipients', 
@@ -119,14 +136,17 @@ CALL sp_Volvo_Settings_Upsert(
 ## 🔌 Connection Strings
 
 ### MySQL Connection String
+
 **Source:** `Helper_Database_Variables.GetConnectionString()`  
 **Purpose:** Primary database for Volvo module (parts, shipments, settings)  
 **Read Locations:**
+
 - `ViewModel_Volvo_ShipmentEntry.ShowEmailPreviewDialogAsync()` (Line 679)
 - `Service_Volvo` (Line 651)
 - All DAOs (constructor injection)
 
 **Usage Pattern:**
+
 ```csharp
 // Instance-based DAO
 var dao = new Dao_VolvoPart(Helper_Database_Variables.GetConnectionString());
@@ -136,6 +156,7 @@ await using var connection = new MySqlConnection(Helper_Database_Variables.GetCo
 ```
 
 **Configuration File:** `appsettings.json` (or environment variable)
+
 ```json
 {
   "ConnectionStrings": {
@@ -149,9 +170,11 @@ await using var connection = new MySqlConnection(Helper_Database_Variables.GetCo
 ## 📁 File Paths
 
 ### CSV Export Directory
+
 **Hardcoded Location:** `%TEMP%` or user-selected via `FileOpenPicker`  
 **Purpose:** Export destination for parts catalog CSV and shipment history CSV  
 **Read Locations:**
+
 - `ExportPartsCsvQueryHandler` - Uses `FileOpenPicker` for user-selected path
 - `ExportShipmentsQueryHandler` - Uses `FileOpenPicker` for user-selected path
 
@@ -160,12 +183,15 @@ await using var connection = new MySqlConnection(Helper_Database_Variables.GetCo
 ---
 
 ### CSV Import Source
+
 **Hardcoded Location:** User-selected via `FileOpenPicker`  
 **Purpose:** Import source for parts catalog CSV  
 **Read Locations:**
+
 - `ViewModel_Volvo_Settings.ImportCsvAsync()` - Uses `FileOpenPicker` for user-selected file
 
 **CSV Format:**
+
 ```csv
 PartNumber,QuantityPerSkid
 V-EMB-1,50
@@ -176,9 +202,11 @@ V-EMB-500,88
 ---
 
 ### Label CSV Output Directory
+
 **Hardcoded Location:** Likely `%TEMP%` or predefined path  
 **Purpose:** Barcode label CSV generation for Bartender label printer  
 **Read Locations:**
+
 - `GenerateLabelCsvQueryHandler`
 
 **Recommendation:** Add `label_output_directory` setting to `settings_module_volvo` for deployment flexibility.
@@ -188,10 +216,12 @@ V-EMB-500,88
 ## 🎨 UI Configuration
 
 ### Window Size
+
 **Source:** `WindowHelper_WindowSizeAndStartupLocation.SetWindowSize()`  
 **Default:** Likely 1400x900 (inherited from project standard)  
 **Purpose:** Default window size for Volvo module views  
 **Read Locations:**
+
 - `View_Volvo_History.xaml.cs`
 - `View_Volvo_Settings.xaml.cs`
 - `View_Volvo_ShipmentEntry.xaml.cs`
@@ -201,6 +231,7 @@ V-EMB-500,88
 ---
 
 ### Default Shipment History Date Range
+
 **Hardcoded Value:** 30 days  
 **Location:** `ViewModel_Volvo_History` (Line 35)
 
@@ -217,6 +248,7 @@ private DateTimeOffset? _endDate = DateTimeOffset.Now;
 ---
 
 ### Maximum Search Results
+
 **Hardcoded Value:** 10  
 **Location:** `SearchVolvoPartsQuery` (default parameter)
 
@@ -235,6 +267,7 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 ## 📊 Database Schema Objects
 
 ### Tables (MySQL)
+
 - `volvo_masterdata` - Volvo parts catalog
 - `volvo_shipments` - Shipment headers
 - `volvo_shipment_lines` - Shipment line items
@@ -242,7 +275,9 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 - `settings_module_volvo` - Module settings
 
 ### Stored Procedures (MySQL)
+
 **Parts:**
+
 - `sp_Volvo_Part_Get`
 - `sp_Volvo_Part_GetAll`
 - `sp_Volvo_Part_Search`
@@ -251,6 +286,7 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 - `sp_Volvo_Part_Deactivate`
 
 **Shipments:**
+
 - `sp_Volvo_Shipment_Get`
 - `sp_Volvo_Shipment_GetByNumber`
 - `sp_Volvo_Shipment_GetRecent`
@@ -263,6 +299,7 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 - `sp_Volvo_Shipment_DeletePending`
 
 **Shipment Lines:**
+
 - `sp_Volvo_ShipmentLine_GetByShipmentId`
 - `sp_Volvo_ShipmentLine_Insert`
 - `sp_Volvo_ShipmentLine_Update`
@@ -270,12 +307,14 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 - `sp_Volvo_ShipmentLine_DeleteByShipmentId`
 
 **Settings:**
+
 - `sp_Volvo_Settings_Get`
 - `sp_Volvo_Settings_GetAll`
 - `sp_Volvo_Settings_Upsert`
 - `sp_Volvo_Settings_Reset`
 
 **Part Components:**
+
 - `sp_Volvo_PartComponent_GetByPartNumber`
 - `sp_Volvo_PartComponent_Insert`
 - `sp_Volvo_PartComponent_Delete`
@@ -285,6 +324,7 @@ public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_Volvo
 ## 🚨 Hardcoded Values to Consider Externalizing
 
 ### 1. Email Fallback Recipients
+
 **Current:** Hardcoded in `ViewModel_Volvo_ShipmentEntry.ShowEmailPreviewDialogAsync()`
 
 ```csharp
@@ -299,6 +339,7 @@ string toRecipients = FormatRecipientsFromJson(
 ---
 
 ### 2. Email Subject Format
+
 **Current:** Likely hardcoded in `FormatEmailDataQueryHandler`
 
 **Recommendation:** Add `email_subject_template` setting with placeholder support (e.g., `"Volvo Shipment #{ShipmentNumber} - PO Requisition"`).
@@ -306,6 +347,7 @@ string toRecipients = FormatRecipientsFromJson(
 ---
 
 ### 3. Recent Shipments Lookback Period
+
 **Current:** Hardcoded to 30 days in `GetRecentShipmentsQuery`
 
 ```csharp
@@ -320,6 +362,7 @@ public record GetRecentShipmentsQuery : IRequest<Model_Dao_Result<List<Model_Vol
 ---
 
 ### 4. Status Filter Options
+
 **Current:** Hardcoded in `ViewModel_Volvo_History`
 
 ```csharp
@@ -334,7 +377,9 @@ private ObservableCollection<string> _statusOptions = new() { "All", "Pending PO
 ## 📝 Configuration Best Practices
 
 ### Adding New Settings
+
 1. **Add to Database:**
+
    ```sql
    CALL sp_Volvo_Settings_Upsert(
        'setting_key',
@@ -346,6 +391,7 @@ private ObservableCollection<string> _statusOptions = new() { "All", "Pending PO
 2. **Document Here:** Add to this SETTABLE_OBJECTS.md file
 
 3. **Read in Code:**
+
    ```csharp
    var dao = new Dao_VolvoSettings(connectionString);
    var result = await dao.GetSettingAsync("setting_key");
@@ -361,6 +407,7 @@ private ObservableCollection<string> _statusOptions = new() { "All", "Pending PO
 ---
 
 ### Configuration Hierarchy
+
 1. **Database Settings** (`settings_module_volvo`) - Highest priority (runtime-configurable via UI)
 2. **appsettings.json** - Environment-specific (connection strings, file paths)
 3. **Hardcoded Defaults** - Lowest priority (fallback values)
@@ -380,6 +427,7 @@ private ObservableCollection<string> _statusOptions = new() { "All", "Pending PO
 ---
 
 **For more details, see:**
+
 - `Module_Volvo/QUICK_REF.md` - CQRS components inventory
 - `Module_Volvo/PRIVILEGES.md` - Authorization requirements
 - `.github/copilot-instructions.md` - Project-wide standards
