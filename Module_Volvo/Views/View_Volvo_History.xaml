@@ -84,7 +84,7 @@
                 <controls:DataGridTemplateColumn Header="Date" Width="120">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind ShipmentDate, Mode=OneWay, StringFormat='{}{0:MM/dd/yyyy}'}" />
+                            <TextBlock Text="{x:Bind ShipmentDateDisplay, Mode=OneWay}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>

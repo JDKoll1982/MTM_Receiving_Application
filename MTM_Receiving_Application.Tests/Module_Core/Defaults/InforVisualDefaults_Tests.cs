@@ -1,6 +1,8 @@
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Core.Defaults;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using Model_InforVisualPart = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_InforVisualPart;
+using Model_InforVisualPO = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_InforVisualPO;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Module_Core.Defaults;

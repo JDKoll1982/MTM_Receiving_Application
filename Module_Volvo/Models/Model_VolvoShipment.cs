@@ -19,6 +19,11 @@ public class Model_VolvoShipment
     public DateTime ShipmentDate { get; set; } = DateTime.Today;
 
     /// <summary>
+    /// Formatted shipment date string for UI display.
+    /// </summary>
+    public string ShipmentDateDisplay => ShipmentDate.ToString("MM/dd/yyyy");
+
+    /// <summary>
     /// Auto-generated sequential number for the day (resets daily)
     /// Example: Shipment #1, Shipment #2 for the same date
     /// </summary>

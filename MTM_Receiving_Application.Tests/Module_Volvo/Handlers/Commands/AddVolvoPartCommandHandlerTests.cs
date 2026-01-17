@@ -1,6 +1,8 @@
 using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Tests.Helpers;
+using Xunit;
+
 
 namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
 
@@ -17,9 +19,12 @@ public class AddVolvoPartCommandHandlerTests
         _fixture = fixture;
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Handle_ShouldInsertPart()
     {
+        await _fixture.InitializeAsync();
+        Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+
         var partDao = _fixture.CreatePartDao();
         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
 

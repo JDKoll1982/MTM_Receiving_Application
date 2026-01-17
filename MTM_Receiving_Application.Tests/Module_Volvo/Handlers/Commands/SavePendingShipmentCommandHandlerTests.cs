@@ -3,6 +3,8 @@ using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Tests.Helpers;
+using Xunit;
+
 
 namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
 
@@ -19,9 +21,12 @@ public class SavePendingShipmentCommandHandlerTests
         _fixture = fixture;
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Handle_ShouldSavePendingShipment()
     {
+        await _fixture.InitializeAsync();
+        Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+
         var shipmentDao = _fixture.CreateShipmentDao();
         var lineDao = _fixture.CreateShipmentLineDao();
         var partDao = _fixture.CreatePartDao();

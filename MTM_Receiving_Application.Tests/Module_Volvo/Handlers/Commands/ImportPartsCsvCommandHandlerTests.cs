@@ -2,6 +2,8 @@ using System.IO;
 using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Tests.Helpers;
+using Xunit;
+
 
 namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
 
@@ -18,9 +20,12 @@ public class ImportPartsCsvCommandHandlerTests
         _fixture = fixture;
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Handle_ShouldImportPartsFromCsv()
     {
+        await _fixture.InitializeAsync();
+        Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+
         var partDao = _fixture.CreatePartDao();
         var componentDao = _fixture.CreatePartComponentDao();
         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();

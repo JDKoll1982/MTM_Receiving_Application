@@ -4,6 +4,8 @@ using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Tests.Helpers;
+using Xunit;
+
 
 namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
 
@@ -20,9 +22,12 @@ public class GenerateLabelCsvQueryHandlerTests
         _fixture = fixture;
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Handle_ShouldGenerateCsvFile()
     {
+        await _fixture.InitializeAsync();
+        Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+
         var shipmentDao = _fixture.CreateShipmentDao();
         var lineDao = _fixture.CreateShipmentLineDao();
         var partDao = _fixture.CreatePartDao();

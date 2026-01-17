@@ -7,6 +7,8 @@ using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Tests.Helpers;
+using Xunit;
+
 
 namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
 
@@ -23,9 +25,12 @@ public class ShipmentCompletionIntegrationTests
         _fixture = fixture;
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task CompleteShipment_Workflow_ShouldPersistAndGenerateCsv()
     {
+        await _fixture.InitializeAsync();
+        Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+
         var shipmentDao = _fixture.CreateShipmentDao();
         var lineDao = _fixture.CreateShipmentLineDao();
         var partDao = _fixture.CreatePartDao();
@@ -80,7 +85,7 @@ public class ShipmentCompletionIntegrationTests
             var shipmentResult = await shipmentDao.GetByIdAsync(shipmentId);
             shipmentResult.IsSuccess.Should().BeTrue();
             shipmentResult.Data.Should().NotBeNull();
-            shipmentResult.Data!.Status.Should().Contain("Completed", StringComparison.OrdinalIgnoreCase);
+            shipmentResult.Data!.Status.Should().Match("*completed*");
         }
         finally
         {

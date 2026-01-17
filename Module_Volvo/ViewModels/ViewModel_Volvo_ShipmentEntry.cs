@@ -117,17 +117,22 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 await _errorHandler.HandleErrorAsync(
                     initialDataResult.ErrorMessage ?? "Failed to get initial shipment data",
+                    Enum_ErrorSeverity.Medium);
+            }
+
+            // Check for any pending shipment (CQRS)
+            var pendingQuery = new GetPendingShipmentQuery();
             // Legacy save method removed after CQRS migration completion.
             var pendingResult = await _mediator.Send(pendingQuery);
 
-                if (pendingResult.IsSuccess && pendingResult.Data != null)
-                {
-                    HasPendingShipment = true;
-                    await LoadPendingShipmentAsync(pendingResult.Data.Id);
-                }
-
-                StatusMessage = "Ready";
+            if (pendingResult.IsSuccess && pendingResult.Data != null)
+            {
+                HasPendingShipment = true;
+                await LoadPendingShipmentAsync(pendingResult.Data.Id);
             }
+
+            StatusMessage = "Ready";
+        }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error initializing Volvo shipment entry: {ex.Message}", ex);
@@ -1065,68 +1070,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(result.ErrorMessage);
         }
-    }
-
-    /// <summary>
-    /// Legacy save method - replaced by SavePendingShipmentCommand
-    /// Keeping for reference during migration
-    /// </summary>
-    private async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentInternalAsync_Legacy()
-    {
-        // Validate
-        if (!ValidateShipment())
-        {
-            return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment validation failed");
-        }
-
-        // Build shipment object
-        var shipment = new Model_VolvoShipment
-        {
-            ShipmentDate = ShipmentDate?.DateTime ?? DateTime.Today,
-            ShipmentNumber = ShipmentNumber,
-            Notes = Notes,
-            Status = VolvoShipmentStatus.PendingPo,
-            EmployeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber.ToString() ?? "0"
-        };
-
-        // Save
-        var saveResult = await _volvoService.SaveShipmentAsync(shipment, Parts.ToList());
-
-        // Check if there's an existing pending shipment
-        if (!saveResult.IsSuccess && saveResult.ErrorMessage.StartsWith("PENDING_EXISTS"))
-        {
-            var parts = saveResult.ErrorMessage.Split('|');
-            var existingShipmentNumber = parts.Length > 1 ? parts[1] : "Unknown";
-            var existingShipmentDate = parts.Length > 2 ? parts[2] : "Unknown Date";
-
-            // Show confirmation dialog
-            var dialog = new ContentDialog
-            {
-                Title = "Overwrite Pending Shipment?",
-                Content = $"A pending shipment already exists (Shipment #{existingShipmentNumber} from {existingShipmentDate}).{Environment.NewLine}{Environment.NewLine}Do you want to delete it and create a new one?",
-                PrimaryButtonText = "Overwrite",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Close,
-                XamlRoot = App.MainWindow?.Content?.XamlRoot
-            };
-
-            var result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
-            {
-                // User confirmed - delete existing and save new
-                await _logger.LogInfoAsync($"User confirmed overwrite of pending shipment #{existingShipmentNumber}");
-                return await _volvoService.SaveShipmentAsync(shipment, Parts.ToList(), overwriteExisting: true);
-            }
-            else
-            {
-                // User canceled
-                await _logger.LogInfoAsync("User canceled shipment overwrite");
-                return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment save canceled by user");
-            }
-        }
-
-        return saveResult;
     }
 
     /// <summary>

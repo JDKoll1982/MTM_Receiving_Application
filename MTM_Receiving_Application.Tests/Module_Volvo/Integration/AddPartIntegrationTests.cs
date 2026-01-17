@@ -19,9 +19,12 @@ public class AddPartIntegrationTests
         _fixture = fixture;
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task AddPart_ShouldAppearInList()
     {
+        await _fixture.InitializeAsync();
+        Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+
         var partDao = _fixture.CreatePartDao();
         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
 
