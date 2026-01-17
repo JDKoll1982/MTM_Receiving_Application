@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediatR;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Models;
+using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using Windows.Storage;
@@ -21,7 +23,7 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 /// </summary>
 public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 {
-    private readonly IService_VolvoMasterData _masterDataService;
+    private readonly IMediator _mediator;
 
     [ObservableProperty]
     private ObservableCollection<Model_VolvoPart> _parts = new();
@@ -39,12 +41,12 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     private int _activePartsCount;
 
     public ViewModel_Volvo_Settings(
-        IService_VolvoMasterData masterDataService,
+        IMediator mediator,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
-        _masterDataService = masterDataService ?? throw new ArgumentNullException(nameof(masterDataService));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [RelayCommand]
@@ -60,7 +62,10 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading parts catalog...";
 
-            var result = await _masterDataService.GetAllPartsAsync(ShowInactive);
+            var result = await _mediator.Send(new GetAllVolvoPartsQuery
+            {
+                IncludeInactive = ShowInactive
+            });
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -126,8 +131,11 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 IsBusy = true;
                 StatusMessage = $"Adding part {dialog.Part.PartNumber}...";
 
-                // No components for now (simplified version)
-                var saveResult = await _masterDataService.AddPartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+                var saveResult = await _mediator.Send(new AddVolvoPartCommand
+                {
+                    PartNumber = dialog.Part.PartNumber,
+                    QuantityPerSkid = dialog.Part.QuantityPerSkid
+                });
 
                 if (saveResult.IsSuccess)
                 {
@@ -189,8 +197,11 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 IsBusy = true;
                 StatusMessage = $"Updating part {dialog.Part.PartNumber}...";
 
-                // No components for now (simplified version)
-                var saveResult = await _masterDataService.UpdatePartAsync(dialog.Part, new System.Collections.Generic.List<Model_VolvoPartComponent>());
+                var saveResult = await _mediator.Send(new UpdateVolvoPartCommand
+                {
+                    PartNumber = dialog.Part.PartNumber,
+                    QuantityPerSkid = dialog.Part.QuantityPerSkid
+                });
 
                 if (saveResult.IsSuccess)
                 {
@@ -261,7 +272,10 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 IsBusy = true;
                 StatusMessage = $"Deactivating part {SelectedPart.PartNumber}...";
 
-                var deactivateResult = await _masterDataService.DeactivatePartAsync(SelectedPart.PartNumber);
+                var deactivateResult = await _mediator.Send(new DeactivateVolvoPartCommand
+                {
+                    PartNumber = SelectedPart.PartNumber
+                });
 
                 if (deactivateResult.IsSuccess)
                 {
@@ -305,7 +319,10 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
         {
             StatusMessage = $"Loading components for {SelectedPart.PartNumber}...";
 
-            var result = await _masterDataService.GetComponentsAsync(SelectedPart.PartNumber);
+            var result = await _mediator.Send(new GetPartComponentsQuery
+            {
+                PartNumber = SelectedPart.PartNumber
+            });
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -378,13 +395,14 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Importing CSV...";
 
-            var csvContent = await FileIO.ReadTextAsync(file);
-            var result = await _masterDataService.ImportCsvAsync(csvContent);
+            var result = await _mediator.Send(new ImportPartsCsvCommand
+            {
+                CsvFilePath = file.Path
+            });
 
             if (result.IsSuccess)
             {
-                var (newCount, updatedCount, unchangedCount) = result.Data;
-                var summary = $"Import complete: {newCount} new, {updatedCount} updated, {unchangedCount} unchanged";
+                var summary = $"Import complete: {result.Data.SuccessCount} succeeded, {result.Data.FailureCount} failed";
                 StatusMessage = summary;
                 await RefreshAsync();
 
@@ -457,7 +475,10 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Exporting to CSV...";
 
-            var result = await _masterDataService.ExportCsvAsync(file.Path, ShowInactive);
+            var result = await _mediator.Send(new ExportPartsCsvQuery
+            {
+                IncludeInactive = ShowInactive
+            });
 
             if (result.IsSuccess && result.Data != null)
             {

@@ -10,7 +10,6 @@ using MediatR;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -29,22 +28,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
 
-    [Obsolete("Legacy service kept for non-migrated methods. Use IMediator for new code.", false)]
-    private readonly IService_Volvo _volvoService; // Keep for legacy methods not yet migrated
-
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_Volvo_ShipmentEntry(
         IMediator mediator,
-        IService_Volvo volvoService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
         IService_UserSessionManager sessionManager) : base(errorHandler, logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _volvoService = volvoService;
         _windowService = windowService;
         _sessionManager = sessionManager;
     }
@@ -123,47 +117,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             {
                 await _errorHandler.HandleErrorAsync(
                     initialDataResult.ErrorMessage ?? "Failed to get initial shipment data",
-                    Enum_ErrorSeverity.Medium,
-                    null,
-                    true);
-            }
-
-            // Load available parts using legacy service (TODO: Migrate to GetAllVolvoPartsQuery)
-            StatusMessage = "Loading Volvo parts catalog...";
-            var partsResult = await _volvoService.GetActivePartsAsync();
-            if (partsResult.IsSuccess && partsResult.Data != null)
-            {
-                _allParts = partsResult.Data;
-                AvailableParts.Clear();
-                foreach (var part in _allParts)
-                {
-                    AvailableParts.Add(part);
-                }
-            }
-            else
-            {
-                await _errorHandler.HandleErrorAsync(
-                    partsResult.ErrorMessage ?? "Failed to load parts catalog",
-                    Enum_ErrorSeverity.Medium,
-                    null,
-                    true);
-            }
-
-            // Check for pending shipment using MediatR
-            var pendingQuery = new GetPendingShipmentQuery
-            {
-                UserName = Environment.UserName
-            };
+            // Legacy save method removed after CQRS migration completion.
             var pendingResult = await _mediator.Send(pendingQuery);
 
-            if (pendingResult.IsSuccess && pendingResult.Data != null)
-            {
-                HasPendingShipment = true;
-                await LoadPendingShipmentAsync(pendingResult.Data.Id);
-            }
+                if (pendingResult.IsSuccess && pendingResult.Data != null)
+                {
+                    HasPendingShipment = true;
+                    await LoadPendingShipmentAsync(pendingResult.Data.Id);
+                }
 
-            StatusMessage = "Ready";
-        }
+                StatusMessage = "Ready";
+            }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error initializing Volvo shipment entry: {ex.Message}", ex);
@@ -535,46 +499,60 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 }
             }
 
-            // Get the saved pending shipment
-            var pendingResult = await _volvoService.GetPendingShipmentWithLinesAsync();
-            if (!pendingResult.IsSuccess || pendingResult.Data.Shipment == null)
+            int shipmentId;
+
+            if (!HasPendingShipment)
+            {
+                var saveResult = await SaveShipmentInternalAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        saveResult.ErrorMessage ?? "Failed to save shipment before preview",
+                        Enum_ErrorSeverity.Medium,
+                        null,
+                        true);
+                    return;
+                }
+
+                shipmentId = saveResult.Data.ShipmentId;
+                HasPendingShipment = true;
+            }
+            else
+            {
+                var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
+                {
+                    UserName = Environment.UserName
+                });
+
+                if (!pendingResult.IsSuccess || pendingResult.Data == null)
+                {
+                    await _errorHandler.HandleErrorAsync(
+                        "No pending shipment found",
+                        Enum_ErrorSeverity.Medium,
+                        null,
+                        true);
+                    return;
+                }
+
+                shipmentId = pendingResult.Data.Id;
+            }
+
+            var emailResult = await _mediator.Send(new FormatEmailDataQuery
+            {
+                ShipmentId = shipmentId
+            });
+
+            if (!emailResult.IsSuccess || emailResult.Data == null)
             {
                 await _errorHandler.HandleErrorAsync(
-                    "No pending shipment found",
+                    emailResult.ErrorMessage ?? "Failed to format email data",
                     Enum_ErrorSeverity.Medium,
                     null,
                     true);
                 return;
             }
 
-            var shipment = pendingResult.Data.Shipment;
-            var lines = pendingResult.Data.Lines;
-
-            // Calculate component explosion to get actual part quantities
-            var explosionResult = await _volvoService.CalculateComponentExplosionAsync(lines);
-
-            Dictionary<string, int> requestedLines;
-            if (explosionResult.IsSuccess && explosionResult.Data != null)
-            {
-                requestedLines = explosionResult.Data;
-                await _logger.LogInfoAsync($"Component explosion successful: {requestedLines.Count} parts");
-            }
-            else
-            {
-                // Fallback to empty if explosion fails
-                requestedLines = new Dictionary<string, int>();
-                await _logger.LogWarningAsync($"Component explosion failed for email preview: {explosionResult.ErrorMessage}");
-            }
-
-            await _logger.LogInfoAsync($"Email preview - RequestedLines count: {requestedLines.Count}");
-
-            // Format email data with actual part quantities
-            var emailData = await _volvoService.FormatEmailDataAsync(shipment, lines, requestedLines);
-
-            await _logger.LogInfoAsync($"Email data formatted - RequestedLines count: {emailData.RequestedLines.Count}");
-
-            // Show email preview dialog
-            await ShowEmailPreviewDialogAsync(emailData);
+            await ShowEmailPreviewDialogAsync(emailResult.Data);
         }
         catch (Exception ex)
         {
@@ -822,7 +800,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         if (result == ContentDialogResult.Primary)
         {
             // Copy HTML to clipboard for Outlook paste as table
-            var htmlContent = _volvoService.FormatEmailAsHtml(emailData);
+            var htmlContent = FormatEmailAsHtml(emailData);
             var dataPackage = new DataPackage();
             dataPackage.SetHtmlFormat(htmlContent);
             // Also include plain text fallback
@@ -878,6 +856,84 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
         text.AppendLine(emailData.Signature);
         return text.ToString();
+    }
+
+    private static string FormatEmailAsHtml(Model_VolvoEmailData emailData)
+    {
+        var html = new StringBuilder();
+
+        html.AppendLine("<html>");
+        html.AppendLine("<body style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
+
+        html.AppendLine($"<p>{emailData.Greeting}</p>");
+        html.AppendLine($"<p>{emailData.Message}</p>");
+
+        if (emailData.Discrepancies.Count > 0)
+        {
+            html.AppendLine("<p><strong>**DISCREPANCIES NOTED**</strong></p>");
+            html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+            html.AppendLine("<thead>");
+            html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
+            html.AppendLine("<th>Part Number</th>");
+            html.AppendLine("<th>Packlist Qty</th>");
+            html.AppendLine("<th>Received Qty</th>");
+            html.AppendLine("<th>Difference</th>");
+            html.AppendLine("<th>Note</th>");
+            html.AppendLine("</tr>");
+            html.AppendLine("</thead>");
+            html.AppendLine("<tbody>");
+
+            foreach (var disc in emailData.Discrepancies)
+            {
+                string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+                html.AppendLine("<tr>");
+                html.AppendLine($"<td>{disc.PartNumber}</td>");
+                html.AppendLine($"<td>{disc.PacklistQty}</td>");
+                html.AppendLine($"<td>{disc.ReceivedQty}</td>");
+                html.AppendLine($"<td>{diffStr}</td>");
+                html.AppendLine($"<td>{disc.Note}</td>");
+                html.AppendLine("</tr>");
+            }
+
+            html.AppendLine("</tbody>");
+            html.AppendLine("</table>");
+            html.AppendLine("<br/>");
+        }
+
+        html.AppendLine("<p><strong>Requested Lines:</strong></p>");
+        html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+        html.AppendLine("<thead>");
+        html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
+        html.AppendLine("<th>Part Number</th>");
+        html.AppendLine("<th>Quantity (pcs)</th>");
+        html.AppendLine("</tr>");
+        html.AppendLine("</thead>");
+        html.AppendLine("<tbody>");
+
+        foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+        {
+            html.AppendLine("<tr>");
+            html.AppendLine($"<td>{kvp.Key}</td>");
+            html.AppendLine($"<td>{kvp.Value}</td>");
+            html.AppendLine("</tr>");
+        }
+
+        html.AppendLine("</tbody>");
+        html.AppendLine("</table>");
+        html.AppendLine("<br/>");
+
+        if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+        {
+            html.AppendLine("<p><strong>Additional Notes:</strong></p>");
+            html.AppendLine($"<p>{emailData.AdditionalNotes}</p>");
+        }
+
+        html.AppendLine($"<p>{emailData.Signature.Replace("\\n", "<br/>")}</p>");
+
+        html.AppendLine("</body>");
+        html.AppendLine("</html>");
+
+        return html.ToString();
     }
 
     [RelayCommand]

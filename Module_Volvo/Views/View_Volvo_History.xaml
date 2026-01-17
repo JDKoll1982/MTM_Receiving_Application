@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
     mc:Ignorable="d"
     Loaded="OnPageLoaded">
 
@@ -72,35 +73,53 @@
             GridLinesVisibility="Horizontal">
             
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn 
-                    Header="Shipment #" 
-                    Binding="{Binding ShipmentNumber}"
-                    Width="100"/>
-                
-                <controls:DataGridTextColumn 
-                    Header="Date" 
-                    Binding="{Binding ShipmentDate}"
-                    Width="120"/>
-                
-                <controls:DataGridTextColumn 
-                    Header="PO Number" 
-                    Binding="{Binding PONumber}"
-                    Width="120"/>
-                
-                <controls:DataGridTextColumn 
-                    Header="Receiver" 
-                    Binding="{Binding ReceiverNumber}"
-                    Width="120"/>
-                
-                <controls:DataGridTextColumn 
-                    Header="Status" 
-                    Binding="{Binding Status}"
-                    Width="120"/>
-                
-                <controls:DataGridTextColumn 
-                    Header="Notes" 
-                    Binding="{Binding Notes}"
-                    Width="*"/>
+                <controls:DataGridTemplateColumn Header="Shipment #" Width="100">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_VolvoShipment">
+                            <TextBlock Text="{x:Bind ShipmentNumber, Mode=OneWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTemplateColumn Header="Date" Width="120">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_VolvoShipment">
+                            <TextBlock Text="{x:Bind ShipmentDate, Mode=OneWay, StringFormat='{}{0:MM/dd/yyyy}'}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTemplateColumn Header="PO Number" Width="120">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_VolvoShipment">
+                            <TextBlock Text="{x:Bind PONumber, Mode=OneWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTemplateColumn Header="Receiver" Width="120">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_VolvoShipment">
+                            <TextBlock Text="{x:Bind ReceiverNumber, Mode=OneWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTemplateColumn Header="Status" Width="120">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_VolvoShipment">
+                            <TextBlock Text="{x:Bind Status, Mode=OneWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTemplateColumn Header="Notes" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_VolvoShipment">
+                            <TextBlock Text="{x:Bind Notes, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

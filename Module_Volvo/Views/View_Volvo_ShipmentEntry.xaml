@@ -117,10 +117,13 @@
                                CanUserReorderColumns="False"
                                GridLinesVisibility="All">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="Part Number"
-                                                  Width="200"
-                                                  Binding="{Binding PartNumber, Mode=OneWay}"
-                                                  IsReadOnly="True"/>
+                    <controls:DataGridTemplateColumn Header="Part Number" Width="200">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <TextBlock Text="{x:Bind PartNumber, Mode=OneWay}" />
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
 
                     <controls:DataGridTemplateColumn Header="Received Skids"
                                                       Width="150">
@@ -135,20 +138,27 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTextColumn Header="Calculated Pieces"
-                                                  Width="150"
-                                                  Binding="{Binding CalculatedPieceCount, Mode=OneWay}"
-                                                  IsReadOnly="True"/>
+                    <controls:DataGridTemplateColumn Header="Calculated Pieces" Width="150">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <TextBlock Text="{x:Bind CalculatedPieceCount, Mode=OneWay}" />
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridCheckBoxColumn Header="Discrepancy"
-                                                      Width="120"
-                                                      Binding="{Binding HasDiscrepancy, Mode=TwoWay}"/>
+                    <controls:DataGridTemplateColumn Header="Discrepancy" Width="120">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <CheckBox IsChecked="{x:Bind HasDiscrepancy, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
 
                     <controls:DataGridTemplateColumn Header="Expected Skids"
                                                       Width="150">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <NumberBox Value="{Binding ExpectedSkidCount, Mode=TwoWay, Converter={StaticResource NullableDoubleToDoubleConverter}}"
+                                <NumberBox Value="{x:Bind ExpectedSkidCount, Mode=TwoWay, Converter={StaticResource NullableDoubleToDoubleConverter}}"
                                            Minimum="0"
                                            SpinButtonPlacementMode="Inline"
                                            HorizontalAlignment="Stretch"
@@ -157,15 +167,21 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTextColumn Header="Expected Pieces"
-                                                  Width="130"
-                                                  Binding="{Binding ExpectedPieceCount, Mode=OneWay}"
-                                                  IsReadOnly="True"/>
+                    <controls:DataGridTemplateColumn Header="Expected Pieces" Width="130">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <TextBlock Text="{x:Bind ExpectedPieceCount, Mode=OneWay}" />
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTextColumn Header="Difference"
-                                                  Width="100"
-                                                  Binding="{Binding PieceDifference, Mode=OneWay}"
-                                                  IsReadOnly="True"/>
+                    <controls:DataGridTemplateColumn Header="Difference" Width="100">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+                                <TextBlock Text="{x:Bind PieceDifference, Mode=OneWay}" />
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
 
                     <controls:DataGridTemplateColumn Header="Discrepancy Note"
                                                       Width="*">

@@ -19,6 +19,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Services;
 /// Service for Volvo dunnage requisition business logic
 /// Handles component explosion, CSV generation, email formatting, and shipment management
 /// </summary>
+[Obsolete("Legacy service - replaced by CQRS handlers. Do not use in new code.", false)]
 public class Service_Volvo : IService_Volvo
 {
     private readonly Dao_VolvoShipment _shipmentDao;

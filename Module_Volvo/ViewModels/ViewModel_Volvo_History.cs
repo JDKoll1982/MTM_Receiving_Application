@@ -1,15 +1,19 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediatR;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Volvo.Contracts;
-using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Volvo.Models;
+using MTM_Receiving_Application.Module_Volvo.Requests;
+using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 
@@ -18,7 +22,7 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 /// </summary>
 public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
 {
-    private readonly IService_Volvo _volvoService;
+    private readonly IMediator _mediator;
 
     #region Observable Properties
 
@@ -45,12 +49,12 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     #region Constructor
 
     public ViewModel_Volvo_History(
-        IService_Volvo volvoService,
+        IMediator mediator,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger)
         : base(errorHandler, logger)
     {
-        _volvoService = volvoService ?? throw new ArgumentNullException(nameof(volvoService));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     #endregion
@@ -75,6 +79,57 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     #region Commands
 
     /// <summary>
+    /// Loads recent shipments (default: last 30 days)
+    /// </summary>
+    [RelayCommand]
+    private async Task LoadRecentShipmentsAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Loading recent shipments...";
+
+            var result = await _mediator.Send(new GetRecentShipmentsQuery());
+
+            if (result.IsSuccess && result.Data != null)
+            {
+                History.Clear();
+                foreach (var shipment in result.Data)
+                {
+                    History.Add(shipment);
+                }
+                StatusMessage = $"Loaded {History.Count} shipment(s)";
+            }
+            else
+            {
+                await _errorHandler.ShowUserErrorAsync(
+                    result.ErrorMessage ?? "Failed to load recent shipments",
+                    "Load Error",
+                    nameof(LoadRecentShipmentsAsync));
+                StatusMessage = "Failed to load recent shipments";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(LoadRecentShipmentsAsync),
+                nameof(ViewModel_Volvo_History));
+            StatusMessage = "Error loading recent shipments";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
     /// Loads shipment history based on current filters
     /// </summary>
     [RelayCommand]
@@ -90,10 +145,12 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading history...";
 
-            var result = await _volvoService.GetHistoryAsync(
-                StartDate?.DateTime ?? DateTime.Now.AddDays(-30),
-                EndDate?.DateTime ?? DateTime.Now,
-                StatusFilter);
+            var result = await _mediator.Send(new GetShipmentHistoryQuery
+            {
+                StartDate = StartDate,
+                EndDate = EndDate,
+                StatusFilter = StatusFilter
+            });
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -145,21 +202,26 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             StatusMessage = $"Loading details for shipment #{SelectedShipment.ShipmentNumber}...";
             await _logger.LogInfoAsync($"Loading details for shipment ID: {SelectedShipment.Id}");
 
-            // Get shipment lines
-            var result = await _volvoService.GetShipmentLinesAsync(SelectedShipment.Id);
+            var result = await _mediator.Send(new GetShipmentDetailQuery
+            {
+                ShipmentId = SelectedShipment.Id
+            });
 
             if (result.IsSuccess && result.Data != null)
             {
+                var shipment = result.Data.Shipment;
+                var lines = result.Data.Lines;
+
                 // Build detail message
                 var details = new System.Text.StringBuilder();
-                details.AppendLine($"Shipment #{SelectedShipment.ShipmentNumber}");
-                details.AppendLine($"Date: {SelectedShipment.ShipmentDate:d}");
-                details.AppendLine($"PO Number: {SelectedShipment.PONumber ?? "N/A"}");
-                details.AppendLine($"Receiver: {SelectedShipment.ReceiverNumber ?? "N/A"}");
-                details.AppendLine($"Status: {SelectedShipment.Status}");
+                details.AppendLine($"Shipment #{shipment.ShipmentNumber}");
+                details.AppendLine($"Date: {shipment.ShipmentDate:d}");
+                details.AppendLine($"PO Number: {shipment.PONumber ?? "N/A"}");
+                details.AppendLine($"Receiver: {shipment.ReceiverNumber ?? "N/A"}");
+                details.AppendLine($"Status: {shipment.Status}");
                 details.AppendLine();
-                details.AppendLine($"Parts ({result.Data.Count}):");
-                foreach (var line in result.Data)
+                details.AppendLine($"Parts ({lines.Count}):");
+                foreach (var line in lines)
                 {
                     details.AppendLine($"  • {line.PartNumber}: {line.ReceivedSkidCount} skids ({line.CalculatedPieceCount} pieces)");
                     if (line.HasDiscrepancy)
@@ -167,10 +229,10 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                         details.AppendLine($"    ⚠ Discrepancy: Expected {line.ExpectedSkidCount} skids");
                     }
                 }
-                if (!string.IsNullOrWhiteSpace(SelectedShipment.Notes))
+                if (!string.IsNullOrWhiteSpace(shipment.Notes))
                 {
                     details.AppendLine();
-                    details.AppendLine($"Notes: {SelectedShipment.Notes}");
+                    details.AppendLine($"Notes: {shipment.Notes}");
                 }
 
                 // Show dialog
@@ -192,8 +254,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 };
                 await dialog.ShowAsync();
 
-                StatusMessage = $"Viewed details for shipment #{SelectedShipment.ShipmentNumber}";
-                await _logger.LogInfoAsync($"Successfully loaded {result.Data.Count} lines");
+                StatusMessage = $"Viewed details for shipment #{shipment.ShipmentNumber}";
+                await _logger.LogInfoAsync($"Successfully loaded {lines.Count} lines");
             }
             else
             {
@@ -237,12 +299,15 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading shipment data...";
 
-            // Get shipment lines
-            var linesResult = await _volvoService.GetShipmentLinesAsync(SelectedShipment.Id);
-            if (!linesResult.IsSuccess || linesResult.Data == null)
+            var detailResult = await _mediator.Send(new GetShipmentDetailQuery
+            {
+                ShipmentId = SelectedShipment.Id
+            });
+
+            if (!detailResult.IsSuccess || detailResult.Data == null)
             {
                 await _errorHandler.ShowUserErrorAsync(
-                    linesResult.ErrorMessage ?? "Failed to load shipment lines",
+                    detailResult.ErrorMessage ?? "Failed to load shipment lines",
                     "Load Error",
                     nameof(EditAsync));
                 return;
@@ -260,8 +325,8 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             };
 
             // Convert List to ObservableCollection for binding
-            var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(linesResult.Data);
-            dialog.LoadShipment(SelectedShipment, linesCollection, availableParts);
+            var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(detailResult.Data.Lines);
+            dialog.LoadShipment(detailResult.Data.Shipment, linesCollection, availableParts);
 
             var result = await dialog.ShowAsync();
 
@@ -274,9 +339,26 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 var updatedLines = dialog.GetUpdatedLines();
 
                 // Call service to update shipment
-                var updateResult = await _volvoService.UpdateShipmentAsync(
-                    updatedShipment,
-                    new System.Collections.Generic.List<Model_VolvoShipmentLine>(updatedLines));
+                var updateCommand = new UpdateShipmentCommand
+                {
+                    ShipmentId = updatedShipment.Id,
+                    ShipmentDate = new DateTimeOffset(updatedShipment.ShipmentDate),
+                    Notes = updatedShipment.Notes ?? string.Empty,
+                    PONumber = updatedShipment.PONumber ?? string.Empty,
+                    ReceiverNumber = updatedShipment.ReceiverNumber ?? string.Empty,
+                    Parts = updatedLines.Select(line => new ShipmentLineDto
+                    {
+                        PartNumber = line.PartNumber,
+                        ReceivedSkidCount = line.ReceivedSkidCount,
+                        ExpectedSkidCount = line.ExpectedSkidCount.HasValue
+                            ? Convert.ToInt32(line.ExpectedSkidCount.Value)
+                            : null,
+                        HasDiscrepancy = line.HasDiscrepancy,
+                        DiscrepancyNote = line.DiscrepancyNote ?? string.Empty
+                    }).ToList()
+                };
+
+                var updateResult = await _mediator.Send(updateCommand);
 
                 if (updateResult.IsSuccess)
                 {
@@ -332,10 +414,12 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Exporting history...";
 
-            var result = await _volvoService.ExportHistoryToCsvAsync(
-                StartDate?.DateTime ?? DateTime.Now.AddDays(-30),
-                EndDate?.DateTime ?? DateTime.Now,
-                StatusFilter);
+            var result = await _mediator.Send(new ExportShipmentsQuery
+            {
+                StartDate = StartDate,
+                EndDate = EndDate,
+                StatusFilter = StatusFilter
+            });
 
             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {

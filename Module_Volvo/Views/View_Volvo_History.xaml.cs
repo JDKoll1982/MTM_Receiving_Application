@@ -18,7 +18,7 @@ public sealed partial class View_Volvo_History : Page
 
     private async void OnPageLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        // Auto-filter on page load (last 30 days)
-        await ViewModel.FilterCommand.ExecuteAsync(null);
+        // Load recent shipments on page load (last 30 days)
+        await ViewModel.LoadRecentShipmentsCommand.ExecuteAsync(null);
     }
 }

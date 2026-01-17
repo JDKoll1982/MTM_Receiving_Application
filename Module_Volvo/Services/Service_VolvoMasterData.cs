@@ -15,6 +15,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Services;
 /// <summary>
 /// Service for managing Volvo parts master data including CRUD operations and CSV import/export
 /// </summary>
+[Obsolete("Legacy service - replaced by CQRS handlers. Do not use in new code.", false)]
 public class Service_VolvoMasterData : IService_VolvoMasterData
 {
     private readonly Dao_VolvoPart _daoPart;

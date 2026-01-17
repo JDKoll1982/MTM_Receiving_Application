@@ -10,7 +10,6 @@ using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Services;
-using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Receiving.Data;
@@ -260,24 +259,6 @@ public partial class App : Application
                 {
                     var logger = sp.GetRequiredService<IService_LoggingUtility>();
                     return new Service_VolvoAuthorization(logger);
-                });
-                services.AddSingleton<IService_Volvo>(sp =>
-                {
-                    var shipmentDao = sp.GetRequiredService<Dao_VolvoShipment>();
-                    var lineDao = sp.GetRequiredService<Dao_VolvoShipmentLine>();
-                    var partDao = sp.GetRequiredService<Dao_VolvoPart>();
-                    var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
-                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    var authService = sp.GetRequiredService<IService_VolvoAuthorization>();
-                    return new Service_Volvo(shipmentDao, lineDao, partDao, componentDao, logger, authService);
-                });
-                services.AddSingleton<IService_VolvoMasterData>(sp =>
-                {
-                    var partDao = sp.GetRequiredService<Dao_VolvoPart>();
-                    var componentDao = sp.GetRequiredService<Dao_VolvoPartComponent>();
-                    var logger = sp.GetRequiredService<IService_LoggingUtility>();
-                    var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
-                    return new Service_VolvoMasterData(partDao, componentDao, logger, errorHandler);
                 });
 
                 // Reporting Services (003-reporting-module)
