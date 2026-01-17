@@ -93,8 +93,6 @@
         <None Include=".github\agents\speckit.plan.agent.md" />
         <None Include=".github\agents\speckit.specify.agent.md" />
         <None Include=".github\agents\speckit.tasks.agent.md" />
-        <None Include=".github\instructions\database-layer.instructions.md" />
-        <None Include=".github\instructions\mvvm-pattern.instructions.md" />
         <None Include=".github\prompts\speckit.analyze.prompt.md" />
         <None Include=".github\prompts\speckit.checklist.prompt.md" />
         <None Include=".github\prompts\speckit.clarify.prompt.md" />
@@ -243,5 +241,8 @@
         <Content Include="Themes\**\*.xaml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include=".github\instructions\" />
     </ItemGroup>
 </Project>

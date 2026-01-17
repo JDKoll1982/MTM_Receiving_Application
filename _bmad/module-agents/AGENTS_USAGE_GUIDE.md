@@ -8,35 +8,77 @@ This document explains how to activate and use the custom module development age
 
 ## 📦 Installed Agents
 
-Four specialized agents are now available in your workspace:
+Ten specialized agents are now available in your workspace:
 
-### 1. **Module Core Creator** 🏗️
+### 1. **Task Router** 🧭
+
+- **Command:** `@task-router`
+- **Purpose:** Intelligent agent that routes you to the correct specialist based on project state and intent
+- **When to Use:** Starting point when unsure which agent to use
+- **Example:** `@task-router I want to improve my project`
+
+### 2. **Module Core Creator** 🏗️
 
 - **Command:** `@module-core-creator`
 - **Purpose:** Create Module_Core infrastructure for new WinUI 3 projects
 - **When to Use:** Starting a brand new project from scratch
 - **Example:** `@module-core-creator Create Module_Core for a new manufacturing application`
 
-### 2. **Module Creator** 🎨
+### 3. **Module Creator** 🎨
 
 - **Command:** `@module-creator`
 - **Purpose:** Generate new feature modules from specification documents
 - **When to Use:** Adding a new feature to an existing project
 - **Example:** `@module-creator Create Module_Inventory from specs/Module_Inventory_Specification.md`
 
-### 3. **Module Rebuilder** 🔧
+### 4. **Module Rebuilder** 🔧
 
 - **Command:** `@module-rebuilder`
 - **Purpose:** Modernize existing modules to CQRS architecture
 - **When to Use:** Refactoring legacy code to use MediatR/FluentValidation
 - **Example:** `@module-rebuilder Rebuild Module_Receiving using CQRS patterns`
 
-### 4. **Core Maintainer** 🛡️
+### 5. **Core Maintainer** 🛡️
 
 - **Command:** `@core-maintainer`
 - **Purpose:** Safely maintain and evolve Module_Core infrastructure
 - **When to Use:** Adding/modifying/removing Core services
 - **Example:** `@core-maintainer Add ShowWarning method to IService_ErrorHandler`
+
+### 6. **Brownfield Health Check** 🔍
+
+- **Command:** `@brownfield-health-check`
+- **Purpose:** Analyze existing project state and generate modernization roadmap
+- **When to Use:** Assessing project health and planning modernization
+- **Example:** `@brownfield-health-check Analyze current project and create roadmap`
+
+### 7. **Compliance Auditor** ✅
+
+- **Command:** `@compliance-auditor`
+- **Purpose:** Validate constitution compliance after module changes
+- **When to Use:** After modernization to ensure architectural standards are met
+- **Example:** `@compliance-auditor Validate Module_Receiving compliance`
+
+### 8. **Doc Generator** 📝
+
+- **Command:** `@doc-generator`
+- **Purpose:** Auto-generate and update module documentation from codebase analysis
+- **When to Use:** Creating or updating QUICK_REF.md, SETTABLE_OBJECTS.md, or PRIVILEGES.md
+- **Example:** `@doc-generator Generate docs for Module_Receiving`
+
+### 9. **Test Generator** 🧪
+
+- **Command:** `@test-generator`
+- **Purpose:** Generate unit and integration test scaffolds for modules
+- **When to Use:** Adding test coverage to new or existing modules
+- **Example:** `@test-generator Create tests for Module_Receiving`
+
+### 10. **Privilege Code Generator** 🔐
+
+- **Command:** `@privilege-code-generator`
+- **Purpose:** Generate authorization code from PRIVILEGES.md specifications
+- **When to Use:** Implementing RBAC from documented privilege rules
+- **Example:** `@privilege-code-generator Generate auth code for Module_Receiving`
 
 ---
 
@@ -158,17 +200,151 @@ Add a new method ShowUserWarning to IService_ErrorHandler
 
 ---
 
+### Example 5: Assessing Project Health
+
+```
+@brownfield-health-check
+Analyze my project and create a modernization roadmap
+```
+
+**Agent will:**
+
+1. Scan all Module_* folders
+2. Classify each module (Modern CQRS vs Legacy Service pattern)
+3. Detect constitution violations
+4. Analyze module dependencies (DAG)
+5. Calculate safe rebuild order
+6. Estimate effort for each module
+7. Write `.github/.project-state.json`
+
+**Result:** Comprehensive roadmap showing what to modernize and in what order
+
+---
+
+### Example 6: Generating Documentation
+
+```
+@doc-generator
+Generate documentation for Module_Receiving
+```
+
+**Agent will:**
+
+1. Scan for configuration reads → `SETTABLE_OBJECTS.md`
+2. Scan for ViewModels, Commands, Queries, Handlers → `QUICK_REF.md`
+3. Scan for authorization requirements → `PRIVILEGES.md`
+4. Create `docs/copilot/` folder structure
+5. Generate Copilot-optimized tables and PlantUML diagrams
+
+**Result:** Complete, auto-generated documentation in sync with code
+
+---
+
+### Example 7: Creating Test Scaffolds
+
+```
+@test-generator
+Create tests for Module_Receiving
+```
+
+**Agent will:**
+
+1. Discover all handlers, DAOs, and ViewModels
+2. Create test classes following AAA pattern
+3. Place files in `Tests/Unit/Module_Receiving/` and `Tests/Integration/Module_Receiving/`
+4. Include FluentAssertions syntax
+5. Add TODO markers for implementation
+
+**Result:** Compilable test scaffolds ready for implementation
+
+---
+
+### Example 8: Implementing Authorization
+
+**First, document privileges in `Module_Receiving/PRIVILEGES.md`:**
+
+```yaml
+authorize:
+  - handler: CreateReceivingLineCommand
+    roles: [Receiving.Operator, Receiving.Manager]
+  - handler: DeleteReceivingLineCommand
+    roles: [Receiving.Manager]
+```
+
+**Then activate the agent:**
+
+```
+@privilege-code-generator
+Generate auth code for Module_Receiving
+```
+
+**Agent will:**
+
+1. Parse PRIVILEGES.md
+2. Add `[Authorize(Roles = "Receiving.Operator,Receiving.Manager")]` to CreateReceivingLineCommandHandler
+3. Add role check helpers
+4. Suggest XAML visibility bindings
+
+**Result:** Working RBAC implementation from documentation
+
+---
+
+### Example 9: Validating Compliance
+
+```
+@compliance-auditor
+Validate Module_Receiving compliance
+```
+
+**Agent will:**
+
+1. Check MVVM purity (x:Bind usage, no Binding)
+2. Check ViewModels are partial and inherit from ViewModel_Shared_Base
+3. Check DAOs are instance-based and return Model_Dao_Result
+4. Check CQRS patterns (handlers use IMediator, validators exist)
+5. Check stored procedure usage (MySQL only)
+6. Generate pass/fail report
+
+**Result:** Detailed compliance report with specific violations and fix recommendations
+
+---
+
+### Example 10: Finding the Right Agent
+
+```
+@task-router
+I want to improve my project's architecture
+```
+
+**Agent will:**
+
+1. Check if Module_Core exists
+2. Count Module_* folders
+3. Read `.github/.project-state.json` if available
+4. Ask clarifying questions
+5. Route you to: Brownfield Health Check (for assessment) or Module Rebuilder (for specific module)
+
+**Result:** Connected to the best agent for your needs
+
+---
+
 ## 🎯 Agent Selection Guide
 
 | Your Goal | Use This Agent | Reason |
 |-----------|----------------|--------|
+| **Not sure where to start** | **Task Router** | Analyzes project and recommends correct agent |
+| **Assess project health** | **Brownfield Health Check** | Scans modules and creates modernization roadmap |
 | Start a new WinUI 3 project | **Module Core Creator** | Creates foundational infrastructure |
 | Add a new feature to existing project | **Module Creator** | Scaffolds complete feature module |
 | Modernize old code to CQRS | **Module Rebuilder** | Migrates to MediatR/FluentValidation |
+| **Verify constitution compliance** | **Compliance Auditor** | Validates MVVM, data access, CQRS patterns |
 | Add method to IService_ErrorHandler | **Core Maintainer** | Impact analysis + safe changes |
 | Change LoggingBehavior | **Core Maintainer** | Affects all modules globally |
 | Create Module_Reporting | **Module Creator** | New feature module |
 | Migrate Module_Routing to handlers | **Module Rebuilder** | Legacy → modern architecture |
+| **Generate or update documentation** | **Doc Generator** | Auto-creates QUICK_REF, SETTABLE_OBJECTS, PRIVILEGES |
+| **Create test scaffolds** | **Test Generator** | Generates xUnit tests for handlers/DAOs/ViewModels |
+| **Implement authorization from specs** | **Privilege Code Generator** | Converts PRIVILEGES.md to RBAC code |
 
 ---
 
@@ -177,26 +353,73 @@ Add a new method ShowUserWarning to IService_ErrorHandler
 **Scenario:** Building a complete manufacturing application from scratch
 
 ```
-Step 1: @module-core-creator
+Step 1: @task-router
+        Help me set up a new manufacturing application
+        → Routes you to Module Core Creator
+        
+Step 2: @module-core-creator
         Create Module_Core for "MTM Manufacturing System"
         
-Step 2: @module-creator
+Step 3: @module-creator
         Create Module_Receiving from specs/Module_Receiving_Specification.md
         
-Step 3: @module-creator
+Step 4: @module-creator
         Create Module_Routing from specs/Module_Routing_Specification.md
         
-Step 4: @module-creator
+Step 5: @module-creator
         Create Module_Dunnage from specs/Module_Dunnage_Specification.md
         
-Step 5: @core-maintainer
+Step 6: @doc-generator
+        Generate documentation for all modules
+        
+Step 7: @test-generator
+        Create tests for Module_Receiving
+        
+Step 8: @privilege-code-generator
+        Generate auth code for Module_Receiving
+        
+Step 9: @core-maintainer
         Add IService_EventAggregator for module communication
         
-Step 6: @module-rebuilder
-        Modernize Module_Reporting (was added manually)
+Step 10: @compliance-auditor
+         Validate all modules for constitution compliance
+         
+Step 11: @brownfield-health-check
+         Analyze final project state and document architecture
 ```
 
-**Result:** Production-ready application with clean architecture!
+**Result:** Production-ready application with clean architecture, full tests, and compliance validation!
+
+---
+
+**Scenario 2:** Modernizing an existing legacy project
+
+```
+Step 1: @brownfield-health-check
+        Analyze project and create modernization roadmap
+        → Generates dependency-aware rebuild order
+        
+Step 2: @module-rebuilder
+        Rebuild Module_Receiving (first in safe order)
+        
+Step 3: @compliance-auditor
+        Validate Module_Receiving compliance
+        → Auto-triggers after rebuilder completes
+        
+Step 4: @test-generator
+        Create tests for modernized Module_Receiving
+        
+Step 5: @module-rebuilder
+        Rebuild Module_Routing (next in order)
+        
+Step 6: @compliance-auditor
+        Validate Module_Routing compliance
+        
+Step 7: @doc-generator
+        Update documentation for all modernized modules
+```
+
+**Result:** Systematically modernized codebase with validated compliance!
 
 ---
 
@@ -214,20 +437,34 @@ Each agent automatically loads these documents:
 
 ### Agent-Specific Documents
 
+- **Task Router:** Uses project-state analysis patterns
+- **Brownfield Health Check:** Uses dependency analysis and classification patterns
 - **Module Core Creator:** Uses all setup/scaffolding patterns
 - **Module Creator:** Uses Diagrams 16-17 (spec structure, scaffolding workflow)
 - **Module Rebuilder:** Uses Diagrams 11-12 (workflow extraction, service classification)
 - **Core Maintainer:** Uses Diagram 13 (impact analysis)
+- **Compliance Auditor:** Uses constitution validation patterns
+- **Doc Generator:** Uses symbol discovery and Copilot-optimized documentation patterns
+- **Test Generator:** Uses xUnit + FluentAssertions patterns, AAA structure
+- **Privilege Code Generator:** Uses RBAC attribute and policy patterns
 
 ---
 
 ## ⚙️ Agent Configuration
+
+### Agent Configuration
 
 Agents are configured in `.github/copilot-agents.json`:
 
 ```json
 {
   "agents": [
+    {
+      "name": "task-router",
+      "instructions": "file:_bmad/module-agents/agents/task-router.md",
+      "model": "claude-sonnet-4.5",
+      "tools": ["read_file", "list_files", ...]
+    },
     {
       "name": "module-core-creator",
       "instructions": "file:_bmad/module-agents/agents/module-core-creator.md",
@@ -237,9 +474,44 @@ Agents are configured in `.github/copilot-agents.json`:
     {
       "name": "module-creator",
       "instructions": "file:_bmad/module-agents/agents/module-creator.md",
+      "model": "claude-sonnet-4.5",
       ...
     },
-    ...
+    {
+      "name": "module-rebuilder",
+      "instructions": "file:_bmad/module-agents/agents/module-rebuilder.md",
+      ...
+    },
+    {
+      "name": "core-maintainer",
+      "instructions": "file:_bmad/module-agents/agents/core-maintainer.md",
+      ...
+    },
+    {
+      "name": "brownfield-health-check",
+      "instructions": "file:_bmad/module-agents/agents/brownfield-health-check.md",
+      ...
+    },
+    {
+      "name": "compliance-auditor",
+      "instructions": "file:_bmad/module-agents/agents/compliance-auditor.md",
+      ...
+    },
+    {
+      "name": "doc-generator",
+      "instructions": "file:_bmad/module-agents/agents/doc-generator.md",
+      ...
+    },
+    {
+      "name": "test-generator",
+      "instructions": "file:_bmad/module-agents/agents/test-generator.md",
+      ...
+    },
+    {
+      "name": "privilege-code-generator",
+      "instructions": "file:_bmad/module-agents/agents/privilege-code-generator.md",
+      ...
+    }
   ]
 }
 ```
@@ -278,6 +550,29 @@ Agents are configured in `.github/copilot-agents.json`:
 ---
 
 ## 📖 Quick Reference
+
+### Task Router
+
+```
+@task-router [describe your goal]
+- Analyzes project state (greenfield vs brownfield)
+- Scans Module_* folders
+- Understands your intent
+- Routes to appropriate specialist agent
+- Result: Connected to the right agent with full context
+```
+
+### Brownfield Health Check
+
+```
+@brownfield-health-check
+- Scans all modules and classifies (Modern vs Legacy)
+- Detects constitution violations
+- Analyzes module dependencies (DAG)
+- Calculates safe rebuild order
+- Estimates modernization effort
+- Result: `.github/.project-state.json` + roadmap
+```
 
 ### Module Core Creator
 
@@ -319,6 +614,49 @@ Agents are configured in `.github/copilot-agents.json`:
 - Result: Safe Core evolution
 ```
 
+### Compliance Auditor
+
+```
+@compliance-auditor Validate Module_[Feature]
+- Validates MVVM purity (x:Bind, partial ViewModels)
+- Validates data access integrity (stored procs, instance DAOs)
+- Validates CQRS patterns (handlers, validators, IMediator)
+- Auto-triggers after Module Rebuilder completes
+- Result: Pass/fail report with specific violations
+```
+
+### Doc Generator
+
+```
+@doc-generator [options]
+- /generate-docs → Update ALL docs for ALL modules
+- /generate-docs Module_Receiving → Specific module
+- /generate-docs QUICK_REF → Specific doc type across all modules
+- Result: Auto-generated QUICK_REF.md, SETTABLE_OBJECTS.md, PRIVILEGES.md
+```
+
+### Test Generator
+
+```
+@test-generator [Module_Name]
+- Discovers handlers, DAOs, ViewModels
+- Creates test classes in Unit/ and Integration/ folders
+- AAA structure with TODO markers
+- Respects constitution (no DB writes to SQL Server)
+- Result: Compilable test scaffolds ready for implementation
+```
+
+### Privilege Code Generator
+
+```
+@privilege-code-generator Module_[Name]
+- Parses PRIVILEGES.md YAML authorize: sections
+- Generates [Authorize] attributes or policies
+- Inserts role checks in handlers
+- Suggests XAML visibility bindings
+- Result: RBAC code scaffolding from documentation
+```
+
 ---
 
 ## ✅ Success Indicators
@@ -350,7 +688,13 @@ Agents are configured in `.github/copilot-agents.json`:
 
 **For detailed agent documentation, see:**
 
+- Task Router: `_bmad/module-agents/agents/task-router.md`
+- Brownfield Health Check: `_bmad/module-agents/agents/brownfield-health-check.md`
 - Module Core Creator: `_bmad/module-agents/agents/module-core-creator.md`
 - Module Creator: `_bmad/module-agents/agents/module-creator.md`
 - Module Rebuilder: `_bmad/module-agents/agents/module-rebuilder.md`
 - Core Maintainer: `_bmad/module-agents/agents/core-maintainer.md`
+- Compliance Auditor: `_bmad/module-agents/agents/compliance-auditor.md`
+- Doc Generator: `_bmad/module-agents/agents/doc-generator.md`
+- Test Generator: `_bmad/module-agents/agents/test-generator.md`
+- Privilege Code Generator: `_bmad/module-agents/agents/privilege-code-generator.md`
