@@ -61,41 +61,9 @@
 
 ### Query Handlers for User Story 1
 
-- [X] T023 [P] [US1] Create GetInitialShipmentDataQuery DTO in Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
-- [X] T024 [P] [US1] Create GetInitialShipmentDataQueryHandler in Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandler.cs
-- [X] T025 [P] [US1] Create GetPendingShipmentQuery DTO in Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs
-- [X] T026 [P] [US1] Create GetPendingShipmentQueryHandler in Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandler.cs
-- [X] T027 [P] [US1] Create SearchVolvoPartsQuery DTO in Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs
-- [X] T028 [P] [US1] Create SearchVolvoPartsQueryHandler in Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs
-- [X] T029 [P] [US1] Create GenerateLabelCsvQuery DTO in Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs
-- [X] T030 [P] [US1] Create GenerateLabelCsvQueryHandler in Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs (functional parity with legacy CSV format)
-
-### Command Handlers for User Story 1
-
-- [X] T031 [P] [US1] Create AddPartToShipmentCommand DTO in Module_Volvo/Requests/Commands/AddPartToShipmentCommand.cs
-- [X] T032 [US1] Create AddPartToShipmentCommandValidator in Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs (PartNumber required, ReceivedSkidCount > 0, HasDiscrepancy → ExpectedSkidCount + DiscrepancyNote required)
-- [X] T033 [US1] Create AddPartToShipmentCommandHandler in Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs
-- [X] T034 [P] [US1] Create RemovePartFromShipmentCommand DTO in Module_Volvo/Requests/Commands/RemovePartFromShipmentCommand.cs
-- [X] T035 [P] [US1] Create RemovePartFromShipmentCommandHandler in Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs
 - [X] T036 [P] [US1] Create SavePendingShipmentCommand DTO in Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs
-- [X] T037 [US1] Create SavePendingShipmentCommandValidator in Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs (ShipmentDate <= Now, Parts.Count > 0)
-- [X] T038 [US1] Create SavePendingShipmentCommandHandler in Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs
-- [X] T039 [P] [US1] Create CompleteShipmentCommand DTO in Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs
-- [X] T040 [US1] Create CompleteShipmentCommandValidator in Module_Volvo/Validators/CompleteShipmentCommandValidator.cs (ShipmentDate <= Now, Parts.Count > 0, all parts validated)
-- [X] T041 [US1] Create CompleteShipmentCommandHandler in Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs (save, generate labels, send email)
-
-### ViewModel Refactoring for User Story 1
-
 - [X] T042 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Inject IMediator, replace InitializeAsync with GetInitialShipmentDataQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T043 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace LoadPendingShipmentAsync with GetPendingShipmentQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T044 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace UpdatePartSuggestions with SearchVolvoPartsQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T045 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace AddPart with AddPartToShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T046 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace RemovePart with RemovePartFromShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T047 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace GenerateLabelsAsync with GenerateLabelCsvQuery in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T048 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace SaveAsPendingAsync with SavePendingShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
 - [X] T049 [US1] Refactor ViewModel_Volvo_ShipmentEntry: Replace CompleteShipmentAsync with CompleteShipmentCommand in Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
-- [X] T050 [US1] Mark IService_Volvo injection in ViewModel_Volvo_ShipmentEntry as [Obsolete] (keep for gradual migration)
-
 **Checkpoint**: User Story 1 implementation complete
 
 ---
@@ -243,69 +211,69 @@
 
 ### Test Infrastructure
 
-- [ ] T006 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/ folder for command handler tests
-- [ ] T007 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ folder for query handler tests
-- [ ] T008 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Validators/ folder for validator tests
-- [ ] T009 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Integration/ folder for integration tests
-- [ ] T010 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/PropertyBased/ folder for property-based tests
-- [ ] T011 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/GoldenFiles/ folder for golden file tests
+- [X] T006 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/ folder for command handler tests
+- [X] T007 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ folder for query handler tests
+- [X] T008 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Validators/ folder for validator tests
+- [X] T009 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/Integration/ folder for integration tests
+- [X] T010 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/PropertyBased/ folder for property-based tests
+- [X] T011 [P] Create MTM_Receiving_Application.Tests/Module_Volvo/GoldenFiles/ folder for golden file tests
 
 ### Unit Tests for User Story 1
 
-- [ ] T051 [P] [US1] Unit test GetInitialShipmentDataQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
-- [ ] T052 [P] [US1] Unit test GetPendingShipmentQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
-- [ ] T053 [P] [US1] Unit test SearchVolvoPartsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
-- [ ] T054 [P] [US1] Unit test GenerateLabelCsvQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
-- [ ] T055 [P] [US1] Unit test AddPartToShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddPartToShipmentCommandValidatorTests.cs
-- [ ] T056 [P] [US1] Unit test AddPartToShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
-- [ ] T057 [P] [US1] Unit test SavePendingShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/SavePendingShipmentCommandValidatorTests.cs
-- [ ] T058 [P] [US1] Unit test SavePendingShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
-- [ ] T059 [P] [US1] Unit test CompleteShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/CompleteShipmentCommandValidatorTests.cs
-- [ ] T060 [P] [US1] Unit test CompleteShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
+- [X] T051 [P] [US1] Unit test GetInitialShipmentDataQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
+- [X] T052 [P] [US1] Unit test GetPendingShipmentQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
+- [X] T053 [P] [US1] Unit test SearchVolvoPartsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
+- [X] T054 [P] [US1] Unit test GenerateLabelCsvQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
+- [X] T055 [P] [US1] Unit test AddPartToShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddPartToShipmentCommandValidatorTests.cs
+- [X] T056 [P] [US1] Unit test AddPartToShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
+- [X] T057 [P] [US1] Unit test SavePendingShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/SavePendingShipmentCommandValidatorTests.cs
+- [X] T058 [P] [US1] Unit test SavePendingShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
+- [X] T059 [P] [US1] Unit test CompleteShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/CompleteShipmentCommandValidatorTests.cs
+- [X] T060 [P] [US1] Unit test CompleteShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
 
 ### Integration & Golden File Tests for User Story 1
 
 - [ ] T020 [P] DEFERRED: Capture golden file: expected_label_basic.csv (moved to T061 - integration test)
 - [ ] T061 [US1] Golden file test: GenerateLabelCsvQuery produces byte-for-byte match with expected_label_basic.csv in MTM_Receiving_Application.Tests/Module_Volvo/GoldenFiles/LabelCsvGoldenFileTests.cs
-- [ ] T062 [US1] Integration test: Complete shipment workflow (ViewModel → Handler → Service → DAO → DB) in MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentCompletionIntegrationTests.cs
-- [ ] T063 [US1] Integration test: Pending shipment save/load workflow in MTM_Receiving_Application.Tests/Module_Volvo/Integration/PendingShipmentIntegrationTests.cs
+- [X] T062 [US1] Integration test: Complete shipment workflow (ViewModel → Handler → Service → DAO → DB) in MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentCompletionIntegrationTests.cs
+- [X] T063 [US1] Integration test: Pending shipment save/load workflow in MTM_Receiving_Application.Tests/Module_Volvo/Integration/PendingShipmentIntegrationTests.cs
 
 ### Unit Tests for User Story 2
 
-- [ ] T083 [P] [US2] Unit test GetRecentShipmentsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandlerTests.cs
-- [ ] T084 [P] [US2] Unit test GetShipmentHistoryQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandlerTests.cs
-- [ ] T085 [P] [US2] Unit test GetShipmentDetailQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandlerTests.cs
-- [ ] T086 [P] [US2] Unit test ExportShipmentsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportShipmentsQueryHandlerTests.cs
-- [ ] T087 [P] [US2] Unit test UpdateShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateShipmentCommandValidatorTests.cs
-- [ ] T088 [P] [US2] Unit test UpdateShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandlerTests.cs
+- [X] T083 [P] [US2] Unit test GetRecentShipmentsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandlerTests.cs
+- [X] T084 [P] [US2] Unit test GetShipmentHistoryQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandlerTests.cs
+- [X] T085 [P] [US2] Unit test GetShipmentDetailQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandlerTests.cs
+- [X] T086 [P] [US2] Unit test ExportShipmentsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportShipmentsQueryHandlerTests.cs
+- [X] T087 [P] [US2] Unit test UpdateShipmentCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateShipmentCommandValidatorTests.cs
+- [X] T088 [P] [US2] Unit test UpdateShipmentCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandlerTests.cs
 
 ### Integration Tests for User Story 2
 
-- [ ] T089 [US2] Integration test: History filtering by date range and status in MTM_Receiving_Application.Tests/Module_Volvo/Integration/HistoryFilteringIntegrationTests.cs
-- [ ] T090 [US2] Integration test: Edit shipment workflow (load detail → update → verify) in MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentEditIntegrationTests.cs
+- [X] T089 [US2] Integration test: History filtering by date range and status in MTM_Receiving_Application.Tests/Module_Volvo/Integration/HistoryFilteringIntegrationTests.cs
+- [X] T090 [US2] Integration test: Edit shipment workflow (load detail → update → verify) in MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentEditIntegrationTests.cs
 
 ### Unit Tests for User Story 3
 
-- [ ] T120 [P] [US3] Unit test GetAllVolvoPartsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandlerTests.cs
-- [ ] T121 [P] [US3] Unit test GetPartComponentsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandlerTests.cs
-- [ ] T122 [P] [US3] Unit test ExportPartsCsvQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportPartsCsvQueryHandlerTests.cs
-- [ ] T123 [P] [US3] Unit test AddVolvoPartCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddVolvoPartCommandValidatorTests.cs
-- [ ] T124 [P] [US3] Unit test AddVolvoPartCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandlerTests.cs
-- [ ] T125 [P] [US3] Unit test UpdateVolvoPartCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateVolvoPartCommandValidatorTests.cs
-- [ ] T126 [P] [US3] Unit test UpdateVolvoPartCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandlerTests.cs
-- [ ] T127 [P] [US3] Unit test DeactivateVolvoPartCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/DeactivateVolvoPartCommandValidatorTests.cs
-- [ ] T128 [P] [US3] Unit test DeactivateVolvoPartCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandlerTests.cs
-- [ ] T129 [P] [US3] Unit test ImportPartsCsvCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/ImportPartsCsvCommandValidatorTests.cs
-- [ ] T130 [P] [US3] Unit test ImportPartsCsvCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandlerTests.cs
+- [X] T120 [P] [US3] Unit test GetAllVolvoPartsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandlerTests.cs
+- [X] T121 [P] [US3] Unit test GetPartComponentsQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandlerTests.cs
+- [X] T122 [P] [US3] Unit test ExportPartsCsvQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportPartsCsvQueryHandlerTests.cs
+- [X] T123 [P] [US3] Unit test AddVolvoPartCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddVolvoPartCommandValidatorTests.cs
+- [X] T124 [P] [US3] Unit test AddVolvoPartCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandlerTests.cs
+- [X] T125 [P] [US3] Unit test UpdateVolvoPartCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateVolvoPartCommandValidatorTests.cs
+- [X] T126 [P] [US3] Unit test UpdateVolvoPartCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandlerTests.cs
+- [X] T127 [P] [US3] Unit test DeactivateVolvoPartCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/DeactivateVolvoPartCommandValidatorTests.cs
+- [X] T128 [P] [US3] Unit test DeactivateVolvoPartCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandlerTests.cs
+- [X] T129 [P] [US3] Unit test ImportPartsCsvCommandValidator in MTM_Receiving_Application.Tests/Module_Volvo/Validators/ImportPartsCsvCommandValidatorTests.cs
+- [X] T130 [P] [US3] Unit test ImportPartsCsvCommandHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandlerTests.cs
 
 ### Integration Tests for User Story 3
 
-- [ ] T131 [US3] Integration test: Add part workflow (ViewModel → Handler → DAO → DB) in MTM_Receiving_Application.Tests/Module_Volvo/Integration/AddPartIntegrationTests.cs
-- [ ] T132 [US3] Integration test: Import CSV workflow with validation errors in MTM_Receiving_Application.Tests/Module_Volvo/Integration/ImportCsvIntegrationTests.cs
+- [X] T131 [US3] Integration test: Add part workflow (ViewModel → Handler → DAO → DB) in MTM_Receiving_Application.Tests/Module_Volvo/Integration/AddPartIntegrationTests.cs
+- [X] T132 [US3] Integration test: Import CSV workflow with validation errors in MTM_Receiving_Application.Tests/Module_Volvo/Integration/ImportCsvIntegrationTests.cs
 
 ### User Story 4 Tests
 
-- [ ] T136 [P] [US4] Unit test FormatEmailDataQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandlerTests.cs
+- [X] T136 [P] [US4] Unit test FormatEmailDataQueryHandler in MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandlerTests.cs
 - [ ] T137 [US4] Golden file test: FormatEmailDataQuery HTML output matches expected_email_html.html in MTM_Receiving_Application.Tests/Module_Volvo/GoldenFiles/EmailGoldenFileTests.cs
 - [ ] T138 [US4] Golden file test: FormatEmailDataQuery plain text output matches expected_email_text.txt in MTM_Receiving_Application.Tests/Module_Volvo/GoldenFiles/EmailGoldenFileTests.cs
 
