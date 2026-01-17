@@ -17,6 +17,10 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
         <converters:NullableDoubleToDoubleConverter x:Key="NullableDoubleToDoubleConverter"/>
         <converters:Converter_BoolToString x:Key="BoolToStringConverter"/>
+        <converters:Converter_IntToString x:Key="IntToStringConverter"/>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter"/>
+        <converters:Converter_NullableDoubleToString x:Key="NullableDoubleToStringConverter"/>
+        <converters:Converter_NullableIntToString x:Key="NullableIntToStringConverter"/>
     </Page.Resources>
 
     <Grid Padding="24" RowSpacing="16">
@@ -41,7 +45,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <CalendarDatePicker Grid.Column="0"
@@ -53,48 +57,20 @@
                            Header="Shipment Number"
                            Value="{x:Bind ViewModel.ShipmentNumber, Mode=TwoWay}"
                            Minimum="1"
-                           SpinButtonPlacementMode="Inline"
-                           HorizontalAlignment="Stretch"/>
-
-                <TextBox Grid.Column="2"
-                         Header="Notes (optional)"
-                         Text="{x:Bind ViewModel.Notes, Mode=TwoWay}"
-                         PlaceholderText="Enter any additional notes"/>
-            </Grid>
-
-            <!-- Part Entry Row -->
-            <Grid ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <AutoSuggestBox Grid.Column="0"
-                                Header="Part Number"
-                                ItemsSource="{x:Bind ViewModel.SuggestedParts, Mode=OneWay}"
-                                Text="{x:Bind ViewModel.PartSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                DisplayMemberPath="PartNumber"
-                                TextMemberPath="PartNumber"
-                                PlaceholderText="Type to search for a part number"
-                                TextChanged="OnPartSearchTextChanged"
-                                SuggestionChosen="OnPartSuggestionChosen"
-                                HorizontalAlignment="Stretch"/>
-
-                <NumberBox Grid.Column="1"
-                           Header="Received Skids"
-                           Value="{x:Bind ViewModel.ReceivedSkidsToAdd, Mode=TwoWay}"
-                           Minimum="1"
-                           Maximum="99"
-                           SpinButtonPlacementMode="Inline"
+                           SpinButtonPlacementMode="Hidden"
                            HorizontalAlignment="Stretch"/>
 
                 <Button Grid.Column="2"
-                        Content="Add Part"
-                        Command="{x:Bind ViewModel.AddPartCommand}"
                         VerticalAlignment="Bottom"
                         Style="{StaticResource AccentButtonStyle}"
-                        Margin="0,0,0,4"/>
+                        Click="AddPartButton_Click"
+                        Margin="0,0,0,4"
+                        MinWidth="120">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <SymbolIcon Symbol="Add"/>
+                        <TextBlock Text="Add Part"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </StackPanel>
 
@@ -103,6 +79,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" 
@@ -110,7 +87,7 @@
                        Style="{StaticResource SubtitleTextBlockStyle}"
                        Margin="0,0,0,8"/>
 
-            <controls:DataGrid Grid.Row="1"
+            <controls:DataGrid x:Name="ShipmentLinesGrid" Grid.Row="1"
                                ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
                                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
                                AutoGenerateColumns="False"
@@ -118,87 +95,121 @@
                                CanUserReorderColumns="False"
                                GridLinesVisibility="All">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTemplateColumn Header="Part Number" Width="200">
+                    <controls:DataGridTemplateColumn Header="Part Number" Width="2*">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBlock Text="{x:Bind PartNumber, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind PartNumber, Mode=OneWay}" 
+                                           VerticalAlignment="Center"
+                                           Margin="8,0"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
                     <controls:DataGridTemplateColumn Header="Received Skids"
-                                                      Width="150">
+                                                      Width="*">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <NumberBox Value="{x:Bind ReceivedSkidCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                           Minimum="1"
-                                           Maximum="99"
-                                           SpinButtonPlacementMode="Inline"
-                                           HorizontalAlignment="Stretch"
-                                           VerticalAlignment="Stretch"/>
+                                <TextBox Text="{x:Bind ReceivedSkidCount, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                                         InputScope="Number"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         BorderThickness="0"
+                                         Background="Transparent"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn Header="Calculated Pieces" Width="150">
+                    <controls:DataGridTemplateColumn Header="Calculated Pieces" Width="*">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBlock Text="{x:Bind CalculatedPieceCount, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind CalculatedPieceCount, Mode=OneWay}" 
+                                           VerticalAlignment="Center"
+                                           Margin="8,0"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn Header="Discrepancy" Width="170">
+                    <controls:DataGridTemplateColumn Header="Discrepancy" Width="230">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <Button
-                                    Content="{x:Bind HasDiscrepancy, Mode=OneWay, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Remove Discrepancy|Report Discrepancy'}"
-                                    Command="{x:Bind ViewModel.ToggleDiscrepancyCommand}"
-                                    CommandParameter="{x:Bind}" />
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <Button Content="Report"
+                                            Click="ReportDiscrepancyButton_Click"
+                                            IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                            Tag="{x:Bind}"
+                                            MinWidth="50"/>
+                                    <Button Content="View"
+                                            Click="ViewDiscrepancyButton_Click"
+                                            IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+                                            Tag="{x:Bind}"
+                                            MinWidth="50"/>
+                                    <Button Content="Remove"
+                                            Click="RemoveDiscrepancyButton_Click"
+                                            IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+                                            Tag="{x:Bind}"
+                                            MinWidth="50"/>
+                                </StackPanel>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
                     <controls:DataGridTemplateColumn Header="Expected Skids"
-                                                      Width="150">
+                                                      Width="0"
+                                                      Visibility="Collapsed">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBlock Text="{x:Bind ExpectedSkidCount, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind ExpectedSkidCount, Mode=OneWay, Converter={StaticResource NullableDoubleToStringConverter}}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn Header="Expected Pieces" Width="130">
+                    <controls:DataGridTemplateColumn Header="Expected Pieces" 
+                                                      Width="0"
+                                                      Visibility="Collapsed">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBlock Text="{x:Bind ExpectedPieceCount, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind ExpectedPieceCount, Mode=OneWay, Converter={StaticResource NullableIntToStringConverter}}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn Header="Difference" Width="100">
+                    <controls:DataGridTemplateColumn Header="Difference" 
+                                                      Width="0"
+                                                      Visibility="Collapsed">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBlock Text="{x:Bind PieceDifference, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind PieceDifference, Mode=OneWay, Converter={StaticResource NullableIntToStringConverter}}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
                     <controls:DataGridTemplateColumn Header="Discrepancy Note"
-                                                      Width="*">
+                                                      Width="0"
+                                                      Visibility="Collapsed">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBlock Text="{x:Bind DiscrepancyNote, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind DiscrepancyNote, Mode=OneWay, TargetNullValue=''}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
+
+            <!-- Order Notes Section -->
+            <TextBox Grid.Row="2"
+                     Header="Order Notes (applies to entire shipment)"
+                     Text="{x:Bind ViewModel.Notes, Mode=TwoWay}"
+                     PlaceholderText="Enter any additional notes for this shipment..."
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     MinHeight="60"
+                     MaxHeight="120"
+                     Margin="0,12,0,0"/>
         </Grid>
 
         <!-- Action Buttons -->
         <CommandBar Grid.Row="3" DefaultLabelPosition="Right">
-            <AppBarButton Icon="Delete" Label="Remove Part" Command="{x:Bind ViewModel.RemovePartCommand}"/>
+            <AppBarButton Icon="Delete" Label="Remove Selected Part" Click="RemoveSelectedPartButton_Click"/>
             <AppBarSeparator/>
             <AppBarButton Label="Generate Labels" Command="{x:Bind ViewModel.GenerateLabelsCommand}">
                 <AppBarButton.Icon>

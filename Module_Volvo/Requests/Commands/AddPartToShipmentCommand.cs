@@ -33,7 +33,7 @@ public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
     /// <summary>
     /// Note explaining the discrepancy (required when HasDiscrepancy = true).
     /// </summary>
-    public string DiscrepancyNote { get; init; } = string.Empty;
+    public string? DiscrepancyNote { get; init; } = string.Empty;
 
     /// <summary>
     /// Optional pending shipment ID (for editing pending shipments).

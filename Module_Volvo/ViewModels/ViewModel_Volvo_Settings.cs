@@ -400,7 +400,7 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                 CsvFilePath = file.Path
             });
 
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null)
             {
                 var summary = $"Import complete: {result.Data.SuccessCount} succeeded, {result.Data.FailureCount} failed";
                 StatusMessage = summary;

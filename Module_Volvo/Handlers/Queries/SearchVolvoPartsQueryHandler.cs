@@ -36,7 +36,7 @@ public class SearchVolvoPartsQueryHandler : IRequestHandler<SearchVolvoPartsQuer
             }
 
             // Filter by search text (case-insensitive partial match)
-            var filteredParts = allPartsResult.Data
+            var filteredParts = (allPartsResult.Data ?? new List<Model_VolvoPart>())
                 .Where(p => string.IsNullOrWhiteSpace(request.SearchText) ||
                            p.PartNumber.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase))
                 .Take(request.MaxResults)

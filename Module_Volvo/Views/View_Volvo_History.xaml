@@ -76,7 +76,7 @@
                 <controls:DataGridTemplateColumn Header="Shipment #" Width="100">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind ShipmentNumber, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind ShipmentNumber, Mode=OneTime}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
@@ -84,7 +84,7 @@
                 <controls:DataGridTemplateColumn Header="Date" Width="120">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind ShipmentDateDisplay, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind ShipmentDateDisplay, Mode=OneTime}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
@@ -92,7 +92,7 @@
                 <controls:DataGridTemplateColumn Header="PO Number" Width="120">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind PONumber, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind PONumber, Mode=OneTime}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
@@ -100,7 +100,7 @@
                 <controls:DataGridTemplateColumn Header="Receiver" Width="120">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind ReceiverNumber, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind ReceiverNumber, Mode=OneTime}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
@@ -108,7 +108,7 @@
                 <controls:DataGridTemplateColumn Header="Status" Width="120">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind Status, Mode=OneWay}" />
+                            <TextBlock Text="{x:Bind Status, Mode=OneTime}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
@@ -116,7 +116,7 @@
                 <controls:DataGridTemplateColumn Header="Notes" Width="*">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:Model_VolvoShipment">
-                            <TextBlock Text="{x:Bind Notes, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{x:Bind Notes, Mode=OneTime}" TextTrimming="CharacterEllipsis" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>

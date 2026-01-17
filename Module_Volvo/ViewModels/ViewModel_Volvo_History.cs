@@ -313,10 +313,15 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                 return;
             }
 
-            // Get available parts for dropdown
-            // Note: This would normally come from a master data service
-            // For now, we'll create a placeholder collection
-            var availableParts = new ObservableCollection<Model_VolvoPart>();
+            // Get available parts for the add part dialog
+            var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
+            {
+                IncludeInactive = false
+            });
+
+            var availableParts = partsResult.IsSuccess && partsResult.Data != null
+                ? new ObservableCollection<Model_VolvoPart>(partsResult.Data)
+                : new ObservableCollection<Model_VolvoPart>();
 
             // Create and show edit dialog
             var dialog = new Views.VolvoShipmentEditDialog

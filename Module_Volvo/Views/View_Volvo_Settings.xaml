@@ -78,14 +78,14 @@
                     <controls:DataGridTemplateColumn Header="Part Number" Width="*">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoPart">
-                                <TextBlock Text="{x:Bind PartNumber, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind PartNumber, Mode=OneTime}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
                     <controls:DataGridTemplateColumn Header="Qty/Skid" Width="100">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoPart">
-                                <TextBlock Text="{x:Bind QuantityPerSkid, Mode=OneWay}" />
+                                <TextBlock Text="{x:Bind QuantityPerSkid, Mode=OneTime}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>

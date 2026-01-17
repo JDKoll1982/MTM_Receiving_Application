@@ -9,7 +9,13 @@ namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
 /// </summary>
 public class CompleteShipmentCommandValidatorTests
 {
-    private readonly CompleteShipmentCommandValidator _validator = new();
+    private readonly CompleteShipmentCommandValidator _validator;
+
+    public CompleteShipmentCommandValidatorTests()
+    {
+        var fixture = new MTM_Receiving_Application.Tests.Helpers.DatabaseFixture();
+        _validator = new CompleteShipmentCommandValidator(fixture.CreateShipmentDao());
+    }
 
     [Fact]
     public void Validate_ShouldPass_WhenCommandIsValid()

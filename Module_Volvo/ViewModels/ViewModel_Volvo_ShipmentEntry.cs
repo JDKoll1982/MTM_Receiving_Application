@@ -31,6 +31,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
+    // Public accessors for code-behind dialog
+    public IService_ErrorHandler ErrorHandler => _errorHandler;
+    public IService_LoggingUtility Logger => _logger;
+
     public ViewModel_Volvo_ShipmentEntry(
         IMediator mediator,
         IService_ErrorHandler errorHandler,
@@ -68,6 +72,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private Model_VolvoShipmentLine? _selectedPart;
 
+
     [ObservableProperty]
     private Model_VolvoPart? _selectedPartToAdd;
 
@@ -75,7 +80,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private string _partSearchText = string.Empty;
 
     [ObservableProperty]
-    private int _receivedSkidsToAdd = 0;
+    private string _receivedSkidsToAdd = string.Empty;
 
     [ObservableProperty]
     private bool _canSave = false;
@@ -90,6 +95,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     private bool _hasPendingShipment = false;
 
     #endregion
+
+    
 
     #region Initialization
 
@@ -237,6 +244,33 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     #region AutoSuggestBox Support
 
     /// <summary>
+    /// Loads all parts for the Add Part dialog
+    /// </summary>
+    public async Task LoadAllPartsForDialogAsync()
+    {
+        try
+        {
+            var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
+            {
+                IncludeInactive = false // Only show active parts in dialog
+            });
+
+            if (partsResult.IsSuccess && partsResult.Data != null)
+            {
+                AvailableParts.Clear();
+                foreach (var part in partsResult.Data.OrderBy(p => p.PartNumber))
+                {
+                    AvailableParts.Add(part);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error loading parts for dialog: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
     /// Updates the part suggestions list based on user's search text (CQRS)
     /// Uses SearchVolvoPartsQuery for autocomplete functionality
     /// </summary>
@@ -311,18 +345,18 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     [RelayCommand(CanExecute = nameof(CanAddPart))]
     private async void AddPart()
     {
-        if (SelectedPartToAdd == null || ReceivedSkidsToAdd <= 0)
+        if (SelectedPartToAdd == null || string.IsNullOrWhiteSpace(ReceivedSkidsToAdd))
         {
             return;
         }
 
         try
         {
-            // Input validation (1-99 range)
-            if (ReceivedSkidsToAdd < 1 || ReceivedSkidsToAdd > 99)
+            // Parse and validate skid count
+            if (!int.TryParse(ReceivedSkidsToAdd, out int skidCount) || skidCount < 1 || skidCount > 99)
             {
                 await _errorHandler.HandleErrorAsync(
-                    "Received skid count must be between 1 and 99",
+                    "Received skid count must be a number between 1 and 99",
                     Enum_ErrorSeverity.Low,
                     null,
                     true);
@@ -344,7 +378,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             var addCommand = new AddPartToShipmentCommand
             {
                 PartNumber = SelectedPartToAdd.PartNumber,
-                ReceivedSkidCount = ReceivedSkidsToAdd,
+                ReceivedSkidCount = skidCount,
                 HasDiscrepancy = false
             };
 
@@ -361,13 +395,13 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
 
             // Validation passed - add to ObservableCollection
-            var calculatedPieces = SelectedPartToAdd.QuantityPerSkid * ReceivedSkidsToAdd;
+            var calculatedPieces = SelectedPartToAdd.QuantityPerSkid * skidCount;
 
             var newLine = new Model_VolvoShipmentLine
             {
                 PartNumber = SelectedPartToAdd.PartNumber,
                 QuantityPerSkid = SelectedPartToAdd.QuantityPerSkid,
-                ReceivedSkidCount = ReceivedSkidsToAdd,
+                ReceivedSkidCount = skidCount,
                 CalculatedPieceCount = calculatedPieces,
                 HasDiscrepancy = false,
                 ExpectedSkidCount = null,
@@ -377,11 +411,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             Parts.Add(newLine);
 
             // Log user action
-            await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {ReceivedSkidsToAdd} skids ({calculatedPieces} pcs)");
+            await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)");
 
             // Reset input fields
             SelectedPartToAdd = null;
-            ReceivedSkidsToAdd = 0;
+            ReceivedSkidsToAdd = string.Empty;
             PartSearchText = string.Empty;
             SuggestedParts.Clear();
 
@@ -400,7 +434,11 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     private bool CanAddPart()
     {
-        return SelectedPartToAdd != null && ReceivedSkidsToAdd >= 1 && ReceivedSkidsToAdd <= 99;
+        return SelectedPartToAdd != null && 
+               !string.IsNullOrWhiteSpace(ReceivedSkidsToAdd) && 
+               int.TryParse(ReceivedSkidsToAdd, out int count) && 
+               count >= 1 && 
+               count <= 99;
     }
 
     /// <summary>
@@ -1291,8 +1329,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             if (confirmResult == ContentDialogResult.Primary)
             {
                 line.HasDiscrepancy = false;
-                line.ExpectedSkidCount = null;
-                line.DiscrepancyNote = null;
             }
 
             return;
@@ -1302,7 +1338,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         {
             Header = "Expected Skids",
             Minimum = 1,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
             Value = line.ExpectedSkidCount ?? 1
         };
 
@@ -1343,19 +1379,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(noteBox.Text))
-        {
-            await _errorHandler.HandleErrorAsync(
-                "Discrepancy note is required",
-                Enum_ErrorSeverity.Low,
-                null,
-                true);
-            return;
-        }
-
         line.HasDiscrepancy = true;
         line.ExpectedSkidCount = expectedSkidsBox.Value;
-        line.DiscrepancyNote = noteBox.Text.Trim();
+        line.DiscrepancyNote = string.IsNullOrWhiteSpace(noteBox.Text) ? null : noteBox.Text.Trim();
     }
 
     [RelayCommand]
@@ -1467,7 +1493,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         AddPartCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnReceivedSkidsToAddChanged(int value)
+    partial void OnReceivedSkidsToAddChanged(string value)
     {
         AddPartCommand.NotifyCanExecuteChanged();
     }
@@ -1486,7 +1512,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         Notes = string.Empty;
         ShipmentNumber = 1;
         SelectedPartToAdd = null;
-        ReceivedSkidsToAdd = 0;
+        ReceivedSkidsToAdd = string.Empty;
         PartSearchText = string.Empty;
         SuggestedParts.Clear();
     }

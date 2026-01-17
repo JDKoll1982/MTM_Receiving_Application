@@ -32,7 +32,6 @@ public class PendingShipmentIntegrationTests
         var shipmentDao = _fixture.CreateShipmentDao();
         var lineDao = _fixture.CreateShipmentLineDao();
         var partDao = _fixture.CreatePartDao();
-        var partDao = _fixture.CreatePartDao();
 
         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
         int shipmentId = 0;
