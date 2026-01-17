@@ -45,7 +45,7 @@ public class CompleteShipmentCommandHandlerTests
             });
             partResult.Success.Should().BeTrue();
 
-            var handler = new CompleteShipmentCommandHandler(shipmentDao, lineDao, authService);
+            var handler = new CompleteShipmentCommandHandler(shipmentDao, lineDao, partDao, authService);
             var result = await handler.Handle(new CompleteShipmentCommand
             {
                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),

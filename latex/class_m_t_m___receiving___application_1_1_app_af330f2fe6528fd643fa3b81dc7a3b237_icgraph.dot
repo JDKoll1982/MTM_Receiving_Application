@@ -1,0 +1,11 @@
+digraph "App"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="App",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Initializes the singleton application object and sets up dependency injection."];
+  Node1 -> Node2 [id="edge2_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="GetService\< T \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_m_t_m___receiving___application_1_1_app.html#a0a89209c2eac365fd379e0bcea91a60c",tooltip="Gets a service from the dependency injection container."];
+}

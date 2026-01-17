@@ -1,4 +1,8 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation;
+using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 
 namespace MTM_Receiving_Application.Module_Volvo.Validators;
@@ -8,8 +12,12 @@ namespace MTM_Receiving_Application.Module_Volvo.Validators;
 /// </summary>
 public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipmentCommand>
 {
-    public CompleteShipmentCommandValidator()
+    private readonly Dao_VolvoShipment _shipmentDao;
+
+    public CompleteShipmentCommandValidator(Dao_VolvoShipment shipmentDao)
     {
+        _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+
         RuleFor(x => x.ShipmentDate)
             .NotEmpty().WithMessage("Shipment date is required")
             .LessThanOrEqualTo(System.DateTimeOffset.Now).WithMessage("Shipment date cannot be in the future");
@@ -37,5 +45,17 @@ public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipme
             part.RuleFor(p => p.ReceivedSkidCount)
                 .GreaterThan(0).WithMessage("Received skid count must be greater than 0");
         });
+
+        RuleFor(x => x)
+            .MustAsync(HasPendingShipmentAsync)
+            .WithMessage("No pending shipment found to complete.");
+    }
+
+    private async Task<bool> HasPendingShipmentAsync(
+        CompleteShipmentCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _shipmentDao.GetPendingAsync();
+        return result.IsSuccess && result.Data != null;
     }
 }

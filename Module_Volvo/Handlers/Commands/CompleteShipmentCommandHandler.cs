@@ -18,15 +18,18 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
 {
     private readonly Dao_VolvoShipment _shipmentDao;
     private readonly Dao_VolvoShipmentLine _lineDao;
+    private readonly Dao_VolvoPart _partDao;
     private readonly IService_VolvoAuthorization _authService;
 
     public CompleteShipmentCommandHandler(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,
+        Dao_VolvoPart partDao,
         IService_VolvoAuthorization authService)
     {
         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+        _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
@@ -42,7 +45,96 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     "You are not authorized to complete shipments");
             }
 
-            // Create shipment model
+            // If a pending shipment exists, complete it instead of inserting a new one
+            var pendingResult = await _shipmentDao.GetPendingAsync();
+            if (!pendingResult.IsSuccess)
+            {
+                return Model_Dao_Result_Factory.Failure<int>(pendingResult.ErrorMessage);
+            }
+
+            if (pendingResult.Data != null)
+            {
+                var pendingShipment = pendingResult.Data;
+
+                // Update notes if changed
+                if (!string.Equals(pendingShipment.Notes ?? string.Empty, request.Notes ?? string.Empty, StringComparison.Ordinal))
+                {
+                    var updateResult = await _shipmentDao.UpdateAsync(new Model_VolvoShipment
+                    {
+                        Id = pendingShipment.Id,
+                        Notes = request.Notes
+                    });
+
+                    if (!updateResult.IsSuccess)
+                    {
+                        return Model_Dao_Result_Factory.Failure<int>(updateResult.ErrorMessage);
+                    }
+                }
+
+                // Replace existing lines with current request parts
+                var existingLinesResult = await _lineDao.GetByShipmentIdAsync(pendingShipment.Id);
+                if (!existingLinesResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(existingLinesResult.ErrorMessage);
+                }
+
+                foreach (var existingLine in existingLinesResult.Data ?? Enumerable.Empty<Model_VolvoShipmentLine>())
+                {
+                    var deleteResult = await _lineDao.DeleteAsync(existingLine.Id);
+                    if (!deleteResult.IsSuccess)
+                    {
+                        return Model_Dao_Result_Factory.Failure<int>(
+                            $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}");
+                    }
+                }
+
+                foreach (var partDto in request.Parts)
+                {
+                    var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+                    if (!partResult.IsSuccess || partResult.Data == null)
+                    {
+                        return Model_Dao_Result_Factory.Failure<int>(
+                            partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                    }
+
+                    var quantityPerSkid = partResult.Data.QuantityPerSkid;
+                    var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+
+                    var line = new Model_VolvoShipmentLine
+                    {
+                        ShipmentId = pendingShipment.Id,
+                        PartNumber = partDto.PartNumber,
+                        QuantityPerSkid = quantityPerSkid,
+                        ReceivedSkidCount = partDto.ReceivedSkidCount,
+                        CalculatedPieceCount = calculatedPieceCount,
+                        ExpectedSkidCount = partDto.ExpectedSkidCount,
+                        HasDiscrepancy = partDto.HasDiscrepancy,
+                        DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+                    };
+
+                    var lineResult = await _lineDao.InsertAsync(line);
+                    if (!lineResult.IsSuccess)
+                    {
+                        return Model_Dao_Result_Factory.Failure<int>(
+                            $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+                    }
+                }
+
+
+                var completeResult = await _shipmentDao.CompleteAsync(
+                    pendingShipment.Id,
+                    request.PONumber,
+                    request.ReceiverNumber);
+
+                if (!completeResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(completeResult.ErrorMessage);
+                }
+
+                return new Model_Dao_Result<int> { Success = true, Data = pendingShipment.Id };
+            }
+
+            // No pending shipment exists: insert then complete
             var shipment = new Model_VolvoShipment
             {
                 ShipmentDate = request.ShipmentDate.DateTime,
@@ -51,12 +143,10 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                 Status = "Completed",
                 PONumber = request.PONumber,
                 ReceiverNumber = request.ReceiverNumber,
-                EmployeeNumber = Environment.UserName // TODO: Get from session/auth
+                EmployeeNumber = Environment.UserName
             };
 
-            // Insert shipment
             var insertResult = await _shipmentDao.InsertAsync(shipment);
-
             if (!insertResult.IsSuccess)
             {
                 return Model_Dao_Result_Factory.Failure<int>(insertResult.ErrorMessage);
@@ -64,14 +154,25 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
 
             var shipmentId = insertResult.Data.ShipmentId;
 
-            // Insert shipment lines
             foreach (var partDto in request.Parts)
             {
+                var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+                if (!partResult.IsSuccess || partResult.Data == null)
+                {
+                    return Model_Dao_Result_Factory.Failure<int>(
+                        partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                }
+
+                var quantityPerSkid = partResult.Data.QuantityPerSkid;
+                var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+
                 var line = new Model_VolvoShipmentLine
                 {
                     ShipmentId = shipmentId,
                     PartNumber = partDto.PartNumber,
+                    QuantityPerSkid = quantityPerSkid,
                     ReceivedSkidCount = partDto.ReceivedSkidCount,
+                    CalculatedPieceCount = calculatedPieceCount,
                     ExpectedSkidCount = partDto.ExpectedSkidCount,
                     HasDiscrepancy = partDto.HasDiscrepancy,
                     DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
@@ -85,22 +186,13 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                 }
             }
 
-            // Complete shipment (updates status, adds PO/Receiver)
-            var completeResult = await _shipmentDao.CompleteAsync(shipmentId, request.PONumber, request.ReceiverNumber);
-
-            if (!completeResult.IsSuccess)
+            var completeInsertResult = await _shipmentDao.CompleteAsync(shipmentId, request.PONumber, request.ReceiverNumber);
+            if (!completeInsertResult.IsSuccess)
             {
-                return Model_Dao_Result_Factory.Failure<int>(completeResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<int>(completeInsertResult.ErrorMessage);
             }
 
-            // TODO: Generate labels and send email (will be handled by ViewModel after successful completion)
-            // The ViewModel will call GenerateLabelCsvQuery and FormatEmailDataQuery
-
-            return new Model_Dao_Result<int>
-            {
-                Success = true,
-                Data = shipmentId
-            };
+            return new Model_Dao_Result<int> { Success = true, Data = shipmentId };
         }
         catch (Exception ex)
         {

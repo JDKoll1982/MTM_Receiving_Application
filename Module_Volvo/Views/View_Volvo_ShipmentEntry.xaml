@@ -16,6 +16,7 @@
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
         <converters:NullableDoubleToDoubleConverter x:Key="NullableDoubleToDoubleConverter"/>
+        <converters:Converter_BoolToString x:Key="BoolToStringConverter"/>
     </Page.Resources>
 
     <Grid Padding="24" RowSpacing="16">
@@ -129,11 +130,12 @@
                                                       Width="150">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <NumberBox Value="{x:Bind ReceivedSkidCount, Mode=TwoWay}"
+                                <NumberBox Value="{x:Bind ReceivedSkidCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                            Minimum="1"
                                            Maximum="99"
                                            SpinButtonPlacementMode="Inline"
-                                           HorizontalAlignment="Stretch"/>
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Stretch"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
@@ -146,10 +148,13 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn Header="Discrepancy" Width="120">
+                    <controls:DataGridTemplateColumn Header="Discrepancy" Width="170">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <CheckBox IsChecked="{x:Bind HasDiscrepancy, Mode=TwoWay}" />
+                                <Button
+                                    Content="{x:Bind HasDiscrepancy, Mode=OneWay, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Remove Discrepancy|Report Discrepancy'}"
+                                    Command="{x:Bind ViewModel.ToggleDiscrepancyCommand}"
+                                    CommandParameter="{x:Bind}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
@@ -158,11 +163,7 @@
                                                       Width="150">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <NumberBox Value="{x:Bind ExpectedSkidCount, Mode=TwoWay, Converter={StaticResource NullableDoubleToDoubleConverter}}"
-                                           Minimum="0"
-                                           SpinButtonPlacementMode="Inline"
-                                           HorizontalAlignment="Stretch"
-                                           IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"/>
+                                <TextBlock Text="{x:Bind ExpectedSkidCount, Mode=OneWay}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
@@ -187,9 +188,7 @@
                                                       Width="*">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
-                                <TextBox Text="{x:Bind DiscrepancyNote, Mode=TwoWay}"
-                                         IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
-                                         PlaceholderText="Explain discrepancy"/>
+                                <TextBlock Text="{x:Bind DiscrepancyNote, Mode=OneWay}" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>

@@ -1,0 +1,395 @@
+\doxysection{Main\+Window.\+xaml.\+cs}
+\hypertarget{_main_window_8xaml_8cs_source}{}\label{_main_window_8xaml_8cs_source}\doxymbox{\hyperlink{_main_window_8xaml_8cs}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00001}00001\ \textcolor{keyword}{using\ }Microsoft.UI.Xaml;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00002}00002\ \textcolor{keyword}{using\ }Microsoft.UI.Xaml.Controls;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00003}00003\ \textcolor{keyword}{using\ }MTM\_Receiving\_Application.Module\_Shared.ViewModels;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00004}00004\ \textcolor{keyword}{using\ }MTM\_Receiving\_Application.Module\_Core.Contracts.Services;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00005}00005\ \textcolor{keyword}{using\ }System;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00007}00007\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_m_t_m___receiving___application}{MTM\_Receiving\_Application}}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00008}00008\ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00012}\doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window}{00012}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{sealed}\ \textcolor{keyword}{partial\ class\ }\doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a8a603bf18efc3c09b623377d865832d6}{MainWindow}}\ :\ Window}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00013}00013\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00014}\doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a5093a969247b9b9d43603a6e3428a2c7}{00014}}\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ ViewModel\_Shared\_MainWindow\ \doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a5093a969247b9b9d43603a6e3428a2c7}{ViewModel}}\ \{\ \textcolor{keyword}{get};\ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00015}00015\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ readonly\ IService\_UserSessionManager\ \_sessionManager;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00016}00016\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ readonly\ IService\_LoggingUtility\ \_logger;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00017}00017\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{bool}\ \_hasNavigatedOnStartup\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00022}\doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a10b0cfae7fba4997abe3398555e436d8}{00022}}\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ Frame\ \doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a10b0cfae7fba4997abe3398555e436d8}{GetContentFrame}}()\ =>\ ContentFrame;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00024}\doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a8a603bf18efc3c09b623377d865832d6}{00024}}\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a8a603bf18efc3c09b623377d865832d6}{MainWindow}}(}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00025}00025\ \ \ \ \ \ \ \ \ \ \ \ \ ViewModel\_Shared\_MainWindow\ viewModel,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00026}00026\ \ \ \ \ \ \ \ \ \ \ \ \ IService\_UserSessionManager\ sessionManager,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00027}00027\ \ \ \ \ \ \ \ \ \ \ \ \ IService\_LoggingUtility\ logger)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00028}00028\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00029}00029\ \ \ \ \ \ \ \ \ \ \ \ \ InitializeComponent();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00030}00030\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_a5093a969247b9b9d43603a6e3428a2c7}{ViewModel}}\ =\ viewModel;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00031}00031\ \ \ \ \ \ \ \ \ \ \ \ \ \_sessionManager\ =\ sessionManager;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00032}00032\ \ \ \ \ \ \ \ \ \ \ \ \ \_logger\ =\ logger;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ initial\ window\ size\ (1450x900\ to\ accommodate\ wide\ data\ grids\ and\ toolbars)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.Resize(\textcolor{keyword}{new}\ Windows.Graphics.SizeInt32(1450,\ 900));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00037}00037\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Center\ window\ on\ screen}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ CenterWindow();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Configure\ title\ bar\ to\ blend\ with\ UI\ (drag\ region\ will\ be\ set\ on\ first\ activation)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ ConfigureTitleBar();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ user\ display\ from\ current\ session}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_sessionManager.CurrentSession?.User\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ user\ =\ \_sessionManager.CurrentSession.User;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UserDisplayTextBlock.Text\ =\ user.DisplayName;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UserPicture.DisplayName\ =\ user.DisplayName;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Wire\ up\ activity\ tracking}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Content\ is\ UIElement\ rootElement)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rootElement.PointerMoved\ +=\ (s,\ e)\ =>\ \_sessionManager.UpdateLastActivity();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rootElement.KeyDown\ +=\ (s,\ e)\ =>\ \_sessionManager.UpdateLastActivity();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ this.Activated\ +=\ MainWindow\_Activated;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ this.Closed\ +=\ MainWindow\_Closed;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Subscribe\ to\ navigation\ events\ once}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigated\ +=\ ContentFrame\_Navigated;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Show\ development\ tools\ in\ debug\ builds}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00065}00065\ \textcolor{preprocessor}{\#if\ DEBUG}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ DatabaseTestMenuItem.Visibility\ =\ Visibility.Visible;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00067}00067\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00068}00068\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ MainWindow\_Closed(\textcolor{keywordtype}{object}\ sender,\ WindowEventArgs\ args)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00071}00071\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ensure\ the\ application\ process\ terminates\ when\ the\ main\ window\ is\ closed}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ Application.Current.Exit();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00074}00074\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ MainWindow\_Activated(\textcolor{keywordtype}{object}\ sender,\ WindowActivatedEventArgs\ args)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00077}00077\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (args.WindowActivationState\ !=\ WindowActivationState.Deactivated)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_sessionManager.UpdateLastActivity();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ title\ bar\ drag\ region\ on\ first\ activation\ (XamlRoot\ will\ be\ available)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SetTitleBarDragRegion();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Navigate\ to\ Receiving\ workflow\ on\ first\ activation}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\_hasNavigatedOnStartup)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_hasNavigatedOnStartup\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Title\ will\ be\ set\ by\ ContentFrame\_Navigated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Receiving.Views.View\_Receiving\_Workflow));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00093}00093\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ NavView\_SelectionChanged(NavigationView\ sender,\ NavigationViewSelectionChangedEventArgs\ args)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00096}00096\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (args.IsSettingsSelected)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ \textcolor{stringliteral}{"{}Settings"{}};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Restore\ when\ Settings\ Views\ are\ implemented}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ContentFrame.Navigate(typeof(Module\_Settings.Views.View\_Settings\_Workflow));}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (args.SelectedItem\ is\ NavigationViewItem\ item)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ tag\ =\ item.Tag?.ToString();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (tag)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}ReceivingWorkflowView"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Title\ will\ be\ set\ by\ ContentFrame\_Navigated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Receiving.Views.View\_Receiving\_Workflow));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}DunnageLabelPage"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Title\ will\ be\ set\ by\ ContentFrame\_Navigated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Dunnage.Views.View\_Dunnage\_WorkflowView));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}RoutingLabelPage"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Title\ will\ be\ set\ by\ ContentFrame\_Navigated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Routing.Views.RoutingModeSelectionView));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}VolvoShipmentEntry"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ \textcolor{stringliteral}{"{}Volvo\ Dunnage\ Requisition"{}};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Volvo.Views.View\_Volvo\_ShipmentEntry));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}VolvoHistory"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ \textcolor{stringliteral}{"{}Volvo\ Shipment\ History"{}};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Volvo.Views.View\_Volvo\_History));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}ReportingMainPage"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ \textcolor{stringliteral}{"{}End\ of\ Day\ Reports"{}};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ContentFrame.Navigate(typeof(Module\_Reporting.Views.View\_Reporting\_Main));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{stringliteral}{"{}DatabaseTestView"{}}:}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogInfo(\textcolor{stringliteral}{"{}Navigating\ to\ Settings\ Database\ Test\ view"{}},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Defensive\ checks}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ContentFrame\ ==\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogError(\textcolor{stringliteral}{"{}ContentFrame\ is\ null\ -\/\ cannot\ navigate"{}},\ \textcolor{keyword}{null},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InvalidOperationException(\textcolor{stringliteral}{"{}ContentFrame\ is\ null"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogInfo(\$\textcolor{stringliteral}{"{}ContentFrame\ state:\ IsLoaded=\{ContentFrame.IsLoaded\},\ BackStackDepth=\{ContentFrame.BackStackDepth\}"{}},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ viewType\ =\ typeof(Module\_Settings.Views.View\_Settings\_DatabaseTest);}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogInfo(\$\textcolor{stringliteral}{"{}View\ type:\ \{viewType.FullName\}"{}},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ \textcolor{stringliteral}{"{}Settings\ Database\ Test"{}};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00150}00150\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Try\ navigation\ with\ detailed\ logging}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogInfo(\textcolor{stringliteral}{"{}Calling\ ContentFrame.Navigate()"{}},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ navigated\ =\ ContentFrame.Navigate(viewType);}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogInfo(\$\textcolor{stringliteral}{"{}Navigation\ result:\ \{navigated\}"{}},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!navigated)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogError(\textcolor{stringliteral}{"{}Navigation\ returned\ false"{}},\ \textcolor{keyword}{null},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogInfo(\textcolor{stringliteral}{"{}Successfully\ navigated\ to\ Settings\ Database\ Test\ view"{}},\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (Exception\ ex)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_logger.LogError(\$\textcolor{stringliteral}{"{}Failed\ to\ navigate\ to\ Settings\ Database\ Test\ view:\ \{ex.Message\}"{}},\ ex,\ \textcolor{stringliteral}{"{}MainWindow"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Build\ detailed\ error\ message}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ errorDetails\ =\ \textcolor{keyword}{new}\ System.Text.StringBuilder();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\textcolor{stringliteral}{"{}Failed\ to\ load\ Settings\ Database\ Test\ view:"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\$\textcolor{stringliteral}{"{}Error\ Type:\ \{ex.GetType().FullName\}"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\$\textcolor{stringliteral}{"{}Message:\ \{ex.Message\}"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\textcolor{stringliteral}{"{}Stack\ Trace:"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(ex.StackTrace\ ??\ \textcolor{stringliteral}{"{}No\ stack\ trace\ available"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Add\ inner\ exception\ details\ if\ present}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ex.InnerException\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00181}00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00182}00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\textcolor{stringliteral}{"{}Inner\ Exception:"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\$\textcolor{stringliteral}{"{}Type:\ \{ex.InnerException.GetType().FullName\}"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\$\textcolor{stringliteral}{"{}Message:\ \{ex.InnerException.Message\}"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorDetails.AppendLine(\$\textcolor{stringliteral}{"{}Stack:\ \{ex.InnerException.StackTrace\ ??\ "{}}No\ stack\ trace\textcolor{stringliteral}{"{}\}"{}});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00188}00188\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Show\ detailed\ error\ to\ user\ in\ scrollable\ view}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ scrollViewer\ =\ \textcolor{keyword}{new}\ ScrollViewer}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Content\ =\ \textcolor{keyword}{new}\ TextBlock}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Text\ =\ errorDetails.ToString(),}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TextWrapping\ =\ TextWrapping.Wrap,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FontFamily\ =\ \textcolor{keyword}{new}\ Microsoft.UI.Xaml.Media.FontFamily(\textcolor{stringliteral}{"{}Consolas"{}}),}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FontSize\ =\ 12,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ IsTextSelectionEnabled\ =\ \textcolor{keyword}{true}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MaxHeight\ =\ 500,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ VerticalScrollBarVisibility\ =\ ScrollBarVisibility.Auto}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ errorDialog\ =\ \textcolor{keyword}{new}\ ContentDialog}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Title\ =\ \textcolor{stringliteral}{"{}Navigation\ Error\ -\/\ Detailed\ Information"{}},}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Content\ =\ scrollViewer,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CloseButtonText\ =\ \textcolor{stringliteral}{"{}OK"{}},}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XamlRoot\ =\ this.Content.XamlRoot}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_\ =\ errorDialog.ShowAsync();}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00217}00217\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00218}00218\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00219}00219\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ ContentFrame\_Navigated(\textcolor{keywordtype}{object}\ sender,\ Microsoft.UI.Xaml.Navigation.NavigationEventArgs\ e)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00220}00220\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ navigated\ to\ ReceivingWorkflowView,\ subscribe\ to\ ViewModel\ changes\ to\ update\ header}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ContentFrame.Content\ is\ Module\_Receiving.Views.View\_Receiving\_Workflow\ receivingView)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ viewModel\ =\ receivingView.ViewModel;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (viewModel\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Update\ header\ with\ current\ step\ title\ (ensure\ UI\ thread)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ viewModel.CurrentStepTitle;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00232}00232\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Subscribe\ to\ property\ changes\ to\ keep\ header\ updated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ viewModel.PropertyChanged\ +=\ (s,\ args)\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (args.PropertyName\ ==\ nameof(viewModel.CurrentStepTitle))}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ensure\ UI\ update\ happens\ on\ UI\ thread}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ viewModel.CurrentStepTitle;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ navigated\ to\ DunnageWorkflowView,\ subscribe\ to\ ViewModel\ changes\ to\ update\ header}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ContentFrame.Content\ is\ Module\_Dunnage.Views.View\_Dunnage\_WorkflowView\ dunnageView)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ viewModel\ =\ dunnageView.ViewModel;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (viewModel\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Update\ header\ with\ current\ step\ title\ (ensure\ UI\ thread)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ viewModel.CurrentStepTitle;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00258}00258\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Subscribe\ to\ property\ changes\ to\ keep\ header\ updated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ viewModel.PropertyChanged\ +=\ (s,\ args)\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (args.PropertyName\ ==\ nameof(viewModel.CurrentStepTitle))}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00263}00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ensure\ UI\ update\ happens\ on\ UI\ thread}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ viewModel.CurrentStepTitle;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ navigated\ to\ RoutingModeSelectionView,\ set\ simple\ title}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ContentFrame.Content\ is\ Module\_Routing.Views.RoutingModeSelectionView)}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ \textcolor{stringliteral}{"{}Internal\ Routing"{}};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Restore\ when\ Settings\ Views\ are\ implemented}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00283}00283\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ If\ navigated\ to\ SettingsWorkflowView,\ subscribe\ to\ ViewModel\ changes\ to\ update\ header}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00284}00284\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ else\ if\ (ContentFrame.Content\ is\ Module\_Settings.Views.View\_Settings\_Workflow\ settingsView)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00285}00285\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00286}00286\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ viewModel\ =\ settingsView.ViewModel;}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00287}00287\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (viewModel\ !=\ null)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00288}00288\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00289}00289\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ Update\ header\ with\ current\ step\ title\ (ensure\ UI\ thread)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00290}00290\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00291}00291\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00292}00292\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ viewModel.CurrentStepTitle;}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00293}00293\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00294}00294\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00295}00295\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ Subscribe\ to\ property\ changes\ to\ keep\ header\ updated}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00296}00296\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ viewModel.PropertyChanged\ +=\ (s,\ args)\ =>}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00297}00297\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00298}00298\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (args.PropertyName\ ==\ nameof(viewModel.CurrentStepTitle))}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00299}00299\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00300}00300\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ Ensure\ UI\ update\ happens\ on\ UI\ thread}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00301}00301\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispatcherQueue.TryEnqueue(()\ =>}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00302}00302\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00303}00303\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PageTitleTextBlock.Text\ =\ viewModel.CurrentStepTitle;}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00304}00304\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00305}00305\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00306}00306\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00307}00307\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00308}00308\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00309}00309\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00310}00310\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00311}00311\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00316}\doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_aa03b63927ef1dfddfc961c0e5a4e0ef2}{00316}}\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_m_t_m___receiving___application_1_1_main_window_aa03b63927ef1dfddfc961c0e5a4e0ef2}{UpdateUserDisplay}}()}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00317}00317\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_sessionManager.CurrentSession?.User\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ user\ =\ \_sessionManager.CurrentSession.User;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UserDisplayTextBlock.Text\ =\ user.DisplayName;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00322}00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UserPicture.DisplayName\ =\ user.DisplayName;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00324}00324\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00325}00325\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00329}00329\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ CenterWindow()}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00330}00330\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ var\ displayArea\ =\ Microsoft.UI.Windowing.DisplayArea.Primary;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ var\ workArea\ =\ displayArea.WorkArea;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00333}00333\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ var\ centerX\ =\ (workArea.Width\ -\/\ 1450)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ var\ centerY\ =\ (workArea.Height\ -\/\ 900)\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00336}00336\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00337}00337\ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.Move(\textcolor{keyword}{new}\ Windows.Graphics.PointInt32(centerX,\ centerY));}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00338}00338\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00339}00339\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00343}00343\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ ConfigureTitleBar()}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00344}00344\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00345}00345\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00346}00346\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00347}00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (AppWindow.TitleBar\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00348}00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00349}00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Make\ title\ bar\ transparent\ to\ blend\ with\ Mica\ backdrop}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00350}00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.ExtendsContentIntoTitleBar\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00351}00351\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ the\ title\ bar\ drag\ region\ to\ the\ AppTitleBar\ element}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.PreferredHeightOption\ =\ Microsoft.UI.Windowing.TitleBarHeightOption.Tall;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00354}00354\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ button\ colors\ to\ match\ theme}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ transparentColor\ =\ Windows.UI.Color.FromArgb(0,\ 0,\ 0,\ 0);}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00357}00357\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Button\ colors\ (will\ use\ theme\ colors)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.ButtonBackgroundColor\ =\ transparentColor;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.ButtonInactiveBackgroundColor\ =\ transparentColor;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00361}00361\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Foreground\ colors\ for\ buttons}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ foregroundColor\ =\ Windows.UI.Color.FromArgb(255,\ 255,\ 255,\ 255);}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.ButtonForegroundColor\ =\ foregroundColor;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.ButtonHoverForegroundColor\ =\ foregroundColor;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.ButtonPressedForegroundColor\ =\ foregroundColor;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00367}00367\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Drag\ region\ will\ be\ set\ after\ window\ loads\ (in\ MainWindow\_Loaded)}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00369}00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ignore\ title\ bar\ customization\ errors}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00375}00375\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00376}00376\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00381}00381\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ SetTitleBarDragRegion()}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00382}00382\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (AppWindow.TitleBar\ !=\ \textcolor{keyword}{null}\ \&\&\ AppTitleBar\ !=\ \textcolor{keyword}{null}\ \&\&\ AppTitleBar.XamlRoot\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00386}00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00387}00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ the\ title\ bar\ height}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00388}00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ scale\ =\ AppTitleBar.XamlRoot.RasterizationScale;}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ titleBarHeight\ =\ (int)(AppTitleBar.ActualHeight\ *\ scale);}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00390}00390\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ entire\ AppTitleBar\ is\ draggable}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00392}00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ dragRect\ =\ \textcolor{keyword}{new}\ Windows.Graphics.RectInt32}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00393}00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ X\ =\ 0,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00395}00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Y\ =\ 0,}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Width\ =\ (int)(AppTitleBar.ActualWidth\ *\ scale),}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00397}00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Height\ =\ titleBarHeight}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00399}00399\ }
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00400}00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AppWindow.TitleBar.SetDragRectangles(\textcolor{keyword}{new}[]\ \{\ dragRect\ \});}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00401}00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00402}00402\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00403}00403\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00404}00404\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00405}00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ignore\ drag\ region\ setup\ errors}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00406}00406\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00407}00407\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00408}00408\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00409}00409\ \}}
+\DoxyCodeLine{\Hypertarget{_main_window_8xaml_8cs_source_l00410}00410\ }
+
+\end{DoxyCode}

@@ -32,6 +32,7 @@ public class PendingShipmentIntegrationTests
         var shipmentDao = _fixture.CreateShipmentDao();
         var lineDao = _fixture.CreateShipmentLineDao();
         var partDao = _fixture.CreatePartDao();
+        var partDao = _fixture.CreatePartDao();
 
         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
         int shipmentId = 0;
@@ -46,7 +47,7 @@ public class PendingShipmentIntegrationTests
             });
             partResult.Success.Should().BeTrue();
 
-            var saveHandler = new SavePendingShipmentCommandHandler(shipmentDao, lineDao);
+            var saveHandler = new SavePendingShipmentCommandHandler(shipmentDao, lineDao, partDao);
             var saveResult = await saveHandler.Handle(new SavePendingShipmentCommand
             {
                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),

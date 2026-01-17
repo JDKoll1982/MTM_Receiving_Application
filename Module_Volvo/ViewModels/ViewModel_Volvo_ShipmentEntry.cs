@@ -120,6 +120,9 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     Enum_ErrorSeverity.Medium);
             }
 
+            // Load part master data for quantity-per-skid cache
+            await LoadAllPartsAsync();
+
             // Check for any pending shipment (CQRS)
             var pendingQuery = new GetPendingShipmentQuery();
             // Legacy save method removed after CQRS migration completion.
@@ -173,12 +176,59 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     Parts.Add(line);
                 }
 
+                ApplyCachedQuantitiesToLines();
+
                 await _logger.LogInfoAsync($"Loaded pending shipment #{shipment.ShipmentNumber} with {Parts.Count} parts");
             }
         }
         catch (Exception ex)
         {
             await _logger.LogErrorAsync($"Error loading pending shipment: {ex.Message}", ex);
+        }
+    }
+
+    private async Task LoadAllPartsAsync()
+    {
+        try
+        {
+            var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
+            {
+                IncludeInactive = true
+            });
+
+            if (partsResult.IsSuccess && partsResult.Data != null)
+            {
+                _allParts = partsResult.Data;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error loading Volvo parts cache: {ex.Message}", ex);
+        }
+    }
+
+    private void ApplyCachedQuantitiesToLines()
+    {
+        if (_allParts == null || _allParts.Count == 0)
+        {
+            return;
+        }
+
+        var partsByNumber = _allParts.ToDictionary(p => p.PartNumber, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var line in Parts)
+        {
+            if (line.QuantityPerSkid <= 0 &&
+                !string.IsNullOrWhiteSpace(line.PartNumber) &&
+                partsByNumber.TryGetValue(line.PartNumber, out var part))
+            {
+                line.QuantityPerSkid = part.QuantityPerSkid;
+            }
+
+            if (line.CalculatedPieceCount <= 0 && line.QuantityPerSkid > 0)
+            {
+                line.CalculatedPieceCount = line.QuantityPerSkid * line.ReceivedSkidCount;
+            }
         }
     }
 
@@ -1209,6 +1259,103 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                     true);
             }
         }
+    }
+
+    [RelayCommand]
+    private async Task ToggleDiscrepancyAsync(Model_VolvoShipmentLine? line)
+    {
+        if (line == null)
+        {
+            return;
+        }
+
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot == null)
+        {
+            return;
+        }
+
+        if (line.HasDiscrepancy)
+        {
+            var confirmDialog = new ContentDialog
+            {
+                Title = "Remove Discrepancy",
+                Content = "Remove the discrepancy for this line?",
+                PrimaryButtonText = "Remove",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = xamlRoot
+            };
+
+            var confirmResult = await confirmDialog.ShowAsync();
+            if (confirmResult == ContentDialogResult.Primary)
+            {
+                line.HasDiscrepancy = false;
+                line.ExpectedSkidCount = null;
+                line.DiscrepancyNote = null;
+            }
+
+            return;
+        }
+
+        var expectedSkidsBox = new NumberBox
+        {
+            Header = "Expected Skids",
+            Minimum = 1,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            Value = line.ExpectedSkidCount ?? 1
+        };
+
+        var noteBox = new TextBox
+        {
+            Header = "Discrepancy Note",
+            PlaceholderText = "Explain discrepancy",
+            Text = line.DiscrepancyNote ?? string.Empty
+        };
+
+        var panel = new StackPanel { Spacing = 12 };
+        panel.Children.Add(expectedSkidsBox);
+        panel.Children.Add(noteBox);
+
+        var dialog = new ContentDialog
+        {
+            Title = "Report Discrepancy",
+            Content = panel,
+            PrimaryButtonText = "Save",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = xamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        if (expectedSkidsBox.Value < 1)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Expected skids must be greater than 0",
+                Enum_ErrorSeverity.Low,
+                null,
+                true);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(noteBox.Text))
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Discrepancy note is required",
+                Enum_ErrorSeverity.Low,
+                null,
+                true);
+            return;
+        }
+
+        line.HasDiscrepancy = true;
+        line.ExpectedSkidCount = expectedSkidsBox.Value;
+        line.DiscrepancyNote = noteBox.Text.Trim();
     }
 
     [RelayCommand]

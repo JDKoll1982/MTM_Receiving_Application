@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['handling_0',['Error Handling',['../md__a_g_e_n_t_s.html#autotoc_md19',1,'']]],
+  ['header_1',['Header',['../md_repomix-output-code-only.html',1,'User Provided Header'],['../md_repomix-output-copilot-docs.html#autotoc_md519',1,'User Provided Header']]],
+  ['help_20service_5fhelp_20cs_2',['File: Module_Core/Services/Help/Service_Help.cs',['../md_repomix-output-code-only.html#autotoc_md129',1,'']]],
+  ['help_20service_5fhelp_5ftests_20cs_3',['File: MTM_Receiving_Application.Tests/Module_Core/Services/Help/Service_Help_Tests.cs',['../md_repomix-output-code-only.html#autotoc_md372',1,'']]],
+  ['help_20system_4',['Help System',['../md__r_e_a_d_m_e.html#autotoc_md45',1,'Help System'],['../md__r_e_a_d_m_e.html#autotoc_md47',1,'Using the Help System']]],
+  ['helper_5fdatabase_5fstoredprocedure_20cs_5',['File: Module_Core/Helpers/Database/Helper_Database_StoredProcedure.cs',['../md_repomix-output-code-only.html#autotoc_md393',1,'']]],
+  ['helper_5fdatabase_5fstoredprocedure_5ftests_20cs_6',['File: MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_StoredProcedure_Tests.cs',['../md_repomix-output-code-only.html#autotoc_md364',1,'']]],
+  ['helper_5fdatabase_5fvariables_20cs_7',['File: Module_Core/Helpers/Database/Helper_Database_Variables.cs',['../md_repomix-output-code-only.html#autotoc_md487',1,'']]],
+  ['helper_5fdatabase_5fvariables_5ftests_20cs_8',['File: MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_Variables_Tests.cs',['../md_repomix-output-code-only.html#autotoc_md365',1,'']]],
+  ['helper_5fmaterialicons_20cs_9',['File: Module_Core/Helpers/UI/Helper_MaterialIcons.cs',['../md_repomix-output-code-only.html#autotoc_md109',1,'']]],
+  ['helper_5fsqlqueryloader_20cs_10',['File: Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs',['../md_repomix-output-code-only.html#autotoc_md108',1,'']]],
+  ['helper_5fwindowextensions_20cs_11',['File: Module_Core/Helpers/UI/Helper_WindowExtensions.cs',['../md_repomix-output-code-only.html#autotoc_md110',1,'']]],
+  ['helper_5fworkflowhelpcontentgenerator_20cs_12',['File: Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs',['../md_repomix-output-code-only.html#autotoc_md111',1,'']]],
+  ['helpers_20database_20helper_5fdatabase_5fstoredprocedure_20cs_13',['File: Module_Core/Helpers/Database/Helper_Database_StoredProcedure.cs',['../md_repomix-output-code-only.html#autotoc_md393',1,'']]],
+  ['helpers_20database_20helper_5fdatabase_5fstoredprocedure_5ftests_20cs_14',['File: MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_StoredProcedure_Tests.cs',['../md_repomix-output-code-only.html#autotoc_md364',1,'']]],
+  ['helpers_20database_20helper_5fdatabase_5fvariables_20cs_15',['File: Module_Core/Helpers/Database/Helper_Database_Variables.cs',['../md_repomix-output-code-only.html#autotoc_md487',1,'']]],
+  ['helpers_20database_20helper_5fdatabase_5fvariables_5ftests_20cs_16',['File: MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_Variables_Tests.cs',['../md_repomix-output-code-only.html#autotoc_md365',1,'']]],
+  ['helpers_20database_20helper_5fsqlqueryloader_20cs_17',['File: Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs',['../md_repomix-output-code-only.html#autotoc_md108',1,'']]],
+  ['helpers_20testhelper_20cs_18',['File: MTM_Receiving_Application.Tests/Helpers/TestHelper.cs',['../md_repomix-output-code-only.html#autotoc_md350',1,'']]],
+  ['helpers_20ui_20helper_5fmaterialicons_20cs_19',['File: Module_Core/Helpers/UI/Helper_MaterialIcons.cs',['../md_repomix-output-code-only.html#autotoc_md109',1,'']]],
+  ['helpers_20ui_20helper_5fwindowextensions_20cs_20',['File: Module_Core/Helpers/UI/Helper_WindowExtensions.cs',['../md_repomix-output-code-only.html#autotoc_md110',1,'']]],
+  ['helpers_20ui_20helper_5fworkflowhelpcontentgenerator_20cs_21',['File: Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs',['../md_repomix-output-code-only.html#autotoc_md111',1,'']]],
+  ['high_20intelligence_20setup_22',['Copilot MCP (High-Intelligence Setup)',['../md__r_e_a_d_m_e.html#autotoc_md36',1,'']]]
+];

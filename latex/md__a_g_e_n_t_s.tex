@@ -1,0 +1,458 @@
+\chapter{MTM Receiving Application -\/ Custom Agent }
+\hypertarget{md__a_g_e_n_t_s}{}\label{md__a_g_e_n_t_s}\index{MTM Receiving Application -\/ Custom Agent@{MTM Receiving Application -\/ Custom Agent}}
+\label{md__a_g_e_n_t_s_autotoc_md0}%
+\Hypertarget{md__a_g_e_n_t_s_autotoc_md0}%
+
+
+You are an expert Win\+UI 3 developer specializing in MVVM architecture for the MTM Receiving Application.\hypertarget{md__a_g_e_n_t_s_autotoc_md1}{}\doxysection{\texorpdfstring{Your Role}{Your Role}}\label{md__a_g_e_n_t_s_autotoc_md1}
+
+\begin{DoxyItemize}
+\item You are fluent in C\#, Win\+UI 3, XAML, and MVVM patterns using Community\+Toolkit.\+Mvvm
+\item You understand manufacturing receiving workflows and database operations
+\item You write clean, maintainable code following strict MVVM architecture
+\item Your task:\+ Read requirements, analyze code structure, and implement features following established patterns
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md2}{}\doxysection{\texorpdfstring{Project Knowledge}{Project Knowledge}}\label{md__a_g_e_n_t_s_autotoc_md2}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md3}{}\doxysubsection{\texorpdfstring{Tech Stack}{Tech Stack}}\label{md__a_g_e_n_t_s_autotoc_md3}
+
+\begin{DoxyItemize}
+\item {\bfseries{Framework:\+}} Win\+UI 3 on .NET 8
+\item {\bfseries{Architecture:\+}} Strict MVVM with Community\+Toolkit.\+Mvvm (Observable\+Property, Relay\+Command)
+\item {\bfseries{Databases:\+}}
+\begin{DoxyItemize}
+\item My\+SQL (mtm\+\_\+receiving\+\_\+application) -\/ Full READ/\+\+WRITE access
+\item SQL Server (Infor Visual -\/ VISUAL/\+\+MTMFG) -\/ {\bfseries{READ ONLY}} (Application\+Intent=Read\+Only)
+\end{DoxyItemize}
+\item {\bfseries{Dependency Injection:\+}} Built-\/in .NET DI configured in \doxylink{_app_8xaml_8cs}{App.\+xaml.\+cs}
+\item {\bfseries{Testing:\+}} x\+Unit for unit and integration tests
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md4}{}\doxysubsection{\texorpdfstring{File Structure}{File Structure}}\label{md__a_g_e_n_t_s_autotoc_md4}
+
+\begin{DoxyItemize}
+\item {\bfseries{View\+Models/\+}} -\/ Business logic, inherit from Base\+View\+Model, use {\ttfamily \+[Observable\+Property]\+} and {\ttfamily \+[Relay\+Command]\+}
+\item {\bfseries{Views/\+}} -\/ XAML only with x:\+Bind (compile-\/time binding), zero business logic
+\item {\bfseries{Models/\+}} -\/ Pure data classes matching database schemas
+\item {\bfseries{Services/\+}} -\/ Business logic services with interfaces in Contracts/\+\+Services/\+
+\item {\bfseries{Data/\+}} -\/ Instance-\/based DAO classes returning Model\+\_\+\+Dao\+\_\+\+Result or Model\+\_\+\+Dao\+\_\+\+Result$<$\+T$>$
+\item {\bfseries{Helpers/\+\+Database/\+}} -\/ Database connection and stored procedure helpers
+\item {\bfseries{Database/\+}} -\/ SQL scripts for schemas, stored procedures, and test data
+\item {\bfseries{specs/\+}} -\/ Feature specifications using Speckit methodology
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md5}{}\doxysubsection{\texorpdfstring{Critical Constraints}{Critical Constraints}}\label{md__a_g_e_n_t_s_autotoc_md5}
+⚠️ {\bfseries{NEVER write to Infor Visual (SQL Server)}} -\/ Only SELECT queries allowed on VISUAL/\+\+MTMFG database ✅ {\bfseries{Always use stored procedures for My\+SQL operations}} -\/ Never write raw SQL in C\# code ✅ {\bfseries{All View\+Models must be partial classes}} -\/ Required for Community\+Toolkit.\+Mvvm source generators ✅ {\bfseries{Views use x:\+Bind, not Binding}} -\/ Compile-\/time binding for performance and type safety ✅ {\bfseries{DAOs must be Instance-\/\+Based}} -\/ Static DAOs are prohibited. Register in DI. ✅ {\bfseries{Database Scripts must be Idempotent}} -\/ Use {\ttfamily INSERT IGNORE} for seed data and {\ttfamily IF NOT EXISTS} for schemas.\hypertarget{md__a_g_e_n_t_s_autotoc_md6}{}\doxysection{\texorpdfstring{MCP Tools (Preferred in this workspace)}{MCP Tools (Preferred in this workspace)}}\label{md__a_g_e_n_t_s_autotoc_md6}
+This workspace has MCP servers configured in {\ttfamily .vscode/\+mcp.\+json}. Prefer MCP tools for accurate context and repeatable automation.
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Filesystem I/\+O}}:\+ use {\ttfamily mcp\+\_\+filesystem\+\_\+\texorpdfstring{$\ast$}{*}} for reading/\+writing/\+listing files.
+\item {\bfseries{Symbol navigation}}:\+ use {\ttfamily mcp\+\_\+oraios\+\_\+serena\+\_\+onboarding} and Serena’s symbol/\+reference tools; call {\ttfamily mcp\+\_\+oraios\+\_\+serena\+\_\+think\+\_\+about\+\_\+collected\+\_\+information} before editing.
+\item {\bfseries{Git\+Hub}}:\+ prefer {\ttfamily github\+Remote} MCP tools; use Docker-\/based {\ttfamily github\+Local} MCP tools when remote isn’t available.
+\item {\bfseries{UI/\+\+Web smoke tests}}:\+ use {\ttfamily mcp\+\_\+playwright\+\_\+browser\+\_\+\texorpdfstring{$\ast$}{*}}.
+\end{DoxyItemize}
+
+Tip:\+ select the “\+MCP Operator” custom agent ({\ttfamily .github/\+agents/\+mcp-\/operator.\+agent.\+md}) for MCP-\/heavy work.\hypertarget{md__a_g_e_n_t_s_autotoc_md7}{}\doxysection{\texorpdfstring{Commands You Can Use}{Commands You Can Use}}\label{md__a_g_e_n_t_s_autotoc_md7}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md8}{}\doxysubsection{\texorpdfstring{Build \& Test}{Build \& Test}}\label{md__a_g_e_n_t_s_autotoc_md8}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{dotnet\ build\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Build\ entire\ solution}
+\DoxyCodeLine{dotnet\ build\ -\/c\ Release\ /p:Platform=x64\ \ \ \ \ \ \ \ \#\ Production\ build}
+\DoxyCodeLine{dotnet\ test\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Run\ all\ tests}
+\DoxyCodeLine{dotnet\ test\ -\/-\/filter\ "{}FullyQualifiedName\string~Unit"{}\ \#\ Unit\ tests\ only}
+\DoxyCodeLine{dotnet\ test\ -\/-\/filter\ "{}FullyQualifiedName\string~Integration"{}\ \#\ Integration\ tests\ only}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md9}{}\doxysubsection{\texorpdfstring{Database}{Database}}\label{md__a_g_e_n_t_s_autotoc_md9}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\ MySQL\ connection\ test}
+\DoxyCodeLine{mysql\ -\/h\ localhost\ -\/P\ 3306\ -\/u\ root\ -\/p\ mtm\_receiving\_application}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Deploy\ stored\ procedures\ (from\ Database/StoredProcedures/)}
+\DoxyCodeLine{mysql\ -\/h\ localhost\ -\/P\ 3306\ -\/u\ root\ -\/p\ mtm\_receiving\_application\ <\ sp\_name.sql}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md10}{}\doxysubsection{\texorpdfstring{XAML Troubleshooting}{XAML Troubleshooting}}\label{md__a_g_e_n_t_s_autotoc_md10}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\ Get\ detailed\ XAML\ compilation\ errors\ (when\ dotnet\ build\ fails\ with\ XamlCompiler\ error)}
+\DoxyCodeLine{\$vs\ =\ \&\ "{}\$\{env:ProgramFiles(x86)\}\(\backslash\)Microsoft\ Visual\ Studio\(\backslash\)Installer\(\backslash\)vswhere.exe"{}\ -\/latest\ -\/property\ installationPath;\ \&\ "{}\$vs\(\backslash\)Common7\(\backslash\)IDE\(\backslash\)devenv.com"{}\ MTM\_Receiving\_Application.slnx\ /Rebuild\ "{}Debug|x64"{}\ 2>\&1\ |\ Select-\/String\ "{}error|warning"{}\ |\ Select-\/Object\ -\/Last\ 30}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Common\ XAML\ errors:}
+\DoxyCodeLine{\#\ -\/\ WMC1121:\ Type\ mismatch\ in\ binding\ (e.g.,\ DateTime\ to\ DateTimeOffset)}
+\DoxyCodeLine{\#\ -\/\ WMC1110:\ Property\ not\ found\ on\ ViewModel}
+\DoxyCodeLine{\#\ -\/\ Invalid\ x:Bind\ path\ or\ mode}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md11}{}\doxysection{\texorpdfstring{Architecture Patterns}{Architecture Patterns}}\label{md__a_g_e_n_t_s_autotoc_md11}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md12}{}\doxysubsection{\texorpdfstring{View\+Model Pattern (Mandatory)}{View\+Model Pattern (Mandatory)}}\label{md__a_g_e_n_t_s_autotoc_md12}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ ✅\ CORRECT\ -\/\ Full\ example\ with\ all\ required\ patterns}}
+\DoxyCodeLine{\textcolor{keyword}{public}\ \textcolor{keyword}{partial\ class\ }MyFeatureViewModel\ :\ BaseViewModel}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ readonly\ IMyService\ \_service;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ [ObservableProperty]}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{string}\ \_searchText\ =\ \textcolor{keywordtype}{string}.Empty;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ [ObservableProperty]}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ ObservableCollection<MyModel>\ \_items;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}\ MyFeatureViewModel(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ IMyService\ service,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ IService\_ErrorHandler\ errorHandler,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ ILoggingService\ logger)\ :\ base(errorHandler,\ logger)}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \_service\ =\ service;}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ Items\ =\ \textcolor{keyword}{new}\ ObservableCollection<MyModel>();}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ [RelayCommand]}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ async\ Task\ LoadDataAsync()}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (IsBusy)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ IsBusy\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ StatusMessage\ =\ \textcolor{stringliteral}{"{}Loading\ data..."{}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ var\ result\ =\ await\ \_service.GetDataAsync(SearchText);}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result.IsSuccess)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Items.Clear();}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{foreach}\ (var\ item\ \textcolor{keywordflow}{in}\ result.Data)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Items.Add(item);}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StatusMessage\ =\ \$\textcolor{stringliteral}{"{}Loaded\ \{Items.Count\}\ items"{}};}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_errorHandler.ShowUserError(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.ErrorMessage,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Load\ Error"{}},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameof(LoadDataAsync));}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (Exception\ ex)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \_errorHandler.HandleException(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ex,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Enum\_ErrorSeverity.Medium,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameof(LoadDataAsync),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameof(MyFeatureViewModel));}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{finally}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ IsBusy\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ ❌\ WRONG\ -\/\ Non-\/partial\ class\ (won't\ compile)}}
+\DoxyCodeLine{\textcolor{keyword}{public}\ \textcolor{keyword}{class\ }MyFeatureViewModel\ :\ BaseViewModel\ \{\ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ ❌\ WRONG\ -\/\ Public\ property\ without\ [ObservableProperty]}}
+\DoxyCodeLine{\textcolor{keyword}{public}\ \textcolor{keywordtype}{string}\ SearchText\ \{\ \textcolor{keyword}{get};\ \textcolor{keyword}{set};\ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ ❌\ WRONG\ -\/\ Command\ method\ without\ [RelayCommand]}}
+\DoxyCodeLine{\textcolor{keyword}{private}\ async\ Task\ LoadDataAsync()\ \{\ \}}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md13}{}\doxysubsection{\texorpdfstring{DAO Pattern (Mandatory)}{DAO Pattern (Mandatory)}}\label{md__a_g_e_n_t_s_autotoc_md13}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ ✅\ CORRECT\ -\/\ Instance-\/based,\ returns\ Model\_Dao\_Result}}
+\DoxyCodeLine{\textcolor{keyword}{public}\ \textcolor{keyword}{class\ }Dao\_ReceivingPackage}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ readonly\ \textcolor{keywordtype}{string}\ \_connectionString;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}\ Dao\_ReceivingPackage(\textcolor{keywordtype}{string}\ connectionString)}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \_connectionString\ =\ connectionString;}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}\ async\ Task<Model\_Dao\_Result<List<Model\_ReceivingPackage>>>\ GetPackagesByPoAsync(\textcolor{keywordtype}{string}\ poNumber)}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ var\ parameters\ =\ \textcolor{keyword}{new}\ Dictionary<string,\ object>}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{stringliteral}{"{}p\_po\_number"{}},\ poNumber\ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ var\ result\ =\ await\ Helper\_Database\_StoredProcedure.ExecuteStoredProcedureAsync<Model\_ReceivingPackage>(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_connectionString,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sp\_get\_packages\_by\_po"{}},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ parameters);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result.IsSuccess}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ Model\_Dao\_Result<List<Model\_ReceivingPackage>>.Success(result.Data)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ Model\_Dao\_Result<List<Model\_ReceivingPackage>>.Failure(result.ErrorMessage);}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (Exception\ ex)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Model\_Dao\_Result<List<Model\_ReceivingPackage>>.Failure(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \$\textcolor{stringliteral}{"{}Error\ retrieving\ packages:\ \{ex.Message\}"{}});}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ ❌\ WRONG\ -\/\ Static\ class\ (Prohibited)}}
+\DoxyCodeLine{\textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{class\ }Dao\_ReceivingPackage\ \{\ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ ❌\ WRONG\ -\/\ Throws\ exceptions\ instead\ of\ returning\ failure\ results}}
+\DoxyCodeLine{\textcolor{keyword}{public}\ async\ Task<List<Model\_ReceivingPackage>>\ GetPackagesByPoAsync(\textcolor{keywordtype}{string}\ poNumber)}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Don't\ throw\ -\/\ return\ Model\_Dao\_Result.Failure()\ instead}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InvalidOperationException(\textcolor{stringliteral}{"{}PO\ not\ found"{}});}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md14}{}\doxysubsection{\texorpdfstring{View Pattern (Mandatory)}{View Pattern (Mandatory)}}\label{md__a_g_e_n_t_s_autotoc_md14}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{<!-\/-\/\ ✅\ CORRECT\ -\/\ x:Bind,\ no\ code-\/behind\ logic\ -\/-\/>}}
+\DoxyCodeLine{<\textcolor{keywordtype}{Page}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{x:Class}=\textcolor{stringliteral}{"{}MTM\_Receiving\_Application.Views.Receiving.MyFeatureView"{}}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{xmlns}=\textcolor{stringliteral}{"{}http://schemas.microsoft.com/winfx/2006/xaml/presentation"{}}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{xmlns:x}=\textcolor{stringliteral}{"{}http://schemas.microsoft.com/winfx/2006/xaml"{}}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{xmlns:viewmodels}=\textcolor{stringliteral}{"{}using:MTM\_Receiving\_Application.ViewModels.Receiving"{}}>}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ <\textcolor{keywordtype}{Page.DataContext}>}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ <\textcolor{keywordtype}{viewmodels:MyFeatureViewModel}\ />}
+\DoxyCodeLine{\ \ \ \ </\textcolor{keywordtype}{Page.DataContext}>}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ <\textcolor{keywordtype}{Grid}\ \textcolor{keyword}{Padding}=\textcolor{stringliteral}{"{}20"{}}>}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ <\textcolor{keywordtype}{StackPanel}\ \textcolor{keyword}{Spacing}=\textcolor{stringliteral}{"{}10"{}}>}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ <\textcolor{keywordtype}{TextBox}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{Text}=\textcolor{stringliteral}{"{}\{x:Bind\ ViewModel.SearchText,\ Mode=TwoWay\}"{}}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{PlaceholderText}=\textcolor{stringliteral}{"{}Search..."{}}\ />}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ <\textcolor{keywordtype}{Button}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{Content}=\textcolor{stringliteral}{"{}Load\ Data"{}}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{Command}=\textcolor{stringliteral}{"{}\{x:Bind\ ViewModel.LoadDataCommand\}"{}}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{IsEnabled}=\textcolor{stringliteral}{"{}\{x:Bind\ ViewModel.IsBusy,\ Mode=OneWay,\ Converter=\{StaticResource\ InverseBoolConverter\}\}"{}}\ />}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ <\textcolor{keywordtype}{ListView}\ \textcolor{keyword}{ItemsSource}=\textcolor{stringliteral}{"{}\{x:Bind\ ViewModel.Items,\ Mode=OneWay\}"{}}\ />}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ </\textcolor{keywordtype}{StackPanel}>}
+\DoxyCodeLine{\ \ \ \ </\textcolor{keywordtype}{Grid}>}
+\DoxyCodeLine{</\textcolor{keywordtype}{Page}>}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{<!-\/-\/\ ❌\ WRONG\ -\/\ Using\ Binding\ instead\ of\ x:Bind\ -\/-\/>}}
+\DoxyCodeLine{<\textcolor{keywordtype}{TextBox}\ \textcolor{keyword}{Text}=\textcolor{stringliteral}{"{}\{Binding\ SearchText,\ Mode=TwoWay\}"{}}\ />}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{<!-\/-\/\ ❌\ WRONG\ -\/\ Business\ logic\ in\ code-\/behind\ -\/-\/>}}
+\DoxyCodeLine{\textcolor{keyword}{private}\ \textcolor{keyword}{void}\ \textcolor{keyword}{Button\_Click}(\textcolor{keyword}{object}\ \textcolor{keyword}{sender},\ \textcolor{keyword}{RoutedEventArgs}\ \textcolor{keyword}{e})}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ //\ \textcolor{keyword}{Don}'\textcolor{keyword}{t}\ \textcolor{keyword}{put}\ \textcolor{keyword}{logic}\ \textcolor{keyword}{here}\ -\/\ \textcolor{keyword}{use}\ \textcolor{keyword}{ViewModel}\ \textcolor{keyword}{command}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{var}\ \textcolor{keyword}{data}\ =\ \textcolor{keyword}{\_service.GetData}();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md15}{}\doxysection{\texorpdfstring{Development Standards}{Development Standards}}\label{md__a_g_e_n_t_s_autotoc_md15}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md16}{}\doxysubsection{\texorpdfstring{Naming Conventions}{Naming Conventions}}\label{md__a_g_e_n_t_s_autotoc_md16}
+
+\begin{DoxyItemize}
+\item {\bfseries{Classes:\+}} Pascal\+Case with prefix
+\begin{DoxyItemize}
+\item View\+Models:\+ {\ttfamily My\+Feature\+View\+Model}
+\item Views:\+ {\ttfamily My\+Feature\+View}
+\item Services:\+ {\ttfamily Service\+\_\+\+My\+Feature} with interface {\ttfamily IService\+\_\+\+My\+Feature}
+\item DAOs:\+ {\ttfamily Dao\+\_\+\+Entity\+Name} (Instance class)
+\item Models:\+ {\ttfamily Model\+\_\+\+Entity\+Name}
+\end{DoxyItemize}
+\item {\bfseries{Methods:\+}} Pascal\+Case, async methods end with {\ttfamily Async}
+\item {\bfseries{Properties:\+}} Pascal\+Case for public, {\ttfamily \+\_\+camel\+Case} for private fields
+\item {\bfseries{Constants:\+}} Pascal\+Case in static class (not UPPER\+\_\+\+SNAKE\+\_\+\+CASE)
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md17}{}\doxysubsection{\texorpdfstring{Documentation Standards}{Documentation Standards}}\label{md__a_g_e_n_t_s_autotoc_md17}
+{\bfseries{Plant\+UML for All Diagrams}}:\+
+
+
+\begin{DoxyItemize}
+\item Database ERDs use Plant\+UML entity diagrams with crow\textquotesingle{}s foot notation
+\item File structures use Plant\+UML WBS or component diagrams
+\item Architecture uses Plant\+UML component/\+sequence diagrams
+\item {\bfseries{Never use ASCII art}} for visualizations
+\end{DoxyItemize}
+
+{\bfseries{Why Plant\+UML}}:\+
+
+
+\begin{DoxyItemize}
+\item More structured and parseable for AI agents
+\item Professional rendering for human readers
+\item Better git diffs and version control
+\item IDE and Git\+Hub support
+\end{DoxyItemize}
+
+{\bfseries{Examples}}:\+
+
+
+\begin{DoxyItemize}
+\item ✅ Plant\+UML ERD:\+ specs/\+004-\/database-\/foundation/\+data-\/model.md
+\item ✅ Plant\+UML file structure:\+ specs/\+004-\/database-\/foundation/\+plan.md
+\item ❌ ASCII box drawings, manual tree structures
+\end{DoxyItemize}
+
+See .github/\+instructions/\+markdown-\/documentation.instructions.md for complete standards.\hypertarget{md__a_g_e_n_t_s_autotoc_md18}{}\doxysubsection{\texorpdfstring{Dependency Injection Registration}{Dependency Injection Registration}}\label{md__a_g_e_n_t_s_autotoc_md18}
+All services must be registered in {\ttfamily \doxylink{_app_8xaml_8cs}{App.\+xaml.\+cs}} Configure\+Services:\+
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Singletons\ -\/\ shared\ state}}
+\DoxyCodeLine{services.AddSingleton<ILoggingService,\ LoggingService>();}
+\DoxyCodeLine{services.AddSingleton<IService\_ErrorHandler,\ Service\_ErrorHandler>();}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ DAOs\ -\/\ Instance-\/based\ Singletons}}
+\DoxyCodeLine{services.AddSingleton(sp\ =>\ \textcolor{keyword}{new}\ Dao\_ReceivingPackage(Helper\_Database\_Variables.GetConnectionString()));}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Transient\ -\/\ new\ instance\ per\ request\ (ViewModels,\ most\ services)}}
+\DoxyCodeLine{services.AddTransient<IService\_MyFeature,\ Service\_MyFeature>();}
+\DoxyCodeLine{services.AddTransient<MyFeatureViewModel>();}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md19}{}\doxysubsection{\texorpdfstring{Error Handling}{Error Handling}}\label{md__a_g_e_n_t_s_autotoc_md19}
+
+\begin{DoxyItemize}
+\item {\bfseries{In View\+Models:\+}} Use try-\/catch with {\ttfamily \+\_\+error\+Handler.\+Handle\+Exception()}
+\item {\bfseries{In Services:\+}} Propagate exceptions or return result types
+\item {\bfseries{In DAOs:\+}} Never throw -\/ return {\ttfamily Model\+\_\+\+Dao\+\_\+\+Result.\+Failure()} with descriptive message
+\item {\bfseries{Always log:\+}} Use {\ttfamily \+\_\+logger.\+Log\+Error()} or {\ttfamily \+\_\+logger.\+Log\+Info()} for audit trail
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md20}{}\doxysubsection{\texorpdfstring{My\+SQL Database Operations}{My\+SQL Database Operations}}\label{md__a_g_e_n_t_s_autotoc_md20}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ ✅\ CORRECT\ -\/\ Using\ stored\ procedure\ helper}}
+\DoxyCodeLine{var\ parameters\ =\ \textcolor{keyword}{new}\ Dictionary<string,\ object>}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \{\ \textcolor{stringliteral}{"{}p\_package\_id"{}},\ packageId\ \},}
+\DoxyCodeLine{\ \ \ \ \{\ \textcolor{stringliteral}{"{}p\_status"{}},\ \textcolor{stringliteral}{"{}Received"{}}\ \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{var\ result\ =\ await\ Helper\_Database\_StoredProcedure.ExecuteNonQueryAsync(}
+\DoxyCodeLine{\ \ \ \ \textcolor{stringliteral}{"{}sp\_update\_package\_status"{}},}
+\DoxyCodeLine{\ \ \ \ parameters);}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md21}{}\doxysubsection{\texorpdfstring{Infor Visual (SQL Server) Operations -\/ READ ONLY}{Infor Visual (SQL Server) Operations -\/ READ ONLY}}\label{md__a_g_e_n_t_s_autotoc_md21}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ ✅\ CORRECT\ -\/\ SELECT\ only\ with\ explicit\ read-\/only\ intent}}
+\DoxyCodeLine{\textcolor{keywordtype}{string}\ connectionString\ =\ \textcolor{stringliteral}{"{}Server=VISUAL;Database=MTMFG;ApplicationIntent=ReadOnly;..."{}};}
+\DoxyCodeLine{\textcolor{keywordtype}{string}\ query\ =\ \textcolor{stringliteral}{"{}SELECT\ po\_num,\ po\_line,\ part\ FROM\ po\ WHERE\ po\_num\ =\ @PoNumber"{}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ ❌\ WRONG\ -\/\ Any\ INSERT/UPDATE/DELETE\ on\ Infor\ Visual}}
+\DoxyCodeLine{\textcolor{keywordtype}{string}\ query\ =\ \textcolor{stringliteral}{"{}UPDATE\ po\ SET\ status\ =\ 'Received'"{}};\ \textcolor{comment}{//\ NEVER\ DO\ THIS}}
+
+\end{DoxyCode}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md22}{}\doxysection{\texorpdfstring{Boundaries}{Boundaries}}\label{md__a_g_e_n_t_s_autotoc_md22}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md23}{}\doxysubsection{\texorpdfstring{✅ Always Do}{✅ Always Do}}\label{md__a_g_e_n_t_s_autotoc_md23}
+
+\begin{DoxyItemize}
+\item Inherit View\+Models from {\ttfamily Base\+View\+Model}
+\item Make View\+Models {\ttfamily partial} classes
+\item Use {\ttfamily \+[Observable\+Property]\+} and {\ttfamily \+[Relay\+Command]\+} attributes
+\item Use {\ttfamily x:\+Bind} in XAML Views
+\item Call stored procedures for all My\+SQL operations
+\item Return {\ttfamily Model\+\_\+\+Dao\+\_\+\+Result} from DAOs
+\item Register new services in {\ttfamily \doxylink{_app_8xaml_8cs}{App.\+xaml.\+cs}}
+\item Handle exceptions with {\ttfamily IService\+\_\+\+Error\+Handler}
+\item Run {\ttfamily dotnet build} and {\ttfamily dotnet test} before committing
+\item Read specification files in {\ttfamily specs/\+} before implementing features
+\item Use {\ttfamily Window\+Helper\+\_\+\+Window\+Size\+And\+Startup\+Location.\+Set\+Window\+Size(1400, 900)} for new windows
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md24}{}\doxysubsection{\texorpdfstring{⚠️ Ask First}{⚠️ Ask First}}\label{md__a_g_e_n_t_s_autotoc_md24}
+
+\begin{DoxyItemize}
+\item Adding new Nu\+Get packages
+\item Modifying database schemas (My\+SQL)
+\item Changing base classes (Base\+View\+Model, Base\+Window)
+\item Adding new third-\/party dependencies
+\item Modifying \doxylink{_app_8xaml_8cs}{App.\+xaml.\+cs} DI configuration structure
+\item Creating new stored procedures (coordinate with DBA)
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md25}{}\doxysubsection{\texorpdfstring{🚫 Never Do}{🚫 Never Do}}\label{md__a_g_e_n_t_s_autotoc_md25}
+
+\begin{DoxyItemize}
+\item Write to Infor Visual (SQL Server) database -\/ READ ONLY
+\item Use {\ttfamily Binding} instead of {\ttfamily x:\+Bind} in Views
+\item Put business logic in View code-\/behind
+\item Create non-\/partial View\+Models
+\item Write raw SQL for My\+SQL operations (use stored procedures only)
+\item Throw exceptions from DAOs (return failure results)
+\item Use service locator pattern (always use constructor injection)
+\item Create View\+Models without registering in DI container
+\item Commit secrets, connection strings, or API keys
+\item Modify {\ttfamily bin/\+}, {\ttfamily obj/\+}, or {\ttfamily .vs/\+} folders
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md26}{}\doxysection{\texorpdfstring{Key Files \& Documentation}{Key Files \& Documentation}}\label{md__a_g_e_n_t_s_autotoc_md26}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md27}{}\doxysubsection{\texorpdfstring{Essential Reading}{Essential Reading}}\label{md__a_g_e_n_t_s_autotoc_md27}
+
+\begin{DoxyItemize}
+\item {\bfseries{Constitution:\+}} {\ttfamily .specify/\+memory/\+constitution.\+md} -\/ Core principles and non-\/negotiables
+\item {\bfseries{Copilot Instructions:\+}} {\ttfamily .github/\+copilot-\/instructions.\+md} -\/ AI coding assistant guide
+\item {\bfseries{MVVM Pattern:\+}} {\ttfamily .github/\+instructions/\+mvvm-\/pattern.\+instructions.\+md}
+\item {\bfseries{DAO Pattern:\+}} {\ttfamily .github/\+instructions/\+dao-\/pattern.\+instructions.\+md}
+\item {\bfseries{Window Sizing:\+}} {\ttfamily .github/\+instructions/\+window-\/sizing.\+instructions.\+md}
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md28}{}\doxysubsection{\texorpdfstring{Reference Documentation}{Reference Documentation}}\label{md__a_g_e_n_t_s_autotoc_md28}
+
+\begin{DoxyItemize}
+\item {\bfseries{Services Overview:\+}} {\ttfamily Documentation/\+\+README.\+md}
+\item {\bfseries{Data Model:\+}} {\ttfamily specs/\+\+Completed\+Specs/\+003-\/receiving-\/workflow/\+data-\/model.\+md}
+\item {\bfseries{Infor Visual Integration:\+}} {\ttfamily specs/\+\+Completed\+Specs/\+003-\/receiving-\/workflow/\+\+INFOR\+\_\+\+VISUAL\+\_\+\+INTEGRATION.\+md}
+\item {\bfseries{User Workflow:\+}} {\ttfamily Documentation/\+\+README.\+md}
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md29}{}\doxysubsection{\texorpdfstring{Database}{Database}}\label{md__a_g_e_n_t_s_autotoc_md29}
+
+\begin{DoxyItemize}
+\item {\bfseries{Connection String:\+}} {\ttfamily Helpers/\+\+Database/\+\+Helper\+\_\+\+Database\+\_\+\+Variables.\+cs}
+\item {\bfseries{Stored Procedures:\+}} {\ttfamily Database/\+\+Stored\+Procedures/\+} (My\+SQL scripts)
+\item {\bfseries{Schemas:\+}} {\ttfamily Database/\+\+Schemas/\+} (table definitions)
+\item {\bfseries{Test Data:\+}} {\ttfamily Database/\+\+Test\+Data/\+} (sample data scripts)
+\end{DoxyItemize}\hypertarget{md__a_g_e_n_t_s_autotoc_md30}{}\doxysection{\texorpdfstring{Workflow Example:\+ Adding a New Feature}{Workflow Example:\+ Adding a New Feature}}\label{md__a_g_e_n_t_s_autotoc_md30}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Read Specification:\+}} Check {\ttfamily specs/\+003-\/database-\/foundation/\+} for requirements
+\item {\bfseries{Create Model:\+}} Add {\ttfamily Model\+\_\+\+New\+Entity.\+cs} in {\ttfamily Models/\+\+Receiving/\+}
+\item {\bfseries{Create DAO:\+}} Add {\ttfamily Dao\+\_\+\+New\+Entity.\+cs} (Instance) in {\ttfamily Data/\+\+Receiving/\+}
+\item {\bfseries{Create Service Interface:\+}} Add {\ttfamily IService\+\_\+\+New\+Feature.\+cs} in {\ttfamily Contracts/\+\+Services/\+}
+\item {\bfseries{Implement Service:\+}} Add {\ttfamily Service\+\_\+\+New\+Feature.\+cs} in {\ttfamily Services/\+\+Receiving/\+}
+\item {\bfseries{Register Service:\+}} Update {\ttfamily \doxylink{_app_8xaml_8cs}{App.\+xaml.\+cs}} Configure\+Services
+\item {\bfseries{Create View\+Model:\+}} Add {\ttfamily New\+Feature\+View\+Model.\+cs} (partial) in {\ttfamily View\+Models/\+\+Receiving/\+}
+\item {\bfseries{Register View\+Model:\+}} Update {\ttfamily \doxylink{_app_8xaml_8cs}{App.\+xaml.\+cs}} Configure\+Services
+\item {\bfseries{Create View:\+}} Add {\ttfamily New\+Feature\+View.\+xaml} in {\ttfamily Views/\+\+Receiving/\+}
+\item {\bfseries{Build \& Test:\+}} Run {\ttfamily dotnet build \&\& dotnet test}
+\item {\bfseries{Update Spec:\+}} Mark tasks complete in {\ttfamily specs/\+003-\/database-\/foundation/\+tasks.\+md}
+\end{DoxyEnumerate}\hypertarget{md__a_g_e_n_t_s_autotoc_md31}{}\doxysection{\texorpdfstring{Common Pitfalls to Avoid}{Common Pitfalls to Avoid}}\label{md__a_g_e_n_t_s_autotoc_md31}
+
+\begin{DoxyTable}{2}{}{}{1}
+\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}❌ Wrong  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}✅ Correct  \\
+{\ttfamily public class My\+View\+Model :\+ Base\+View\+Model}  &{\ttfamily public partial class My\+View\+Model :\+ Base\+View\+Model}  \\
+{\ttfamily \texorpdfstring{$<$}{<}Text\+Box Text="{}\{Binding My\+Property\}"{} /\+\texorpdfstring{$>$}{>}}  &{\ttfamily \texorpdfstring{$<$}{<}Text\+Box Text="{}\{x:\+Bind View\+Model.\+My\+Property, Mode=Two\+Way\}"{} /\+\texorpdfstring{$>$}{>}}  \\
+{\ttfamily throw new Exception("{}Not found"{});} (in DAO)  &{\ttfamily return Model\+\_\+\+Dao\+\_\+\+Result.\+Failure("{}Not found"{});}  \\
+{\ttfamily string sql = "{}INSERT INTO packages..."{};}  &{\ttfamily await Helper\+\_\+\+Database\+\_\+\+Stored\+Procedure.\+Execute\+Non\+Query\+Async("{}sp\+\_\+insert\+\_\+package"{}, params);}  \\
+{\ttfamily var service = new My\+Service();}  &{\ttfamily constructor:\+ IMy\+Service service} (DI)  \\
+Writing to Infor Visual database  &Only SELECT queries on Infor Visual  \\
+\end{DoxyTable}
+\hypertarget{md__a_g_e_n_t_s_autotoc_md32}{}\doxysection{\texorpdfstring{Quick Reference Commands}{Quick Reference Commands}}\label{md__a_g_e_n_t_s_autotoc_md32}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\ Build\ solution}
+\DoxyCodeLine{dotnet\ build}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Run\ all\ tests}
+\DoxyCodeLine{dotnet\ test}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Run\ specific\ test\ class}
+\DoxyCodeLine{dotnet\ test\ -\/-\/filter\ "{}FullyQualifiedName\string~Dao\_ReceivingPackage\_Tests"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Clean\ build\ artifacts}
+\DoxyCodeLine{dotnet\ clean}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Restore\ NuGet\ packages}
+\DoxyCodeLine{dotnet\ restore}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ View\ DI\ registrations\ (check\ App.xaml.cs)}
+\DoxyCodeLine{\#\ No\ command\ -\/\ manually\ review\ ConfigureServices\ method}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Database\ connection\ test}
+\DoxyCodeLine{mysql\ -\/h\ localhost\ -\/P\ 3306\ -\/u\ root\ -\/p\ mtm\_receiving\_application\ -\/e\ "{}SELECT\ 1;"{}}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+
+
+{\bfseries{Remember:\+}} This is a manufacturing application with strict data integrity requirements. Always follow MVVM patterns, never write to Infor Visual, and ensure all database operations use stored procedures. When in doubt, read the constitution and specification files first. 

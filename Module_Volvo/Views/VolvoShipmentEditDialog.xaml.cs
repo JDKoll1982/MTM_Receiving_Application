@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using System;
@@ -80,5 +81,85 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         {
             Lines.Remove(selectedLine);
         }
+    }
+
+    private async void OnDiscrepancyButtonClicked(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || button.Tag is not Model_VolvoShipmentLine line)
+        {
+            return;
+        }
+
+        if (XamlRoot == null)
+        {
+            return;
+        }
+
+        if (line.HasDiscrepancy)
+        {
+            var confirmDialog = new ContentDialog
+            {
+                Title = "Remove Discrepancy",
+                Content = "Remove the discrepancy for this line?",
+                PrimaryButtonText = "Remove",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = XamlRoot
+            };
+
+            var confirmResult = await confirmDialog.ShowAsync();
+            if (confirmResult == ContentDialogResult.Primary)
+            {
+                line.HasDiscrepancy = false;
+                line.ExpectedSkidCount = null;
+                line.DiscrepancyNote = null;
+            }
+
+            return;
+        }
+
+        var expectedSkidsBox = new NumberBox
+        {
+            Header = "Expected Skids",
+            Minimum = 1,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            Value = line.ExpectedSkidCount ?? 1
+        };
+
+        var noteBox = new TextBox
+        {
+            Header = "Discrepancy Note",
+            PlaceholderText = "Explain discrepancy",
+            Text = line.DiscrepancyNote ?? string.Empty
+        };
+
+        var panel = new StackPanel { Spacing = 12 };
+        panel.Children.Add(expectedSkidsBox);
+        panel.Children.Add(noteBox);
+
+        var dialog = new ContentDialog
+        {
+            Title = "Report Discrepancy",
+            Content = panel,
+            PrimaryButtonText = "Save",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        if (expectedSkidsBox.Value < 1 || string.IsNullOrWhiteSpace(noteBox.Text))
+        {
+            return;
+        }
+
+        line.HasDiscrepancy = true;
+        line.ExpectedSkidCount = expectedSkidsBox.Value;
+        line.DiscrepancyNote = noteBox.Text.Trim();
     }
 }

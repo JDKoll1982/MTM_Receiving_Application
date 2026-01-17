@@ -3,7 +3,7 @@ using MediatR;
 namespace MTM_Receiving_Application.Module_Volvo.Requests;
 
 /// <summary>
-/// Shared DTO representing a shipment line item used across multiple commands.
+/// Shared Data Transfer Object representing a shipment line item used across multiple commands.
 /// </summary>
 /// <remarks>
 /// Used by: SavePendingShipmentCommand, CompleteShipmentCommand, UpdateShipmentCommand
