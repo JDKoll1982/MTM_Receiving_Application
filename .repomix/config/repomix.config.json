@@ -1,0 +1,63 @@
+{
+    "$schema": "https://repomix.com/schemas/latest/schema.json",
+    "input": {
+        "maxFileSize": 50000000
+    },
+    "output": {
+        "filePath": ".repomix/outputs/core/repomix-output-core.md",
+        "style": "markdown",
+        "parsableStyle": false,
+        "compress": false,
+        "headerText": "MTM Receiving Application - Core Project Code (Architecture & Implementation)",
+        "fileSummary": true,
+        "directoryStructure": true,
+        "files": true,
+        "removeComments": false,
+        "removeEmptyLines": false,
+        "topFilesLength": 10,
+        "showLineNumbers": false,
+        "truncateBase64": true,
+        "copyToClipboard": false,
+        "includeEmptyDirectories": false,
+        "includeFullDirectoryStructure": false,
+        "tokenCountTree": false,
+        "git": {
+            "sortByChanges": true,
+            "sortByChangesMaxCommits": 100,
+            "includeDiffs": false,
+            "includeLogs": false,
+            "includeLogsCount": 50
+        }
+    },
+    "include": [
+        "**/*.cs",
+        "**/*.xaml",
+        "App.xaml.cs",
+        "MainWindow.xaml.cs"
+    ],
+    "ignore": {
+        "useGitignore": true,
+        "useDotIgnore": true,
+        "useDefaultPatterns": true,
+        "customPatterns": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/.vs/**",
+            "**/node_modules/**",
+            "**/*.md",
+            "docs/**",
+            "Documentation/**",
+            "Assets/**",
+            "Database/**",
+            "specs/**",
+            "_bmad-output/**",
+            "**/*REPORT.md"
+        ]
+    },
+    "security": {
+        "enableSecurityCheck": true
+    },
+    "tokenCount": {
+        "encoding": "o200k_base"
+    }
+}

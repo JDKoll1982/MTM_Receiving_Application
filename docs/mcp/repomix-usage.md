@@ -4,9 +4,9 @@ Use these presets to generate AI-friendly repository bundles.
 
 ## Presets
 
-- Code only (minimal tokens): [repomix.code-only.config.json](../../repomix.code-only.config.json)
-- Full context with git: [repomix.full-context.config.json](../../repomix.full-context.config.json)
-- Copilot docs context: [repomix-copilot-docs.json](../../repomix-copilot-docs.json)
+- Code only (minimal tokens): [.repomix/config/repomix.code-only.config.json](../../.repomix/config/repomix.code-only.config.json)
+- Full context with git: [.repomix/config/repomix.full-context.config.json](../../.repomix/config/repomix.full-context.config.json)
+- Copilot docs context: [.repomix/config/repomix-copilot-docs.json](../../.repomix/config/repomix-copilot-docs.json)
 
 ## Commands
 
@@ -15,13 +15,13 @@ Use these presets to generate AI-friendly repository bundles.
 npx repomix@latest --style markdown
 
 # Code-only, compressed (fast, low tokens) -> Markdown
-npx repomix@latest --config repomix.code-only.config.json --style markdown
+npx repomix@latest --config .repomix/config/repomix.code-only.config.json --style markdown
 
 # Full context with diffs + logs (larger output) -> Markdown
-npx repomix@latest --config repomix.full-context.config.json --style markdown
+npx repomix@latest --config .repomix/config/repomix.full-context.config.json --style markdown
 
 # Documentation-focused bundle used by Copilot -> Markdown
-npx repomix@latest --config repomix-copilot-docs.json --style markdown
+npx repomix@latest --config .repomix/config/repomix-copilot-docs.json --style markdown
 ```
 
 ## Notes

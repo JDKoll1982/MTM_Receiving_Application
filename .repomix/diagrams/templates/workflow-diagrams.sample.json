@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Volvo_ShipmentEntry",
+        "template": "workflow"
+    },
+    {
+        "name": "Volvo_GenerateLabels",
+        "template": "workflow"
+    },
+    {
+        "name": "Volvo_PreviewEmail",
+        "template": "workflow"
+    },
+    {
+        "name": "VolvoShipmentEditDialog",
+        "template": "dialog"
+    },
+    {
+        "name": "VolvoPartAddEditDialog",
+        "template": "dialog"
+    }
+]

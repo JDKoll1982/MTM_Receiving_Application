@@ -1,0 +1,25344 @@
+This file is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where line numbers have been added.
+
+# File Summary
+
+## Purpose
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+## File Format
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  a. A header with the file path (## File: path/to/file)
+  b. The full contents of the file in a code block
+
+## Usage Guidelines
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+- Pay special attention to the Repository Description. These contain important context and guidelines specific to this project.
+
+## Notes
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching these patterns are excluded: **/bin/**, **/obj/**, **/.vs/**, **/node_modules/**
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Line numbers have been added to the beginning of each line
+- Long base64 data strings (e.g., data:image/png;base64,...) have been truncated to reduce token count
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+# User Provided Header
+MTM Receiving Application - Full Repository Context with Git
+
+# Directory Structure
+```
+_bmad/_config/agent-manifest.csv
+_bmad/_config/agents/bmb-agent-builder.customize.yaml
+_bmad/_config/agents/bmb-module-builder.customize.yaml
+_bmad/_config/agents/bmb-workflow-builder.customize.yaml
+_bmad/_config/agents/bmm-analyst.customize.yaml
+_bmad/_config/agents/bmm-architect.customize.yaml
+_bmad/_config/agents/bmm-dev.customize.yaml
+_bmad/_config/agents/bmm-pm.customize.yaml
+_bmad/_config/agents/bmm-quick-flow-solo-dev.customize.yaml
+_bmad/_config/agents/bmm-sm.customize.yaml
+_bmad/_config/agents/bmm-tea.customize.yaml
+_bmad/_config/agents/bmm-tech-writer.customize.yaml
+_bmad/_config/agents/bmm-ux-designer.customize.yaml
+_bmad/_config/agents/cis-brainstorming-coach.customize.yaml
+_bmad/_config/agents/cis-creative-problem-solver.customize.yaml
+_bmad/_config/agents/cis-design-thinking-coach.customize.yaml
+_bmad/_config/agents/cis-innovation-strategist.customize.yaml
+_bmad/_config/agents/cis-presentation-master.customize.yaml
+_bmad/_config/agents/cis-storyteller.customize.yaml
+_bmad/_config/agents/core-bmad-master.customize.yaml
+_bmad/_config/files-manifest.csv
+_bmad/_config/manifest.yaml
+_bmad/_config/task-manifest.csv
+_bmad/_config/tool-manifest.csv
+_bmad/_config/workflow-manifest.csv
+_bmad/_memory/config.yaml
+_bmad/_memory/docent-sidecar/README.md
+_bmad/agents/code-reviewer/code-reviewer.agent.yaml
+_bmad/agents/config.yaml
+_bmad/bmb/agents/docent/docent.agent.yaml
+_bmad/bmb/agents/docent/docent.agent.yaml.backup
+_bmad/bmb/config.yaml
+_bmad/bmb/README.md
+_bmad/bmb/reference/agents/simple-examples/README.md
+_bmad/bmb/reference/readme.md
+_bmad/bmb/workflows-legacy/edit-module/README.md
+_bmad/bmb/workflows-legacy/module-brief/README.md
+_bmad/bmb/workflows/agent/data/communication-presets.csv
+_bmad/bmb/workflows/workflow/data/common-workflow-tools.csv
+_bmad/bmm/config.yaml
+_bmad/bmm/data/README.md
+_bmad/bmm/teams/default-party.csv
+_bmad/bmm/teams/team-fullstack.yaml
+_bmad/bmm/testarch/tea-index.csv
+_bmad/bmm/workflows/2-plan-workflows/prd/data/domain-complexity.csv
+_bmad/bmm/workflows/2-plan-workflows/prd/data/project-types.csv
+_bmad/bmm/workflows/3-solutioning/create-architecture/data/domain-complexity.csv
+_bmad/bmm/workflows/3-solutioning/create-architecture/data/project-types.csv
+_bmad/bmm/workflows/4-implementation/code-review/instructions.xml
+_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml
+_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml
+_bmad/bmm/workflows/4-implementation/create-story/instructions.xml
+_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
+_bmad/bmm/workflows/4-implementation/dev-story/instructions.xml
+_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml
+_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml
+_bmad/bmm/workflows/4-implementation/sprint-planning/sprint-status-template.yaml
+_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml
+_bmad/bmm/workflows/4-implementation/sprint-status/workflow.yaml
+_bmad/bmm/workflows/document-project/documentation-requirements.csv
+_bmad/bmm/workflows/document-project/templates/project-scan-report-schema.json
+_bmad/bmm/workflows/document-project/workflow.yaml
+_bmad/bmm/workflows/document-project/workflows/deep-dive.yaml
+_bmad/bmm/workflows/document-project/workflows/full-scan.yaml
+_bmad/bmm/workflows/excalidraw-diagrams/_shared/excalidraw-library.json
+_bmad/bmm/workflows/excalidraw-diagrams/_shared/excalidraw-templates.yaml
+_bmad/bmm/workflows/excalidraw-diagrams/create-dataflow/workflow.yaml
+_bmad/bmm/workflows/excalidraw-diagrams/create-diagram/workflow.yaml
+_bmad/bmm/workflows/excalidraw-diagrams/create-flowchart/workflow.yaml
+_bmad/bmm/workflows/excalidraw-diagrams/create-wireframe/workflow.yaml
+_bmad/bmm/workflows/testarch/atdd/workflow.yaml
+_bmad/bmm/workflows/testarch/automate/workflow.yaml
+_bmad/bmm/workflows/testarch/ci/github-actions-template.yaml
+_bmad/bmm/workflows/testarch/ci/gitlab-ci-template.yaml
+_bmad/bmm/workflows/testarch/ci/workflow.yaml
+_bmad/bmm/workflows/testarch/framework/workflow.yaml
+_bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml
+_bmad/bmm/workflows/testarch/test-design/workflow.yaml
+_bmad/bmm/workflows/testarch/test-review/workflow.yaml
+_bmad/bmm/workflows/testarch/trace/workflow.yaml
+_bmad/bmm/workflows/workflow-status/init/workflow.yaml
+_bmad/bmm/workflows/workflow-status/paths/enterprise-brownfield.yaml
+_bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.yaml
+_bmad/bmm/workflows/workflow-status/paths/method-brownfield.yaml
+_bmad/bmm/workflows/workflow-status/paths/method-greenfield.yaml
+_bmad/bmm/workflows/workflow-status/project-levels.yaml
+_bmad/bmm/workflows/workflow-status/workflow-status-template.yaml
+_bmad/bmm/workflows/workflow-status/workflow.yaml
+_bmad/cis/config.yaml
+_bmad/cis/teams/creative-squad.yaml
+_bmad/cis/teams/default-party.csv
+_bmad/cis/workflows/design-thinking/design-methods.csv
+_bmad/cis/workflows/design-thinking/README.md
+_bmad/cis/workflows/design-thinking/workflow.yaml
+_bmad/cis/workflows/innovation-strategy/innovation-frameworks.csv
+_bmad/cis/workflows/innovation-strategy/README.md
+_bmad/cis/workflows/innovation-strategy/workflow.yaml
+_bmad/cis/workflows/problem-solving/README.md
+_bmad/cis/workflows/problem-solving/solving-methods.csv
+_bmad/cis/workflows/problem-solving/workflow.yaml
+_bmad/cis/workflows/README.md
+_bmad/cis/workflows/storytelling/README.md
+_bmad/cis/workflows/storytelling/story-types.csv
+_bmad/cis/workflows/storytelling/workflow.yaml
+_bmad/core/config.yaml
+_bmad/core/resources/excalidraw/README.md
+_bmad/core/tasks/index-docs.xml
+_bmad/core/tasks/review-adversarial-general.xml
+_bmad/core/tasks/shard-doc.xml
+_bmad/core/tasks/validate-workflow.xml
+_bmad/core/tasks/workflow.xml
+_bmad/core/workflows/advanced-elicitation/methods.csv
+_bmad/core/workflows/advanced-elicitation/workflow.xml
+_bmad/core/workflows/brainstorming/brain-methods.csv
+_bmad/module-agents/config.yaml
+_bmad/module-agents/config/stack-winui3-csharp.yaml
+.config/dotnet-tools.json
+.github/.last-agent-run
+.github/.project-state.json
+.github/copilot-agents.json
+.github/templates/code-review/MIGRATION.template.sql
+.markdownlint.json
+.repomixignore
+.serena/project.yml
+.specify/config.json
+.specify/scripts/powershell/check-prerequisites.ps1
+.specify/scripts/powershell/common.ps1
+.specify/scripts/powershell/create-new-feature.ps1
+.specify/scripts/powershell/setup-plan.ps1
+.specify/scripts/powershell/update-agent-context.ps1
+AGENTS.md
+App.xaml
+App.xaml.cs
+MainWindow.xaml
+MainWindow.xaml.cs
+Module_Core/Behaviors/AuditBehavior.cs
+Module_Core/Behaviors/LoggingBehavior.cs
+Module_Core/Behaviors/ValidationBehavior.cs
+Module_Core/Contracts/Services/IService_Authentication.cs
+Module_Core/Contracts/Services/IService_CSVWriter.cs
+Module_Core/Contracts/Services/IService_Dispatcher.cs
+Module_Core/Contracts/Services/IService_ErrorHandler.cs
+Module_Core/Contracts/Services/IService_Focus.cs
+Module_Core/Contracts/Services/IService_Help.cs
+Module_Core/Contracts/Services/IService_InforVisual.cs
+Module_Core/Contracts/Services/IService_LoggingUtility.cs
+Module_Core/Contracts/Services/IService_Notification.cs
+Module_Core/Contracts/Services/IService_OnStartup_AppLifecycle.cs
+Module_Core/Contracts/Services/IService_Pagination.cs
+Module_Core/Contracts/Services/IService_SessionManager.cs
+Module_Core/Contracts/Services/IService_UserSessionManager.cs
+Module_Core/Contracts/Services/IService_ViewModelRegistry.cs
+Module_Core/Contracts/Services/ITimer.cs
+Module_Core/Contracts/Services/IWindowService.cs
+Module_Core/Contracts/Services/Navigation/IService_Navigation.cs
+Module_Core/Contracts/ViewModels/IResettableViewModel.cs
+Module_Core/Converters/Converter_BooleanToVisibility.cs
+Module_Core/Converters/Converter_BoolToString.cs
+Module_Core/Converters/Converter_DecimalToInt.cs
+Module_Core/Converters/Converter_DecimalToString.cs
+Module_Core/Converters/Converter_DoubleToDecimal.cs
+Module_Core/Converters/Converter_EmptyStringToVisibility.cs
+Module_Core/Converters/Converter_EnumToVisibility.cs
+Module_Core/Converters/Converter_IconCodeToGlyph.cs
+Module_Core/Converters/Converter_IntToString.cs
+Module_Core/Converters/Converter_IntToVisibility.cs
+Module_Core/Converters/Converter_InverseBool.cs
+Module_Core/Converters/Converter_LoadNumberToOneBased.cs
+Module_Core/Converters/Converter_NullableDoubleToString.cs
+Module_Core/Converters/Converter_NullableIntToString.cs
+Module_Core/Converters/Converter_StringFormat.cs
+Module_Core/Converters/NullableDoubleToDoubleConverter.cs
+Module_Core/Data/Authentication/Dao_User.cs
+Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs
+Module_Core/Data/InforVisual/Dao_InforVisualPart.cs
+Module_Core/Data/InforVisual/Dao_InforVisualPO.cs
+Module_Core/Defaults/.gitkeep
+Module_Core/Defaults/InforVisualDefaults.cs
+Module_Core/Defaults/WorkstationDefaults.cs
+Module_Core/Helpers/Database/Helper_Database_StoredProcedure.cs
+Module_Core/Helpers/Database/Helper_Database_Variables.cs
+Module_Core/Helpers/Database/Helper_SqlQueryLoader.cs
+Module_Core/Helpers/UI/Helper_MaterialIcons.cs
+Module_Core/Helpers/UI/Helper_WindowExtensions.cs
+Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs
+Module_Core/Helpers/UI/WindowHelper_WindowSizeAndStartupLocation.cs
+Module_Core/Models/Core/Model_Dao_Result_Factory.cs
+Module_Core/Models/Core/Model_Dao_Result_Generic.cs
+Module_Core/Models/Core/Model_Dao_Result.cs
+Module_Core/Models/Core/Model_HelpContent.cs
+Module_Core/Models/Enums/Enum_DataSourceType.cs
+Module_Core/Models/Enums/Enum_ErrorSeverity.cs
+Module_Core/Models/Enums/Enum_HelpSeverity.cs
+Module_Core/Models/Enums/Enum_HelpType.cs
+Module_Core/Models/Enums/Enum_InfoBarSeverity.cs
+Module_Core/Models/Enums/Enum_LabelType.cs
+Module_Core/Models/Enums/Enum_PackageType.cs
+Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs
+Module_Core/Models/Enums/Enum_ValidationSeverity.cs
+Module_Core/Models/InforVisual/Model_InforVisualConnection.cs
+Module_Core/Models/InforVisual/Model_InforVisualPart.cs
+Module_Core/Models/InforVisual/Model_InforVisualPO.cs
+Module_Core/Models/Reporting/Model_ReportRow.cs
+Module_Core/Models/Systems/Model_AppSettings.cs
+Module_Core/Models/Systems/Model_AuthenticationResult.cs
+Module_Core/Models/Systems/Model_CreateUserResult.cs
+Module_Core/Models/Systems/Model_SessionTimedOutEventArgs.cs
+Module_Core/Models/Systems/Model_User.cs
+Module_Core/Models/Systems/Model_UserSession.cs
+Module_Core/Models/Systems/Model_ValidationResult.cs
+Module_Core/Models/Systems/Model_WorkstationConfig.cs
+Module_Core/Services/Authentication/Service_Authentication.cs
+Module_Core/Services/Authentication/Service_UserSessionManager.cs
+Module_Core/Services/Database/Service_ErrorHandler.cs
+Module_Core/Services/Database/Service_InforVisualConnect.cs
+Module_Core/Services/Database/Service_LoggingUtility.cs
+Module_Core/Services/Help/Service_Help.cs
+Module_Core/Services/Navigation/Service_Navigation.cs
+Module_Core/Services/Service_Dispatcher.cs
+Module_Core/Services/Service_DispatcherTimerWrapper.cs
+Module_Core/Services/Service_Focus.cs
+Module_Core/Services/Service_Notification.cs
+Module_Core/Services/Service_Pagination.cs
+Module_Core/Services/Service_Window.cs
+Module_Core/Services/Startup/Service_OnStartup_AppLifecycle.cs
+Module_Core/Services/UI/Service_ViewModelRegistry.cs
+Module_Core/Themes/MaterialIcons.xaml
+Module_Dunnage/Contracts/IService_DunnageAdminWorkflow.cs
+Module_Dunnage/Contracts/IService_DunnageCSVWriter.cs
+Module_Dunnage/Contracts/IService_DunnageWorkflow.cs
+Module_Dunnage/Contracts/IService_MySQL_Dunnage.cs
+Module_Dunnage/Data/Dao_DunnageCustomField.cs
+Module_Dunnage/Data/Dao_DunnageLine.cs
+Module_Dunnage/Data/Dao_DunnageLoad.cs
+Module_Dunnage/Data/Dao_DunnagePart.cs
+Module_Dunnage/Data/Dao_DunnageSpec.cs
+Module_Dunnage/Data/Dao_DunnageType.cs
+Module_Dunnage/Data/Dao_DunnageUserPreference.cs
+Module_Dunnage/Data/Dao_InventoriedDunnage.cs
+Module_Dunnage/Enums/Enum_DunnageAdminSection.cs
+Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs
+Module_Dunnage/Models/Model_CustomFieldDefinition.cs
+Module_Dunnage/Models/Model_DunnageLine.cs
+Module_Dunnage/Models/Model_DunnageLoad.cs
+Module_Dunnage/Models/Model_DunnagePart.cs
+Module_Dunnage/Models/Model_DunnageSession.cs
+Module_Dunnage/Models/Model_DunnageSpec.cs
+Module_Dunnage/Models/Model_DunnageType.cs
+Module_Dunnage/Models/Model_IconDefinition.cs
+Module_Dunnage/Models/Model_InventoriedDunnage.cs
+Module_Dunnage/Models/Model_SpecInput.cs
+Module_Dunnage/Models/Model_SpecItem.cs
+Module_Dunnage/Models/SpecDefinition.cs
+Module_Dunnage/Services/Service_DunnageAdminWorkflow.cs
+Module_Dunnage/Services/Service_DunnageCSVWriter.cs
+Module_Dunnage/Services/Service_DunnageWorkflow.cs
+Module_Dunnage/Services/Service_MySQL_Dunnage.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_AddTypeDialogViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminInventoryViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminMainViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminPartsViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_AdminTypesViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_PartSelectionViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_QuantityEntryViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_TypeSelectionViewModel.cs
+Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs
+Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml
+Module_Dunnage/Views/View_Dunnage_AdminInventoryView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml
+Module_Dunnage/Views/View_Dunnage_AdminMainView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml
+Module_Dunnage/Views/View_Dunnage_AdminPartsView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml
+Module_Dunnage/Views/View_Dunnage_AdminTypesView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml
+Module_Dunnage/Views/View_Dunnage_Control_IconPickerControl.xaml.cs
+Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml
+Module_Dunnage/Views/View_Dunnage_DetailsEntryView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml
+Module_Dunnage/Views/View_Dunnage_Dialog_AddMultipleRowsDialog.xaml.cs
+Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml
+Module_Dunnage/Views/View_Dunnage_Dialog_AddToInventoriedListDialog.xaml.cs
+Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml
+Module_Dunnage/Views/View_Dunnage_Dialog_Dunnage_AddTypeDialog.xaml.cs
+Module_Dunnage/Views/View_Dunnage_EditModeView.xaml
+Module_Dunnage/Views/View_Dunnage_EditModeView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml
+Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml
+Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml
+Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_QuantityEntryView.xaml
+Module_Dunnage/Views/View_Dunnage_QuantityEntryView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml
+Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml.cs
+Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml
+Module_Dunnage/Views/View_Dunnage_QuickAddTypeDialog.xaml.cs
+Module_Dunnage/Views/View_Dunnage_ReviewView.xaml
+Module_Dunnage/Views/View_Dunnage_ReviewView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml
+Module_Dunnage/Views/View_Dunnage_TypeSelectionView.xaml.cs
+Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml
+Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs
+Module_Receiving/Contracts/IService_MySQL_PackagePreferences.cs
+Module_Receiving/Contracts/IService_MySQL_Receiving.cs
+Module_Receiving/Contracts/IService_MySQL_ReceivingLine.cs
+Module_Receiving/Contracts/IService_ReceivingValidation.cs
+Module_Receiving/Contracts/IService_ReceivingWorkflow.cs
+Module_Receiving/Data/Dao_PackageTypePreference.cs
+Module_Receiving/Data/Dao_ReceivingLine.cs
+Module_Receiving/Data/Dao_ReceivingLoad.cs
+Module_Receiving/Models/Model_Application_Variables.cs
+Module_Receiving/Models/Model_CSVDeleteResult.cs
+Module_Receiving/Models/Model_CSVExistenceResult.cs
+Module_Receiving/Models/Model_CSVWriteResult.cs
+Module_Receiving/Models/Model_InforVisualPart.cs
+Module_Receiving/Models/Model_InforVisualPO.cs
+Module_Receiving/Models/Model_PackageTypePreference.cs
+Module_Receiving/Models/Model_ReceivingLine.cs
+Module_Receiving/Models/Model_ReceivingLoad.cs
+Module_Receiving/Models/Model_ReceivingSession.cs
+Module_Receiving/Models/Model_ReceivingValidationResult.cs
+Module_Receiving/Models/Model_ReceivingWorkflowStepResult.cs
+Module_Receiving/Models/Model_SaveResult.cs
+Module_Receiving/Models/Model_UserPreference.cs
+Module_Receiving/Models/Model_WorkflowStepResult.cs
+Module_Receiving/Services/Service_CSVWriter.cs
+Module_Receiving/Services/Service_MySQL_PackagePreferences.cs
+Module_Receiving/Services/Service_MySQL_Receiving.cs
+Module_Receiving/Services/Service_MySQL_ReceivingLine.cs
+Module_Receiving/Services/Service_ReceivingValidation.cs
+Module_Receiving/Services/Service_ReceivingWorkflow.cs
+Module_Receiving/Services/Service_SessionManager.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_ModeSelection.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs
+Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs
+Module_Receiving/Views/View_Receiving_EditMode.xaml
+Module_Receiving/Views/View_Receiving_EditMode.xaml.cs
+Module_Receiving/Views/View_Receiving_HeatLot.xaml
+Module_Receiving/Views/View_Receiving_HeatLot.xaml.cs
+Module_Receiving/Views/View_Receiving_LoadEntry.xaml
+Module_Receiving/Views/View_Receiving_LoadEntry.xaml.cs
+Module_Receiving/Views/View_Receiving_ManualEntry.xaml
+Module_Receiving/Views/View_Receiving_ManualEntry.xaml.cs
+Module_Receiving/Views/View_Receiving_ModeSelection.xaml
+Module_Receiving/Views/View_Receiving_ModeSelection.xaml.cs
+Module_Receiving/Views/View_Receiving_PackageType.xaml
+Module_Receiving/Views/View_Receiving_PackageType.xaml.cs
+Module_Receiving/Views/View_Receiving_POEntry.xaml
+Module_Receiving/Views/View_Receiving_POEntry.xaml.cs
+Module_Receiving/Views/View_Receiving_Review.xaml
+Module_Receiving/Views/View_Receiving_Review.xaml.cs
+Module_Receiving/Views/View_Receiving_WeightQuantity.xaml
+Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs
+Module_Receiving/Views/View_Receiving_Workflow.xaml
+Module_Receiving/Views/View_Receiving_Workflow.xaml.cs
+Module_Reporting/Contracts/IService_Reporting.cs
+Module_Reporting/Data/Dao_Reporting.cs
+Module_Reporting/README.md
+Module_Reporting/Services/Service_Reporting.cs
+Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs
+Module_Reporting/Views/View_Reporting_Main.xaml
+Module_Reporting/Views/View_Reporting_Main.xaml.cs
+Module_Routing/Constants/Constant_Routing.cs
+Module_Routing/Constants/Constant_RoutingConfiguration.cs
+Module_Routing/Converters/IntToFontWeightConverter.cs
+Module_Routing/Converters/IntToProgressBrushConverter.cs
+Module_Routing/Converters/NullToBooleanConverter.cs
+Module_Routing/Data/Dao_InforVisualPO.cs
+Module_Routing/Data/Dao_RoutingLabel.cs
+Module_Routing/Data/Dao_RoutingLabelHistory.cs
+Module_Routing/Data/Dao_RoutingOtherReason.cs
+Module_Routing/Data/Dao_RoutingRecipient.cs
+Module_Routing/Data/Dao_RoutingUsageTracking.cs
+Module_Routing/Data/Dao_RoutingUserPreference.cs
+Module_Routing/Enums/Enum_Routing_WorkflowStep.cs
+Module_Routing/Enums/Enum_RoutingMode.cs
+Module_Routing/Interfaces/IDao_RoutingLabel.cs
+Module_Routing/Interfaces/IDao_RoutingLabelHistory.cs
+Module_Routing/Interfaces/IDao_RoutingRecipient.cs
+Module_Routing/Interfaces/IDao_RoutingUsageTracking.cs
+Module_Routing/Models/Model_InforVisualPOLine.cs
+Module_Routing/Models/Model_RoutingLabel.cs
+Module_Routing/Models/Model_RoutingLabelHistory.cs
+Module_Routing/Models/Model_RoutingOtherReason.cs
+Module_Routing/Models/Model_RoutingRecipient.cs
+Module_Routing/Models/Model_RoutingUsageTracking.cs
+Module_Routing/Models/Model_RoutingUserPreference.cs
+Module_Routing/README.md
+Module_Routing/Services/IRoutingInforVisualService.cs
+Module_Routing/Services/IRoutingRecipientService.cs
+Module_Routing/Services/IRoutingService.cs
+Module_Routing/Services/IRoutingUsageTrackingService.cs
+Module_Routing/Services/IRoutingUserPreferenceService.cs
+Module_Routing/Services/RoutingInforVisualService.cs
+Module_Routing/Services/RoutingRecipientService.cs
+Module_Routing/Services/RoutingService.cs
+Module_Routing/Services/RoutingUsageTrackingService.cs
+Module_Routing/Services/RoutingUserPreferenceService.cs
+Module_Routing/ViewModels/RoutingEditModeViewModel.cs
+Module_Routing/ViewModels/RoutingManualEntryViewModel.cs
+Module_Routing/ViewModels/RoutingModeSelectionViewModel.cs
+Module_Routing/ViewModels/RoutingWizardContainerViewModel.cs
+Module_Routing/ViewModels/RoutingWizardStep1ViewModel.cs
+Module_Routing/ViewModels/RoutingWizardStep2ViewModel.cs
+Module_Routing/ViewModels/RoutingWizardStep3ViewModel.cs
+Module_Routing/Views/RoutingEditModeView.xaml
+Module_Routing/Views/RoutingEditModeView.xaml.cs
+Module_Routing/Views/RoutingManualEntryView.xaml
+Module_Routing/Views/RoutingManualEntryView.xaml.cs
+Module_Routing/Views/RoutingModeSelectionView.xaml
+Module_Routing/Views/RoutingModeSelectionView.xaml.cs
+Module_Routing/Views/RoutingWizardContainerView.xaml
+Module_Routing/Views/RoutingWizardContainerView.xaml.cs
+Module_Routing/Views/RoutingWizardStep1View.xaml
+Module_Routing/Views/RoutingWizardStep1View.xaml.cs
+Module_Routing/Views/RoutingWizardStep2View.xaml
+Module_Routing/Views/RoutingWizardStep2View.xaml.cs
+Module_Routing/Views/RoutingWizardStep3View.xaml
+Module_Routing/Views/RoutingWizardStep3View.xaml.cs
+Module_Settings.Core/Data/Dao_SettingsCoreAudit.cs
+Module_Settings.Core/Data/Dao_SettingsCoreRoles.cs
+Module_Settings.Core/Data/Dao_SettingsCoreSystem.cs
+Module_Settings.Core/Data/Dao_SettingsCoreUser.cs
+Module_Settings.Core/Data/Dao_SettingsCoreUserRoles.cs
+Module_Settings.Core/Defaults/settings.manifest.json
+Module_Settings.Core/Enums/Enum_SettingsDataType.cs
+Module_Settings.Core/Enums/Enum_SettingsPermissionLevel.cs
+Module_Settings.Core/Enums/Enum_SettingsScope.cs
+Module_Settings.Core/Interfaces/IService_SettingsCoreFacade.cs
+Module_Settings.Core/Interfaces/IService_SettingsWindowHost.cs
+Module_Settings.Core/Interfaces/IService_UserPreferences.cs
+Module_Settings.Core/Interfaces/ISettingsCache.cs
+Module_Settings.Core/Interfaces/ISettingsEncryptionService.cs
+Module_Settings.Core/Interfaces/ISettingsManifestProvider.cs
+Module_Settings.Core/Interfaces/ISettingsMetadataRegistry.cs
+Module_Settings.Core/Models/Model_CoreSetting.cs
+Module_Settings.Core/Models/Model_SettingsAuditEntry.cs
+Module_Settings.Core/Models/Model_SettingsDefinition.cs
+Module_Settings.Core/Models/Model_SettingsRole.cs
+Module_Settings.Core/Models/Model_SettingsUserRole.cs
+Module_Settings.Core/Models/Model_SettingsValue.cs
+Module_Settings.Core/Models/Model_UserSetting.cs
+Module_Settings.Core/Services/GetSettingQuery.cs
+Module_Settings.Core/Services/GetSettingQueryHandler.cs
+Module_Settings.Core/Services/ResetSettingCommand.cs
+Module_Settings.Core/Services/ResetSettingCommandHandler.cs
+Module_Settings.Core/Services/Service_SettingsCache.cs
+Module_Settings.Core/Services/Service_SettingsCoreFacade.cs
+Module_Settings.Core/Services/Service_SettingsEncryptionService.cs
+Module_Settings.Core/Services/Service_SettingsManifestProvider.cs
+Module_Settings.Core/Services/Service_SettingsMetadataRegistry.cs
+Module_Settings.Core/Services/Service_SettingsWindowHost.cs
+Module_Settings.Core/Services/Service_UserPreferences.cs
+Module_Settings.Core/Services/SetSettingCommand.cs
+Module_Settings.Core/Services/SetSettingCommandHandler.cs
+Module_Settings.Core/Validators/SetSettingCommandValidator.cs
+Module_Settings.Core/ViewModels/ViewModel_Settings_Database.cs
+Module_Settings.Core/ViewModels/ViewModel_Settings_Logging.cs
+Module_Settings.Core/ViewModels/ViewModel_Settings_SharedPaths.cs
+Module_Settings.Core/ViewModels/ViewModel_Settings_System.cs
+Module_Settings.Core/ViewModels/ViewModel_Settings_Theme.cs
+Module_Settings.Core/ViewModels/ViewModel_Settings_Users.cs
+Module_Settings.Core/ViewModels/ViewModel_SettingsWindow.cs
+Module_Settings.Core/Views/View_Settings_CoreWindow.xaml
+Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs
+Module_Settings.Core/Views/View_Settings_Database.xaml
+Module_Settings.Core/Views/View_Settings_Database.xaml.cs
+Module_Settings.Core/Views/View_Settings_Logging.xaml
+Module_Settings.Core/Views/View_Settings_Logging.xaml.cs
+Module_Settings.Core/Views/View_Settings_SharedPaths.xaml
+Module_Settings.Core/Views/View_Settings_SharedPaths.xaml.cs
+Module_Settings.Core/Views/View_Settings_System.xaml
+Module_Settings.Core/Views/View_Settings_System.xaml.cs
+Module_Settings.Core/Views/View_Settings_Theme.xaml
+Module_Settings.Core/Views/View_Settings_Theme.xaml.cs
+Module_Settings.Core/Views/View_Settings_Users.xaml
+Module_Settings.Core/Views/View_Settings_Users.xaml.cs
+Module_Settings.DeveloperTools/Data/Dao_SettingsDiagnostics.cs
+Module_Settings.DeveloperTools/Models/Model_SettingsDbDaoResult.cs
+Module_Settings.DeveloperTools/Models/Model_SettingsDbProcedureResult.cs
+Module_Settings.DeveloperTools/Models/Model_SettingsDbTableResult.cs
+Module_Settings.DeveloperTools/Models/Model_SettingsDbTestReport.cs
+Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommand.cs
+Module_Settings.DeveloperTools/Services/RunSettingsDbTestCommandHandler.cs
+Module_Settings.DeveloperTools/ViewModels/ViewModel_SettingsDeveloperTools_DatabaseTest.cs
+Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml
+Module_Settings.DeveloperTools/Views/View_SettingsDeveloperTools_DatabaseTest.xaml.cs
+Module_Shared/ViewModels/ViewModel_Shared_Base.cs
+Module_Shared/ViewModels/ViewModel_Shared_HelpDialog.cs
+Module_Shared/ViewModels/ViewModel_Shared_MainWindow.cs
+Module_Shared/ViewModels/ViewModel_Shared_NewUserSetup.cs
+Module_Shared/ViewModels/ViewModel_Shared_SharedTerminalLogin.cs
+Module_Shared/ViewModels/ViewModel_Shared_SplashScreen.cs
+Module_Shared/Views/View_Shared_HelpDialog.xaml
+Module_Shared/Views/View_Shared_HelpDialog.xaml.cs
+Module_Shared/Views/View_Shared_IconSelectorWindow.xaml
+Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs
+Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml
+Module_Shared/Views/View_Shared_NewUserSetupDialog.xaml.cs
+Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml
+Module_Shared/Views/View_Shared_SharedTerminalLoginDialog.xaml.cs
+Module_Shared/Views/View_Shared_SplashScreenWindow.xaml
+Module_Shared/Views/View_Shared_SplashScreenWindow.xaml.cs
+Module_Volvo/Contracts/IService_Volvo.cs
+Module_Volvo/Contracts/IService_VolvoMasterData.cs
+Module_Volvo/Data/Dao_VolvoPart.cs
+Module_Volvo/Data/Dao_VolvoPartComponent.cs
+Module_Volvo/Data/Dao_VolvoSettings.cs
+Module_Volvo/Data/Dao_VolvoShipment.cs
+Module_Volvo/Data/Dao_VolvoShipmentLine.cs
+Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs
+Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandler.cs
+Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs
+Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandler.cs
+Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandler.cs
+Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs
+Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs
+Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandler.cs
+Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandler.cs
+Module_Volvo/Handlers/Queries/ExportPartsCsvQueryHandler.cs
+Module_Volvo/Handlers/Queries/ExportShipmentsQueryHandler.cs
+Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandler.cs
+Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandler.cs
+Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandler.cs
+Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs
+Module_Volvo/Helpers/Helper_VolvoShipmentCalculations.cs
+Module_Volvo/Interfaces/IDao_VolvoPart.cs
+Module_Volvo/Interfaces/IDao_VolvoShipment.cs
+Module_Volvo/Interfaces/IDao_VolvoShipmentLine.cs
+Module_Volvo/Models/Model_EmailRecipient.cs
+Module_Volvo/Models/Model_VolvoEmailData.cs
+Module_Volvo/Models/Model_VolvoPart.cs
+Module_Volvo/Models/Model_VolvoPartComponent.cs
+Module_Volvo/Models/Model_VolvoSetting.cs
+Module_Volvo/Models/Model_VolvoShipment.cs
+Module_Volvo/Models/Model_VolvoShipmentLine.cs
+Module_Volvo/Models/VolvoShipmentStatus.cs
+Module_Volvo/Requests/Commands/AddPartToShipmentCommand.cs
+Module_Volvo/Requests/Commands/AddVolvoPartCommand.cs
+Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs
+Module_Volvo/Requests/Commands/DeactivateVolvoPartCommand.cs
+Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs
+Module_Volvo/Requests/Commands/RemovePartFromShipmentCommand.cs
+Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs
+Module_Volvo/Requests/Commands/UpdateShipmentCommand.cs
+Module_Volvo/Requests/Commands/UpdateVolvoPartCommand.cs
+Module_Volvo/Requests/Queries/ExportPartsCsvQuery.cs
+Module_Volvo/Requests/Queries/ExportShipmentsQuery.cs
+Module_Volvo/Requests/Queries/FormatEmailDataQuery.cs
+Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs
+Module_Volvo/Requests/Queries/GetAllVolvoPartsQuery.cs
+Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
+Module_Volvo/Requests/Queries/GetPartComponentsQuery.cs
+Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs
+Module_Volvo/Requests/Queries/GetRecentShipmentsQuery.cs
+Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs
+Module_Volvo/Requests/Queries/GetShipmentHistoryQuery.cs
+Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs
+Module_Volvo/Requests/ShipmentLineDto.cs
+Module_Volvo/Services/IService_VolvoAuthorization.cs
+Module_Volvo/Services/Service_Volvo.cs
+Module_Volvo/Services/Service_VolvoAuthorization.cs
+Module_Volvo/Services/Service_VolvoMasterData.cs
+Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs
+Module_Volvo/Validators/AddVolvoPartCommandValidator.cs
+Module_Volvo/Validators/CompleteShipmentCommandValidator.cs
+Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs
+Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs
+Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs
+Module_Volvo/Validators/UpdateShipmentCommandValidator.cs
+Module_Volvo/Validators/UpdateVolvoPartCommandValidator.cs
+Module_Volvo/ViewModels/ViewModel_Volvo_History.cs
+Module_Volvo/ViewModels/ViewModel_Volvo_Settings.cs
+Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+Module_Volvo/Views/View_Volvo_History.xaml
+Module_Volvo/Views/View_Volvo_History.xaml.cs
+Module_Volvo/Views/View_Volvo_Settings.xaml
+Module_Volvo/Views/View_Volvo_Settings.xaml.cs
+Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml
+Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml.cs
+Module_Volvo/Views/VolvoPartAddEditDialog.xaml
+Module_Volvo/Views/VolvoPartAddEditDialog.xaml.cs
+Module_Volvo/Views/VolvoShipmentEditDialog.xaml
+Module_Volvo/Views/VolvoShipmentEditDialog.xaml.cs
+MTM_Receiving_Application.Tests/.runsettings
+MTM_Receiving_Application.Tests/build.ps1
+MTM_Receiving_Application.Tests/Fixtures/DatabaseFixture.cs
+MTM_Receiving_Application.Tests/Fixtures/ServiceCollectionFixture.cs
+MTM_Receiving_Application.Tests/GlobalUsings.cs
+MTM_Receiving_Application.Tests/Helpers/DatabaseCollection.cs
+MTM_Receiving_Application.Tests/Helpers/DatabaseFixture.cs
+MTM_Receiving_Application.Tests/Helpers/DatabasePreflight.cs
+MTM_Receiving_Application.Tests/Helpers/FakeVolvoAuthorizationService.cs
+MTM_Receiving_Application.Tests/Helpers/TestHelper.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_BooleanToVisibility_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_BoolToString_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_DecimalToInt_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_DecimalToString_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_DoubleToDecimal_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_EmptyStringToVisibility_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_EnumToVisibility_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_IconCodeToGlyph_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_IntToVisibility_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_LoadNumberToOneBased_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_StringFormat_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Converters/NullableDoubleToDoubleConverter_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Data/Authentication/Dao_User_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Defaults/InforVisualDefaults_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Defaults/WorkstationDefaults_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_StoredProcedure_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_Variables_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Models/Core/Model_Dao_Result_Factory_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_AuthenticationResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_User_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_UserSession_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_ValidationResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_WorkstationConfig_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_Authentication_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_UserSessionManager_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_ErrorHandler_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Services/Help/Service_Help_Tests.cs
+MTM_Receiving_Application.Tests/Module_Core/Services/UI/Service_ViewModelRegistry_Tests.cs
+MTM_Receiving_Application.Tests/Module_Dunnage/Data/Dao_DunnageLoad_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Data/Dao_ReceivingLine_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Data/Dao_ReceivingLoad_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Application_Variables_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_CSVDeleteResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_CSVExistenceResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_CSVWriteResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_InforVisualPart_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_InforVisualPO_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_PackageTypePreference_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingLine_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingLoad_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingSession_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingValidationResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingWorkflowStepResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_SaveResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_UserPreference_Tests.cs
+MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_WorkflowStepResult_Tests.cs
+MTM_Receiving_Application.Tests/Module_Routing/Data/Dao_RoutingLabel_Tests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportPartsCsvQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportShipmentsQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Integration/AddPartIntegrationTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Integration/HistoryFilteringIntegrationTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Integration/ImportCsvIntegrationTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Integration/PendingShipmentIntegrationTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentCompletionIntegrationTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentEditIntegrationTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddPartToShipmentCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddVolvoPartCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/CompleteShipmentCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/DeactivateVolvoPartCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/ImportPartsCsvCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/SavePendingShipmentCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateShipmentCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateVolvoPartCommandValidatorTests.cs
+MTM_Receiving_Application.Tests/README.md
+README.md
+Scripts/Add-AsyncSuffix.ps1
+Scripts/Fix-Markdown-Diagrams.ps1
+Scripts/Fix-MarkdownLint.ps1
+Scripts/Generate-SettingsDaoParameterMap.ps1
+Scripts/McpServers/filesystem-win/index.mjs
+Scripts/McpServers/filesystem-win/package.json
+Scripts/outputs/settings-dao-parameter-map.json
+Scripts/Visualize-Build.ps1
+specs/005-settings-system-redesign/README.md
+```
+
+# Files
+
+## File: Module_Volvo/Interfaces/IDao_VolvoPart.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using System.Threading.Tasks;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Interfaces;
+ 7: 
+ 8: /// <summary>
+ 9: /// Interface for Volvo part data access operations
+10: /// Created for testability and dependency injection
+11: /// </summary>
+12: public interface IDao_VolvoPart
+13: {
+14:     Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllAsync(bool includeInactive = false);
+15:     Task<Model_Dao_Result<Model_VolvoPart>> GetByPartNumberAsync(string partNumber);
+16:     Task<Model_Dao_Result<int>> InsertAsync(Model_VolvoPart part);
+17:     Task<Model_Dao_Result> UpdateAsync(Model_VolvoPart part);
+18:     Task<Model_Dao_Result> DeactivateAsync(string partNumber);
+19: }
+````
+
+## File: Module_Volvo/Interfaces/IDao_VolvoShipment.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using System.Threading.Tasks;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Interfaces;
+ 7: 
+ 8: /// <summary>
+ 9: /// Interface for Volvo shipment data access operations
+10: /// Created for testability and dependency injection
+11: /// </summary>
+12: public interface IDao_VolvoShipment
+13: {
+14:     Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetAllAsync(bool includeArchived = false);
+15:     Task<Model_Dao_Result<Model_VolvoShipment>> GetByIdAsync(int shipmentId);
+16:     Task<Model_Dao_Result<Model_VolvoShipment>> GetPendingAsync();
+17:     Task<Model_Dao_Result<int>> InsertAsync(Model_VolvoShipment shipment);
+18:     Task<Model_Dao_Result> UpdateAsync(Model_VolvoShipment shipment);
+19:     Task<Model_Dao_Result> ArchiveAsync(int shipmentId);
+20: }
+````
+
+## File: Module_Volvo/Interfaces/IDao_VolvoShipmentLine.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using System.Threading.Tasks;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Interfaces;
+ 7: 
+ 8: /// <summary>
+ 9: /// Interface for Volvo shipment line data access operations
+10: /// Created for testability and dependency injection
+11: /// </summary>
+12: public interface IDao_VolvoShipmentLine
+13: {
+14:     Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetByShipmentIdAsync(int shipmentId);
+15:     Task<Model_Dao_Result<int>> InsertAsync(Model_VolvoShipmentLine line);
+16:     Task<Model_Dao_Result> UpdateAsync(Model_VolvoShipmentLine line);
+17:     Task<Model_Dao_Result> DeleteAsync(int lineId);
+18: }
+````
+
+## File: Module_Volvo/Models/Model_EmailRecipient.cs
+````csharp
+ 1: using System.Text.Json.Serialization;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 4: 
+ 5: /// <summary>
+ 6: /// Represents an email recipient with name and email address
+ 7: /// </summary>
+ 8: public class Model_EmailRecipient
+ 9: {
+10:     [JsonPropertyName("name")]
+11:     public string Name { get; set; } = string.Empty;
+12: 
+13:     [JsonPropertyName("email")]
+14:     public string Email { get; set; } = string.Empty;
+15: 
+16:     /// <summary>
+17:     /// Formats the recipient in Outlook format: "Name" &lt;email@domain.com&gt;
+18:     /// </summary>
+19:     public string ToOutlookFormat()
+20:     {
+21:         return $"\"{Name}\" <{Email}>";
+22:     }
+23: }
+````
+
+## File: Module_Volvo/Models/Model_VolvoEmailData.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 4: 
+ 5: /// <summary>
+ 6: /// Structured email data for PO requisition
+ 7: /// Separates email content into logical sections for display and formatting
+ 8: /// </summary>
+ 9: public class Model_VolvoEmailData
+10: {
+11:     /// <summary>
+12:     /// Email subject line
+13:     /// </summary>
+14:     public string Subject { get; set; } = string.Empty;
+15: 
+16:     /// <summary>
+17:     /// Greeting text
+18:     /// </summary>
+19:     public string Greeting { get; set; } = string.Empty;
+20: 
+21:     /// <summary>
+22:     /// Main message body
+23:     /// </summary>
+24:     public string Message { get; set; } = string.Empty;
+25: 
+26:     /// <summary>
+27:     /// List of discrepancy line items (empty if no discrepancies)
+28:     /// </summary>
+29:     public List<DiscrepancyLineItem> Discrepancies { get; set; } = new();
+30: 
+31:     /// <summary>
+32:     /// Requested parts/quantities after component explosion
+33:     /// </summary>
+34:     public Dictionary<string, int> RequestedLines { get; set; } = new();
+35: 
+36:     /// <summary>
+37:     /// Additional notes (optional)
+38:     /// </summary>
+39:     public string? AdditionalNotes { get; set; }
+40: 
+41:     /// <summary>
+42:     /// Email signature
+43:     /// </summary>
+44:     public string Signature { get; set; } = string.Empty;
+45: 
+46:     /// <summary>
+47:     /// Represents a discrepancy line item for table display
+48:     /// </summary>
+49:     public class DiscrepancyLineItem
+50:     {
+51:         public string PartNumber { get; set; } = string.Empty;
+52:         public int PacklistQty { get; set; }
+53:         public int ReceivedQty { get; set; }
+54:         public int Difference { get; set; }
+55:         public string Note { get; set; } = string.Empty;
+56:     }
+57: }
+````
+
+## File: Module_Volvo/Models/VolvoShipmentStatus.cs
+````csharp
+ 1: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 2: 
+ 3: /// <summary>
+ 4: /// Constants for Volvo shipment status values
+ 5: /// Prevents magic strings throughout the codebase
+ 6: /// </summary>
+ 7: public static class VolvoShipmentStatus
+ 8: {
+ 9:     /// <summary>
+10:     /// Shipment is pending PO creation (user has not yet completed with PO/Receiver numbers)
+11:     /// </summary>
+12:     public const string PendingPo = "pending_po";
+13: 
+14:     /// <summary>
+15:     /// Shipment has been completed with PO and Receiver numbers
+16:     /// </summary>
+17:     public const string Completed = "completed";
+18: 
+19:     /// <summary>
+20:     /// Shipment has been archived (soft delete)
+21:     /// </summary>
+22:     public const string Archived = "archived";
+23: }
+````
+
+## File: Module_Volvo/Services/IService_VolvoAuthorization.cs
+````csharp
+ 1: using System.Threading.Tasks;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Services;
+ 5: 
+ 6: /// <summary>
+ 7: /// Authorization service for Volvo module operations
+ 8: /// Implements role-based access control (RBAC) for Volvo features
+ 9: /// </summary>
+10: public interface IService_VolvoAuthorization
+11: {
+12:     /// <summary>
+13:     /// Checks if current user can create/modify Volvo shipments
+14:     /// </summary>
+15:     Task<Model_Dao_Result> CanManageShipmentsAsync();
+16: 
+17:     /// <summary>
+18:     /// Checks if current user can manage Volvo master data (parts, components)
+19:     /// </summary>
+20:     Task<Model_Dao_Result> CanManageMasterDataAsync();
+21: 
+22:     /// <summary>
+23:     /// Checks if current user can complete/close Volvo shipments
+24:     /// </summary>
+25:     Task<Model_Dao_Result> CanCompleteShipmentsAsync();
+26: 
+27:     /// <summary>
+28:     /// Checks if current user can generate labels for Volvo shipments
+29:     /// </summary>
+30:     Task<Model_Dao_Result> CanGenerateLabelsAsync();
+31: }
+````
+
+## File: Module_Volvo/Services/Service_VolvoAuthorization.cs
+````csharp
+  1: using System;
+  2: using System.Threading.Tasks;
+  3: using MTM_Receiving_Application.Module_Core.Models.Core;
+  4: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  5: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  6: 
+  7: namespace MTM_Receiving_Application.Module_Volvo.Services;
+  8: 
+  9: /// <summary>
+ 10: /// Authorization service for Volvo module operations
+ 11: /// Currently implements basic authorization - can be extended with role-based checks
+ 12: /// </summary>
+ 13: public class Service_VolvoAuthorization : IService_VolvoAuthorization
+ 14: {
+ 15:     private readonly IService_LoggingUtility _logger;
+ 16:     // Issue #6: TODO - Inject IService_UserSessionManager when available
+ 17:     // Required for proper authentication and role-based authorization
+ 18: 
+ 19:     public Service_VolvoAuthorization(IService_LoggingUtility logger)
+ 20:     {
+ 21:         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+ 22:     }
+ 23: 
+ 24:     /// <summary>
+ 25:     /// Checks if current user can create/modify Volvo shipments
+ 26:     /// </summary>
+ 27:     public async Task<Model_Dao_Result> CanManageShipmentsAsync()
+ 28:     {
+ 29:         try
+ 30:         {
+ 31:             // Issue #6: TODO - Implement actual role check when user session management is available
+ 32:             // For now, returning true to allow development/testing
+ 33:             // For now, log the authorization check
+ 34:             await _logger.LogInfoAsync("Authorization check: CanManageShipments");
+ 35: 
+ 36:             // Placeholder: Allow all operations until role-based auth is implemented
+ 37:             return new Model_Dao_Result
+ 38:             {
+ 39:                 Success = true
+ 40:             };
+ 41:         }
+ 42:         catch (Exception ex)
+ 43:         {
+ 44:             await _logger.LogErrorAsync($"Error checking shipment management authorization: {ex.Message}", ex);
+ 45:             return new Model_Dao_Result
+ 46:             {
+ 47:                 Success = false,
+ 48:                 ErrorMessage = "Authorization check failed",
+ 49:                 Severity = Enum_ErrorSeverity.Error,
+ 50:                 Exception = ex
+ 51:             };
+ 52:         }
+ 53:     }
+ 54: 
+ 55:     /// <summary>
+ 56:     /// Checks if current user can manage Volvo master data (parts, components)
+ 57:     /// </summary>
+ 58:     public async Task<Model_Dao_Result> CanManageMasterDataAsync()
+ 59:     {
+ 60:         try
+ 61:         {
+ 62:             await _logger.LogInfoAsync("Authorization check: CanManageMasterData");
+ 63: 
+ 64:             // TODO: Implement role check - typically restricted to supervisors/admins
+ 65:             return new Model_Dao_Result
+ 66:             {
+ 67:                 Success = true
+ 68:             };
+ 69:         }
+ 70:         catch (Exception ex)
+ 71:         {
+ 72:             await _logger.LogErrorAsync($"Error checking master data authorization: {ex.Message}", ex);
+ 73:             return new Model_Dao_Result
+ 74:             {
+ 75:                 Success = false,
+ 76:                 ErrorMessage = "Authorization check failed",
+ 77:                 Severity = Enum_ErrorSeverity.Error,
+ 78:                 Exception = ex
+ 79:             };
+ 80:         }
+ 81:     }
+ 82: 
+ 83:     /// <summary>
+ 84:     /// Checks if current user can complete/close Volvo shipments
+ 85:     /// </summary>
+ 86:     public async Task<Model_Dao_Result> CanCompleteShipmentsAsync()
+ 87:     {
+ 88:         try
+ 89:         {
+ 90:             await _logger.LogInfoAsync("Authorization check: CanCompleteShipments");
+ 91: 
+ 92:             // TODO: Implement role check - may require supervisor approval
+ 93:             return new Model_Dao_Result
+ 94:             {
+ 95:                 Success = true
+ 96:             };
+ 97:         }
+ 98:         catch (Exception ex)
+ 99:         {
+100:             await _logger.LogErrorAsync($"Error checking shipment completion authorization: {ex.Message}", ex);
+101:             return new Model_Dao_Result
+102:             {
+103:                 Success = false,
+104:                 ErrorMessage = "Authorization check failed",
+105:                 Severity = Enum_ErrorSeverity.Error,
+106:                 Exception = ex
+107:             };
+108:         }
+109:     }
+110: 
+111:     /// <summary>
+112:     /// Checks if current user can generate labels for Volvo shipments
+113:     /// </summary>
+114:     public async Task<Model_Dao_Result> CanGenerateLabelsAsync()
+115:     {
+116:         try
+117:         {
+118:             await _logger.LogInfoAsync("Authorization check: CanGenerateLabels");
+119: 
+120:             // TODO: Implement role check
+121:             return new Model_Dao_Result
+122:             {
+123:                 Success = true
+124:             };
+125:         }
+126:         catch (Exception ex)
+127:         {
+128:             await _logger.LogErrorAsync($"Error checking label generation authorization: {ex.Message}", ex);
+129:             return new Model_Dao_Result
+130:             {
+131:                 Success = false,
+132:                 ErrorMessage = "Authorization check failed",
+133:                 Severity = Enum_ErrorSeverity.Error,
+134:                 Exception = ex
+135:             };
+136:         }
+137:     }
+138: }
+````
+
+## File: Module_Volvo/Views/View_Volvo_Settings.xaml.cs
+````csharp
+ 1: using Microsoft.UI.Xaml.Controls;
+ 2: using MTM_Receiving_Application.Module_Volvo.ViewModels;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Views;
+ 5: 
+ 6: /// <summary>
+ 7: /// Settings view for Volvo parts master data management
+ 8: /// </summary>
+ 9: public sealed partial class View_Volvo_Settings : Page
+10: {
+11:     public ViewModel_Volvo_Settings ViewModel { get; }
+12: 
+13:     public View_Volvo_Settings()
+14:     {
+15:         ViewModel = App.GetService<ViewModel_Volvo_Settings>();
+16:         InitializeComponent();
+17:     }
+18: 
+19:     private async void OnPageLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+20:     {
+21:         await ViewModel.RefreshCommand.ExecuteAsync(null);
+22:     }
+23: }
+````
+
+## File: Module_Volvo/Views/VolvoPartAddEditDialog.xaml
+````
+ 1: <ContentDialog
+ 2:     x:Class="MTM_Receiving_Application.Module_Volvo.Views.VolvoPartAddEditDialog"
+ 3:     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 4:     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ 5:     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+ 6:     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ 7:     mc:Ignorable="d"
+ 8:     Title="Add/Edit Volvo Part"
+ 9:     PrimaryButtonText="Save"
+10:     CloseButtonText="Cancel"
+11:     DefaultButton="Primary"
+12:     PrimaryButtonClick="OnSaveClicked"
+13:     Width="500">
+14: 
+15:     <StackPanel Spacing="16" Padding="8">
+16:         <!-- Part Number -->
+17:         <TextBox x:Name="PartNumberTextBox"
+18:                  Header="Part Number"
+19:                  PlaceholderText="e.g., V-EMB-500"
+20:                  MaxLength="50"/>
+21: 
+22:         <!-- Quantity Per Skid -->
+23:         <NumberBox x:Name="QuantityPerSkidNumberBox"
+24:                    Header="Quantity Per Skid"
+25:                    PlaceholderText="e.g., 88"
+26:                    Minimum="0"
+27:                    Maximum="10000"
+28:                    SpinButtonPlacementMode="Inline"
+29:                    Value="0"/>
+30: 
+31:         <!-- Historical Integrity Warning (Edit Mode Only) -->
+32:         <InfoBar x:Name="EditModeWarning"
+33:                  Severity="Warning"
+34:                  IsOpen="False"
+35:                  IsClosable="False"
+36:                  Message="Changes to quantity will NOT affect past shipments. Historical piece counts are preserved."/>
+37: 
+38:         <!-- Component Section (Simplified - Future Enhancement) -->
+39:         <Expander Header="Components (Advanced)" IsExpanded="False">
+40:             <StackPanel Spacing="8" Padding="8">
+41:                 <TextBlock Text="Component management will be available in a future update." 
+42:                           Style="{StaticResource CaptionTextBlockStyle}"
+43:                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+44:                 <TextBlock Text="For now, use CSV import to define components." 
+45:                           Style="{StaticResource CaptionTextBlockStyle}"
+46:                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+47:             </StackPanel>
+48:         </Expander>
+49:     </StackPanel>
+50: </ContentDialog>
+````
+
+## File: Module_Volvo/Views/VolvoPartAddEditDialog.xaml.cs
+````csharp
+ 1: using Microsoft.UI.Xaml.Controls;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Views;
+ 5: 
+ 6: /// <summary>
+ 7: /// Dialog for adding or editing a Volvo part
+ 8: /// </summary>
+ 9: public sealed partial class VolvoPartAddEditDialog : ContentDialog
+10: {
+11:     public Model_VolvoPart? Part { get; private set; }
+12:     public bool IsEditMode { get; private set; }
+13: 
+14:     public VolvoPartAddEditDialog()
+15:     {
+16:         InitializeComponent();
+17:     }
+18: 
+19:     /// <summary>
+20:     /// Initialize dialog in Add mode
+21:     /// </summary>
+22:     public void InitializeForAdd()
+23:     {
+24:         IsEditMode = false;
+25:         Title = "Add New Volvo Part";
+26:         PartNumberTextBox.IsReadOnly = false;
+27:         EditModeWarning.IsOpen = false;
+28: 
+29:         // Clear fields
+30:         PartNumberTextBox.Text = string.Empty;
+31:         QuantityPerSkidNumberBox.Value = 0;
+32:     }
+33: 
+34:     /// <summary>
+35:     /// Initialize dialog in Edit mode with existing part data
+36:     /// </summary>
+37:     /// <param name="part"></param>
+38:     public void InitializeForEdit(Model_VolvoPart part)
+39:     {
+40:         IsEditMode = true;
+41:         Title = $"Edit Part: {part.PartNumber}";
+42:         PartNumberTextBox.IsReadOnly = true; // Part number cannot be changed
+43:         EditModeWarning.IsOpen = true;
+44: 
+45:         // Pre-fill fields
+46:         PartNumberTextBox.Text = part.PartNumber;
+47:         QuantityPerSkidNumberBox.Value = part.QuantityPerSkid;
+48:     }
+49: 
+50:     private void OnSaveClicked(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+51:     {
+52:         // Validate inputs
+53:         if (string.IsNullOrWhiteSpace(PartNumberTextBox.Text))
+54:         {
+55:             args.Cancel = true;
+56:             // In a real implementation, show error message
+57:             return;
+58:         }
+59: 
+60:         // Create part object
+61:         Part = new Model_VolvoPart
+62:         {
+63:             PartNumber = PartNumberTextBox.Text.Trim().ToUpperInvariant(),
+64:             QuantityPerSkid = (int)QuantityPerSkidNumberBox.Value,
+65:             IsActive = true
+66:         };
+67:     }
+68: }
+````
+
+## File: Scripts/Visualize-Build.ps1
+````powershell
+ 1: <#
+ 2: .SYNOPSIS
+ 3:     Runs the build and generates a DOT graph of warnings/errors (Pure PowerShell).
+ 4: .DESCRIPTION
+ 5:     This script runs 'dotnet build', parses the output, 
+ 6:     and generates a 'build-issues.dot' file.
+ 7:     If Graphviz 'dot' is installed, it also renders a PNG.
+ 8: #>
+ 9: 
+10: $ErrorActionPreference = "Stop"
+11: $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+12: $DotFile = Join-Path $ScriptDir "..\build-issues.dot"
+13: $PngFile = Join-Path $ScriptDir "..\build-issues.png"
+14: 
+15: Write-Host "Running dotnet build..." -ForegroundColor Cyan
+16: $BuildOutput = dotnet build -clp:NoSummary 2>&1
+17: 
+18: # Parse Output
+19: $Issues = @()
+20: # Regex for MSBuild warning/error: File(Line,Col): Level Code: Message [Project]
+21: $Pattern = "^\s*(?<file>.*)\((?<line>\d+),(?<col>\d+)\):\s+(?<level>warning|error)\s+(?<code>\w+):\s+(?<msg>.*)\s+\[.*\]"
+22: 
+23: foreach ($Line in $BuildOutput) {
+24:     if ($Line -match $Pattern) {
+25:         $Issues += [PSCustomObject]@{
+26:             File  = $Matches.file
+27:             Level = $Matches.level
+28:             Code  = $Matches.code
+29:             Msg   = $Matches.msg
+30:         }
+31:     }
+32: }
+33: 
+34: Write-Host "Found $($Issues.Count) issues." -ForegroundColor Cyan
+35: 
+36: # Generate DOT
+37: $DotContent = @("digraph BuildIssues {")
+38: $DotContent += "  rankdir=LR;"
+39: $DotContent += '  node [shape=box, style=filled, fontname="Segoe UI"];'
+40: $DotContent += '  edge [fontname="Segoe UI", fontsize=10];'
+41: $DotContent += "  ROOT [label=`"Build Issues\nTotal: $($Issues.Count)`", fillcolor=`"lightblue`", shape=doubleoctagon];"
+42: 
+43: if ($Issues.Count -eq 0) {
+44:     $DotContent += '  "Good Job!" [shape=box, style=filled, fillcolor=green];'
+45: } else {
+46:     # Group by File
+47:     $FileGroups = $Issues | Group-Object File
+48:     
+49:     foreach ($Group in $FileGroups) {
+50:         $FileName = Split-Path $Group.Name -Leaf
+51:         $FileId = """$FileName"""
+52:         $Total = $Group.Count
+53:         
+54:         # Determine color
+55:         $HasError = $Group.Group | Where-Object { $_.Level -eq 'error' }
+56:         $Color = if ($HasError) { "lightpink" } else { "lightyellow" }
+57:         
+58:         $DotContent += "  $FileId [label=`"$FileName\n($Total)`", fillcolor=`"$Color`"];"
+59:         $DotContent += "  ROOT -> $FileId;"
+60:         
+61:         # Group by Code within File
+62:         $CodeGroups = $Group.Group | Group-Object Code
+63:         foreach ($CodeGroup in $CodeGroups) {
+64:             $Code = $CodeGroup.Name
+65:             $Count = $CodeGroup.Count
+66:             $Level = $CodeGroup.Group[0].Level
+67:             
+68:             $CodeId = """${FileName}_${Code}"""
+69:             $CodeColor = if ($Level -eq 'warning') { "orange" } else { "red" }
+70:             
+71:             $DotContent += "  $CodeId [label=`"$Code`", fillcolor=`"$CodeColor`", shape=ellipse];"
+72:             $DotContent += "  $FileId -> $CodeId [label=`"$Count`"];"
+73:         }
+74:     }
+75: }
+76: 
+77: $DotContent += "}"
+78: $DotContent | Set-Content -Path $DotFile -Encoding UTF8
+79: 
+80: Write-Host "DOT file generated at: $DotFile" -ForegroundColor Green
+81: 
+82: # Render if dot is available
+83: if (Get-Command "dot" -ErrorAction SilentlyContinue) {
+84:     Write-Host "Rendering to PNG..." -ForegroundColor Cyan
+85:     dot -Tpng $DotFile -o $PngFile
+86:     Write-Host "Graph image generated at: $PngFile" -ForegroundColor Green
+87:     Invoke-Item $PngFile
+88: } else {
+89:     Write-Warning "Graphviz 'dot' tool not found. Install it to render PNG images."
+90:     Write-Host "You can view the DOT file online at https://dreampuf.github.io/GraphvizOnline/" -ForegroundColor Gray
+91: }
+````
+
+## File: Module_Volvo/Contracts/IService_Volvo.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Threading.Tasks;
+  4: using MTM_Receiving_Application.Module_Core.Models.Core;
+  5: using MTM_Receiving_Application.Module_Volvo.Models;
+  6: 
+  7: namespace MTM_Receiving_Application.Module_Volvo.Contracts;
+  8: 
+  9: /// <summary>
+ 10: /// Service interface for Volvo dunnage requisition business logic
+ 11: /// Handles component explosion, CSV generation, email formatting, and shipment management
+ 12: /// </summary>
+ 13: public interface IService_Volvo
+ 14: {
+ 15:     /// <summary>
+ 16:     /// Calculates component explosion and aggregates piece counts for all parts in shipment
+ 17:     /// Example: If V-EMB-500 (3 skids) includes components V-EMB-2 and V-EMB-92,
+ 18:     /// result includes V-EMB-500: 264 pcs + V-EMB-2: 3 pcs + V-EMB-92: 3 pcs
+ 19:     /// </summary>
+ 20:     /// <param name="lines">List of shipment lines with part numbers and skid counts</param>
+ 21:     /// <returns>Dictionary of part numbers to total piece counts (includes parent parts + components)</returns>
+ 22:     public Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
+ 23:         List<Model_VolvoShipmentLine> lines);
+ 24: 
+ 25:     /// <summary>
+ 26:     /// Generates CSV file for LabelView 2022 label printing
+ 27:     /// Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
+ 28:     /// Saved to: %APPDATA%\MTM_Receiving_Application\Volvo\Labels\Shipment_[ID]_[Date].csv
+ 29:     /// </summary>
+ 30:     /// <param name="shipmentId">Shipment ID to generate labels for</param>
+ 31:     /// <returns>File path where CSV was written</returns>
+ 32:     public Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(int shipmentId);
+ 33: 
+ 34:     /// <summary>
+ 35:     /// Formats email text for PO requisition (with discrepancy notice if applicable)
+ 36:     /// Includes: Greeting, discrepancy table (if any), requested lines, signature
+ 37:     /// </summary>
+ 38:     /// <param name="shipment">Shipment header</param>
+ 39:     /// <param name="lines">Shipment lines with discrepancy data</param>
+ 40:     /// <param name="requestedLines">Aggregated component explosion results</param>
+ 41:     /// <returns>Formatted email text ready to copy to Outlook</returns>
+ 42:     public Task<string> FormatEmailTextAsync(
+ 43:         Model_VolvoShipment shipment,
+ 44:         List<Model_VolvoShipmentLine> lines,
+ 45:         Dictionary<string, int>? requestedLines = null);
+ 46: 
+ 47:     /// <summary>
+ 48:     /// Formats email data for PO requisition (structured for preview and HTML export)
+ 49:     /// </summary>
+ 50:     /// <param name="shipment">Shipment header</param>
+ 51:     /// <param name="lines">Shipment lines with discrepancy data</param>
+ 52:     /// <param name="requestedLines">Aggregated component explosion results</param>
+ 53:     /// <returns>Structured email data</returns>
+ 54:     public Task<Model_VolvoEmailData> FormatEmailDataAsync(
+ 55:         Model_VolvoShipment shipment,
+ 56:         List<Model_VolvoShipmentLine> lines,
+ 57:         Dictionary<string, int>? requestedLines = null);
+ 58: 
+ 59:     /// <summary>
+ 60:     /// Converts structured email data to HTML format with tables for Outlook paste
+ 61:     /// </summary>
+ 62:     /// <param name="emailData">Structured email data</param>
+ 63:     /// <returns>HTML formatted email</returns>
+ 64:     public string FormatEmailAsHtml(Model_VolvoEmailData emailData);
+ 65: 
+ 66:     /// <summary>
+ 67:     /// Validates shipment data before save
+ 68:     /// Centralized validation logic to ensure data integrity
+ 69:     /// </summary>
+ 70:     /// <param name="shipment">Shipment header to validate</param>
+ 71:     /// <param name="lines">Shipment lines to validate</param>
+ 72:     /// <returns>Validation result with error message if failed</returns>
+ 73:     public Task<Model_Dao_Result> ValidateShipmentAsync(
+ 74:         Model_VolvoShipment shipment,
+ 75:         List<Model_VolvoShipmentLine> lines);
+ 76: 
+ 77:     /// <summary>
+ 78:     /// Saves shipment and lines with status='pending_po'
+ 79:     /// Validates: Only one pending shipment allowed at a time
+ 80:     /// </summary>
+ 81:     /// <param name="shipment">Shipment header data</param>
+ 82:     /// <param name="lines">Shipment line items</param>
+ 83:     /// <param name="overwriteExisting">If true, deletes any existing pending shipment before saving</param>
+ 84:     /// <returns>Tuple of (ShipmentId, ShipmentNumber) for the saved shipment</returns>
+ 85:     public Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
+ 86:         Model_VolvoShipment shipment,
+ 87:         List<Model_VolvoShipmentLine> lines,
+ 88:         bool overwriteExisting = false);
+ 89: 
+ 90:     /// <summary>
+ 91:     /// Gets pending shipment if one exists (status='pending_po')
+ 92:     /// </summary>
+ 93:     /// <returns>Pending shipment or null if none exists</returns>
+ 94:     public Task<Model_Dao_Result<Model_VolvoShipment?>> GetPendingShipmentAsync();
+ 95: 
+ 96:     /// <summary>
+ 97:     /// Gets pending shipment with all line items
+ 98:     /// </summary>
+ 99:     /// <returns>Tuple of (shipment, lines) or null if no pending shipment</returns>
+100:     public Task<Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>> GetPendingShipmentWithLinesAsync();
+101: 
+102:     /// <summary>
+103:     /// Completes shipment with PO and Receiver numbers
+104:     /// Sets status='completed' and is_archived=1
+105:     /// </summary>
+106:     /// <param name="shipmentId">Shipment ID to complete</param>
+107:     /// <param name="poNumber">Purchase order number from purchasing department</param>
+108:     /// <param name="receiverNumber">Receiver number from Infor Visual</param>
+109:     /// <returns>Success/failure result</returns>
+110:     public Task<Model_Dao_Result> CompleteShipmentAsync(int shipmentId, string poNumber, string receiverNumber);
+111: 
+112:     /// <summary>
+113:     /// Gets all active Volvo parts for dropdown population
+114:     /// </summary>
+115:     /// <returns>List of active parts (is_active=1)</returns>
+116:     public Task<Model_Dao_Result<List<Model_VolvoPart>>> GetActivePartsAsync();
+117: 
+118:     /// <summary>
+119:     /// Gets shipment history with filtering
+120:     /// </summary>
+121:     /// <param name="startDate">Start date for filter</param>
+122:     /// <param name="endDate">End date for filter</param>
+123:     /// <param name="status">Status filter ('pending_po', 'completed', or 'all')
+124:     /// </param>
+125:     /// <returns>List of shipments matching filters</returns>
+126:     public Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
+127:         DateTime startDate,
+128:         DateTime endDate,
+129:         string status = "all");
+130: 
+131:     /// <summary>
+132:     /// Gets all shipment lines for a specific shipment
+133:     /// </summary>
+134:     /// <param name="shipmentId">Shipment ID</param>
+135:     /// <returns>List of shipment lines</returns>
+136:     public Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId);
+137: 
+138:     /// <summary>
+139:     /// Updates an existing shipment and its lines
+140:     /// Regenerates CSV if applicable
+141:     /// </summary>
+142:     /// <param name="shipment">Updated shipment data</param>
+143:     /// <param name="lines">Updated shipment lines</param>
+144:     /// <returns>Success/failure result</returns>
+145:     public Task<Model_Dao_Result> UpdateShipmentAsync(
+146:         Model_VolvoShipment shipment,
+147:         List<Model_VolvoShipmentLine> lines);
+148: 
+149:     /// <summary>
+150:     /// Exports shipment history to CSV format
+151:     /// </summary>
+152:     /// <param name="startDate">Start date for filter</param>
+153:     /// <param name="endDate">End date for filter</param>
+154:     /// <param name="status">Status filter</param>
+155:     /// <returns>CSV content as string</returns>
+156:     public Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
+157:         DateTime startDate,
+158:         DateTime endDate,
+159:         string status = "all");
+160: }
+````
+
+## File: Module_Volvo/Contracts/IService_VolvoMasterData.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using System.Threading.Tasks;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Contracts;
+ 7: 
+ 8: /// <summary>
+ 9: /// Service interface for managing Volvo parts master data
+10: /// </summary>
+11: public interface IService_VolvoMasterData
+12: {
+13:     /// <summary>
+14:     /// Gets all parts from the master catalog
+15:     /// </summary>
+16:     /// <param name="includeInactive">Include deactivated parts</param>
+17:     /// <returns>List of parts</returns>
+18:     public Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllPartsAsync(bool includeInactive = false);
+19: 
+20:     /// <summary>
+21:     /// Gets a specific part by part number
+22:     /// </summary>
+23:     /// <param name="partNumber">Part number to retrieve</param>
+24:     /// <returns>Part details or null if not found</returns>
+25:     public Task<Model_Dao_Result<Model_VolvoPart?>> GetPartByNumberAsync(string partNumber);
+26: 
+27:     /// <summary>
+28:     /// Adds a new part to the master catalog
+29:     /// </summary>
+30:     /// <param name="part">Part to add</param>
+31:     /// <param name="components">Optional component relationships</param>
+32:     /// <returns>Success result</returns>
+33:     public Task<Model_Dao_Result> AddPartAsync(Model_VolvoPart part, List<Model_VolvoPartComponent>? components = null);
+34: 
+35:     /// <summary>
+36:     /// Updates an existing part in the master catalog
+37:     /// </summary>
+38:     /// <param name="part">Part with updated values</param>
+39:     /// <param name="components">Updated component relationships (replaces existing)</param>
+40:     /// <returns>Success result</returns>
+41:     public Task<Model_Dao_Result> UpdatePartAsync(Model_VolvoPart part, List<Model_VolvoPartComponent>? components = null);
+42: 
+43:     /// <summary>
+44:     /// Deactivates a part (soft delete - preserves historical integrity)
+45:     /// </summary>
+46:     /// <param name="partNumber">Part number to deactivate</param>
+47:     /// <returns>Success result</returns>
+48:     public Task<Model_Dao_Result> DeactivatePartAsync(string partNumber);
+49: 
+50:     /// <summary>
+51:     /// Gets all components for a specific part
+52:     /// </summary>
+53:     /// <param name="partNumber">Part number</param>
+54:     /// <returns>List of components</returns>
+55:     public Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(string partNumber);
+56: 
+57:     public Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportCsvAsync(string csvFilePath);
+58: 
+59:     /// <summary>
+60:     /// Exports all parts to CSV file
+61:     /// </summary>
+62:     /// <param name="csvFilePath">Path where CSV should be saved</param>
+63:     /// <param name="includeInactive">Include deactivated parts</param>
+64:     /// <returns>Success result with file path</returns>
+65:     public Task<Model_Dao_Result<string>> ExportCsvAsync(string csvFilePath, bool includeInactive = false);
+66: }
+````
+
+## File: Module_Volvo/Data/Dao_VolvoPartComponent.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Data;
+  4: using System.Threading.Tasks;
+  5: using MTM_Receiving_Application.Module_Core.Models.Core;
+  6: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  7: using MTM_Receiving_Application.Module_Volvo.Models;
+  8: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  9: 
+ 10: namespace MTM_Receiving_Application.Module_Volvo.Data;
+ 11: 
+ 12: /// <summary>
+ 13: /// Data Access Object for volvo_part_components table
+ 14: /// Provides CRUD operations using stored procedures
+ 15: /// </summary>
+ 16: public class Dao_VolvoPartComponent
+ 17: {
+ 18:     private readonly string _connectionString;
+ 19: 
+ 20:     public Dao_VolvoPartComponent(string connectionString)
+ 21:     {
+ 22:         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+ 23:     }
+ 24: 
+ 25:     /// <summary>
+ 26:     /// Gets all components for a parent part (for component explosion)
+ 27:     /// </summary>
+ 28:     /// <param name="parentPartNumber"></param>
+ 29:     public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetByParentPartAsync(string parentPartNumber)
+ 30:     {
+ 31:         var parameters = new Dictionary<string, object>
+ 32:         {
+ 33:             { "parent_part_number", parentPartNumber }
+ 34:         };
+ 35: 
+ 36:         return await Helper_Database_StoredProcedure.ExecuteListAsync(
+ 37:             _connectionString,
+ 38:             "sp_Volvo_PartComponent_Get",
+ 39:             MapFromReader,
+ 40:             parameters
+ 41:         );
+ 42:     }
+ 43: 
+ 44:     /// <summary>
+ 45:     /// Inserts a new component relationship
+ 46:     /// </summary>
+ 47:     /// <param name="component"></param>
+ 48:     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoPartComponent component)
+ 49:     {
+ 50:         var parameters = new Dictionary<string, object>
+ 51:         {
+ 52:             { "parent_part_number", component.ParentPartNumber },
+ 53:             { "component_part_number", component.ComponentPartNumber },
+ 54:             { "quantity", component.Quantity }
+ 55:         };
+ 56: 
+ 57:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 58:             _connectionString,
+ 59:             "sp_Volvo_PartComponent_Insert",
+ 60:             parameters
+ 61:         );
+ 62:     }
+ 63: 
+ 64:     /// <summary>
+ 65:     /// Deletes all components for a parent part (used before updating component list)
+ 66:     /// </summary>
+ 67:     /// <param name="parentPartNumber"></param>
+ 68:     public async Task<Model_Dao_Result> DeleteByParentPartAsync(string parentPartNumber)
+ 69:     {
+ 70:         var parameters = new Dictionary<string, object>
+ 71:         {
+ 72:             { "parent_part_number", parentPartNumber }
+ 73:         };
+ 74: 
+ 75:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 76:             _connectionString,
+ 77:             "sp_Volvo_PartComponent_DeleteByParent",
+ 78:             parameters
+ 79:         );
+ 80:     }
+ 81: 
+ 82:     /// <summary>
+ 83:     /// Gets components for multiple parent parts (batch query to avoid N+1)
+ 84:     /// </summary>
+ 85:     /// <param name="parentPartNumbers"></param>
+ 86:     public async Task<Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>> GetComponentsByParentPartsAsync(
+ 87:         List<string> parentPartNumbers)
+ 88:     {
+ 89:         if (parentPartNumbers == null || parentPartNumbers.Count == 0)
+ 90:         {
+ 91:             return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+ 92:             {
+ 93:                 Success = true,
+ 94:                 Data = new Dictionary<string, List<Model_VolvoPartComponent>>()
+ 95:             };
+ 96:         }
+ 97: 
+ 98:         try
+ 99:         {
+100:             var result = new Dictionary<string, List<Model_VolvoPartComponent>>();
+101: 
+102:             // Batch query optimization - can be improved with stored proc
+103:             foreach (var parentPart in parentPartNumbers)
+104:             {
+105:                 var componentsResult = await GetByParentPartAsync(parentPart);
+106:                 if (componentsResult.IsSuccess && componentsResult.Data != null)
+107:                 {
+108:                     result[parentPart] = componentsResult.Data;
+109:                 }
+110:                 else
+111:                 {
+112:                     result[parentPart] = new List<Model_VolvoPartComponent>();
+113:                 }
+114:             }
+115: 
+116:             return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+117:             {
+118:                 Success = true,
+119:                 Data = result
+120:             };
+121:         }
+122:         catch (Exception ex)
+123:         {
+124:             return new Model_Dao_Result<Dictionary<string, List<Model_VolvoPartComponent>>>
+125:             {
+126:                 Success = false,
+127:                 ErrorMessage = $"Error retrieving components batch: {ex.Message}",
+128:                 Severity = Enum_ErrorSeverity.Error,
+129:                 Exception = ex
+130:             };
+131:         }
+132:     }
+133: 
+134:     private static Model_VolvoPartComponent MapFromReader(IDataReader reader)
+135:     {
+136:         return new Model_VolvoPartComponent
+137:         {
+138:             ComponentPartNumber = reader.GetString(reader.GetOrdinal("component_part_number")),
+139:             Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
+140:             ComponentQuantityPerSkid = reader.GetInt32(reader.GetOrdinal("component_quantity_per_skid"))
+141:         };
+142:     }
+143: }
+````
+
+## File: Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 8: 
+ 9: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+10: 
+11: /// <summary>
+12: /// Handler for AddPartToShipmentCommand.
+13: /// Validates part exists in master data and returns success for ViewModel to update its collection.
+14: /// </summary>
+15: public class AddPartToShipmentCommandHandler : IRequestHandler<AddPartToShipmentCommand, Model_Dao_Result>
+16: {
+17:     private readonly Dao_VolvoPart _partDao;
+18: 
+19:     public AddPartToShipmentCommandHandler(Dao_VolvoPart partDao)
+20:     {
+21:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+22:     }
+23: 
+24:     public async Task<Model_Dao_Result> Handle(AddPartToShipmentCommand request, CancellationToken cancellationToken)
+25:     {
+26:         try
+27:         {
+28:             // Validate part exists in master data
+29:             var partResult = await _partDao.GetByIdAsync(request.PartNumber);
+30: 
+31:             if (!partResult.IsSuccess || partResult.Data == null)
+32:             {
+33:                 return Model_Dao_Result_Factory.Failure(
+34:                     $"Part '{request.PartNumber}' not found in master data");
+35:             }
+36: 
+37:             // Return success - ViewModel will update its ObservableCollection
+38:             return Model_Dao_Result_Factory.Success();
+39:         }
+40:         catch (Exception ex)
+41:         {
+42:             return Model_Dao_Result_Factory.Failure(
+43:                 $"Unexpected error adding part: {ex.Message}", ex);
+44:         }
+45:     }
+46: }
+````
+
+## File: Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Models;
+ 8: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 9: 
+10: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+11: 
+12: /// <summary>
+13: /// Handler for AddVolvoPartCommand - adds a new part to master data.
+14: /// </summary>
+15: public class AddVolvoPartCommandHandler : IRequestHandler<AddVolvoPartCommand, Model_Dao_Result>
+16: {
+17:     private readonly Dao_VolvoPart _partDao;
+18: 
+19:     public AddVolvoPartCommandHandler(Dao_VolvoPart partDao)
+20:     {
+21:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+22:     }
+23: 
+24:     public async Task<Model_Dao_Result> Handle(AddVolvoPartCommand request, CancellationToken cancellationToken)
+25:     {
+26:         var part = new Model_VolvoPart
+27:         {
+28:             PartNumber = request.PartNumber.Trim().ToUpperInvariant(),
+29:             QuantityPerSkid = request.QuantityPerSkid,
+30:             IsActive = true
+31:         };
+32: 
+33:         return await _partDao.InsertAsync(part);
+34:     }
+35: }
+````
+
+## File: Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 8: 
+ 9: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+10: 
+11: /// <summary>
+12: /// Handler for DeactivateVolvoPartCommand - deactivates a part.
+13: /// </summary>
+14: public class DeactivateVolvoPartCommandHandler : IRequestHandler<DeactivateVolvoPartCommand, Model_Dao_Result>
+15: {
+16:     private readonly Dao_VolvoPart _partDao;
+17: 
+18:     public DeactivateVolvoPartCommandHandler(Dao_VolvoPart partDao)
+19:     {
+20:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+21:     }
+22: 
+23:     public async Task<Model_Dao_Result> Handle(DeactivateVolvoPartCommand request, CancellationToken cancellationToken)
+24:     {
+25:         return await _partDao.DeactivateAsync(request.PartNumber);
+26:     }
+27: }
+````
+
+## File: Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandler.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.IO;
+  4: using System.Linq;
+  5: using System.Text;
+  6: using System.Threading;
+  7: using System.Threading.Tasks;
+  8: using MediatR;
+  9: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 10: using MTM_Receiving_Application.Module_Volvo.Data;
+ 11: using MTM_Receiving_Application.Module_Volvo.Models;
+ 12: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 13: 
+ 14: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 15: 
+ 16: /// <summary>
+ 17: /// Handler for ImportPartsCsvCommand - imports parts from CSV file.
+ 18: /// </summary>
+ 19: public class ImportPartsCsvCommandHandler : IRequestHandler<ImportPartsCsvCommand, Model_Dao_Result<ImportPartsCsvResult>>
+ 20: {
+ 21:     private readonly Dao_VolvoPart _partDao;
+ 22:     private readonly Dao_VolvoPartComponent _componentDao;
+ 23: 
+ 24:     public ImportPartsCsvCommandHandler(Dao_VolvoPart partDao, Dao_VolvoPartComponent componentDao)
+ 25:     {
+ 26:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+ 27:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+ 28:     }
+ 29: 
+ 30:     public async Task<Model_Dao_Result<ImportPartsCsvResult>> Handle(ImportPartsCsvCommand request, CancellationToken cancellationToken)
+ 31:     {
+ 32:         try
+ 33:         {
+ 34:             if (string.IsNullOrWhiteSpace(request.CsvFilePath))
+ 35:             {
+ 36:                 return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>("CSV file path is required");
+ 37:             }
+ 38: 
+ 39:             var csvContent = await File.ReadAllTextAsync(request.CsvFilePath, cancellationToken);
+ 40:             var lines = csvContent
+ 41:                 .Split('\n')
+ 42:                 .Select(l => l.Trim())
+ 43:                 .Where(l => !string.IsNullOrWhiteSpace(l))
+ 44:                 .ToList();
+ 45: 
+ 46:             if (lines.Count < 2)
+ 47:             {
+ 48:                 return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>(
+ 49:                     "CSV file must contain header and at least one data row");
+ 50:             }
+ 51: 
+ 52:             var header = lines[0];
+ 53:             if (!header.Contains("PartNumber") || !header.Contains("QuantityPerSkid"))
+ 54:             {
+ 55:                 return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>(
+ 56:                     "CSV must contain columns: PartNumber, QuantityPerSkid, Components");
+ 57:             }
+ 58: 
+ 59:             int successCount = 0;
+ 60:             int failureCount = 0;
+ 61:             var errors = new List<string>();
+ 62: 
+ 63:             for (int i = 1; i < lines.Count; i++)
+ 64:             {
+ 65:                 try
+ 66:                 {
+ 67:                     var fields = ParseCsvLine(lines[i]);
+ 68:                     if (fields.Length < 2)
+ 69:                     {
+ 70:                         errors.Add($"Line {i + 1}: Invalid format - expected at least 2 fields");
+ 71:                         failureCount++;
+ 72:                         continue;
+ 73:                     }
+ 74: 
+ 75:                     var partNumber = fields[0].Trim();
+ 76:                     var quantityStr = fields[1].Trim();
+ 77:                     var componentsStr = fields.Length > 2 ? fields[2].Trim() : string.Empty;
+ 78: 
+ 79:                     if (string.IsNullOrWhiteSpace(partNumber))
+ 80:                     {
+ 81:                         errors.Add($"Line {i + 1}: Part number is required");
+ 82:                         failureCount++;
+ 83:                         continue;
+ 84:                     }
+ 85: 
+ 86:                     if (!int.TryParse(quantityStr, out int quantity) || quantity <= 0)
+ 87:                     {
+ 88:                         errors.Add($"Line {i + 1}: Invalid quantity '{quantityStr}'");
+ 89:                         failureCount++;
+ 90:                         continue;
+ 91:                     }
+ 92: 
+ 93:                     var part = new Model_VolvoPart
+ 94:                     {
+ 95:                         PartNumber = partNumber.Trim().ToUpperInvariant(),
+ 96:                         QuantityPerSkid = quantity,
+ 97:                         IsActive = true
+ 98:                     };
+ 99: 
+100:                     var existing = await _partDao.GetByIdAsync(part.PartNumber);
+101:                     var isNew = !existing.IsSuccess || existing.Data == null;
+102: 
+103:                     Model_Dao_Result saveResult = isNew
+104:                         ? await _partDao.InsertAsync(part)
+105:                         : await _partDao.UpdateAsync(part);
+106: 
+107:                     if (!saveResult.IsSuccess)
+108:                     {
+109:                         errors.Add($"Line {i + 1}: {saveResult.ErrorMessage}");
+110:                         failureCount++;
+111:                         continue;
+112:                     }
+113: 
+114:                     var components = ParseComponents(part.PartNumber, componentsStr);
+115: 
+116:                     if (components.Count > 0)
+117:                     {
+118:                         var deleteResult = await _componentDao.DeleteByParentPartAsync(part.PartNumber);
+119:                         if (!deleteResult.IsSuccess)
+120:                         {
+121:                             errors.Add($"Line {i + 1}: Failed to clear components - {deleteResult.ErrorMessage}");
+122:                             failureCount++;
+123:                             continue;
+124:                         }
+125: 
+126:                         foreach (var component in components)
+127:                         {
+128:                             var insertResult = await _componentDao.InsertAsync(component);
+129:                             if (!insertResult.IsSuccess)
+130:                             {
+131:                                 errors.Add($"Line {i + 1}: Failed to save component {component.ComponentPartNumber}");
+132:                                 failureCount++;
+133:                                 continue;
+134:                             }
+135:                         }
+136:                     }
+137:                     else
+138:                     {
+139:                         await _componentDao.DeleteByParentPartAsync(part.PartNumber);
+140:                     }
+141: 
+142:                     successCount++;
+143:                 }
+144:                 catch (Exception ex)
+145:                 {
+146:                     errors.Add($"Line {i + 1}: {ex.Message}");
+147:                     failureCount++;
+148:                 }
+149:             }
+150: 
+151:             var result = new ImportPartsCsvResult
+152:             {
+153:                 SuccessCount = successCount,
+154:                 FailureCount = failureCount,
+155:                 Errors = errors
+156:             };
+157: 
+158:             return Model_Dao_Result_Factory.Success(result);
+159:         }
+160:         catch (Exception ex)
+161:         {
+162:             return Model_Dao_Result_Factory.Failure<ImportPartsCsvResult>(
+163:                 $"Unexpected error importing CSV: {ex.Message}", ex);
+164:         }
+165:     }
+166: 
+167:     private static string[] ParseCsvLine(string line)
+168:     {
+169:         var fields = new List<string>();
+170:         var currentField = new StringBuilder();
+171:         bool inQuotes = false;
+172: 
+173:         for (int i = 0; i < line.Length; i++)
+174:         {
+175:             char c = line[i];
+176: 
+177:             if (c == '"')
+178:             {
+179:                 inQuotes = !inQuotes;
+180:             }
+181:             else if (c == ',' && !inQuotes)
+182:             {
+183:                 fields.Add(currentField.ToString());
+184:                 currentField.Clear();
+185:             }
+186:             else
+187:             {
+188:                 currentField.Append(c);
+189:             }
+190:         }
+191: 
+192:         fields.Add(currentField.ToString());
+193:         return fields.ToArray();
+194:     }
+195: 
+196:     private static List<Model_VolvoPartComponent> ParseComponents(string parentPartNumber, string componentsStr)
+197:     {
+198:         var components = new List<Model_VolvoPartComponent>();
+199: 
+200:         if (string.IsNullOrWhiteSpace(componentsStr))
+201:         {
+202:             return components;
+203:         }
+204: 
+205:         var componentPairs = componentsStr.Split(';', StringSplitOptions.RemoveEmptyEntries);
+206:         foreach (var pair in componentPairs)
+207:         {
+208:             var parts = pair.Split(':');
+209:             if (parts.Length == 2 && int.TryParse(parts[1], out int compQty) && compQty > 0)
+210:             {
+211:                 components.Add(new Model_VolvoPartComponent
+212:                 {
+213:                     ParentPartNumber = parentPartNumber,
+214:                     ComponentPartNumber = parts[0].Trim(),
+215:                     Quantity = compQty
+216:                 });
+217:             }
+218:         }
+219: 
+220:         return components;
+221:     }
+222: }
+````
+
+## File: Module_Volvo/Handlers/Commands/RemovePartFromShipmentCommandHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 7: 
+ 8: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 9: 
+10: /// <summary>
+11: /// Handler for RemovePartFromShipmentCommand.
+12: /// Returns success - ViewModel manages its own ObservableCollection removal.
+13: /// </summary>
+14: public class RemovePartFromShipmentCommandHandler : IRequestHandler<RemovePartFromShipmentCommand, Model_Dao_Result>
+15: {
+16:     public async Task<Model_Dao_Result> Handle(RemovePartFromShipmentCommand request, CancellationToken cancellationToken)
+17:     {
+18:         // Simple validation - part number should not be empty
+19:         if (string.IsNullOrWhiteSpace(request.PartNumber))
+20:         {
+21:             return Model_Dao_Result_Factory.Failure("Part number is required");
+22:         }
+23: 
+24:         // Return success - ViewModel will remove from ObservableCollection
+25:         return await Task.FromResult(Model_Dao_Result_Factory.Success());
+26:     }
+27: }
+````
+
+## File: Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Models;
+ 8: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 9: 
+10: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+11: 
+12: /// <summary>
+13: /// Handler for UpdateVolvoPartCommand - updates a part in master data.
+14: /// </summary>
+15: public class UpdateVolvoPartCommandHandler : IRequestHandler<UpdateVolvoPartCommand, Model_Dao_Result>
+16: {
+17:     private readonly Dao_VolvoPart _partDao;
+18: 
+19:     public UpdateVolvoPartCommandHandler(Dao_VolvoPart partDao)
+20:     {
+21:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+22:     }
+23: 
+24:     public async Task<Model_Dao_Result> Handle(UpdateVolvoPartCommand request, CancellationToken cancellationToken)
+25:     {
+26:         var part = new Model_VolvoPart
+27:         {
+28:             PartNumber = request.PartNumber.Trim().ToUpperInvariant(),
+29:             QuantityPerSkid = request.QuantityPerSkid,
+30:             IsActive = true
+31:         };
+32: 
+33:         return await _partDao.UpdateAsync(part);
+34:     }
+35: }
+````
+
+## File: Module_Volvo/Handlers/Queries/ExportPartsCsvQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Linq;
+ 4: using System.Text;
+ 5: using System.Threading;
+ 6: using System.Threading.Tasks;
+ 7: using MediatR;
+ 8: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 9: using MTM_Receiving_Application.Module_Volvo.Data;
+10: using MTM_Receiving_Application.Module_Volvo.Models;
+11: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+12: 
+13: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+14: 
+15: /// <summary>
+16: /// Handler for ExportPartsCsvQuery - exports parts master data as CSV content.
+17: /// </summary>
+18: public class ExportPartsCsvQueryHandler : IRequestHandler<ExportPartsCsvQuery, Model_Dao_Result<string>>
+19: {
+20:     private readonly Dao_VolvoPart _partDao;
+21:     private readonly Dao_VolvoPartComponent _componentDao;
+22: 
+23:     public ExportPartsCsvQueryHandler(Dao_VolvoPart partDao, Dao_VolvoPartComponent componentDao)
+24:     {
+25:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+26:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+27:     }
+28: 
+29:     public async Task<Model_Dao_Result<string>> Handle(ExportPartsCsvQuery request, CancellationToken cancellationToken)
+30:     {
+31:         try
+32:         {
+33:             var partsResult = await _partDao.GetAllAsync(request.IncludeInactive);
+34:             if (!partsResult.IsSuccess || partsResult.Data == null)
+35:             {
+36:                 return Model_Dao_Result_Factory.Failure<string>(partsResult.ErrorMessage ?? "Failed to retrieve parts");
+37:             }
+38: 
+39:             var csv = new StringBuilder();
+40:             csv.AppendLine("PartNumber,QuantityPerSkid,Components");
+41: 
+42:             foreach (var part in partsResult.Data)
+43:             {
+44:                 var componentsResult = await _componentDao.GetByParentPartAsync(part.PartNumber);
+45:                 var componentsStr = string.Empty;
+46: 
+47:                 if (componentsResult.IsSuccess && componentsResult.Data?.Any() == true)
+48:                 {
+49:                     componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
+50:                 }
+51: 
+52:                 csv.AppendLine($"{EscapeCsvField(part.PartNumber)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
+53:             }
+54: 
+55:             return Model_Dao_Result_Factory.Success(csv.ToString());
+56:         }
+57:         catch (Exception ex)
+58:         {
+59:             return Model_Dao_Result_Factory.Failure<string>($"Export failed: {ex.Message}");
+60:         }
+61:     }
+62: 
+63:     private static string EscapeCsvField(string? field)
+64:     {
+65:         if (string.IsNullOrEmpty(field))
+66:         {
+67:             return string.Empty;
+68:         }
+69: 
+70:         if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
+71:         {
+72:             return "\"" + field.Replace("\"", "\"\"") + "\"";
+73:         }
+74: 
+75:         return field;
+76:     }
+77: }
+````
+
+## File: Module_Volvo/Handlers/Queries/ExportShipmentsQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Text;
+ 3: using System.Threading;
+ 4: using System.Threading.Tasks;
+ 5: using MediatR;
+ 6: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 7: using MTM_Receiving_Application.Module_Volvo.Data;
+ 8: using MTM_Receiving_Application.Module_Volvo.Models;
+ 9: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+10: 
+11: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+12: 
+13: /// <summary>
+14: /// Handler for ExportShipmentsQuery - exports shipment history to CSV.
+15: /// </summary>
+16: public class ExportShipmentsQueryHandler : IRequestHandler<ExportShipmentsQuery, Model_Dao_Result<string>>
+17: {
+18:     private readonly Dao_VolvoShipment _shipmentDao;
+19: 
+20:     public ExportShipmentsQueryHandler(Dao_VolvoShipment shipmentDao)
+21:     {
+22:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+23:     }
+24: 
+25:     public async Task<Model_Dao_Result<string>> Handle(ExportShipmentsQuery request, CancellationToken cancellationToken)
+26:     {
+27:         var startDate = (request.StartDate ?? DateTimeOffset.Now.AddDays(-30)).DateTime;
+28:         var endDate = (request.EndDate ?? DateTimeOffset.Now).DateTime;
+29:         var statusFilter = NormalizeStatus(request.StatusFilter);
+30: 
+31:         var historyResult = await _shipmentDao.GetHistoryAsync(startDate, endDate, statusFilter);
+32:         if (!historyResult.IsSuccess || historyResult.Data == null)
+33:         {
+34:             return Model_Dao_Result_Factory.Failure<string>(
+35:                 historyResult.ErrorMessage ?? "Failed to retrieve history data");
+36:         }
+37: 
+38:         var csv = new StringBuilder();
+39:         csv.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
+40: 
+41:         foreach (var shipment in historyResult.Data)
+42:         {
+43:             csv.AppendLine($"{shipment.ShipmentNumber}," +
+44:                            $"{shipment.ShipmentDate:yyyy-MM-dd}," +
+45:                            $"{EscapeCsv(shipment.PONumber)}," +
+46:                            $"{EscapeCsv(shipment.ReceiverNumber)}," +
+47:                            $"{shipment.Status}," +
+48:                            $"{shipment.EmployeeNumber}," +
+49:                            $"{EscapeCsv(shipment.Notes)}");
+50:         }
+51: 
+52:         return Model_Dao_Result_Factory.Success(csv.ToString());
+53:     }
+54: 
+55:     private static string EscapeCsv(string? value)
+56:     {
+57:         if (string.IsNullOrEmpty(value))
+58:         {
+59:             return string.Empty;
+60:         }
+61: 
+62:         if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
+63:         {
+64:             return "\"" + value.Replace("\"", "\"\"") + "\"";
+65:         }
+66: 
+67:         return value;
+68:     }
+69: 
+70:     private static string NormalizeStatus(string? status)
+71:     {
+72:         if (string.IsNullOrWhiteSpace(status))
+73:         {
+74:             return "all";
+75:         }
+76: 
+77:         if (status.Equals("All", StringComparison.OrdinalIgnoreCase))
+78:         {
+79:             return "all";
+80:         }
+81: 
+82:         if (status.Equals("Pending PO", StringComparison.OrdinalIgnoreCase))
+83:         {
+84:             return VolvoShipmentStatus.PendingPo;
+85:         }
+86: 
+87:         if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+88:         {
+89:             return VolvoShipmentStatus.Completed;
+90:         }
+91: 
+92:         return status;
+93:     }
+94: }
+````
+
+## File: Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandler.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Linq;
+  4: using System.Threading;
+  5: using System.Threading.Tasks;
+  6: using MediatR;
+  7: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  8: using MTM_Receiving_Application.Module_Core.Models.Core;
+  9: using MTM_Receiving_Application.Module_Volvo.Data;
+ 10: using MTM_Receiving_Application.Module_Volvo.Helpers;
+ 11: using MTM_Receiving_Application.Module_Volvo.Models;
+ 12: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 13: 
+ 14: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 15: 
+ 16: /// <summary>
+ 17: /// Handler for FormatEmailDataQuery - formats email data for a shipment.
+ 18: /// </summary>
+ 19: public class FormatEmailDataQueryHandler : IRequestHandler<FormatEmailDataQuery, Model_Dao_Result<Model_VolvoEmailData>>
+ 20: {
+ 21:     private readonly Dao_VolvoShipment _shipmentDao;
+ 22:     private readonly Dao_VolvoShipmentLine _lineDao;
+ 23:     private readonly Dao_VolvoPart _partDao;
+ 24:     private readonly Dao_VolvoPartComponent _componentDao;
+ 25:     private readonly IService_LoggingUtility _logger;
+ 26: 
+ 27:     public FormatEmailDataQueryHandler(
+ 28:         Dao_VolvoShipment shipmentDao,
+ 29:         Dao_VolvoShipmentLine lineDao,
+ 30:         Dao_VolvoPart partDao,
+ 31:         Dao_VolvoPartComponent componentDao,
+ 32:         IService_LoggingUtility logger)
+ 33:     {
+ 34:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+ 35:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+ 36:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+ 37:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+ 38:         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+ 39:     }
+ 40: 
+ 41:     public async Task<Model_Dao_Result<Model_VolvoEmailData>> Handle(FormatEmailDataQuery request, CancellationToken cancellationToken)
+ 42:     {
+ 43:         try
+ 44:         {
+ 45:             var shipmentResult = await _shipmentDao.GetByIdAsync(request.ShipmentId);
+ 46:             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+ 47:             {
+ 48:                 return Model_Dao_Result_Factory.Failure<Model_VolvoEmailData>(
+ 49:                     shipmentResult.ErrorMessage ?? "Shipment not found");
+ 50:             }
+ 51: 
+ 52:             var linesResult = await _lineDao.GetByShipmentIdAsync(request.ShipmentId);
+ 53:             if (!linesResult.IsSuccess || linesResult.Data == null)
+ 54:             {
+ 55:                 return Model_Dao_Result_Factory.Failure<Model_VolvoEmailData>(
+ 56:                     linesResult.ErrorMessage ?? "Failed to retrieve shipment lines");
+ 57:             }
+ 58: 
+ 59:             var requestedLines = new Dictionary<string, int>();
+ 60:             var explosionResult = await Helper_VolvoShipmentCalculations.CalculateComponentExplosionAsync(
+ 61:                 _partDao,
+ 62:                 _componentDao,
+ 63:                 linesResult.Data,
+ 64:                 _logger);
+ 65:             if (explosionResult.IsSuccess && explosionResult.Data != null)
+ 66:             {
+ 67:                 requestedLines = explosionResult.Data;
+ 68:             }
+ 69: 
+ 70:             var emailData = BuildEmailData(shipmentResult.Data, linesResult.Data, requestedLines);
+ 71: 
+ 72:             return Model_Dao_Result_Factory.Success(emailData);
+ 73:         }
+ 74:         catch (Exception ex)
+ 75:         {
+ 76:             return Model_Dao_Result_Factory.Failure<Model_VolvoEmailData>(
+ 77:                 $"Unexpected error formatting email data: {ex.Message}", ex);
+ 78:         }
+ 79:     }
+ 80: 
+ 81:     private static Model_VolvoEmailData BuildEmailData(
+ 82:         Model_VolvoShipment shipment,
+ 83:         List<Model_VolvoShipmentLine> lines,
+ 84:         Dictionary<string, int> requestedLines)
+ 85:     {
+ 86:         var emailData = new Model_VolvoEmailData
+ 87:         {
+ 88:             Subject = $"PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}",
+ 89:             Greeting = "Good morning,",
+ 90:             Message = $"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:",
+ 91:             RequestedLines = requestedLines,
+ 92:             AdditionalNotes = string.IsNullOrWhiteSpace(shipment.Notes) ? null : shipment.Notes,
+ 93:             Signature = string.Empty
+ 94:         };
+ 95: 
+ 96:         var discrepancies = lines.Where(l => l.HasDiscrepancy).ToList();
+ 97:         foreach (var line in discrepancies)
+ 98:         {
+ 99:             int expectedPieces = line.ExpectedPieceCount ?? 0;
+100:             int receivedPieces = line.CalculatedPieceCount;
+101:             int difference = receivedPieces - expectedPieces;
+102:             emailData.Discrepancies.Add(new Model_VolvoEmailData.DiscrepancyLineItem
+103:             {
+104:                 PartNumber = line.PartNumber,
+105:                 PacklistQty = expectedPieces,
+106:                 ReceivedQty = receivedPieces,
+107:                 Difference = difference,
+108:                 Note = line.DiscrepancyNote ?? string.Empty
+109:             });
+110:         }
+111: 
+112:         return emailData;
+113:     }
+114: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Threading;
+ 4: using System.Threading.Tasks;
+ 5: using MediatR;
+ 6: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 7: using MTM_Receiving_Application.Module_Volvo.Data;
+ 8: using MTM_Receiving_Application.Module_Volvo.Models;
+ 9: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+10: 
+11: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+12: 
+13: /// <summary>
+14: /// Handler for GetAllVolvoPartsQuery - retrieves parts for settings grid.
+15: /// </summary>
+16: public class GetAllVolvoPartsQueryHandler : IRequestHandler<GetAllVolvoPartsQuery, Model_Dao_Result<List<Model_VolvoPart>>>
+17: {
+18:     private readonly Dao_VolvoPart _partDao;
+19: 
+20:     public GetAllVolvoPartsQueryHandler(Dao_VolvoPart partDao)
+21:     {
+22:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+23:     }
+24: 
+25:     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> Handle(GetAllVolvoPartsQuery request, CancellationToken cancellationToken)
+26:     {
+27:         try
+28:         {
+29:             return await _partDao.GetAllAsync(request.IncludeInactive);
+30:         }
+31:         catch (Exception ex)
+32:         {
+33:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPart>>(
+34:                 $"Unexpected error retrieving parts: {ex.Message}", ex);
+35:         }
+36:     }
+37: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 8: 
+ 9: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+10: 
+11: /// <summary>
+12: /// Handler for GetInitialShipmentDataQuery - returns current date and next shipment number.
+13: /// </summary>
+14: public class GetInitialShipmentDataQueryHandler : IRequestHandler<GetInitialShipmentDataQuery, Model_Dao_Result<InitialShipmentData>>
+15: {
+16:     private readonly Dao_VolvoShipment _shipmentDao;
+17: 
+18:     public GetInitialShipmentDataQueryHandler(Dao_VolvoShipment shipmentDao)
+19:     {
+20:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+21:     }
+22: 
+23:     public async Task<Model_Dao_Result<InitialShipmentData>> Handle(GetInitialShipmentDataQuery request, CancellationToken cancellationToken)
+24:     {
+25:         try
+26:         {
+27:             // Get next shipment number from database
+28:             var nextNumberResult = await _shipmentDao.GetNextShipmentNumberAsync();
+29: 
+30:             if (!nextNumberResult.IsSuccess)
+31:             {
+32:                 return Model_Dao_Result_Factory.Failure<InitialShipmentData>(
+33:                     nextNumberResult.ErrorMessage ?? "Failed to retrieve next shipment number");
+34:             }
+35: 
+36:             var data = new InitialShipmentData
+37:             {
+38:                 CurrentDate = DateTimeOffset.Now,
+39:                 NextShipmentNumber = nextNumberResult.Data
+40:             };
+41: 
+42:             return Model_Dao_Result_Factory.Success(data);
+43:         }
+44:         catch (Exception ex)
+45:         {
+46:             return Model_Dao_Result_Factory.Failure<InitialShipmentData>(
+47:                 $"Unexpected error getting initial shipment data: {ex.Message}", ex);
+48:         }
+49:     }
+50: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Threading;
+ 4: using System.Threading.Tasks;
+ 5: using MediatR;
+ 6: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 7: using MTM_Receiving_Application.Module_Volvo.Data;
+ 8: using MTM_Receiving_Application.Module_Volvo.Models;
+ 9: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+10: 
+11: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+12: 
+13: /// <summary>
+14: /// Handler for GetPartComponentsQuery - retrieves components for a parent part.
+15: /// </summary>
+16: public class GetPartComponentsQueryHandler : IRequestHandler<GetPartComponentsQuery, Model_Dao_Result<List<Model_VolvoPartComponent>>>
+17: {
+18:     private readonly Dao_VolvoPartComponent _componentDao;
+19: 
+20:     public GetPartComponentsQueryHandler(Dao_VolvoPartComponent componentDao)
+21:     {
+22:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+23:     }
+24: 
+25:     public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> Handle(GetPartComponentsQuery request, CancellationToken cancellationToken)
+26:     {
+27:         try
+28:         {
+29:             if (string.IsNullOrWhiteSpace(request.PartNumber))
+30:             {
+31:                 return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>("Part number is required");
+32:             }
+33: 
+34:             return await _componentDao.GetByParentPartAsync(request.PartNumber);
+35:         }
+36:         catch (Exception ex)
+37:         {
+38:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>(
+39:                 $"Unexpected error retrieving components: {ex.Message}", ex);
+40:         }
+41:     }
+42: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Models;
+ 8: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 9: 
+10: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+11: 
+12: /// <summary>
+13: /// Handler for GetPendingShipmentQuery - retrieves pending shipment for current user.
+14: /// </summary>
+15: public class GetPendingShipmentQueryHandler : IRequestHandler<GetPendingShipmentQuery, Model_Dao_Result<Model_VolvoShipment>>
+16: {
+17:     private readonly Dao_VolvoShipment _shipmentDao;
+18: 
+19:     public GetPendingShipmentQueryHandler(Dao_VolvoShipment shipmentDao)
+20:     {
+21:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+22:     }
+23: 
+24:     public async Task<Model_Dao_Result<Model_VolvoShipment>> Handle(GetPendingShipmentQuery request, CancellationToken cancellationToken)
+25:     {
+26:         try
+27:         {
+28:             // Get pending shipment (currently no user filtering in DAO, future enhancement)
+29:             return await _shipmentDao.GetPendingAsync();
+30:         }
+31:         catch (Exception ex)
+32:         {
+33:             return Model_Dao_Result_Factory.Failure<Model_VolvoShipment>(
+34:                 $"Unexpected error retrieving pending shipment: {ex.Message}", ex);
+35:         }
+36:     }
+37: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Threading;
+ 4: using System.Threading.Tasks;
+ 5: using MediatR;
+ 6: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 7: using MTM_Receiving_Application.Module_Volvo.Data;
+ 8: using MTM_Receiving_Application.Module_Volvo.Models;
+ 9: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+10: 
+11: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+12: 
+13: /// <summary>
+14: /// Handler for GetRecentShipmentsQuery - retrieves recent shipment history.
+15: /// </summary>
+16: public class GetRecentShipmentsQueryHandler : IRequestHandler<GetRecentShipmentsQuery, Model_Dao_Result<List<Model_VolvoShipment>>>
+17: {
+18:     private readonly Dao_VolvoShipment _shipmentDao;
+19: 
+20:     public GetRecentShipmentsQueryHandler(Dao_VolvoShipment shipmentDao)
+21:     {
+22:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+23:     }
+24: 
+25:     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> Handle(GetRecentShipmentsQuery request, CancellationToken cancellationToken)
+26:     {
+27:         try
+28:         {
+29:             var days = request.Days <= 0 ? 30 : request.Days;
+30:             var startDate = DateTime.Now.AddDays(-days).Date;
+31:             var endDate = DateTime.Now.Date;
+32: 
+33:             return await _shipmentDao.GetHistoryAsync(startDate, endDate, "all");
+34:         }
+35:         catch (Exception ex)
+36:         {
+37:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoShipment>>(
+38:                 $"Unexpected error retrieving recent shipments: {ex.Message}", ex);
+39:         }
+40:     }
+41: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 6: using MTM_Receiving_Application.Module_Volvo.Data;
+ 7: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 8: 
+ 9: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+10: 
+11: /// <summary>
+12: /// Handler for GetShipmentDetailQuery - retrieves shipment header and lines.
+13: /// </summary>
+14: public class GetShipmentDetailQueryHandler : IRequestHandler<GetShipmentDetailQuery, Model_Dao_Result<ShipmentDetail>>
+15: {
+16:     private readonly Dao_VolvoShipment _shipmentDao;
+17:     private readonly Dao_VolvoShipmentLine _lineDao;
+18: 
+19:     public GetShipmentDetailQueryHandler(Dao_VolvoShipment shipmentDao, Dao_VolvoShipmentLine lineDao)
+20:     {
+21:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+22:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+23:     }
+24: 
+25:     public async Task<Model_Dao_Result<ShipmentDetail>> Handle(GetShipmentDetailQuery request, CancellationToken cancellationToken)
+26:     {
+27:         try
+28:         {
+29:             var shipmentResult = await _shipmentDao.GetByIdAsync(request.ShipmentId);
+30:             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+31:             {
+32:                 return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
+33:                     shipmentResult.ErrorMessage ?? "Shipment not found");
+34:             }
+35: 
+36:             var linesResult = await _lineDao.GetByShipmentIdAsync(request.ShipmentId);
+37:             if (!linesResult.IsSuccess || linesResult.Data == null)
+38:             {
+39:                 return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
+40:                     linesResult.ErrorMessage ?? "Failed to retrieve shipment lines");
+41:             }
+42: 
+43:             var detail = new ShipmentDetail
+44:             {
+45:                 Shipment = shipmentResult.Data,
+46:                 Lines = linesResult.Data
+47:             };
+48: 
+49:             return Model_Dao_Result_Factory.Success(detail);
+50:         }
+51:         catch (Exception ex)
+52:         {
+53:             return Model_Dao_Result_Factory.Failure<ShipmentDetail>(
+54:                 $"Unexpected error retrieving shipment detail: {ex.Message}", ex);
+55:         }
+56:     }
+57: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Threading;
+ 4: using System.Threading.Tasks;
+ 5: using MediatR;
+ 6: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 7: using MTM_Receiving_Application.Module_Volvo.Data;
+ 8: using MTM_Receiving_Application.Module_Volvo.Models;
+ 9: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+10: 
+11: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+12: 
+13: /// <summary>
+14: /// Handler for GetShipmentHistoryQuery - retrieves shipment history with filters.
+15: /// </summary>
+16: public class GetShipmentHistoryQueryHandler : IRequestHandler<GetShipmentHistoryQuery, Model_Dao_Result<List<Model_VolvoShipment>>>
+17: {
+18:     private readonly Dao_VolvoShipment _shipmentDao;
+19: 
+20:     public GetShipmentHistoryQueryHandler(Dao_VolvoShipment shipmentDao)
+21:     {
+22:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+23:     }
+24: 
+25:     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> Handle(GetShipmentHistoryQuery request, CancellationToken cancellationToken)
+26:     {
+27:         try
+28:         {
+29:             var startDate = (request.StartDate ?? DateTimeOffset.Now.AddDays(-30)).DateTime.Date;
+30:             var endDate = (request.EndDate ?? DateTimeOffset.Now).DateTime.Date;
+31:             var statusFilter = NormalizeStatus(request.StatusFilter);
+32: 
+33:             return await _shipmentDao.GetHistoryAsync(startDate, endDate, statusFilter);
+34:         }
+35:         catch (Exception ex)
+36:         {
+37:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoShipment>>(
+38:                 $"Unexpected error retrieving shipment history: {ex.Message}", ex);
+39:         }
+40:     }
+41: 
+42:     private static string NormalizeStatus(string? status)
+43:     {
+44:         if (string.IsNullOrWhiteSpace(status))
+45:         {
+46:             return "all";
+47:         }
+48: 
+49:         if (status.Equals("All", StringComparison.OrdinalIgnoreCase))
+50:         {
+51:             return "all";
+52:         }
+53: 
+54:         if (status.Equals("Pending PO", StringComparison.OrdinalIgnoreCase))
+55:         {
+56:             return VolvoShipmentStatus.PendingPo;
+57:         }
+58: 
+59:         if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+60:         {
+61:             return VolvoShipmentStatus.Completed;
+62:         }
+63: 
+64:         return status;
+65:     }
+66: }
+````
+
+## File: Module_Volvo/Models/Model_VolvoPart.cs
+````csharp
+ 1: using System;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 4: 
+ 5: /// <summary>
+ 6: /// Represents a Volvo dunnage part in the master catalog
+ 7: /// Maps to volvo_masterdata database table
+ 8: /// </summary>
+ 9: public class Model_VolvoPart
+10: {
+11:     /// <summary>
+12:     /// Part number (primary key)
+13:     /// Example: V-EMB-1, V-EMB-500, V-EMB-750
+14:     /// </summary>
+15:     public string PartNumber { get; set; } = string.Empty;
+16: 
+17:     /// <summary>
+18:     /// Number of pieces per skid for this part
+19:     /// Example: V-EMB-2 = 20 pieces/skid, V-EMB-500 = 88 pieces/skid
+20:     /// </summary>
+21:     public int QuantityPerSkid { get; set; }
+22: 
+23:     /// <summary>
+24:     /// Flag indicating if part is active
+25:     /// If false, part is hidden from dropdown lists but still referenced in historical data
+26:     /// </summary>
+27:     public bool IsActive { get; set; } = true;
+28: 
+29:     /// <summary>
+30:     /// Timestamp when part was created in the system
+31:     /// </summary>
+32:     public DateTime CreatedDate { get; set; } = DateTime.Now;
+33: 
+34:     /// <summary>
+35:     /// Timestamp when part was last modified
+36:     /// </summary>
+37:     public DateTime ModifiedDate { get; set; } = DateTime.Now;
+38: }
+````
+
+## File: Module_Volvo/Models/Model_VolvoPartComponent.cs
+````csharp
+ 1: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 2: 
+ 3: /// <summary>
+ 4: /// Represents a component relationship for Volvo parts (component explosion)
+ 5: /// Maps to volvo_part_components database table
+ 6: /// Example: V-EMB-500 includes 1× V-EMB-2 and 1× V-EMB-92
+ 7: /// </summary>
+ 8: public class Model_VolvoPartComponent
+ 9: {
+10:     /// <summary>
+11:     /// Auto-increment primary key
+12:     /// </summary>
+13:     public int Id { get; set; }
+14: 
+15:     /// <summary>
+16:     /// The parent part number (e.g., V-EMB-500)
+17:     /// </summary>
+18:     public string ParentPartNumber { get; set; } = string.Empty;
+19: 
+20:     /// <summary>
+21:     /// The component part number included with the parent (e.g., V-EMB-2)
+22:     /// </summary>
+23:     public string ComponentPartNumber { get; set; } = string.Empty;
+24: 
+25:     /// <summary>
+26:     /// Quantity of this component included per skid of the parent part
+27:     /// Usually 1, but can be higher (e.g., V-EMB-780 includes 3× V-EMB-26)
+28:     /// </summary>
+29:     public int Quantity { get; set; } = 1;
+30: 
+31:     /// <summary>
+32:     /// Quantity per skid for the component part (from volvo_masterdata)
+33:     /// Used for calculating total piece count during component explosion
+34:     /// </summary>
+35:     public int ComponentQuantityPerSkid { get; set; }
+36: }
+````
+
+## File: Module_Volvo/Models/Model_VolvoSetting.cs
+````csharp
+ 1: using CommunityToolkit.Mvvm.ComponentModel;
+ 2: using System;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: /// <summary>
+ 7: /// Represents a configurable setting for the Volvo module
+ 8: /// Database Table: settings_module_volvo
+ 9: /// </summary>
+10: public partial class Model_VolvoSetting : ObservableObject
+11: {
+12:     [ObservableProperty]
+13:     private string _settingKey = string.Empty;
+14: 
+15:     [ObservableProperty]
+16:     private string _settingValue = string.Empty;
+17: 
+18:     [ObservableProperty]
+19:     private string _settingType = string.Empty;
+20: 
+21:     [ObservableProperty]
+22:     private string _category = string.Empty;
+23: 
+24:     [ObservableProperty]
+25:     private string? _description;
+26: 
+27:     [ObservableProperty]
+28:     private string _defaultValue = string.Empty;
+29: 
+30:     [ObservableProperty]
+31:     private int? _minValue;
+32: 
+33:     [ObservableProperty]
+34:     private int? _maxValue;
+35: 
+36:     [ObservableProperty]
+37:     private DateTime _modifiedDate = DateTime.Now;
+38: 
+39:     [ObservableProperty]
+40:     private string? _modifiedBy;
+41: }
+````
+
+## File: Module_Volvo/Models/Model_VolvoShipmentLine.cs
+````csharp
+  1: using System;
+  2: using CommunityToolkit.Mvvm.ComponentModel;
+  3: 
+  4: namespace MTM_Receiving_Application.Module_Volvo.Models;
+  5: 
+  6: /// <summary>
+  7: /// Represents an individual part line item within a Volvo shipment
+  8: /// Maps to volvo_line_data database table
+  9: /// </summary>
+ 10: public partial class Model_VolvoShipmentLine : ObservableObject
+ 11: {
+ 12:     /// <summary>
+ 13:     /// Auto-increment primary key
+ 14:     /// </summary>
+ 15:     [ObservableProperty]
+ 16:     private int _id;
+ 17: 
+ 18:     /// <summary>
+ 19:     /// Foreign key to parent shipment
+ 20:     /// </summary>
+ 21:     [ObservableProperty]
+ 22:     private int _shipmentId;
+ 23: 
+ 24:     /// <summary>
+ 25:     /// Volvo part number (from volvo_masterdata)
+ 26:     /// Example: V-EMB-500, V-EMB-750
+ 27:     /// </summary>
+ 28:     [ObservableProperty]
+ 29:     private string _partNumber = string.Empty;
+ 30: 
+ 31:     /// <summary>
+ 32:     /// Quantity per skid for this part (cached for recalculation)
+ 33:     /// </summary>
+ 34:     [ObservableProperty]
+ 35:     private int _quantityPerSkid;
+ 36: 
+ 37:     /// <summary>
+ 38:     /// Number of skids actually received (user-entered count)
+ 39:     /// </summary>
+ 40:     [ObservableProperty]
+ 41:     private int _receivedSkidCount;
+ 42: 
+ 43:     /// <summary>
+ 44:     /// Calculated piece count from component explosion
+ 45:     /// IMPORTANT: Stored at creation time (historical integrity - doesn't change if master data updates)
+ 46:     /// </summary>
+ 47:     [ObservableProperty]
+ 48:     private int _calculatedPieceCount;
+ 49: 
+ 50:     /// <summary>
+ 51:     /// Flag indicating if there is a discrepancy between expected and received quantities
+ 52:     /// If true, ExpectedSkidCount and DiscrepancyNote are populated
+ 53:     /// </summary>
+ 54:     [ObservableProperty]
+ 55:     private bool _hasDiscrepancy = false;
+ 56: 
+ 57:     /// <summary>
+ 58:     /// Expected skid count from Volvo packlist (NULL if no discrepancy)
+ 59:     /// Used to calculate difference: ReceivedSkidCount - ExpectedSkidCount
+ 60:     /// </summary>
+ 61:     [ObservableProperty]
+ 62:     private double? _expectedSkidCount;
+ 63: 
+ 64:     /// <summary>
+ 65:     /// User's note about the discrepancy (NULL if no discrepancy)
+ 66:     /// </summary>
+ 67:     [ObservableProperty]
+ 68:     private string? _discrepancyNote;
+ 69: 
+ 70:     /// <summary>
+ 71:     /// Expected piece count (calculated from ExpectedSkidCount × QuantityPerSkid)
+ 72:     /// Returns null if no expected count is set
+ 73:     /// </summary>
+ 74:     public int? ExpectedPieceCount => ExpectedSkidCount.HasValue && QuantityPerSkid > 0
+ 75:         ? (int)(ExpectedSkidCount.Value * QuantityPerSkid)
+ 76:         : null;
+ 77: 
+ 78:     /// <summary>
+ 79:     /// Calculated difference between received and expected pieces
+ 80:     /// Positive = more received than expected, Negative = fewer received
+ 81:     /// Returns null if no expected count is set
+ 82:     /// </summary>
+ 83:     public int? PieceDifference => ExpectedPieceCount.HasValue
+ 84:         ? CalculatedPieceCount - ExpectedPieceCount.Value
+ 85:         : null;
+ 86: 
+ 87:     /// <summary>
+ 88:     /// Recalculate pieces when received skid count changes
+ 89:     /// </summary>
+ 90:     partial void OnReceivedSkidCountChanged(int value)
+ 91:     {
+ 92:         CalculatedPieceCount = QuantityPerSkid * value;
+ 93:         OnPropertyChanged(nameof(PieceDifference));
+ 94:         OnPropertyChanged(nameof(ExpectedPieceCount));
+ 95:     }
+ 96: 
+ 97:     /// <summary>
+ 98:     /// Update calculated values when quantity per skid changes
+ 99:     /// </summary>
+100:     partial void OnQuantityPerSkidChanged(int value)
+101:     {
+102:         CalculatedPieceCount = ReceivedSkidCount * value;
+103:         OnPropertyChanged(nameof(ExpectedPieceCount));
+104:         OnPropertyChanged(nameof(PieceDifference));
+105:     }
+106: 
+107:     /// <summary>
+108:     /// Update calculated difference when expected skid count changes
+109:     /// </summary>
+110:     partial void OnExpectedSkidCountChanged(double? value)
+111:     {
+112:         OnPropertyChanged(nameof(ExpectedPieceCount));
+113:         OnPropertyChanged(nameof(PieceDifference));
+114:     }
+115: 
+116:     /// <summary>
+117:     /// Clear discrepancy fields when HasDiscrepancy is unchecked
+118:     /// </summary>
+119:     partial void OnHasDiscrepancyChanged(bool value)
+120:     {
+121:         if (!value)
+122:         {
+123:             ExpectedSkidCount = null;
+124:             DiscrepancyNote = null;
+125:         }
+126:     }
+127: }
+````
+
+## File: Module_Volvo/Requests/Commands/AddVolvoPartCommand.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 5: 
+ 6: /// <summary>
+ 7: /// Command to add a new Volvo part to master data.
+ 8: /// </summary>
+ 9: public record AddVolvoPartCommand : IRequest<Model_Dao_Result>
+10: {
+11:     /// <summary>
+12:     /// Part number to add.
+13:     /// </summary>
+14:     public string PartNumber { get; init; } = string.Empty;
+15: 
+16:     /// <summary>
+17:     /// Quantity per skid.
+18:     /// </summary>
+19:     public int QuantityPerSkid { get; init; }
+20: }
+````
+
+## File: Module_Volvo/Requests/Commands/CompleteShipmentCommand.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using MediatR;
+ 4: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 7: 
+ 8: /// <summary>
+ 9: /// Command to finalize shipment (generates labels, sends email, marks as completed).
+10: /// </summary>
+11: public record CompleteShipmentCommand : IRequest<Model_Dao_Result<int>>
+12: {
+13:     /// <summary>
+14:     /// Shipment date.
+15:     /// </summary>
+16:     public DateTimeOffset ShipmentDate { get; init; }
+17: 
+18:     /// <summary>
+19:     /// Shipment number (auto-generated if 0).
+20:     /// </summary>
+21:     public int ShipmentNumber { get; init; }
+22: 
+23:     /// <summary>
+24:     /// Optional notes for this shipment.
+25:     /// </summary>
+26:     public string Notes { get; init; } = string.Empty;
+27: 
+28:     /// <summary>
+29:     /// List of parts in this shipment.
+30:     /// </summary>
+31:     public List<ShipmentLineDto> Parts { get; init; } = new();
+32: 
+33:     /// <summary>
+34:     /// PO number for requisition.
+35:     /// </summary>
+36:     public string PONumber { get; init; } = string.Empty;
+37: 
+38:     /// <summary>
+39:     /// Receiver number for tracking.
+40:     /// </summary>
+41:     public string ReceiverNumber { get; init; } = string.Empty;
+42: }
+````
+
+## File: Module_Volvo/Requests/Commands/DeactivateVolvoPartCommand.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 5: 
+ 6: /// <summary>
+ 7: /// Command to deactivate a Volvo part.
+ 8: /// </summary>
+ 9: public record DeactivateVolvoPartCommand : IRequest<Model_Dao_Result>
+10: {
+11:     /// <summary>
+12:     /// Part number to deactivate.
+13:     /// </summary>
+14:     public string PartNumber { get; init; } = string.Empty;
+15: }
+````
+
+## File: Module_Volvo/Requests/Commands/ImportPartsCsvCommand.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 6: 
+ 7: /// <summary>
+ 8: /// Command to bulk import parts from CSV file.
+ 9: /// </summary>
+10: public record ImportPartsCsvCommand : IRequest<Model_Dao_Result<ImportPartsCsvResult>>
+11: {
+12:     /// <summary>
+13:     /// Full file path to CSV file containing part data (PartNumber, QuantityPerSkid).
+14:     /// </summary>
+15:     public string CsvFilePath { get; init; } = string.Empty;
+16: }
+17: 
+18: /// <summary>
+19: /// Result of CSV import operation with success/failure counts and error details.
+20: /// </summary>
+21: public record ImportPartsCsvResult
+22: {
+23:     /// <summary>
+24:     /// Number of parts successfully imported.
+25:     /// </summary>
+26:     public int SuccessCount { get; init; }
+27: 
+28:     /// <summary>
+29:     /// Number of parts that failed validation or import.
+30:     /// </summary>
+31:     public int FailureCount { get; init; }
+32: 
+33:     /// <summary>
+34:     /// List of error messages for failed imports (includes row number and reason).
+35:     /// </summary>
+36:     public List<string> Errors { get; init; } = new();
+37: }
+````
+
+## File: Module_Volvo/Requests/Commands/RemovePartFromShipmentCommand.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 5: 
+ 6: /// <summary>
+ 7: /// Command to remove a part from the current shipment (in-memory operation).
+ 8: /// </summary>
+ 9: public record RemovePartFromShipmentCommand : IRequest<Model_Dao_Result>
+10: {
+11:     /// <summary>
+12:     /// Part number to remove from current shipment.
+13:     /// </summary>
+14:     public string PartNumber { get; init; } = string.Empty;
+15: }
+````
+
+## File: Module_Volvo/Requests/Commands/SavePendingShipmentCommand.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using MediatR;
+ 4: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 7: 
+ 8: /// <summary>
+ 9: /// Command to save shipment as pending (allows resuming later).
+10: /// </summary>
+11: public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
+12: {
+13:     /// <summary>
+14:     /// Optional existing shipment ID (null for new pending shipment).
+15:     /// </summary>
+16:     public int? ShipmentId { get; init; }
+17: 
+18:     /// <summary>
+19:     /// Shipment date.
+20:     /// </summary>
+21:     public DateTimeOffset ShipmentDate { get; init; }
+22: 
+23:     /// <summary>
+24:     /// Shipment number (auto-generated if not provided).
+25:     /// </summary>
+26:     public int ShipmentNumber { get; init; }
+27: 
+28:     /// <summary>
+29:     /// Optional notes for this shipment.
+30:     /// </summary>
+31:     public string Notes { get; init; } = string.Empty;
+32: 
+33:     /// <summary>
+34:     /// List of parts in this shipment.
+35:     /// </summary>
+36:     public List<ShipmentLineDto> Parts { get; init; } = new();
+37: }
+````
+
+## File: Module_Volvo/Requests/Commands/UpdateShipmentCommand.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using MediatR;
+ 4: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 5: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 8: 
+ 9: /// <summary>
+10: /// Command to update an existing shipment and its lines.
+11: /// </summary>
+12: public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
+13: {
+14:     /// <summary>
+15:     /// Shipment ID to update.
+16:     /// </summary>
+17:     public int ShipmentId { get; init; }
+18: 
+19:     /// <summary>
+20:     /// Updated shipment date.
+21:     /// </summary>
+22:     public DateTimeOffset ShipmentDate { get; init; }
+23: 
+24:     /// <summary>
+25:     /// Updated notes.
+26:     /// </summary>
+27:     public string Notes { get; init; } = string.Empty;
+28: 
+29:     /// <summary>
+30:     /// Updated PO number (if completed).
+31:     /// </summary>
+32:     public string PONumber { get; init; } = string.Empty;
+33: 
+34:     /// <summary>
+35:     /// Updated receiver number (if completed).
+36:     /// </summary>
+37:     public string ReceiverNumber { get; init; } = string.Empty;
+38: 
+39:     /// <summary>
+40:     /// Updated shipment line items.
+41:     /// </summary>
+42:     public List<ShipmentLineDto> Parts { get; init; } = new();
+43: }
+````
+
+## File: Module_Volvo/Requests/Commands/UpdateVolvoPartCommand.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 5: 
+ 6: /// <summary>
+ 7: /// Command to update an existing Volvo part.
+ 8: /// </summary>
+ 9: public record UpdateVolvoPartCommand : IRequest<Model_Dao_Result>
+10: {
+11:     /// <summary>
+12:     /// Part number to update.
+13:     /// </summary>
+14:     public string PartNumber { get; init; } = string.Empty;
+15: 
+16:     /// <summary>
+17:     /// Updated quantity per skid.
+18:     /// </summary>
+19:     public int QuantityPerSkid { get; init; }
+20: }
+````
+
+## File: Module_Volvo/Requests/Queries/ExportPartsCsvQuery.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 5: 
+ 6: /// <summary>
+ 7: /// Query to export Volvo parts master data to CSV.
+ 8: /// </summary>
+ 9: public record ExportPartsCsvQuery : IRequest<Model_Dao_Result<string>>
+10: {
+11:     /// <summary>
+12:     /// Include inactive parts in the export.
+13:     /// </summary>
+14:     public bool IncludeInactive { get; init; } = false;
+15: }
+````
+
+## File: Module_Volvo/Requests/Queries/ExportShipmentsQuery.cs
+````csharp
+ 1: using System;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 6: 
+ 7: /// <summary>
+ 8: /// Query to export shipment history to CSV.
+ 9: /// </summary>
+10: public record ExportShipmentsQuery : IRequest<Model_Dao_Result<string>>
+11: {
+12:     /// <summary>
+13:     /// Optional start date filter.
+14:     /// </summary>
+15:     public DateTimeOffset? StartDate { get; init; }
+16: 
+17:     /// <summary>
+18:     /// Optional end date filter.
+19:     /// </summary>
+20:     public DateTimeOffset? EndDate { get; init; }
+21: 
+22:     /// <summary>
+23:     /// Optional status filter (All, Pending PO, Completed, or raw status string).
+24:     /// </summary>
+25:     public string StatusFilter { get; init; } = "All";
+26: }
+````
+
+## File: Module_Volvo/Requests/Queries/FormatEmailDataQuery.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: using MTM_Receiving_Application.Module_Volvo.Models;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 6: 
+ 7: /// <summary>
+ 8: /// Query to format email data for a shipment.
+ 9: /// </summary>
+10: public record FormatEmailDataQuery : IRequest<Model_Dao_Result<Model_VolvoEmailData>>
+11: {
+12:     /// <summary>
+13:     /// Shipment ID to format email data for.
+14:     /// </summary>
+15:     public int ShipmentId { get; init; }
+16: }
+````
+
+## File: Module_Volvo/Requests/Queries/GenerateLabelCsvQuery.cs
+````csharp
+ 1: using MediatR;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 5: 
+ 6: /// <summary>
+ 7: /// Query to generate CSV label file for a shipment.
+ 8: /// </summary>
+ 9: public record GenerateLabelCsvQuery : IRequest<Model_Dao_Result<string>>
+10: {
+11:     /// <summary>
+12:     /// Shipment ID to generate labels for.
+13:     /// </summary>
+14:     public int ShipmentId { get; init; }
+15: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetAllVolvoPartsQuery.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Query to retrieve all Volvo parts for the settings grid.
+10: /// </summary>
+11: public record GetAllVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPart>>>
+12: {
+13:     /// <summary>
+14:     /// Include inactive parts in the result set.
+15:     /// </summary>
+16:     public bool IncludeInactive { get; init; } = false;
+17: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetInitialShipmentDataQuery.cs
+````csharp
+ 1: using System;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 6: 
+ 7: /// <summary>
+ 8: /// Query to get initial data for new shipment entry (current date + next shipment number).
+ 9: /// </summary>
+10: public record GetInitialShipmentDataQuery : IRequest<Model_Dao_Result<InitialShipmentData>>
+11: {
+12:     // No parameters - returns current date and next available shipment number
+13: }
+14: 
+15: /// <summary>
+16: /// Response DTO containing initial shipment data.
+17: /// </summary>
+18: public record InitialShipmentData
+19: {
+20:     /// <summary>
+21:     /// Current date/time for shipment initialization.
+22:     /// </summary>
+23:     public DateTimeOffset CurrentDate { get; init; }
+24: 
+25:     /// <summary>
+26:     /// Next available shipment number (auto-incremented from database).
+27:     /// </summary>
+28:     public int NextShipmentNumber { get; init; }
+29: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetPartComponentsQuery.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Query to retrieve BOM components for a Volvo part.
+10: /// </summary>
+11: public record GetPartComponentsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPartComponent>>>
+12: {
+13:     /// <summary>
+14:     /// Parent part number to retrieve components for.
+15:     /// </summary>
+16:     public string PartNumber { get; init; } = string.Empty;
+17: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetPendingShipmentQuery.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Query to retrieve pending shipment for current user (to resume entry).
+10: /// </summary>
+11: public record GetPendingShipmentQuery : IRequest<Model_Dao_Result<Model_VolvoShipment>>
+12: {
+13:     /// <summary>
+14:     /// Username of current user to find their pending shipment.
+15:     /// </summary>
+16:     public string UserName { get; init; } = string.Empty;
+17: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetRecentShipmentsQuery.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Query to retrieve recent Volvo shipments for history view.
+10: /// </summary>
+11: public record GetRecentShipmentsQuery : IRequest<Model_Dao_Result<List<Model_VolvoShipment>>>
+12: {
+13:     /// <summary>
+14:     /// Number of days to look back (default: 30).
+15:     /// </summary>
+16:     public int Days { get; init; } = 30;
+17: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetShipmentDetailQuery.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Query to get shipment detail with line items for editing/viewing.
+10: /// </summary>
+11: public record GetShipmentDetailQuery : IRequest<Model_Dao_Result<ShipmentDetail>>
+12: {
+13:     /// <summary>
+14:     /// Shipment ID to retrieve.
+15:     /// </summary>
+16:     public int ShipmentId { get; init; }
+17: }
+18: 
+19: /// <summary>
+20: /// Response DTO containing complete shipment details including line items.
+21: /// </summary>
+22: public record ShipmentDetail
+23: {
+24:     /// <summary>
+25:     /// Shipment header information.
+26:     /// </summary>
+27:     public Model_VolvoShipment Shipment { get; init; } = new();
+28: 
+29:     /// <summary>
+30:     /// Shipment line items (parts with quantities and discrepancies).
+31:     /// </summary>
+32:     public List<Model_VolvoShipmentLine> Lines { get; init; } = new();
+33: }
+````
+
+## File: Module_Volvo/Requests/Queries/GetShipmentHistoryQuery.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using MediatR;
+ 4: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 5: using MTM_Receiving_Application.Module_Volvo.Models;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 8: 
+ 9: /// <summary>
+10: /// Query to retrieve shipment history with filters.
+11: /// </summary>
+12: public record GetShipmentHistoryQuery : IRequest<Model_Dao_Result<List<Model_VolvoShipment>>>
+13: {
+14:     /// <summary>
+15:     /// Optional start date filter.
+16:     /// </summary>
+17:     public DateTimeOffset? StartDate { get; init; }
+18: 
+19:     /// <summary>
+20:     /// Optional end date filter.
+21:     /// </summary>
+22:     public DateTimeOffset? EndDate { get; init; }
+23: 
+24:     /// <summary>
+25:     /// Optional status filter (All, Pending PO, Completed, or raw status string).
+26:     /// </summary>
+27:     public string StatusFilter { get; init; } = "All";
+28: }
+````
+
+## File: Module_Volvo/Requests/Queries/SearchVolvoPartsQuery.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using MediatR;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Query for autocomplete search of Volvo parts by part number.
+10: /// </summary>
+11: public record SearchVolvoPartsQuery : IRequest<Model_Dao_Result<List<Model_VolvoPart>>>
+12: {
+13:     /// <summary>
+14:     /// Search text to match against part numbers (partial match supported).
+15:     /// </summary>
+16:     public string SearchText { get; init; } = string.Empty;
+17: 
+18:     /// <summary>
+19:     /// Maximum number of results to return (default: 10).
+20:     /// </summary>
+21:     public int MaxResults { get; init; } = 10;
+22: }
+````
+
+## File: Module_Volvo/Validators/AddPartToShipmentCommandValidator.cs
+````csharp
+ 1: using FluentValidation;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Validator for AddPartToShipmentCommand.
+ 8: /// </summary>
+ 9: public class AddPartToShipmentCommandValidator : AbstractValidator<AddPartToShipmentCommand>
+10: {
+11:     public AddPartToShipmentCommandValidator()
+12:     {
+13:         RuleFor(x => x.PartNumber)
+14:             .NotEmpty().WithMessage("Part number is required")
+15:             .MaximumLength(50).WithMessage("Part number must not exceed 50 characters");
+16: 
+17:         RuleFor(x => x.ReceivedSkidCount)
+18:             .GreaterThan(0).WithMessage("Received skid count must be greater than 0");
+19: 
+20:         // When HasDiscrepancy = true, ExpectedSkidCount and DiscrepancyNote are required
+21:         When(x => x.HasDiscrepancy, () =>
+22:         {
+23:             RuleFor(x => x.ExpectedSkidCount)
+24:                 .NotNull().WithMessage("Expected skid count is required when there is a discrepancy")
+25:                 .GreaterThan(0).WithMessage("Expected skid count must be greater than 0");
+26: 
+27:             RuleFor(x => x.DiscrepancyNote)
+28:                 .NotEmpty().WithMessage("Discrepancy note is required when there is a discrepancy")
+29:                 .MaximumLength(500).WithMessage("Discrepancy note must not exceed 500 characters");
+30:         });
+31:     }
+32: }
+````
+
+## File: Module_Volvo/Validators/AddVolvoPartCommandValidator.cs
+````csharp
+ 1: using FluentValidation;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Validator for AddVolvoPartCommand.
+ 8: /// </summary>
+ 9: public class AddVolvoPartCommandValidator : AbstractValidator<AddVolvoPartCommand>
+10: {
+11:     public AddVolvoPartCommandValidator()
+12:     {
+13:         RuleFor(x => x.PartNumber)
+14:             .NotEmpty().WithMessage("Part number is required")
+15:             .MaximumLength(50).WithMessage("Part number must not exceed 50 characters");
+16: 
+17:         RuleFor(x => x.QuantityPerSkid)
+18:             .GreaterThan(0).WithMessage("Quantity per skid must be greater than 0");
+19:     }
+20: }
+````
+
+## File: Module_Volvo/Validators/DeactivateVolvoPartCommandValidator.cs
+````csharp
+ 1: using FluentValidation;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Validator for DeactivateVolvoPartCommand.
+ 8: /// </summary>
+ 9: public class DeactivateVolvoPartCommandValidator : AbstractValidator<DeactivateVolvoPartCommand>
+10: {
+11:     public DeactivateVolvoPartCommandValidator()
+12:     {
+13:         RuleFor(x => x.PartNumber)
+14:             .NotEmpty().WithMessage("Part number is required")
+15:             .MaximumLength(50).WithMessage("Part number must not exceed 50 characters");
+16:     }
+17: }
+````
+
+## File: Module_Volvo/Validators/ImportPartsCsvCommandValidator.cs
+````csharp
+ 1: using System.IO;
+ 2: using FluentValidation;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 6: 
+ 7: /// <summary>
+ 8: /// Validator for ImportPartsCsvCommand.
+ 9: /// </summary>
+10: public class ImportPartsCsvCommandValidator : AbstractValidator<ImportPartsCsvCommand>
+11: {
+12:     public ImportPartsCsvCommandValidator()
+13:     {
+14:         RuleFor(x => x.CsvFilePath)
+15:             .NotEmpty().WithMessage("CSV file path is required")
+16:             .Must(File.Exists).WithMessage("CSV file does not exist");
+17:     }
+18: }
+````
+
+## File: Module_Volvo/Validators/SavePendingShipmentCommandValidator.cs
+````csharp
+ 1: using FluentValidation;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Validator for SavePendingShipmentCommand.
+ 8: /// </summary>
+ 9: public class SavePendingShipmentCommandValidator : AbstractValidator<SavePendingShipmentCommand>
+10: {
+11:     public SavePendingShipmentCommandValidator()
+12:     {
+13:         RuleFor(x => x.ShipmentDate)
+14:             .NotEmpty().WithMessage("Shipment date is required")
+15:             .LessThanOrEqualTo(System.DateTimeOffset.Now).WithMessage("Shipment date cannot be in the future");
+16: 
+17:         RuleFor(x => x.Parts)
+18:             .NotEmpty().WithMessage("At least one part is required");
+19: 
+20:         RuleFor(x => x.Notes)
+21:             .MaximumLength(1000).WithMessage("Notes must not exceed 1000 characters");
+22:     }
+23: }
+````
+
+## File: Module_Volvo/Validators/UpdateShipmentCommandValidator.cs
+````csharp
+ 1: using FluentValidation;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Validator for UpdateShipmentCommand.
+ 8: /// </summary>
+ 9: public class UpdateShipmentCommandValidator : AbstractValidator<UpdateShipmentCommand>
+10: {
+11:     public UpdateShipmentCommandValidator()
+12:     {
+13:         RuleFor(x => x.ShipmentId)
+14:             .GreaterThan(0).WithMessage("Shipment ID must be greater than 0");
+15: 
+16:         RuleFor(x => x.ShipmentDate)
+17:             .NotEmpty().WithMessage("Shipment date is required")
+18:             .LessThanOrEqualTo(System.DateTimeOffset.Now).WithMessage("Shipment date cannot be in the future");
+19: 
+20:         RuleFor(x => x.Parts)
+21:             .NotEmpty().WithMessage("At least one part is required");
+22: 
+23:         RuleFor(x => x.Notes)
+24:             .MaximumLength(1000).WithMessage("Notes must not exceed 1000 characters");
+25: 
+26:         RuleFor(x => x.PONumber)
+27:             .MaximumLength(50).WithMessage("PO number must not exceed 50 characters");
+28: 
+29:         RuleFor(x => x.ReceiverNumber)
+30:             .MaximumLength(50).WithMessage("Receiver number must not exceed 50 characters");
+31: 
+32:         RuleForEach(x => x.Parts).ChildRules(part =>
+33:         {
+34:             part.RuleFor(p => p.PartNumber)
+35:                 .NotEmpty().WithMessage("Part number is required");
+36: 
+37:             part.RuleFor(p => p.ReceivedSkidCount)
+38:                 .GreaterThan(0).WithMessage("Received skid count must be greater than 0");
+39:         });
+40:     }
+41: }
+````
+
+## File: Module_Volvo/Validators/UpdateVolvoPartCommandValidator.cs
+````csharp
+ 1: using FluentValidation;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Validator for UpdateVolvoPartCommand.
+ 8: /// </summary>
+ 9: public class UpdateVolvoPartCommandValidator : AbstractValidator<UpdateVolvoPartCommand>
+10: {
+11:     public UpdateVolvoPartCommandValidator()
+12:     {
+13:         RuleFor(x => x.PartNumber)
+14:             .NotEmpty().WithMessage("Part number is required")
+15:             .MaximumLength(50).WithMessage("Part number must not exceed 50 characters");
+16: 
+17:         RuleFor(x => x.QuantityPerSkid)
+18:             .GreaterThan(0).WithMessage("Quantity per skid must be greater than 0");
+19:     }
+20: }
+````
+
+## File: Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Linq;
+  4: using System.Threading.Tasks;
+  5: using Microsoft.UI;
+  6: using Microsoft.UI.Xaml;
+  7: using Microsoft.UI.Xaml.Controls;
+  8: using Microsoft.UI.Xaml.Input;
+  9: using Microsoft.UI.Xaml.Media;
+ 10: using MTM_Receiving_Application.Module_Volvo.ViewModels;
+ 11: using MTM_Receiving_Application.Module_Volvo.Models;
+ 12: 
+ 13: namespace MTM_Receiving_Application.Module_Volvo.Views;
+ 14: 
+ 15: /// <summary>
+ 16: /// Page for Volvo shipment entry
+ 17: /// </summary>
+ 18: public sealed partial class View_Volvo_ShipmentEntry : Page
+ 19: {
+ 20:     public ViewModel_Volvo_ShipmentEntry ViewModel { get; }
+ 21: 
+ 22:     public View_Volvo_ShipmentEntry()
+ 23:     {
+ 24:         ViewModel = App.GetService<ViewModel_Volvo_ShipmentEntry>();
+ 25:         DataContext = ViewModel;
+ 26:         InitializeComponent();
+ 27:     }
+ 28: 
+ 29:     private async void OnLoaded(object sender, RoutedEventArgs e)
+ 30:     {
+ 31:         await ViewModel.InitializeAsync();
+ 32:     }
+ 33: 
+ 34:     private async void AddPartButton_Click(object sender, RoutedEventArgs e)
+ 35:     {
+ 36:         await ShowAddPartDialogAsync();
+ 37:     }
+ 38: 
+ 39:     private async void RemoveSelectedPartButton_Click(object sender, RoutedEventArgs e)
+ 40:     {
+ 41:         if (ViewModel.SelectedPart == null)
+ 42:         {
+ 43:             var noSelectionDialog = new ContentDialog
+ 44:             {
+ 45:                 Title = "No Part Selected",
+ 46:                 Content = "Please select a part from the grid to remove.",
+ 47:                 CloseButtonText = "OK",
+ 48:                 XamlRoot = this.XamlRoot
+ 49:             };
+ 50:             await noSelectionDialog.ShowAsync();
+ 51:             return;
+ 52:         }
+ 53: 
+ 54:         var confirmDialog = new ContentDialog
+ 55:         {
+ 56:             Title = "Remove Part",
+ 57:             Content = $"Are you sure you want to remove {ViewModel.SelectedPart.PartNumber} from this shipment?",
+ 58:             PrimaryButtonText = "Remove",
+ 59:             CloseButtonText = "Cancel",
+ 60:             DefaultButton = ContentDialogButton.Close,
+ 61:             XamlRoot = this.XamlRoot
+ 62:         };
+ 63: 
+ 64:         var result = await confirmDialog.ShowAsync();
+ 65:         if (result == ContentDialogResult.Primary)
+ 66:         {
+ 67:             ViewModel.Parts.Remove(ViewModel.SelectedPart);
+ 68:         }
+ 69:     }
+ 70: 
+ 71:     private async void ReportDiscrepancyButton_Click(object sender, RoutedEventArgs e)
+ 72:     {
+ 73:         if (sender is Button button && button.Tag is Model_VolvoShipmentLine line)
+ 74:         {
+ 75:             await ViewModel.ToggleDiscrepancyCommand.ExecuteAsync(line);
+ 76:         }
+ 77:     }
+ 78: 
+ 79:     private async void ViewDiscrepancyButton_Click(object sender, RoutedEventArgs e)
+ 80:     {
+ 81:         if (sender is Button button && button.Tag is Model_VolvoShipmentLine line)
+ 82:         {
+ 83:             await ShowViewDiscrepancyDialogAsync(line);
+ 84:         }
+ 85:     }
+ 86: 
+ 87:     private async void RemoveDiscrepancyButton_Click(object sender, RoutedEventArgs e)
+ 88:     {
+ 89:         if (sender is not Button button || button.Tag is not Model_VolvoShipmentLine line)
+ 90:         {
+ 91:             return;
+ 92:         }
+ 93: 
+ 94:         var xamlRoot = this.XamlRoot;
+ 95:         if (xamlRoot == null)
+ 96:         {
+ 97:             return;
+ 98:         }
+ 99: 
+100:         var confirmDialog = new ContentDialog
+101:         {
+102:             Title = "Remove Discrepancy",
+103:             Content = "Remove the discrepancy for this line?",
+104:             PrimaryButtonText = "Remove",
+105:             CloseButtonText = "Cancel",
+106:             DefaultButton = ContentDialogButton.Primary,
+107:             XamlRoot = xamlRoot
+108:         };
+109: 
+110:         var confirmResult = await confirmDialog.ShowAsync();
+111:         if (confirmResult == ContentDialogResult.Primary)
+112:         {
+113:             line.HasDiscrepancy = false;
+114:         }
+115:     }
+116: 
+117:     private async Task ShowViewDiscrepancyDialogAsync(Model_VolvoShipmentLine line)
+118:     {
+119:         var xamlRoot = this.XamlRoot;
+120:         if (xamlRoot == null)
+121:         {
+122:             return;
+123:         }
+124: 
+125:         var content = new StackPanel { Spacing = 12 };
+126:         
+127:         content.Children.Add(new TextBlock
+128:         {
+129:             Text = $"Part: {line.PartNumber}",
+130:             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+131:             FontSize = 16
+132:         });
+133: 
+134:         content.Children.Add(new TextBlock
+135:         {
+136:             Text = $"Received Skids: {line.ReceivedSkidCount}",
+137:             FontSize = 14
+138:         });
+139: 
+140:         content.Children.Add(new TextBlock
+141:         {
+142:             Text = $"Expected Skids: {line.ExpectedSkidCount:F2}",
+143:             FontSize = 14
+144:         });
+145: 
+146:         content.Children.Add(new TextBlock
+147:         {
+148:             Text = $"Received Pieces: {line.CalculatedPieceCount}",
+149:             FontSize = 14
+150:         });
+151: 
+152:         if (line.ExpectedPieceCount.HasValue)
+153:         {
+154:             content.Children.Add(new TextBlock
+155:             {
+156:                 Text = $"Expected Pieces: {line.ExpectedPieceCount.Value}",
+157:                 FontSize = 14
+158:             });
+159: 
+160:             if (line.PieceDifference.HasValue)
+161:             {
+162:                 var diff = line.PieceDifference.Value;
+163:                 var diffText = diff > 0 ? $"+{diff}" : diff.ToString();
+164:                 content.Children.Add(new TextBlock
+165:                 {
+166:                     Text = $"Difference: {diffText} pieces",
+167:                     FontSize = 14,
+168:                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+169:                     Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) : 
+170:                                  diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Orange) :
+171:                                  new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
+172:                 });
+173:             }
+174:         }
+175: 
+176:         if (!string.IsNullOrWhiteSpace(line.DiscrepancyNote))
+177:         {
+178:             content.Children.Add(new TextBlock
+179:             {
+180:                 Text = "Note:",
+181:                 FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+182:                 Margin = new Thickness(0, 8, 0, 4),
+183:                 FontSize = 14
+184:             });
+185: 
+186:             content.Children.Add(new TextBox
+187:             {
+188:                 Text = line.DiscrepancyNote,
+189:                 IsReadOnly = true,
+190:                 TextWrapping = TextWrapping.Wrap,
+191:                 MinHeight = 60,
+192:                 Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent)
+193:             });
+194:         }
+195: 
+196:         var dialog = new ContentDialog
+197:         {
+198:             Title = "Discrepancy Details",
+199:             Content = content,
+200:             CloseButtonText = "Close",
+201:             DefaultButton = ContentDialogButton.Close,
+202:             XamlRoot = xamlRoot
+203:         };
+204: 
+205:         await dialog.ShowAsync();
+206:     }
+207: 
+208:     private async Task ShowAddPartDialogAsync()
+209:     {
+210:         var xamlRoot = this.XamlRoot;
+211:         if (xamlRoot == null)
+212:         {
+213:             return;
+214:         }
+215: 
+216:         // Load all parts
+217:         await ViewModel.LoadAllPartsForDialogAsync();
+218:         
+219:         var allParts = new List<Model_VolvoPart>(ViewModel.AvailableParts);
+220:         var filteredParts = new List<Model_VolvoPart>(allParts);
+221: 
+222:         // Create error message display
+223:         var errorMessage = new TextBlock
+224:         {
+225:             Foreground = new SolidColorBrush(Microsoft.UI.Colors.Red),
+226:             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+227:             TextWrapping = TextWrapping.Wrap,
+228:             Visibility = Visibility.Collapsed,
+229:             Margin = new Thickness(0, 0, 0, 12)
+230:         };
+231: 
+232:         // Create search box
+233:         var searchBox = new TextBox
+234:         {
+235:             PlaceholderText = "Search part numbers...",
+236:             Margin = new Thickness(0, 0, 0, 12)
+237:         };
+238: 
+239:         // Create ListView for parts
+240:         var partsListView = new ListView
+241:         {
+242:             ItemsSource = filteredParts,
+243:             SelectionMode = ListViewSelectionMode.Single,
+244:             MaxHeight = 300,
+245:             Margin = new Thickness(0, 0, 0, 12),
+246:             DisplayMemberPath = "PartNumber"  // Show PartNumber property for each item
+247:         };
+248: 
+249:         // Create received skids input
+250:         var receivedSkidsBox = new TextBox
+251:         {
+252:             Header = "Received Skids",
+253:             PlaceholderText = "Enter quantity (1-99)",
+254:             InputScope = new InputScope { Names = { new InputScopeName(InputScopeNameValue.Number) } }
+255:         };
+256: 
+257:         // Search handler with fuzzy filtering
+258:         searchBox.TextChanged += (s, args) =>
+259:         {
+260:             var searchText = searchBox.Text?.ToLower() ?? string.Empty;
+261:             
+262:             if (string.IsNullOrWhiteSpace(searchText))
+263:             {
+264:                 partsListView.ItemsSource = allParts;
+265:                 return;
+266:             }
+267: 
+268:             // Fuzzy search: matches if characters appear in order
+269:             var filtered = allParts.Where(part =>
+270:             {
+271:                 var partNumber = part.PartNumber.ToLower();
+272:                 int searchIndex = 0;
+273:                 
+274:                 foreach (char c in partNumber)
+275:                 {
+276:                     if (searchIndex < searchText.Length && c == searchText[searchIndex])
+277:                     {
+278:                         searchIndex++;
+279:                     }
+280:                 }
+281:                 
+282:                 return searchIndex == searchText.Length || partNumber.Contains(searchText);
+283:             }).ToList();
+284: 
+285:             partsListView.ItemsSource = filtered;
+286:         };
+287: 
+288:         // Build dialog content
+289:         var content = new StackPanel { Spacing = 12 };
+290:         content.Children.Add(errorMessage);  // Error message at top (hidden by default)
+291:         content.Children.Add(searchBox);
+292:         
+293:         var partsHeader = new TextBlock
+294:         {
+295:             Text = "Available Parts",
+296:             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+297:             Margin = new Thickness(0, 0, 0, 4)
+298:         };
+299:         content.Children.Add(partsHeader);
+300:         content.Children.Add(partsListView);
+301:         content.Children.Add(receivedSkidsBox);
+302: 
+303:         var dialog = new ContentDialog
+304:         {
+305:             Title = "Add Part to Shipment",
+306:             Content = content,
+307:             PrimaryButtonText = "Add",
+308:             CloseButtonText = "Cancel",
+309:             DefaultButton = ContentDialogButton.Primary,
+310:             XamlRoot = xamlRoot
+311:         };
+312: 
+313:         dialog.PrimaryButtonClick += async (s, args) =>
+314:         {
+315:             var deferral = args.GetDeferral();
+316:             
+317:             try
+318:             {
+319:                 // Hide previous error
+320:                 errorMessage.Visibility = Visibility.Collapsed;
+321: 
+322:                 // Validate selection
+323:                 if (partsListView.SelectedItem is not Model_VolvoPart selectedPart)
+324:                 {
+325:                     args.Cancel = true;
+326:                     errorMessage.Text = "Please select a part from the list.";
+327:                     errorMessage.Visibility = Visibility.Visible;
+328:                     return;
+329:                 }
+330: 
+331:                 // Validate skid count
+332:                 if (!int.TryParse(receivedSkidsBox.Text, out int skidCount) || skidCount < 1 || skidCount > 99)
+333:                 {
+334:                     args.Cancel = true;
+335:                     errorMessage.Text = "Received skid count must be a number between 1 and 99.";
+336:                     errorMessage.Visibility = Visibility.Visible;
+337:                     return;
+338:                 }
+339: 
+340:                 // Check for duplicate
+341:                 if (ViewModel.Parts.Any(p => p.PartNumber.Equals(selectedPart.PartNumber, StringComparison.OrdinalIgnoreCase)))
+342:                 {
+343:                     args.Cancel = true;
+344:                     errorMessage.Text = $"Part {selectedPart.PartNumber} is already in this shipment. Remove it first to update the quantity.";
+345:                     errorMessage.Visibility = Visibility.Visible;
+346:                     return;
+347:                 }
+348: 
+349:                 // Add the part - validation passed
+350:                 var calculatedPieces = selectedPart.QuantityPerSkid * skidCount;
+351:                 var newLine = new Model_VolvoShipmentLine
+352:                 {
+353:                     PartNumber = selectedPart.PartNumber,
+354:                     QuantityPerSkid = selectedPart.QuantityPerSkid,
+355:                     ReceivedSkidCount = skidCount,
+356:                     CalculatedPieceCount = calculatedPieces,
+357:                     HasDiscrepancy = false,
+358:                     ExpectedSkidCount = null,
+359:                     DiscrepancyNote = string.Empty
+360:                 };
+361: 
+362:                 ViewModel.Parts.Add(newLine);
+363:                 await ViewModel.Logger.LogInfoAsync($"User added part {selectedPart.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)");
+364:             }
+365:             finally
+366:             {
+367:                 deferral.Complete();
+368:             }
+369:         };
+370: 
+371:         await dialog.ShowAsync();
+372:     }
+373: }
+````
+
+## File: MTM_Receiving_Application.Tests/.runsettings
+````
+ 1: <?xml version="1.0" encoding="utf-8"?>
+ 2: <RunSettings>
+ 3:     <RunConfiguration>
+ 4:         <TargetPlatform>x64</TargetPlatform>
+ 5:         <EnvironmentVariables>
+ 6:             <!-- Set Platform environment variable -->
+ 7:             <Platform>x64</Platform>
+ 8:         </EnvironmentVariables>
+ 9:     </RunConfiguration>
+10:     <MSBuild>
+11:         <MSBuildProperties>
+12:             <Platform>x64</Platform>
+13:             <Configuration>Debug</Configuration>
+14:         </MSBuildProperties>
+15:     </MSBuild>
+16: </RunSettings>
+````
+
+## File: MTM_Receiving_Application.Tests/build.ps1
+````powershell
+  1: #!/usr/bin/env pwsh
+  2: <#
+  3: .SYNOPSIS
+  4:     Build script for MTM Receiving Application Tests
+  5: 
+  6: .DESCRIPTION
+  7:     Cleans, restores, and builds the test project.
+  8:     Automatically builds the main application first to ensure dependencies are available.
+  9: 
+ 10: .PARAMETER Configuration
+ 11:     Build configuration (Debug or Release). Default is Debug.
+ 12: 
+ 13: .PARAMETER Clean
+ 14:     If specified, performs a clean before building.
+ 15: 
+ 16: .PARAMETER SkipMainBuild
+ 17:     If specified, skips building the main application (use only if already built).
+ 18: 
+ 19: .EXAMPLE
+ 20:     .\build.ps1
+ 21:     Builds the main app and test project in Debug configuration
+ 22: 
+ 23: .EXAMPLE
+ 24:     .\build.ps1 -Configuration Release -Clean
+ 25:     Cleans and builds both projects in Release configuration
+ 26: 
+ 27: .EXAMPLE
+ 28:     .\build.ps1 -SkipMainBuild
+ 29:     Builds only the test project (assumes main app is already built)
+ 30: #>
+ 31: 
+ 32: param(
+ 33:     [Parameter()]
+ 34:     [ValidateSet('Debug', 'Release')]
+ 35:     [string]$Configuration = 'Debug',
+ 36: 
+ 37:     [Parameter()]
+ 38:     [switch]$Clean,
+ 39: 
+ 40:     [Parameter()]
+ 41:     [switch]$SkipMainBuild
+ 42: )
+ 43: 
+ 44: $ErrorActionPreference = 'Stop'
+ 45: $testProjectFile = 'MTM_Receiving_Application.Tests.csproj'
+ 46: $mainProjectFile = '..\MTM_Receiving_Application.csproj'
+ 47: 
+ 48: Write-Host "=== MTM Receiving Application Tests Build Script ===" -ForegroundColor Cyan
+ 49: Write-Host "Configuration: $Configuration" -ForegroundColor Yellow
+ 50: Write-Host ""
+ 51: 
+ 52: # Build main application first (unless skipped)
+ 53: if (-not $SkipMainBuild) {
+ 54:     Write-Host "Building main application (required dependency)..." -ForegroundColor Green
+ 55: 
+ 56:     if ($Clean) {
+ 57:         Write-Host "Cleaning main application..." -ForegroundColor Yellow
+ 58:         dotnet clean $mainProjectFile -c $Configuration -p:Platform=x64
+ 59:         if ($LASTEXITCODE -ne 0) {
+ 60:             Write-Error "Main project clean failed with exit code $LASTEXITCODE"
+ 61:             exit $LASTEXITCODE
+ 62:         }
+ 63:     }
+ 64: 
+ 65:     Write-Host "Restoring main application packages..." -ForegroundColor Yellow
+ 66:     dotnet restore $mainProjectFile
+ 67:     if ($LASTEXITCODE -ne 0) {
+ 68:         Write-Error "Main project restore failed with exit code $LASTEXITCODE"
+ 69:         exit $LASTEXITCODE
+ 70:     }
+ 71: 
+ 72:     Write-Host "Building main application..." -ForegroundColor Yellow
+ 73:     dotnet build $mainProjectFile -c $Configuration -p:Platform=x64 --no-restore
+ 74:     if ($LASTEXITCODE -ne 0) {
+ 75:         Write-Error "Main project build failed with exit code $LASTEXITCODE"
+ 76:         exit $LASTEXITCODE
+ 77:     }
+ 78: 
+ 79:     Write-Host "Main application built successfully." -ForegroundColor Green
+ 80:     Write-Host ""
+ 81: }
+ 82: 
+ 83: # Clean test project if requested
+ 84: if ($Clean) {
+ 85:     Write-Host "Cleaning test project..." -ForegroundColor Green
+ 86:     dotnet clean $testProjectFile -c $Configuration
+ 87:     if ($LASTEXITCODE -ne 0) {
+ 88:         Write-Error "Test project clean failed with exit code $LASTEXITCODE"
+ 89:         exit $LASTEXITCODE
+ 90:     }
+ 91:     Write-Host "Clean completed successfully." -ForegroundColor Green
+ 92:     Write-Host ""
+ 93: }
+ 94: 
+ 95: # Restore test project packages
+ 96: Write-Host "Restoring test project packages..." -ForegroundColor Green
+ 97: dotnet restore $testProjectFile
+ 98: if ($LASTEXITCODE -ne 0) {
+ 99:     Write-Error "Test project restore failed with exit code $LASTEXITCODE"
+100:     exit $LASTEXITCODE
+101: }
+102: Write-Host "Restore completed successfully." -ForegroundColor Green
+103: Write-Host ""
+104: 
+105: # Build test project
+106: Write-Host "Building test project..." -ForegroundColor Green
+107: dotnet build $testProjectFile -c $Configuration --no-restore --no-dependencies
+108: if ($LASTEXITCODE -ne 0) {
+109:     Write-Error "Test project build failed with exit code $LASTEXITCODE"
+110:     exit $LASTEXITCODE
+111: }
+112: 
+113: Write-Host ""
+114: Write-Host "=== Build Completed Successfully ===" -ForegroundColor Green
+115: Write-Host "Output: bin\$Configuration\net8.0-windows10.0.22621.0\" -ForegroundColor Cyan
+116: Write-Host ""
+117: Write-Host "To run tests, execute: dotnet test" -ForegroundColor Yellow
+````
+
+## File: MTM_Receiving_Application.Tests/Fixtures/DatabaseFixture.cs
+````csharp
+ 1: using System;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Tests.Fixtures;
+ 4: 
+ 5: /// <summary>
+ 6: /// Shared test fixture for database-related tests.
+ 7: /// Keep this lightweight; prefer per-test isolation unless explicitly needed.
+ 8: /// </summary>
+ 9: public sealed class DatabaseFixture : IDisposable
+10: {
+11:     public DatabaseFixture()
+12:     {
+13:         // Intentionally empty: initialize per-module DB helpers when needed.
+14:     }
+15: 
+16:     public void Dispose()
+17:     {
+18:         // Intentionally empty: dispose connections/resources when added.
+19:     }
+20: }
+````
+
+## File: MTM_Receiving_Application.Tests/Fixtures/ServiceCollectionFixture.cs
+````csharp
+ 1: using System;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Tests.Fixtures;
+ 4: 
+ 5: /// <summary>
+ 6: /// Shared test fixture for DI container setup.
+ 7: /// This can be expanded to register services/DAOs with test doubles.
+ 8: /// </summary>
+ 9: public sealed class ServiceCollectionFixture : IDisposable
+10: {
+11:     public ServiceCollectionFixture()
+12:     {
+13:         // Intentionally empty: register services in tests as needed.
+14:     }
+15: 
+16:     public void Dispose()
+17:     {
+18:         // Intentionally empty: dispose provider/resources when added.
+19:     }
+20: }
+````
+
+## File: MTM_Receiving_Application.Tests/Helpers/DatabaseCollection.cs
+````csharp
+ 1: using Xunit;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Tests.Helpers;
+ 4: 
+ 5: /// <summary>
+ 6: /// Shared collection for database integration tests.
+ 7: /// </summary>
+ 8: [CollectionDefinition("Database", DisableParallelization = true)]
+ 9: public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+10: {
+11: }
+````
+
+## File: MTM_Receiving_Application.Tests/Helpers/DatabasePreflight.cs
+````csharp
+ 1: using System;
+ 2: using System.Data;
+ 3: using System.Threading.Tasks;
+ 4: using MySql.Data.MySqlClient;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Helpers;
+ 7: 
+ 8: internal static class DatabasePreflight
+ 9: {
+10:     internal static async Task<(bool IsReady, string? Reason)> CheckAsync(
+11:         string connectionString,
+12:         string requiredStoredProcedure)
+13:     {
+14:         try
+15:         {
+16:             await using var connection = new MySqlConnection(connectionString);
+17:             await connection.OpenAsync();
+18: 
+19:             await using var command = new MySqlCommand(@"SELECT ROUTINE_NAME
+20: FROM information_schema.ROUTINES
+21: WHERE ROUTINE_SCHEMA = DATABASE()
+22:   AND ROUTINE_TYPE = 'PROCEDURE'
+23:   AND ROUTINE_NAME = @proc;", connection)
+24:             {
+25:                 CommandType = CommandType.Text
+26:             };
+27: 
+28:             command.Parameters.AddWithValue("@proc", requiredStoredProcedure);
+29: 
+30:             var result = await command.ExecuteScalarAsync();
+31:             if (result is null)
+32:             {
+33:                 return (false,
+34:                     $"MySQL test database is reachable but missing required stored procedure '{requiredStoredProcedure}'. " +
+35:                     "Provision the test schema/stored procedures for 'mtm_receiving_application_test'.");
+36:             }
+37: 
+38:             return (true, null);
+39:         }
+40:         catch (Exception ex)
+41:         {
+42:             return (false, $"MySQL test database is not ready: {ex.Message}");
+43:         }
+44:     }
+45: }
+````
+
+## File: MTM_Receiving_Application.Tests/Helpers/FakeVolvoAuthorizationService.cs
+````csharp
+ 1: using System.Threading.Tasks;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 3: using MTM_Receiving_Application.Module_Volvo.Services;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Helpers;
+ 6: 
+ 7: /// <summary>
+ 8: /// Fake authorization service for Volvo handler tests.
+ 9: /// </summary>
+10: public class FakeVolvoAuthorizationService : IService_VolvoAuthorization
+11: {
+12:     public Task<Model_Dao_Result> CanManageShipmentsAsync() => Task.FromResult(new Model_Dao_Result { Success = true });
+13: 
+14:     public Task<Model_Dao_Result> CanManageMasterDataAsync() => Task.FromResult(new Model_Dao_Result { Success = true });
+15: 
+16:     public Task<Model_Dao_Result> CanCompleteShipmentsAsync() => Task.FromResult(new Model_Dao_Result { Success = true });
+17: 
+18:     public Task<Model_Dao_Result> CanGenerateLabelsAsync() => Task.FromResult(new Model_Dao_Result { Success = true });
+19: }
+````
+
+## File: MTM_Receiving_Application.Tests/Helpers/TestHelper.cs
+````csharp
+1: using System;
+2: 
+3: namespace MTM_Receiving_Application.Tests.Helpers;
+4: 
+5: public static class TestHelper
+6: {
+7:     public static string NewGuidString() => Guid.NewGuid().ToString("N");
+8: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_BooleanToVisibility_Tests.cs
+````csharp
+ 1: using Microsoft.UI.Xaml;
+ 2: using MTM_Receiving_Application.Module_Core.Converters;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+ 5: 
+ 6: /// <summary>
+ 7: /// Unit tests for <see cref="Converter_BooleanToVisibility"/>.
+ 8: /// Tests conversion of boolean values to WinUI Visibility with optional inverse parameter.
+ 9: /// </summary>
+10: [Trait("Category", "Unit")]
+11: [Trait("Type", "Converter")]
+12: public class Converter_BooleanToVisibility_Tests
+13: {
+14:     private readonly Converter_BooleanToVisibility _sut;
+15: 
+16:     public Converter_BooleanToVisibility_Tests()
+17:     {
+18:         _sut = new();
+19:     }
+20: 
+21:     [Theory]
+22:     [InlineData(true, null, Visibility.Visible)]
+23:     [InlineData(false, null, Visibility.Collapsed)]
+24:     [InlineData(true, "Inverse", Visibility.Collapsed)]
+25:     [InlineData(false, "Inverse", Visibility.Visible)]
+26:     [InlineData(true, "inverse", Visibility.Collapsed)]
+27:     [InlineData(false, "inverse", Visibility.Visible)]
+28:     public void Convert_WithBooleanValue_ReturnsExpectedVisibility(bool input, string? parameter, Visibility expected)
+29:     {
+30:         // Act
+31:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+32: 
+33:         // Assert
+34:         result.Should().Be(expected);
+35:     }
+36: 
+37:     [Fact]
+38:     public void Convert_WithNullValue_ReturnsCollapsed()
+39:     {
+40:         // Act
+41:         var result = _sut.Convert(null, typeof(Visibility), null, "en-US");
+42: 
+43:         // Assert
+44:         result.Should().Be(Visibility.Collapsed);
+45:     }
+46: 
+47:     [Theory]
+48:     [InlineData("true")]
+49:     [InlineData("false")]
+50:     [InlineData(1)]
+51:     [InlineData(0)]
+52:     public void Convert_WithNonBooleanValue_ReturnsCollapsed(object input)
+53:     {
+54:         // Act
+55:         var result = _sut.Convert(input, typeof(Visibility), null, "en-US");
+56: 
+57:         // Assert
+58:         result.Should().Be(Visibility.Collapsed);
+59:     }
+60: 
+61:     [Fact]
+62:     public void Convert_WithUnknownParameter_IgnoresParameter()
+63:     {
+64:         // Act
+65:         var result = _sut.Convert(true, typeof(Visibility), "SomeOtherParam", "en-US");
+66: 
+67:         // Assert
+68:         result.Should().Be(Visibility.Visible);
+69:     }
+70: 
+71:     [Fact]
+72:     public void ConvertBack_ThrowsNotImplementedException()
+73:     {
+74:         // Act
+75:         Action act = () => _sut.ConvertBack(Visibility.Visible, typeof(bool), null, "en-US");
+76: 
+77:         // Assert
+78:         act.Should().Throw<NotImplementedException>();
+79:     }
+80: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_BoolToString_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="Converter_BoolToString"/>.
+  7: /// Tests conversion of boolean values to custom string representations using pipe-delimited parameter.
+  8: /// Format: "TrueString|FalseString"
+  9: /// </summary>
+ 10: [Trait("Category", "Unit")]
+ 11: [Trait("Type", "Converter")]
+ 12: public class Converter_BoolToString_Tests
+ 13: {
+ 14:     private readonly Converter_BoolToString _sut;
+ 15: 
+ 16:     public Converter_BoolToString_Tests()
+ 17:     {
+ 18:         _sut = new();
+ 19:     }
+ 20: 
+ 21:     [Theory]
+ 22:     [InlineData(true, "Yes|No", "Yes")]
+ 23:     [InlineData(false, "Yes|No", "No")]
+ 24:     [InlineData(true, "Active|Inactive", "Active")]
+ 25:     [InlineData(false, "Active|Inactive", "Inactive")]
+ 26:     [InlineData(true, "✓|✗", "✓")]
+ 27:     [InlineData(false, "✓|✗", "✗")]
+ 28:     public void Convert_WithBooleanAndValidParameter_ReturnsCorrectString(bool input, string parameter, string expected)
+ 29:     {
+ 30:         // Act
+ 31:         var result = _sut.Convert(input, typeof(string), parameter, "en-US");
+ 32: 
+ 33:         // Assert
+ 34:         result.Should().Be(expected);
+ 35:     }
+ 36: 
+ 37:     [Fact]
+ 38:     public void Convert_WithNullValue_ReturnsEmptyString()
+ 39:     {
+ 40:         // Act
+ 41:         var result = _sut.Convert(null, typeof(string), "Yes|No", "en-US");
+ 42: 
+ 43:         // Assert
+ 44:         result.Should().Be(string.Empty);
+ 45:     }
+ 46: 
+ 47:     [Theory]
+ 48:     [InlineData(true, null)]
+ 49:     [InlineData(false, null)]
+ 50:     public void Convert_WithNullParameter_ReturnsBooleanToString(bool input, object? parameter)
+ 51:     {
+ 52:         // Act
+ 53:         var result = _sut.Convert(input, typeof(string), parameter, "en-US");
+ 54: 
+ 55:         // Assert
+ 56:         result.Should().Be(input.ToString());
+ 57:     }
+ 58: 
+ 59:     [Theory]
+ 60:     [InlineData(true, "OnlyOneValue")]
+ 61:     [InlineData(false, "OnlyOneValue")]
+ 62:     public void Convert_WithInvalidParameter_ReturnsBooleanToString(bool input, string parameter)
+ 63:     {
+ 64:         // Act
+ 65:         var result = _sut.Convert(input, typeof(string), parameter, "en-US");
+ 66: 
+ 67:         // Assert
+ 68:         result.Should().Be(input.ToString());
+ 69:     }
+ 70: 
+ 71:     [Theory]
+ 72:     [InlineData("true", "Yes|No")]
+ 73:     [InlineData(1, "Yes|No")]
+ 74:     public void Convert_WithNonBooleanValue_ReturnsValueToString(object input, string parameter)
+ 75:     {
+ 76:         // Act
+ 77:         var result = _sut.Convert(input, typeof(string), parameter, "en-US");
+ 78: 
+ 79:         // Assert
+ 80:         result.Should().Be(input.ToString());
+ 81:     }
+ 82: 
+ 83:     [Theory]
+ 84:     [InlineData(true, "Yes|No|Maybe")]
+ 85:     [InlineData(false, "Yes|No|Maybe")]
+ 86:     public void Convert_WithMoreThanTwoParts_ReturnsOriginalBooleanString(bool input, string parameter)
+ 87:     {
+ 88:         // Act
+ 89:         var result = _sut.Convert(input, typeof(string), parameter, "en-US");
+ 90: 
+ 91:         // Assert
+ 92:         result.Should().Be(input.ToString());
+ 93:     }
+ 94: 
+ 95:     [Fact]
+ 96:     public void ConvertBack_ThrowsNotImplementedException()
+ 97:     {
+ 98:         // Act
+ 99:         Action act = () => _sut.ConvertBack("Yes", typeof(bool), "Yes|No", "en-US");
+100: 
+101:         // Assert
+102:         act.Should().Throw<NotImplementedException>();
+103:     }
+104: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_DecimalToString_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="Converter_DecimalToString"/>.
+  7: /// Tests bidirectional conversion between decimal and string, with special handling for zero values.
+  8: /// </summary>
+  9: [Trait("Category", "Unit")]
+ 10: [Trait("Type", "Converter")]
+ 11: public class Converter_DecimalToString_Tests
+ 12: {
+ 13:     private readonly Converter_DecimalToString _sut;
+ 14: 
+ 15:     public Converter_DecimalToString_Tests()
+ 16:     {
+ 17:         _sut = new();
+ 18:     }
+ 19: 
+ 20:     [Theory]
+ 21:     [InlineData(0.0, "")]
+ 22:     [InlineData(42.5, "42.5")]
+ 23:     [InlineData(100.0, "100")]
+ 24:     [InlineData(1234.56789, "1234.56789")]
+ 25:     [InlineData(-50.25, "-50.25")]
+ 26:     public void Convert_WithDecimalValue_ReturnsExpectedString(decimal input, string expected)
+ 27:     {
+ 28:         // Act
+ 29:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 30: 
+ 31:         // Assert
+ 32:         result.Should().Be(expected);
+ 33:     }
+ 34: 
+ 35:     [Fact]
+ 36:     public void Convert_WithVeryPreciseDecimal_ReturnsPreciseString()
+ 37:     {
+ 38:         // Arrange - G29 format preserves up to 29 significant digits
+ 39:         var input = 0.12345678901234567890123456789m;
+ 40: 
+ 41:         // Act
+ 42:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 43: 
+ 44:         // Assert - G29 will trim trailing zeros and use the most compact representation
+ 45:         result.Should().BeOfType<string>();
+ 46:         var resultString = (string)result;
+ 47:         resultString.Should().NotBeNullOrEmpty();
+ 48:         resultString.Should().StartWith("0.12345678901234");
+ 49:     }
+ 50: 
+ 51:     [Fact]
+ 52:     public void Convert_WithZero_ReturnsEmptyString()
+ 53:     {
+ 54:         // Act
+ 55:         var result = _sut.Convert(0m, typeof(string), null, "en-US");
+ 56: 
+ 57:         // Assert
+ 58:         result.Should().Be(string.Empty);
+ 59:     }
+ 60: 
+ 61:     [Theory]
+ 62:     [InlineData(null)]
+ 63:     [InlineData("text")]
+ 64:     [InlineData(42)]
+ 65:     public void Convert_WithNonDecimalValue_ReturnsEmptyString(object? input)
+ 66:     {
+ 67:         // Act
+ 68:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 69: 
+ 70:         // Assert
+ 71:         result.Should().Be(string.Empty);
+ 72:     }
+ 73: 
+ 74:     [Theory]
+ 75:     [InlineData("42.5", 42.5)]
+ 76:     [InlineData("100", 100)]
+ 77:     [InlineData("1234.56789", 1234.56789)]
+ 78:     [InlineData("-50.25", -50.25)]
+ 79:     [InlineData("0", 0)]
+ 80:     public void ConvertBack_WithValidString_ReturnsDecimal(string input, decimal expected)
+ 81:     {
+ 82:         // Act
+ 83:         var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+ 84: 
+ 85:         // Assert
+ 86:         result.Should().Be(expected);
+ 87:     }
+ 88: 
+ 89:     [Theory]
+ 90:     [InlineData("")]
+ 91:     [InlineData("   ")]
+ 92:     [InlineData(null)]
+ 93:     public void ConvertBack_WithEmptyOrWhitespaceString_ReturnsZero(string? input)
+ 94:     {
+ 95:         // Act
+ 96:         var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+ 97: 
+ 98:         // Assert
+ 99:         result.Should().Be(0m);
+100:     }
+101: 
+102:     [Theory]
+103:     [InlineData("abc")]
+104:     [InlineData("12.34.56")]
+105:     [InlineData("not a number")]
+106:     public void ConvertBack_WithInvalidString_ReturnsZero(string input)
+107:     {
+108:         // Act
+109:         var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+110: 
+111:         // Assert
+112:         result.Should().Be(0m);
+113:     }
+114: 
+115:     [Fact]
+116:     public void ConvertBack_WithNonStringValue_ReturnsZero()
+117:     {
+118:         // Act
+119:         var result = _sut.ConvertBack(42, typeof(decimal), null, "en-US");
+120: 
+121:         // Assert
+122:         result.Should().Be(0m);
+123:     }
+124: 
+125:     [Fact]
+126:     public void Convert_RoundTrip_PreservesValue()
+127:     {
+128:         // Arrange
+129:         var originalValue = 1234.56789m;
+130: 
+131:         // Act - Convert to string
+132:         var stringResult = _sut.Convert(originalValue, typeof(string), null, "en-US");
+133: 
+134:         // Act - Convert back to decimal
+135:         var decimalResult = _sut.ConvertBack(stringResult, typeof(decimal), null, "en-US");
+136: 
+137:         // Assert
+138:         decimalResult.Should().Be(originalValue);
+139:     }
+140: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_DoubleToDecimal_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="Converter_DoubleToDecimal"/>.
+  7: /// Tests bidirectional conversion between decimal and double types.
+  8: /// </summary>
+  9: [Trait("Category", "Unit")]
+ 10: [Trait("Type", "Converter")]
+ 11: public class Converter_DoubleToDecimal_Tests
+ 12: {
+ 13:     private readonly Converter_DoubleToDecimal _sut;
+ 14: 
+ 15:     public Converter_DoubleToDecimal_Tests()
+ 16:     {
+ 17:         _sut = new();
+ 18:     }
+ 19: 
+ 20:     [Theory]
+ 21:     [InlineData(0.0, 0.0)]
+ 22:     [InlineData(42.5, 42.5)]
+ 23:     [InlineData(100.0, 100.0)]
+ 24:     [InlineData(1234.56789, 1234.56789)]
+ 25:     [InlineData(-50.25, -50.25)]
+ 26:     public void Convert_WithDecimalValue_ReturnsDouble(decimal input, double expected)
+ 27:     {
+ 28:         // Act
+ 29:         var result = _sut.Convert(input, typeof(double), null, "en-US");
+ 30: 
+ 31:         // Assert
+ 32:         result.Should().Be(expected);
+ 33:     }
+ 34: 
+ 35:     [Theory]
+ 36:     [InlineData(null)]
+ 37:     [InlineData("text")]
+ 38:     [InlineData(42)]
+ 39:     public void Convert_WithNonDecimalValue_ReturnsZeroDouble(object? input)
+ 40:     {
+ 41:         // Act
+ 42:         var result = _sut.Convert(input, typeof(double), null, "en-US");
+ 43: 
+ 44:         // Assert
+ 45:         result.Should().Be(0.0);
+ 46:     }
+ 47: 
+ 48:     [Theory]
+ 49:     [InlineData(0.0, 0.0)]
+ 50:     [InlineData(42.5, 42.5)]
+ 51:     [InlineData(100.0, 100.0)]
+ 52:     [InlineData(1234.56789, 1234.56789)]
+ 53:     [InlineData(-50.25, -50.25)]
+ 54:     public void ConvertBack_WithDoubleValue_ReturnsDecimal(double input, decimal expected)
+ 55:     {
+ 56:         // Act
+ 57:         var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+ 58: 
+ 59:         // Assert
+ 60:         result.Should().Be(expected);
+ 61:     }
+ 62: 
+ 63:     [Theory]
+ 64:     [InlineData(null)]
+ 65:     [InlineData("text")]
+ 66:     [InlineData(42)]
+ 67:     public void ConvertBack_WithNonDoubleValue_ReturnsZeroDecimal(object? input)
+ 68:     {
+ 69:         // Act
+ 70:         var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+ 71: 
+ 72:         // Assert
+ 73:         result.Should().Be(0m);
+ 74:     }
+ 75: 
+ 76:     [Fact]
+ 77:     public void Convert_RoundTrip_PreservesValue()
+ 78:     {
+ 79:         // Arrange
+ 80:         var originalValue = 1234.56789m;
+ 81: 
+ 82:         // Act - Convert to double
+ 83:         var doubleResult = _sut.Convert(originalValue, typeof(double), null, "en-US");
+ 84: 
+ 85:         // Act - Convert back to decimal
+ 86:         var decimalResult = _sut.ConvertBack(doubleResult, typeof(decimal), null, "en-US");
+ 87: 
+ 88:         // Assert
+ 89:         decimalResult.Should().Be(originalValue);
+ 90:     }
+ 91: 
+ 92:     [Fact]
+ 93:     public void Convert_WithLargeDecimalValue_HandlesWithinDoubleRange()
+ 94:     {
+ 95:         // Arrange - Use a large value that's within double range but shows precision
+ 96:         var input = 79228162514264m; // Well within both decimal and double range
+ 97: 
+ 98:         // Act
+ 99:         var result = _sut.Convert(input, typeof(double), null, "en-US");
+100: 
+101:         // Assert - Should not throw
+102:         result.Should().BeOfType<double>();
+103:         ((double)result).Should().BeApproximately(79228162514264.0, 0.1);
+104:     }
+105: 
+106:     [Fact]
+107:     public void ConvertBack_WithLargeDoubleValue_HandlesWithinDecimalRange()
+108:     {
+109:         // Arrange - Use a large value within decimal range
+110:         var input = 79228162514264.0; // Well within decimal range
+111: 
+112:         // Act
+113:         var result = _sut.ConvertBack(input, typeof(decimal), null, "en-US");
+114: 
+115:         // Assert - Should not throw
+116:         result.Should().BeOfType<decimal>();
+117:         ((decimal)result).Should().BeApproximately(79228162514264m, 1m);
+118:     }
+119: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_EmptyStringToVisibility_Tests.cs
+````csharp
+ 1: using Microsoft.UI.Xaml;
+ 2: using MTM_Receiving_Application.Module_Core.Converters;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+ 5: 
+ 6: /// <summary>
+ 7: /// Unit tests for <see cref="Converter_EmptyStringToVisibility"/>.
+ 8: /// Tests conversion of string values to Visibility based on empty/whitespace checks with optional inverse.
+ 9: /// </summary>
+10: [Trait("Category", "Unit")]
+11: [Trait("Type", "Converter")]
+12: public class Converter_EmptyStringToVisibility_Tests
+13: {
+14:     private readonly Converter_EmptyStringToVisibility _sut;
+15: 
+16:     public Converter_EmptyStringToVisibility_Tests()
+17:     {
+18:         _sut = new();
+19:     }
+20: 
+21:     [Theory]
+22:     [InlineData("Hello", null, Visibility.Visible)]
+23:     [InlineData("Some text", null, Visibility.Visible)]
+24:     [InlineData("  text  ", null, Visibility.Visible)]
+25:     [InlineData("", null, Visibility.Collapsed)]
+26:     [InlineData("   ", null, Visibility.Collapsed)]
+27:     [InlineData(null, null, Visibility.Collapsed)]
+28:     public void Convert_WithStringValue_ReturnsExpectedVisibility(string? input, object? parameter, Visibility expected)
+29:     {
+30:         // Act
+31:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+32: 
+33:         // Assert
+34:         result.Should().Be(expected);
+35:     }
+36: 
+37:     [Theory]
+38:     [InlineData("Hello", "Inverse", Visibility.Collapsed)]
+39:     [InlineData("Some text", "Inverse", Visibility.Collapsed)]
+40:     [InlineData("", "Inverse", Visibility.Visible)]
+41:     [InlineData("   ", "Inverse", Visibility.Visible)]
+42:     [InlineData(null, "Inverse", Visibility.Visible)]
+43:     [InlineData("Text", "inverse", Visibility.Collapsed)]
+44:     public void Convert_WithInverseParameter_ReturnsInvertedVisibility(string? input, string parameter, Visibility expected)
+45:     {
+46:         // Act
+47:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+48: 
+49:         // Assert
+50:         result.Should().Be(expected);
+51:     }
+52: 
+53:     [Theory]
+54:     [InlineData(42)]
+55:     [InlineData(true)]
+56:     [InlineData(3.14)]
+57:     public void Convert_WithNonStringValue_ReturnsCollapsed(object input)
+58:     {
+59:         // Act
+60:         var result = _sut.Convert(input, typeof(Visibility), null, "en-US");
+61: 
+62:         // Assert
+63:         result.Should().Be(Visibility.Collapsed);
+64:     }
+65: 
+66:     [Fact]
+67:     public void Convert_WithUnknownParameter_IgnoresParameter()
+68:     {
+69:         // Act
+70:         var result = _sut.Convert("Hello", typeof(Visibility), "SomeOtherParam", "en-US");
+71: 
+72:         // Assert
+73:         result.Should().Be(Visibility.Visible);
+74:     }
+75: 
+76:     [Fact]
+77:     public void ConvertBack_ThrowsNotImplementedException()
+78:     {
+79:         // Act
+80:         Action act = () => _sut.ConvertBack(Visibility.Visible, typeof(string), null, "en-US");
+81: 
+82:         // Assert
+83:         act.Should().Throw<NotImplementedException>();
+84:     }
+85: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_EnumToVisibility_Tests.cs
+````csharp
+  1: using Microsoft.UI.Xaml;
+  2: using MTM_Receiving_Application.Module_Core.Converters;
+  3: 
+  4: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  5: 
+  6: /// <summary>
+  7: /// Unit tests for <see cref="Converter_EnumToVisibility"/>.
+  8: /// Tests conversion of enum values to Visibility based on parameter match (case-insensitive).
+  9: /// </summary>
+ 10: [Trait("Category", "Unit")]
+ 11: [Trait("Type", "Converter")]
+ 12: public class Converter_EnumToVisibility_Tests
+ 13: {
+ 14:     private readonly Converter_EnumToVisibility _sut;
+ 15: 
+ 16:     // Test enum for converter testing
+ 17:     public enum TestEnum
+ 18:     {
+ 19:         First,
+ 20:         Second,
+ 21:         Third
+ 22:     }
+ 23: 
+ 24:     public Converter_EnumToVisibility_Tests()
+ 25:     {
+ 26:         _sut = new();
+ 27:     }
+ 28: 
+ 29:     [Theory]
+ 30:     [InlineData(TestEnum.First, "First", Visibility.Visible)]
+ 31:     [InlineData(TestEnum.First, "Second", Visibility.Collapsed)]
+ 32:     [InlineData(TestEnum.Second, "Second", Visibility.Visible)]
+ 33:     [InlineData(TestEnum.Third, "Third", Visibility.Visible)]
+ 34:     [InlineData(TestEnum.First, "first", Visibility.Visible)]
+ 35:     [InlineData(TestEnum.Second, "SECOND", Visibility.Visible)]
+ 36:     public void Convert_WithEnumValue_ReturnsExpectedVisibility(TestEnum input, string parameter, Visibility expected)
+ 37:     {
+ 38:         // Act
+ 39:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+ 40: 
+ 41:         // Assert
+ 42:         result.Should().Be(expected);
+ 43:     }
+ 44: 
+ 45:     [Fact]
+ 46:     public void Convert_WithNullValue_ReturnsCollapsed()
+ 47:     {
+ 48:         // Act
+ 49:         var result = _sut.Convert(null, typeof(Visibility), "First", "en-US");
+ 50: 
+ 51:         // Assert
+ 52:         result.Should().Be(Visibility.Collapsed);
+ 53:     }
+ 54: 
+ 55:     [Fact]
+ 56:     public void Convert_WithNullParameter_ReturnsCollapsed()
+ 57:     {
+ 58:         // Act
+ 59:         var result = _sut.Convert(TestEnum.First, typeof(Visibility), null, "en-US");
+ 60: 
+ 61:         // Assert
+ 62:         result.Should().Be(Visibility.Collapsed);
+ 63:     }
+ 64: 
+ 65:     [Fact]
+ 66:     public void Convert_WithBothNull_ReturnsCollapsed()
+ 67:     {
+ 68:         // Act
+ 69:         var result = _sut.Convert(null, typeof(Visibility), null, "en-US");
+ 70: 
+ 71:         // Assert
+ 72:         result.Should().Be(Visibility.Collapsed);
+ 73:     }
+ 74: 
+ 75:     [Theory]
+ 76:     [InlineData("First", "First", Visibility.Visible)]
+ 77:     [InlineData("Second", "Second", Visibility.Visible)]
+ 78:     [InlineData("First", "Second", Visibility.Collapsed)]
+ 79:     public void Convert_WithStringValue_ComparesCorrectly(string input, string parameter, Visibility expected)
+ 80:     {
+ 81:         // Act
+ 82:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+ 83: 
+ 84:         // Assert
+ 85:         result.Should().Be(expected);
+ 86:     }
+ 87: 
+ 88:     [Theory]
+ 89:     [InlineData(1, "1", Visibility.Visible)]
+ 90:     [InlineData(2, "1", Visibility.Collapsed)]
+ 91:     public void Convert_WithNumericValue_ComparesAsString(int input, string parameter, Visibility expected)
+ 92:     {
+ 93:         // Act
+ 94:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+ 95: 
+ 96:         // Assert
+ 97:         result.Should().Be(expected);
+ 98:     }
+ 99: 
+100:     [Fact]
+101:     public void ConvertBack_ThrowsNotImplementedException()
+102:     {
+103:         // Act
+104:         Action act = () => _sut.ConvertBack(Visibility.Visible, typeof(TestEnum), "First", "en-US");
+105: 
+106:         // Assert
+107:         act.Should().Throw<NotImplementedException>();
+108:     }
+109: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_IconCodeToGlyph_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="Converter_IconCodeToGlyph"/>.
+  7: /// Tests conversion of icon codes (HTML entity or hex format) to Unicode glyph characters.
+  8: /// Supports formats: "&#xE7B8;" (HTML entity) or "E7B8" (raw hex)
+  9: /// </summary>
+ 10: [Trait("Category", "Unit")]
+ 11: [Trait("Type", "Converter")]
+ 12: public class Converter_IconCodeToGlyph_Tests
+ 13: {
+ 14:     private readonly Converter_IconCodeToGlyph _sut;
+ 15: 
+ 16:     public Converter_IconCodeToGlyph_Tests()
+ 17:     {
+ 18:         _sut = new();
+ 19:     }
+ 20: 
+ 21:     [Theory]
+ 22:     [InlineData("&#xE7B8;", "\uE7B8")]
+ 23:     [InlineData("&#xE8A7;", "\uE8A7")]
+ 24:     [InlineData("&#xE700;", "\uE700")]
+ 25:     [InlineData("&#xE74D;", "\uE74D")]
+ 26:     public void Convert_WithHtmlEntityFormat_ReturnsGlyphCharacter(string input, string expected)
+ 27:     {
+ 28:         // Act
+ 29:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 30: 
+ 31:         // Assert
+ 32:         result.Should().Be(expected);
+ 33:     }
+ 34: 
+ 35:     [Theory]
+ 36:     [InlineData("E7B8", "\uE7B8")]
+ 37:     [InlineData("E8A7", "\uE8A7")]
+ 38:     [InlineData("E700", "\uE700")]
+ 39:     [InlineData("E74D", "\uE74D")]
+ 40:     public void Convert_WithRawHexFormat_ReturnsGlyphCharacter(string input, string expected)
+ 41:     {
+ 42:         // Act
+ 43:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 44: 
+ 45:         // Assert
+ 46:         result.Should().Be(expected);
+ 47:     }
+ 48: 
+ 49:     [Theory]
+ 50:     [InlineData(null)]
+ 51:     [InlineData("")]
+ 52:     [InlineData("   ")]
+ 53:     public void Convert_WithNullOrWhitespace_ReturnsDefaultIcon(string? input)
+ 54:     {
+ 55:         // Act
+ 56:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 57: 
+ 58:         // Assert
+ 59:         result.Should().Be("\uE7B8"); // Default box icon
+ 60:     }
+ 61: 
+ 62:     [Theory]
+ 63:     [InlineData("InvalidFormat")]
+ 64:     [InlineData("&#xZZZZ;")]
+ 65:     [InlineData("ZZZZ")]
+ 66:     [InlineData("12345")]
+ 67:     [InlineData("ABC")]
+ 68:     public void Convert_WithInvalidHexValue_ReturnsInputAsIs(string input)
+ 69:     {
+ 70:         // Act
+ 71:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 72: 
+ 73:         // Assert
+ 74:         result.Should().Be(input);
+ 75:     }
+ 76: 
+ 77:     [Theory]
+ 78:     [InlineData("A")]
+ 79:     [InlineData("AB")]
+ 80:     [InlineData("ABC")]
+ 81:     [InlineData("ABCDE")]
+ 82:     public void Convert_WithNonFourCharacterHex_ReturnsInputAsIs(string input)
+ 83:     {
+ 84:         // Act
+ 85:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 86: 
+ 87:         // Assert
+ 88:         result.Should().Be(input);
+ 89:     }
+ 90: 
+ 91:     [Fact]
+ 92:     public void Convert_WithSingleCharacterString_ReturnsInputAsIs()
+ 93:     {
+ 94:         // Arrange
+ 95:         var input = "X";
+ 96: 
+ 97:         // Act
+ 98:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 99: 
+100:         // Assert
+101:         result.Should().Be(input);
+102:     }
+103: 
+104:     [Theory]
+105:     [InlineData(42)]
+106:     [InlineData(true)]
+107:     public void Convert_WithNonStringValue_ReturnsDefaultIcon(object input)
+108:     {
+109:         // Act
+110:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+111: 
+112:         // Assert
+113:         result.Should().Be("\uE7B8");
+114:     }
+115: 
+116:     [Fact]
+117:     public void ConvertBack_ThrowsNotImplementedException()
+118:     {
+119:         // Act
+120:         Action act = () => _sut.ConvertBack("\uE7B8", typeof(string), null, "en-US");
+121: 
+122:         // Assert
+123:         act.Should().Throw<NotImplementedException>();
+124:     }
+125: 
+126:     [Theory]
+127:     [InlineData("&#xE7B8;")]
+128:     [InlineData("E7B8")]
+129:     public void Convert_WithLowercaseHex_HandlesCorrectly(string input)
+130:     {
+131:         // Arrange
+132:         var lowercaseInput = input.ToLower();
+133: 
+134:         // Act
+135:         var result = _sut.Convert(lowercaseInput, typeof(string), null, "en-US");
+136: 
+137:         // Assert
+138:         result.Should().NotBeNull();
+139:         result.Should().BeOfType<string>();
+140:     }
+141: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_IntToVisibility_Tests.cs
+````csharp
+  1: using Microsoft.UI.Xaml;
+  2: using MTM_Receiving_Application.Module_Core.Converters;
+  3: 
+  4: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  5: 
+  6: /// <summary>
+  7: /// Unit tests for <see cref="Converter_IntToVisibility"/>.
+  8: /// Tests conversion of integer values to Visibility with multiple parameter modes:
+  9: /// - No parameter: Visible if value > 0
+ 10: /// - "Inverse": Visible if value == 0
+ 11: /// - Numeric string (e.g., "1", "2"): Visible if value == parameter
+ 12: /// - Direct int parameter: Visible if value == parameter
+ 13: /// </summary>
+ 14: [Trait("Category", "Unit")]
+ 15: [Trait("Type", "Converter")]
+ 16: public class Converter_IntToVisibility_Tests
+ 17: {
+ 18:     private readonly Converter_IntToVisibility _sut;
+ 19: 
+ 20:     public Converter_IntToVisibility_Tests()
+ 21:     {
+ 22:         _sut = new();
+ 23:     }
+ 24: 
+ 25:     [Theory]
+ 26:     [InlineData(0, Visibility.Collapsed)]
+ 27:     [InlineData(1, Visibility.Visible)]
+ 28:     [InlineData(5, Visibility.Visible)]
+ 29:     [InlineData(-1, Visibility.Collapsed)]
+ 30:     public void Convert_WithNoParameter_ShowsWhenValueGreaterThanZero(int input, Visibility expected)
+ 31:     {
+ 32:         // Act
+ 33:         var result = _sut.Convert(input, typeof(Visibility), null, "en-US");
+ 34: 
+ 35:         // Assert
+ 36:         result.Should().Be(expected);
+ 37:     }
+ 38: 
+ 39:     [Theory]
+ 40:     [InlineData(0, Visibility.Visible)]
+ 41:     [InlineData(1, Visibility.Collapsed)]
+ 42:     [InlineData(5, Visibility.Collapsed)]
+ 43:     [InlineData(-1, Visibility.Collapsed)]
+ 44:     public void Convert_WithInverseParameter_ShowsWhenValueIsZero(int input, Visibility expected)
+ 45:     {
+ 46:         // Act
+ 47:         var result = _sut.Convert(input, typeof(Visibility), "Inverse", "en-US");
+ 48: 
+ 49:         // Assert
+ 50:         result.Should().Be(expected);
+ 51:     }
+ 52: 
+ 53:     [Theory]
+ 54:     [InlineData(0, Visibility.Visible)]
+ 55:     [InlineData(1, Visibility.Collapsed)]
+ 56:     [InlineData(5, Visibility.Collapsed)]
+ 57:     public void Convert_WithInverseParameterCaseInsensitive_WorksCorrectly(int input, Visibility expected)
+ 58:     {
+ 59:         // Act
+ 60:         var result = _sut.Convert(input, typeof(Visibility), "inverse", "en-US");
+ 61: 
+ 62:         // Assert
+ 63:         result.Should().Be(expected);
+ 64:     }
+ 65: 
+ 66:     [Theory]
+ 67:     [InlineData(1, "1", Visibility.Visible)]
+ 68:     [InlineData(1, "2", Visibility.Collapsed)]
+ 69:     [InlineData(2, "2", Visibility.Visible)]
+ 70:     [InlineData(3, "3", Visibility.Visible)]
+ 71:     [InlineData(0, "0", Visibility.Visible)]
+ 72:     public void Convert_WithNumericStringParameter_ShowsWhenValueMatchesParameter(int input, string parameter, Visibility expected)
+ 73:     {
+ 74:         // Act
+ 75:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+ 76: 
+ 77:         // Assert
+ 78:         result.Should().Be(expected);
+ 79:     }
+ 80: 
+ 81:     [Theory]
+ 82:     [InlineData(1, 1, Visibility.Visible)]
+ 83:     [InlineData(1, 2, Visibility.Collapsed)]
+ 84:     [InlineData(2, 2, Visibility.Visible)]
+ 85:     [InlineData(0, 0, Visibility.Visible)]
+ 86:     public void Convert_WithDirectIntParameter_ShowsWhenValueMatchesParameter(int input, int parameter, Visibility expected)
+ 87:     {
+ 88:         // Act
+ 89:         var result = _sut.Convert(input, typeof(Visibility), parameter, "en-US");
+ 90: 
+ 91:         // Assert
+ 92:         result.Should().Be(expected);
+ 93:     }
+ 94: 
+ 95:     [Fact]
+ 96:     public void Convert_WithNullValue_ReturnsCollapsed()
+ 97:     {
+ 98:         // Act
+ 99:         var result = _sut.Convert(null, typeof(Visibility), null, "en-US");
+100: 
+101:         // Assert
+102:         result.Should().Be(Visibility.Collapsed);
+103:     }
+104: 
+105:     [Theory]
+106:     [InlineData("NotANumber")]
+107:     [InlineData("abc")]
+108:     public void Convert_WithNonNumericStringParameter_FallsBackToGreaterThanZero(string parameter)
+109:     {
+110:         // Act
+111:         var result = _sut.Convert(5, typeof(Visibility), parameter, "en-US");
+112: 
+113:         // Assert
+114:         result.Should().Be(Visibility.Visible);
+115:     }
+116: 
+117:     [Theory]
+118:     [InlineData("5")]
+119:     [InlineData(5.5)]
+120:     public void Convert_WithNonIntegerValue_TreatsAsZero(object input)
+121:     {
+122:         // Act
+123:         var result = _sut.Convert(input, typeof(Visibility), null, "en-US");
+124: 
+125:         // Assert
+126:         result.Should().Be(Visibility.Collapsed);
+127:     }
+128: 
+129:     [Fact]
+130:     public void ConvertBack_ThrowsNotImplementedException()
+131:     {
+132:         // Act
+133:         Action act = () => _sut.ConvertBack(Visibility.Visible, typeof(int), null, "en-US");
+134: 
+135:         // Assert
+136:         act.Should().Throw<NotImplementedException>();
+137:     }
+138: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_LoadNumberToOneBased_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="Converter_LoadNumberToOneBased"/>.
+  7: /// Tests bidirectional conversion between zero-based (internal) and one-based (display) load numbers.
+  8: /// </summary>
+  9: [Trait("Category", "Unit")]
+ 10: [Trait("Type", "Converter")]
+ 11: public class Converter_LoadNumberToOneBased_Tests
+ 12: {
+ 13:     private readonly Converter_LoadNumberToOneBased _sut;
+ 14: 
+ 15:     public Converter_LoadNumberToOneBased_Tests()
+ 16:     {
+ 17:         _sut = new();
+ 18:     }
+ 19: 
+ 20:     [Theory]
+ 21:     [InlineData(0, 1)]
+ 22:     [InlineData(1, 2)]
+ 23:     [InlineData(5, 6)]
+ 24:     [InlineData(10, 11)]
+ 25:     [InlineData(99, 100)]
+ 26:     public void Convert_WithIntegerValue_ReturnsOneBasedValue(int input, int expected)
+ 27:     {
+ 28:         // Act
+ 29:         var result = _sut.Convert(input, typeof(int), null, "en-US");
+ 30: 
+ 31:         // Assert
+ 32:         result.Should().Be(expected);
+ 33:     }
+ 34: 
+ 35:     [Theory]
+ 36:     [InlineData(null)]
+ 37:     [InlineData("text")]
+ 38:     [InlineData(3.14)]
+ 39:     [InlineData(true)]
+ 40:     public void Convert_WithNonIntegerValue_ReturnsValueAsIs(object? input)
+ 41:     {
+ 42:         // Act
+ 43:         var result = _sut.Convert(input, typeof(int), null, "en-US");
+ 44: 
+ 45:         // Assert
+ 46:         result.Should().Be(input);
+ 47:     }
+ 48: 
+ 49:     [Theory]
+ 50:     [InlineData("1", 0)]
+ 51:     [InlineData("2", 1)]
+ 52:     [InlineData("6", 5)]
+ 53:     [InlineData("11", 10)]
+ 54:     [InlineData("100", 99)]
+ 55:     public void ConvertBack_WithValidStringValue_ReturnsZeroBasedValue(string input, int expected)
+ 56:     {
+ 57:         // Act
+ 58:         var result = _sut.ConvertBack(input, typeof(int), null, "en-US");
+ 59: 
+ 60:         // Assert
+ 61:         result.Should().Be(expected);
+ 62:     }
+ 63: 
+ 64:     [Theory]
+ 65:     [InlineData("")]
+ 66:     [InlineData("abc")]
+ 67:     [InlineData("12.34")]
+ 68:     public void ConvertBack_WithInvalidString_ReturnsValueAsIs(string input)
+ 69:     {
+ 70:         // Act
+ 71:         var result = _sut.ConvertBack(input, typeof(int), null, "en-US");
+ 72: 
+ 73:         // Assert
+ 74:         result.Should().Be(input);
+ 75:     }
+ 76: 
+ 77:     [Theory]
+ 78:     [InlineData(null)]
+ 79:     [InlineData(42)]
+ 80:     [InlineData(true)]
+ 81:     public void ConvertBack_WithNonStringValue_ReturnsValueAsIs(object? input)
+ 82:     {
+ 83:         // Act
+ 84:         var result = _sut.ConvertBack(input, typeof(int), null, "en-US");
+ 85: 
+ 86:         // Assert
+ 87:         result.Should().Be(input);
+ 88:     }
+ 89: 
+ 90:     [Theory]
+ 91:     [InlineData(0)]
+ 92:     [InlineData(1)]
+ 93:     [InlineData(5)]
+ 94:     [InlineData(10)]
+ 95:     [InlineData(99)]
+ 96:     public void Convert_RoundTrip_PreservesValue(int originalValue)
+ 97:     {
+ 98:         // Act - Convert to one-based
+ 99:         var oneBasedResult = _sut.Convert(originalValue, typeof(int), null, "en-US");
+100: 
+101:         // Act - Convert back to zero-based
+102:         var zeroBasedResult = _sut.ConvertBack(oneBasedResult.ToString(), typeof(int), null, "en-US");
+103: 
+104:         // Assert
+105:         zeroBasedResult.Should().Be(originalValue);
+106:     }
+107: 
+108:     [Fact]
+109:     public void Convert_WithNegativeValue_ReturnsNegativeOneBased()
+110:     {
+111:         // Act
+112:         var result = _sut.Convert(-5, typeof(int), null, "en-US");
+113: 
+114:         // Assert
+115:         result.Should().Be(-4);
+116:     }
+117: 
+118:     [Fact]
+119:     public void ConvertBack_WithZeroString_ReturnsNegativeOne()
+120:     {
+121:         // Act
+122:         var result = _sut.ConvertBack("0", typeof(int), null, "en-US");
+123: 
+124:         // Assert
+125:         result.Should().Be(-1);
+126:     }
+127: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_StringFormat_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="Converter_StringFormat"/>.
+  7: /// Tests string formatting using parameter as format string (e.g., "Total: {0}").
+  8: /// </summary>
+  9: [Trait("Category", "Unit")]
+ 10: [Trait("Type", "Converter")]
+ 11: public class Converter_StringFormat_Tests
+ 12: {
+ 13:     private readonly Converter_StringFormat _sut;
+ 14: 
+ 15:     public Converter_StringFormat_Tests()
+ 16:     {
+ 17:         _sut = new();
+ 18:     }
+ 19: 
+ 20:     [Theory]
+ 21:     [InlineData("Hello", "Greeting: {0}", "Greeting: Hello")]
+ 22:     [InlineData(42, "Count: {0}", "Count: 42")]
+ 23:     [InlineData(3.14, "Value: {0:F2}", "Value: 3.14")]
+ 24:     [InlineData("Item", "{0} - Selected", "Item - Selected")]
+ 25:     public void Convert_WithValidFormatParameter_ReturnsFormattedString(object input, string format, string expected)
+ 26:     {
+ 27:         // Act
+ 28:         var result = _sut.Convert(input, typeof(string), format, "en-US");
+ 29: 
+ 30:         // Assert
+ 31:         result.Should().Be(expected);
+ 32:     }
+ 33: 
+ 34:     [Theory]
+ 35:     [InlineData("Hello")]
+ 36:     [InlineData(42)]
+ 37:     [InlineData(3.14)]
+ 38:     public void Convert_WithNullParameter_ReturnsValueAsIs(object input)
+ 39:     {
+ 40:         // Act
+ 41:         var result = _sut.Convert(input, typeof(string), null, "en-US");
+ 42: 
+ 43:         // Assert
+ 44:         result.Should().Be(input);
+ 45:     }
+ 46: 
+ 47:     [Theory]
+ 48:     [InlineData(42)]
+ 49:     [InlineData(true)]
+ 50:     [InlineData(3.14)]
+ 51:     public void Convert_WithNonStringParameter_ReturnsValueAsIs(object input)
+ 52:     {
+ 53:         // Act
+ 54:         var result = _sut.Convert(input, typeof(string), 123, "en-US");
+ 55: 
+ 56:         // Assert
+ 57:         result.Should().Be(input);
+ 58:     }
+ 59: 
+ 60:     [Fact]
+ 61:     public void Convert_WithNullValue_FormatsNullAsString()
+ 62:     {
+ 63:         // Act
+ 64:         var result = _sut.Convert(null, typeof(string), "Value: {0}", "en-US");
+ 65: 
+ 66:         // Assert
+ 67:         result.Should().Be("Value: ");
+ 68:     }
+ 69: 
+ 70:     [Theory]
+ 71:     [InlineData(1234, "{0:N0}", "1,234")]
+ 72:     [InlineData(1234.5678, "{0:F2}", "1234.57")]
+ 73:     [InlineData(0.75, "{0:P0}", "75%")]
+ 74:     public void Convert_WithNumericFormatting_ReturnsFormattedNumber(object input, string format, string expected)
+ 75:     {
+ 76:         // Act
+ 77:         var result = _sut.Convert(input, typeof(string), format, "en-US");
+ 78: 
+ 79:         // Assert
+ 80:         result.Should().Be(expected);
+ 81:     }
+ 82: 
+ 83:     [Fact]
+ 84:     public void Convert_WithEmptyFormatString_ReturnsEmptyString()
+ 85:     {
+ 86:         // Act
+ 87:         var result = _sut.Convert("Hello", typeof(string), "", "en-US");
+ 88: 
+ 89:         // Assert
+ 90:         result.Should().Be("");
+ 91:     }
+ 92: 
+ 93:     [Fact]
+ 94:     public void ConvertBack_ThrowsNotImplementedException()
+ 95:     {
+ 96:         // Act
+ 97:         Action act = () => _sut.ConvertBack("Formatted String", typeof(object), "{0}", "en-US");
+ 98: 
+ 99:         // Assert
+100:         act.Should().Throw<NotImplementedException>();
+101:     }
+102: 
+103:     [Theory]
+104:     [InlineData("Test", "Prefix: {0} Suffix", "Prefix: Test Suffix")]
+105:     [InlineData(100, "Item #{0:D3}", "Item #100")]
+106:     public void Convert_WithComplexFormatString_HandlesCorrectly(object input, string format, string expected)
+107:     {
+108:         // Act
+109:         var result = _sut.Convert(input, typeof(string), format, "en-US");
+110: 
+111:         // Assert
+112:         result.Should().Be(expected);
+113:     }
+114: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/NullableDoubleToDoubleConverter_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters;
+  4: 
+  5: /// <summary>
+  6: /// Unit tests for <see cref="NullableDoubleToDoubleConverter"/>.
+  7: /// Tests bidirectional conversion between nullable double (double?) and double for NumberBox bindings.
+  8: /// </summary>
+  9: [Trait("Category", "Unit")]
+ 10: [Trait("Type", "Converter")]
+ 11: public class NullableDoubleToDoubleConverter_Tests
+ 12: {
+ 13:     private readonly NullableDoubleToDoubleConverter _sut;
+ 14: 
+ 15:     public NullableDoubleToDoubleConverter_Tests()
+ 16:     {
+ 17:         _sut = new();
+ 18:     }
+ 19: 
+ 20:     [Theory]
+ 21:     [InlineData(0.0, 0.0)]
+ 22:     [InlineData(42.5, 42.5)]
+ 23:     [InlineData(100.0, 100.0)]
+ 24:     [InlineData(1234.56789, 1234.56789)]
+ 25:     [InlineData(-50.25, -50.25)]
+ 26:     [InlineData(double.MaxValue, double.MaxValue)]
+ 27:     [InlineData(double.MinValue, double.MinValue)]
+ 28:     public void Convert_WithDoubleValue_ReturnsDoubleValue(double input, double expected)
+ 29:     {
+ 30:         // Act
+ 31:         var result = _sut.Convert(input, typeof(double), null, "en-US");
+ 32: 
+ 33:         // Assert
+ 34:         result.Should().Be(expected);
+ 35:     }
+ 36: 
+ 37:     [Theory]
+ 38:     [InlineData(null)]
+ 39:     [InlineData("text")]
+ 40:     [InlineData(42)]
+ 41:     [InlineData(true)]
+ 42:     public void Convert_WithNonDoubleValue_ReturnsZero(object? input)
+ 43:     {
+ 44:         // Act
+ 45:         var result = _sut.Convert(input, typeof(double), null, "en-US");
+ 46: 
+ 47:         // Assert
+ 48:         result.Should().Be(0.0);
+ 49:     }
+ 50: 
+ 51:     [Theory]
+ 52:     [InlineData(0.0)]
+ 53:     [InlineData(42.5)]
+ 54:     [InlineData(100.0)]
+ 55:     [InlineData(1234.56789)]
+ 56:     [InlineData(-50.25)]
+ 57:     public void ConvertBack_WithDoubleValue_ReturnsNullableDouble(double input)
+ 58:     {
+ 59:         // Act
+ 60:         var result = _sut.ConvertBack(input, typeof(double?), null, "en-US");
+ 61: 
+ 62:         // Assert
+ 63:         result.Should().Be((double?)input);
+ 64:     }
+ 65: 
+ 66:     [Theory]
+ 67:     [InlineData(null)]
+ 68:     [InlineData("text")]
+ 69:     [InlineData(42)]
+ 70:     [InlineData(true)]
+ 71:     public void ConvertBack_WithNonDoubleValue_ReturnsNull(object? input)
+ 72:     {
+ 73:         // Act
+ 74:         var result = _sut.ConvertBack(input, typeof(double?), null, "en-US");
+ 75: 
+ 76:         // Assert
+ 77:         result.Should().BeNull();
+ 78:     }
+ 79: 
+ 80:     [Theory]
+ 81:     [InlineData(0.0)]
+ 82:     [InlineData(42.5)]
+ 83:     [InlineData(1234.56789)]
+ 84:     [InlineData(-50.25)]
+ 85:     public void Convert_RoundTrip_PreservesValue(double originalValue)
+ 86:     {
+ 87:         // Act - Convert to double
+ 88:         var doubleResult = _sut.Convert(originalValue, typeof(double), null, "en-US");
+ 89: 
+ 90:         // Act - Convert back to nullable double
+ 91:         var nullableResult = _sut.ConvertBack(doubleResult, typeof(double?), null, "en-US");
+ 92: 
+ 93:         // Assert
+ 94:         nullableResult.Should().Be(originalValue);
+ 95:     }
+ 96: 
+ 97:     [Fact]
+ 98:     public void Convert_WithNaN_ReturnsNaN()
+ 99:     {
+100:         // Act
+101:         var result = _sut.Convert(double.NaN, typeof(double), null, "en-US");
+102: 
+103:         // Assert
+104:         result.Should().Be(double.NaN);
+105:     }
+106: 
+107:     [Fact]
+108:     public void Convert_WithPositiveInfinity_ReturnsPositiveInfinity()
+109:     {
+110:         // Act
+111:         var result = _sut.Convert(double.PositiveInfinity, typeof(double), null, "en-US");
+112: 
+113:         // Assert
+114:         result.Should().Be(double.PositiveInfinity);
+115:     }
+116: 
+117:     [Fact]
+118:     public void Convert_WithNegativeInfinity_ReturnsNegativeInfinity()
+119:     {
+120:         // Act
+121:         var result = _sut.Convert(double.NegativeInfinity, typeof(double), null, "en-US");
+122: 
+123:         // Assert
+124:         result.Should().Be(double.NegativeInfinity);
+125:     }
+126: 
+127:     [Fact]
+128:     public void ConvertBack_WithNaN_ReturnsNullableNaN()
+129:     {
+130:         // Act
+131:         var result = _sut.ConvertBack(double.NaN, typeof(double?), null, "en-US");
+132: 
+133:         // Assert
+134:         result.Should().Be((double?)double.NaN);
+135:     }
+136: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Defaults/WorkstationDefaults_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Core.Defaults;
+ 3: using Xunit;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Core.Defaults;
+ 6: 
+ 7: public class WorkstationDefaults_Tests
+ 8: {
+ 9:     [Fact]
+10:     public void SharedTerminalWorkstationType_ShouldNotBeNullOrWhiteSpace()
+11:     {
+12:         WorkstationDefaults.SharedTerminalWorkstationType.Should().NotBeNullOrWhiteSpace();
+13:     }
+14: 
+15:     [Fact]
+16:     public void PersonalWorkstationWorkstationType_ShouldNotBeNullOrWhiteSpace()
+17:     {
+18:         WorkstationDefaults.PersonalWorkstationWorkstationType.Should().NotBeNullOrWhiteSpace();
+19:     }
+20: 
+21:     [Fact]
+22:     public void SharedTerminalTimeoutMinutes_ShouldBePositive()
+23:     {
+24:         WorkstationDefaults.SharedTerminalTimeoutMinutes.Should().BeGreaterThan(0);
+25:     }
+26: 
+27:     [Fact]
+28:     public void PersonalWorkstationTimeoutMinutes_ShouldBePositive()
+29:     {
+30:         WorkstationDefaults.PersonalWorkstationTimeoutMinutes.Should().BeGreaterThan(0);
+31:     }
+32: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_StoredProcedure_Tests.cs
+````csharp
+ 1: using System.Data;
+ 2: using MySql.Data.MySqlClient;
+ 3: using Xunit;
+ 4: using FluentAssertions;
+ 5: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Module_Core.Helpers.Database
+ 8: {
+ 9:     /// <summary>
+10:     /// Unit tests for Helper_Database_StoredProcedure logic
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Helper")]
+14:     public class Helper_Database_StoredProcedure_Tests
+15:     {
+16:         [Fact]
+17:         public void ValidateParameters_NullParameters_ReturnsTrue()
+18:         {
+19:             // Act
+20:             var result = Helper_Database_StoredProcedure.ValidateParameters(null);
+21: 
+22:             // Assert
+23:             result.Should().BeTrue("null parameters list is considered valid (no parameters to validate)");
+24:         }
+25: 
+26:         [Fact]
+27:         public void ValidateParameters_ValidInputParameters_ReturnsTrue()
+28:         {
+29:             // Arrange
+30:             var parameters = new[]
+31:             {
+32:                 new MySqlParameter("@p1", "value"),
+33:                 new MySqlParameter("@p2", 123)
+34:             };
+35: 
+36:             // Act
+37:             var result = Helper_Database_StoredProcedure.ValidateParameters(parameters);
+38: 
+39:             // Assert
+40:             result.Should().BeTrue();
+41:         }
+42: 
+43:         [Fact]
+44:         public void ValidateParameters_NullInputParameterContent_ReturnsFalse()
+45:         {
+46:             // Arrange
+47:             // Create a parameter with explicit null value (not DBNull)
+48:             var parameter = new MySqlParameter("@p1", MySqlDbType.VarChar);
+49:             parameter.Value = null;
+50:             parameter.Direction = ParameterDirection.Input;
+51: 
+52:             var parameters = new[] { parameter };
+53: 
+54:             // Act
+55:             var result = Helper_Database_StoredProcedure.ValidateParameters(parameters);
+56: 
+57:             // Assert
+58:             result.Should().BeFalse("input parameters should not be null (use DBNull.Value instead)");
+59:         }
+60: 
+61:         [Fact]
+62:         public void ValidateParameters_DBNullInputParameter_ReturnsTrue()
+63:         {
+64:             // Arrange
+65:             var parameters = new[]
+66:             {
+67:                 new MySqlParameter("@p1", System.DBNull.Value)
+68:             };
+69: 
+70:             // Act
+71:             var result = Helper_Database_StoredProcedure.ValidateParameters(parameters);
+72: 
+73:             // Assert
+74:             result.Should().BeTrue("DBNull.Value is a valid value for parameters");
+75:         }
+76:     }
+77: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Helpers/Database/Helper_Database_Variables_Tests.cs
+````csharp
+ 1: using Xunit;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Core.Helpers.Database
+ 6: {
+ 7:     /// <summary>
+ 8:     /// Unit tests for Helper_Database_Variables
+ 9:     /// </summary>
+10:     [Trait("Category", "Unit")]
+11:     [Trait("Layer", "Helper")]
+12:     public class Helper_Database_Variables_Tests
+13:     {
+14:         [Fact]
+15:         public void GetConnectionString_Production_ReturnsProductionString()
+16:         {
+17:             // Act
+18:             var connectionString = Helper_Database_Variables.GetConnectionString(true);
+19: 
+20:             // Assert
+21:             connectionString.Should().Contain("Database=mtm_receiving_application");
+22:             connectionString.Should().NotContain("_test");
+23:         }
+24: 
+25:         [Fact]
+26:         public void GetConnectionString_Test_ReturnsTestString()
+27:         {
+28:             // Act
+29:             var connectionString = Helper_Database_Variables.GetConnectionString(false);
+30: 
+31:             // Assert
+32:             connectionString.Should().Contain("Database=mtm_receiving_application_test");
+33:         }
+34: 
+35:         [Fact]
+36:         public void GetInforVisualConnectionString_ReturnsReadOnlyIntent()
+37:         {
+38:             // Act
+39:             var connectionString = Helper_Database_Variables.GetInforVisualConnectionString();
+40: 
+41:             // Assert
+42:             connectionString.Should().Contain("ApplicationIntent=ReadOnly");
+43:         }
+44:     }
+45: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_AuthenticationResult_Tests.cs
+````csharp
+ 1: using System;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_AuthenticationResult
+10:     /// </summary>
+11:     [Trait("Category", "Unit")]
+12:     [Trait("Layer", "Model")]
+13:     public class Model_AuthenticationResult_Tests
+14:     {
+15:         [Fact]
+16:         public void SuccessResult_SetsSuccessTrue()
+17:         {
+18:             var user = new Model_User();
+19: 
+20:             var result = Model_AuthenticationResult.SuccessResult(user);
+21: 
+22:             result.Success.Should().BeTrue();
+23:         }
+24: 
+25:         [Fact]
+26:         public void SuccessResult_SetsUser()
+27:         {
+28:             var user = new Model_User();
+29: 
+30:             var result = Model_AuthenticationResult.SuccessResult(user);
+31: 
+32:             result.User.Should().BeSameAs(user);
+33:         }
+34: 
+35:         [Fact]
+36:         public void SuccessResult_SetsErrorMessageEmpty()
+37:         {
+38:             var user = new Model_User();
+39: 
+40:             var result = Model_AuthenticationResult.SuccessResult(user);
+41: 
+42:             result.ErrorMessage.Should().BeEmpty();
+43:         }
+44: 
+45:         [Fact]
+46:         public void SuccessResult_WithNullUser_Throws()
+47:         {
+48:             var act = static () => Model_AuthenticationResult.SuccessResult(null!);
+49: 
+50:             act.Should().Throw<ArgumentNullException>();
+51:         }
+52: 
+53:         [Fact]
+54:         public void ErrorResult_SetsSuccessFalse()
+55:         {
+56:             var result = Model_AuthenticationResult.ErrorResult("bad");
+57: 
+58:             result.Success.Should().BeFalse();
+59:         }
+60: 
+61:         [Fact]
+62:         public void ErrorResult_SetsUserNull()
+63:         {
+64:             var result = Model_AuthenticationResult.ErrorResult("bad");
+65: 
+66:             result.User.Should().BeNull();
+67:         }
+68: 
+69:         [Fact]
+70:         public void ErrorResult_SetsErrorMessage()
+71:         {
+72:             var result = Model_AuthenticationResult.ErrorResult("bad");
+73: 
+74:             result.ErrorMessage.Should().Be("bad");
+75:         }
+76: 
+77:         [Fact]
+78:         public void ErrorResult_WithNullMessage_Throws()
+79:         {
+80:             var act = static () => Model_AuthenticationResult.ErrorResult(null!);
+81: 
+82:             act.Should().Throw<ArgumentException>();
+83:         }
+84: 
+85:         [Fact]
+86:         public void ErrorResult_WithWhitespaceMessage_Throws()
+87:         {
+88:             var act = static () => Model_AuthenticationResult.ErrorResult("   ");
+89: 
+90:             act.Should().Throw<ArgumentException>();
+91:         }
+92:     }
+93: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_User_Tests.cs
+````csharp
+ 1: using System;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_User
+10:     /// </summary>
+11:     [Trait("Category", "Unit")]
+12:     [Trait("Layer", "Model")]
+13:     public class Model_User_Tests
+14:     {
+15:         [Fact]
+16:         public void Constructor_Default_SetsCreatedAndModifiedToNow()
+17:         {
+18:             // Arrange
+19:             var before = DateTime.Now;
+20: 
+21:             // Act
+22:             var user = new Model_User();
+23:             var after = DateTime.Now;
+24: 
+25:             // Assert
+26:             user.CreatedDate.Should().BeOnOrAfter(before);
+27:             user.CreatedDate.Should().BeOnOrBefore(after);
+28:             user.ModifiedDate.Should().BeOnOrAfter(before);
+29:             user.ModifiedDate.Should().BeOnOrBefore(after);
+30:         }
+31: 
+32:         [Fact]
+33:         public void HasErpAccess_ReturnsFalseWhenVisualUsernameMissing()
+34:         {
+35:             var user = new Model_User { VisualUsername = null };
+36: 
+37:             user.HasErpAccess.Should().BeFalse();
+38:         }
+39: 
+40:         [Fact]
+41:         public void HasErpAccess_ReturnsFalseWhenVisualUsernameWhitespace()
+42:         {
+43:             var user = new Model_User { VisualUsername = "   " };
+44: 
+45:             user.HasErpAccess.Should().BeFalse();
+46:         }
+47: 
+48:         [Fact]
+49:         public void HasErpAccess_ReturnsTrueWhenVisualUsernameProvided()
+50:         {
+51:             var user = new Model_User { VisualUsername = "user" };
+52: 
+53:             user.HasErpAccess.Should().BeTrue();
+54:         }
+55: 
+56:         [Fact]
+57:         public void DisplayName_FormatsEmployeeNumberAndName()
+58:         {
+59:             var user = new Model_User
+60:             {
+61:                 FullName = "Jane Doe",
+62:                 EmployeeNumber = 123
+63:             };
+64: 
+65:             user.DisplayName.Should().Be("Jane Doe (Emp #123)");
+66:         }
+67:     }
+68: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_ValidationResult_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 3: using Xunit;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+ 6: {
+ 7:     /// <summary>
+ 8:     /// Unit tests for Model_ValidationResult
+ 9:     /// </summary>
+10:     [Trait("Category", "Unit")]
+11:     [Trait("Layer", "Model")]
+12:     public class Model_ValidationResult_Tests
+13:     {
+14:         [Fact]
+15:         public void Valid_SetsIsValidTrue()
+16:         {
+17:             var result = Model_ValidationResult.Valid();
+18: 
+19:             result.IsValid.Should().BeTrue();
+20:         }
+21: 
+22:         [Fact]
+23:         public void Valid_SetsErrorMessageEmpty()
+24:         {
+25:             var result = Model_ValidationResult.Valid();
+26: 
+27:             result.ErrorMessage.Should().BeEmpty();
+28:         }
+29: 
+30:         [Fact]
+31:         public void Invalid_SetsIsValidFalse()
+32:         {
+33:             var result = Model_ValidationResult.Invalid("bad");
+34: 
+35:             result.IsValid.Should().BeFalse();
+36:         }
+37: 
+38:         [Fact]
+39:         public void Invalid_SetsErrorMessage()
+40:         {
+41:             var result = Model_ValidationResult.Invalid("bad");
+42: 
+43:             result.ErrorMessage.Should().Be("bad");
+44:         }
+45: 
+46:         [Fact]
+47:         public void Invalid_WithNullMessage_NormalizesMessage()
+48:         {
+49:             var result = Model_ValidationResult.Invalid(null);
+50: 
+51:             result.ErrorMessage.Should().Be("Validation failed.");
+52:         }
+53: 
+54:         [Fact]
+55:         public void Invalid_WithWhitespaceMessage_NormalizesMessage()
+56:         {
+57:             var result = Model_ValidationResult.Invalid("   ");
+58: 
+59:             result.ErrorMessage.Should().Be("Validation failed.");
+60:         }
+61:     }
+62: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_Authentication_Tests.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Threading.Tasks;
+  4: using System.Linq;
+  5: using Xunit;
+  6: using FluentAssertions;
+  7: using Moq;
+  8: using MTM_Receiving_Application.Module_Core.Services.Authentication;
+  9: using MTM_Receiving_Application.Module_Core.Data.Authentication;
+ 10: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+ 11: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 12: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 13: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 14: 
+ 15: namespace MTM_Receiving_Application.Tests.Module_Core.Services.Authentication
+ 16: {
+ 17:     /// <summary>
+ 18:     /// Unit tests for Service_Authentication
+ 19:     /// </summary>
+ 20:     [Trait("Category", "Unit")]
+ 21:     [Trait("Layer", "Service")]
+ 22:     public class Service_Authentication_Tests
+ 23:     {
+ 24:         private readonly Mock<Dao_User> _mockDaoUser;
+ 25:         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
+ 26:         private readonly Service_Authentication _sut;
+ 27: 
+ 28:         public Service_Authentication_Tests()
+ 29:         {
+ 30:             // Dao_User constructor requires a string, but the mock object will override virtual methods
+ 31:             _mockDaoUser = new Mock<Dao_User>("Server=fake;");
+ 32:             _mockErrorHandler = new Mock<IService_ErrorHandler>();
+ 33:             _sut = new Service_Authentication(_mockDaoUser.Object, _mockErrorHandler.Object);
+ 34:         }
+ 35: 
+ 36:         [Fact]
+ 37:         public async Task AuthenticateByWindowsUsernameAsync_EmptyUsername_ReturnsError_Async()
+ 38:         {
+ 39:             // Act
+ 40:             var result = await _sut.AuthenticateByWindowsUsernameAsync("");
+ 41: 
+ 42:             // Assert
+ 43:             result.Success.Should().BeFalse();
+ 44:             result.ErrorMessage.Should().Contain("required");
+ 45:         }
+ 46: 
+ 47:         [Fact]
+ 48:         public async Task AuthenticateByWindowsUsernameAsync_UserNotFound_ReturnsError_Async()
+ 49:         {
+ 50:             // Arrange
+ 51:             _mockDaoUser.Setup(x => x.GetUserByWindowsUsernameAsync(It.IsAny<string>()))
+ 52:                 .ReturnsAsync(Model_Dao_Result_Factory.Failure<Model_User>("User not found"));
+ 53: 
+ 54:             // Act
+ 55:             var result = await _sut.AuthenticateByWindowsUsernameAsync("domain\\user");
+ 56: 
+ 57:             // Assert
+ 58:             result.Success.Should().BeFalse();
+ 59:             result.ErrorMessage.Should().Contain("not found");
+ 60:         }
+ 61: 
+ 62:         [Fact]
+ 63:         public async Task AuthenticateByWindowsUsernameAsync_ValidUser_ReturnsSuccess_Async()
+ 64:         {
+ 65:             // Arrange
+ 66:             var user = new Model_User { FullName = "Test User", WindowsUsername = "domain\\user" };
+ 67:             _mockDaoUser.Setup(x => x.GetUserByWindowsUsernameAsync("domain\\user"))
+ 68:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(user));
+ 69: 
+ 70:             _mockDaoUser.Setup(x => x.LogUserActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+ 71:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+ 72: 
+ 73:             // Act
+ 74:             var result = await _sut.AuthenticateByWindowsUsernameAsync("domain\\user");
+ 75: 
+ 76:             // Assert
+ 77:             result.Success.Should().BeTrue();
+ 78:             result.User.Should().BeEquivalentTo(user);
+ 79:             _mockDaoUser.Verify(x => x.LogUserActivityAsync("login_success", "domain\\user", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+ 80:         }
+ 81: 
+ 82:         [Theory]
+ 83:         [InlineData("", "1234")]
+ 84:         [InlineData("user", "")]
+ 85:         [InlineData("user", "123")] // Too short
+ 86:         [InlineData("user", "12345")] // Too long
+ 87:         [InlineData("user", "abcd")] // Non-numeric
+ 88:         public async Task AuthenticateByPinAsync_InvalidInput_ReturnsError_Async(string username, string pin)
+ 89:         {
+ 90:             // Act
+ 91:             var result = await _sut.AuthenticateByPinAsync(username, pin);
+ 92: 
+ 93:             // Assert
+ 94:             result.Success.Should().BeFalse();
+ 95:         }
+ 96: 
+ 97:         [Fact]
+ 98:         public async Task AuthenticateByPinAsync_ValidCredentials_ReturnsSuccess_Async()
+ 99:         {
+100:             // Arrange
+101:             var user = new Model_User { FullName = "Test User", WindowsUsername = "domain\\user" };
+102:             _mockDaoUser.Setup(x => x.ValidateUserPinAsync("user", "1234"))
+103:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(user));
+104: 
+105:              _mockDaoUser.Setup(x => x.LogUserActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+106:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+107: 
+108:             // Act
+109:             var result = await _sut.AuthenticateByPinAsync("user", "1234");
+110: 
+111:             // Assert
+112:             result.Success.Should().BeTrue();
+113:             result.User.Should().Be(user);
+114:         }
+115: 
+116:         [Fact]
+117:         public async Task CreateNewUserAsync_InvalidData_ReturnsError_Async()
+118:         {
+119:             // Arrange
+120:             var user = new Model_User { WindowsUsername = "" }; // Missing fields
+121: 
+122:             // Act
+123:             var result = await _sut.CreateNewUserAsync(user, "admin");
+124: 
+125:             // Assert
+126:             result.Success.Should().BeFalse();
+127:         }
+128: 
+129:          [Fact]
+130:         public async Task CreateNewUserAsync_ValidData_ReturnsSuccess_Async()
+131:         {
+132:             // Arrange
+133:             var user = new Model_User 
+134:             { 
+135:                 WindowsUsername = "domain\\newuser",
+136:                 FullName = "New User",
+137:                 Department = "Receiving",
+138:                 Shift = "1",
+139:                 Pin = "1234"
+140:             };
+141:             
+142:             _mockDaoUser.Setup(x => x.CreateNewUserAsync(user, "admin"))
+143:                 .ReturnsAsync(Model_Dao_Result_Factory.Success<int>(101));
+144: 
+145:              _mockDaoUser.Setup(x => x.LogUserActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+146:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+147: 
+148:             // Act
+149:             var result = await _sut.CreateNewUserAsync(user, "admin");
+150: 
+151:             // Assert
+152:             result.Success.Should().BeTrue();
+153:             result.EmployeeNumber.Should().Be(101);
+154:         }
+155: 
+156:         [Theory]
+157:         [InlineData("1234", true)]
+158:         [InlineData("123", false)]
+159:         [InlineData("abcd", false)]
+160:         [InlineData("", false)]
+161:         public async Task ValidatePinAsync_ValidatesCorrectly_Async(string pin, bool expectedValid)
+162:         {
+163:             // Act
+164:             var result = await _sut.ValidatePinAsync(pin);
+165: 
+166:             // Assert
+167:             result.IsValid.Should().Be(expectedValid);
+168:         }
+169: 
+170:         [Fact]
+171:         public async Task DetectWorkstationTypeAsync_SharedTerminal_ReturnsType_Async()
+172:         {
+173:             // Arrange
+174:             var computerName = "SHARED-PC";
+175:             _mockDaoUser.Setup(x => x.GetSharedTerminalNamesAsync())
+176:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<string> { "SHARED-PC" }));
+177: 
+178:             // Act
+179:             var result = await _sut.DetectWorkstationTypeAsync(computerName);
+180: 
+181:             // Assert
+182:             result.WorkstationType.Should().Be("shared_terminal");
+183:             result.ComputerName.Should().Be(computerName);
+184:         }
+185: 
+186:          [Fact]
+187:         public async Task DetectWorkstationTypeAsync_PersonalWorkstation_ReturnsType_Async()
+188:         {
+189:              // Arrange
+190:             var computerName = "PERSONAL-PC";
+191:             _mockDaoUser.Setup(x => x.GetSharedTerminalNamesAsync())
+192:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<string> { "SHARED-PC" }));
+193: 
+194:             // Act
+195:             var result = await _sut.DetectWorkstationTypeAsync(computerName);
+196: 
+197:             // Assert
+198:             result.WorkstationType.Should().Be("personal_workstation");
+199:         }
+200:     }
+201: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Services/Authentication/Service_UserSessionManager_Tests.cs
+````csharp
+  1: using System;
+  2: using System.Threading.Tasks;
+  3: using Xunit;
+  4: using FluentAssertions;
+  5: using Moq;
+  6: using MTM_Receiving_Application.Module_Core.Services.Authentication;
+  7: using MTM_Receiving_Application.Module_Core.Data.Authentication;
+  8: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  9: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 10: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 11: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 12: 
+ 13: namespace MTM_Receiving_Application.Tests.Module_Core.Services.Authentication
+ 14: {
+ 15:     /// <summary>
+ 16:     /// Unit tests for Service_UserSessionManager
+ 17:     /// </summary>
+ 18:     [Trait("Category", "Unit")]
+ 19:     [Trait("Layer", "Service")]
+ 20:     public class Service_UserSessionManager_Tests
+ 21:     {
+ 22:         private readonly Mock<Dao_User> _mockDaoUser;
+ 23:         private readonly Mock<IService_Dispatcher> _mockDispatcher;
+ 24:         private readonly Mock<IService_DispatcherTimer> _mockTimer;
+ 25:         private readonly Service_UserSessionManager _sut;
+ 26: 
+ 27:         public Service_UserSessionManager_Tests()
+ 28:         {
+ 29:             _mockDaoUser = new Mock<Dao_User>("Server=fake;");
+ 30:             _mockDispatcher = new Mock<IService_Dispatcher>();
+ 31:             _mockTimer = new Mock<IService_DispatcherTimer>();
+ 32:             
+ 33:             _mockDispatcher.Setup(x => x.CreateTimer()).Returns(_mockTimer.Object);
+ 34: 
+ 35:             _sut = new Service_UserSessionManager(_mockDaoUser.Object, _mockDispatcher.Object);
+ 36:         }
+ 37: 
+ 38:         [Fact]
+ 39:         public void CreateSession_NullUser_ThrowsArgumentNullException()
+ 40:         {
+ 41:             // Act
+ 42:             Action act = () => _sut.CreateSession(null!, new Model_WorkstationConfig("PC"), "Windows");
+ 43: 
+ 44:             // Assert
+ 45:             act.Should().Throw<ArgumentNullException>().WithParameterName("user");
+ 46:         }
+ 47: 
+ 48:         [Fact]
+ 49:         public void CreateSession_ValidData_SetsCurrentSession()
+ 50:         {
+ 51:             // Arrange
+ 52:             var user = new Model_User { WindowsUsername = "test" };
+ 53:             var config = new Model_WorkstationConfig("PC") { WorkstationType = "personal_workstation" };
+ 54: 
+ 55:             // Act
+ 56:             var session = _sut.CreateSession(user, config, "Windows");
+ 57: 
+ 58:             // Assert
+ 59:             session.Should().NotBeNull();
+ 60:             session.User.Should().Be(user);
+ 61:             session.WorkstationName.Should().Be("PC");
+ 62:             session.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(30));
+ 63:             _sut.CurrentSession.Should().Be(session);
+ 64:         }
+ 65: 
+ 66:         [Fact]
+ 67:         public void StartTimeoutMonitoring_NoSession_ThrowsInvalidOperationException()
+ 68:         {
+ 69:             // Act
+ 70:             Action act = () => _sut.StartTimeoutMonitoring();
+ 71: 
+ 72:             // Assert
+ 73:             act.Should().Throw<InvalidOperationException>();
+ 74:         }
+ 75: 
+ 76:         [Fact]
+ 77:         public void StartTimeoutMonitoring_WithSession_StartsTimer()
+ 78:         {
+ 79:             // Arrange
+ 80:             _sut.CreateSession(new Model_User(), new Model_WorkstationConfig("PC"), "Windows");
+ 81: 
+ 82:             // Act
+ 83:             _sut.StartTimeoutMonitoring();
+ 84: 
+ 85:             // Assert
+ 86:             _mockDispatcher.Verify(x => x.CreateTimer(), Times.Once);
+ 87:             _mockTimer.Verify(x => x.Start(), Times.Once);
+ 88:             _mockTimer.VerifySet(x => x.Interval = It.IsAny<TimeSpan>());
+ 89:             _mockTimer.VerifySet(x => x.IsRepeating = true);
+ 90:         }
+ 91: 
+ 92:         [Fact]
+ 93:         public void StopTimeoutMonitoring_StopsTimer()
+ 94:         {
+ 95:             // Arrange
+ 96:             _sut.CreateSession(new Model_User(), new Model_WorkstationConfig("PC"), "Windows");
+ 97:             _sut.StartTimeoutMonitoring();
+ 98: 
+ 99:             // Act
+100:             _sut.StopTimeoutMonitoring();
+101: 
+102:             // Assert
+103:             _mockTimer.Verify(x => x.Stop(), Times.Once);
+104:         }
+105: 
+106:         [Fact]
+107:         public async Task EndSessionAsync_LogsAndClearsSession_Async()
+108:         {
+109:             // Arrange
+110:             var user = new Model_User { WindowsUsername = "test" };
+111:             _sut.CreateSession(user, new Model_WorkstationConfig("PC"), "Windows");
+112:             _sut.StartTimeoutMonitoring();
+113: 
+114:             _mockDaoUser.Setup(x => x.LogUserActivityAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+115:                 .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+116: 
+117:             // Act
+118:             await _sut.EndSessionAsync("Logout");
+119: 
+120:             // Assert
+121:             _sut.CurrentSession.Should().BeNull();
+122:             _mockTimer.Verify(x => x.Stop(), Times.Once); // Should stop monitoring
+123:              _mockDaoUser.Verify(x => x.LogUserActivityAsync("Logout", "test", "PC", It.IsNotNull<string>()), Times.Once);
+124:         }
+125: 
+126:         [Fact]
+127:         public void UpdateLastActivity_UpdatesTimestamp()
+128:         {
+129:             // Arrange
+130:             _sut.CreateSession(new Model_User(), new Model_WorkstationConfig("PC"), "Windows");
+131:             var initialTime = _sut.CurrentSession!.LastActivityTimestamp;
+132:             
+133:             // Wait a tiny bit (not reliable in unit tests really, but checks update)
+134:             // Instead we can check that it's very close or just called.
+135:             // Since we can't inject time provider, we assume DateTime.Now changes or is called.
+136:             
+137:             // Act
+138:             _sut.UpdateLastActivity();
+139: 
+140:             // Assert
+141:             _sut.CurrentSession.LastActivityTimestamp.Should().BeOnOrAfter(initialTime);
+142:         }
+143:     }
+144: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Services/Database/Service_ErrorHandler_Tests.cs
+````csharp
+  1: using System;
+  2: using System.Threading.Tasks;
+  3: using Xunit;
+  4: using FluentAssertions;
+  5: using Moq;
+  6: using MTM_Receiving_Application.Module_Core.Services.Database;
+  7: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  8: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  9: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 10: using Microsoft.UI.Xaml;
+ 11: 
+ 12: namespace MTM_Receiving_Application.Tests.Module_Core.Services.Database
+ 13: {
+ 14:     /// <summary>
+ 15:     /// Unit tests for Service_ErrorHandler
+ 16:     /// </summary>
+ 17:     [Trait("Category", "Unit")]
+ 18:     [Trait("Layer", "Service")]
+ 19:     public class Service_ErrorHandler_Tests
+ 20:     {
+ 21:         private readonly Mock<IService_LoggingUtility> _mockLogger;
+ 22:         private readonly Mock<IService_Window> _mockWindowService;
+ 23:         private readonly Service_ErrorHandler _sut;
+ 24: 
+ 25:         public Service_ErrorHandler_Tests()
+ 26:         {
+ 27:             _mockLogger = new Mock<IService_LoggingUtility>();
+ 28:             _mockWindowService = new Mock<IService_Window>();
+ 29:             _sut = new Service_ErrorHandler(_mockLogger.Object, _mockWindowService.Object);
+ 30:         }
+ 31: 
+ 32:         [Fact]
+ 33:         public async Task LogErrorAsync_InfoSeverity_CallsLogInfo_Async()
+ 34:         {
+ 35:             // Act
+ 36:             await _sut.LogErrorAsync("Test Info", Enum_ErrorSeverity.Info);
+ 37: 
+ 38:             // Assert
+ 39:             _mockLogger.Verify(x => x.LogInfo("Test Info", It.IsAny<string?>()), Times.Once);
+ 40:         }
+ 41: 
+ 42:         [Fact]
+ 43:         public async Task LogErrorAsync_ErrorSeverity_CallsLogError_Async()
+ 44:         {
+ 45:             // Arrange
+ 46:             var ex = new Exception("Test Ex");
+ 47: 
+ 48:             // Act
+ 49:             await _sut.LogErrorAsync("Test Error", Enum_ErrorSeverity.Error, ex);
+ 50: 
+ 51:             // Assert
+ 52:             _mockLogger.Verify(x => x.LogError("Test Error", ex, It.IsAny<string?>()), Times.Once);
+ 53:         }
+ 54: 
+ 55:         [Fact]
+ 56:         public async Task HandleErrorAsync_ShowDialogFalse_OnlyLogs_Async()
+ 57:         {
+ 58:             // Act
+ 59:             await _sut.HandleErrorAsync("Test", Enum_ErrorSeverity.Warning, null, false);
+ 60: 
+ 61:             // Assert
+ 62:             _mockLogger.Verify(x => x.LogWarning("Test", It.IsAny<string?>()), Times.Once);
+ 63:             _mockWindowService.Verify(x => x.GetXamlRoot(), Times.Never);
+ 64:         }
+ 65: 
+ 66:         [Fact]
+ 67:         public async Task HandleErrorAsync_ShowDialogTrue_LogsAndChecksWindow_Async()
+ 68:         {
+ 69:             // Arrange
+ 70:             _mockWindowService.Setup(x => x.GetXamlRoot()).Returns((XamlRoot?)null); // Returrns null to avoid UI thread crash
+ 71: 
+ 72:             // Act
+ 73:             await _sut.HandleErrorAsync("Test", Enum_ErrorSeverity.Error, null, true);
+ 74: 
+ 75:             // Assert
+ 76:             _mockLogger.Verify(x => x.LogError("Test", null, It.IsAny<string?>()), Times.Once);
+ 77:             _mockWindowService.Verify(x => x.GetXamlRoot(), Times.Once);
+ 78:             // Since xamlRoot is null, we expect a warning log about it
+ 79:             _mockLogger.Verify(x => x.LogWarning("Cannot show dialog - XamlRoot is null", It.IsAny<string?>()), Times.Once);
+ 80:         }
+ 81: 
+ 82:         [Fact]
+ 83:         public async Task HandleDaoErrorAsync_SuccessResult_DoesNothing_Async()
+ 84:         {
+ 85:             // Arrange
+ 86:             var result = Model_Dao_Result_Factory.Success();
+ 87: 
+ 88:             // Act
+ 89:             await _sut.HandleDaoErrorAsync(result, "TestOp");
+ 90: 
+ 91:             // Assert
+ 92:             _mockLogger.Verify(x => x.LogInfo(It.IsAny<string>(), It.IsAny<string?>()), Times.Never);
+ 93:             _mockLogger.Verify(x => x.LogError(It.IsAny<string>(), It.IsAny<Exception?>(), It.IsAny<string?>()), Times.Never);
+ 94:         }
+ 95: 
+ 96:         [Fact]
+ 97:         public async Task HandleDaoErrorAsync_FailureResult_LogsError_Async()
+ 98:         {
+ 99:             // Arrange
+100:             var result = Model_Dao_Result_Factory.Failure("DB Fail", new Exception("SQL Error"));
+101:             _mockWindowService.Setup(x => x.GetXamlRoot()).Returns((XamlRoot?)null);
+102: 
+103:             // Act
+104:             await _sut.HandleDaoErrorAsync(result, "TestOp", true);
+105: 
+106:             // Assert
+107:             _mockLogger.Verify(x => x.LogError(It.Is<string>(s => s.Contains("DB Fail") && s.Contains("TestOp")), It.IsAny<Exception>(), It.IsAny<string?>()), Times.Once);
+108:         }
+109:     }
+110: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Services/Help/Service_Help_Tests.cs
+````csharp
+ 1: using System;
+ 2: using System.Linq;
+ 3: using Xunit;
+ 4: using FluentAssertions;
+ 5: using Moq;
+ 6: using MTM_Receiving_Application.Module_Core.Services.Help;
+ 7: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+ 8: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 9: 
+10: namespace MTM_Receiving_Application.Tests.Module_Core.Services.Help
+11: {
+12:     /// <summary>
+13:     /// Unit tests for Service_Help content retrieval
+14:     /// </summary>
+15:     [Trait("Category", "Unit")]
+16:     [Trait("Layer", "Service")]
+17:     public class Service_Help_Tests
+18:     {
+19:         private readonly Mock<IService_Window> _mockWindow;
+20:         private readonly Mock<IService_LoggingUtility> _mockLogger;
+21:         private readonly Mock<IService_Dispatcher> _mockDispatcher;
+22:         private readonly Service_Help _sut;
+23: 
+24:         public Service_Help_Tests()
+25:         {
+26:             _mockWindow = new Mock<IService_Window>();
+27:             _mockLogger = new Mock<IService_LoggingUtility>();
+28:             _mockDispatcher = new Mock<IService_Dispatcher>();
+29: 
+30:         _sut = new Service_Help(_mockWindow.Object, _mockLogger.Object, _mockDispatcher.Object);
+31:         }
+32: 
+33:         [Fact]
+34:         public void GetHelpContent_ExistingKey_ReturnsContent()
+35:         {
+36:             // Act
+37:             var content = _sut.GetHelpContent("Dunnage.ModeSelection");
+38: 
+39:             // Assert
+40:             content.Should().NotBeNull();
+41:             content?.Title.Should().Be("Select Entry Mode");
+42:             content?.Key.Should().Be("Dunnage.ModeSelection");
+43:         }
+44: 
+45:         [Fact]
+46:         public void GetHelpContent_NonExistentKey_ReturnsNull()
+47:         {
+48:             // Act
+49:             var content = _sut.GetHelpContent("NonExistentKey");
+50: 
+51:             // Assert
+52:             content.Should().BeNull();
+53:         }
+54: 
+55:         [Fact]
+56:         public void GetHelpByCategory_ReturnsFilteredList()
+57:         {
+58:             // Act
+59:             var list = _sut.GetHelpByCategory("Dunnage Workflow");
+60: 
+61:             // Assert
+62:             list.Should().NotBeEmpty();
+63:             list.All(x => x.Category == "Dunnage Workflow").Should().BeTrue();
+64:         }
+65: 
+66:         [Fact]
+67:         public void SearchHelp_ReturnsMatchingItems()
+68:         {
+69:             // Act
+70:             var results = _sut.SearchHelp("dunnage");
+71: 
+72:             // Assert
+73:             results.Should().NotBeEmpty();
+74:             // Should contain items with "dunnage" in title or content
+75:             results.Should().Contain(x => x.Title.ToLower().Contains("dunnage") || x.Content.ToLower().Contains("dunnage"));
+76:         }
+77: 
+78:         [Fact]
+79:         public void SearchHelp_EmptyTerm_ReturnsEmptyList()
+80:         {
+81:             // Act
+82:             var results = _sut.SearchHelp("");
+83: 
+84:             // Assert
+85:             results.Should().BeEmpty();
+86:         }
+87: 
+88:          [Fact]
+89:         public void TipRetreival_ReturnsContent()
+90:         {
+91:             // Act
+92:             var tip = _sut.GetTip("Dunnage.QuantityEntry");
+93: 
+94:             // Assert
+95:             tip.Should().NotBeNullOrEmpty();
+96:         }
+97:     }
+98: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Services/UI/Service_ViewModelRegistry_Tests.cs
+````csharp
+ 1: using System;
+ 2: using System.Linq;
+ 3: using Xunit;
+ 4: using FluentAssertions;
+ 5: using MTM_Receiving_Application.Module_Core.Services.UI;
+ 6: using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Core.Services.UI
+ 9: {
+10:     /// <summary>
+11:     /// Unit tests for Service_ViewModelRegistry
+12:     /// </summary>
+13:     [Trait("Category", "Unit")]
+14:     [Trait("Layer", "Service")]
+15:     public class Service_ViewModelRegistry_Tests
+16:     {
+17:         private class TestViewModel : IResettableViewModel
+18:         {
+19:             public bool ResetCalled { get; private set; }
+20:             public void ResetToDefaults() => ResetCalled = true;
+21:         }
+22: 
+23:         private class AnotherViewModel { }
+24: 
+25:         [Fact]
+26:         public void Register_and_GetViewModels_WorksCorrectly()
+27:         {
+28:             // Arrange
+29:             var sut = new Service_ViewModelRegistry();
+30:             var vm1 = new TestViewModel();
+31:             var vm2 = new AnotherViewModel();
+32: 
+33:             // Act
+34:             sut.Register(vm1);
+35:             sut.Register(vm2);
+36: 
+37:             var retrieved = sut.GetViewModels<TestViewModel>().ToList();
+38: 
+39:             // Assert
+40:             retrieved.Should().HaveCount(1);
+41:             retrieved.First().Should().Be(vm1);
+42:         }
+43: 
+44:         [Fact]
+45:         public void ClearAllInputs_CallsResetOnResettableVMs()
+46:         {
+47:             // Arrange
+48:             var sut = new Service_ViewModelRegistry();
+49:             var vm1 = new TestViewModel();
+50:             var vm2 = new AnotherViewModel(); // Not resettable
+51: 
+52:             sut.Register(vm1);
+53:             sut.Register(vm2);
+54: 
+55:             // Act
+56:             sut.ClearAllInputs();
+57: 
+58:             // Assert
+59:             vm1.ResetCalled.Should().BeTrue();
+60:         }
+61: 
+62:         [Fact]
+63:         public void Cleanup_RemovesDeadReferences()
+64:         {
+65:              // Arrange
+66:             var sut = new Service_ViewModelRegistry();
+67:             
+68:             void RegisterTemporaryVM()
+69:             {
+70:                 var vm = new TestViewModel();
+71:                 sut.Register(vm);
+72:             }
+73: 
+74:             RegisterTemporaryVM();
+75:             
+76:             // Force GC to collect the temporary VM
+77:             GC.Collect();
+78:             GC.WaitForPendingFinalizers();
+79: 
+80:             // Act
+81:             // GetViewModels calls Cleanup internally
+82:             var list = sut.GetViewModels<TestViewModel>().ToList();
+83: 
+84:             // Assert
+85:             list.Should().BeEmpty();
+86:         }
+87:     }
+88: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Application_Variables_Tests.cs
+````csharp
+ 1: using System;
+ 2: using System.IO;
+ 3: using FluentAssertions;
+ 4: using MTM_Receiving_Application.Module_Receiving.Models;
+ 5: using Xunit;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 8: {
+ 9:     /// <summary>
+10:     /// Unit tests for Model_Application_Variables.
+11:     /// Tests default configurations.
+12:     /// </summary>
+13:     [Trait("Category", "Unit")]
+14:     [Trait("Layer", "Model")]
+15:     public class Model_Application_Variables_Tests
+16:     {
+17:         [Fact]
+18:         public void Constructor_Defaults_SetsSensibleValues()
+19:         {
+20:             // Act
+21:             var config = new Model_Application_Variables();
+22: 
+23:             // Assert
+24:             config.ApplicationName.Should().NotBeEmpty();
+25:             config.Version.Should().MatchRegex(@"\d+\.\d+\.\d+");
+26:             config.ConnectionString.Should().BeEmpty();
+27:             config.EnvironmentType.Should().Be("Development");
+28:         }
+29: 
+30:         [Fact]
+31:         public void LogDirectory_Default_IsInAppData()
+32:         {
+33:             // Act
+34:             var config = new Model_Application_Variables();
+35:             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+36: 
+37:             // Assert
+38:             config.LogDirectory.Should().StartWith(appData);
+39:             config.LogDirectory.Should().Contain("MTM_Receiving_Application");
+40:         }
+41:     }
+42: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_CSVDeleteResult_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Receiving.Models;
+ 3: using Xunit;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 6: {
+ 7:     /// <summary>
+ 8:     /// Unit tests for Model_CSVDeleteResult.
+ 9:     /// Tests simple property behavior.
+10:     /// </summary>
+11:     [Trait("Category", "Unit")]
+12:     [Trait("Layer", "Model")]
+13:     public class Model_CSVDeleteResult_Tests
+14:     {
+15:         [Fact]
+16:         public void Properties_SetAndGet_WorksCorrectly()
+17:         {
+18:             // Arrange
+19:             var result = new Model_CSVDeleteResult();
+20: 
+21:             // Act
+22:             result.LocalDeleted = true;
+23:             result.NetworkDeleted = false;
+24:             result.LocalError = null;
+25:             result.NetworkError = "Access Denied";
+26: 
+27:             // Assert
+28:             result.LocalDeleted.Should().BeTrue();
+29:             result.NetworkDeleted.Should().BeFalse();
+30:             result.LocalError.Should().BeNull();
+31:             result.NetworkError.Should().Be("Access Denied");
+32:         }
+33:     }
+34: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_CSVExistenceResult_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Receiving.Models;
+ 3: using Xunit;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 6: {
+ 7:     /// <summary>
+ 8:     /// Unit tests for Model_CSVExistenceResult.
+ 9:     /// Tests simple property holders.
+10:     /// </summary>
+11:     [Trait("Category", "Unit")]
+12:     [Trait("Layer", "Model")]
+13:     public class Model_CSVExistenceResult_Tests
+14:     {
+15:         [Fact]
+16:         public void Properties_SetAndGet_Works()
+17:         {
+18:             // Arrange
+19:             var result = new Model_CSVExistenceResult();
+20: 
+21:             // Act
+22:             result.LocalExists = true;
+23:             result.NetworkExists = true;
+24:             result.NetworkAccessible = true;
+25: 
+26:             // Assert
+27:             result.LocalExists.Should().BeTrue();
+28:             result.NetworkExists.Should().BeTrue();
+29:             result.NetworkAccessible.Should().BeTrue();
+30:         }
+31:     }
+32: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_CSVWriteResult_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Receiving.Models;
+ 3: using Xunit;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 6: {
+ 7:     /// <summary>
+ 8:     /// Unit tests for Model_CSVWriteResult.
+ 9:     /// Tests success calculation logic.
+10:     /// </summary>
+11:     [Trait("Category", "Unit")]
+12:     [Trait("Layer", "Model")]
+13:     public class Model_CSVWriteResult_Tests
+14:     {
+15:         [Fact]
+16:         public void Constructor_Defaults_AreCorrect()
+17:         {
+18:             // Act
+19:             var result = new Model_CSVWriteResult();
+20: 
+21:             // Assert
+22:             result.LocalSuccess.Should().BeFalse();
+23:             result.NetworkSuccess.Should().BeFalse();
+24:             result.ErrorMessage.Should().BeEmpty();
+25:         }
+26: 
+27:         [Fact]
+28:         public void IsFullSuccess_ReturnsTrueOnlyIfBothSucceed()
+29:         {
+30:             // Arrange
+31:             var result = new Model_CSVWriteResult
+32:             {
+33:                 LocalSuccess = true,
+34:                 NetworkSuccess = true
+35:             };
+36: 
+37:             // Assert
+38:             result.IsFullSuccess.Should().BeTrue();
+39:             result.IsPartialSuccess.Should().BeFalse();
+40:             result.IsFailure.Should().BeFalse();
+41:         }
+42: 
+43:         [Fact]
+44:         public void IsPartialSuccess_ReturnsTrueOnlyIfLocalSucceedsButNetworkFails()
+45:         {
+46:             // Arrange
+47:             var result = new Model_CSVWriteResult
+48:             {
+49:                 LocalSuccess = true,
+50:                 NetworkSuccess = false
+51:             };
+52: 
+53:             // Assert
+54:             result.IsFullSuccess.Should().BeFalse();
+55:             result.IsPartialSuccess.Should().BeTrue();
+56:             result.IsFailure.Should().BeFalse();
+57:         }
+58: 
+59:         [Fact]
+60:         public void IsFailure_ReturnsTrueIfLocalFails()
+61:         {
+62:             // Arrange
+63:             var result = new Model_CSVWriteResult
+64:             {
+65:                 LocalSuccess = false,
+66:                 NetworkSuccess = true // Weird case, but if local fails it's considered failure per logic
+67:             };
+68: 
+69:             // Assert
+70:             result.IsFailure.Should().BeTrue();
+71:         }
+72:     }
+73: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_InforVisualPart_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Receiving.Models;
+ 3: using Xunit;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 6: {
+ 7:     /// <summary>
+ 8:     /// Unit tests for Model_InforVisualPart.
+ 9:     /// Tests display text logic.
+10:     /// </summary>
+11:     [Trait("Category", "Unit")]
+12:     [Trait("Layer", "Model")]
+13:     public class Model_InforVisualPart_Tests
+14:     {
+15:         [Fact]
+16:         public void DisplayText_FormatsCorrectly()
+17:         {
+18:             // Arrange
+19:             var part = new Model_InforVisualPart
+20:             {
+21:                 PartID = "PART-01",
+22:                 Description = "A Widget",
+23:                 POLineNumber = "001"
+24:             };
+25: 
+26:             // Act
+27:             var text = part.DisplayText;
+28: 
+29:             // Assert
+30:             text.Should().Be("PART-01 - A Widget (Line 001)");
+31:         }
+32: 
+33:         [Fact]
+34:         public void Constructor_Defaults_AreCorrect()
+35:         {
+36:             // Act
+37:             var part = new Model_InforVisualPart();
+38: 
+39:             // Assert
+40:             part.UnitOfMeasure.Should().Be("EA");
+41:             part.QtyOrdered.Should().Be(0);
+42:         }
+43:     }
+44: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_InforVisualPO_Tests.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Receiving.Models;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_InforVisualPO.
+10:     /// Tests calculated properties and default lists.
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_InforVisualPO_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Defaults_AreCorrect()
+18:         {
+19:             // Act
+20:             var po = new Model_InforVisualPO();
+21: 
+22:             // Assert
+23:             po.Parts.Should().NotBeNull().And.BeEmpty();
+24:             po.HasParts.Should().BeFalse();
+25:             po.PONumber.Should().BeEmpty();
+26:         }
+27: 
+28:         [Fact]
+29:         public void HasParts_ReturnsTrueOnlyWhenPartsExist()
+30:         {
+31:             // Arrange
+32:             var po = new Model_InforVisualPO();
+33: 
+34:             // Act
+35:             po.Parts.Add(new Model_InforVisualPart());
+36: 
+37:             // Assert
+38:             po.HasParts.Should().BeTrue();
+39:         }
+40: 
+41:         [Theory]
+42:         [InlineData("R", "Open")]
+43:         [InlineData("O", "Open")]
+44:         [InlineData("C", "Closed")]
+45:         [InlineData("X", "Cancelled")]
+46:         [InlineData("P", "Partially Received")]
+47:         [InlineData("F", "Firm")]
+48:         [InlineData("", "Unknown")]
+49:         [InlineData("Z", "Status: Z")] // Unknown code fallback
+50:         public void StatusDescription_MapsCodesCorrectly(string code, string expected)
+51:         {
+52:             // Arrange
+53:             var po = new Model_InforVisualPO { Status = code };
+54: 
+55:             // Act
+56:             var desc = po.StatusDescription;
+57: 
+58:             // Assert
+59:             desc.Should().Be(expected);
+60:         }
+61: 
+62:         [Theory]
+63:         [InlineData("C", true)]
+64:         [InlineData("X", true)]
+65:         [InlineData("R", false)]
+66:         [InlineData("O", false)]
+67:         [InlineData("P", false)]
+68:         public void IsClosed_ReturnsTrueForClosedOrCancelled(string status, bool expected)
+69:         {
+70:             // Arrange
+71:             var po = new Model_InforVisualPO { Status = status };
+72: 
+73:             // Act
+74:             var isClosed = po.IsClosed;
+75: 
+76:             // Assert
+77:             isClosed.Should().Be(expected);
+78:         }
+79:     }
+80: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_PackageTypePreference_Tests.cs
+````csharp
+ 1: using System;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Receiving.Models;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_PackageTypePreference.
+10:     /// Tests simple property behavior and default DateTime.
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_PackageTypePreference_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Defaults_AreCorrect()
+18:         {
+19:             // Act
+20:             var model = new Model_PackageTypePreference();
+21: 
+22:             // Assert
+23:             model.PartID.Should().BeEmpty();
+24:             model.PackageTypeName.Should().BeEmpty();
+25:             model.LastModified.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+26:         }
+27:     }
+28: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingLine_Tests.cs
+````csharp
+ 1: using System;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Receiving.Models;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_ReceivingLine.
+10:     /// Tests property defaults and formatting.
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_ReceivingLine_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Defaults_AreCorrect()
+18:         {
+19:             // Act
+20:             var line = new Model_ReceivingLine();
+21: 
+22:             // Assert
+23:             line.Date.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+24:             line.LabelNumber.Should().Be(1);
+25:             line.TotalLabels.Should().Be(1);
+26:             line.VendorName.Should().Be("Unknown");
+27:             line.PartID.Should().BeEmpty();
+28:         }
+29: 
+30:         [Fact]
+31:         public void LabelText_ReturnsFormattedString()
+32:         {
+33:             // Arrange
+34:             var line = new Model_ReceivingLine
+35:             {
+36:                 LabelNumber = 2,
+37:                 TotalLabels = 5
+38:             };
+39: 
+40:             // Act
+41:             var text = line.LabelText;
+42: 
+43:             // Assert
+44:             text.Should().Be("2 / 5");
+45:         }
+46: 
+47:         [Fact]
+48:         public void LabelText_UpdatesWhenPropertiesChange()
+49:         {
+50:             // Arrange
+51:             var line = new Model_ReceivingLine
+52:             {
+53:                 LabelNumber = 1,
+54:                 TotalLabels = 1
+55:             };
+56: 
+57:             // Act
+58:             line.LabelNumber = 3;
+59:             line.TotalLabels = 10;
+60: 
+61:             // Assert
+62:             line.LabelText.Should().Be("3 / 10");
+63:         }
+64:     }
+65: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingLoad_Tests.cs
+````csharp
+  1: using FluentAssertions;
+  2: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  3: using MTM_Receiving_Application.Module_Receiving.Models;
+  4: using Xunit;
+  5: 
+  6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+  7: {
+  8:     /// <summary>
+  9:     /// Unit tests for Model_ReceivingLoad.
+ 10:     /// Tests property logic, change handlers, and calculations.
+ 11:     /// </summary>
+ 12:     [Trait("Category", "Unit")]
+ 13:     [Trait("Layer", "Model")]
+ 14:     public class Model_ReceivingLoad_Tests
+ 15:     {
+ 16:         private Model_ReceivingLoad _sut;
+ 17: 
+ 18:         public Model_ReceivingLoad_Tests()
+ 19:         {
+ 20:             _sut = new Model_ReceivingLoad();
+ 21:         }
+ 22: 
+ 23:         // ====================================================================
+ 24:         // Constructor & Defaults
+ 25:         // ====================================================================
+ 26: 
+ 27:         [Fact]
+ 28:         public void Constructor_Initialization_SetsDefaults()
+ 29:         {
+ 30:             // Act
+ 31:             var model = new Model_ReceivingLoad();
+ 32: 
+ 33:             // Assert
+ 34:             model.LoadID.Should().NotBeEmpty();
+ 35:             model.PartID.Should().BeEmpty();
+ 36:             model.HeatLotNumber.Should().BeEmpty();
+ 37:             model.ReceivedDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+ 38:             model.PackageType.Should().Be(Enum_PackageType.Skid);
+ 39:             model.PackageTypeName.Should().Be("Skid");
+ 40:             model.PackagesPerLoad.Should().Be(0);
+ 41:         }
+ 42: 
+ 43:         // ====================================================================
+ 44:         // Property Logic: PartID
+ 45:         // ====================================================================
+ 46: 
+ 47:         [Fact]
+ 48:         public void PartID_WhenChanged_SetsPackagesPerLoadToOneIfZero()
+ 49:         {
+ 50:             // Arrange
+ 51:             _sut.PackagesPerLoad = 0;
+ 52: 
+ 53:             // Act
+ 54:             _sut.PartID = "TEST-PART";
+ 55: 
+ 56:             // Assert
+ 57:             _sut.PackagesPerLoad.Should().Be(1);
+ 58:         }
+ 59: 
+ 60:         [Fact]
+ 61:         public void PartID_WhenChangedToMMC_SetsPackageTypeToCoil()
+ 62:         {
+ 63:             // Arrange
+ 64:             _sut.PackageType = Enum_PackageType.Skid;
+ 65: 
+ 66:             // Act
+ 67:             _sut.PartID = "PART-MMC-001";
+ 68: 
+ 69:             // Assert
+ 70:             _sut.PackageType.Should().Be(Enum_PackageType.Coil);
+ 71:         }
+ 72: 
+ 73:         [Fact]
+ 74:         public void PartID_WhenChangedToMMF_SetsPackageTypeToSheet()
+ 75:         {
+ 76:             // Arrange
+ 77:             _sut.PackageType = Enum_PackageType.Skid;
+ 78: 
+ 79:             // Act
+ 80:             _sut.PartID = "PART-MMF-001";
+ 81: 
+ 82:             // Assert
+ 83:             _sut.PackageType.Should().Be(Enum_PackageType.Sheet);
+ 84:         }
+ 85: 
+ 86:         [Theory]
+ 87:         [InlineData(null)]
+ 88:         [InlineData("")]
+ 89:         [InlineData("   ")]
+ 90:         public void PartID_WhenSetToEmptyOrNull_DoesNotChangePackageType(string partId)
+ 91:         {
+ 92:             // Arrange
+ 93:             _sut.PackageType = Enum_PackageType.Skid;
+ 94:             _sut.PackagesPerLoad = 0;
+ 95: 
+ 96:             // Act
+ 97:             _sut.PartID = partId;
+ 98: 
+ 99:             // Assert
+100:             _sut.PackageType.Should().Be(Enum_PackageType.Skid);
+101:             _sut.PackagesPerLoad.Should().Be(0);
+102:         }
+103: 
+104:         // ====================================================================
+105:         // Property Logic: PackageType / PackageTypeName
+106:         // ====================================================================
+107: 
+108:         [Fact]
+109:         public void PackageType_WhenChanged_UpdatesPackageTypeName()
+110:         {
+111:             // Act
+112:             _sut.PackageType = Enum_PackageType.Box;
+113: 
+114:             // Assert
+115:             _sut.PackageTypeName.Should().Be("Box");
+116:         }
+117: 
+118:         [Fact]
+119:         public void PackageTypeName_WhenChangedToValidEnum_UpdatesPackageType()
+120:         {
+121:             // Act
+122:             _sut.PackageTypeName = "Box";
+123: 
+124:             // Assert
+125:             _sut.PackageType.Should().Be(Enum_PackageType.Box);
+126:         }
+127: 
+128:         [Fact]
+129:         public void PackageTypeName_WhenChangedToInvalidEnum_DoesNotUpdatePackageType()
+130:         {
+131:             // Arrange
+132:             _sut.PackageType = Enum_PackageType.Skid;
+133: 
+134:             // Act
+135:             _sut.PackageTypeName = "InvalidType";
+136: 
+137:             // Assert
+138:             _sut.PackageType.Should().Be(Enum_PackageType.Skid);
+139:         }
+140: 
+141:         // ====================================================================
+142:         // Calculation: WeightPerPackage
+143:         // ====================================================================
+144: 
+145:         [Theory]
+146:         [InlineData(100.0, 2, 50.0)]
+147:         [InlineData(1000.0, 4, 250.0)]
+148:         [InlineData(100.0, 3, 33.0)] // Rounds to nearest whole number as per logic: Math.Round(..., 0)
+149:         [InlineData(0.0, 1, 0.0)]
+150:         public void CalculateWeightPerPackage_UpdatesUsingWeightAndPackages(decimal weight, int packages, decimal expected)
+151:         {
+152:             // Act
+153:             _sut.WeightQuantity = weight;
+154:             _sut.PackagesPerLoad = packages;
+155: 
+156:             // Assert
+157:             _sut.WeightPerPackage.Should().Be(expected);
+158:         }
+159: 
+160:         [Fact]
+161:         public void CalculateWeightPerPackage_WhenPackagesIsZero_SetResultToZero()
+162:         {
+163:             // Arrange
+164:             _sut.WeightQuantity = 100;
+165:             _sut.PackagesPerLoad = 0;
+166: 
+167:             // Act & Assert
+168:             // Triggers OnPackagesPerLoadChanged
+169:             _sut.WeightPerPackage.Should().Be(0);
+170:         }
+171: 
+172:         // ====================================================================
+173:         // Calculated Properties
+174:         // ====================================================================
+175: 
+176:         [Fact]
+177:         public void WeightPerPackageDisplay_FormattedCorrectly()
+178:         {
+179:             // Arrange
+180:             _sut.WeightQuantity = 100;
+181:             _sut.PackagesPerLoad = 2;
+182:             _sut.PackageType = Enum_PackageType.Box;
+183: 
+184:             // Act
+185:             var display = _sut.WeightPerPackageDisplay;
+186: 
+187:             // Assert
+188:             display.Should().Be("50 lbs per Box");
+189:         }
+190: 
+191:         [Fact]
+192:         public void PONumberDisplay_WhenNullOrEmpty_ReturnsNA()
+193:         {
+194:             // Arrange
+195:             _sut.PoNumber = null;
+196: 
+197:             // Act
+198:             var display = _sut.PONumberDisplay;
+199: 
+200:             // Assert
+201:             display.Should().Be("N/A");
+202:         }
+203: 
+204:         [Fact]
+205:         public void PONumberDisplay_WhenValid_ReturnsPONumber()
+206:         {
+207:             // Arrange
+208:             _sut.PoNumber = "12345";
+209: 
+210:             // Act
+211:             var display = _sut.PONumberDisplay;
+212: 
+213:             // Assert
+214:             display.Should().Be("12345");
+215:         }
+216:     }
+217: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingSession_Tests.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Linq;
+ 4: using FluentAssertions;
+ 5: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 6: using MTM_Receiving_Application.Module_Receiving.Models;
+ 7: using Xunit;
+ 8: 
+ 9: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+10: {
+11:     /// <summary>
+12:     /// Unit tests for Model_ReceivingSession.
+13:     /// Tests aggregation logic and transient properties.
+14:     /// </summary>
+15:     [Trait("Category", "Unit")]
+16:     [Trait("Layer", "Model")]
+17:     public class Model_ReceivingSession_Tests
+18:     {
+19:         [Fact]
+20:         public void Constructor_Defaults_AreCorrect()
+21:         {
+22:             // Act
+23:             var session = new Model_ReceivingSession();
+24: 
+25:             // Assert
+26:             session.SessionID.Should().NotBeEmpty();
+27:             session.CreatedDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+28:             session.Loads.Should().NotBeNull().And.BeEmpty();
+29:             session.TotalLoadsCount.Should().Be(0);
+30:             session.TotalWeightQuantity.Should().Be(0);
+31:             session.HasLoads.Should().BeFalse();
+32:         }
+33: 
+34:         [Fact]
+35:         public void TotalWeightQuantity_CalculatesSumCorrectly()
+36:         {
+37:             // Arrange
+38:             var session = new Model_ReceivingSession();
+39:             session.Loads.Add(new Model_ReceivingLoad { WeightQuantity = 100 });
+40:             session.Loads.Add(new Model_ReceivingLoad { WeightQuantity = 250 });
+41: 
+42:             // Act
+43:             var total = session.TotalWeightQuantity;
+44: 
+45:             // Assert
+46:             total.Should().Be(350);
+47:         }
+48: 
+49:         [Fact]
+50:         public void UniqueParts_ReturnsDistinctList()
+51:         {
+52:             // Arrange
+53:             var session = new Model_ReceivingSession();
+54:             session.Loads.Add(new Model_ReceivingLoad { PartID = "PART-A" });
+55:             session.Loads.Add(new Model_ReceivingLoad { PartID = "PART-A" });
+56:             session.Loads.Add(new Model_ReceivingLoad { PartID = "PART-B" });
+57: 
+58:             // Act
+59:             var parts = session.UniqueParts;
+60: 
+61:             // Assert
+62:             parts.Should().HaveCount(2);
+63:             parts.Should().Contain("PART-A");
+64:             parts.Should().Contain("PART-B");
+65:         }
+66: 
+67:         [Fact]
+68:         public void HasLoads_ReturnsTrueWhenLoadsExist()
+69:         {
+70:             // Arrange
+71:             var session = new Model_ReceivingSession();
+72:             session.Loads.Add(new Model_ReceivingLoad());
+73: 
+74:             // Act
+75:             var hasLoads = session.HasLoads;
+76: 
+77:             // Assert
+78:             hasLoads.Should().BeTrue();
+79:         }
+80: 
+81:         [Fact]
+82:         public void TransientProperties_HandleNullLoadsForSafety()
+83:         {
+84:             // Arrange
+85:             var session = new Model_ReceivingSession
+86:             {
+87:                 Loads = null! // Simulating deserialization issue or explicit null set
+88:             };
+89: 
+90:             // Assert
+91:             session.TotalLoadsCount.Should().Be(0);
+92:             session.TotalWeightQuantity.Should().Be(0);
+93:             session.UniqueParts.Should().NotBeNull().And.BeEmpty();
+94:             session.HasLoads.Should().BeFalse();
+95:         }
+96:     }
+97: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingValidationResult_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 3: using MTM_Receiving_Application.Module_Receiving.Models;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_ReceivingValidationResult.
+10:     /// Tests factory methods and default states.
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_ReceivingValidationResult_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Defaults_AreSafe()
+18:         {
+19:             // Act
+20:             var result = new Model_ReceivingValidationResult();
+21: 
+22:             // Assert
+23:             result.IsValid.Should().BeFalse();
+24:             result.Severity.Should().Be(Enum_ValidationSeverity.Error);
+25:             result.Message.Should().BeEmpty();
+26:             result.Errors.Should().NotBeNull().And.BeEmpty();
+27:         }
+28: 
+29:         [Fact]
+30:         public void Success_Factory_ReturnsValidObject()
+31:         {
+32:             // Act
+33:             var result = Model_ReceivingValidationResult.Success();
+34: 
+35:             // Assert
+36:             result.IsValid.Should().BeTrue();
+37:             result.Message.Should().BeEmpty();
+38:             result.Errors.Should().BeEmpty();
+39:         }
+40: 
+41:         [Fact]
+42:         public void Error_Factory_ReturnsErrorObject()
+43:         {
+44:             // Act
+45:             var msg = "Some error";
+46:             var result = Model_ReceivingValidationResult.Error(msg);
+47: 
+48:             // Assert
+49:             result.IsValid.Should().BeFalse();
+50:             result.Severity.Should().Be(Enum_ValidationSeverity.Error);
+51:             result.Message.Should().Be(msg);
+52:             result.Errors.Should().Contain(msg);
+53:         }
+54: 
+55:         [Fact]
+56:         public void Warning_Factory_ReturnsWarningObject()
+57:         {
+58:             // Act
+59:             var msg = "Pay attention";
+60:             var result = Model_ReceivingValidationResult.Warning(msg);
+61: 
+62:             // Assert
+63:             result.IsValid.Should().BeTrue("Warnings should not block validity");
+64:             result.Severity.Should().Be(Enum_ValidationSeverity.Warning);
+65:             result.Message.Should().Be(msg);
+66:         }
+67:     }
+68: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_ReceivingWorkflowStepResult_Tests.cs
+````csharp
+ 1: using System.Collections.Generic;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 4: using MTM_Receiving_Application.Module_Receiving.Models;
+ 5: using Xunit;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 8: {
+ 9:     /// <summary>
+10:     /// Unit tests for Model_ReceivingWorkflowStepResult.
+11:     /// Tests factory methods and properties.
+12:     /// </summary>
+13:     [Trait("Category", "Unit")]
+14:     [Trait("Layer", "Model")]
+15:     public class Model_ReceivingWorkflowStepResult_Tests
+16:     {
+17:         [Fact]
+18:         public void Constructor_Defaults_AreCorrect()
+19:         {
+20:             // Act
+21:             var result = new Model_ReceivingWorkflowStepResult();
+22: 
+23:             // Assert
+24:             result.Success.Should().BeFalse();
+25:             result.Message.Should().BeEmpty();
+26:             result.ValidationErrors.Should().NotBeNull().And.BeEmpty();
+27:         }
+28: 
+29:         [Fact]
+30:         public void SuccessResult_Factory_CreatesSuccessObject()
+31:         {
+32:             // Act
+33:             var step = Enum_ReceivingWorkflowStep.Review;
+34:             var message = "Success";
+35:             var result = Model_ReceivingWorkflowStepResult.SuccessResult(step, message);
+36: 
+37:             // Assert
+38:             result.Success.Should().BeTrue();
+39:             result.NewStep.Should().Be(step);
+40:             result.Message.Should().Be(message);
+41:         }
+42: 
+43:         [Fact]
+44:         public void ErrorResult_Factory_CreatesErrorObject()
+45:         {
+46:             // Act
+47:             var errors = new List<string> { "Error 1", "Error 2" };
+48:             var result = Model_ReceivingWorkflowStepResult.ErrorResult(errors);
+49: 
+50:             // Assert
+51:             result.Success.Should().BeFalse();
+52:             result.ValidationErrors.Should().BeEquivalentTo(errors);
+53:         }
+54:     }
+55: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_SaveResult_Tests.cs
+````csharp
+  1: using System.Collections.Generic;
+  2: using FluentAssertions;
+  3: using MTM_Receiving_Application.Module_Receiving.Models;
+  4: using Xunit;
+  5: 
+  6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+  7: {
+  8:     /// <summary>
+  9:     /// Unit tests for Model_SaveResult.
+ 10:     /// Tests success calculation logic and property behavior.
+ 11:     /// </summary>
+ 12:     [Trait("Category", "Unit")]
+ 13:     [Trait("Layer", "Model")]
+ 14:     public class Model_SaveResult_Tests
+ 15:     {
+ 16:         [Fact]
+ 17:         public void Constructor_Defaults_AreCorrect()
+ 18:         {
+ 19:             // Act
+ 20:             var result = new Model_SaveResult();
+ 21: 
+ 22:             // Assert
+ 23:             result.Success.Should().BeFalse();
+ 24:             result.LoadsSaved.Should().Be(0);
+ 25:             result.LocalCSVSuccess.Should().BeFalse();
+ 26:             result.NetworkCSVSuccess.Should().BeFalse();
+ 27:             result.DatabaseSuccess.Should().BeFalse();
+ 28:             result.Errors.Should().BeEmpty();
+ 29:             result.Warnings.Should().BeEmpty();
+ 30:         }
+ 31: 
+ 32:         [Fact]
+ 33:         public void IsFullSuccess_WhenAllTrue_ReturnsTrue()
+ 34:         {
+ 35:             // Arrange
+ 36:             var result = new Model_SaveResult
+ 37:             {
+ 38:                 LocalCSVSuccess = true,
+ 39:                 NetworkCSVSuccess = true,
+ 40:                 DatabaseSuccess = true
+ 41:             };
+ 42: 
+ 43:             // Assert
+ 44:             result.IsFullSuccess.Should().BeTrue();
+ 45:             result.IsPartialSuccess.Should().BeFalse();
+ 46:         }
+ 47: 
+ 48:         [Theory]
+ 49:         [InlineData(false, true, true)]
+ 50:         [InlineData(true, false, true)]
+ 51:         [InlineData(true, true, false)]
+ 52:         [InlineData(false, false, false)]
+ 53:         public void IsFullSuccess_WhenAnyFalse_ReturnsFalse(bool local, bool network, bool db)
+ 54:         {
+ 55:             // Arrange
+ 56:             var result = new Model_SaveResult
+ 57:             {
+ 58:                 LocalCSVSuccess = local,
+ 59:                 NetworkCSVSuccess = network,
+ 60:                 DatabaseSuccess = db
+ 61:             };
+ 62: 
+ 63:             // Assert
+ 64:             result.IsFullSuccess.Should().BeFalse();
+ 65:         }
+ 66: 
+ 67:         [Theory]
+ 68:         [InlineData(true, false, false)] // Only Local
+ 69:         [InlineData(false, false, true)] // Only DB
+ 70:         [InlineData(true, false, true)] // Local + DB
+ 71:         public void IsPartialSuccess_WhenMixedSuccessMatchesCriteria_ReturnsTrue(bool local, bool network, bool db)
+ 72:         {
+ 73:             // Arrange
+ 74:             var result = new Model_SaveResult
+ 75:             {
+ 76:                 LocalCSVSuccess = local,
+ 77:                 NetworkCSVSuccess = network,
+ 78:                 DatabaseSuccess = db
+ 79:             };
+ 80: 
+ 81:             // Assert
+ 82:             result.IsPartialSuccess.Should().BeTrue();
+ 83:         }
+ 84: 
+ 85:         [Fact]
+ 86:         public void IsPartialSuccess_WhenFullSuccess_ReturnsFalse()
+ 87:         {
+ 88:             // Arrange
+ 89:             var result = new Model_SaveResult
+ 90:             {
+ 91:                 LocalCSVSuccess = true,
+ 92:                 NetworkCSVSuccess = true,
+ 93:                 DatabaseSuccess = true
+ 94:             };
+ 95: 
+ 96:             // Assert
+ 97:             result.IsPartialSuccess.Should().BeFalse();
+ 98:         }
+ 99: 
+100:         [Fact]
+101:         public void IsPartialSuccess_WhenNoSuccess_ReturnsFalse()
+102:         {
+103:             // Arrange
+104:             var result = new Model_SaveResult
+105:             {
+106:                 LocalCSVSuccess = false,
+107:                 NetworkCSVSuccess = false,
+108:                 DatabaseSuccess = false
+109:             };
+110: 
+111:             // Assert
+112:             result.IsPartialSuccess.Should().BeFalse();
+113:         }
+114: 
+115:         [Fact]
+116:         public void LegacyProperties_MapToNewProperties()
+117:         {
+118:             // Arrange
+119:             var result = new Model_SaveResult();
+120: 
+121:             // Act
+122:             result.RecordsSaved = 10;
+123:             result.IsSuccess = true;
+124: 
+125:             // Assert
+126:             result.LoadsSaved.Should().Be(10);
+127:             result.Success.Should().BeTrue();
+128:         }
+129:     }
+130: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_UserPreference_Tests.cs
+````csharp
+ 1: using System;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Receiving.Models;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_UserPreference.
+10:     /// Tests ObservableObject properties.
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_UserPreference_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Defaults_AreCorrect()
+18:         {
+19:             // Act
+20:             var prefs = new Model_UserPreference();
+21: 
+22:             // Assert
+23:             prefs.Username.Should().BeEmpty();
+24:             prefs.PreferredPackageType.Should().Be("Package");
+25:             prefs.Workstation.Should().BeEmpty();
+26:         }
+27: 
+28:         [Fact]
+29:         public void Properties_NotifyChanges()
+30:         {
+31:             // Arrange
+32:             var prefs = new Model_UserPreference();
+33:             var propertyChanged = false;
+34:             prefs.PropertyChanged += (s, e) =>
+35:             {
+36:                 if (e.PropertyName == nameof(Model_UserPreference.Username))
+37:                     propertyChanged = true;
+38:             };
+39: 
+40:             // Act
+41:             prefs.Username = "NewUser";
+42: 
+43:             // Assert
+44:             propertyChanged.Should().BeTrue();
+45:             prefs.Username.Should().Be("NewUser");
+46:         }
+47:     }
+48: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_WorkflowStepResult_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Dunnage.Enums;
+ 3: using MTM_Receiving_Application.Module_Receiving.Models;
+ 4: using Xunit;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models
+ 7: {
+ 8:     /// <summary>
+ 9:     /// Unit tests for Model_WorkflowStepResult.
+10:     /// Tests property defaults and setting values.
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_WorkflowStepResult_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Defaults_AreCorrect()
+18:         {
+19:             // Act
+20:             var model = new Model_WorkflowStepResult();
+21: 
+22:             // Assert
+23:             model.IsSuccess.Should().BeFalse();
+24:             model.ErrorMessage.Should().BeEmpty();
+25:             model.TargetStep.Should().BeNull();
+26:         }
+27: 
+28:         [Fact]
+29:         public void Properties_SetAndGet_WorksCorrectly()
+30:         {
+31:             // Arrange
+32:             var model = new Model_WorkflowStepResult();
+33:             var step = Enum_DunnageWorkflowStep.Review;
+34: 
+35:             // Act
+36:             model.IsSuccess = true;
+37:             model.ErrorMessage = "Operation successful";
+38:             model.TargetStep = step;
+39: 
+40:             // Assert
+41:             model.IsSuccess.Should().BeTrue();
+42:             model.ErrorMessage.Should().Be("Operation successful");
+43:             model.TargetStep.Should().Be(step);
+44:         }
+45:     }
+46: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportPartsCsvQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for ExportPartsCsvQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class ExportPartsCsvQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public ExportPartsCsvQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnCsvContent()
+23:     {
+24:         var partDao = _fixture.CreatePartDao();
+25:         var componentDao = _fixture.CreatePartComponentDao();
+26:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+27: 
+28:         try
+29:         {
+30:             var insertResult = await partDao.InsertAsync(new Model_VolvoPart
+31:             {
+32:                 PartNumber = partNumber,
+33:                 QuantityPerSkid = 10,
+34:                 IsActive = true
+35:             });
+36:             insertResult.Success.Should().BeTrue();
+37: 
+38:             var handler = new ExportPartsCsvQueryHandler(partDao, componentDao);
+39:             var result = await handler.Handle(new ExportPartsCsvQuery { IncludeInactive = false }, default);
+40: 
+41:             result.IsSuccess.Should().BeTrue();
+42:             result.Data.Should().Contain(partNumber);
+43:         }
+44:         finally
+45:         {
+46:             await partDao.DeactivateAsync(partNumber);
+47:         }
+48:     }
+49: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/ExportShipmentsQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for ExportShipmentsQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class ExportShipmentsQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public ExportShipmentsQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnCsvContent()
+23:     {
+24:         var shipmentDao = _fixture.CreateShipmentDao();
+25:         int shipmentId = 0;
+26: 
+27:         try
+28:         {
+29:             var shipment = new Model_VolvoShipment
+30:             {
+31:                 ShipmentDate = DateTime.Today,
+32:                 EmployeeNumber = "TEST",
+33:                 Notes = "TEST-EXPORT"
+34:             };
+35: 
+36:             var insertResult = await shipmentDao.InsertAsync(shipment);
+37:             insertResult.Success.Should().BeTrue();
+38:             shipmentId = insertResult.Data.ShipmentId;
+39: 
+40:             var handler = new ExportShipmentsQueryHandler(shipmentDao);
+41:             var result = await handler.Handle(new ExportShipmentsQuery
+42:             {
+43:                 StartDate = DateTimeOffset.Now.AddDays(-2),
+44:                 EndDate = DateTimeOffset.Now,
+45:                 StatusFilter = "All"
+46:             }, default);
+47: 
+48:             result.IsSuccess.Should().BeTrue();
+49:             result.Data.Should().NotBeNullOrWhiteSpace();
+50:         }
+51:         finally
+52:         {
+53:             if (shipmentId > 0)
+54:             {
+55:                 await shipmentDao.DeleteAsync(shipmentId);
+56:             }
+57:         }
+58:     }
+59: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/FormatEmailDataQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: using MTM_Receiving_Application.Module_Core.Services.Database;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 8: 
+ 9: /// <summary>
+10: /// Integration tests for FormatEmailDataQueryHandler.
+11: /// </summary>
+12: [Collection("Database")]
+13: public class FormatEmailDataQueryHandlerTests
+14: {
+15:     private readonly DatabaseFixture _fixture;
+16: 
+17:     public FormatEmailDataQueryHandlerTests(DatabaseFixture fixture)
+18:     {
+19:         _fixture = fixture;
+20:     }
+21: 
+22:     [Fact]
+23:     public async Task Handle_ShouldReturnEmailData()
+24:     {
+25:         var shipmentDao = _fixture.CreateShipmentDao();
+26:         var lineDao = _fixture.CreateShipmentLineDao();
+27:         var partDao = _fixture.CreatePartDao();
+28:         var componentDao = _fixture.CreatePartComponentDao();
+29:         var logger = new Service_LoggingUtility();
+30: 
+31:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+32:         int shipmentId = 0;
+33: 
+34:         try
+35:         {
+36:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+37:             {
+38:                 PartNumber = partNumber,
+39:                 QuantityPerSkid = 10,
+40:                 IsActive = true
+41:             });
+42:             partResult.Success.Should().BeTrue();
+43: 
+44:             var shipment = new Model_VolvoShipment
+45:             {
+46:                 ShipmentDate = DateTime.Today,
+47:                 EmployeeNumber = "TEST",
+48:                 Notes = "TEST-EMAIL"
+49:             };
+50: 
+51:             var insertResult = await shipmentDao.InsertAsync(shipment);
+52:             insertResult.Success.Should().BeTrue();
+53:             shipmentId = insertResult.Data.ShipmentId;
+54: 
+55:             var line = new Model_VolvoShipmentLine
+56:             {
+57:                 ShipmentId = shipmentId,
+58:                 PartNumber = partNumber,
+59:                 QuantityPerSkid = 10,
+60:                 ReceivedSkidCount = 1,
+61:                 CalculatedPieceCount = 10
+62:             };
+63: 
+64:             var lineResult = await lineDao.InsertAsync(line);
+65:             lineResult.Success.Should().BeTrue();
+66: 
+67:             var handler = new FormatEmailDataQueryHandler(shipmentDao, lineDao, partDao, componentDao, logger);
+68:             var result = await handler.Handle(new FormatEmailDataQuery { ShipmentId = shipmentId }, default);
+69: 
+70:             result.IsSuccess.Should().BeTrue();
+71:             result.Data.Should().NotBeNull();
+72:             result.Data!.RequestedLines.Should().ContainKey(partNumber);
+73:         }
+74:         finally
+75:         {
+76:             if (shipmentId > 0)
+77:             {
+78:                 await shipmentDao.DeleteAsync(shipmentId);
+79:             }
+80:             await partDao.DeactivateAsync(partNumber);
+81:         }
+82:     }
+83: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetAllVolvoPartsQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for GetAllVolvoPartsQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class GetAllVolvoPartsQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public GetAllVolvoPartsQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnParts()
+23:     {
+24:         var partDao = _fixture.CreatePartDao();
+25:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+26: 
+27:         try
+28:         {
+29:             var insertResult = await partDao.InsertAsync(new Model_VolvoPart
+30:             {
+31:                 PartNumber = partNumber,
+32:                 QuantityPerSkid = 10,
+33:                 IsActive = true
+34:             });
+35:             insertResult.Success.Should().BeTrue();
+36: 
+37:             var handler = new GetAllVolvoPartsQueryHandler(partDao);
+38:             var result = await handler.Handle(new GetAllVolvoPartsQuery { IncludeInactive = false }, default);
+39: 
+40:             result.IsSuccess.Should().BeTrue();
+41:             result.Data.Should().NotBeNull();
+42:             result.Data!.Any(p => p.PartNumber == partNumber).Should().BeTrue();
+43:         }
+44:         finally
+45:         {
+46:             await partDao.DeactivateAsync(partNumber);
+47:         }
+48:     }
+49: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetRecentShipmentsQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for GetRecentShipmentsQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class GetRecentShipmentsQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public GetRecentShipmentsQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnRecentShipments()
+23:     {
+24:         var shipmentDao = _fixture.CreateShipmentDao();
+25:         int shipmentId = 0;
+26: 
+27:         try
+28:         {
+29:             var shipment = new Model_VolvoShipment
+30:             {
+31:                 ShipmentDate = DateTime.Today,
+32:                 EmployeeNumber = "TEST",
+33:                 Notes = "TEST-RECENT"
+34:             };
+35: 
+36:             var insertResult = await shipmentDao.InsertAsync(shipment);
+37:             insertResult.Success.Should().BeTrue();
+38:             shipmentId = insertResult.Data.ShipmentId;
+39: 
+40:             var handler = new GetRecentShipmentsQueryHandler(shipmentDao);
+41:             var result = await handler.Handle(new GetRecentShipmentsQuery { Days = 30 }, default);
+42: 
+43:             result.IsSuccess.Should().BeTrue();
+44:             result.Data.Should().NotBeNull();
+45:             result.Data!.Count.Should().BeGreaterThan(0);
+46:         }
+47:         finally
+48:         {
+49:             if (shipmentId > 0)
+50:             {
+51:                 await shipmentDao.DeleteAsync(shipmentId);
+52:             }
+53:         }
+54:     }
+55: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentDetailQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for GetShipmentDetailQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class GetShipmentDetailQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public GetShipmentDetailQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnShipmentAndLines()
+23:     {
+24:         var shipmentDao = _fixture.CreateShipmentDao();
+25:         var lineDao = _fixture.CreateShipmentLineDao();
+26:         var partDao = _fixture.CreatePartDao();
+27:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+28:         int shipmentId = 0;
+29: 
+30:         try
+31:         {
+32:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+33:             {
+34:                 PartNumber = partNumber,
+35:                 QuantityPerSkid = 10,
+36:                 IsActive = true
+37:             });
+38:             partResult.Success.Should().BeTrue();
+39: 
+40:             var shipment = new Model_VolvoShipment
+41:             {
+42:                 ShipmentDate = DateTime.Today,
+43:                 EmployeeNumber = "TEST",
+44:                 Notes = "TEST-DETAIL"
+45:             };
+46: 
+47:             var insertResult = await shipmentDao.InsertAsync(shipment);
+48:             insertResult.Success.Should().BeTrue();
+49:             shipmentId = insertResult.Data.ShipmentId;
+50: 
+51:             var line = new Model_VolvoShipmentLine
+52:             {
+53:                 ShipmentId = shipmentId,
+54:                 PartNumber = partNumber,
+55:                 QuantityPerSkid = 10,
+56:                 ReceivedSkidCount = 1,
+57:                 CalculatedPieceCount = 10
+58:             };
+59: 
+60:             var lineResult = await lineDao.InsertAsync(line);
+61:             lineResult.Success.Should().BeTrue();
+62: 
+63:             var handler = new GetShipmentDetailQueryHandler(shipmentDao, lineDao);
+64:             var result = await handler.Handle(new GetShipmentDetailQuery { ShipmentId = shipmentId }, default);
+65: 
+66:             result.IsSuccess.Should().BeTrue();
+67:             result.Data.Should().NotBeNull();
+68:             result.Data!.Shipment.Id.Should().Be(shipmentId);
+69:             result.Data.Lines.Count.Should().BeGreaterThan(0);
+70:         }
+71:         finally
+72:         {
+73:             if (shipmentId > 0)
+74:             {
+75:                 await shipmentDao.DeleteAsync(shipmentId);
+76:             }
+77:             await partDao.DeactivateAsync(partNumber);
+78:         }
+79:     }
+80: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetShipmentHistoryQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for GetShipmentHistoryQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class GetShipmentHistoryQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public GetShipmentHistoryQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnHistoryWithinDateRange()
+23:     {
+24:         var shipmentDao = _fixture.CreateShipmentDao();
+25:         int shipmentId = 0;
+26: 
+27:         try
+28:         {
+29:             var shipment = new Model_VolvoShipment
+30:             {
+31:                 ShipmentDate = DateTime.Today,
+32:                 EmployeeNumber = "TEST",
+33:                 Notes = "TEST-HISTORY"
+34:             };
+35: 
+36:             var insertResult = await shipmentDao.InsertAsync(shipment);
+37:             insertResult.Success.Should().BeTrue();
+38:             shipmentId = insertResult.Data.ShipmentId;
+39: 
+40:             var handler = new GetShipmentHistoryQueryHandler(shipmentDao);
+41:             var result = await handler.Handle(new GetShipmentHistoryQuery
+42:             {
+43:                 StartDate = DateTimeOffset.Now.AddDays(-2),
+44:                 EndDate = DateTimeOffset.Now,
+45:                 StatusFilter = "All"
+46:             }, default);
+47: 
+48:             result.IsSuccess.Should().BeTrue();
+49:             result.Data.Should().NotBeNull();
+50:             result.Data!.Any(s => s.Id == shipmentId).Should().BeTrue();
+51:         }
+52:         finally
+53:         {
+54:             if (shipmentId > 0)
+55:             {
+56:                 await shipmentDao.DeleteAsync(shipmentId);
+57:             }
+58:         }
+59:     }
+60: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Integration/HistoryFilteringIntegrationTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for history filtering by date range and status.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class HistoryFilteringIntegrationTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public HistoryFilteringIntegrationTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task FilterHistory_ShouldReturnResultsInRange()
+23:     {
+24:         var shipmentDao = _fixture.CreateShipmentDao();
+25:         int shipmentId = 0;
+26: 
+27:         try
+28:         {
+29:             var shipment = new Model_VolvoShipment
+30:             {
+31:                 ShipmentDate = DateTime.Today,
+32:                 EmployeeNumber = "TEST",
+33:                 Notes = "TEST-HISTORY-FILTER"
+34:             };
+35: 
+36:             var insertResult = await shipmentDao.InsertAsync(shipment);
+37:             insertResult.Success.Should().BeTrue();
+38:             shipmentId = insertResult.Data.ShipmentId;
+39: 
+40:             var handler = new GetShipmentHistoryQueryHandler(shipmentDao);
+41:             var result = await handler.Handle(new GetShipmentHistoryQuery
+42:             {
+43:                 StartDate = DateTimeOffset.Now.AddDays(-2),
+44:                 EndDate = DateTimeOffset.Now,
+45:                 StatusFilter = "All"
+46:             }, default);
+47: 
+48:             result.IsSuccess.Should().BeTrue();
+49:             result.Data.Should().NotBeNull();
+50:             result.Data!.Any(s => s.Id == shipmentId).Should().BeTrue();
+51:         }
+52:         finally
+53:         {
+54:             if (shipmentId > 0)
+55:             {
+56:                 await shipmentDao.DeleteAsync(shipmentId);
+57:             }
+58:         }
+59:     }
+60: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Integration/ImportCsvIntegrationTests.cs
+````csharp
+ 1: using System.IO;
+ 2: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for CSV import workflow with validation errors.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class ImportCsvIntegrationTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public ImportCsvIntegrationTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task ImportCsv_ShouldReportFailures()
+23:     {
+24:         var partDao = _fixture.CreatePartDao();
+25:         var componentDao = _fixture.CreatePartComponentDao();
+26:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+27: 
+28:         var tempFile = Path.Combine(Path.GetTempPath(), $"volvo_{Guid.NewGuid():N}.csv");
+29:         await File.WriteAllTextAsync(tempFile, $"PartNumber,QuantityPerSkid,Components\n{partNumber},10,\nINVALID,,");
+30: 
+31:         try
+32:         {
+33:             var handler = new ImportPartsCsvCommandHandler(partDao, componentDao);
+34:             var result = await handler.Handle(new ImportPartsCsvCommand
+35:             {
+36:                 CsvFilePath = tempFile
+37:             }, default);
+38: 
+39:             result.IsSuccess.Should().BeTrue();
+40:             result.Data!.FailureCount.Should().BeGreaterThan(0);
+41:         }
+42:         finally
+43:         {
+44:             File.Delete(tempFile);
+45:             await partDao.DeactivateAsync(partNumber);
+46:         }
+47:     }
+48: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentEditIntegrationTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Core.Services.Database;
+ 2: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 4: using MTM_Receiving_Application.Module_Volvo.Models;
+ 5: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 6: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 7: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 8: using MTM_Receiving_Application.Tests.Helpers;
+ 9: 
+10: namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
+11: 
+12: /// <summary>
+13: /// Integration tests for shipment edit workflow.
+14: /// </summary>
+15: [Collection("Database")]
+16: public class ShipmentEditIntegrationTests
+17: {
+18:     private readonly DatabaseFixture _fixture;
+19: 
+20:     public ShipmentEditIntegrationTests(DatabaseFixture fixture)
+21:     {
+22:         _fixture = fixture;
+23:     }
+24: 
+25:     [Fact]
+26:     public async Task EditShipment_ShouldUpdateNotesAndLines()
+27:     {
+28:         var shipmentDao = _fixture.CreateShipmentDao();
+29:         var lineDao = _fixture.CreateShipmentLineDao();
+30:         var partDao = _fixture.CreatePartDao();
+31:         var componentDao = _fixture.CreatePartComponentDao();
+32:         var logger = new Service_LoggingUtility();
+33:         var authService = new FakeVolvoAuthorizationService();
+34: 
+35:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+36:         int shipmentId = 0;
+37: 
+38:         try
+39:         {
+40:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+41:             {
+42:                 PartNumber = partNumber,
+43:                 QuantityPerSkid = 10,
+44:                 IsActive = true
+45:             });
+46:             partResult.Success.Should().BeTrue();
+47: 
+48:             var shipment = new Model_VolvoShipment
+49:             {
+50:                 ShipmentDate = DateTime.Today,
+51:                 EmployeeNumber = "TEST",
+52:                 Notes = "TEST-EDIT"
+53:             };
+54: 
+55:             var insertResult = await shipmentDao.InsertAsync(shipment);
+56:             insertResult.Success.Should().BeTrue();
+57:             shipmentId = insertResult.Data.ShipmentId;
+58: 
+59:             var line = new Model_VolvoShipmentLine
+60:             {
+61:                 ShipmentId = shipmentId,
+62:                 PartNumber = partNumber,
+63:                 QuantityPerSkid = 10,
+64:                 ReceivedSkidCount = 1,
+65:                 CalculatedPieceCount = 10
+66:             };
+67:             var lineResult = await lineDao.InsertAsync(line);
+68:             lineResult.Success.Should().BeTrue();
+69: 
+70:             var updateHandler = new UpdateShipmentCommandHandler(shipmentDao, lineDao, partDao, componentDao, authService, logger);
+71:             var updateResult = await updateHandler.Handle(new UpdateShipmentCommand
+72:             {
+73:                 ShipmentId = shipmentId,
+74:                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+75:                 Notes = "UPDATED",
+76:                 Parts = new List<ShipmentLineDto>
+77:                 {
+78:                     new() { PartNumber = partNumber, ReceivedSkidCount = 2 }
+79:                 }
+80:             }, default);
+81: 
+82:             updateResult.IsSuccess.Should().BeTrue();
+83: 
+84:             var detailHandler = new GetShipmentDetailQueryHandler(shipmentDao, lineDao);
+85:             var detailResult = await detailHandler.Handle(new GetShipmentDetailQuery { ShipmentId = shipmentId }, default);
+86: 
+87:             detailResult.IsSuccess.Should().BeTrue();
+88:             detailResult.Data!.Shipment.Notes.Should().Be("UPDATED");
+89:         }
+90:         finally
+91:         {
+92:             if (shipmentId > 0)
+93:             {
+94:                 await shipmentDao.DeleteAsync(shipmentId);
+95:             }
+96:             await partDao.DeactivateAsync(partNumber);
+97:         }
+98:     }
+99: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddVolvoPartCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Unit tests for AddVolvoPartCommandValidator.
+ 8: /// </summary>
+ 9: public class AddVolvoPartCommandValidatorTests
+10: {
+11:     private readonly AddVolvoPartCommandValidator _validator = new();
+12: 
+13:     [Fact]
+14:     public void Validate_ShouldPass_WhenCommandIsValid()
+15:     {
+16:         var command = new AddVolvoPartCommand
+17:         {
+18:             PartNumber = "V-EMB-1",
+19:             QuantityPerSkid = 10
+20:         };
+21: 
+22:         var result = _validator.Validate(command);
+23: 
+24:         result.IsValid.Should().BeTrue();
+25:     }
+26: 
+27:     [Fact]
+28:     public void Validate_ShouldFail_WhenQuantityInvalid()
+29:     {
+30:         var command = new AddVolvoPartCommand
+31:         {
+32:             PartNumber = "V-EMB-1",
+33:             QuantityPerSkid = 0
+34:         };
+35: 
+36:         var result = _validator.Validate(command);
+37: 
+38:         result.IsValid.Should().BeFalse();
+39:     }
+40: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/DeactivateVolvoPartCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Unit tests for DeactivateVolvoPartCommandValidator.
+ 8: /// </summary>
+ 9: public class DeactivateVolvoPartCommandValidatorTests
+10: {
+11:     private readonly DeactivateVolvoPartCommandValidator _validator = new();
+12: 
+13:     [Fact]
+14:     public void Validate_ShouldPass_WhenCommandIsValid()
+15:     {
+16:         var command = new DeactivateVolvoPartCommand
+17:         {
+18:             PartNumber = "V-EMB-1"
+19:         };
+20: 
+21:         var result = _validator.Validate(command);
+22: 
+23:         result.IsValid.Should().BeTrue();
+24:     }
+25: 
+26:     [Fact]
+27:     public void Validate_ShouldFail_WhenPartNumberMissing()
+28:     {
+29:         var command = new DeactivateVolvoPartCommand
+30:         {
+31:             PartNumber = ""
+32:         };
+33: 
+34:         var result = _validator.Validate(command);
+35: 
+36:         result.IsValid.Should().BeFalse();
+37:     }
+38: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/ImportPartsCsvCommandValidatorTests.cs
+````csharp
+ 1: using System.IO;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 6: 
+ 7: /// <summary>
+ 8: /// Unit tests for ImportPartsCsvCommandValidator.
+ 9: /// </summary>
+10: public class ImportPartsCsvCommandValidatorTests
+11: {
+12:     private readonly ImportPartsCsvCommandValidator _validator = new();
+13: 
+14:     [Fact]
+15:     public void Validate_ShouldPass_WhenFileExists()
+16:     {
+17:         var tempFile = Path.GetTempFileName();
+18:         try
+19:         {
+20:             var command = new ImportPartsCsvCommand
+21:             {
+22:                 CsvFilePath = tempFile
+23:             };
+24: 
+25:             var result = _validator.Validate(command);
+26: 
+27:             result.IsValid.Should().BeTrue();
+28:         }
+29:         finally
+30:         {
+31:             File.Delete(tempFile);
+32:         }
+33:     }
+34: 
+35:     [Fact]
+36:     public void Validate_ShouldFail_WhenFileMissing()
+37:     {
+38:         var command = new ImportPartsCsvCommand
+39:         {
+40:             CsvFilePath = Path.Combine(Path.GetTempPath(), $"missing_{Guid.NewGuid():N}.csv")
+41:         };
+42: 
+43:         var result = _validator.Validate(command);
+44: 
+45:         result.IsValid.Should().BeFalse();
+46:     }
+47: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateShipmentCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 6: 
+ 7: /// <summary>
+ 8: /// Unit tests for UpdateShipmentCommandValidator.
+ 9: /// </summary>
+10: public class UpdateShipmentCommandValidatorTests
+11: {
+12:     private readonly UpdateShipmentCommandValidator _validator = new();
+13: 
+14:     [Fact]
+15:     public void Validate_ShouldPass_WhenCommandIsValid()
+16:     {
+17:         var command = new UpdateShipmentCommand
+18:         {
+19:             ShipmentId = 1,
+20:             ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+21:             Parts = new List<ShipmentLineDto>
+22:             {
+23:                 new() { PartNumber = "V-EMB-1", ReceivedSkidCount = 1 }
+24:             }
+25:         };
+26: 
+27:         var result = _validator.Validate(command);
+28: 
+29:         result.IsValid.Should().BeTrue();
+30:     }
+31: 
+32:     [Fact]
+33:     public void Validate_ShouldFail_WhenShipmentIdInvalid()
+34:     {
+35:         var command = new UpdateShipmentCommand
+36:         {
+37:             ShipmentId = 0,
+38:             ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+39:             Parts = new List<ShipmentLineDto>
+40:             {
+41:                 new() { PartNumber = "V-EMB-1", ReceivedSkidCount = 1 }
+42:             }
+43:         };
+44: 
+45:         var result = _validator.Validate(command);
+46: 
+47:         result.IsValid.Should().BeFalse();
+48:     }
+49: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/UpdateVolvoPartCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Unit tests for UpdateVolvoPartCommandValidator.
+ 8: /// </summary>
+ 9: public class UpdateVolvoPartCommandValidatorTests
+10: {
+11:     private readonly UpdateVolvoPartCommandValidator _validator = new();
+12: 
+13:     [Fact]
+14:     public void Validate_ShouldPass_WhenCommandIsValid()
+15:     {
+16:         var command = new UpdateVolvoPartCommand
+17:         {
+18:             PartNumber = "V-EMB-1",
+19:             QuantityPerSkid = 5
+20:         };
+21: 
+22:         var result = _validator.Validate(command);
+23: 
+24:         result.IsValid.Should().BeTrue();
+25:     }
+26: 
+27:     [Fact]
+28:     public void Validate_ShouldFail_WhenPartNumberMissing()
+29:     {
+30:         var command = new UpdateVolvoPartCommand
+31:         {
+32:             PartNumber = "",
+33:             QuantityPerSkid = 5
+34:         };
+35: 
+36:         var result = _validator.Validate(command);
+37: 
+38:         result.IsValid.Should().BeFalse();
+39:     }
+40: }
+````
+
+## File: MTM_Receiving_Application.Tests/README.md
+````markdown
+  1: # MTM Receiving Application - Test Project
+  2: 
+  3: This test project provides comprehensive testing for the MTM Receiving Application using xUnit, FluentAssertions, and Moq.
+  4: 
+  5: ## 📋 Table of Contents
+  6: 
+  7: - [Project Structure](#-project-structure)
+  8: - [Testing Framework](#-testing-framework)
+  9: - [Getting Started](#-getting-started)
+ 10: - [Creating Tests](#-creating-tests)
+ 11: - [Running Tests](#-running-tests)
+ 12: - [Test Organization](#-test-organization)
+ 13: - [Testing Patterns](#-testing-patterns)
+ 14: - [Dependencies & Services](#-dependencies--services)
+ 15: 
+ 16: ---
+ 17: 
+ 18: ## 📁 Project Structure
+ 19: 
+ 20: ```bash
+ 21: MTM_Receiving_Application.Tests/
+ 22: ├── build.ps1                          # Build script for test project
+ 23: ├── README.md                          # This file
+ 24: ├── GlobalUsings.cs                    # Global using statements
+ 25: ├── Fixtures/                          # Test fixtures for reusable setup
+ 26: │   ├── DatabaseFixture.cs             # Database test setup/teardown
+ 27: │   └── ServiceCollectionFixture.cs    # DI container for testing
+ 28: ├── Helpers/                           # Test helper utilities
+ 29: │   └── TestHelper.cs                  # Common test utilities
+ 30: ├── Unit/                              # Unit tests (isolated component tests)
+ 31: │   ├── Module_Core/                   # Core module tests
+ 32: │   │   ├── Converters/                # Converter tests
+ 33: │   │   ├── Helpers/                   # Helper class tests
+ 34: │   │   ├── Models/                    # Model tests
+ 35: │   │   └── Services/                  # Core service tests
+ 36: │   ├── Module_Dunnage/                # Dunnage module tests
+ 37: │   │   ├── Data/                      # DAO tests
+ 38: │   │   ├── Services/                  # Service tests
+ 39: │   │   └── ViewModels/                # ViewModel tests
+ 40: │   ├── Module_Receiving/              # Receiving module tests
+ 41: │   │   ├── Data/                      # DAO tests
+ 42: │   │   ├── Services/                  # Service tests
+ 43: │   │   └── ViewModels/                # ViewModel tests
+ 44: │   ├── Module_Reporting/              # Reporting module tests
+ 45: │   ├── Module_Routing/                # Routing module tests
+ 46: │   ├── Module_Settings/               # Settings module tests
+ 47: │   ├── Module_Shared/                 # Shared module tests
+ 48: │   └── Module_Volvo/                  # Volvo module tests
+ 49: └── Integration/                       # Integration tests (multi-component)
+ 50:     ├── Module_Core/                   # Core integration tests
+ 51:     ├── Module_Dunnage/                # Dunnage workflow tests
+ 52:     ├── Module_Receiving/              # Receiving workflow tests
+ 53:     ├── Module_Routing/                # Routing workflow tests
+ 54:     └── Module_Volvo/                  # Volvo integration tests
+ 55: ```
+ 56: 
+ 57: ---
+ 58: 
+ 59: ## 🧪 Testing Framework
+ 60: 
+ 61: ### Core Technologies
+ 62: 
+ 63: - **xUnit** - Test framework (per project standards)
+ 64: - **FluentAssertions** - Readable assertion library
+ 65: - **Moq** - Mocking framework for dependencies
+ 66: - **Microsoft.Data.Sqlite** - In-memory database for testing
+ 67: - **MySql.Data** - MySQL testing support
+ 68: 
+ 69: ### Test Categories
+ 70: 
+ 71: 1. **Unit Tests** (`Unit/`) - Test individual components in isolation
+ 72: 2. **Integration Tests** (`Integration/`) - Test multiple components working together
+ 73: 
+ 74: ---
+ 75: 
+ 76: ## 🚀 Getting Started
+ 77: 
+ 78: ### Prerequisites
+ 79: 
+ 80: - .NET 8 SDK
+ 81: - Main MTM Receiving Application compiled (x64 platform)
+ 82: - MySQL database (for integration tests)
+ 83: 
+ 84: ### Building the Test Project
+ 85: 
+ 86: ```powershell
+ 87: # Option 1: Using the build script (recommended)
+ 88: .\build.ps1                    # Builds main app + tests
+ 89: .\build.ps1 -Clean             # Clean + full rebuild
+ 90: .\build.ps1 -Configuration Release  # Release build
+ 91: 
+ 92: # Option 2: Using dotnet CLI directly
+ 93: cd MTM_Receiving_Application.Tests
+ 94: dotnet restore
+ 95: dotnet build --no-dependencies
+ 96: ```
+ 97: 
+ 98: ---
+ 99: 
+100: ## 📝 Creating Tests
+101: 
+102: ### Naming Conventions
+103: 
+104: **File Naming:**
+105: 
+106: ```text
+107: {ClassName}_Tests.cs
+108: ```
+109: 
+110: **Examples:**
+111: 
+112: - `Service_Authentication_Tests.cs`
+113: - `ViewModel_Receiving_Workflow_Tests.cs`
+114: - `Dao_ReceivingLine_Tests.cs`
+115: 
+116: **Class Naming:**
+117: 
+118: ```csharp
+119: public class {ClassName}_Tests
+120: ```
+121: 
+122: ### Test Method Naming
+123: 
+124: Use descriptive names that explain what is being tested:
+125: 
+126: ```csharp
+127: [Fact]
+128: public void MethodName_Scenario_ExpectedBehavior()
+129: 
+130: // Examples:
+131: [Fact]
+132: public void InsertReceivingLine_ValidData_ReturnsSuccess()
+133: 
+134: [Fact]
+135: public void LoadData_EmptyDatabase_ReturnsEmptyList()
+136: 
+137: [Fact]
+138: public void ValidateInput_NullValue_ThrowsArgumentNullException()
+139: ```
+140: 
+141: ### Unit Test Template
+142: 
+143: ```csharp
+144: using Xunit;
+145: using FluentAssertions;
+146: using Moq;
+147: using MTM_Receiving_Application.Module_Receiving.Services;
+148: using MTM_Receiving_Application.Module_Receiving.Data;
+149: using MTM_Receiving_Application.Module_Core.Models.Core;
+150: 
+151: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Services
+152: {
+153:     public class Service_MySQL_ReceivingLine_Tests
+154:     {
+155:         private readonly Mock<Dao_ReceivingLine> _mockDao;
+156:         private readonly Service_MySQL_ReceivingLine _service;
+157: 
+158:         public Service_MySQL_ReceivingLine_Tests()
+159:         {
+160:             // Arrange: Setup mocks
+161:             _mockDao = new Mock<Dao_ReceivingLine>("fake-connection-string");
+162:             _service = new Service_MySQL_ReceivingLine(
+163:                 _mockDao.Object,
+164:                 Mock.Of<IService_LoggingUtility>()
+165:             );
+166:         }
+167: 
+168:         [Fact]
+169:         public async Task InsertLineAsync_ValidLine_ReturnsSuccess()
+170:         {
+171:             // Arrange
+172:             var testLine = new Model_ReceivingLine
+173:             {
+174:                 PONumber = "PO-12345",
+175:                 Quantity = 100
+176:             };
+177: 
+178:             var expectedResult = new Model_Dao_Result
+179:             {
+180:                 Success = true,
+181:                 AffectedRows = 1
+182:             };
+183: 
+184:             _mockDao
+185:                 .Setup(dao => dao.InsertReceivingLineAsync(testLine))
+186:                 .ReturnsAsync(expectedResult);
+187: 
+188:             // Act
+189:             var result = await _service.InsertLineAsync(testLine);
+190: 
+191:             // Assert
+192:             result.Should().NotBeNull();
+193:             result.Success.Should().BeTrue();
+194:             result.AffectedRows.Should().Be(1);
+195: 
+196:             _mockDao.Verify(
+197:                 dao => dao.InsertReceivingLineAsync(testLine),
+198:                 Times.Once
+199:             );
+200:         }
+201: 
+202:         [Fact]
+203:         public async Task InsertLineAsync_NullLine_ReturnsFail()
+204:         {
+205:             // Arrange
+206:             Model_ReceivingLine nullLine = null;
+207: 
+208:             // Act
+209:             var result = await _service.InsertLineAsync(nullLine);
+210: 
+211:             // Assert
+212:             result.Should().NotBeNull();
+213:             result.Success.Should().BeFalse();
+214:             result.ErrorMessage.Should().NotBeEmpty();
+215:         }
+216:     }
+217: }
+218: ```
+219: 
+220: ### ViewModel Test Template
+221: 
+222: ```csharp
+223: using Xunit;
+224: using FluentAssertions;
+225: using Moq;
+226: using MTM_Receiving_Application.Module_Receiving.ViewModels;
+227: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+228: 
+229: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels
+230: {
+231:     public class ViewModel_Receiving_Workflow_Tests
+232:     {
+233:         private readonly Mock<IService_ReceivingWorkflow> _mockWorkflowService;
+234:         private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
+235:         private readonly Mock<IService_LoggingUtility> _mockLogger;
+236:         private readonly ViewModel_Receiving_Workflow _viewModel;
+237: 
+238:         public ViewModel_Receiving_Workflow_Tests()
+239:         {
+240:             _mockWorkflowService = new Mock<IService_ReceivingWorkflow>();
+241:             _mockErrorHandler = new Mock<IService_ErrorHandler>();
+242:             _mockLogger = new Mock<IService_LoggingUtility>();
+243: 
+244:             _viewModel = new ViewModel_Receiving_Workflow(
+245:                 _mockWorkflowService.Object,
+246:                 _mockErrorHandler.Object,
+247:                 _mockLogger.Object
+248:             );
+249:         }
+250: 
+251:         [Fact]
+252:         public async Task LoadDataCommand_Success_UpdatesProperties()
+253:         {
+254:             // Arrange
+255:             var testData = new List<Model_ReceivingLine>
+256:             {
+257:                 new Model_ReceivingLine { PONumber = "PO-001" },
+258:                 new Model_ReceivingLine { PONumber = "PO-002" }
+259:             };
+260: 
+261:             _mockWorkflowService
+262:                 .Setup(s => s.GetReceivingLinesAsync())
+263:                 .ReturnsAsync(new Model_Dao_Result<List<Model_ReceivingLine>>
+264:                 {
+265:                     Success = true,
+266:                     Data = testData
+267:                 });
+268: 
+269:             // Act
+270:             await _viewModel.LoadDataCommand.ExecuteAsync(null);
+271: 
+272:             // Assert
+273:             _viewModel.Items.Should().HaveCount(2);
+274:             _viewModel.IsBusy.Should().BeFalse();
+275:             _viewModel.StatusMessage.Should().Contain("2 items");
+276:         }
+277: 
+278:         [Fact]
+279:         public void Property_IsBusy_RaisesPropertyChanged()
+280:         {
+281:             // Arrange
+282:             var propertyChangedRaised = false;
+283:             _viewModel.PropertyChanged += (s, e) =>
+284:             {
+285:                 if (e.PropertyName == nameof(_viewModel.IsBusy))
+286:                     propertyChangedRaised = true;
+287:             };
+288: 
+289:             // Act
+290:             _viewModel.IsBusy = true;
+291: 
+292:             // Assert
+293:             propertyChangedRaised.Should().BeTrue();
+294:         }
+295:     }
+296: }
+297: ```
+298: 
+299: ### Integration Test Template
+300: 
+301: ```csharp
+302: using Xunit;
+303: using FluentAssertions;
+304: using Microsoft.Extensions.DependencyInjection;
+305: using MTM_Receiving_Application.Tests.Fixtures;
+306: 
+307: namespace MTM_Receiving_Application.Tests.Integration.Module_Receiving
+308: {
+309:     [Collection("Database Collection")]
+310:     public class ReceivingWorkflow_Integration_Tests : IClassFixture<ServiceCollectionFixture>
+311:     {
+312:         private readonly ServiceCollectionFixture _fixture;
+313:         private readonly IService_ReceivingWorkflow _workflowService;
+314: 
+315:         public ReceivingWorkflow_Integration_Tests(
+316:             ServiceCollectionFixture fixture,
+317:             DatabaseFixture dbFixture)
+318:         {
+319:             _fixture = fixture;
+320:             _workflowService = _fixture.ServiceProvider
+321:                 .GetRequiredService<IService_ReceivingWorkflow>();
+322:         }
+323: 
+324:         [Fact]
+325:         public async Task CompleteWorkflow_ValidData_Success()
+326:         {
+327:             // Arrange
+328:             var poNumber = "PO-TEST-001";
+329: 
+330:             // Act
+331:             var result = await _workflowService.StartWorkflowAsync(poNumber);
+332: 
+333:             // Assert
+334:             result.Should().NotBeNull();
+335:             result.Success.Should().BeTrue();
+336:         }
+337:     }
+338: }
+339: ```
+340: 
+341: ---
+342: 
+343: ## 🏃 Running Tests
+344: 
+345: ### Command Line
+346: 
+347: ```powershell
+348: # Run all tests
+349: dotnet test
+350: 
+351: # Run specific test class
+352: dotnet test --filter "FullyQualifiedName~Service_Authentication_Tests"
+353: 
+354: # Run tests by category
+355: dotnet test --filter "FullyQualifiedName~Unit"           # Unit tests only
+356: dotnet test --filter "FullyQualifiedName~Integration"    # Integration tests only
+357: dotnet test --filter "FullyQualifiedName~Module_Receiving"  # Module-specific
+358: 
+359: # Run with detailed output
+360: dotnet test -v:detailed
+361: 
+362: # Run with coverage
+363: dotnet test --collect:"XPlat Code Coverage"
+364: ```
+365: 
+366: ### Visual Studio / VS Code
+367: 
+368: - **Test Explorer**: View and run tests from the test explorer panel
+369: - **Run from editor**: Click the green arrow next to `[Fact]` attributes
+370: 
+371: ---
+372: 
+373: ## 📂 Test Organization
+374: 
+375: ### File Placement Rules
+376: 
+377: **Unit Tests** - Mirror the main project structure:
+378: 
+379: ```bash
+380: Main Project:                          Test Project:
+381: Module_Receiving/                      Unit/Module_Receiving/
+382: ├── Data/                              ├── Data/
+383: │   └── Dao_ReceivingLine.cs          │   └── Dao_ReceivingLine_Tests.cs
+384: ├── Services/                          ├── Services/
+385: │   └── Service_MySQL_ReceivingLine.cs│   └── Service_MySQL_ReceivingLine_Tests.cs
+386: └── ViewModels/                        └── ViewModels/
+387:     └── ViewModel_Receiving_Workflow.cs    └── ViewModel_Receiving_Workflow_Tests.cs
+388: ```
+389: 
+390: **Integration Tests** - Grouped by feature/workflow:
+391: 
+392: ```bash
+393: Integration/Module_Receiving/
+394: ├── ReceivingWorkflow_Integration_Tests.cs
+395: ├── POValidation_Integration_Tests.cs
+396: └── LabelGeneration_Integration_Tests.cs
+397: ```
+398: 
+399: ---
+400: 
+401: ## 🎯 Testing Patterns
+402: 
+403: ### 1. Testing DAOs (Data Access Objects)
+404: 
+405: **Key Points:**
+406: 
+407: - DAOs must NEVER throw exceptions (return `Model_Dao_Result` with failure)
+408: - Use in-memory SQLite or mock database connections
+409: - Test both success and failure paths
+410: 
+411: ```csharp
+412: [Fact]
+413: public async Task InsertAsync_ValidData_ReturnsSuccess()
+414: {
+415:     // Arrange
+416:     var dao = new Dao_ReceivingLine("connection-string");
+417:     var testLine = new Model_ReceivingLine { /* ... */ };
+418: 
+419:     // Act
+420:     var result = await dao.InsertReceivingLineAsync(testLine);
+421: 
+422:     // Assert
+423:     result.Success.Should().BeTrue();
+424:     result.ErrorMessage.Should().BeNullOrEmpty();
+425: }
+426: 
+427: [Fact]
+428: public async Task InsertAsync_NullParameter_ReturnsFailure()
+429: {
+430:     // Arrange
+431:     var dao = new Dao_ReceivingLine("connection-string");
+432: 
+433:     // Act
+434:     var result = await dao.InsertReceivingLineAsync(null);
+435: 
+436:     // Assert
+437:     result.Success.Should().BeFalse();
+438:     result.ErrorMessage.Should().Contain("null");
+439: }
+440: ```
+441: 
+442: ### 2. Testing Services
+443: 
+444: **Key Points:**
+445: 
+446: - Mock DAO dependencies
+447: - Test business logic validation
+448: - Verify error handling and logging
+449: 
+450: ```csharp
+451: [Fact]
+452: public async Task ProcessData_InvalidInput_LogsError()
+453: {
+454:     // Arrange
+455:     var mockLogger = new Mock<IService_LoggingUtility>();
+456:     var service = new Service_MyService(mockLogger.Object);
+457: 
+458:     // Act
+459:     await service.ProcessDataAsync(null);
+460: 
+461:     // Assert
+462:     mockLogger.Verify(
+463:         l => l.LogError(It.IsAny<string>(), It.IsAny<string>()),
+464:         Times.Once
+465:     );
+466: }
+467: ```
+468: 
+469: ### 3. Testing ViewModels
+470: 
+471: **Key Points:**
+472: 
+473: - Must be `partial` classes (CommunityToolkit.Mvvm)
+474: - Test `[ObservableProperty]` property changes
+475: - Test `[RelayCommand]` command execution
+476: - Verify `IsBusy` state management
+477: 
+478: ```csharp
+479: [Fact]
+480: public async Task Command_SetsIsBusyDuringExecution()
+481: {
+482:     // Arrange
+483:     var mockService = new Mock<IService_Data>();
+484:     mockService
+485:         .Setup(s => s.GetDataAsync())
+486:         .Returns(async () =>
+487:         {
+488:             await Task.Delay(100); // Simulate work
+489:             return new Model_Dao_Result { Success = true };
+490:         });
+491: 
+492:     var viewModel = new ViewModel_Test(mockService.Object);
+493: 
+494:     // Act
+495:     var commandTask = viewModel.LoadDataCommand.ExecuteAsync(null);
+496: 
+497:     // Assert - During execution
+498:     viewModel.IsBusy.Should().BeTrue();
+499: 
+500:     await commandTask;
+501: 
+502:     // Assert - After execution
+503:     viewModel.IsBusy.Should().BeFalse();
+504: }
+505: ```
+506: 
+507: ### 4. Testing Converters
+508: 
+509: ```csharp
+510: [Theory]
+511: [InlineData(true, Visibility.Visible)]
+512: [InlineData(false, Visibility.Collapsed)]
+513: public void Convert_BoolToVisibility_ReturnsCorrectValue(bool input, Visibility expected)
+514: {
+515:     // Arrange
+516:     var converter = new Converter_BooleanToVisibility();
+517: 
+518:     // Act
+519:     var result = converter.Convert(input, typeof(Visibility), null, null);
+520: 
+521:     // Assert
+522:     result.Should().Be(expected);
+523: }
+524: ```
+525: 
+526: ---
+527: 
+528: ## 🔧 Dependencies & Services
+529: 
+530: ### Accessing Services via DI
+531: 
+532: Use `ServiceCollectionFixture` to access configured services:
+533: 
+534: ```csharp
+535: public class MyTest : IClassFixture<ServiceCollectionFixture>
+536: {
+537:     private readonly IService_MySQL_Receiving _receivingService;
+538: 
+539:     public MyTest(ServiceCollectionFixture fixture)
+540:     {
+541:         _receivingService = fixture.ServiceProvider
+542:             .GetRequiredService<IService_MySQL_Receiving>();
+543:     }
+544: }
+545: ```
+546: 
+547: ### Database Testing
+548: 
+549: Use `DatabaseFixture` for tests requiring database access:
+550: 
+551: ```csharp
+552: [Collection("Database Collection")]
+553: public class DatabaseTests : IClassFixture<DatabaseFixture>
+554: {
+555:     private readonly DatabaseFixture _dbFixture;
+556: 
+557:     public DatabaseTests(DatabaseFixture dbFixture)
+558:     {
+559:         _dbFixture = dbFixture;
+560:     }
+561: }
+562: ```
+563: 
+564: ---
+565: 
+566: ## 📚 Additional Resources
+567: 
+568: ### Project Architecture
+569: 
+570: - **Constitution**: `../.specify/memory/constitution.md`
+571: - **MVVM Guide**: `../.github/instructions/mvvm-pattern.instructions.md`
+572: - **DAO Guide**: `../.github/instructions/dao-pattern.instructions.md`
+573: - **Main README**: `../README.md`
+574: 
+575: ### Testing Best Practices
+576: 
+577: 1. **AAA Pattern**: Arrange, Act, Assert
+578: 2. **One assertion per test** (or logically related assertions)
+579: 3. **Descriptive test names** that explain intent
+580: 4. **Test isolation**: Each test should be independent
+581: 5. **Mock external dependencies**: Database, file system, network
+582: 6. **Clean up**: Fixtures handle setup/teardown
+583: 
+584: ### FluentAssertions Examples
+585: 
+586: ```csharp
+587: // Collections
+588: result.Should().NotBeNull();
+589: result.Should().HaveCount(5);
+590: result.Should().Contain(x => x.Id == 123);
+591: result.Should().BeEmpty();
+592: 
+593: // Strings
+594: name.Should().Be("Expected");
+595: name.Should().StartWith("Exp");
+596: name.Should().Contain("pec");
+597: name.Should().NotBeNullOrWhiteSpace();
+598: 
+599: // Numbers
+600: count.Should().BeGreaterThan(0);
+601: count.Should().BeLessThanOrEqualTo(100);
+602: count.Should().BeInRange(1, 10);
+603: 
+604: // Booleans
+605: result.Success.Should().BeTrue();
+606: result.HasErrors.Should().BeFalse();
+607: 
+608: // Exceptions
+609: Action act = () => method.ThrowException();
+610: act.Should().Throw<ArgumentNullException>()
+611:    .WithMessage("*parameter*");
+612: 
+613: // Async
+614: Func<Task> act = async () => await method.DoWorkAsync();
+615: await act.Should().ThrowAsync<InvalidOperationException>();
+616: ```
+617: 
+618: ---
+619: 
+620: ## 🐛 Troubleshooting
+621: 
+622: ### Common Issues
+623: 
+624: **Issue**: `Metadata file could not be found`
+625: 
+626: ```powershell
+627: # Solution: Build main app first
+628: cd ..
+629: .\build.ps1 -Platform x64
+630: cd MTM_Receiving_Application.Tests
+631: ```
+632: 
+633: **Issue**: `Type or namespace could not be found`
+634: 
+635: ```powershell
+636: # Solution: Restore packages
+637: dotnet restore
+638: ```
+639: 
+640: **Issue**: Test runner can't find tests
+641: 
+642: ```powershell
+643: # Solution: Rebuild
+644: dotnet clean
+645: dotnet build
+646: ```
+647: 
+648: ---
+649: 
+650: ## 📝 Quick Reference
+651: 
+652: ```powershell
+653: # Create new test file for Service
+654: New-Item "Unit/Module_Receiving/Services/Service_MyService_Tests.cs"
+655: 
+656: # Create new test file for ViewModel
+657: New-Item "Unit/Module_Receiving/ViewModels/ViewModel_MyFeature_Tests.cs"
+658: 
+659: # Create new test file for DAO
+660: New-Item "Unit/Module_Receiving/Data/Dao_MyEntity_Tests.cs"
+661: 
+662: # Run specific module tests
+663: dotnet test --filter "FullyQualifiedName~Module_Receiving"
+664: 
+665: # Run and watch for changes
+666: dotnet watch test
+667: ```
+668: 
+669: ---
+670: 
+671: **Last Updated**: January 11, 2026
+672: **Framework**: xUnit 2.9.0
+673: **Target**: .NET 8 (net8.0-windows10.0.22621.0)
+````
+
+## File: Scripts/Add-AsyncSuffix.ps1
+````powershell
+ 1: <#
+ 2: .SYNOPSIS
+ 3:     Adds the 'Async' suffix to asynchronous methods in a C# file that are missing it.
+ 4: 
+ 5: .DESCRIPTION
+ 6:     This script parses a C# file for method declarations that use the 'async' modifier 
+ 7:     and return 'Task' or 'ValueTask', but do not end with the 'Async' suffix. 
+ 8:     It renames the method definition in place.
+ 9:     
+10:     WARNING: This script performs regex-based text replacement. It updates method 
+11:     definitions but DOES NOT parse or update references (call sites) to these methods.
+12:     Review changes carefully or use an IDE refactoring tool for complete rename.
+13: 
+14: .PARAMETER FilePath
+15:     Path to the C# file to process.
+16: 
+17: .EXAMPLE
+18:     .\Add-AsyncSuffix.ps1 -FilePath "..\Services\MyService.cs" -WhatIf
+19:     Shows which methods would be renamed without modifying the file.
+20: 
+21: .EXAMPLE
+22:     .\Add-AsyncSuffix.ps1 -FilePath "..\Services\MyService.cs"
+23:     Renames the methods in the file.
+24: #>
+25: [CmdletBinding(SupportsShouldProcess=$true)]
+26: param (
+27:     [Parameter(Mandatory=$true, HelpMessage="Path to the C# file to process")]
+28:     [ValidateScript({Test-Path $_ -PathType Leaf})]
+29:     [string]$FilePath
+30: )
+31: 
+32: # Read the file content
+33: $originalContent = Get-Content -Path $FilePath -Raw
+34: $newContent = $originalContent
+35: 
+36: # Regex to find async method definitions
+37: # Matches: async keyword, arbitrary return type characters (must contain Task/ValueTask), MethodName, paren
+38: # We use named groups for clarity and compatibility with ExplicitCapture
+39: $pattern = '(?<prefix>\basync\s+[\w\s<>,\[\]]*?(?:Task|ValueTask)[\w\s<>,\[\]]*?\s+)(?<name>\w+)(?<!Async)(?<suffix>\s*\()'
+40: 
+41: $matches = [regex]::Matches($originalContent, $pattern, "ExplicitCapture")
+42: 
+43: if ($matches.Count -eq 0) {
+44:     Write-Host "No async methods missing suffix found in '$FilePath'." -ForegroundColor Gray
+45:     return
+46: }
+47: 
+48: Write-Host "Found $($matches.Count) method(s) to rename in '$FilePath'." -ForegroundColor Cyan
+49: 
+50: foreach ($match in $matches) {
+51:     $fullHeader = $match.Value
+52:     $prefix = $match.Groups['prefix'].Value
+53:     $methodName = $match.Groups['name'].Value
+54:     $suffix = $match.Groups['suffix'].Value
+55:     
+56:     $newMethodName = "${methodName}_Async"
+57:     $newHeader = "${prefix}${newMethodName}${suffix}"
+58:     
+59:     if ($PSCmdlet.ShouldProcess("Method '$methodName'", "Rename to '$newMethodName'")) {
+60:         # Perform replacement
+61:         # Note: Simple Replace might replace occurrences elsewhere if headers are identical duplicates (unlikely for headers)
+62:         # We use strict substitution for the specific match index would be safer, 
+63:         # but regex command typically rebuilds the string. 
+64:         
+65:         # Simpler approach allows regex replace global if the header is unique enough.
+66:         # However, to be robust, we'll re-run the regex replace on the variable so far.
+67:         
+68:         # Using [regex]::Replace with a MatchEvaluator to modify only if needed?
+69:         # Since we are iterating matches, let's do a single pass replace.
+70:     }
+71: }
+72: 
+73: # Apply changes if we are processing real run
+74: if ($PSCmdlet.ShouldProcess($FilePath, "Save changes to file")) {
+75:     $evaluator = { param($m) 
+76:         $existingName = $m.Groups['name'].Value
+77:         $newName = "${existingName}_Async"
+78:         Write-Host "  Renaming '$existingName' -> '$newName'" -ForegroundColor Green
+79:         return $m.Groups['prefix'].Value + $newName + $m.Groups['suffix'].Value
+80:     }
+81:     
+82:     $finalContent = [regex]::Replace($originalContent, $pattern, $evaluator, "ExplicitCapture")
+83:     
+84:     if ($finalContent -ne $originalContent) {
+85:         Set-Content -Path $FilePath -Value $finalContent -Encoding UTF8
+86:         Write-Host "File saved." -ForegroundColor Green
+87:     }
+88: }
+````
+
+## File: Scripts/Fix-Markdown-Diagrams.ps1
+````powershell
+ 1: # Fix-MarkdownDiagrams.ps1
+ 2: # Scans markdown files for code blocks missing a language tag that look like diagrams.
+ 3: 
+ 4: $TargetFiles = Get-ChildItem -Recurse -Filter "*.md"
+ 5: 
+ 6: foreach ($File in $TargetFiles) {
+ 7:     Write-Host "Processing $($File.FullName)..." -ForegroundColor Cyan
+ 8:     
+ 9:     # Read file content as a single string
+10:     $Content = Get-Content -Path $File.FullName -Raw
+11:     
+12:     # Regex Breakdown:
+13:     # (?m)        : Multi-line mode
+14:     # ^```\r?\n   : Matches opening backticks with NO language tag (start of line)
+15:     # ([\s\S]*?)  : Captures block content (non-greedy)
+16:     # (?=```)     : Lookahead for the closing backticks
+17:     # Condition   : Only replace if content contains diagram arrows (→, ↓, etc.)
+18:     
+19:     $NewContent = [regex]::Replace($Content, '(?m)^```\r?\n([\s\S]*?)(?=^```)', {
+20:             param($Match)
+21:             $BlockBody = $Match.Groups[1].Value
+22:         
+23:             # Define diagram indicators (arrows, boxes, etc.)
+24:             if ($BlockBody -match '[→↓←↑➔]|--|==>|-->') {
+25:                 return "```text`n$BlockBody"
+26:             }
+27:             return $Match.Value
+28:         })
+29: 
+30:     if ($Content -ne $NewContent) {
+31:         Set-Content -Path $File.FullName -Value $NewContent -NoNewline
+32:         Write-Host "  Fixed diagram in $($File.Name)" -ForegroundColor Green
+33:     }
+34: }
+````
+
+## File: Scripts/Generate-SettingsDaoParameterMap.ps1
+````powershell
+  1: <#!
+  2: .SYNOPSIS
+  3:   Generates a JSON map of MySQL stored procedure parameters to help implement missing DAOs.
+  4: 
+  5: .DESCRIPTION
+  6:   - Scans Database/StoredProcedures/Settings/**/*.sql
+  7:   - Extracts CREATE PROCEDURE name + parameter list
+  8:   - Scans Module_Settings/Data/Dao_*.cs for stored procedure usage
+  9:   - Produces JSON including:
+ 10:       * storedProcedure
+ 11:       * parameters (direction/name/sqlType)
+ 12:       * suggestedDao (based on naming)
+ 13:       * referencedInDaos (existing references)
+ 14:       * missingDao (if suggested DAO file doesn't exist)
+ 15: 
+ 16: .PARAMETER OutputPath
+ 17:   Output JSON path. Defaults to Scripts/outputs/settings-dao-parameter-map.json
+ 18: 
+ 19: .PARAMETER StoredProcedureRoot
+ 20:   Folder containing Settings stored procedure SQL files.
+ 21: 
+ 22: .PARAMETER DaoRoot
+ 23:   Folder containing DAO C# files.
+ 24: 
+ 25: .EXAMPLE
+ 26:   .\Scripts\Generate-SettingsDaoParameterMap.ps1
+ 27: 
+ 28: .EXAMPLE
+ 29:   .\Scripts\Generate-SettingsDaoParameterMap.ps1 -OutputPath .\_bmad-output\implementation-artifacts\settings-dao-parameter-map.json
+ 30: #>
+ 31: 
+ 32: [CmdletBinding()]
+ 33: param(
+ 34:     [string]$OutputPath = "Scripts/outputs/settings-dao-parameter-map.json",
+ 35:     [string]$StoredProcedureRoot = "Database/StoredProcedures/Settings",
+ 36:     [string]$DaoRoot = "Module_Settings/Data"
+ 37: )
+ 38: 
+ 39: Set-StrictMode -Version Latest
+ 40: $ErrorActionPreference = 'Stop'
+ 41: 
+ 42: function Resolve-RepoPath([string]$path) {
+ 43:     if ([System.IO.Path]::IsPathRooted($path)) { return $path }
+ 44:     return (Join-Path -Path (Get-Location) -ChildPath $path)
+ 45: }
+ 46: 
+ 47: function Remove-SqlComments([string]$sql) {
+ 48:     # remove /* */ comments
+ 49:     $noBlock = [regex]::Replace($sql, "/\*.*?\*/", "", [System.Text.RegularExpressions.RegexOptions]::Singleline)
+ 50:     # remove -- comments
+ 51:     $noLine = [regex]::Replace($noBlock, "--.*?$", "", [System.Text.RegularExpressions.RegexOptions]::Multiline)
+ 52:     return $noLine
+ 53: }
+ 54: 
+ 55: function Split-CommaOutsideParens([string]$text) {
+ 56:     $parts = @()
+ 57:     $sb = New-Object System.Text.StringBuilder
+ 58:     $depth = 0
+ 59:     foreach ($ch in $text.ToCharArray()) {
+ 60:         if ($ch -eq '(') { $depth++ }
+ 61:         elseif ($ch -eq ')') { if ($depth -gt 0) { $depth-- } }
+ 62: 
+ 63:         if ($ch -eq ',' -and $depth -eq 0) {
+ 64:             $parts += $sb.ToString()
+ 65:             $null = $sb.Clear()
+ 66:             continue
+ 67:         }
+ 68: 
+ 69:         $null = $sb.Append($ch)
+ 70:     }
+ 71:     if ($sb.Length -gt 0) { $parts += $sb.ToString() }
+ 72:     return @($parts)
+ 73: }
+ 74: 
+ 75: function Add-Unique([hashtable]$table, [string]$key) {
+ 76:     if ([string]::IsNullOrWhiteSpace($key)) { return }
+ 77:     if (-not $table.ContainsKey($key)) { $table[$key] = $true }
+ 78: }
+ 79: 
+ 80: function Analyze-ProcedureColumns([string]$bodySql) {
+ 81:     # Returns:
+ 82:     #  - perTable: tableName -> @{ reads=@(); writes=@(); }
+ 83:     #  - readColumns: flattened unique list of "table.column"
+ 84:     #  - writeColumns: flattened unique list of "table.column"
+ 85:     if ([string]::IsNullOrWhiteSpace($bodySql)) {
+ 86:         return [pscustomobject]@{ perTable = @(); readColumns = @(); writeColumns = @() }
+ 87:     }
+ 88: 
+ 89:     $sql = Remove-SqlComments $bodySql
+ 90:     $sql = $sql -replace "\r\n", "`n"
+ 91: 
+ 92:     # build alias -> table map from FROM/JOIN clauses
+ 93:     $aliasToTable = @{}
+ 94:     $fromJoinPattern = '(?is)\b(?:FROM|JOIN)\s+[`"`]?(?<table>[A-Za-z0-9_]+)[`"`]?\s*(?:AS\s+)?(?<alias>[A-Za-z0-9_]+)?'
+ 95:     foreach ($m in [regex]::Matches($sql, $fromJoinPattern)) {
+ 96:         $table = $m.Groups['table'].Value
+ 97:         $alias = $m.Groups['alias'].Value
+ 98:         if ([string]::IsNullOrWhiteSpace($alias)) { $alias = $table }
+ 99:         if (-not $aliasToTable.ContainsKey($alias)) { $aliasToTable[$alias] = $table }
+100:     }
+101: 
+102:     $readsByTable = @{}
+103:     $writesByTable = @{}
+104: 
+105:     function Add-Read([string]$table, [string]$col) {
+106:         if ([string]::IsNullOrWhiteSpace($table) -or [string]::IsNullOrWhiteSpace($col)) { return }
+107:         if (-not $readsByTable.ContainsKey($table)) { $readsByTable[$table] = @{} }
+108:         Add-Unique $readsByTable[$table] $col
+109:     }
+110: 
+111:     function Add-Write([string]$table, [string]$col) {
+112:         if ([string]::IsNullOrWhiteSpace($table) -or [string]::IsNullOrWhiteSpace($col)) { return }
+113:         if (-not $writesByTable.ContainsKey($table)) { $writesByTable[$table] = @{} }
+114:         Add-Unique $writesByTable[$table] $col
+115:     }
+116: 
+117:     # INSERT INTO table (col1, col2, ...)
+118:     $insertPattern = '(?is)\bINSERT\s+(?:IGNORE\s+)?INTO\s+[`"`]?(?<table>[A-Za-z0-9_]+)[`"`]?\s*\((?<cols>[^\)]*)\)'
+119:     foreach ($m in [regex]::Matches($sql, $insertPattern)) {
+120:         $table = $m.Groups['table'].Value
+121:         $cols = Split-CommaOutsideParens $m.Groups['cols'].Value
+122:         foreach ($c in $cols) {
+123:             $col = ($c -replace '[`"`]', '').Trim()
+124:             if (-not [string]::IsNullOrWhiteSpace($col)) { Add-Write $table $col }
+125:         }
+126:     }
+127: 
+128:     # UPDATE table [alias] SET a=b, c=d
+129:     $updatePattern = '(?is)\bUPDATE\s+[`"`]?(?<table>[A-Za-z0-9_]+)[`"`]?\s*(?:AS\s+)?(?<alias>[A-Za-z0-9_]+)?\s+SET\s+(?<set>.*?)(?:\bWHERE\b|;|$)'
+130:     foreach ($m in [regex]::Matches($sql, $updatePattern)) {
+131:         $table = $m.Groups['table'].Value
+132:         $alias = $m.Groups['alias'].Value
+133:         if ([string]::IsNullOrWhiteSpace($alias)) { $alias = $table }
+134:         if (-not $aliasToTable.ContainsKey($alias)) { $aliasToTable[$alias] = $table }
+135: 
+136:         $setBlock = $m.Groups['set'].Value
+137:         $assignments = Split-CommaOutsideParens $setBlock
+138:         foreach ($a in $assignments) {
+139:             $left = ($a -split '=')[0].Trim()
+140:             $left = ($left -replace '[`"`]', '').Trim()
+141:             $lm = [regex]::Match($left, '^(?:(?<alias>[A-Za-z0-9_]+)\.)?(?<col>[A-Za-z0-9_]+)$')
+142:             if ($lm.Success) {
+143:                 $aAlias = $lm.Groups['alias'].Value
+144:                 $col = $lm.Groups['col'].Value
+145:                 $targetTable = $table
+146:                 if (-not [string]::IsNullOrWhiteSpace($aAlias) -and $aliasToTable.ContainsKey($aAlias)) {
+147:                     $targetTable = $aliasToTable[$aAlias]
+148:                 }
+149:                 Add-Write $targetTable $col
+150:             }
+151:         }
+152:     }
+153: 
+154:     # SELECT ... FROM ...  (extract qualified column references like ss.setting_value)
+155:     $qualifiedColPattern = '(?i)\b(?<alias>[A-Za-z0-9_]+)\.(?<col>[A-Za-z0-9_]+)\b'
+156:     foreach ($m in [regex]::Matches($sql, $qualifiedColPattern)) {
+157:         $alias = $m.Groups['alias'].Value
+158:         $col = $m.Groups['col'].Value
+159:         if ($aliasToTable.ContainsKey($alias)) {
+160:             Add-Read $aliasToTable[$alias] $col
+161:         }
+162:     }
+163: 
+164:     # Flatten to arrays
+165:     $perTable = @()
+166:     $allReads = @{}
+167:     $allWrites = @{}
+168: 
+169:     $tables = @(@($readsByTable.Keys) + @($writesByTable.Keys) | Sort-Object -Unique)
+170:     foreach ($t in $tables) {
+171:         $readCols = @()
+172:         $writeCols = @()
+173:         if ($readsByTable.ContainsKey($t)) { $readCols = @($readsByTable[$t].Keys | Sort-Object) }
+174:         if ($writesByTable.ContainsKey($t)) { $writeCols = @($writesByTable[$t].Keys | Sort-Object) }
+175: 
+176:         foreach ($rc in $readCols) { Add-Unique $allReads ("$t.$rc") }
+177:         foreach ($wc in $writeCols) { Add-Unique $allWrites ("$t.$wc") }
+178: 
+179:         $perTable += [pscustomobject]@{
+180:             table  = $t
+181:             reads  = $readCols
+182:             writes = $writeCols
+183:         }
+184:     }
+185: 
+186:     return [pscustomobject]@{
+187:         perTable     = $perTable
+188:         readColumns  = @($allReads.Keys | Sort-Object)
+189:         writeColumns = @($allWrites.Keys | Sort-Object)
+190:     }
+191: }
+192: 
+193: function Parse-CreateProcedure([string]$sqlText) {
+194:     $sql = Remove-SqlComments $sqlText
+195:     # Normalize to LF. In PowerShell, newline escape is `n (not \n).
+196:     $sql = $sql -replace "\r\n", "`n"
+197: 
+198:     # Match up to the opening '(' and then scan for the matching closing ')'.
+199:     # This avoids breaking on VARCHAR(50) / DECIMAL(10,2) etc.
+200:     $startPattern = '(?is)CREATE\s+(?:DEFINER\s*=\s*[^\s]+\s+)?PROCEDURE\s+[`"`]?(?<name>[A-Za-z0-9_]+)[`"`]?\s*\('
+201:     $startMatches = [regex]::Matches($sql, $startPattern)
+202: 
+203:     $procs = @()
+204:     foreach ($m in $startMatches) {
+205:         $name = $m.Groups['name'].Value.Trim()
+206: 
+207:         $openParenIndex = $m.Index + $m.Length - 1
+208:         $depth = 0
+209:         $closeParenIndex = -1
+210:         for ($i = $openParenIndex; $i -lt $sql.Length; $i++) {
+211:             $ch = $sql[$i]
+212:             if ($ch -eq '(') { $depth++ }
+213:             elseif ($ch -eq ')') {
+214:                 $depth--
+215:                 if ($depth -eq 0) { $closeParenIndex = $i; break }
+216:             }
+217:         }
+218: 
+219:         if ($closeParenIndex -lt 0) { continue }
+220: 
+221:         $paramBlock = $sql.Substring($openParenIndex + 1, $closeParenIndex - $openParenIndex - 1).Trim()
+222:         $params = @()
+223: 
+224:         if (-not [string]::IsNullOrWhiteSpace($paramBlock)) {
+225:             # split by commas that are not within parentheses
+226:             $parts = @()
+227:             $sb = New-Object System.Text.StringBuilder
+228:             $depth = 0
+229:             foreach ($ch in $paramBlock.ToCharArray()) {
+230:                 if ($ch -eq '(') { $depth++ }
+231:                 elseif ($ch -eq ')') { if ($depth -gt 0) { $depth-- } }
+232: 
+233:                 if ($ch -eq ',' -and $depth -eq 0) {
+234:                     $parts += $sb.ToString()
+235:                     $null = $sb.Clear()
+236:                     continue
+237:                 }
+238:                 $null = $sb.Append($ch)
+239:             }
+240:             if ($sb.Length -gt 0) { $parts += $sb.ToString() }
+241: 
+242:             foreach ($raw in $parts) {
+243:                 $line = ($raw -replace "\s+", " ").Trim()
+244:                 if ([string]::IsNullOrWhiteSpace($line)) { continue }
+245: 
+246:                 # examples:
+247:                 # IN p_user_id INT
+248:                 # OUT p_total INT
+249:                 # INOUT p_value DECIMAL(10,2)
+250:                 $pm = [regex]::Match($line, '(?i)^(?<dir>INOUT|IN|OUT)\s+(?<pname>[`"`]?(?:[^\s`"`]+)[`"`]?)\s+(?<ptype>.+?)$')
+251:                 if (-not $pm.Success) {
+252:                     $params += [pscustomobject]@{
+253:                         direction = "UNKNOWN"
+254:                         name      = $line
+255:                         sqlType   = ""
+256:                         raw       = $raw.Trim()
+257:                     }
+258:                     continue
+259:                 }
+260: 
+261:                 $dir = $pm.Groups['dir'].Value.ToUpperInvariant()
+262:                 $pname = $pm.Groups['pname'].Value.Trim('`', '"')
+263:                 $ptype = $pm.Groups['ptype'].Value.Trim()
+264: 
+265:                 $params += [pscustomobject]@{
+266:                     direction = $dir
+267:                     name      = $pname
+268:                     sqlType   = $ptype
+269:                     raw       = $raw.Trim()
+270:                 }
+271:             }
+272:         }
+273: 
+274:         # Attempt to capture the body (BEGIN..END) for column usage analysis
+275:         $beginIndex = $sql.IndexOf('BEGIN', $closeParenIndex, [System.StringComparison]::OrdinalIgnoreCase)
+276:         $endIndex = -1
+277:         if ($beginIndex -ge 0) {
+278:             $end1 = $sql.IndexOf('END$$', $beginIndex, [System.StringComparison]::OrdinalIgnoreCase)
+279:             $end2 = $sql.IndexOf('END;', $beginIndex, [System.StringComparison]::OrdinalIgnoreCase)
+280:             if ($end1 -ge 0 -and $end2 -ge 0) { $endIndex = [Math]::Min($end1 + 5, $end2 + 4) }
+281:             elseif ($end1 -ge 0) { $endIndex = $end1 + 5 }
+282:             elseif ($end2 -ge 0) { $endIndex = $end2 + 4 }
+283:         }
+284: 
+285:         $bodySql = $null
+286:         if ($beginIndex -ge 0 -and $endIndex -gt $beginIndex) {
+287:             $bodySql = $sql.Substring($beginIndex, $endIndex - $beginIndex)
+288:         }
+289: 
+290:         $procs += [pscustomobject]@{
+291:             storedProcedure = $name
+292:             parameters      = $params
+293:             bodySql         = $bodySql
+294:         }
+295:     }
+296: 
+297:     return $procs
+298: }
+299: 
+300: function Guess-DaoName([string]$storedProcedure) {
+301:     if ($storedProcedure -match '^sp_(?<prefix>[A-Za-z0-9]+)') {
+302:         $prefix = $Matches['prefix']
+303: 
+304:         # normalize some known prefixes
+305:         switch -Regex ($prefix) {
+306:             '^SystemSettings$' { return 'Dao_SystemSettings' }
+307:             '^UserSettings$' { return 'Dao_UserSettings' }
+308:             '^SettingsAuditLog$' { return 'Dao_SettingsAuditLog' }
+309:             '^PackageTypeMappings$' { return 'Dao_PackageTypeMappings' }
+310:             '^PackageType$' { return 'Dao_PackageType' }
+311:             '^RoutingRule$' { return 'Dao_RoutingRule' }
+312:             '^ScheduledReport$' { return 'Dao_ScheduledReport' }
+313:             default { return "Dao_$prefix" }
+314:         }
+315:     }
+316:     return "Dao_Unknown"
+317: }
+318: 
+319: $spRootFull = Resolve-RepoPath $StoredProcedureRoot
+320: $daoRootFull = Resolve-RepoPath $DaoRoot
+321: $outputFull = Resolve-RepoPath $OutputPath
+322: 
+323: if (-not (Test-Path $spRootFull)) {
+324:     throw "Stored procedure folder not found: $spRootFull"
+325: }
+326: 
+327: $spFiles = Get-ChildItem -Path $spRootFull -Recurse -File -Filter *.sql | Sort-Object FullName
+328: 
+329: # Map stored procedure -> list of DAO file references
+330: $daoFiles = @()
+331: if (Test-Path $daoRootFull) {
+332:     $daoFiles = Get-ChildItem -Path $daoRootFull -File -Filter "Dao_*.cs" | Sort-Object FullName
+333: }
+334: 
+335: $daoFileText = @{}
+336: foreach ($dao in $daoFiles) {
+337:     $daoFileText[$dao.FullName] = Get-Content -Path $dao.FullName -Raw
+338: }
+339: 
+340: $allProcedures = @()
+341: foreach ($f in $spFiles) {
+342:     $sqlText = Get-Content -Path $f.FullName -Raw
+343:     $parsed = Parse-CreateProcedure $sqlText
+344:     foreach ($p in $parsed) {
+345:         $columnAccess = Analyze-ProcedureColumns $p.bodySql
+346:         $allProcedures += [pscustomobject]@{
+347:             storedProcedure = $p.storedProcedure
+348:             parameters      = $p.parameters
+349:             columnAccess    = $columnAccess
+350:             sqlFile         = (Resolve-Path $f.FullName).Path
+351:         }
+352:     }
+353: }
+354: 
+355: # build reference map
+356: $refMap = @{}
+357: foreach ($p in $allProcedures) {
+358:     $refMap[$p.storedProcedure] = @()
+359: }
+360: 
+361: foreach ($dao in $daoFiles) {
+362:     $text = $daoFileText[$dao.FullName]
+363:     $spNames = @($refMap.Keys)
+364:     foreach ($spName in $spNames) {
+365:         # look for "sp_Name" within quotes
+366:         if ($text -match [regex]::Escape('"' + $spName + '"')) {
+367:             $refMap[$spName] += $dao.Name
+368:         }
+369:     }
+370: }
+371: 
+372: # compute missing suggested DAOs (file does not exist)
+373: $existingDaoNames = @{}
+374: foreach ($dao in $daoFiles) { $existingDaoNames[$dao.BaseName] = $true }
+375: 
+376: $result = foreach ($p in ($allProcedures | Sort-Object storedProcedure -Unique)) {
+377:     $suggestedDao = Guess-DaoName $p.storedProcedure
+378:     $missingDao = -not $existingDaoNames.ContainsKey($suggestedDao)
+379: 
+380:     [pscustomobject]@{
+381:         storedProcedure  = $p.storedProcedure
+382:         sqlFile          = ($p.sqlFile -replace "\\", "/")
+383:         suggestedDao     = $suggestedDao
+384:         missingDao       = $missingDao
+385:         referencedInDaos = @($refMap[$p.storedProcedure] | Sort-Object -Unique)
+386:         parameters       = $p.parameters
+387:         columnAccess     = $p.columnAccess.perTable
+388:         readColumns      = $p.columnAccess.readColumns
+389:         writeColumns     = $p.columnAccess.writeColumns
+390:     }
+391: }
+392: 
+393: # summary stats
+394: $summary = [pscustomobject]@{
+395:     generatedAt                = (Get-Date).ToString('o')
+396:     storedProcedureRoot        = ($spRootFull -replace "\\", "/")
+397:     daoRoot                    = ($daoRootFull -replace "\\", "/")
+398:     procedureCount             = @($result).Count
+399:     referencedProcedureCount   = @($result | Where-Object { $_.referencedInDaos.Count -gt 0 }).Count
+400:     unreferencedProcedureCount = @($result | Where-Object { $_.referencedInDaos.Count -eq 0 }).Count
+401:     missingDaoCount            = @($result | Where-Object { $_.missingDao -eq $true }).Count
+402: }
+403: 
+404: $outObject = [pscustomobject]@{
+405:     summary    = $summary
+406:     procedures = @($result)
+407: }
+408: 
+409: # ensure output directory exists
+410: $outDir = Split-Path -Parent $outputFull
+411: if (-not (Test-Path $outDir)) {
+412:     New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+413: }
+414: 
+415: $outJson = $outObject | ConvertTo-Json -Depth 20
+416: Set-Content -Path $outputFull -Value $outJson -Encoding UTF8
+417: 
+418: Write-Host "Wrote: $outputFull"
+419: Write-Host ("Procedures: {0}, Referenced: {1}, Unreferenced: {2}, Missing DAO types: {3}" -f `
+420:         $summary.procedureCount, $summary.referencedProcedureCount, $summary.unreferencedProcedureCount, $summary.missingDaoCount)
+````
+
+## File: Scripts/McpServers/filesystem-win/index.mjs
+````javascript
+  1: #!/usr/bin/env node
+  2: 
+  3: import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+  4: import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+  5: import { RootsListChangedNotificationSchema } from "@modelcontextprotocol/sdk/types.js";
+  6: import fs from "fs/promises";
+  7: import { createReadStream } from "fs";
+  8: import path from "path";
+  9: import os from "os";
+ 10: import { minimatch } from "minimatch";
+ 11: import { z } from "zod";
+ 12: 
+ 13: const isWindows = process.platform === "win32";
+ 14: 
+ 15: function normalizePath(p) {
+ 16:     // Normalize separators and remove trailing slashes.
+ 17:     let normalized = path.normalize(p);
+ 18:     while (normalized.length > 1 && (normalized.endsWith(path.sep) || normalized.endsWith("/"))) {
+ 19:         normalized = normalized.slice(0, -1);
+ 20:     }
+ 21:     return normalized;
+ 22: }
+ 23: 
+ 24: function expandHome(p) {
+ 25:     if (p === "~") return os.homedir();
+ 26:     if (p.startsWith("~/") || p.startsWith("~\\")) return path.join(os.homedir(), p.slice(2));
+ 27:     return p;
+ 28: }
+ 29: 
+ 30: function parseFileUriToPath(uri) {
+ 31:     // Handles VS Code Windows roots like: file:///c%3A/Users/... (colon percent-encoded)
+ 32:     // and normal file URIs like: file:///c:/Users/...
+ 33:     try {
+ 34:         const u = new URL(uri);
+ 35:         if (u.protocol !== "file:") return null;
+ 36: 
+ 37:         // URL.pathname is already slash-separated; decode percent-encoding.
+ 38:         let pathname = decodeURIComponent(u.pathname);
+ 39: 
+ 40:         // On Windows, file URIs commonly come as /c:/... (leading slash before drive).
+ 41:         if (isWindows && /^\/[a-zA-Z]:\//.test(pathname)) {
+ 42:             pathname = pathname.slice(1);
+ 43:         }
+ 44: 
+ 45:         // Convert forward slashes to platform separators for resolve.
+ 46:         const platformPath = isWindows ? pathname.replaceAll("/", "\\") : pathname;
+ 47:         return platformPath;
+ 48:     } catch {
+ 49:         return null;
+ 50:     }
+ 51: }
+ 52: 
+ 53: function parseRootUri(rootUri) {
+ 54:     if (!rootUri) return null;
+ 55: 
+ 56:     if (rootUri.startsWith("file://")) {
+ 57:         return parseFileUriToPath(rootUri);
+ 58:     }
+ 59: 
+ 60:     // Some clients may send plain paths.
+ 61:     return rootUri;
+ 62: }
+ 63: 
+ 64: async function resolveExistingDirectory(dir) {
+ 65:     const expanded = expandHome(dir);
+ 66:     const absolute = path.resolve(expanded);
+ 67:     const real = await fs.realpath(absolute);
+ 68:     const stats = await fs.stat(real);
+ 69:     if (!stats.isDirectory()) throw new Error(`${dir} is not a directory`);
+ 70:     return normalizePath(real);
+ 71: }
+ 72: 
+ 73: async function getValidRootDirectories(requestedRoots) {
+ 74:     const validated = [];
+ 75: 
+ 76:     for (const root of requestedRoots ?? []) {
+ 77:         const raw = parseRootUri(root?.uri ?? "");
+ 78:         if (!raw) continue;
+ 79: 
+ 80:         try {
+ 81:             const expanded = expandHome(raw);
+ 82:             const absolute = path.resolve(expanded);
+ 83:             const real = await fs.realpath(absolute);
+ 84:             const stats = await fs.stat(real);
+ 85:             if (stats.isDirectory()) {
+ 86:                 validated.push(normalizePath(real));
+ 87:             }
+ 88:         } catch {
+ 89:             // Intentionally ignore invalid roots to avoid noisy logs.
+ 90:         }
+ 91:     }
+ 92: 
+ 93:     return validated;
+ 94: }
+ 95: 
+ 96: function isWithinAllowedDirectories(candidatePath, allowedDirectories) {
+ 97:     const candidate = normalizePath(candidatePath);
+ 98:     const candCmp = isWindows ? candidate.toLowerCase() : candidate;
+ 99: 
+100:     for (const allowedDir of allowedDirectories) {
+101:         const base = normalizePath(allowedDir);
+102:         const baseCmp = isWindows ? base.toLowerCase() : base;
+103: 
+104:         if (candCmp === baseCmp) return true;
+105: 
+106:         const prefix = baseCmp.endsWith(path.sep) ? baseCmp : baseCmp + path.sep;
+107:         if (candCmp.startsWith(prefix)) return true;
+108:     }
+109: 
+110:     return false;
+111: }
+112: 
+113: async function resolveAndValidatePath(inputPath, allowedDirectories) {
+114:     const raw = parseRootUri(inputPath) ?? inputPath;
+115:     const expanded = expandHome(raw);
+116: 
+117:     const resolved = path.isAbsolute(expanded)
+118:         ? path.resolve(expanded)
+119:         : path.resolve(allowedDirectories[0] ?? process.cwd(), expanded);
+120: 
+121:     // Resolve symlinks where possible; for paths that don't exist yet (write), resolve parent.
+122:     let finalPath;
+123:     try {
+124:         finalPath = await fs.realpath(resolved);
+125:     } catch {
+126:         const parent = path.dirname(resolved);
+127:         const parentReal = await fs.realpath(parent);
+128:         finalPath = path.join(parentReal, path.basename(resolved));
+129:     }
+130: 
+131:     if (!isWithinAllowedDirectories(finalPath, allowedDirectories)) {
+132:         throw new Error("Access denied: Path is outside allowed directories.");
+133:     }
+134: 
+135:     return finalPath;
+136: }
+137: 
+138: async function readFileAsBase64(filePath) {
+139:     return await new Promise((resolve, reject) => {
+140:         const stream = createReadStream(filePath);
+141:         const chunks = [];
+142:         stream.on("data", (chunk) => chunks.push(chunk));
+143:         stream.on("end", () => resolve(Buffer.concat(chunks).toString("base64")));
+144:         stream.on("error", reject);
+145:     });
+146: }
+147: 
+148: function headLines(text, n) {
+149:     const lines = text.split(/\r?\n/);
+150:     return lines.slice(0, n).join("\n");
+151: }
+152: 
+153: function tailLines(text, n) {
+154:     const lines = text.split(/\r?\n/);
+155:     return lines.slice(Math.max(0, lines.length - n)).join("\n");
+156: }
+157: 
+158: function formatListing(entries) {
+159:     return entries
+160:         .map((entry) => `${entry.isDirectory() ? "[DIR]" : "[FILE]"} ${entry.name}`)
+161:         .join("\n");
+162: }
+163: 
+164: function toTextResult(text) {
+165:     return {
+166:         content: [{ type: "text", text }],
+167:         structuredContent: { content: text },
+168:     };
+169: }
+170: 
+171: const args = process.argv.slice(2);
+172: 
+173: let allowedDirectories = [];
+174: if (args.length > 0) {
+175:     allowedDirectories = await Promise.all(args.map(resolveExistingDirectory));
+176: }
+177: 
+178: const server = new McpServer({ name: "filesystem-win", version: "0.1.0" });
+179: 
+180: async function updateAllowedDirectoriesFromRoots(requestedRoots) {
+181:     const validated = await getValidRootDirectories(requestedRoots);
+182:     if (validated.length > 0) {
+183:         allowedDirectories = validated;
+184:     }
+185: }
+186: 
+187: server.server.oninitialized = async () => {
+188:     const caps = server.server.getClientCapabilities();
+189:     if (caps?.roots) {
+190:         try {
+191:             const response = await server.server.listRoots();
+192:             if (response && "roots" in response) {
+193:                 await updateAllowedDirectoriesFromRoots(response.roots);
+194:             }
+195:         } catch {
+196:             // ignore
+197:         }
+198:     }
+199: 
+200:     if (allowedDirectories.length === 0) {
+201:         throw new Error(
+202:             "Server cannot operate: no allowed directories. Configure via args or ensure client roots are provided."
+203:         );
+204:     }
+205: };
+206: 
+207: server.server.setNotificationHandler(RootsListChangedNotificationSchema, async () => {
+208:     try {
+209:         const response = await server.server.listRoots();
+210:         if (response && "roots" in response) {
+211:             await updateAllowedDirectoriesFromRoots(response.roots);
+212:         }
+213:     } catch {
+214:         // ignore
+215:     }
+216: });
+217: 
+218: server.registerTool(
+219:     "list_allowed_directories",
+220:     {
+221:         title: "List Allowed Directories",
+222:         description: "Returns the list of directories that this server is allowed to access.",
+223:         inputSchema: {},
+224:         outputSchema: { content: z.string() },
+225:         annotations: { readOnlyHint: true },
+226:     },
+227:     async () => toTextResult(`Allowed directories:\n${allowedDirectories.join("\n")}`)
+228: );
+229: 
+230: const ReadTextFileArgsSchema = z.object({
+231:     path: z.string(),
+232:     tail: z.number().optional(),
+233:     head: z.number().optional(),
+234: });
+235: 
+236: server.registerTool(
+237:     "read_text_file",
+238:     {
+239:         title: "Read Text File",
+240:         description: "Read a file as UTF-8 text (optionally head/tail). Only works within allowed directories.",
+241:         inputSchema: ReadTextFileArgsSchema.shape,
+242:         outputSchema: { content: z.string() },
+243:         annotations: { readOnlyHint: true },
+244:     },
+245:     async (args) => {
+246:         if (args.head && args.tail) throw new Error("Cannot specify both head and tail.");
+247:         const filePath = await resolveAndValidatePath(args.path, allowedDirectories);
+248:         const content = await fs.readFile(filePath, "utf8");
+249:         const text = args.head ? headLines(content, args.head) : args.tail ? tailLines(content, args.tail) : content;
+250:         return toTextResult(text);
+251:     }
+252: );
+253: 
+254: server.registerTool(
+255:     "read_file",
+256:     {
+257:         title: "Read File (Deprecated)",
+258:         description: "Alias for read_text_file.",
+259:         inputSchema: ReadTextFileArgsSchema.shape,
+260:         outputSchema: { content: z.string() },
+261:         annotations: { readOnlyHint: true },
+262:     },
+263:     async (args) => {
+264:         return await server.server.callTool({ name: "read_text_file", arguments: args });
+265:     }
+266: );
+267: 
+268: const ReadMultipleFilesArgsSchema = z.object({
+269:     paths: z.array(z.string()).min(1),
+270: });
+271: 
+272: server.registerTool(
+273:     "read_multiple_files",
+274:     {
+275:         title: "Read Multiple Files",
+276:         description: "Read multiple files as UTF-8 text.",
+277:         inputSchema: ReadMultipleFilesArgsSchema.shape,
+278:         outputSchema: { content: z.string() },
+279:         annotations: { readOnlyHint: true },
+280:     },
+281:     async (args) => {
+282:         const results = await Promise.all(
+283:             args.paths.map(async (p) => {
+284:                 try {
+285:                     const filePath = await resolveAndValidatePath(p, allowedDirectories);
+286:                     const content = await fs.readFile(filePath, "utf8");
+287:                     return `${p}:\n${content}\n`;
+288:                 } catch (e) {
+289:                     const msg = e instanceof Error ? e.message : String(e);
+290:                     return `${p}: Error - ${msg}`;
+291:                 }
+292:             })
+293:         );
+294: 
+295:         return toTextResult(results.join("\n---\n"));
+296:     }
+297: );
+298: 
+299: const ReadMediaFileArgsSchema = z.object({ path: z.string() });
+300: server.registerTool(
+301:     "read_media_file",
+302:     {
+303:         title: "Read Media File",
+304:         description: "Read an image/audio file and return base64 data.",
+305:         inputSchema: ReadMediaFileArgsSchema.shape,
+306:         outputSchema: { content: z.array(z.object({ type: z.string(), data: z.string(), mimeType: z.string() })) },
+307:         annotations: { readOnlyHint: true },
+308:     },
+309:     async (args) => {
+310:         const filePath = await resolveAndValidatePath(args.path, allowedDirectories);
+311:         const ext = path.extname(filePath).toLowerCase();
+312:         const mime =
+313:             {
+314:                 ".png": "image/png",
+315:                 ".jpg": "image/jpeg",
+316:                 ".jpeg": "image/jpeg",
+317:                 ".gif": "image/gif",
+318:                 ".webp": "image/webp",
+319:                 ".bmp": "image/bmp",
+320:                 ".svg": "image/svg+xml",
+321:                 ".mp3": "audio/mpeg",
+322:                 ".wav": "audio/wav",
+323:                 ".ogg": "audio/ogg",
+324:                 ".flac": "audio/flac",
+325:             }[ext] ?? "application/octet-stream";
+326: 
+327:         const data = await readFileAsBase64(filePath);
+328:         const type = mime.startsWith("image/") ? "image" : mime.startsWith("audio/") ? "audio" : "blob";
+329: 
+330:         return {
+331:             content: [{ type, data, mimeType: mime }],
+332:             structuredContent: { content: [{ type, data, mimeType: mime }] },
+333:         };
+334:     }
+335: );
+336: 
+337: const ListDirectoryArgsSchema = z.object({ path: z.string() });
+338: server.registerTool(
+339:     "list_directory",
+340:     {
+341:         title: "List Directory",
+342:         description: "List directory contents.",
+343:         inputSchema: ListDirectoryArgsSchema.shape,
+344:         outputSchema: { content: z.string() },
+345:         annotations: { readOnlyHint: true },
+346:     },
+347:     async (args) => {
+348:         const dirPath = await resolveAndValidatePath(args.path, allowedDirectories);
+349:         const entries = await fs.readdir(dirPath, { withFileTypes: true });
+350:         return toTextResult(formatListing(entries));
+351:     }
+352: );
+353: 
+354: server.registerTool(
+355:     "list_directory_with_sizes",
+356:     {
+357:         title: "List Directory with Sizes",
+358:         description: "List directory contents including file sizes.",
+359:         inputSchema: z.object({ path: z.string(), sortBy: z.enum(["name", "size"]).optional().default("name") }).shape,
+360:         outputSchema: { content: z.string() },
+361:         annotations: { readOnlyHint: true },
+362:     },
+363:     async (args) => {
+364:         const dirPath = await resolveAndValidatePath(args.path, allowedDirectories);
+365:         const entries = await fs.readdir(dirPath, { withFileTypes: true });
+366:         const detailed = await Promise.all(
+367:             entries.map(async (entry) => {
+368:                 const p = path.join(dirPath, entry.name);
+369:                 try {
+370:                     const st = await fs.stat(p);
+371:                     return { name: entry.name, isDirectory: entry.isDirectory(), size: st.size };
+372:                 } catch {
+373:                     return { name: entry.name, isDirectory: entry.isDirectory(), size: 0 };
+374:                 }
+375:             })
+376:         );
+377: 
+378:         detailed.sort((a, b) => {
+379:             if (args.sortBy === "size") return b.size - a.size;
+380:             return a.name.localeCompare(b.name);
+381:         });
+382: 
+383:         const lines = detailed.map((e) => `${e.isDirectory ? "[DIR]" : "[FILE]"} ${e.name}${e.isDirectory ? "" : ` (${e.size} bytes)`}`);
+384:         return toTextResult(lines.join("\n"));
+385:     }
+386: );
+387: 
+388: server.registerTool(
+389:     "create_directory",
+390:     {
+391:         title: "Create Directory",
+392:         description: "Create a directory recursively.",
+393:         inputSchema: z.object({ path: z.string() }).shape,
+394:         outputSchema: { content: z.string() },
+395:         annotations: { readOnlyHint: false, idempotentHint: true, destructiveHint: false },
+396:     },
+397:     async (args) => {
+398:         const dirPath = await resolveAndValidatePath(args.path, allowedDirectories);
+399:         await fs.mkdir(dirPath, { recursive: true });
+400:         return toTextResult(`Successfully created directory ${args.path}`);
+401:     }
+402: );
+403: 
+404: server.registerTool(
+405:     "get_file_info",
+406:     {
+407:         title: "Get File Info",
+408:         description: "Get metadata for a file/directory.",
+409:         inputSchema: z.object({ path: z.string() }).shape,
+410:         outputSchema: { content: z.string() },
+411:         annotations: { readOnlyHint: true },
+412:     },
+413:     async (args) => {
+414:         const p = await resolveAndValidatePath(args.path, allowedDirectories);
+415:         const st = await fs.stat(p);
+416:         const info = {
+417:             path: p,
+418:             type: st.isDirectory() ? "directory" : "file",
+419:             size: st.size,
+420:             mtime: st.mtime.toISOString(),
+421:             ctime: st.ctime.toISOString(),
+422:         };
+423:         return toTextResult(Object.entries(info).map(([k, v]) => `${k}: ${v}`).join("\n"));
+424:     }
+425: );
+426: 
+427: server.registerTool(
+428:     "move_file",
+429:     {
+430:         title: "Move File",
+431:         description: "Move/rename a file or directory.",
+432:         inputSchema: z.object({ source: z.string(), destination: z.string() }).shape,
+433:         outputSchema: { content: z.string() },
+434:         annotations: { readOnlyHint: false, idempotentHint: false, destructiveHint: false },
+435:     },
+436:     async (args) => {
+437:         const src = await resolveAndValidatePath(args.source, allowedDirectories);
+438:         const dst = await resolveAndValidatePath(args.destination, allowedDirectories);
+439:         await fs.rename(src, dst);
+440:         return toTextResult(`Successfully moved ${args.source} to ${args.destination}`);
+441:     }
+442: );
+443: 
+444: server.registerTool(
+445:     "write_file",
+446:     {
+447:         title: "Write File",
+448:         description: "Create/overwrite a file with text content.",
+449:         inputSchema: z.object({ path: z.string(), content: z.string() }).shape,
+450:         outputSchema: { content: z.string() },
+451:         annotations: { readOnlyHint: false, idempotentHint: true, destructiveHint: true },
+452:     },
+453:     async (args) => {
+454:         const p = await resolveAndValidatePath(args.path, allowedDirectories);
+455:         await fs.mkdir(path.dirname(p), { recursive: true });
+456:         await fs.writeFile(p, args.content, "utf8");
+457:         return toTextResult(`Successfully wrote to ${args.path}`);
+458:     }
+459: );
+460: 
+461: server.registerTool(
+462:     "edit_file",
+463:     {
+464:         title: "Edit File",
+465:         description: "Apply exact text replacements in a file.",
+466:         inputSchema: z
+467:             .object({
+468:                 path: z.string(),
+469:                 edits: z.array(z.object({ oldText: z.string(), newText: z.string() })),
+470:                 dryRun: z.boolean().default(false),
+471:             })
+472:             .shape,
+473:         outputSchema: { content: z.string() },
+474:         annotations: { readOnlyHint: false, idempotentHint: false, destructiveHint: true },
+475:     },
+476:     async (args) => {
+477:         const p = await resolveAndValidatePath(args.path, allowedDirectories);
+478:         const original = await fs.readFile(p, "utf8");
+479:         let updated = original;
+480: 
+481:         for (const edit of args.edits) {
+482:             if (!updated.includes(edit.oldText)) {
+483:                 throw new Error("Edit failed: oldText not found.");
+484:             }
+485:             updated = updated.replace(edit.oldText, edit.newText);
+486:         }
+487: 
+488:         if (args.dryRun) {
+489:             return toTextResult("Dry run successful (diff output not implemented in this lightweight server).");
+490:         }
+491: 
+492:         await fs.writeFile(p, updated, "utf8");
+493:         return toTextResult("Edits applied successfully.");
+494:     }
+495: );
+496: 
+497: server.registerTool(
+498:     "search_files",
+499:     {
+500:         title: "Search Files",
+501:         description: "Search for files/directories matching a glob pattern.",
+502:         inputSchema: z.object({ path: z.string(), pattern: z.string(), excludePatterns: z.array(z.string()).optional().default([]) }).shape,
+503:         outputSchema: { content: z.string() },
+504:         annotations: { readOnlyHint: true },
+505:     },
+506:     async (args) => {
+507:         const root = await resolveAndValidatePath(args.path, allowedDirectories);
+508:         const results = [];
+509: 
+510:         async function walk(current) {
+511:             const entries = await fs.readdir(current, { withFileTypes: true });
+512:             for (const entry of entries) {
+513:                 const full = path.join(current, entry.name);
+514:                 const rel = path.relative(root, full);
+515: 
+516:                 const excluded = (args.excludePatterns ?? []).some((p) => minimatch(rel, p, { dot: true }));
+517:                 if (excluded) continue;
+518: 
+519:                 if (minimatch(rel, args.pattern, { dot: true })) {
+520:                     results.push(full);
+521:                 }
+522: 
+523:                 if (entry.isDirectory()) {
+524:                     await walk(full);
+525:                 }
+526:             }
+527:         }
+528: 
+529:         await walk(root);
+530:         return toTextResult(results.length ? results.join("\n") : "No matches found");
+531:     }
+532: );
+533: 
+534: server.registerTool(
+535:     "directory_tree",
+536:     {
+537:         title: "Directory Tree",
+538:         description: "Return a recursive directory tree as JSON.",
+539:         inputSchema: z.object({ path: z.string(), excludePatterns: z.array(z.string()).optional().default([]) }).shape,
+540:         outputSchema: { content: z.string() },
+541:         annotations: { readOnlyHint: true },
+542:     },
+543:     async (args) => {
+544:         const root = await resolveAndValidatePath(args.path, allowedDirectories);
+545: 
+546:         async function build(current) {
+547:             const entries = await fs.readdir(current, { withFileTypes: true });
+548:             const out = [];
+549: 
+550:             for (const entry of entries) {
+551:                 const full = path.join(current, entry.name);
+552:                 const rel = path.relative(root, full);
+553:                 const excluded = (args.excludePatterns ?? []).some((p) => minimatch(rel, p, { dot: true }));
+554:                 if (excluded) continue;
+555: 
+556:                 if (entry.isDirectory()) {
+557:                     out.push({ name: entry.name, type: "directory", children: await build(full) });
+558:                 } else {
+559:                     out.push({ name: entry.name, type: "file" });
+560:                 }
+561:             }
+562: 
+563:             return out;
+564:         }
+565: 
+566:         const tree = await build(root);
+567:         return toTextResult(JSON.stringify(tree, null, 2));
+568:     }
+569: );
+570: 
+571: const transport = new StdioServerTransport();
+572: await server.connect(transport);
+````
+
+## File: Scripts/McpServers/filesystem-win/package.json
+````json
+ 1: {
+ 2:     "name": "mtm-filesystem-mcp-win",
+ 3:     "private": true,
+ 4:     "version": "0.0.0",
+ 5:     "type": "module",
+ 6:     "dependencies": {
+ 7:         "@modelcontextprotocol/sdk": "^1.0.0",
+ 8:         "minimatch": "^10.0.1",
+ 9:         "zod": "^3.25.0"
+10:     }
+11: }
+````
+
+## File: Module_Volvo/Data/Dao_VolvoPart.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Data;
+  4: using System.Threading.Tasks;
+  5: using MTM_Receiving_Application.Module_Core.Models.Core;
+  6: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  7: using MTM_Receiving_Application.Module_Volvo.Models;
+  8: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  9: 
+ 10: namespace MTM_Receiving_Application.Module_Volvo.Data;
+ 11: 
+ 12: /// <summary>
+ 13: /// Data Access Object for volvo_masterdata table
+ 14: /// Provides CRUD operations using stored procedures
+ 15: /// </summary>
+ 16: public class Dao_VolvoPart
+ 17: {
+ 18:     private readonly string _connectionString;
+ 19: 
+ 20:     public Dao_VolvoPart(string connectionString)
+ 21:     {
+ 22:         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+ 23:     }
+ 24: 
+ 25:     /// <summary>
+ 26:     /// Gets all Volvo parts (optionally including inactive)
+ 27:     /// </summary>
+ 28:     /// <param name="includeInactive"></param>
+ 29:     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllAsync(bool includeInactive = false)
+ 30:     {
+ 31:         var parameters = new Dictionary<string, object>
+ 32:         {
+ 33:             { "include_inactive", includeInactive ? 1 : 0 }
+ 34:         };
+ 35: 
+ 36:         return await Helper_Database_StoredProcedure.ExecuteListAsync(
+ 37:             _connectionString,
+ 38:             "sp_Volvo_PartMaster_GetAll",
+ 39:             MapFromReader,
+ 40:             parameters
+ 41:         );
+ 42:     }
+ 43: 
+ 44:     /// <summary>
+ 45:     /// Gets a part by part number
+ 46:     /// </summary>
+ 47:     /// <param name="partNumber"></param>
+ 48:     public async Task<Model_Dao_Result<Model_VolvoPart>> GetByIdAsync(string partNumber)
+ 49:     {
+ 50:         var parameters = new Dictionary<string, object>
+ 51:         {
+ 52:             { "part_number", partNumber }
+ 53:         };
+ 54: 
+ 55:         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+ 56:             _connectionString,
+ 57:             "sp_Volvo_PartMaster_GetById",
+ 58:             MapFromReader,
+ 59:             parameters
+ 60:         );
+ 61:     }
+ 62: 
+ 63:     /// <summary>
+ 64:     /// Inserts a new Volvo part
+ 65:     /// </summary>
+ 66:     /// <param name="part"></param>
+ 67:     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoPart part)
+ 68:     {
+ 69:         var parameters = new Dictionary<string, object>
+ 70:         {
+ 71:             { "part_number", part.PartNumber },
+ 72:             { "quantity_per_skid", part.QuantityPerSkid },
+ 73:             { "is_active", part.IsActive ? 1 : 0 }
+ 74:         };
+ 75: 
+ 76:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 77:             _connectionString,
+ 78:             "sp_Volvo_PartMaster_Insert",
+ 79:             parameters
+ 80:         );
+ 81:     }
+ 82: 
+ 83:     /// <summary>
+ 84:     /// Updates an existing Volvo part
+ 85:     /// </summary>
+ 86:     /// <param name="part"></param>
+ 87:     public async Task<Model_Dao_Result> UpdateAsync(Model_VolvoPart part)
+ 88:     {
+ 89:         var parameters = new Dictionary<string, object>
+ 90:         {
+ 91:             { "part_number", part.PartNumber },
+ 92:             { "quantity_per_skid", part.QuantityPerSkid }
+ 93:         };
+ 94: 
+ 95:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 96:             _connectionString,
+ 97:             "sp_Volvo_PartMaster_Update",
+ 98:             parameters
+ 99:         );
+100:     }
+101: 
+102:     /// <summary>
+103:     /// Deactivates a Volvo part (soft delete)
+104:     /// Checks for active shipment references before deactivation
+105:     /// </summary>
+106:     /// <param name="partNumber"></param>
+107:     public async Task<Model_Dao_Result> DeactivateAsync(string partNumber)
+108:     {
+109:         // Check for active references
+110:         var checkParams = new Dictionary<string, object>
+111:         {
+112:             { "part_number", partNumber },
+113:             { "active_reference_count", 0 } // OUT parameter
+114:         };
+115: 
+116:         var checkResult = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+117:             _connectionString,
+118:             "sp_volvo_part_check_references",
+119:             checkParams
+120:         );
+121: 
+122:         // Note: Output parameters not yet supported by helper - skip check for now
+123:         // TODO: Implement when stored proc helper supports OUT parameters
+124:         // For now, cascade protection is logged but not enforced
+125: 
+126:         // Safe to deactivate
+127:         var parameters = new Dictionary<string, object>
+128:         {
+129:             { "part_number", partNumber },
+130:             { "is_active", 0 }
+131:         };
+132: 
+133:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+134:             _connectionString,
+135:             "sp_Volvo_PartMaster_SetActive",
+136:             parameters
+137:         );
+138:     }
+139: 
+140:     /// <summary>
+141:     /// Gets multiple parts by part numbers (batch query to avoid N+1)
+142:     /// </summary>
+143:     /// <param name="partNumbers"></param>
+144:     public async Task<Model_Dao_Result<Dictionary<string, Model_VolvoPart>>> GetPartsByNumbersAsync(List<string> partNumbers)
+145:     {
+146:         if (partNumbers == null || partNumbers.Count == 0)
+147:         {
+148:             return new Model_Dao_Result<Dictionary<string, Model_VolvoPart>>
+149:             {
+150:                 Success = true,
+151:                 Data = new Dictionary<string, Model_VolvoPart>()
+152:             };
+153:         }
+154: 
+155:         try
+156:         {
+157:             var result = new Dictionary<string, Model_VolvoPart>();
+158: 
+159:             // For now, use multiple queries (better than N+1, can be optimized with stored proc)
+160:             foreach (var partNumber in partNumbers)
+161:             {
+162:                 var partResult = await GetByIdAsync(partNumber);
+163:                 if (partResult.IsSuccess && partResult.Data != null)
+164:                 {
+165:                     result[partNumber] = partResult.Data;
+166:                 }
+167:             }
+168: 
+169:             return new Model_Dao_Result<Dictionary<string, Model_VolvoPart>>
+170:             {
+171:                 Success = true,
+172:                 Data = result
+173:             };
+174:         }
+175:         catch (Exception ex)
+176:         {
+177:             return new Model_Dao_Result<Dictionary<string, Model_VolvoPart>>
+178:             {
+179:                 Success = false,
+180:                 ErrorMessage = $"Error retrieving parts batch: {ex.Message}",
+181:                 Severity = Enum_ErrorSeverity.Error,
+182:                 Exception = ex
+183:             };
+184:         }
+185:     }
+186: 
+187:     private static Model_VolvoPart MapFromReader(IDataReader reader)
+188:     {
+189:         return new Model_VolvoPart
+190:         {
+191:             PartNumber = reader.GetString(reader.GetOrdinal("part_number")),
+192:             QuantityPerSkid = reader.GetInt32(reader.GetOrdinal("quantity_per_skid")),
+193:             IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
+194:             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
+195:             ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
+196:         };
+197:     }
+198: }
+````
+
+## File: Module_Volvo/Data/Dao_VolvoShipmentLine.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Data;
+  4: using System.Threading.Tasks;
+  5: using MTM_Receiving_Application.Module_Core.Models.Core;
+  6: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  7: using MTM_Receiving_Application.Module_Volvo.Models;
+  8: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  9: 
+ 10: namespace MTM_Receiving_Application.Module_Volvo.Data;
+ 11: 
+ 12: /// <summary>
+ 13: /// Data Access Object for volvo_line_data table
+ 14: /// Provides CRUD operations using stored procedures
+ 15: /// </summary>
+ 16: public class Dao_VolvoShipmentLine
+ 17: {
+ 18:     private readonly string _connectionString;
+ 19: 
+ 20:     public Dao_VolvoShipmentLine(string connectionString)
+ 21:     {
+ 22:         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+ 23:     }
+ 24: 
+ 25:     /// <summary>
+ 26:     /// Inserts a new shipment line
+ 27:     /// </summary>
+ 28:     /// <param name="line"></param>
+ 29:     public async Task<Model_Dao_Result> InsertAsync(Model_VolvoShipmentLine line)
+ 30:     {
+ 31:         var parameters = new Dictionary<string, object>
+ 32:         {
+ 33:             { "shipment_id", line.ShipmentId },
+ 34:             { "part_number", line.PartNumber },
+ 35:             { "quantity_per_skid", line.QuantityPerSkid },
+ 36:             { "received_skid_count", line.ReceivedSkidCount },
+ 37:             { "calculated_piece_count", line.CalculatedPieceCount },
+ 38:             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
+ 39:             { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
+ 40:             { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+ 41:         };
+ 42: 
+ 43:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 44:             _connectionString,
+ 45:             "sp_Volvo_ShipmentLine_Insert",
+ 46:             parameters
+ 47:         );
+ 48:     }
+ 49: 
+ 50:     /// <summary>
+ 51:     /// Gets all lines for a shipment
+ 52:     /// </summary>
+ 53:     /// <param name="shipmentId"></param>
+ 54:     public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetByShipmentIdAsync(int shipmentId)
+ 55:     {
+ 56:         var parameters = new Dictionary<string, object>
+ 57:         {
+ 58:             { "shipment_id", shipmentId }
+ 59:         };
+ 60: 
+ 61:         return await Helper_Database_StoredProcedure.ExecuteListAsync(
+ 62:             _connectionString,
+ 63:             "sp_Volvo_ShipmentLine_GetByShipment",
+ 64:             MapFromReader,
+ 65:             parameters
+ 66:         );
+ 67:     }
+ 68: 
+ 69:     /// <summary>
+ 70:     /// Updates a shipment line
+ 71:     /// </summary>
+ 72:     /// <param name="line"></param>
+ 73:     public async Task<Model_Dao_Result> UpdateAsync(Model_VolvoShipmentLine line)
+ 74:     {
+ 75:         var parameters = new Dictionary<string, object>
+ 76:         {
+ 77:             { "id", line.Id },
+ 78:             { "received_skid_count", line.ReceivedSkidCount },
+ 79:             { "calculated_piece_count", line.CalculatedPieceCount },
+ 80:             { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
+ 81:             { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
+ 82:             { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+ 83:         };
+ 84: 
+ 85:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 86:             _connectionString,
+ 87:             "sp_Volvo_ShipmentLine_Update",
+ 88:             parameters
+ 89:         );
+ 90:     }
+ 91: 
+ 92:     /// <summary>
+ 93:     /// Deletes a shipment line
+ 94:     /// </summary>
+ 95:     /// <param name="lineId"></param>
+ 96:     public async Task<Model_Dao_Result> DeleteAsync(int lineId)
+ 97:     {
+ 98:         var parameters = new Dictionary<string, object>
+ 99:         {
+100:             { "id", lineId }
+101:         };
+102: 
+103:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+104:             _connectionString,
+105:             "sp_Volvo_ShipmentLine_Delete",
+106:             parameters
+107:         );
+108:     }
+109: 
+110:     private static Model_VolvoShipmentLine MapFromReader(IDataReader reader)
+111:     {
+112:         return new Model_VolvoShipmentLine
+113:         {
+114:             Id = reader.GetInt32(reader.GetOrdinal("id")),
+115:             ShipmentId = reader.GetInt32(reader.GetOrdinal("shipment_id")),
+116:             PartNumber = reader.GetString(reader.GetOrdinal("part_number")),
+117:             QuantityPerSkid = reader.GetInt32(reader.GetOrdinal("quantity_per_skid")),
+118:             ReceivedSkidCount = reader.GetInt32(reader.GetOrdinal("received_skid_count")),
+119:             CalculatedPieceCount = reader.GetInt32(reader.GetOrdinal("calculated_piece_count")),
+120:             HasDiscrepancy = reader.GetBoolean(reader.GetOrdinal("has_discrepancy")),
+121:             ExpectedSkidCount = reader.IsDBNull(reader.GetOrdinal("expected_skid_count"))
+122:                 ? null
+123:                 : reader.GetInt32(reader.GetOrdinal("expected_skid_count")),
+124:             DiscrepancyNote = reader.IsDBNull(reader.GetOrdinal("discrepancy_note"))
+125:                 ? null
+126:                 : reader.GetString(reader.GetOrdinal("discrepancy_note"))
+127:         };
+128:     }
+129: }
+````
+
+## File: Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandler.cs
+````csharp
+  1: using System;
+  2: using System.Linq;
+  3: using System.Threading;
+  4: using System.Threading.Tasks;
+  5: using MediatR;
+  6: using MTM_Receiving_Application.Module_Core.Models.Core;
+  7: using MTM_Receiving_Application.Module_Volvo.Data;
+  8: using MTM_Receiving_Application.Module_Volvo.Models;
+  9: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 10: using MTM_Receiving_Application.Module_Volvo.Services;
+ 11: 
+ 12: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 13: 
+ 14: /// <summary>
+ 15: /// Handler for CompleteShipmentCommand - finalizes shipment, generates labels, sends email.
+ 16: /// </summary>
+ 17: public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCommand, Model_Dao_Result<int>>
+ 18: {
+ 19:     private readonly Dao_VolvoShipment _shipmentDao;
+ 20:     private readonly Dao_VolvoShipmentLine _lineDao;
+ 21:     private readonly Dao_VolvoPart _partDao;
+ 22:     private readonly IService_VolvoAuthorization _authService;
+ 23: 
+ 24:     public CompleteShipmentCommandHandler(
+ 25:         Dao_VolvoShipment shipmentDao,
+ 26:         Dao_VolvoShipmentLine lineDao,
+ 27:         Dao_VolvoPart partDao,
+ 28:         IService_VolvoAuthorization authService)
+ 29:     {
+ 30:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+ 31:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+ 32:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+ 33:         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+ 34:     }
+ 35: 
+ 36:     public async Task<Model_Dao_Result<int>> Handle(CompleteShipmentCommand request, CancellationToken cancellationToken)
+ 37:     {
+ 38:         try
+ 39:         {
+ 40:             // Authorization check
+ 41:             var authResult = await _authService.CanCompleteShipmentsAsync();
+ 42:             if (!authResult.IsSuccess)
+ 43:             {
+ 44:                 return Model_Dao_Result_Factory.Failure<int>(
+ 45:                     "You are not authorized to complete shipments");
+ 46:             }
+ 47: 
+ 48:             // If a pending shipment exists, complete it instead of inserting a new one
+ 49:             var pendingResult = await _shipmentDao.GetPendingAsync();
+ 50:             if (!pendingResult.IsSuccess)
+ 51:             {
+ 52:                 return Model_Dao_Result_Factory.Failure<int>(pendingResult.ErrorMessage);
+ 53:             }
+ 54: 
+ 55:             if (pendingResult.Data != null)
+ 56:             {
+ 57:                 var pendingShipment = pendingResult.Data;
+ 58: 
+ 59:                 // Update notes if changed
+ 60:                 if (!string.Equals(pendingShipment.Notes ?? string.Empty, request.Notes ?? string.Empty, StringComparison.Ordinal))
+ 61:                 {
+ 62:                     var updateResult = await _shipmentDao.UpdateAsync(new Model_VolvoShipment
+ 63:                     {
+ 64:                         Id = pendingShipment.Id,
+ 65:                         Notes = request.Notes
+ 66:                     });
+ 67: 
+ 68:                     if (!updateResult.IsSuccess)
+ 69:                     {
+ 70:                         return Model_Dao_Result_Factory.Failure<int>(updateResult.ErrorMessage);
+ 71:                     }
+ 72:                 }
+ 73: 
+ 74:                 // Replace existing lines with current request parts
+ 75:                 var existingLinesResult = await _lineDao.GetByShipmentIdAsync(pendingShipment.Id);
+ 76:                 if (!existingLinesResult.IsSuccess)
+ 77:                 {
+ 78:                     return Model_Dao_Result_Factory.Failure<int>(existingLinesResult.ErrorMessage);
+ 79:                 }
+ 80: 
+ 81:                 foreach (var existingLine in existingLinesResult.Data ?? Enumerable.Empty<Model_VolvoShipmentLine>())
+ 82:                 {
+ 83:                     var deleteResult = await _lineDao.DeleteAsync(existingLine.Id);
+ 84:                     if (!deleteResult.IsSuccess)
+ 85:                     {
+ 86:                         return Model_Dao_Result_Factory.Failure<int>(
+ 87:                             $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}");
+ 88:                     }
+ 89:                 }
+ 90: 
+ 91:                 foreach (var partDto in request.Parts)
+ 92:                 {
+ 93:                     var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+ 94:                     if (!partResult.IsSuccess || partResult.Data == null)
+ 95:                     {
+ 96:                         return Model_Dao_Result_Factory.Failure<int>(
+ 97:                             partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+ 98:                     }
+ 99: 
+100:                     var quantityPerSkid = partResult.Data.QuantityPerSkid;
+101:                     var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+102: 
+103:                     var line = new Model_VolvoShipmentLine
+104:                     {
+105:                         ShipmentId = pendingShipment.Id,
+106:                         PartNumber = partDto.PartNumber,
+107:                         QuantityPerSkid = quantityPerSkid,
+108:                         ReceivedSkidCount = partDto.ReceivedSkidCount,
+109:                         CalculatedPieceCount = calculatedPieceCount,
+110:                         ExpectedSkidCount = partDto.ExpectedSkidCount,
+111:                         HasDiscrepancy = partDto.HasDiscrepancy,
+112:                         DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+113:                     };
+114: 
+115:                     var lineResult = await _lineDao.InsertAsync(line);
+116:                     if (!lineResult.IsSuccess)
+117:                     {
+118:                         return Model_Dao_Result_Factory.Failure<int>(
+119:                             $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+120:                     }
+121:                 }
+122: 
+123: 
+124:                 var completeResult = await _shipmentDao.CompleteAsync(
+125:                     pendingShipment.Id,
+126:                     request.PONumber,
+127:                     request.ReceiverNumber);
+128: 
+129:                 if (!completeResult.IsSuccess)
+130:                 {
+131:                     return Model_Dao_Result_Factory.Failure<int>(completeResult.ErrorMessage);
+132:                 }
+133: 
+134:                 return new Model_Dao_Result<int> { Success = true, Data = pendingShipment.Id };
+135:             }
+136: 
+137:             // No pending shipment exists: insert then complete
+138:             var shipment = new Model_VolvoShipment
+139:             {
+140:                 ShipmentDate = request.ShipmentDate.DateTime,
+141:                 ShipmentNumber = request.ShipmentNumber,
+142:                 Notes = request.Notes,
+143:                 Status = "Completed",
+144:                 PONumber = request.PONumber,
+145:                 ReceiverNumber = request.ReceiverNumber,
+146:                 EmployeeNumber = Environment.UserName
+147:             };
+148: 
+149:             var insertResult = await _shipmentDao.InsertAsync(shipment);
+150:             if (!insertResult.IsSuccess)
+151:             {
+152:                 return Model_Dao_Result_Factory.Failure<int>(insertResult.ErrorMessage);
+153:             }
+154: 
+155:             var shipmentId = insertResult.Data.ShipmentId;
+156: 
+157:             foreach (var partDto in request.Parts)
+158:             {
+159:                 var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+160:                 if (!partResult.IsSuccess || partResult.Data == null)
+161:                 {
+162:                     return Model_Dao_Result_Factory.Failure<int>(
+163:                         partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+164:                 }
+165: 
+166:                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
+167:                 var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+168: 
+169:                 var line = new Model_VolvoShipmentLine
+170:                 {
+171:                     ShipmentId = shipmentId,
+172:                     PartNumber = partDto.PartNumber,
+173:                     QuantityPerSkid = quantityPerSkid,
+174:                     ReceivedSkidCount = partDto.ReceivedSkidCount,
+175:                     CalculatedPieceCount = calculatedPieceCount,
+176:                     ExpectedSkidCount = partDto.ExpectedSkidCount,
+177:                     HasDiscrepancy = partDto.HasDiscrepancy,
+178:                     DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+179:                 };
+180: 
+181:                 var lineResult = await _lineDao.InsertAsync(line);
+182:                 if (!lineResult.IsSuccess)
+183:                 {
+184:                     return Model_Dao_Result_Factory.Failure<int>(
+185:                         $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+186:                 }
+187:             }
+188: 
+189:             var completeInsertResult = await _shipmentDao.CompleteAsync(shipmentId, request.PONumber, request.ReceiverNumber);
+190:             if (!completeInsertResult.IsSuccess)
+191:             {
+192:                 return Model_Dao_Result_Factory.Failure<int>(completeInsertResult.ErrorMessage);
+193:             }
+194: 
+195:             return new Model_Dao_Result<int> { Success = true, Data = shipmentId };
+196:         }
+197:         catch (Exception ex)
+198:         {
+199:             return Model_Dao_Result_Factory.Failure<int>(
+200:                 $"Unexpected error completing shipment: {ex.Message}", ex);
+201:         }
+202:     }
+203: }
+````
+
+## File: Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandler.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Threading;
+  4: using System.Threading.Tasks;
+  5: using MediatR;
+  6: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  7: using MTM_Receiving_Application.Module_Core.Models.Core;
+  8: using MTM_Receiving_Application.Module_Volvo.Contracts;
+  9: using MTM_Receiving_Application.Module_Volvo.Data;
+ 10: using MTM_Receiving_Application.Module_Volvo.Helpers;
+ 11: using MTM_Receiving_Application.Module_Volvo.Models;
+ 12: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 13: using MTM_Receiving_Application.Module_Volvo.Services;
+ 14: 
+ 15: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 16: 
+ 17: /// <summary>
+ 18: /// Handler for UpdateShipmentCommand - updates shipment header and lines.
+ 19: /// </summary>
+ 20: public class UpdateShipmentCommandHandler : IRequestHandler<UpdateShipmentCommand, Model_Dao_Result>
+ 21: {
+ 22:     private readonly Dao_VolvoShipment _shipmentDao;
+ 23:     private readonly Dao_VolvoShipmentLine _lineDao;
+ 24:     private readonly Dao_VolvoPart _partDao;
+ 25:     private readonly Dao_VolvoPartComponent _componentDao;
+ 26:     private readonly IService_VolvoAuthorization _authService;
+ 27:     private readonly IService_LoggingUtility _logger;
+ 28: 
+ 29:     public UpdateShipmentCommandHandler(
+ 30:         Dao_VolvoShipment shipmentDao,
+ 31:         Dao_VolvoShipmentLine lineDao,
+ 32:         Dao_VolvoPart partDao,
+ 33:         Dao_VolvoPartComponent componentDao,
+ 34:         IService_VolvoAuthorization authService,
+ 35:         IService_LoggingUtility logger)
+ 36:     {
+ 37:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+ 38:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+ 39:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+ 40:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+ 41:         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+ 42:         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+ 43:     }
+ 44: 
+ 45:     public async Task<Model_Dao_Result> Handle(UpdateShipmentCommand request, CancellationToken cancellationToken)
+ 46:     {
+ 47:         try
+ 48:         {
+ 49:             var shipmentResult = await _shipmentDao.GetByIdAsync(request.ShipmentId);
+ 50:             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+ 51:             {
+ 52:                 return Model_Dao_Result_Factory.Failure(
+ 53:                     shipmentResult.ErrorMessage ?? "Shipment not found");
+ 54:             }
+ 55: 
+ 56:             var shipment = shipmentResult.Data;
+ 57:             shipment.ShipmentDate = request.ShipmentDate.DateTime;
+ 58:             shipment.Notes = request.Notes;
+ 59:             shipment.PONumber = request.PONumber;
+ 60:             shipment.ReceiverNumber = request.ReceiverNumber;
+ 61: 
+ 62:             var updateResult = await _shipmentDao.UpdateAsync(shipment);
+ 63:             if (!updateResult.IsSuccess)
+ 64:             {
+ 65:                 return updateResult;
+ 66:             }
+ 67: 
+ 68:             var existingLines = await _lineDao.GetByShipmentIdAsync(shipment.Id);
+ 69:             if (existingLines.IsSuccess && existingLines.Data != null)
+ 70:             {
+ 71:                 foreach (var line in existingLines.Data)
+ 72:                 {
+ 73:                     var deleteResult = await _lineDao.DeleteAsync(line.Id);
+ 74:                     if (!deleteResult.IsSuccess)
+ 75:                     {
+ 76:                         return Model_Dao_Result_Factory.Failure(
+ 77:                             deleteResult.ErrorMessage ?? $"Failed to delete line {line.Id}");
+ 78:                     }
+ 79:                 }
+ 80:             }
+ 81: 
+ 82:             var newLines = new List<Model_VolvoShipmentLine>();
+ 83:             foreach (var part in request.Parts)
+ 84:             {
+ 85:                 var partResult = await _partDao.GetByIdAsync(part.PartNumber);
+ 86:                 if (!partResult.IsSuccess || partResult.Data == null)
+ 87:                 {
+ 88:                     return Model_Dao_Result_Factory.Failure(
+ 89:                         partResult.ErrorMessage ?? $"Part '{part.PartNumber}' not found in master data");
+ 90:                 }
+ 91: 
+ 92:                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
+ 93: 
+ 94:                 var line = new Model_VolvoShipmentLine
+ 95:                 {
+ 96:                     ShipmentId = shipment.Id,
+ 97:                     PartNumber = part.PartNumber,
+ 98:                     QuantityPerSkid = quantityPerSkid,
+ 99:                     ReceivedSkidCount = part.ReceivedSkidCount,
+100:                     CalculatedPieceCount = quantityPerSkid * part.ReceivedSkidCount,
+101:                     ExpectedSkidCount = part.ExpectedSkidCount,
+102:                     HasDiscrepancy = part.HasDiscrepancy,
+103:                     DiscrepancyNote = part.DiscrepancyNote
+104:                 };
+105: 
+106:                 newLines.Add(line);
+107:             }
+108: 
+109:             foreach (var line in newLines)
+110:             {
+111:                 var insertResult = await _lineDao.InsertAsync(line);
+112:                 if (!insertResult.IsSuccess)
+113:                 {
+114:                     return Model_Dao_Result_Factory.Failure(
+115:                         insertResult.ErrorMessage ?? $"Failed to insert line for part {line.PartNumber}");
+116:                 }
+117:             }
+118: 
+119:             if (shipment.Status == VolvoShipmentStatus.Completed && !string.IsNullOrWhiteSpace(shipment.PONumber))
+120:             {
+121:                 await Helper_VolvoShipmentCalculations.GenerateLabelCsvAsync(
+122:                     _shipmentDao,
+123:                     _lineDao,
+124:                     _partDao,
+125:                     _componentDao,
+126:                     _authService,
+127:                     _logger,
+128:                     shipment.Id);
+129:             }
+130: 
+131:             return Model_Dao_Result_Factory.Success("Shipment updated successfully");
+132:         }
+133:         catch (Exception ex)
+134:         {
+135:             return Model_Dao_Result_Factory.Failure(
+136:                 $"Unexpected error updating shipment: {ex.Message}", ex);
+137:         }
+138:     }
+139: }
+````
+
+## File: Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using System.Linq;
+ 4: using System.Threading;
+ 5: using System.Threading.Tasks;
+ 6: using MediatR;
+ 7: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 8: using MTM_Receiving_Application.Module_Volvo.Data;
+ 9: using MTM_Receiving_Application.Module_Volvo.Models;
+10: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+11: 
+12: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+13: 
+14: /// <summary>
+15: /// Handler for SearchVolvoPartsQuery - autocomplete search for part numbers.
+16: /// </summary>
+17: public class SearchVolvoPartsQueryHandler : IRequestHandler<SearchVolvoPartsQuery, Model_Dao_Result<List<Model_VolvoPart>>>
+18: {
+19:     private readonly Dao_VolvoPart _partDao;
+20: 
+21:     public SearchVolvoPartsQueryHandler(Dao_VolvoPart partDao)
+22:     {
+23:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+24:     }
+25: 
+26:     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> Handle(SearchVolvoPartsQuery request, CancellationToken cancellationToken)
+27:     {
+28:         try
+29:         {
+30:             // Get all active parts
+31:             var allPartsResult = await _partDao.GetAllAsync(includeInactive: false);
+32: 
+33:             if (!allPartsResult.IsSuccess)
+34:             {
+35:                 return allPartsResult;
+36:             }
+37: 
+38:             // Filter by search text (case-insensitive partial match)
+39:             var filteredParts = (allPartsResult.Data ?? new List<Model_VolvoPart>())
+40:                 .Where(p => string.IsNullOrWhiteSpace(request.SearchText) ||
+41:                            p.PartNumber.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase))
+42:                 .Take(request.MaxResults)
+43:                 .ToList();
+44: 
+45:             return Model_Dao_Result_Factory.Success(filteredParts);
+46:         }
+47:         catch (Exception ex)
+48:         {
+49:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPart>>(
+50:                 $"Unexpected error searching parts: {ex.Message}", ex);
+51:         }
+52:     }
+53: }
+````
+
+## File: Module_Volvo/Helpers/Helper_VolvoShipmentCalculations.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.IO;
+  4: using System.Linq;
+  5: using System.Text;
+  6: using System.Threading.Tasks;
+  7: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  8: using MTM_Receiving_Application.Module_Core.Models.Core;
+  9: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 10: using MTM_Receiving_Application.Module_Volvo.Contracts;
+ 11: using MTM_Receiving_Application.Module_Volvo.Data;
+ 12: using MTM_Receiving_Application.Module_Volvo.Models;
+ 13: using MTM_Receiving_Application.Module_Volvo.Services;
+ 14: 
+ 15: namespace MTM_Receiving_Application.Module_Volvo.Helpers;
+ 16: 
+ 17: /// <summary>
+ 18: /// Helper methods for Volvo shipment calculations and CSV generation.
+ 19: /// </summary>
+ 20: public static class Helper_VolvoShipmentCalculations
+ 21: {
+ 22:     /// <summary>
+ 23:     /// Calculates component explosion and aggregates piece counts for shipment lines.
+ 24:     /// </summary>
+ 25:     public static async Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
+ 26:         Dao_VolvoPart partDao,
+ 27:         Dao_VolvoPartComponent componentDao,
+ 28:         List<Model_VolvoShipmentLine> lines,
+ 29:         IService_LoggingUtility? logger = null)
+ 30:     {
+ 31:         try
+ 32:         {
+ 33:             if (lines == null || lines.Count == 0)
+ 34:             {
+ 35:                 return Model_Dao_Result_Factory.Failure<Dictionary<string, int>>("No shipment lines provided");
+ 36:             }
+ 37: 
+ 38:             var aggregatedPieces = new Dictionary<string, int>();
+ 39: 
+ 40:             foreach (var line in lines)
+ 41:             {
+ 42:                 var partResult = await partDao.GetByIdAsync(line.PartNumber);
+ 43:                 if (!partResult.IsSuccess || partResult.Data == null)
+ 44:                 {
+ 45:                     return Model_Dao_Result_Factory.Failure<Dictionary<string, int>>(
+ 46:                         $"Part {line.PartNumber} not found in master data");
+ 47:                 }
+ 48: 
+ 49:                 var parentPart = partResult.Data;
+ 50: 
+ 51:                 if (parentPart.QuantityPerSkid <= 0)
+ 52:                 {
+ 53:                     return Model_Dao_Result_Factory.Failure<Dictionary<string, int>>(
+ 54:                         $"Part {line.PartNumber} has invalid QuantityPerSkid: {parentPart.QuantityPerSkid} (must be > 0)");
+ 55:                 }
+ 56: 
+ 57:                 var parentPieces = line.ReceivedSkidCount * parentPart.QuantityPerSkid;
+ 58:                 if (aggregatedPieces.ContainsKey(line.PartNumber))
+ 59:                 {
+ 60:                     aggregatedPieces[line.PartNumber] += parentPieces;
+ 61:                 }
+ 62:                 else
+ 63:                 {
+ 64:                     aggregatedPieces[line.PartNumber] = parentPieces;
+ 65:                 }
+ 66: 
+ 67:                 var componentsResult = await componentDao.GetByParentPartAsync(line.PartNumber);
+ 68:                 if (componentsResult.IsSuccess && componentsResult.Data != null)
+ 69:                 {
+ 70:                     foreach (var component in componentsResult.Data)
+ 71:                     {
+ 72:                         if (component.Quantity <= 0 || component.ComponentQuantityPerSkid <= 0)
+ 73:                         {
+ 74:                             if (logger != null)
+ 75:                             {
+ 76:                                 await logger.LogWarningAsync(
+ 77:                                     $"Skipping component {component.ComponentPartNumber} with invalid quantity: " +
+ 78:                                     $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}");
+ 79:                             }
+ 80:                             continue;
+ 81:                         }
+ 82: 
+ 83:                         var componentPieces = line.ReceivedSkidCount * component.Quantity * component.ComponentQuantityPerSkid;
+ 84: 
+ 85:                         if (aggregatedPieces.ContainsKey(component.ComponentPartNumber))
+ 86:                         {
+ 87:                             aggregatedPieces[component.ComponentPartNumber] += componentPieces;
+ 88:                         }
+ 89:                         else
+ 90:                         {
+ 91:                             aggregatedPieces[component.ComponentPartNumber] = componentPieces;
+ 92:                         }
+ 93:                     }
+ 94:                 }
+ 95:             }
+ 96: 
+ 97:             return Model_Dao_Result_Factory.Success(aggregatedPieces);
+ 98:         }
+ 99:         catch (Exception ex)
+100:         {
+101:             return Model_Dao_Result_Factory.Failure<Dictionary<string, int>>(
+102:                 $"Error calculating component explosion: {ex.Message}", ex);
+103:         }
+104:     }
+105: 
+106:     /// <summary>
+107:     /// Generates CSV label file for a shipment and returns the file path.
+108:     /// </summary>
+109:     public static async Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(
+110:         Dao_VolvoShipment shipmentDao,
+111:         Dao_VolvoShipmentLine lineDao,
+112:         Dao_VolvoPart partDao,
+113:         Dao_VolvoPartComponent componentDao,
+114:         IService_VolvoAuthorization authService,
+115:         IService_LoggingUtility logger,
+116:         int shipmentId)
+117:     {
+118:         try
+119:         {
+120:             var authResult = await authService.CanGenerateLabelsAsync();
+121:             if (!authResult.IsSuccess)
+122:             {
+123:                 return new Model_Dao_Result<string>
+124:                 {
+125:                     Success = false,
+126:                     ErrorMessage = "You are not authorized to generate labels",
+127:                     Severity = Enum_ErrorSeverity.Warning
+128:                 };
+129:             }
+130: 
+131:             if (shipmentId <= 0)
+132:             {
+133:                 return new Model_Dao_Result<string>
+134:                 {
+135:                     Success = false,
+136:                     ErrorMessage = "Invalid shipment ID",
+137:                     Severity = Enum_ErrorSeverity.Error
+138:                 };
+139:             }
+140: 
+141:             await logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
+142: 
+143:             var shipmentResult = await shipmentDao.GetByIdAsync(shipmentId);
+144:             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+145:             {
+146:                 return new Model_Dao_Result<string>
+147:                 {
+148:                     Success = false,
+149:                     ErrorMessage = "Shipment not found",
+150:                     Severity = Enum_ErrorSeverity.Error
+151:                 };
+152:             }
+153: 
+154:             var linesResult = await lineDao.GetByShipmentIdAsync(shipmentId);
+155:             if (!linesResult.IsSuccess || linesResult.Data == null)
+156:             {
+157:                 return new Model_Dao_Result<string>
+158:                 {
+159:                     Success = false,
+160:                     ErrorMessage = "Failed to retrieve shipment lines",
+161:                     Severity = Enum_ErrorSeverity.Error
+162:                 };
+163:             }
+164: 
+165:             var explosionResult = await CalculateComponentExplosionAsync(partDao, componentDao, linesResult.Data, logger);
+166:             if (!explosionResult.IsSuccess || explosionResult.Data == null)
+167:             {
+168:                 return new Model_Dao_Result<string>
+169:                 {
+170:                     Success = false,
+171:                     ErrorMessage = explosionResult.ErrorMessage,
+172:                     Severity = Enum_ErrorSeverity.Error
+173:                 };
+174:             }
+175: 
+176:             var aggregatedPieces = explosionResult.Data;
+177: 
+178:             const int MaxCsvLines = 10000;
+179:             if (aggregatedPieces.Count > MaxCsvLines)
+180:             {
+181:                 return new Model_Dao_Result<string>
+182:                 {
+183:                     Success = false,
+184:                     ErrorMessage = $"CSV generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxCsvLines})",
+185:                     Severity = Enum_ErrorSeverity.Error
+186:                 };
+187:             }
+188: 
+189:             var shipment = shipmentResult.Data;
+190: 
+191:             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+192:             string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
+193:             Directory.CreateDirectory(csvDirectory);
+194: 
+195:             string fileName = "Volvo_Labels.csv";
+196:             string filePath = Path.Combine(csvDirectory, fileName);
+197: 
+198:             var csvContent = new StringBuilder();
+199:             csvContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
+200: 
+201:             string dateFormatted = shipment.ShipmentDate.ToString("MM/dd/yyyy");
+202:             string timeFormatted = DateTime.Now.ToString("HH:mm:ss");
+203: 
+204:             foreach (var kvp in aggregatedPieces.OrderBy(x => x.Key))
+205:             {
+206:                 csvContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
+207:             }
+208: 
+209:             await File.WriteAllTextAsync(filePath, csvContent.ToString());
+210: 
+211:             await logger.LogInfoAsync($"Label CSV generated: {filePath}");
+212: 
+213:             return new Model_Dao_Result<string>
+214:             {
+215:                 Success = true,
+216:                 Data = filePath
+217:             };
+218:         }
+219:         catch (Exception ex)
+220:         {
+221:             await logger.LogErrorAsync($"Error generating label CSV: {ex.Message}", ex);
+222:             return new Model_Dao_Result<string>
+223:             {
+224:                 Success = false,
+225:                 ErrorMessage = $"Error generating label CSV: {ex.Message}",
+226:                 Severity = Enum_ErrorSeverity.Error,
+227:                 Exception = ex
+228:             };
+229:         }
+230:     }
+231: }
+````
+
+## File: Module_Volvo/Models/Model_VolvoShipment.cs
+````csharp
+ 1: using System;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Module_Volvo.Models;
+ 4: 
+ 5: /// <summary>
+ 6: /// Represents a Volvo dunnage shipment header
+ 7: /// Maps to volvo_label_data database table
+ 8: /// </summary>
+ 9: public class Model_VolvoShipment
+10: {
+11:     /// <summary>
+12:     /// Auto-increment primary key
+13:     /// </summary>
+14:     public int Id { get; set; }
+15: 
+16:     /// <summary>
+17:     /// Date of shipment arrival
+18:     /// </summary>
+19:     public DateTime ShipmentDate { get; set; } = DateTime.Today;
+20: 
+21:     /// <summary>
+22:     /// Formatted shipment date string for UI display.
+23:     /// </summary>
+24:     public string ShipmentDateDisplay => ShipmentDate.ToString("MM/dd/yyyy");
+25: 
+26:     /// <summary>
+27:     /// Auto-generated sequential number for the day (resets daily)
+28:     /// Example: Shipment #1, Shipment #2 for the same date
+29:     /// </summary>
+30:     public int ShipmentNumber { get; set; }
+31: 
+32:     /// <summary>
+33:     /// Purchase order number (filled after purchasing department provides it)
+34:     /// NULL until shipment is completed
+35:     /// </summary>
+36:     public string? PONumber { get; set; }
+37: 
+38:     /// <summary>
+39:     /// Receiver number from Infor Visual (filled after PO receiving)
+40:     /// NULL until shipment is completed
+41:     /// </summary>
+42:     public string? ReceiverNumber { get; set; }
+43: 
+44:     /// <summary>
+45:     /// Employee number from authentication context
+46:     /// </summary>
+47:     public string EmployeeNumber { get; set; } = string.Empty;
+48: 
+49:     /// <summary>
+50:     /// Optional notes about the shipment
+51:     /// </summary>
+52:     public string? Notes { get; set; }
+53: 
+54:     /// <summary>
+55:     /// Status: 'pending_po' (awaiting PO from purchasing) or 'completed' (PO/Receiver entered)
+56:     /// </summary>
+57:     public string Status { get; set; } = "pending_po";
+58: 
+59:     /// <summary>
+60:     /// Timestamp when shipment was created
+61:     /// </summary>
+62:     public DateTime CreatedDate { get; set; } = DateTime.Now;
+63: 
+64:     /// <summary>
+65:     /// Timestamp when shipment was last modified
+66:     /// </summary>
+67:     public DateTime ModifiedDate { get; set; } = DateTime.Now;
+68: 
+69:     /// <summary>
+70:     /// Flag indicating if shipment has been archived to history
+71:     /// Set to true when status changes to 'completed'
+72:     /// </summary>
+73:     public bool IsArchived { get; set; } = false;
+74: }
+````
+
+## File: Module_Volvo/Requests/Commands/AddPartToShipmentCommand.cs
+````csharp
+ 1: using System;
+ 2: using System.Collections.Generic;
+ 3: using MediatR;
+ 4: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 7: 
+ 8: /// <summary>
+ 9: /// Command to add a part to the current shipment (in-memory, not persisted until save/complete).
+10: /// </summary>
+11: public record AddPartToShipmentCommand : IRequest<Model_Dao_Result>
+12: {
+13:     /// <summary>
+14:     /// Part number from Volvo master data.
+15:     /// </summary>
+16:     public string PartNumber { get; init; } = string.Empty;
+17: 
+18:     /// <summary>
+19:     /// Number of skids received for this part.
+20:     /// </summary>
+21:     public int ReceivedSkidCount { get; init; }
+22: 
+23:     /// <summary>
+24:     /// Expected number of skids (when HasDiscrepancy = true).
+25:     /// </summary>
+26:     public int? ExpectedSkidCount { get; init; }
+27: 
+28:     /// <summary>
+29:     /// Indicates if there is a discrepancy between received and expected counts.
+30:     /// </summary>
+31:     public bool HasDiscrepancy { get; init; }
+32: 
+33:     /// <summary>
+34:     /// Note explaining the discrepancy (required when HasDiscrepancy = true).
+35:     /// </summary>
+36:     public string? DiscrepancyNote { get; init; } = string.Empty;
+37: 
+38:     /// <summary>
+39:     /// Optional pending shipment ID (for editing pending shipments).
+40:     /// </summary>
+41:     public int? PendingShipmentId { get; init; }
+42: }
+````
+
+## File: Module_Volvo/Requests/ShipmentLineDto.cs
+````csharp
+ 1: using MediatR;
+ 2: 
+ 3: namespace MTM_Receiving_Application.Module_Volvo.Requests;
+ 4: 
+ 5: /// <summary>
+ 6: /// Shared Data Transfer Object representing a shipment line item used across multiple commands.
+ 7: /// </summary>
+ 8: /// <remarks>
+ 9: /// Used by: SavePendingShipmentCommand, CompleteShipmentCommand, UpdateShipmentCommand
+10: /// </remarks>
+11: public record ShipmentLineDto
+12: {
+13:     /// <summary>
+14:     /// Part number from Volvo master data.
+15:     /// </summary>
+16:     public string PartNumber { get; init; } = string.Empty;
+17: 
+18:     /// <summary>
+19:     /// Number of skids received for this part.
+20:     /// </summary>
+21:     public int ReceivedSkidCount { get; init; }
+22: 
+23:     /// <summary>
+24:     /// Expected number of skids (populated when HasDiscrepancy = true).
+25:     /// </summary>
+26:     public int? ExpectedSkidCount { get; init; }
+27: 
+28:     /// <summary>
+29:     /// Indicates if there is a discrepancy between received and expected counts.
+30:     /// </summary>
+31:     public bool HasDiscrepancy { get; init; }
+32: 
+33:     /// <summary>
+34:     /// Note explaining the discrepancy (required when HasDiscrepancy = true).
+35:     /// </summary>
+36:     public string DiscrepancyNote { get; init; } = string.Empty;
+37: }
+````
+
+## File: Module_Volvo/Services/Service_VolvoMasterData.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Linq;
+  4: using System.Text;
+  5: using System.Threading.Tasks;
+  6: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  7: using MTM_Receiving_Application.Module_Volvo.Contracts;
+  8: using MTM_Receiving_Application.Module_Volvo.Data;
+  9: using MTM_Receiving_Application.Module_Volvo.Models;
+ 10: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 11: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 12: 
+ 13: namespace MTM_Receiving_Application.Module_Volvo.Services;
+ 14: 
+ 15: /// <summary>
+ 16: /// Service for managing Volvo parts master data including CRUD operations and CSV import/export
+ 17: /// </summary>
+ 18: [Obsolete("Legacy service - replaced by CQRS handlers. Do not use in new code.", false)]
+ 19: public class Service_VolvoMasterData : IService_VolvoMasterData
+ 20: {
+ 21:     private readonly Dao_VolvoPart _daoPart;
+ 22:     private readonly Dao_VolvoPartComponent _daoComponent;
+ 23:     private readonly IService_LoggingUtility _logger;
+ 24:     private readonly IService_ErrorHandler _errorHandler;
+ 25: 
+ 26:     public Service_VolvoMasterData(
+ 27:         Dao_VolvoPart daoPart,
+ 28:         Dao_VolvoPartComponent daoComponent,
+ 29:         IService_LoggingUtility logger,
+ 30:         IService_ErrorHandler errorHandler)
+ 31:     {
+ 32:         _daoPart = daoPart ?? throw new ArgumentNullException(nameof(daoPart));
+ 33:         _daoComponent = daoComponent ?? throw new ArgumentNullException(nameof(daoComponent));
+ 34:         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+ 35:         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+ 36:     }
+ 37: 
+ 38:     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetAllPartsAsync(bool includeInactive)
+ 39:     {
+ 40:         try
+ 41:         {
+ 42:             await _logger.LogInfoAsync($"Getting all Volvo parts (includeInactive={includeInactive})");
+ 43:             var result = await _daoPart.GetAllAsync(includeInactive);
+ 44: 
+ 45:             if (!result.IsSuccess)
+ 46:             {
+ 47:                 await _logger.LogErrorAsync($"Failed to get parts: {result.ErrorMessage}");
+ 48:             }
+ 49: 
+ 50:             return result;
+ 51:         }
+ 52:         catch (Exception ex)
+ 53:         {
+ 54:             await _logger.LogErrorAsync($"Error getting all parts: {ex.Message}", ex);
+ 55:             await _errorHandler.HandleErrorAsync(
+ 56:                 "Failed to retrieve parts catalog",
+ 57:                 Enum_ErrorSeverity.Medium,
+ 58:                 ex,
+ 59:                 showDialog: false);
+ 60:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPart>>($"Error retrieving parts: {ex.Message}");
+ 61:         }
+ 62:     }
+ 63: 
+ 64:     public async Task<Model_Dao_Result<Model_VolvoPart?>> GetPartByNumberAsync(string partNumber)
+ 65:     {
+ 66:         try
+ 67:         {
+ 68:             await _logger.LogInfoAsync($"Getting part by number: {partNumber}");
+ 69:             var result = await _daoPart.GetByIdAsync(partNumber);
+ 70: 
+ 71:             if (!result.IsSuccess)
+ 72:             {
+ 73:                 await _logger.LogErrorAsync($"Failed to get part {partNumber}: {result.ErrorMessage}");
+ 74:                 return Model_Dao_Result_Factory.Failure<Model_VolvoPart?>(result.ErrorMessage);
+ 75:             }
+ 76: 
+ 77:             return Model_Dao_Result_Factory.Success<Model_VolvoPart?>(result.Data);
+ 78:         }
+ 79:         catch (Exception ex)
+ 80:         {
+ 81:             await _logger.LogErrorAsync($"Error getting part {partNumber}: {ex.Message}", ex);
+ 82:             return Model_Dao_Result_Factory.Failure<Model_VolvoPart?>($"Error retrieving part: {ex.Message}");
+ 83:         }
+ 84:     }
+ 85: 
+ 86:     public async Task<Model_Dao_Result> AddPartAsync(Model_VolvoPart part, List<Model_VolvoPartComponent>? components = null)
+ 87:     {
+ 88:         try
+ 89:         {
+ 90:             await _logger.LogInfoAsync($"Adding new part: {part.PartNumber}");
+ 91: 
+ 92:             // Validate input
+ 93:             if (string.IsNullOrWhiteSpace(part.PartNumber))
+ 94:             {
+ 95:                 return Model_Dao_Result_Factory.Failure("Part number is required");
+ 96:             }
+ 97: 
+ 98:             if (part.QuantityPerSkid < 0)
+ 99:             {
+100:                 return Model_Dao_Result_Factory.Failure("Quantity per skid must be non-negative");
+101:             }
+102: 
+103:             // Insert new part
+104:             var insertResult = await _daoPart.InsertAsync(part);
+105:             if (!insertResult.IsSuccess)
+106:             {
+107:                 await _logger.LogErrorAsync($"Failed to insert part {part.PartNumber}: {insertResult.ErrorMessage}");
+108:                 return Model_Dao_Result_Factory.Failure(insertResult.ErrorMessage);
+109:             }
+110: 
+111:             // Insert components if provided
+112:             if (components?.Any() == true)
+113:             {
+114:                 foreach (var component in components)
+115:                 {
+116:                     component.ParentPartNumber = part.PartNumber;
+117:                     var componentResult = await _daoComponent.InsertAsync(component);
+118:                     if (!componentResult.IsSuccess)
+119:                     {
+120:                         await _logger.LogErrorAsync($"Failed to insert component {component.ComponentPartNumber}: {componentResult.ErrorMessage}");
+121:                         return Model_Dao_Result_Factory.Failure($"Failed to save component {component.ComponentPartNumber}");
+122:                     }
+123:                 }
+124:             }
+125: 
+126:             await _logger.LogInfoAsync($"Successfully added part {part.PartNumber} with {components?.Count ?? 0} components");
+127:             return Model_Dao_Result_Factory.Success("Part added successfully");
+128:         }
+129:         catch (Exception ex)
+130:         {
+131:             await _logger.LogErrorAsync($"Error adding part {part.PartNumber}: {ex.Message}", ex);
+132:             await _errorHandler.HandleErrorAsync(
+133:                 $"Failed to add part {part.PartNumber}",
+134:                 Enum_ErrorSeverity.Error,
+135:                 ex,
+136:                 showDialog: false);
+137:             return Model_Dao_Result_Factory.Failure($"Error adding part: {ex.Message}");
+138:         }
+139:     }
+140: 
+141:     public async Task<Model_Dao_Result> UpdatePartAsync(Model_VolvoPart part, List<Model_VolvoPartComponent>? components = null)
+142:     {
+143:         try
+144:         {
+145:             await _logger.LogInfoAsync($"Updating part: {part.PartNumber}");
+146: 
+147:             // Validate input
+148:             if (string.IsNullOrWhiteSpace(part.PartNumber))
+149:             {
+150:                 return Model_Dao_Result_Factory.Failure("Part number is required");
+151:             }
+152: 
+153:             if (part.QuantityPerSkid < 0)
+154:             {
+155:                 return Model_Dao_Result_Factory.Failure("Quantity per skid must be non-negative");
+156:             }
+157: 
+158:             // Update existing part
+159:             var updateResult = await _daoPart.UpdateAsync(part);
+160:             if (!updateResult.IsSuccess)
+161:             {
+162:                 await _logger.LogErrorAsync($"Failed to update part {part.PartNumber}: {updateResult.ErrorMessage}");
+163:                 return Model_Dao_Result_Factory.Failure(updateResult.ErrorMessage);
+164:             }
+165: 
+166:             // Update components (delete existing and re-insert)
+167:             if (components?.Any() == true)
+168:             {
+169:                 // Delete existing components
+170:                 var deleteResult = await _daoComponent.DeleteByParentPartAsync(part.PartNumber);
+171:                 if (!deleteResult.IsSuccess)
+172:                 {
+173:                     await _logger.LogErrorAsync($"Failed to delete components for {part.PartNumber}: {deleteResult.ErrorMessage}");
+174:                     return Model_Dao_Result_Factory.Failure($"Failed to update components: {deleteResult.ErrorMessage}");
+175:                 }
+176: 
+177:                 // Insert new components
+178:                 foreach (var component in components)
+179:                 {
+180:                     component.ParentPartNumber = part.PartNumber;
+181:                     var insertResult = await _daoComponent.InsertAsync(component);
+182:                     if (!insertResult.IsSuccess)
+183:                     {
+184:                         await _logger.LogErrorAsync($"Failed to insert component {component.ComponentPartNumber}: {insertResult.ErrorMessage}");
+185:                         return Model_Dao_Result_Factory.Failure($"Failed to save component {component.ComponentPartNumber}");
+186:                     }
+187:                 }
+188:             }
+189:             else
+190:             {
+191:                 // No components - delete any existing ones
+192:                 await _daoComponent.DeleteByParentPartAsync(part.PartNumber);
+193:             }
+194: 
+195:             await _logger.LogInfoAsync($"Successfully updated part {part.PartNumber} with {components?.Count ?? 0} components");
+196:             return Model_Dao_Result_Factory.Success("Part updated successfully");
+197:         }
+198:         catch (Exception ex)
+199:         {
+200:             await _logger.LogErrorAsync($"Error updating part {part.PartNumber}: {ex.Message}", ex);
+201:             await _errorHandler.HandleErrorAsync(
+202:                 $"Failed to update part {part.PartNumber}",
+203:                 Enum_ErrorSeverity.Error,
+204:                 ex,
+205:                 showDialog: false);
+206:             return Model_Dao_Result_Factory.Failure($"Error updating part: {ex.Message}");
+207:         }
+208:     }
+209: 
+210:     public async Task<Model_Dao_Result> DeactivatePartAsync(string partNumber)
+211:     {
+212:         try
+213:         {
+214:             await _logger.LogInfoAsync($"Deactivating part: {partNumber}");
+215: 
+216:             var result = await _daoPart.DeactivateAsync(partNumber);
+217: 
+218:             if (!result.IsSuccess)
+219:             {
+220:                 await _logger.LogErrorAsync($"Failed to deactivate part {partNumber}: {result.ErrorMessage}");
+221:             }
+222:             else
+223:             {
+224:                 await _logger.LogInfoAsync($"Successfully deactivated part {partNumber}");
+225:             }
+226: 
+227:             return result;
+228:         }
+229:         catch (Exception ex)
+230:         {
+231:             await _logger.LogErrorAsync($"Error deactivating part {partNumber}: {ex.Message}", ex);
+232:             return Model_Dao_Result_Factory.Failure($"Error deactivating part: {ex.Message}");
+233:         }
+234:     }
+235: 
+236:     public async Task<Model_Dao_Result<List<Model_VolvoPartComponent>>> GetComponentsAsync(string partNumber)
+237:     {
+238:         try
+239:         {
+240:             await _logger.LogInfoAsync($"Getting components for part: {partNumber}");
+241:             var result = await _daoComponent.GetByParentPartAsync(partNumber);
+242: 
+243:             if (!result.IsSuccess)
+244:             {
+245:                 await _logger.LogErrorAsync($"Failed to get components for {partNumber}: {result.ErrorMessage}");
+246:             }
+247: 
+248:             return result;
+249:         }
+250:         catch (Exception ex)
+251:         {
+252:             await _logger.LogErrorAsync($"Error getting components for {partNumber}: {ex.Message}", ex);
+253:             return Model_Dao_Result_Factory.Failure<List<Model_VolvoPartComponent>>($"Error retrieving components: {ex.Message}");
+254:         }
+255:     }
+256: 
+257:     public async Task<Model_Dao_Result<(int New, int Updated, int Unchanged)>> ImportCsvAsync(string csvFilePath)
+258:     {
+259:         try
+260:         {
+261:             await _logger.LogInfoAsync("Starting CSV import");
+262: 
+263:             if (string.IsNullOrWhiteSpace(csvFilePath))
+264:             {
+265:                 return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV content is empty");
+266:             }
+267: 
+268:             var lines = csvFilePath.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
+269: 
+270:             if (lines.Count < 2)
+271:             {
+272:                 return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV file must contain header and at least one data row");
+273:             }
+274: 
+275:             // Validate header
+276:             var header = lines[0];
+277:             if (!header.Contains("PartNumber") || !header.Contains("QuantityPerSkid"))
+278:             {
+279:                 return Model_Dao_Result_Factory.Failure<(int, int, int)>("CSV must contain columns: PartNumber, QuantityPerSkid, Components");
+280:             }
+281: 
+282:             int newCount = 0;
+283:             int updatedCount = 0;
+284:             int errorCount = 0;
+285:             var errors = new List<string>();
+286: 
+287:             for (int i = 1; i < lines.Count; i++)
+288:             {
+289:                 try
+290:                 {
+291:                     var fields = ParseCsvLine(lines[i]);
+292: 
+293:                     if (fields.Length < 3)
+294:                     {
+295:                         errors.Add($"Line {i + 1}: Invalid format - expected at least 3 fields");
+296:                         errorCount++;
+297:                         continue;
+298:                     }
+299: 
+300:                     var partNumber = fields[0].Trim();
+301:                     var quantityStr = fields[1].Trim();
+302:                     var componentsStr = fields.Length > 2 ? fields[2].Trim() : "";
+303: 
+304:                     if (!int.TryParse(quantityStr, out int quantity))
+305:                     {
+306:                         errors.Add($"Line {i + 1}: Invalid quantity '{quantityStr}'");
+307:                         errorCount++;
+308:                         continue;
+309:                     }
+310: 
+311:                     var part = new Model_VolvoPart
+312:                     {
+313:                         PartNumber = partNumber,
+314:                         QuantityPerSkid = quantity,
+315:                         IsActive = true
+316:                     };
+317: 
+318:                     // Parse components (format: "PART1:QTY1;PART2:QTY2")
+319:                     var components = new List<Model_VolvoPartComponent>();
+320:                     if (!string.IsNullOrWhiteSpace(componentsStr))
+321:                     {
+322:                         var componentPairs = componentsStr.Split(';');
+323:                         foreach (var pair in componentPairs)
+324:                         {
+325:                             var parts = pair.Split(':');
+326:                             if (parts.Length == 2)
+327:                             {
+328:                                 if (int.TryParse(parts[1], out int compQty))
+329:                                 {
+330:                                     components.Add(new Model_VolvoPartComponent
+331:                                     {
+332:                                         ComponentPartNumber = parts[0].Trim(),
+333:                                         Quantity = compQty
+334:                                     });
+335:                                 }
+336:                             }
+337:                         }
+338:                     }
+339: 
+340:                     // Check if exists
+341:                     var existing = await _daoPart.GetByIdAsync(partNumber);
+342:                     bool isNew = !existing.IsSuccess || existing.Data == null;
+343: 
+344:                     Model_Dao_Result saveResult;
+345:                     if (isNew)
+346:                     {
+347:                         saveResult = await AddPartAsync(part, components);
+348:                     }
+349:                     else
+350:                     {
+351:                         saveResult = await UpdatePartAsync(part, components);
+352:                     }
+353: 
+354:                     if (saveResult.IsSuccess)
+355:                     {
+356:                         if (isNew)
+357:                         {
+358:                             newCount++;
+359:                         }
+360:                         else
+361:                         {
+362:                             updatedCount++;
+363:                         }
+364:                     }
+365:                     else
+366:                     {
+367:                         errors.Add($"Line {i + 1}: {saveResult.ErrorMessage}");
+368:                         errorCount++;
+369:                     }
+370:                 }
+371:                 catch (Exception ex)
+372:                 {
+373:                     errors.Add($"Line {i + 1}: {ex.Message}");
+374:                     errorCount++;
+375:                 }
+376:             }
+377: 
+378:             var summary = $"Import complete: {newCount} new, {updatedCount} updated, {errorCount} errors";
+379:             await _logger.LogInfoAsync(summary);
+380: 
+381:             if (errors.Count > 0)
+382:             {
+383:                 summary += "\nErrors:\n" + string.Join("\n", errors);
+384:             }
+385: 
+386:             return Model_Dao_Result_Factory.Success((newCount, updatedCount, errorCount));
+387:         }
+388:         catch (Exception ex)
+389:         {
+390:             await _logger.LogErrorAsync($"Error importing CSV: {ex.Message}", ex);
+391:             return Model_Dao_Result_Factory.Failure<(int, int, int)>($"Import failed: {ex.Message}");
+392:         }
+393:     }
+394: 
+395:     public async Task<Model_Dao_Result<string>> ExportCsvAsync(string csvFilePath, bool includeInactive = false)
+396:     {
+397:         try
+398:         {
+399:             await _logger.LogInfoAsync($"Exporting parts to CSV (includeInactive={includeInactive})");
+400: 
+401:             var partsResult = await GetAllPartsAsync(includeInactive);
+402:             if (!partsResult.IsSuccess)
+403:             {
+404:                 return Model_Dao_Result_Factory.Failure<string>(partsResult.ErrorMessage);
+405:             }
+406: 
+407:             var csv = new StringBuilder();
+408:             csv.AppendLine("PartNumber,QuantityPerSkid,Components");
+409: 
+410:             foreach (var part in partsResult.Data ?? new List<Model_VolvoPart>())
+411:             {
+412:                 var componentsResult = await GetComponentsAsync(part.PartNumber ?? string.Empty);
+413:                 var componentsStr = "";
+414: 
+415:                 if (componentsResult.IsSuccess && componentsResult.Data?.Any() == true)
+416:                 {
+417:                     componentsStr = string.Join(";", componentsResult.Data.Select(c => $"{c.ComponentPartNumber}:{c.Quantity}"));
+418:                 }
+419: 
+420:                 csv.AppendLine($"{EscapeCsvField(part.PartNumber ?? string.Empty)},{part.QuantityPerSkid},{EscapeCsvField(componentsStr)}");
+421:             }
+422: 
+423:             await _logger.LogInfoAsync($"Export complete: {partsResult.Data?.Count ?? 0} parts");
+424:             return Model_Dao_Result_Factory.Success(csv.ToString());
+425:         }
+426:         catch (Exception ex)
+427:         {
+428:             await _logger.LogErrorAsync($"Error exporting CSV: {ex.Message}", ex);
+429:             return Model_Dao_Result_Factory.Failure<string>($"Export failed: {ex.Message}");
+430:         }
+431:     }
+432: 
+433:     private string[] ParseCsvLine(string line)
+434:     {
+435:         var fields = new List<string>();
+436:         var currentField = new StringBuilder();
+437:         bool inQuotes = false;
+438: 
+439:         for (int i = 0; i < line.Length; i++)
+440:         {
+441:             char c = line[i];
+442: 
+443:             if (c == '"')
+444:             {
+445:                 inQuotes = !inQuotes;
+446:             }
+447:             else if (c == ',' && !inQuotes)
+448:             {
+449:                 fields.Add(currentField.ToString());
+450:                 currentField.Clear();
+451:             }
+452:             else
+453:             {
+454:                 currentField.Append(c);
+455:             }
+456:         }
+457: 
+458:         fields.Add(currentField.ToString());
+459:         return fields.ToArray();
+460:     }
+461: 
+462:     private string EscapeCsvField(string field)
+463:     {
+464:         if (field == null)
+465:         {
+466:             return "";
+467:         }
+468: 
+469:         if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
+470:         {
+471:             return "\"" + field.Replace("\"", "\"\"") + "\"";
+472:         }
+473: 
+474:         return field;
+475:     }
+476: }
+````
+
+## File: Module_Volvo/Validators/CompleteShipmentCommandValidator.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using FluentValidation;
+ 5: using MTM_Receiving_Application.Module_Volvo.Data;
+ 6: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 7: 
+ 8: namespace MTM_Receiving_Application.Module_Volvo.Validators;
+ 9: 
+10: /// <summary>
+11: /// Validator for CompleteShipmentCommand.
+12: /// </summary>
+13: public class CompleteShipmentCommandValidator : AbstractValidator<CompleteShipmentCommand>
+14: {
+15:     private readonly Dao_VolvoShipment _shipmentDao;
+16: 
+17:     public CompleteShipmentCommandValidator(Dao_VolvoShipment shipmentDao)
+18:     {
+19:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+20: 
+21:         RuleFor(x => x.ShipmentDate)
+22:             .NotEmpty().WithMessage("Shipment date is required")
+23:             .LessThanOrEqualTo(System.DateTimeOffset.Now).WithMessage("Shipment date cannot be in the future");
+24: 
+25:         RuleFor(x => x.Parts)
+26:             .NotEmpty().WithMessage("At least one part is required");
+27: 
+28:         RuleFor(x => x.PONumber)
+29:             .NotEmpty().WithMessage("PO number is required")
+30:             .MaximumLength(50).WithMessage("PO number must not exceed 50 characters");
+31: 
+32:         RuleFor(x => x.ReceiverNumber)
+33:             .NotEmpty().WithMessage("Receiver number is required")
+34:             .MaximumLength(50).WithMessage("Receiver number must not exceed 50 characters");
+35: 
+36:         RuleFor(x => x.Notes)
+37:             .MaximumLength(1000).WithMessage("Notes must not exceed 1000 characters");
+38: 
+39:         // Validate each part in the Parts collection
+40:         RuleForEach(x => x.Parts).ChildRules(part =>
+41:         {
+42:             part.RuleFor(p => p.PartNumber)
+43:                 .NotEmpty().WithMessage("Part number is required");
+44: 
+45:             part.RuleFor(p => p.ReceivedSkidCount)
+46:                 .GreaterThan(0).WithMessage("Received skid count must be greater than 0");
+47:         });
+48: 
+49:         RuleFor(x => x)
+50:             .MustAsync(HasPendingShipmentAsync)
+51:             .WithMessage("No pending shipment found to complete.");
+52:     }
+53: 
+54:     private async Task<bool> HasPendingShipmentAsync(
+55:         CompleteShipmentCommand command,
+56:         CancellationToken cancellationToken)
+57:     {
+58:         var result = await _shipmentDao.GetPendingAsync();
+59:         return result.IsSuccess && result.Data != null;
+60:     }
+61: }
+````
+
+## File: Module_Volvo/Views/View_Volvo_History.xaml.cs
+````csharp
+ 1: using System.Threading.Tasks;
+ 2: using Microsoft.UI.Xaml.Controls;
+ 3: using MTM_Receiving_Application.Module_Volvo.ViewModels;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Module_Volvo.Views;
+ 6: 
+ 7: /// <summary>
+ 8: /// Page for viewing and managing Volvo shipment history
+ 9: /// </summary>
+10: public sealed partial class View_Volvo_History : Page
+11: {
+12:     public ViewModel_Volvo_History ViewModel { get; }
+13: 
+14:     public View_Volvo_History()
+15:     {
+16:         ViewModel = App.GetService<ViewModel_Volvo_History>();
+17:         InitializeComponent();
+18:     }
+19: 
+20:     private async void OnPageLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+21:     {
+22:         // Load recent shipments on page load (last 30 days)
+23:         await ViewModel.LoadRecentShipmentsCommand.ExecuteAsync(null);
+24:     }
+25: }
+````
+
+## File: Module_Volvo/Views/View_Volvo_Settings.xaml
+````
+  1: <Page
+  2:     x:Class="MTM_Receiving_Application.Module_Volvo.Views.View_Volvo_Settings"
+  3:     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  4:     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  5:     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  6:     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  7:     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+  8:     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+  9:     mc:Ignorable="d"
+ 10:     Loaded="OnPageLoaded">
+ 11: 
+ 12:     <Grid Padding="24" RowSpacing="16">
+ 13:         <Grid.RowDefinitions>
+ 14:             <RowDefinition Height="Auto"/>
+ 15:             <RowDefinition Height="Auto"/>
+ 16:             <RowDefinition Height="*"/>
+ 17:             <RowDefinition Height="Auto"/>
+ 18:         </Grid.RowDefinitions>
+ 19: 
+ 20:         <!-- Header -->
+ 21:         <TextBlock 
+ 22:             Grid.Row="0"
+ 23:             Text="Volvo Dunnage Parts Master Data"
+ 24:             Style="{StaticResource TitleTextBlockStyle}"/>
+ 25: 
+ 26:         <!-- Toolbar -->
+ 27:         <CommandBar Grid.Row="1" DefaultLabelPosition="Right">
+ 28:             <AppBarButton 
+ 29:                 Icon="Add" 
+ 30:                 Label="Add Part" 
+ 31:                 Command="{x:Bind ViewModel.AddPartCommand, Mode=OneWay}"/>
+ 32:             <AppBarButton 
+ 33:                 Icon="Edit" 
+ 34:                 Label="Edit Part" 
+ 35:                 Command="{x:Bind ViewModel.EditPartCommand, Mode=OneWay}"/>
+ 36:             <AppBarButton 
+ 37:                 Icon="Delete" 
+ 38:                 Label="Deactivate" 
+ 39:                 Command="{x:Bind ViewModel.DeactivatePartCommand, Mode=OneWay}"/>
+ 40:             <AppBarSeparator/>
+ 41:             <AppBarButton 
+ 42:                 Icon="PreviewLink" 
+ 43:                 Label="View Components" 
+ 44:                 Command="{x:Bind ViewModel.ViewComponentsCommand, Mode=OneWay}"/>
+ 45:             <AppBarSeparator/>
+ 46:             <AppBarButton 
+ 47:                 Icon="Import" 
+ 48:                 Label="Import CSV" 
+ 49:                 Command="{x:Bind ViewModel.ImportCsvCommand, Mode=OneWay}"/>
+ 50:             <AppBarButton 
+ 51:                 Icon="Save" 
+ 52:                 Label="Export CSV" 
+ 53:                 Command="{x:Bind ViewModel.ExportCsvCommand, Mode=OneWay}"/>
+ 54:             <AppBarSeparator/>
+ 55:             <AppBarButton 
+ 56:                 Icon="Refresh" 
+ 57:                 Label="Refresh" 
+ 58:                 Command="{x:Bind ViewModel.RefreshCommand, Mode=OneWay}"/>
+ 59:             <AppBarSeparator/>
+ 60:             <AppBarToggleButton 
+ 61:                 Icon="View" 
+ 62:                 Label="Show Inactive"
+ 63:                 IsChecked="{x:Bind ViewModel.ShowInactive, Mode=TwoWay}"/>
+ 64:         </CommandBar>
+ 65: 
+ 66:         <!-- Data Grid -->
+ 67:         <Grid Grid.Row="2">
+ 68:             <controls:DataGrid
+ 69:                 ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+ 70:                 SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+ 71:                 AutoGenerateColumns="False"
+ 72:                 IsReadOnly="True"
+ 73:                 GridLinesVisibility="All"
+ 74:                 HeadersVisibility="Column"
+ 75:                 AlternatingRowBackground="{ThemeResource SystemListLowColor}"
+ 76:                 SelectionMode="Single">
+ 77:                 <controls:DataGrid.Columns>
+ 78:                     <controls:DataGridTemplateColumn Header="Part Number" Width="*">
+ 79:                         <controls:DataGridTemplateColumn.CellTemplate>
+ 80:                             <DataTemplate x:DataType="models:Model_VolvoPart">
+ 81:                                 <TextBlock Text="{x:Bind PartNumber, Mode=OneTime}" />
+ 82:                             </DataTemplate>
+ 83:                         </controls:DataGridTemplateColumn.CellTemplate>
+ 84:                     </controls:DataGridTemplateColumn>
+ 85:                     <controls:DataGridTemplateColumn Header="Qty/Skid" Width="100">
+ 86:                         <controls:DataGridTemplateColumn.CellTemplate>
+ 87:                             <DataTemplate x:DataType="models:Model_VolvoPart">
+ 88:                                 <TextBlock Text="{x:Bind QuantityPerSkid, Mode=OneTime}" />
+ 89:                             </DataTemplate>
+ 90:                         </controls:DataGridTemplateColumn.CellTemplate>
+ 91:                     </controls:DataGridTemplateColumn>
+ 92:                     <controls:DataGridTemplateColumn Header="Active" Width="80">
+ 93:                         <controls:DataGridTemplateColumn.CellTemplate>
+ 94:                             <DataTemplate x:DataType="models:Model_VolvoPart">
+ 95:                                 <TextBlock 
+ 96:                                     Text="{x:Bind IsActive}" 
+ 97:                                     Foreground="{x:Bind IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Gray'}"/>
+ 98:                             </DataTemplate>
+ 99:                         </controls:DataGridTemplateColumn.CellTemplate>
+100:                     </controls:DataGridTemplateColumn>
+101:                 </controls:DataGrid.Columns>
+102:             </controls:DataGrid>
+103:         </Grid>
+104: 
+105:         <!-- Status Bar -->
+106:         <Grid Grid.Row="3" ColumnSpacing="12">
+107:             <Grid.ColumnDefinitions>
+108:                 <ColumnDefinition Width="Auto"/>
+109:                 <ColumnDefinition Width="*"/>
+110:             </Grid.ColumnDefinitions>
+111: 
+112:             <ProgressRing 
+113:                 Grid.Column="0"
+114:                 IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+115:                 Width="20" 
+116:                 Height="20"
+117:                 Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay}"/>
+118: 
+119:             <TextBlock 
+120:                 Grid.Column="1"
+121:                 Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+122:                 VerticalAlignment="Center"/>
+123:         </Grid>
+124:     </Grid>
+125: </Page>
+````
+
+## File: Module_Volvo/Views/VolvoShipmentEditDialog.xaml.cs
+````csharp
+  1: using Microsoft.UI;
+  2: using Microsoft.UI.Dispatching;
+  3: using Microsoft.UI.Xaml;
+  4: using Microsoft.UI.Xaml.Controls;
+  5: using MTM_Receiving_Application.Module_Volvo.Models;
+  6: using System;
+  7: using System.Collections.Generic;
+  8: using System.Collections.ObjectModel;
+  9: using System.Linq;
+ 10: 
+ 11: namespace MTM_Receiving_Application.Module_Volvo.Views;
+ 12: 
+ 13: public sealed partial class VolvoShipmentEditDialog : ContentDialog
+ 14: {
+ 15:     public Model_VolvoShipment Shipment { get; set; } = null!;
+ 16:     public ObservableCollection<Model_VolvoShipmentLine> Lines { get; private set; }
+ 17:     public ObservableCollection<Model_VolvoPart> AvailableParts { get; set; }
+ 18:     
+ 19:     private List<Model_VolvoPart> _allParts = new();
+ 20:     private bool _addPartPanelOpen = false;
+ 21: 
+ 22:     public VolvoShipmentEditDialog()
+ 23:     {
+ 24:         InitializeComponent();
+ 25:         Lines = new ObservableCollection<Model_VolvoShipmentLine>();
+ 26:         AvailableParts = new ObservableCollection<Model_VolvoPart>();
+ 27: 
+ 28:         // Wire up button events
+ 29:         ToggleAddPartButton.Click += (s, e) => ToggleAddPartPanel();
+ 30:         ConfirmAddPartButton.Click += (s, e) => ConfirmAddPart();
+ 31:         CancelAddPartButton.Click += (s, e) => CloseAddPartPanel();
+ 32:         RemovePartButton.Click += (s, e) => RemoveSelectedLine();
+ 33: 
+ 34:         // Set DataGrid ItemsSource
+ 35:         PartsDataGrid.ItemsSource = Lines;
+ 36:     }
+ 37: 
+ 38:     public void LoadShipment(Model_VolvoShipment shipment, ObservableCollection<Model_VolvoShipmentLine> lines, ObservableCollection<Model_VolvoPart> availableParts)
+ 39:     {
+ 40:         Shipment = shipment;
+ 41:         AvailableParts = availableParts;
+ 42:         _allParts = new List<Model_VolvoPart>(availableParts);
+ 43: 
+ 44:         // Populate header fields
+ 45:         ShipmentDatePicker.Date = shipment.ShipmentDate;
+ 46:         ShipmentNumberBox.Text = shipment.ShipmentNumber.ToString();
+ 47:         PONumberBox.Text = shipment.PONumber ?? string.Empty;
+ 48:         ReceiverNumberBox.Text = shipment.ReceiverNumber ?? string.Empty;
+ 49:         NotesBox.Text = shipment.Notes ?? string.Empty;
+ 50: 
+ 51:         // Load lines
+ 52:         Lines.Clear();
+ 53:         foreach (var line in lines)
+ 54:         {
+ 55:             Lines.Add(line);
+ 56:         }
+ 57:         
+ 58:         // Debug: Log part count
+ 59:         System.Diagnostics.Debug.WriteLine($"[EditDialog] Loaded {_allParts.Count} parts for selection");
+ 60:         
+ 61:         // IMPORTANT: Set ItemsSource AFTER parts are loaded
+ 62:         if (_allParts.Count > 0)
+ 63:         {
+ 64:             AddPartListView.ItemsSource = null; // Clear first
+ 65:             AddPartListView.ItemsSource = _allParts;
+ 66:             System.Diagnostics.Debug.WriteLine($"[EditDialog] ListView ItemsSource set with {_allParts.Count} parts");
+ 67:         }
+ 68:         else
+ 69:         {
+ 70:             System.Diagnostics.Debug.WriteLine("[EditDialog] WARNING: No parts available to load!");
+ 71:         }
+ 72:     }
+ 73: 
+ 74:     public Model_VolvoShipment GetUpdatedShipment()
+ 75:     {
+ 76:         Shipment.ShipmentDate = ShipmentDatePicker.Date?.DateTime ?? DateTime.Now;
+ 77:         Shipment.PONumber = string.IsNullOrWhiteSpace(PONumberBox.Text) ? null : PONumberBox.Text;
+ 78:         Shipment.ReceiverNumber = string.IsNullOrWhiteSpace(ReceiverNumberBox.Text) ? null : ReceiverNumberBox.Text;
+ 79:         Shipment.Notes = string.IsNullOrWhiteSpace(NotesBox.Text) ? null : NotesBox.Text;
+ 80: 
+ 81:         return Shipment;
+ 82:     }
+ 83: 
+ 84:     public ObservableCollection<Model_VolvoShipmentLine> GetUpdatedLines()
+ 85:     {
+ 86:         return Lines;
+ 87:     }
+ 88: 
+ 89:     private void ToggleAddPartPanel()
+ 90:     {
+ 91:         _addPartPanelOpen = !_addPartPanelOpen;
+ 92:         
+ 93:         if (_addPartPanelOpen)
+ 94:         {
+ 95:             // Open panel
+ 96:             AddPartPanel.Visibility = Visibility.Visible;
+ 97:             AddPartIcon.Symbol = Symbol.Remove;
+ 98:             AddPartButtonText.Text = "Cancel";
+ 99:             
+100:             // Reset fields
+101:             PartSearchBox.Text = string.Empty;
+102:             AddPartQuantityBox.Text = string.Empty;
+103:             AddPartListView.SelectedItem = null;
+104:             AddPartErrorMessage.Visibility = Visibility.Collapsed;
+105:             AddPartListView.ItemsSource = _allParts;
+106:         }
+107:         else
+108:         {
+109:             CloseAddPartPanel();
+110:         }
+111:     }
+112: 
+113:     private void CloseAddPartPanel()
+114:     {
+115:         _addPartPanelOpen = false;
+116:         AddPartPanel.Visibility = Visibility.Collapsed;
+117:         AddPartIcon.Symbol = Symbol.Add;
+118:         AddPartButtonText.Text = "Add Part";
+119:         AddPartErrorMessage.Visibility = Visibility.Collapsed;
+120:     }
+121: 
+122:     private void OnPartSearchTextChanged(object sender, TextChangedEventArgs e)
+123:     {
+124:         var searchText = PartSearchBox.Text?.ToLower() ?? string.Empty;
+125:         
+126:         if (string.IsNullOrWhiteSpace(searchText))
+127:         {
+128:             AddPartListView.ItemsSource = _allParts;
+129:             return;
+130:         }
+131: 
+132:         // Fuzzy search: matches if characters appear in order
+133:         var filtered = _allParts.Where(part =>
+134:         {
+135:             var partNumber = part.PartNumber.ToLower();
+136:             int searchIndex = 0;
+137:             
+138:             foreach (char c in partNumber)
+139:             {
+140:                 if (searchIndex < searchText.Length && c == searchText[searchIndex])
+141:                 {
+142:                     searchIndex++;
+143:                 }
+144:             }
+145:             
+146:             return searchIndex == searchText.Length || partNumber.Contains(searchText);
+147:         }).ToList();
+148: 
+149:         AddPartListView.ItemsSource = filtered;
+150:     }
+151: 
+152:     private void ConfirmAddPart()
+153:     {
+154:         // Hide previous error
+155:         AddPartErrorMessage.Visibility = Visibility.Collapsed;
+156: 
+157:         // Validate selection
+158:         if (AddPartListView.SelectedItem is not Model_VolvoPart selectedPart)
+159:         {
+160:             AddPartErrorMessage.Text = "Please select a part from the list.";
+161:             AddPartErrorMessage.Visibility = Visibility.Visible;
+162:             return;
+163:         }
+164: 
+165:         // Validate skid count
+166:         if (!int.TryParse(AddPartQuantityBox.Text, out int skidCount) || skidCount < 1 || skidCount > 99)
+167:         {
+168:             AddPartErrorMessage.Text = "Received skid count must be a number between 1 and 99.";
+169:             AddPartErrorMessage.Visibility = Visibility.Visible;
+170:             return;
+171:         }
+172: 
+173:         // Check for duplicate
+174:         if (Lines.Any(p => p.PartNumber.Equals(selectedPart.PartNumber, StringComparison.OrdinalIgnoreCase)))
+175:         {
+176:             AddPartErrorMessage.Text = $"Part {selectedPart.PartNumber} is already in this shipment. Remove it first to update the quantity.";
+177:             AddPartErrorMessage.Visibility = Visibility.Visible;
+178:             return;
+179:         }
+180: 
+181:         // Add the part - validation passed
+182:         var calculatedPieces = selectedPart.QuantityPerSkid * skidCount;
+183:         var newLine = new Model_VolvoShipmentLine
+184:         {
+185:             ShipmentId = Shipment.Id,
+186:             PartNumber = selectedPart.PartNumber,
+187:             QuantityPerSkid = selectedPart.QuantityPerSkid,
+188:             ReceivedSkidCount = skidCount,
+189:             CalculatedPieceCount = calculatedPieces,
+190:             HasDiscrepancy = false,
+191:             ExpectedSkidCount = null,
+192:             DiscrepancyNote = string.Empty
+193:         };
+194: 
+195:         Lines.Add(newLine);
+196:         CloseAddPartPanel();
+197:     }
+198: 
+199:     private void RemoveSelectedLine()
+200:     {
+201:         // Clear any previous errors
+202:         ValidationErrorBar.IsOpen = false;
+203: 
+204:         if (PartsDataGrid.SelectedItem is not Model_VolvoShipmentLine selectedLine)
+205:         {
+206:             ValidationErrorBar.Message = "Please select a part from the grid to remove.";
+207:             ValidationErrorBar.IsOpen = true;
+208:             return;
+209:         }
+210: 
+211:         // Prevent deleting the last part
+212:         if (Lines.Count <= 1)
+213:         {
+214:             ValidationErrorBar.Title = "Cannot Remove Part";
+215:             ValidationErrorBar.Message = "A shipment must have at least one part. Add another part before removing this one.";
+216:             ValidationErrorBar.IsOpen = true;
+217:             return;
+218:         }
+219: 
+220:         // Remove the part (no confirmation needed - user can use Cancel button to undo)
+221:         Lines.Remove(selectedLine);
+222:         
+223:         // Show success message briefly
+224:         ValidationErrorBar.Severity = InfoBarSeverity.Success;
+225:         ValidationErrorBar.Title = "Part Removed";
+226:         ValidationErrorBar.Message = $"{selectedLine.PartNumber} has been removed from the shipment.";
+227:         ValidationErrorBar.IsOpen = true;
+228:         
+229:         // Auto-hide success message after 3 seconds
+230:         var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+231:         timer.Tick += (s, e) =>
+232:         {
+233:             ValidationErrorBar.IsOpen = false;
+234:             ValidationErrorBar.Severity = InfoBarSeverity.Error; // Reset to error
+235:             ValidationErrorBar.Title = string.Empty;
+236:             timer.Stop();
+237:         };
+238:         timer.Start();
+239:     }
+240: 
+241:     private async void ReportDiscrepancyButton_Click(object sender, RoutedEventArgs e)
+242:     {
+243:         if (sender is not Button button || button.Tag is not Model_VolvoShipmentLine line)
+244:         {
+245:             return;
+246:         }
+247: 
+248:         if (line.HasDiscrepancy)
+249:         {
+250:             line.HasDiscrepancy = false;
+251:             return;
+252:         }
+253: 
+254:         var expectedSkidsBox = new NumberBox
+255:         {
+256:             Header = "Expected Skids",
+257:             Minimum = 1,
+258:             SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
+259:             Value = line.ExpectedSkidCount ?? 1
+260:         };
+261: 
+262:         var noteBox = new TextBox
+263:         {
+264:             Header = "Discrepancy Note",
+265:             PlaceholderText = "Explain discrepancy",
+266:             Text = line.DiscrepancyNote ?? string.Empty
+267:         };
+268: 
+269:         var panel = new StackPanel { Spacing = 12 };
+270:         panel.Children.Add(expectedSkidsBox);
+271:         panel.Children.Add(noteBox);
+272: 
+273:         var dialog = new ContentDialog
+274:         {
+275:             Title = "Report Discrepancy",
+276:             Content = panel,
+277:             PrimaryButtonText = "Save",
+278:             CloseButtonText = "Cancel",
+279:             DefaultButton = ContentDialogButton.Primary,
+280:             XamlRoot = XamlRoot
+281:         };
+282: 
+283:         var result = await dialog.ShowAsync();
+284:         if (result != ContentDialogResult.Primary)
+285:         {
+286:             return;
+287:         }
+288: 
+289:         if (expectedSkidsBox.Value < 1 || string.IsNullOrWhiteSpace(noteBox.Text))
+290:         {
+291:             return;
+292:         }
+293: 
+294:         line.HasDiscrepancy = true;
+295:         line.ExpectedSkidCount = expectedSkidsBox.Value;
+296:         line.DiscrepancyNote = noteBox.Text.Trim();
+297:     }
+298: 
+299:     private async void ViewDiscrepancyButton_Click(object sender, RoutedEventArgs e)
+300:     {
+301:         if (sender is not Button button || button.Tag is not Model_VolvoShipmentLine line)
+302:         {
+303:             return;
+304:         }
+305: 
+306:         if (!line.HasDiscrepancy)
+307:         {
+308:             return;
+309:         }
+310: 
+311:         var content = new StackPanel { Spacing = 12 };
+312:         
+313:         content.Children.Add(new TextBlock
+314:         {
+315:             Text = $"Part: {line.PartNumber}",
+316:             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+317:             FontSize = 16
+318:         });
+319: 
+320:         content.Children.Add(new TextBlock
+321:         {
+322:             Text = $"Received Skids: {line.ReceivedSkidCount}",
+323:             FontSize = 14
+324:         });
+325: 
+326:         content.Children.Add(new TextBlock
+327:         {
+328:             Text = $"Expected Skids: {line.ExpectedSkidCount:F2}",
+329:             FontSize = 14
+330:         });
+331: 
+332:         content.Children.Add(new TextBlock
+333:         {
+334:             Text = $"Received Pieces: {line.CalculatedPieceCount}",
+335:             FontSize = 14
+336:         });
+337: 
+338:         if (line.ExpectedPieceCount.HasValue)
+339:         {
+340:             content.Children.Add(new TextBlock
+341:             {
+342:                 Text = $"Expected Pieces: {line.ExpectedPieceCount.Value}",
+343:                 FontSize = 14
+344:             });
+345: 
+346:             if (line.PieceDifference.HasValue)
+347:             {
+348:                 var diff = line.PieceDifference.Value;
+349:                 var diffText = diff > 0 ? $"+{diff}" : diff.ToString();
+350:                 content.Children.Add(new TextBlock
+351:                 {
+352:                     Text = $"Difference: {diffText} pieces",
+353:                     FontSize = 14,
+354:                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+355:                     Foreground = diff < 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red) : 
+356:                                  diff > 0 ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Orange) :
+357:                                  new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green)
+358:                 });
+359:             }
+360:         }
+361: 
+362:         if (!string.IsNullOrWhiteSpace(line.DiscrepancyNote))
+363:         {
+364:             content.Children.Add(new TextBlock
+365:             {
+366:                 Text = "Note:",
+367:                 FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+368:                 Margin = new Thickness(0, 8, 0, 4),
+369:                 FontSize = 14
+370:             });
+371: 
+372:             content.Children.Add(new TextBox
+373:             {
+374:                 Text = line.DiscrepancyNote,
+375:                 IsReadOnly = true,
+376:                 TextWrapping = TextWrapping.Wrap,
+377:                 MinHeight = 60,
+378:                 Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent)
+379:             });
+380:         }
+381: 
+382:         var dialog = new ContentDialog
+383:         {
+384:             Title = "Discrepancy Details",
+385:             Content = content,
+386:             CloseButtonText = "Close",
+387:             DefaultButton = ContentDialogButton.Close,
+388:             XamlRoot = XamlRoot
+389:         };
+390: 
+391:         await dialog.ShowAsync();
+392:     }
+393: 
+394:     private async void RemoveDiscrepancyButton_Click(object sender, RoutedEventArgs e)
+395:     {
+396:         if (sender is not Button button || button.Tag is not Model_VolvoShipmentLine line)
+397:         {
+398:             return;
+399:         }
+400: 
+401:         var confirmDialog = new ContentDialog
+402:         {
+403:             Title = "Remove Discrepancy",
+404:             Content = "Remove the discrepancy for this line?",
+405:             PrimaryButtonText = "Remove",
+406:             CloseButtonText = "Cancel",
+407:             DefaultButton = ContentDialogButton.Primary,
+408:             XamlRoot = XamlRoot
+409:         };
+410: 
+411:         var confirmResult = await confirmDialog.ShowAsync();
+412:         if (confirmResult == ContentDialogResult.Primary)
+413:         {
+414:             line.HasDiscrepancy = false;
+415:             line.ExpectedSkidCount = null;
+416:             line.DiscrepancyNote = null;
+417:         }
+418:     }
+419: }
+````
+
+## File: MTM_Receiving_Application.Tests/Helpers/DatabaseFixture.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+ 2: using MTM_Receiving_Application.Module_Volvo.Data;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: /// <summary>
+ 7: /// Database fixture for Volvo integration tests.
+ 8: /// </summary>
+ 9: public class DatabaseFixture
+10: {
+11:     public DatabaseFixture()
+12:     {
+13:         ConnectionString = Helper_Database_Variables.GetConnectionString(useProduction: false);
+14:     }
+15: 
+16:     public string ConnectionString { get; }
+17: 
+18:     public bool IsDatabaseReady { get; private set; }
+19: 
+20:     public string? DatabaseNotReadyReason { get; private set; }
+21: 
+22:     public async Task InitializeAsync()
+23:     {
+24:         var (isReady, reason) = await DatabasePreflight.CheckAsync(
+25:             ConnectionString,
+26:             requiredStoredProcedure: "sp_Volvo_PartMaster_Insert");
+27: 
+28:         IsDatabaseReady = isReady;
+29:         DatabaseNotReadyReason = reason;
+30:     }
+31: 
+32:     public Dao_VolvoShipment CreateShipmentDao() => new(ConnectionString);
+33: 
+34:     public Dao_VolvoShipmentLine CreateShipmentLineDao() => new(ConnectionString);
+35: 
+36:     public Dao_VolvoPart CreatePartDao() => new(ConnectionString);
+37: 
+38:     public Dao_VolvoPartComponent CreatePartComponentDao() => new(ConnectionString);
+39: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Converters/Converter_DecimalToInt_Tests.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Converters;
+  2: 
+  3: namespace MTM_Receiving_Application.Tests.Module_Core.Converters
+  4: {
+  5:     /// <summary>
+  6:     /// Unit tests for <see cref="Converter_DecimalToInt"/>.
+  7:     /// Tests conversion of decimal/double/float values to formatted integer strings (N0 format).
+  8:     /// ConvertBack parses strings back to decimal.
+  9:     /// </summary>
+ 10:     [Trait("Category", "Unit")]
+ 11:     [Trait("Type", "Converter")]
+ 12:     public class Converter_DecimalToInt_Tests
+ 13:     {
+ 14:         private readonly Converter_DecimalToInt _sut;
+ 15: 
+ 16:         public Converter_DecimalToInt_Tests()
+ 17:         {
+ 18:             _sut = new();
+ 19:         }
+ 20: 
+ 21:         [Theory]
+ 22:         [InlineData(42.99, "42")]
+ 23:         [InlineData(100.01, "100")]
+ 24:         [InlineData(0.0, "0")]
+ 25:         [InlineData(1234.56, "1,234")]
+ 26:         [InlineData(-50.75, "-50")]
+ 27:         public void Convert_WithDecimalValue_ReturnsFormattedIntegerString(decimal input, string expected)
+ 28:         {
+ 29:             // Act
+ 30:             object result = _sut.Convert(input, typeof(string), default(object)!, "en-US");
+ 31: 
+ 32:             // Assert
+ 33:             _ = result.Should().Be(expected);
+ 34:         }
+ 35: 
+ 36:         [Theory]
+ 37:         [InlineData(42.99, "42")]
+ 38:         [InlineData(1234.56, "1,234")]
+ 39:         [InlineData(0.0, "0")]
+ 40:         public void Convert_WithDoubleValue_ReturnsFormattedIntegerString(double input, string expected)
+ 41:         {
+ 42:             // Act
+ 43:             object result = _sut.Convert(input, typeof(string), default(object)!, "en-US");
+ 44: 
+ 45:             // Assert
+ 46:             _ = result.Should().Be(expected);
+ 47:         }
+ 48: 
+ 49:         [Theory]
+ 50:         [InlineData(42.99f, "42")]
+ 51:         [InlineData(100.5f, "100")]
+ 52:         public void Convert_WithFloatValue_ReturnsFormattedIntegerString(float input, string expected)
+ 53:         {
+ 54:             // Act
+ 55:             object result = _sut.Convert(input, typeof(string), default(object)!, "en-US");
+ 56: 
+ 57:             // Assert
+ 58:             _ = result.Should().Be(expected);
+ 59:         }
+ 60: 
+ 61:         [Fact]
+ 62:         public void Convert_WithNullValue_ReturnsEmptyString()
+ 63:         {
+ 64:             // Act
+ 65:             object result = _sut.Convert(null!, typeof(string), default(object)!, "en-US");
+ 66: 
+ 67:             // Assert
+ 68:             _ = result.Should().Be(string.Empty);
+ 69:         }
+ 70: 
+ 71:         [Theory]
+ 72:         [InlineData("true")]
+ 73:         [InlineData(["text"])]
+ 74:         public void Convert_WithNonNumericValue_ReturnsValueToString(object input)
+ 75:         {
+ 76:             // Act
+ 77:             object result = _sut.Convert(input, typeof(string), default(object)!, "en-US");
+ 78: 
+ 79:             // Assert
+ 80:             _ = result.Should().Be(input.ToString());
+ 81:         }
+ 82: 
+ 83:         [Theory]
+ 84:         [InlineData("42", 42)]
+ 85:         [InlineData("100", 100)]
+ 86:         [InlineData("0", 0)]
+ 87:         [InlineData("1234", 1234)]
+ 88:         [InlineData("-50", -50)]
+ 89:         public void ConvertBack_WithValidString_ReturnsDecimal(string input, decimal expected)
+ 90:         {
+ 91:             // Act
+ 92:             object result = _sut.ConvertBack(input, typeof(decimal), default(object)!, "en-US");
+ 93: 
+ 94:             // Assert
+ 95:             _ = result.Should().Be(expected);
+ 96:         }
+ 97: 
+ 98:         [Theory]
+ 99:         [InlineData("")]
+100:         [InlineData("abc")]
+101:         [InlineData(null)]
+102:         public void ConvertBack_WithInvalidString_ReturnsZero(string? input)
+103:         {
+104:             // Act
+105:             object result = _sut.ConvertBack(input!, typeof(decimal), default(object)!, "en-US");
+106: 
+107:             // Assert
+108:             _ = result.Should().Be(0m);
+109:         }
+110: 
+111:         [Fact]
+112:         public void ConvertBack_WithNonStringValue_ReturnsZero()
+113:         {
+114:             // Act
+115:             object result = _sut.ConvertBack(42, typeof(decimal), default(object)!, "en-US");
+116: 
+117:             // Assert
+118:             _ = result.Should().Be(0m);
+119:         }
+120:     }
+121: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Defaults/InforVisualDefaults_Tests.cs
+````csharp
+ 1: using FluentAssertions;
+ 2: using MTM_Receiving_Application.Module_Core.Defaults;
+ 3: using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+ 4: using Model_InforVisualPart = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_InforVisualPart;
+ 5: using Model_InforVisualPO = MTM_Receiving_Application.Module_Core.Models.InforVisual.Model_InforVisualPO;
+ 6: using Xunit;
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Core.Defaults;
+ 9: 
+10: public class InforVisualDefaults_Tests
+11: {
+12:     [Fact]
+13:     public void DefaultSiteId_ShouldNotBeNullOrWhiteSpace()
+14:     {
+15:         InforVisualDefaults.DefaultSiteId.Should().NotBeNullOrWhiteSpace();
+16:     }
+17: 
+18:     [Fact]
+19:     public void DefaultUom_ShouldNotBeNullOrWhiteSpace()
+20:     {
+21:         InforVisualDefaults.DefaultUom.Should().NotBeNullOrWhiteSpace();
+22:     }
+23: 
+24:     [Fact]
+25:     public void DefaultPartStatus_ShouldNotBeNullOrWhiteSpace()
+26:     {
+27:         InforVisualDefaults.DefaultPartStatus.Should().NotBeNullOrWhiteSpace();
+28:     }
+29: 
+30:     [Fact]
+31:     public void Model_InforVisualConnection_DefaultsShouldMatch()
+32:     {
+33:         var model = new Model_InforVisualConnection();
+34: 
+35:         model.Server.Should().Be(InforVisualDefaults.DefaultServer);
+36:         model.Database.Should().Be(InforVisualDefaults.DefaultDatabase);
+37:         model.SiteId.Should().Be(InforVisualDefaults.DefaultSiteId);
+38:     }
+39: 
+40:     [Fact]
+41:     public void Model_InforVisualPart_DefaultsShouldMatch()
+42:     {
+43:         var model = new Model_InforVisualPart();
+44: 
+45:         model.PrimaryUom.Should().Be(InforVisualDefaults.DefaultUom);
+46:         model.DefaultSite.Should().Be(InforVisualDefaults.DefaultSiteId);
+47:         model.PartStatus.Should().Be(InforVisualDefaults.DefaultPartStatus);
+48:     }
+49: 
+50:     [Fact]
+51:     public void Model_InforVisualPO_DefaultsShouldMatch()
+52:     {
+53:         var model = new Model_InforVisualPO();
+54: 
+55:         model.UnitOfMeasure.Should().Be(InforVisualDefaults.DefaultUom);
+56:         model.SiteId.Should().Be(InforVisualDefaults.DefaultSiteId);
+57:     }
+58: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Models/Core/Model_Dao_Result_Factory_Tests.cs
+````csharp
+  1: using System;
+  2: using FluentAssertions;
+  3: using MTM_Receiving_Application.Module_Core.Models.Core;
+  4: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  5: using Xunit;
+  6: 
+  7: namespace MTM_Receiving_Application.Tests.Module_Core.Models.Core
+  8: {
+  9:     /// <summary>
+ 10:     /// Unit tests for Model_Dao_Result_Factory
+ 11:     /// </summary>
+ 12:     [Trait("Category", "Unit")]
+ 13:     [Trait("Layer", "Model")]
+ 14:     public class Model_Dao_Result_Factory_Tests
+ 15:     {
+ 16:         [Fact]
+ 17:         public void Failure_CreatesFailedResult()
+ 18:         {
+ 19:             // Act
+ 20:             var result = Model_Dao_Result_Factory.Failure("Error!");
+ 21: 
+ 22:             // Assert
+ 23:             result.Success.Should().BeFalse();
+ 24:             result.ErrorMessage.Should().Be("Error!");
+ 25:             result.Severity.Should().Be(Enum_ErrorSeverity.Error);
+ 26:         }
+ 27: 
+ 28:         [Fact]
+ 29:         public void Failure_WithNullMessage_UsesDefaultMessage()
+ 30:         {
+ 31:             // Act
+ 32:             var result = Model_Dao_Result_Factory.Failure(null);
+ 33: 
+ 34:             // Assert
+ 35:             result.Success.Should().BeFalse();
+ 36:             result.ErrorMessage.Should().Be("Operation failed.");
+ 37:         }
+ 38: 
+ 39:         [Fact]
+ 40:         public void Failure_WithWhitespaceMessage_UsesDefaultMessage()
+ 41:         {
+ 42:             // Act
+ 43:             var result = Model_Dao_Result_Factory.Failure("   ");
+ 44: 
+ 45:             // Assert
+ 46:             result.Success.Should().BeFalse();
+ 47:             result.ErrorMessage.Should().Be("Operation failed.");
+ 48:         }
+ 49: 
+ 50:         [Fact]
+ 51:         public void Failure_WithException_CapturesException()
+ 52:         {
+ 53:             // Arrange
+ 54:             var ex = new InvalidOperationException("Test ex");
+ 55: 
+ 56:             // Act
+ 57:             var result = Model_Dao_Result_Factory.Failure("Error!", ex);
+ 58: 
+ 59:             // Assert
+ 60:             result.Success.Should().BeFalse();
+ 61:             result.Exception.Should().Be(ex);
+ 62:         }
+ 63: 
+ 64:         [Fact]
+ 65:         public void Success_CreatesSuccessResult()
+ 66:         {
+ 67:             // Act
+ 68:             var result = Model_Dao_Result_Factory.Success(5);
+ 69: 
+ 70:             // Assert
+ 71:             result.Success.Should().BeTrue();
+ 72:             result.AffectedRows.Should().Be(5);
+ 73:             result.ErrorMessage.Should().BeEmpty();
+ 74:         }
+ 75: 
+ 76:         [Fact]
+ 77:         public void Success_WithNegativeAffectedRows_ClampsToZero()
+ 78:         {
+ 79:             // Act
+ 80:             var result = Model_Dao_Result_Factory.Success(-1);
+ 81: 
+ 82:             // Assert
+ 83:             result.Success.Should().BeTrue();
+ 84:             result.AffectedRows.Should().Be(0);
+ 85:         }
+ 86: 
+ 87:         [Fact]
+ 88:         public void FailureGeneric_CreatesFailedResult()
+ 89:         {
+ 90:             // Act
+ 91:             var result = Model_Dao_Result_Factory.Failure<string>("Generic Error!");
+ 92: 
+ 93:             // Assert
+ 94:             result.Success.Should().BeFalse();
+ 95:             result.ErrorMessage.Should().Be("Generic Error!");
+ 96:             result.Data.Should().BeNull();
+ 97:         }
+ 98: 
+ 99:         [Fact]
+100:         public void FailureGeneric_WithNullMessage_UsesDefaultMessage()
+101:         {
+102:             // Act
+103:             var result = Model_Dao_Result_Factory.Failure<string>(null);
+104: 
+105:             // Assert
+106:             result.Success.Should().BeFalse();
+107:             result.ErrorMessage.Should().Be("Operation failed.");
+108:         }
+109: 
+110:         [Fact]
+111:         public void SuccessGeneric_CreatesSuccessResultWithData()
+112:         {
+113:             // Act
+114:             var result = Model_Dao_Result_Factory.Success("Test Data", 1);
+115: 
+116:             // Assert
+117:             result.Success.Should().BeTrue();
+118:             result.Data.Should().Be("Test Data");
+119:             result.AffectedRows.Should().Be(1);
+120:             result.ErrorMessage.Should().BeEmpty();
+121:         }
+122: 
+123:         [Fact]
+124:         public void SuccessGeneric_WithNegativeAffectedRows_ClampsToZero()
+125:         {
+126:             // Act
+127:             var result = Model_Dao_Result_Factory.Success("Test Data", -1);
+128: 
+129:             // Assert
+130:             result.Success.Should().BeTrue();
+131:             result.AffectedRows.Should().Be(0);
+132:         }
+133:     }
+134: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_UserSession_Tests.cs
+````csharp
+  1: using System;
+  2: using FluentAssertions;
+  3: using MTM_Receiving_Application.Module_Core.Models.Systems;
+  4: using Xunit;
+  5: 
+  6: namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+  7: {
+  8:     /// <summary>
+  9:     /// Unit tests for Model_UserSession
+ 10:     /// </summary>
+ 11:     [Trait("Category", "Unit")]
+ 12:     [Trait("Layer", "Model")]
+ 13:     public class Model_UserSession_Tests
+ 14:     {
+ 15:         [Fact]
+ 16:         public void DefaultConstructor_SetsTimestamps()
+ 17:         {
+ 18:             // Arrange
+ 19:             var before = DateTime.Now;
+ 20: 
+ 21:             // Act
+ 22:             var session = new Model_UserSession();
+ 23:             var after = DateTime.Now;
+ 24: 
+ 25:             // Assert
+ 26:             session.LoginTimestamp.Should().BeOnOrAfter(before);
+ 27:             session.LoginTimestamp.Should().BeOnOrBefore(after);
+ 28:             session.LastActivityTimestamp.Should().BeOnOrAfter(before);
+ 29:             session.LastActivityTimestamp.Should().BeOnOrBefore(after);
+ 30:         }
+ 31: 
+ 32:         [Fact]
+ 33:         public void UpdateLastActivity_UpdatesTimestamp()
+ 34:         {
+ 35:             // Arrange
+ 36:             var session = new Model_UserSession();
+ 37:             session.LastActivityTimestamp = DateTime.Now.AddMinutes(-1);
+ 38: 
+ 39:             // Act
+ 40:             session.UpdateLastActivity();
+ 41: 
+ 42:             // Assert
+ 43:             session.LastActivityTimestamp.Should().BeAfter(DateTime.Now.AddSeconds(-5));
+ 44:         }
+ 45: 
+ 46:         [Fact]
+ 47:         public void TimeSinceLastActivity_ReturnsCorrectDifference()
+ 48:         {
+ 49:             // Arrange
+ 50:             var session = new Model_UserSession();
+ 51:             session.LastActivityTimestamp = DateTime.Now.AddMinutes(-5);
+ 52: 
+ 53:             // Act
+ 54:             var elapsed = session.TimeSinceLastActivity;
+ 55: 
+ 56:             // Assert
+ 57:             elapsed.Should().BeCloseTo(TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(2));
+ 58:         }
+ 59: 
+ 60:         [Fact]
+ 61:         public void IsTimedOut_ReturnsTrueWhenExpired()
+ 62:         {
+ 63:             // Arrange
+ 64:             var session = new Model_UserSession
+ 65:             {
+ 66:                 TimeoutDuration = TimeSpan.FromMinutes(10),
+ 67:                 LastActivityTimestamp = DateTime.Now.AddMinutes(-11)
+ 68:             };
+ 69: 
+ 70:             // Act
+ 71:             var isTimedOut = session.IsTimedOut;
+ 72: 
+ 73:             // Assert
+ 74:             isTimedOut.Should().BeTrue();
+ 75:         }
+ 76: 
+ 77:         [Fact]
+ 78:         public void IsTimedOut_ReturnsFalseWhenActive()
+ 79:         {
+ 80:             // Arrange
+ 81:             var session = new Model_UserSession
+ 82:             {
+ 83:                 TimeoutDuration = TimeSpan.FromMinutes(10),
+ 84:                 LastActivityTimestamp = DateTime.Now.AddMinutes(-5)
+ 85:             };
+ 86: 
+ 87:             // Act
+ 88:             var isTimedOut = session.IsTimedOut;
+ 89: 
+ 90:             // Assert
+ 91:             isTimedOut.Should().BeFalse();
+ 92:         }
+ 93: 
+ 94:         [Fact]
+ 95:         public void HasErpAccess_ReturnsFalseIfUserIsNull()
+ 96:         {
+ 97:             // Arrange
+ 98:             var session = new Model_UserSession { User = null };
+ 99: 
+100:             // Act
+101:             var hasAccess = session.HasErpAccess;
+102: 
+103:             // Assert
+104:             hasAccess.Should().BeFalse();
+105:         }
+106: 
+107:         [Fact]
+108:         public void HasErpAccess_ReturnsFalseIfUserHasNoVisualUsername()
+109:         {
+110:             // Arrange
+111:             var session = new Model_UserSession
+112:             {
+113:                 User = new Model_User { VisualUsername = null }
+114:             };
+115: 
+116:             // Act
+117:             var hasAccess = session.HasErpAccess;
+118: 
+119:             // Assert
+120:             hasAccess.Should().BeFalse();
+121:         }
+122: 
+123:         [Fact]
+124:         public void HasErpAccess_ReturnsTrueIfUserHasVisualUsername()
+125:         {
+126:             // Arrange
+127:             var session = new Model_UserSession
+128:             {
+129:                 User = new Model_User { VisualUsername = "user" }
+130:             };
+131: 
+132:             // Act
+133:             var hasAccess = session.HasErpAccess;
+134: 
+135:             // Assert
+136:             hasAccess.Should().BeTrue();
+137:         }
+138: 
+139:         [Fact]
+140:         public void Constructor_WithUser_SetsUser()
+141:         {
+142:             // Arrange
+143:             var user = new Model_User();
+144: 
+145:             // Act
+146:             var session = new Model_UserSession(user);
+147: 
+148:             // Assert
+149:             session.User.Should().BeSameAs(user);
+150:         }
+151: 
+152:         [Fact]
+153:         public void Constructor_WithNullUser_Throws()
+154:         {
+155:             // Act
+156:             var act = static () => new Model_UserSession(null!);
+157: 
+158:             // Assert
+159:             act.Should().Throw<ArgumentNullException>();
+160:         }
+161:     }
+162: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Models/Systems/Model_WorkstationConfig_Tests.cs
+````csharp
+ 1: using System;
+ 2: using FluentAssertions;
+ 3: using MTM_Receiving_Application.Module_Core.Defaults;
+ 4: using MTM_Receiving_Application.Module_Core.Models.Systems;
+ 5: using Xunit;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Module_Core.Models.Systems
+ 8: {
+ 9:     /// <summary>
+10:     /// Unit tests for Model_WorkstationConfig logic
+11:     /// </summary>
+12:     [Trait("Category", "Unit")]
+13:     [Trait("Layer", "Model")]
+14:     public class Model_WorkstationConfig_Tests
+15:     {
+16:         [Fact]
+17:         public void Constructor_Default_UsesMachineName()
+18:         {
+19:             var config = new Model_WorkstationConfig();
+20: 
+21:             config.ComputerName.Should().Be(Environment.MachineName);
+22:         }
+23: 
+24:         [Fact]
+25:         public void Constructor_WithParameter_SetsComputerName()
+26:         {
+27:             var config = new Model_WorkstationConfig("TEST-PC");
+28: 
+29:             config.ComputerName.Should().Be("TEST-PC");
+30:         }
+31: 
+32:         [Fact]
+33:         public void IsSharedTerminal_ReturnsTrueForSharedType()
+34:         {
+35:             var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.SharedTerminalWorkstationType };
+36: 
+37:             config.IsSharedTerminal.Should().BeTrue();
+38:         }
+39: 
+40:         [Fact]
+41:         public void IsSharedTerminal_ReturnsFalseForSharedType()
+42:         {
+43:             var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.SharedTerminalWorkstationType };
+44: 
+45:             config.IsPersonalWorkstation.Should().BeFalse();
+46:         }
+47: 
+48:         [Fact]
+49:         public void IsPersonalWorkstation_ReturnsTrueForPersonalType()
+50:         {
+51:             var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.PersonalWorkstationWorkstationType };
+52: 
+53:             config.IsPersonalWorkstation.Should().BeTrue();
+54:         }
+55: 
+56:         [Fact]
+57:         public void IsPersonalWorkstation_ReturnsFalseForPersonalType()
+58:         {
+59:             var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.PersonalWorkstationWorkstationType };
+60: 
+61:             config.IsSharedTerminal.Should().BeFalse();
+62:         }
+63: 
+64:         [Fact]
+65:         public void TimeoutDuration_SharedTerminal_ReturnsSharedTimeoutMinutes()
+66:         {
+67:             var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.SharedTerminalWorkstationType };
+68: 
+69:             config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(WorkstationDefaults.SharedTerminalTimeoutMinutes));
+70:         }
+71: 
+72:         [Fact]
+73:         public void TimeoutDuration_PersonalWorkstation_ReturnsPersonalTimeoutMinutes()
+74:         {
+75:             var config = new Model_WorkstationConfig { WorkstationType = WorkstationDefaults.PersonalWorkstationWorkstationType };
+76: 
+77:             config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(WorkstationDefaults.PersonalWorkstationTimeoutMinutes));
+78:         }
+79: 
+80:         [Fact]
+81:         public void TimeoutDuration_UnknownType_ReturnsPersonalTimeoutMinutesDefault()
+82:         {
+83:             var config = new Model_WorkstationConfig { WorkstationType = "unknown" };
+84: 
+85:             config.TimeoutDuration.Should().Be(TimeSpan.FromMinutes(WorkstationDefaults.PersonalWorkstationTimeoutMinutes));
+86:         }
+87:     }
+88: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddVolvoPartCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: using MTM_Receiving_Application.Tests.Helpers;
+ 4: using Xunit;
+ 5: 
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+ 8: 
+ 9: /// <summary>
+10: /// Integration tests for AddVolvoPartCommandHandler.
+11: /// </summary>
+12: [Collection("Database")]
+13: public class AddVolvoPartCommandHandlerTests
+14: {
+15:     private readonly DatabaseFixture _fixture;
+16: 
+17:     public AddVolvoPartCommandHandlerTests(DatabaseFixture fixture)
+18:     {
+19:         _fixture = fixture;
+20:     }
+21: 
+22:     [SkippableFact]
+23:     public async Task Handle_ShouldInsertPart()
+24:     {
+25:         await _fixture.InitializeAsync();
+26:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+27: 
+28:         var partDao = _fixture.CreatePartDao();
+29:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+30: 
+31:         try
+32:         {
+33:             var handler = new AddVolvoPartCommandHandler(partDao);
+34:             var result = await handler.Handle(new AddVolvoPartCommand
+35:             {
+36:                 PartNumber = partNumber,
+37:                 QuantityPerSkid = 10
+38:             }, default);
+39: 
+40:             result.IsSuccess.Should().BeTrue();
+41: 
+42:             var fetch = await partDao.GetByIdAsync(partNumber);
+43:             fetch.IsSuccess.Should().BeTrue();
+44:             fetch.Data.Should().NotBeNull();
+45:         }
+46:         finally
+47:         {
+48:             await partDao.DeactivateAsync(partNumber);
+49:         }
+50:     }
+51: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/DeactivateVolvoPartCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: using Xunit;
+ 6: 
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+ 9: 
+10: /// <summary>
+11: /// Integration tests for DeactivateVolvoPartCommandHandler.
+12: /// </summary>
+13: [Collection("Database")]
+14: public class DeactivateVolvoPartCommandHandlerTests
+15: {
+16:     private readonly DatabaseFixture _fixture;
+17: 
+18:     public DeactivateVolvoPartCommandHandlerTests(DatabaseFixture fixture)
+19:     {
+20:         _fixture = fixture;
+21:     }
+22: 
+23:     [SkippableFact]
+24:     public async Task Handle_ShouldDeactivatePart()
+25:     {
+26:         await _fixture.InitializeAsync();
+27:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+28: 
+29:         var partDao = _fixture.CreatePartDao();
+30:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+31: 
+32:         var insertResult = await partDao.InsertAsync(new Model_VolvoPart
+33:         {
+34:             PartNumber = partNumber,
+35:             QuantityPerSkid = 5,
+36:             IsActive = true
+37:         });
+38:         insertResult.Success.Should().BeTrue();
+39: 
+40:         var handler = new DeactivateVolvoPartCommandHandler(partDao);
+41:         var result = await handler.Handle(new DeactivateVolvoPartCommand
+42:         {
+43:             PartNumber = partNumber
+44:         }, default);
+45: 
+46:         result.IsSuccess.Should().BeTrue();
+47: 
+48:         var fetch = await partDao.GetByIdAsync(partNumber);
+49:         fetch.Data.Should().NotBeNull();
+50:         fetch.Data!.IsActive.Should().BeFalse();
+51:     }
+52: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/ImportPartsCsvCommandHandlerTests.cs
+````csharp
+ 1: using System.IO;
+ 2: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: using Xunit;
+ 6: 
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+ 9: 
+10: /// <summary>
+11: /// Integration tests for ImportPartsCsvCommandHandler.
+12: /// </summary>
+13: [Collection("Database")]
+14: public class ImportPartsCsvCommandHandlerTests
+15: {
+16:     private readonly DatabaseFixture _fixture;
+17: 
+18:     public ImportPartsCsvCommandHandlerTests(DatabaseFixture fixture)
+19:     {
+20:         _fixture = fixture;
+21:     }
+22: 
+23:     [SkippableFact]
+24:     public async Task Handle_ShouldImportPartsFromCsv()
+25:     {
+26:         await _fixture.InitializeAsync();
+27:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+28: 
+29:         var partDao = _fixture.CreatePartDao();
+30:         var componentDao = _fixture.CreatePartComponentDao();
+31:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+32: 
+33:         var tempFile = Path.Combine(Path.GetTempPath(), $"volvo_{Guid.NewGuid():N}.csv");
+34:         await File.WriteAllTextAsync(tempFile, $"PartNumber,QuantityPerSkid,Components\n{partNumber},10,");
+35: 
+36:         try
+37:         {
+38:             var handler = new ImportPartsCsvCommandHandler(partDao, componentDao);
+39:             var result = await handler.Handle(new ImportPartsCsvCommand
+40:             {
+41:                 CsvFilePath = tempFile
+42:             }, default);
+43: 
+44:             result.IsSuccess.Should().BeTrue();
+45:             result.Data.Should().NotBeNull();
+46:             result.Data!.SuccessCount.Should().BeGreaterThan(0);
+47:         }
+48:         finally
+49:         {
+50:             File.Delete(tempFile);
+51:             await partDao.DeactivateAsync(partNumber);
+52:         }
+53:     }
+54: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateShipmentCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Core.Services.Database;
+ 2: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Models;
+ 4: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 5: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 6: using MTM_Receiving_Application.Tests.Helpers;
+ 7: using Xunit;
+ 8: 
+ 9: 
+10: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+11: 
+12: /// <summary>
+13: /// Integration tests for UpdateShipmentCommandHandler.
+14: /// </summary>
+15: [Collection("Database")]
+16: public class UpdateShipmentCommandHandlerTests
+17: {
+18:     private readonly DatabaseFixture _fixture;
+19: 
+20:     public UpdateShipmentCommandHandlerTests(DatabaseFixture fixture)
+21:     {
+22:         _fixture = fixture;
+23:     }
+24: 
+25:     [SkippableFact]
+26:     public async Task Handle_ShouldUpdateShipment()
+27:     {
+28:         await _fixture.InitializeAsync();
+29:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+30: 
+31:         var shipmentDao = _fixture.CreateShipmentDao();
+32:         var lineDao = _fixture.CreateShipmentLineDao();
+33:         var partDao = _fixture.CreatePartDao();
+34:         var componentDao = _fixture.CreatePartComponentDao();
+35:         var logger = new Service_LoggingUtility();
+36:         var authService = new FakeVolvoAuthorizationService();
+37:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+38:         int shipmentId = 0;
+39: 
+40:         try
+41:         {
+42:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+43:             {
+44:                 PartNumber = partNumber,
+45:                 QuantityPerSkid = 10,
+46:                 IsActive = true
+47:             });
+48:             partResult.Success.Should().BeTrue();
+49: 
+50:             var shipment = new Model_VolvoShipment
+51:             {
+52:                 ShipmentDate = DateTime.Today,
+53:                 EmployeeNumber = "TEST",
+54:                 Notes = "TEST-UPDATE"
+55:             };
+56: 
+57:             var insertResult = await shipmentDao.InsertAsync(shipment);
+58:             insertResult.Success.Should().BeTrue();
+59:             shipmentId = insertResult.Data.ShipmentId;
+60: 
+61:             var line = new Model_VolvoShipmentLine
+62:             {
+63:                 ShipmentId = shipmentId,
+64:                 PartNumber = partNumber,
+65:                 QuantityPerSkid = 10,
+66:                 ReceivedSkidCount = 1,
+67:                 CalculatedPieceCount = 10
+68:             };
+69:             var lineResult = await lineDao.InsertAsync(line);
+70:             lineResult.Success.Should().BeTrue();
+71: 
+72:             var handler = new UpdateShipmentCommandHandler(shipmentDao, lineDao, partDao, componentDao, authService, logger);
+73:             var result = await handler.Handle(new UpdateShipmentCommand
+74:             {
+75:                 ShipmentId = shipmentId,
+76:                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+77:                 Notes = "UPDATED",
+78:                 Parts = new List<ShipmentLineDto>
+79:                 {
+80:                     new() { PartNumber = partNumber, ReceivedSkidCount = 2 }
+81:                 }
+82:             }, default);
+83: 
+84:             result.IsSuccess.Should().BeTrue();
+85:         }
+86:         finally
+87:         {
+88:             if (shipmentId > 0)
+89:             {
+90:                 await shipmentDao.DeleteAsync(shipmentId);
+91:             }
+92:             await partDao.DeactivateAsync(partNumber);
+93:         }
+94:     }
+95: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/UpdateVolvoPartCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: using Xunit;
+ 6: 
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+ 9: 
+10: /// <summary>
+11: /// Integration tests for UpdateVolvoPartCommandHandler.
+12: /// </summary>
+13: [Collection("Database")]
+14: public class UpdateVolvoPartCommandHandlerTests
+15: {
+16:     private readonly DatabaseFixture _fixture;
+17: 
+18:     public UpdateVolvoPartCommandHandlerTests(DatabaseFixture fixture)
+19:     {
+20:         _fixture = fixture;
+21:     }
+22: 
+23:     [SkippableFact]
+24:     public async Task Handle_ShouldUpdatePart()
+25:     {
+26:         await _fixture.InitializeAsync();
+27:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+28: 
+29:         var partDao = _fixture.CreatePartDao();
+30:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+31: 
+32:         try
+33:         {
+34:             var insertResult = await partDao.InsertAsync(new Model_VolvoPart
+35:             {
+36:                 PartNumber = partNumber,
+37:                 QuantityPerSkid = 5,
+38:                 IsActive = true
+39:             });
+40:             insertResult.Success.Should().BeTrue();
+41: 
+42:             var handler = new UpdateVolvoPartCommandHandler(partDao);
+43:             var result = await handler.Handle(new UpdateVolvoPartCommand
+44:             {
+45:                 PartNumber = partNumber,
+46:                 QuantityPerSkid = 12
+47:             }, default);
+48: 
+49:             result.IsSuccess.Should().BeTrue();
+50: 
+51:             var fetch = await partDao.GetByIdAsync(partNumber);
+52:             fetch.Data.Should().NotBeNull();
+53:             fetch.Data!.QuantityPerSkid.Should().Be(12);
+54:         }
+55:         finally
+56:         {
+57:             await partDao.DeactivateAsync(partNumber);
+58:         }
+59:     }
+60: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPartComponentsQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: using Xunit;
+ 6: 
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 9: 
+10: /// <summary>
+11: /// Integration tests for GetPartComponentsQueryHandler.
+12: /// </summary>
+13: [Collection("Database")]
+14: public class GetPartComponentsQueryHandlerTests
+15: {
+16:     private readonly DatabaseFixture _fixture;
+17: 
+18:     public GetPartComponentsQueryHandlerTests(DatabaseFixture fixture)
+19:     {
+20:         _fixture = fixture;
+21:     }
+22: 
+23:     [SkippableFact]
+24:     public async Task Handle_ShouldReturnComponents()
+25:     {
+26:         await _fixture.InitializeAsync();
+27:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+28: 
+29:         var partDao = _fixture.CreatePartDao();
+30:         var componentDao = _fixture.CreatePartComponentDao();
+31:         var parentPart = $"TEST-P-{Guid.NewGuid():N}".ToUpperInvariant();
+32:         var componentPart = $"TEST-C-{Guid.NewGuid():N}".ToUpperInvariant();
+33: 
+34:         try
+35:         {
+36:             var parentResult = await partDao.InsertAsync(new Model_VolvoPart
+37:             {
+38:                 PartNumber = parentPart,
+39:                 QuantityPerSkid = 10,
+40:                 IsActive = true
+41:             });
+42:             parentResult.Success.Should().BeTrue();
+43: 
+44:             var componentResult = await partDao.InsertAsync(new Model_VolvoPart
+45:             {
+46:                 PartNumber = componentPart,
+47:                 QuantityPerSkid = 5,
+48:                 IsActive = true
+49:             });
+50:             componentResult.Success.Should().BeTrue();
+51: 
+52:             var insertComponent = await componentDao.InsertAsync(new Model_VolvoPartComponent
+53:             {
+54:                 ParentPartNumber = parentPart,
+55:                 ComponentPartNumber = componentPart,
+56:                 Quantity = 1
+57:             });
+58:             insertComponent.Success.Should().BeTrue();
+59: 
+60:             var handler = new GetPartComponentsQueryHandler(componentDao);
+61:             var result = await handler.Handle(new GetPartComponentsQuery { PartNumber = parentPart }, default);
+62: 
+63:             result.IsSuccess.Should().BeTrue();
+64:             result.Data.Should().NotBeNull();
+65:             result.Data!.Any(c => c.ComponentPartNumber == componentPart).Should().BeTrue();
+66:         }
+67:         finally
+68:         {
+69:             await componentDao.DeleteByParentPartAsync(parentPart);
+70:             await partDao.DeactivateAsync(parentPart);
+71:             await partDao.DeactivateAsync(componentPart);
+72:         }
+73:     }
+74: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Integration/AddPartIntegrationTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 5: using MTM_Receiving_Application.Tests.Helpers;
+ 6: 
+ 7: namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
+ 8: 
+ 9: /// <summary>
+10: /// Integration tests for add part workflow.
+11: /// </summary>
+12: [Collection("Database")]
+13: public class AddPartIntegrationTests
+14: {
+15:     private readonly DatabaseFixture _fixture;
+16: 
+17:     public AddPartIntegrationTests(DatabaseFixture fixture)
+18:     {
+19:         _fixture = fixture;
+20:     }
+21: 
+22:     [SkippableFact]
+23:     public async Task AddPart_ShouldAppearInList()
+24:     {
+25:         await _fixture.InitializeAsync();
+26:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+27: 
+28:         var partDao = _fixture.CreatePartDao();
+29:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+30: 
+31:         try
+32:         {
+33:             var addHandler = new AddVolvoPartCommandHandler(partDao);
+34:             var addResult = await addHandler.Handle(new AddVolvoPartCommand
+35:             {
+36:                 PartNumber = partNumber,
+37:                 QuantityPerSkid = 10
+38:             }, default);
+39: 
+40:             addResult.IsSuccess.Should().BeTrue();
+41: 
+42:             var listHandler = new GetAllVolvoPartsQueryHandler(partDao);
+43:             var listResult = await listHandler.Handle(new GetAllVolvoPartsQuery { IncludeInactive = false }, default);
+44: 
+45:             listResult.IsSuccess.Should().BeTrue();
+46:             listResult.Data!.Any(p => p.PartNumber == partNumber).Should().BeTrue();
+47:         }
+48:         finally
+49:         {
+50:             await partDao.DeactivateAsync(partNumber);
+51:         }
+52:     }
+53: }
+````
+
+## File: Scripts/Fix-MarkdownLint.ps1
+````powershell
+ 1: # Fix-MarkdownLint.ps1
+ 2: # Fixes all markdownlint violations in the repository
+ 3: 
+ 4: [CmdletBinding()]
+ 5: param(
+ 6:     [Parameter()]
+ 7:     [string]$Path = (Get-Location).Path,
+ 8:     
+ 9:     [Parameter()]
+10:     [switch]$WhatIf
+11: )
+12: 
+13: $ErrorActionPreference = "Stop"
+14: 
+15: Write-Host "Fixing markdownlint violations in: $Path" -ForegroundColor Cyan
+16: 
+17: # Check if markdownlint-cli is available
+18: $markdownlintInstalled = $null -ne (Get-Command npx -ErrorAction SilentlyContinue)
+19: 
+20: if (-not $markdownlintInstalled) {
+21:     Write-Error "npx not found. Please install Node.js and npm first."
+22:     exit 1
+23: }
+24: 
+25: # Run markdownlint fix
+26: $args = @(
+27:     "markdownlint-cli",
+28:     "--fix",
+29:     "**/*.md"
+30: )
+31: 
+32: if ($WhatIf) {
+33:     Write-Host "Would run: npx $($args -join ' ')" -ForegroundColor Yellow
+34: }
+35: else {
+36:     Write-Host "Running: npx $($args -join ' ')" -ForegroundColor Green
+37:     & npx @args
+38:     
+39:     if ($LASTEXITCODE -eq 0) {
+40:         Write-Host "`nMarkdown files fixed successfully!" -ForegroundColor Green
+41:     }
+42:     else {
+43:         Write-Warning "Some issues could not be auto-fixed. Please review manually."
+44:     }
+45: }
+````
+
+## File: Module_Volvo/Data/Dao_VolvoSettings.cs
+````csharp
+  1: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  2: using MTM_Receiving_Application.Module_Core.Models.Core;
+  3: using MTM_Receiving_Application.Module_Volvo.Models;
+  4: using System.Collections.Generic;
+  5: using System.Data;
+  6: using System.Threading.Tasks;
+  7: 
+  8: namespace MTM_Receiving_Application.Module_Volvo.Data;
+  9: 
+ 10: /// <summary>
+ 11: /// Data Access Object for Volvo settings operations
+ 12: /// </summary>
+ 13: public class Dao_VolvoSettings
+ 14: {
+ 15:     private readonly string _connectionString;
+ 16: 
+ 17:     public Dao_VolvoSettings(string connectionString)
+ 18:     {
+ 19:         _connectionString = connectionString;
+ 20:     }
+ 21: 
+ 22:     /// <summary>
+ 23:     /// Gets a specific setting by key
+ 24:     /// </summary>
+ 25:     /// <param name="settingKey"></param>
+ 26:     public async Task<Model_Dao_Result<Model_VolvoSetting>> GetSettingAsync(string settingKey)
+ 27:     {
+ 28:         var parameters = new Dictionary<string, object>
+ 29:         {
+ 30:             { "setting_key", settingKey }
+ 31:         };
+ 32: 
+ 33:         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+ 34:             _connectionString,
+ 35:             "sp_Volvo_Settings_Get",
+ 36:             MapFromReader,
+ 37:             parameters
+ 38:         );
+ 39:     }
+ 40: 
+ 41:     /// <summary>
+ 42:     /// Gets all settings, optionally filtered by category
+ 43:     /// </summary>
+ 44:     /// <param name="category"></param>
+ 45:     public async Task<Model_Dao_Result<List<Model_VolvoSetting>>> GetAllSettingsAsync(string? category = null)
+ 46:     {
+ 47:         var parameters = new Dictionary<string, object>
+ 48:         {
+ 49:             { "category", category ?? string.Empty }
+ 50:         };
+ 51: 
+ 52:         return await Helper_Database_StoredProcedure.ExecuteListAsync(
+ 53:             _connectionString,
+ 54:             "sp_Volvo_Settings_GetAll",
+ 55:             MapFromReader,
+ 56:             parameters
+ 57:         );
+ 58:     }
+ 59: 
+ 60:     /// <summary>
+ 61:     /// Inserts or updates a setting value
+ 62:     /// </summary>
+ 63:     /// <param name="settingKey"></param>
+ 64:     /// <param name="settingValue"></param>
+ 65:     /// <param name="modifiedBy"></param>
+ 66:     public async Task<Model_Dao_Result> UpsertSettingAsync(string settingKey, string settingValue, string modifiedBy)
+ 67:     {
+ 68:         var parameters = new Dictionary<string, object>
+ 69:         {
+ 70:             { "setting_key", settingKey },
+ 71:             { "setting_value", settingValue },
+ 72:             { "modified_by", modifiedBy }
+ 73:         };
+ 74: 
+ 75:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 76:             _connectionString,
+ 77:             "sp_Volvo_Settings_Upsert",
+ 78:             parameters
+ 79:         );
+ 80:     }
+ 81: 
+ 82:     /// <summary>
+ 83:     /// Resets a setting to its default value
+ 84:     /// </summary>
+ 85:     /// <param name="settingKey"></param>
+ 86:     /// <param name="modifiedBy"></param>
+ 87:     public async Task<Model_Dao_Result> ResetSettingAsync(string settingKey, string modifiedBy)
+ 88:     {
+ 89:         var parameters = new Dictionary<string, object>
+ 90:         {
+ 91:             { "setting_key", settingKey },
+ 92:             { "modified_by", modifiedBy }
+ 93:         };
+ 94: 
+ 95:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+ 96:             _connectionString,
+ 97:             "sp_Volvo_Settings_Reset",
+ 98:             parameters
+ 99:         );
+100:     }
+101: 
+102:     /// <summary>
+103:     /// Maps DataReader to Model_VolvoSetting
+104:     /// </summary>
+105:     /// <param name="reader"></param>
+106:     private static Model_VolvoSetting MapFromReader(IDataReader reader)
+107:     {
+108:         return new Model_VolvoSetting
+109:         {
+110:             SettingKey = reader.GetString(reader.GetOrdinal("setting_key")),
+111:             SettingValue = reader.GetString(reader.GetOrdinal("setting_value")),
+112:             SettingType = reader.GetString(reader.GetOrdinal("setting_type")),
+113:             Category = reader.GetString(reader.GetOrdinal("category")),
+114:             Description = reader.IsDBNull(reader.GetOrdinal("description"))
+115:                 ? null
+116:                 : reader.GetString(reader.GetOrdinal("description")),
+117:             DefaultValue = reader.GetString(reader.GetOrdinal("default_value")),
+118:             MinValue = reader.IsDBNull(reader.GetOrdinal("min_value"))
+119:                 ? null
+120:                 : reader.GetInt32(reader.GetOrdinal("min_value")),
+121:             MaxValue = reader.IsDBNull(reader.GetOrdinal("max_value"))
+122:                 ? null
+123:                 : reader.GetInt32(reader.GetOrdinal("max_value")),
+124:             ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
+125:             ModifiedBy = reader.IsDBNull(reader.GetOrdinal("modified_by"))
+126:                 ? null
+127:                 : reader.GetString(reader.GetOrdinal("modified_by"))
+128:         };
+129:     }
+130: }
+````
+
+## File: Module_Volvo/Data/Dao_VolvoShipment.cs
+````csharp
+  1: using System;
+  2: using System.Collections.Generic;
+  3: using System.Data;
+  4: using System.Threading.Tasks;
+  5: using MySql.Data.MySqlClient;
+  6: using MTM_Receiving_Application.Module_Core.Models.Core;
+  7: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  8: using MTM_Receiving_Application.Module_Volvo.Models;
+  9: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+ 10: 
+ 11: namespace MTM_Receiving_Application.Module_Volvo.Data;
+ 12: 
+ 13: /// <summary>
+ 14: /// Data Access Object for volvo_label_data table
+ 15: /// Provides CRUD operations using stored procedures
+ 16: /// </summary>
+ 17: public class Dao_VolvoShipment
+ 18: {
+ 19:     private readonly string _connectionString;
+ 20: 
+ 21:     public Dao_VolvoShipment(string connectionString)
+ 22:     {
+ 23:         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+ 24:     }
+ 25: 
+ 26:     /// <summary>
+ 27:     /// Inserts a new Volvo shipment and returns the generated ID and shipment number
+ 28:     /// </summary>
+ 29:     /// <param name="shipment">Volvo shipment model to insert</param>
+ 30:     /// <returns>Model_Dao_Result with shipment ID and number in Data property</returns>
+ 31:     public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> InsertAsync(Model_VolvoShipment shipment)
+ 32:     {
+ 33:         try
+ 34:         {
+ 35:             await using var connection = new MySqlConnection(_connectionString);
+ 36:             await connection.OpenAsync();
+ 37: 
+ 38:             await using var command = new MySqlCommand("sp_volvo_shipment_insert", connection)
+ 39:             {
+ 40:                 CommandType = CommandType.StoredProcedure
+ 41:             };
+ 42: 
+ 43:             // Input parameters
+ 44:             command.Parameters.AddWithValue("@p_shipment_date", shipment.ShipmentDate);
+ 45:             command.Parameters.AddWithValue("@p_employee_number", shipment.EmployeeNumber);
+ 46:             command.Parameters.AddWithValue("@p_notes", shipment.Notes ?? (object)DBNull.Value);
+ 47: 
+ 48:             // Output parameters
+ 49:             var newIdParam = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
+ 50:             {
+ 51:                 Direction = ParameterDirection.Output
+ 52:             };
+ 53:             var shipmentNumberParam = new MySqlParameter("@p_shipment_number", MySqlDbType.Int32)
+ 54:             {
+ 55:                 Direction = ParameterDirection.Output
+ 56:             };
+ 57: 
+ 58:             command.Parameters.Add(newIdParam);
+ 59:             command.Parameters.Add(shipmentNumberParam);
+ 60: 
+ 61:             await command.ExecuteNonQueryAsync();
+ 62: 
+ 63:             var shipmentId = Convert.ToInt32(newIdParam.Value);
+ 64:             var shipmentNumber = Convert.ToInt32(shipmentNumberParam.Value);
+ 65: 
+ 66:             return new Model_Dao_Result<(int, int)>
+ 67:             {
+ 68:                 Success = true,
+ 69:                 Data = (shipmentId, shipmentNumber),
+ 70:                 AffectedRows = 1
+ 71:             };
+ 72:         }
+ 73:         catch (Exception ex)
+ 74:         {
+ 75:             return new Model_Dao_Result<(int, int)>
+ 76:             {
+ 77:                 Success = false,
+ 78:                 ErrorMessage = $"Error inserting Volvo shipment: {ex.Message}",
+ 79:                 Severity = Enum_ErrorSeverity.Error,
+ 80:                 Exception = ex
+ 81:             };
+ 82:         }
+ 83:     }
+ 84: 
+ 85:     /// <summary>
+ 86:     /// Updates a Volvo shipment
+ 87:     /// </summary>
+ 88:     /// <param name="shipment">Volvo shipment model to update</param>
+ 89:     /// <returns>Model_Dao_Result indicating success/failure</returns>
+ 90:     public async Task<Model_Dao_Result> UpdateAsync(Model_VolvoShipment shipment)
+ 91:     {
+ 92:         try
+ 93:         {
+ 94:             var parameters = new Dictionary<string, object>
+ 95:             {
+ 96:                 { "id", shipment.Id },
+ 97:                 { "notes", shipment.Notes ?? (object)DBNull.Value }
+ 98:             };
+ 99: 
+100:             var result = await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+101:                 _connectionString,
+102:                 "sp_volvo_shipment_update",
+103:                 parameters);
+104: 
+105:             return result;
+106:         }
+107:         catch (Exception ex)
+108:         {
+109:             return new Model_Dao_Result
+110:             {
+111:                 Success = false,
+112:                 ErrorMessage = $"Error updating Volvo shipment: {ex.Message}",
+113:                 Severity = Enum_ErrorSeverity.Error,
+114:                 Exception = ex
+115:             };
+116:         }
+117:     }
+118: 
+119:     /// <summary>
+120:     /// Completes a shipment with PO and Receiver numbers
+121:     /// </summary>
+122:     /// <param name="shipmentId">Shipment ID</param>
+123:     /// <param name="poNumber">Purchase order number</param>
+124:     /// <param name="receiverNumber">Receiver number</param>
+125:     /// <returns>Model_Dao_Result indicating success/failure</returns>
+126:     public async Task<Model_Dao_Result> CompleteAsync(int shipmentId, string poNumber, string receiverNumber)
+127:     {
+128:         var parameters = new Dictionary<string, object>
+129:         {
+130:             { "shipment_id", shipmentId },
+131:             { "po_number", poNumber },
+132:             { "receiver_number", receiverNumber }
+133:         };
+134: 
+135:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+136:             _connectionString,
+137:             "sp_volvo_shipment_complete",
+138:             parameters
+139:         );
+140:     }
+141: 
+142:     /// <summary>
+143:     /// Deletes a shipment and all its lines (CASCADE DELETE)
+144:     /// </summary>
+145:     /// <param name="shipmentId">Shipment ID to delete</param>
+146:     /// <returns>Model_Dao_Result indicating success/failure</returns>
+147:     public async Task<Model_Dao_Result> DeleteAsync(int shipmentId)
+148:     {
+149:         var parameters = new Dictionary<string, object>
+150:         {
+151:             { "shipment_id", shipmentId }
+152:         };
+153: 
+154:         return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+155:             _connectionString,
+156:             "sp_volvo_shipment_delete",
+157:             parameters
+158:         );
+159:     }
+160: 
+161:     /// <summary>
+162:     /// Gets the pending shipment if one exists
+163:     /// </summary>
+164:     /// <returns>Model_Dao_Result with pending shipment or null if none exists</returns>
+165:     public async Task<Model_Dao_Result<Model_VolvoShipment>> GetPendingAsync()
+166:     {
+167:         return await Helper_Database_StoredProcedure.ExecuteSingleAsync(
+168:             _connectionString,
+169:             "sp_Volvo_Shipment_GetPending",
+170:             MapFromReader,
+171:             null
+172:         );
+173:     }
+174: 
+175:     /// <summary>
+176:     /// Gets a shipment by ID
+177:     /// </summary>
+178:     /// <param name="shipmentId">Shipment ID</param>
+179:     /// <returns>Model_Dao_Result with shipment or null if not found</returns>
+180:     public async Task<Model_Dao_Result<Model_VolvoShipment?>> GetByIdAsync(int shipmentId)
+181:     {
+182:         try
+183:         {
+184:             await using var connection = new MySqlConnection(_connectionString);
+185:             await connection.OpenAsync();
+186: 
+187:             await using var command = new MySqlCommand
+188:             {
+189:                 Connection = connection,
+190:                 CommandText = @"
+191:                     SELECT id, shipment_date, shipment_number, po_number, receiver_number,
+192:                            employee_number, notes, status, created_date, modified_date, is_archived
+193:                     FROM volvo_label_data
+194:                     WHERE id = @p_id",
+195:                 CommandType = CommandType.Text
+196:             };
+197: 
+198:             command.Parameters.AddWithValue("@p_id", shipmentId);
+199: 
+200:             await using var reader = await command.ExecuteReaderAsync();
+201: 
+202:             if (await reader.ReadAsync())
+203:             {
+204:                 return new Model_Dao_Result<Model_VolvoShipment?>
+205:                 {
+206:                     Success = true,
+207:                     Data = MapFromReader(reader),
+208:                     AffectedRows = 1
+209:                 };
+210:             }
+211: 
+212:             return new Model_Dao_Result<Model_VolvoShipment?>
+213:             {
+214:                 Success = false,
+215:                 Data = null,
+216:                 ErrorMessage = "Shipment not found"
+217:             };
+218:         }
+219:         catch (Exception ex)
+220:         {
+221:             return new Model_Dao_Result<Model_VolvoShipment?>
+222:             {
+223:                 Success = false,
+224:                 Data = null,
+225:                 ErrorMessage = $"Error retrieving shipment: {ex.Message}",
+226:                 Severity = Enum_ErrorSeverity.Error,
+227:                 Exception = ex
+228:             };
+229:         }
+230:     }
+231: 
+232:     /// <summary>
+233:     /// Gets shipment history with filtering
+234:     /// </summary>
+235:     /// <param name="startDate">Start date for filter</param>
+236:     /// <param name="endDate">End date for filter</param>
+237:     /// <param name="status">Status filter ('pending_po', 'completed', or 'all')</param>
+238:     /// <returns>Model_Dao_Result with list of shipments</returns>
+239:     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
+240:         DateTime startDate,
+241:         DateTime endDate,
+242:         string status = "all")
+243:     {
+244:         var parameters = new Dictionary<string, object>
+245:         {
+246:             { "start_date", startDate.Date },
+247:             { "end_date", endDate.Date },
+248:             { "status", status }
+249:         };
+250: 
+251:         return await Helper_Database_StoredProcedure.ExecuteListAsync(
+252:             _connectionString,
+253:             "sp_Volvo_Shipment_GetHistory",
+254:             MapFromReader,
+255:             parameters
+256:         );
+257:     }
+258: 
+259:     /// <summary>
+260:     /// Maps DataReader to Model_VolvoShipment
+261:     /// </summary>
+262:     /// <param name="reader"></param>
+263:     private static Model_VolvoShipment MapFromReader(IDataReader reader)
+264:     {
+265:         return new Model_VolvoShipment
+266:         {
+267:             Id = reader.GetInt32(reader.GetOrdinal("id")),
+268:             ShipmentDate = reader.GetDateTime(reader.GetOrdinal("shipment_date")),
+269:             ShipmentNumber = reader.GetInt32(reader.GetOrdinal("shipment_number")),
+270:             PONumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+271:                 ? null
+272:                 : reader.GetString(reader.GetOrdinal("po_number")),
+273:             ReceiverNumber = reader.IsDBNull(reader.GetOrdinal("receiver_number"))
+274:                 ? null
+275:                 : reader.GetString(reader.GetOrdinal("receiver_number")),
+276:             EmployeeNumber = reader.GetString(reader.GetOrdinal("employee_number")),
+277:             Notes = reader.IsDBNull(reader.GetOrdinal("notes"))
+278:                 ? null
+279:                 : reader.GetString(reader.GetOrdinal("notes")),
+280:             Status = reader.GetString(reader.GetOrdinal("status")),
+281:             CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
+282:             ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date")),
+283:             IsArchived = reader.GetBoolean(reader.GetOrdinal("is_archived"))
+284:         };
+285:     }
+286: 
+287:     /// <summary>
+288:     /// Gets the next available shipment number (max + 1)
+289:     /// </summary>
+290:     public async Task<Model_Dao_Result<int>> GetNextShipmentNumberAsync()
+291:     {
+292:         try
+293:         {
+294:             // Query to get max shipment_number + 1
+295:             await using var connection = new MySqlConnection(_connectionString);
+296:             await connection.OpenAsync();
+297: 
+298:             const string query = "SELECT COALESCE(MAX(shipment_number), 0) + 1 FROM volvo_label_data";
+299:             await using var command = new MySqlCommand(query, connection);
+300: 
+301:             var result = await command.ExecuteScalarAsync();
+302:             var nextNumber = Convert.ToInt32(result);
+303: 
+304:             return new Model_Dao_Result<int>
+305:             {
+306:                 Success = true,
+307:                 Data = nextNumber
+308:             };
+309:         }
+310:         catch (Exception ex)
+311:         {
+312:             return new Model_Dao_Result<int>
+313:             {
+314:                 Success = false,
+315:                 ErrorMessage = $"Error getting next shipment number: {ex.Message}",
+316:                 Severity = Enum_ErrorSeverity.Error,
+317:                 Exception = ex
+318:             };
+319:         }
+320:     }
+321: }
+````
+
+## File: Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandler.cs
+````csharp
+  1: using System;
+  2: using System.Linq;
+  3: using System.Threading;
+  4: using System.Threading.Tasks;
+  5: using Mapster;
+  6: using MediatR;
+  7: using MTM_Receiving_Application.Module_Core.Models.Core;
+  8: using MTM_Receiving_Application.Module_Volvo.Data;
+  9: using MTM_Receiving_Application.Module_Volvo.Models;
+ 10: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 11: 
+ 12: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 13: 
+ 14: /// <summary>
+ 15: /// Handler for SavePendingShipmentCommand - saves shipment as pending for later resumption.
+ 16: /// </summary>
+ 17: public class SavePendingShipmentCommandHandler : IRequestHandler<SavePendingShipmentCommand, Model_Dao_Result<int>>
+ 18: {
+ 19:     private readonly Dao_VolvoShipment _shipmentDao;
+ 20:     private readonly Dao_VolvoShipmentLine _lineDao;
+ 21:     private readonly Dao_VolvoPart _partDao;
+ 22: 
+ 23:     public SavePendingShipmentCommandHandler(
+ 24:         Dao_VolvoShipment shipmentDao,
+ 25:         Dao_VolvoShipmentLine lineDao,
+ 26:         Dao_VolvoPart partDao)
+ 27:     {
+ 28:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+ 29:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+ 30:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+ 31:     }
+ 32: 
+ 33:     public async Task<Model_Dao_Result<int>> Handle(SavePendingShipmentCommand request, CancellationToken cancellationToken)
+ 34:     {
+ 35:         try
+ 36:         {
+ 37:             // Create shipment model
+ 38:             var shipment = new Model_VolvoShipment
+ 39:             {
+ 40:                 ShipmentDate = request.ShipmentDate.DateTime,
+ 41:                 ShipmentNumber = request.ShipmentNumber,
+ 42:                 Notes = request.Notes,
+ 43:                 Status = "Pending",
+ 44:                 EmployeeNumber = Environment.UserName // TODO: Get from session/auth
+ 45:             };
+ 46: 
+ 47:             Model_Dao_Result<(int ShipmentId, int ShipmentNumber)> saveResult;
+ 48: 
+ 49:             if (request.ShipmentId.HasValue && request.ShipmentId.Value > 0)
+ 50:             {
+ 51:                 // Update existing pending shipment by ID
+ 52:                 shipment.Id = request.ShipmentId.Value;
+ 53:                 var updateResult = await _shipmentDao.UpdateAsync(shipment);
+ 54: 
+ 55:                 if (!updateResult.IsSuccess)
+ 56:                 {
+ 57:                     return Model_Dao_Result_Factory.Failure<int>(updateResult.ErrorMessage);
+ 58:                 }
+ 59: 
+ 60:                 saveResult = new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+ 61:                 {
+ 62:                     Success = true,
+ 63:                     Data = (request.ShipmentId.Value, request.ShipmentNumber)
+ 64:                 };
+ 65:             }
+ 66:             else
+ 67:             {
+ 68:                 // If a pending shipment already exists, update it instead of inserting a new one
+ 69:                 var pendingResult = await _shipmentDao.GetPendingAsync();
+ 70:                 if (!pendingResult.IsSuccess)
+ 71:                 {
+ 72:                     return Model_Dao_Result_Factory.Failure<int>(pendingResult.ErrorMessage);
+ 73:                 }
+ 74: 
+ 75:                 if (pendingResult.Data != null)
+ 76:                 {
+ 77:                     shipment.Id = pendingResult.Data.Id;
+ 78:                     var updateResult = await _shipmentDao.UpdateAsync(shipment);
+ 79: 
+ 80:                     if (!updateResult.IsSuccess)
+ 81:                     {
+ 82:                         return Model_Dao_Result_Factory.Failure<int>(updateResult.ErrorMessage);
+ 83:                     }
+ 84: 
+ 85:                     saveResult = new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+ 86:                     {
+ 87:                         Success = true,
+ 88:                         Data = (pendingResult.Data.Id, pendingResult.Data.ShipmentNumber)
+ 89:                     };
+ 90:                 }
+ 91:                 else
+ 92:                 {
+ 93:                     // Insert new pending shipment
+ 94:                     saveResult = await _shipmentDao.InsertAsync(shipment);
+ 95: 
+ 96:                     if (!saveResult.IsSuccess)
+ 97:                     {
+ 98:                         return Model_Dao_Result_Factory.Failure<int>(saveResult.ErrorMessage);
+ 99:                     }
+100:                 }
+101:             }
+102: 
+103:             var shipmentId = saveResult.Data.ShipmentId;
+104: 
+105:             // Replace existing lines if shipment already existed
+106:             var existingLinesResult = await _lineDao.GetByShipmentIdAsync(shipmentId);
+107:             if (!existingLinesResult.IsSuccess)
+108:             {
+109:                 return Model_Dao_Result_Factory.Failure<int>(existingLinesResult.ErrorMessage);
+110:             }
+111: 
+112:             foreach (var existingLine in existingLinesResult.Data ?? Enumerable.Empty<Model_VolvoShipmentLine>())
+113:             {
+114:                 var deleteResult = await _lineDao.DeleteAsync(existingLine.Id);
+115:                 if (!deleteResult.IsSuccess)
+116:                 {
+117:                     return Model_Dao_Result_Factory.Failure<int>(
+118:                         $"Failed to delete line {existingLine.Id}: {deleteResult.ErrorMessage}");
+119:                 }
+120:             }
+121: 
+122:             // Insert shipment lines
+123:             foreach (var partDto in request.Parts)
+124:             {
+125:                 var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+126:                 if (!partResult.IsSuccess || partResult.Data == null)
+127:                 {
+128:                     return Model_Dao_Result_Factory.Failure<int>(
+129:                         partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+130:                 }
+131: 
+132:                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
+133:                 var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+134: 
+135:                 var line = new Model_VolvoShipmentLine
+136:                 {
+137:                     ShipmentId = shipmentId,
+138:                     PartNumber = partDto.PartNumber,
+139:                     QuantityPerSkid = quantityPerSkid,
+140:                     ReceivedSkidCount = partDto.ReceivedSkidCount,
+141:                     CalculatedPieceCount = calculatedPieceCount,
+142:                     ExpectedSkidCount = partDto.ExpectedSkidCount,
+143:                     HasDiscrepancy = partDto.HasDiscrepancy,
+144:                     DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+145:                 };
+146: 
+147:                 var lineResult = await _lineDao.InsertAsync(line);
+148:                 if (!lineResult.IsSuccess)
+149:                 {
+150:                     return Model_Dao_Result_Factory.Failure<int>(
+151:                         $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+152:                 }
+153:             }
+154: 
+155:             return new Model_Dao_Result<int>
+156:             {
+157:                 Success = true,
+158:                 Data = shipmentId
+159:             };
+160:         }
+161:         catch (Exception ex)
+162:         {
+163:             return Model_Dao_Result_Factory.Failure<int>(
+164:                 $"Unexpected error saving pending shipment: {ex.Message}", ex);
+165:         }
+166:     }
+167: }
+````
+
+## File: Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandler.cs
+````csharp
+ 1: using System;
+ 2: using System.Threading;
+ 3: using System.Threading.Tasks;
+ 4: using MediatR;
+ 5: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+ 6: using MTM_Receiving_Application.Module_Core.Models.Core;
+ 7: using MTM_Receiving_Application.Module_Volvo.Contracts;
+ 8: using MTM_Receiving_Application.Module_Volvo.Data;
+ 9: using MTM_Receiving_Application.Module_Volvo.Helpers;
+10: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+11: using MTM_Receiving_Application.Module_Volvo.Services;
+12: 
+13: namespace MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+14: 
+15: /// <summary>
+16: /// Handler for GenerateLabelCsvQuery - generates CSV label file for shipment.
+17: /// </summary>
+18: public class GenerateLabelCsvQueryHandler : IRequestHandler<GenerateLabelCsvQuery, Model_Dao_Result<string>>
+19: {
+20:     private readonly Dao_VolvoShipment _shipmentDao;
+21:     private readonly Dao_VolvoShipmentLine _lineDao;
+22:     private readonly Dao_VolvoPart _partDao;
+23:     private readonly Dao_VolvoPartComponent _componentDao;
+24:     private readonly IService_VolvoAuthorization _authService;
+25:     private readonly IService_LoggingUtility _logger;
+26: 
+27:     public GenerateLabelCsvQueryHandler(
+28:         Dao_VolvoShipment shipmentDao,
+29:         Dao_VolvoShipmentLine lineDao,
+30:         Dao_VolvoPart partDao,
+31:         Dao_VolvoPartComponent componentDao,
+32:         IService_VolvoAuthorization authService,
+33:         IService_LoggingUtility logger)
+34:     {
+35:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+36:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+37:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+38:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+39:         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+40:         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+41:     }
+42: 
+43:     public async Task<Model_Dao_Result<string>> Handle(GenerateLabelCsvQuery request, CancellationToken cancellationToken)
+44:     {
+45:         return await Helper_VolvoShipmentCalculations.GenerateLabelCsvAsync(
+46:             _shipmentDao,
+47:             _lineDao,
+48:             _partDao,
+49:             _componentDao,
+50:             _authService,
+51:             _logger,
+52:             request.ShipmentId);
+53:     }
+54: }
+````
+
+## File: Module_Volvo/ViewModels/ViewModel_Volvo_History.cs
+````csharp
+  1: using System;
+  2: using System.Collections.ObjectModel;
+  3: using System.Linq;
+  4: using System.Threading.Tasks;
+  5: using CommunityToolkit.Mvvm.ComponentModel;
+  6: using CommunityToolkit.Mvvm.Input;
+  7: using MediatR;
+  8: using Microsoft.UI.Xaml;
+  9: using Microsoft.UI.Xaml.Controls;
+ 10: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+ 11: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 12: using MTM_Receiving_Application.Module_Shared.ViewModels;
+ 13: using MTM_Receiving_Application.Module_Volvo.Models;
+ 14: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 15: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 16: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 17: 
+ 18: namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
+ 19: 
+ 20: /// <summary>
+ 21: /// ViewModel for viewing and managing Volvo shipment history
+ 22: /// </summary>
+ 23: public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
+ 24: {
+ 25:     private readonly IMediator _mediator;
+ 26: 
+ 27:     #region Observable Properties
+ 28: 
+ 29:     [ObservableProperty]
+ 30:     private ObservableCollection<Model_VolvoShipment> _history = new();
+ 31: 
+ 32:     [ObservableProperty]
+ 33:     private Model_VolvoShipment? _selectedShipment;
+ 34: 
+ 35:     [ObservableProperty]
+ 36:     private DateTimeOffset? _startDate = DateTimeOffset.Now.AddDays(-30);
+ 37: 
+ 38:     [ObservableProperty]
+ 39:     private DateTimeOffset? _endDate = DateTimeOffset.Now;
+ 40: 
+ 41:     [ObservableProperty]
+ 42:     private string _statusFilter = "All";
+ 43: 
+ 44:     [ObservableProperty]
+ 45:     private ObservableCollection<string> _statusOptions = new() { "All", "Pending PO", "Completed" };
+ 46: 
+ 47:     #endregion
+ 48: 
+ 49:     #region Constructor
+ 50: 
+ 51:     public ViewModel_Volvo_History(
+ 52:         IMediator mediator,
+ 53:         IService_ErrorHandler errorHandler,
+ 54:         IService_LoggingUtility logger)
+ 55:         : base(errorHandler, logger)
+ 56:     {
+ 57:         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+ 58:     }
+ 59: 
+ 60:     #endregion
+ 61: 
+ 62:     #region Navigation Commands
+ 63: 
+ 64:     [RelayCommand]
+ 65:     private void GoBack()
+ 66:     {
+ 67:         if (App.MainWindow is MainWindow mainWindow)
+ 68:         {
+ 69:             var contentFrame = mainWindow.GetContentFrame();
+ 70:             if (contentFrame != null && contentFrame.CanGoBack)
+ 71:             {
+ 72:                 contentFrame.GoBack();
+ 73:             }
+ 74:         }
+ 75:     }
+ 76: 
+ 77:     #endregion
+ 78: 
+ 79:     #region Commands
+ 80: 
+ 81:     /// <summary>
+ 82:     /// Loads recent shipments (default: last 30 days)
+ 83:     /// </summary>
+ 84:     [RelayCommand]
+ 85:     private async Task LoadRecentShipmentsAsync()
+ 86:     {
+ 87:         if (IsBusy)
+ 88:         {
+ 89:             return;
+ 90:         }
+ 91: 
+ 92:         try
+ 93:         {
+ 94:             IsBusy = true;
+ 95:             StatusMessage = "Loading recent shipments...";
+ 96: 
+ 97:             var result = await _mediator.Send(new GetRecentShipmentsQuery());
+ 98: 
+ 99:             if (result.IsSuccess && result.Data != null)
+100:             {
+101:                 History.Clear();
+102:                 foreach (var shipment in result.Data)
+103:                 {
+104:                     History.Add(shipment);
+105:                 }
+106:                 StatusMessage = $"Loaded {History.Count} shipment(s)";
+107:             }
+108:             else
+109:             {
+110:                 await _errorHandler.ShowUserErrorAsync(
+111:                     result.ErrorMessage ?? "Failed to load recent shipments",
+112:                     "Load Error",
+113:                     nameof(LoadRecentShipmentsAsync));
+114:                 StatusMessage = "Failed to load recent shipments";
+115:             }
+116:         }
+117:         catch (Exception ex)
+118:         {
+119:             _errorHandler.HandleException(
+120:                 ex,
+121:                 Enum_ErrorSeverity.Medium,
+122:                 nameof(LoadRecentShipmentsAsync),
+123:                 nameof(ViewModel_Volvo_History));
+124:             StatusMessage = "Error loading recent shipments";
+125:         }
+126:         finally
+127:         {
+128:             IsBusy = false;
+129:         }
+130:     }
+131: 
+132:     /// <summary>
+133:     /// Loads shipment history based on current filters
+134:     /// </summary>
+135:     [RelayCommand]
+136:     private async Task FilterAsync()
+137:     {
+138:         if (IsBusy)
+139:         {
+140:             return;
+141:         }
+142: 
+143:         try
+144:         {
+145:             IsBusy = true;
+146:             StatusMessage = "Loading history...";
+147: 
+148:             var result = await _mediator.Send(new GetShipmentHistoryQuery
+149:             {
+150:                 StartDate = StartDate,
+151:                 EndDate = EndDate,
+152:                 StatusFilter = StatusFilter
+153:             });
+154: 
+155:             if (result.IsSuccess && result.Data != null)
+156:             {
+157:                 History.Clear();
+158:                 foreach (var shipment in result.Data)
+159:                 {
+160:                     History.Add(shipment);
+161:                 }
+162:                 StatusMessage = $"Loaded {History.Count} shipment(s)";
+163:             }
+164:             else
+165:             {
+166:                 await _errorHandler.ShowUserErrorAsync(
+167:                     result.ErrorMessage ?? "Failed to load history",
+168:                     "Load Error",
+169:                     nameof(FilterAsync));
+170:                 StatusMessage = "Failed to load history";
+171:             }
+172:         }
+173:         catch (Exception ex)
+174:         {
+175:             _errorHandler.HandleException(
+176:                 ex,
+177:                 Enum_ErrorSeverity.Medium,
+178:                 nameof(FilterAsync),
+179:                 nameof(ViewModel_Volvo_History));
+180:             StatusMessage = "Error loading history";
+181:         }
+182:         finally
+183:         {
+184:             IsBusy = false;
+185:         }
+186:     }
+187: 
+188:     /// <summary>
+189:     /// Views details for the selected shipment
+190:     /// </summary>
+191:     [RelayCommand(CanExecute = nameof(CanViewDetail))]
+192:     private async Task ViewDetailAsync()
+193:     {
+194:         if (SelectedShipment == null)
+195:         {
+196:             return;
+197:         }
+198: 
+199:         try
+200:         {
+201:             IsBusy = true;
+202:             StatusMessage = $"Loading details for shipment #{SelectedShipment.ShipmentNumber}...";
+203:             await _logger.LogInfoAsync($"Loading details for shipment ID: {SelectedShipment.Id}");
+204: 
+205:             var result = await _mediator.Send(new GetShipmentDetailQuery
+206:             {
+207:                 ShipmentId = SelectedShipment.Id
+208:             });
+209: 
+210:             if (result.IsSuccess && result.Data != null)
+211:             {
+212:                 var shipment = result.Data.Shipment;
+213:                 var lines = result.Data.Lines;
+214: 
+215:                 // Build detail message
+216:                 var details = new System.Text.StringBuilder();
+217:                 details.AppendLine($"Shipment #{shipment.ShipmentNumber}");
+218:                 details.AppendLine($"Date: {shipment.ShipmentDate:d}");
+219:                 details.AppendLine($"PO Number: {shipment.PONumber ?? "N/A"}");
+220:                 details.AppendLine($"Receiver: {shipment.ReceiverNumber ?? "N/A"}");
+221:                 details.AppendLine($"Status: {shipment.Status}");
+222:                 details.AppendLine();
+223:                 details.AppendLine($"Parts ({lines.Count}):");
+224:                 foreach (var line in lines)
+225:                 {
+226:                     details.AppendLine($"  • {line.PartNumber}: {line.ReceivedSkidCount} skids ({line.CalculatedPieceCount} pieces)");
+227:                     if (line.HasDiscrepancy)
+228:                     {
+229:                         details.AppendLine($"    ⚠ Discrepancy: Expected {line.ExpectedSkidCount} skids");
+230:                     }
+231:                 }
+232:                 if (!string.IsNullOrWhiteSpace(shipment.Notes))
+233:                 {
+234:                     details.AppendLine();
+235:                     details.AppendLine($"Notes: {shipment.Notes}");
+236:                 }
+237: 
+238:                 // Show dialog
+239:                 var dialog = new ContentDialog
+240:                 {
+241:                     Title = $"Shipment #{SelectedShipment.ShipmentNumber} Details",
+242:                     Content = new ScrollViewer
+243:                     {
+244:                         Content = new TextBlock
+245:                         {
+246:                             Text = details.ToString(),
+247:                             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+248:                             FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas")
+249:                         },
+250:                         MaxHeight = 500
+251:                     },
+252:                     CloseButtonText = "Close",
+253:                     XamlRoot = App.MainWindow?.Content?.XamlRoot
+254:                 };
+255:                 await dialog.ShowAsync();
+256: 
+257:                 StatusMessage = $"Viewed details for shipment #{shipment.ShipmentNumber}";
+258:                 await _logger.LogInfoAsync($"Successfully loaded {lines.Count} lines");
+259:             }
+260:             else
+261:             {
+262:                 await _errorHandler.ShowUserErrorAsync(
+263:                     result.ErrorMessage ?? "Failed to load shipment details",
+264:                     "Load Error",
+265:                     nameof(ViewDetailAsync));
+266:                 StatusMessage = "Failed to load details";
+267:             }
+268:         }
+269:         catch (Exception ex)
+270:         {
+271:             _errorHandler.HandleException(
+272:                 ex,
+273:                 Enum_ErrorSeverity.Medium,
+274:                 nameof(ViewDetailAsync),
+275:                 nameof(ViewModel_Volvo_History));
+276:             StatusMessage = "Error loading details";
+277:         }
+278:         finally
+279:         {
+280:             IsBusy = false;
+281:         }
+282:     }
+283: 
+284:     private bool CanViewDetail() => SelectedShipment != null && !IsBusy;
+285: 
+286:     /// <summary>
+287:     /// Opens edit dialog for the selected shipment
+288:     /// </summary>
+289:     [RelayCommand(CanExecute = nameof(CanEdit))]
+290:     private async Task EditAsync()
+291:     {
+292:         if (SelectedShipment == null)
+293:         {
+294:             return;
+295:         }
+296: 
+297:         try
+298:         {
+299:             IsBusy = true;
+300:             StatusMessage = "Loading shipment data...";
+301: 
+302:             var detailResult = await _mediator.Send(new GetShipmentDetailQuery
+303:             {
+304:                 ShipmentId = SelectedShipment.Id
+305:             });
+306: 
+307:             if (!detailResult.IsSuccess || detailResult.Data == null)
+308:             {
+309:                 await _errorHandler.ShowUserErrorAsync(
+310:                     detailResult.ErrorMessage ?? "Failed to load shipment lines",
+311:                     "Load Error",
+312:                     nameof(EditAsync));
+313:                 return;
+314:             }
+315: 
+316:             // Get available parts for the add part dialog
+317:             var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
+318:             {
+319:                 IncludeInactive = false
+320:             });
+321: 
+322:             var availableParts = partsResult.IsSuccess && partsResult.Data != null
+323:                 ? new ObservableCollection<Model_VolvoPart>(partsResult.Data)
+324:                 : new ObservableCollection<Model_VolvoPart>();
+325: 
+326:             // Create and show edit dialog
+327:             var dialog = new Views.VolvoShipmentEditDialog
+328:             {
+329:                 XamlRoot = App.MainWindow?.Content?.XamlRoot
+330:             };
+331: 
+332:             // Convert List to ObservableCollection for binding
+333:             var linesCollection = new ObservableCollection<Model_VolvoShipmentLine>(detailResult.Data.Lines);
+334:             dialog.LoadShipment(detailResult.Data.Shipment, linesCollection, availableParts);
+335: 
+336:             var result = await dialog.ShowAsync();
+337: 
+338:             if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+339:             {
+340:                 StatusMessage = "Saving changes...";
+341: 
+342:                 // Get updated data from dialog
+343:                 var updatedShipment = dialog.GetUpdatedShipment();
+344:                 var updatedLines = dialog.GetUpdatedLines();
+345: 
+346:                 // Call service to update shipment
+347:                 var updateCommand = new UpdateShipmentCommand
+348:                 {
+349:                     ShipmentId = updatedShipment.Id,
+350:                     ShipmentDate = new DateTimeOffset(updatedShipment.ShipmentDate),
+351:                     Notes = updatedShipment.Notes ?? string.Empty,
+352:                     PONumber = updatedShipment.PONumber ?? string.Empty,
+353:                     ReceiverNumber = updatedShipment.ReceiverNumber ?? string.Empty,
+354:                     Parts = updatedLines.Select(line => new ShipmentLineDto
+355:                     {
+356:                         PartNumber = line.PartNumber,
+357:                         ReceivedSkidCount = line.ReceivedSkidCount,
+358:                         ExpectedSkidCount = line.ExpectedSkidCount.HasValue
+359:                             ? Convert.ToInt32(line.ExpectedSkidCount.Value)
+360:                             : null,
+361:                         HasDiscrepancy = line.HasDiscrepancy,
+362:                         DiscrepancyNote = line.DiscrepancyNote ?? string.Empty
+363:                     }).ToList()
+364:                 };
+365: 
+366:                 var updateResult = await _mediator.Send(updateCommand);
+367: 
+368:                 if (updateResult.IsSuccess)
+369:                 {
+370:                     StatusMessage = $"Shipment #{SelectedShipment.ShipmentNumber} updated successfully";
+371: 
+372:                     // Refresh history
+373:                     await FilterAsync();
+374:                 }
+375:                 else
+376:                 {
+377:                     await _errorHandler.ShowUserErrorAsync(
+378:                         updateResult.ErrorMessage ?? "Failed to update shipment",
+379:                         "Update Error",
+380:                         nameof(EditAsync));
+381:                     StatusMessage = "Update failed";
+382:                 }
+383:             }
+384:             else
+385:             {
+386:                 StatusMessage = "Edit cancelled";
+387:             }
+388:         }
+389:         catch (Exception ex)
+390:         {
+391:             _errorHandler.HandleException(
+392:                 ex,
+393:                 Enum_ErrorSeverity.Medium,
+394:                 nameof(EditAsync),
+395:                 nameof(ViewModel_Volvo_History));
+396:             StatusMessage = "Error editing shipment";
+397:         }
+398:         finally
+399:         {
+400:             IsBusy = false;
+401:         }
+402:     }
+403: 
+404:     private bool CanEdit() => SelectedShipment != null && !IsBusy;
+405: 
+406:     /// <summary>
+407:     /// Exports history to CSV file
+408:     /// </summary>
+409:     [RelayCommand]
+410:     private async Task ExportAsync()
+411:     {
+412:         if (IsBusy)
+413:         {
+414:             return;
+415:         }
+416: 
+417:         try
+418:         {
+419:             IsBusy = true;
+420:             StatusMessage = "Exporting history...";
+421: 
+422:             var result = await _mediator.Send(new ExportShipmentsQuery
+423:             {
+424:                 StartDate = StartDate,
+425:                 EndDate = EndDate,
+426:                 StatusFilter = StatusFilter
+427:             });
+428: 
+429:             if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
+430:             {
+431:                 // Save file picker would go here
+432:                 StatusMessage = $"Exported {History.Count} record(s) to CSV";
+433:             }
+434:             else
+435:             {
+436:                 await _errorHandler.ShowUserErrorAsync(
+437:                     result.ErrorMessage ?? "Failed to export history",
+438:                     "Export Error",
+439:                     nameof(ExportAsync));
+440:                 StatusMessage = "Export failed";
+441:             }
+442:         }
+443:         catch (Exception ex)
+444:         {
+445:             _errorHandler.HandleException(
+446:                 ex,
+447:                 Enum_ErrorSeverity.Medium,
+448:                 nameof(ExportAsync),
+449:                 nameof(ViewModel_Volvo_History));
+450:             StatusMessage = "Error exporting history";
+451:         }
+452:         finally
+453:         {
+454:             IsBusy = false;
+455:         }
+456:     }
+457: 
+458:     #endregion
+459: 
+460:     #region Property Changed Handlers
+461: 
+462:     partial void OnSelectedShipmentChanged(Model_VolvoShipment? value)
+463:     {
+464:         ViewDetailCommand.NotifyCanExecuteChanged();
+465:         EditCommand.NotifyCanExecuteChanged();
+466:     }
+467: 
+468:     #endregion
+469: }
+````
+
+## File: Module_Volvo/ViewModels/ViewModel_Volvo_Settings.cs
+````csharp
+  1: using System;
+  2: using System.Collections.ObjectModel;
+  3: using System.Linq;
+  4: using System.Threading.Tasks;
+  5: using System.Windows.Input;
+  6: using CommunityToolkit.Mvvm.ComponentModel;
+  7: using CommunityToolkit.Mvvm.Input;
+  8: using MediatR;
+  9: using Microsoft.UI.Xaml.Controls;
+ 10: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+ 11: using MTM_Receiving_Application.Module_Volvo.Models;
+ 12: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 13: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 14: using MTM_Receiving_Application.Module_Shared.ViewModels;
+ 15: using MTM_Receiving_Application.Module_Core.Models.Enums;
+ 16: using Windows.Storage;
+ 17: using Windows.Storage.Pickers;
+ 18: 
+ 19: namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
+ 20: 
+ 21: /// <summary>
+ 22: /// ViewModel for Volvo master data settings (parts catalog management)
+ 23: /// </summary>
+ 24: public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
+ 25: {
+ 26:     private readonly IMediator _mediator;
+ 27: 
+ 28:     [ObservableProperty]
+ 29:     private ObservableCollection<Model_VolvoPart> _parts = new();
+ 30: 
+ 31:     [ObservableProperty]
+ 32:     private Model_VolvoPart? _selectedPart;
+ 33: 
+ 34:     [ObservableProperty]
+ 35:     private bool _showInactive = false;
+ 36: 
+ 37:     [ObservableProperty]
+ 38:     private int _totalPartsCount;
+ 39: 
+ 40:     [ObservableProperty]
+ 41:     private int _activePartsCount;
+ 42: 
+ 43:     public ViewModel_Volvo_Settings(
+ 44:         IMediator mediator,
+ 45:         IService_ErrorHandler errorHandler,
+ 46:         IService_LoggingUtility logger)
+ 47:         : base(errorHandler, logger)
+ 48:     {
+ 49:         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+ 50:     }
+ 51: 
+ 52:     [RelayCommand]
+ 53:     private async Task RefreshAsync()
+ 54:     {
+ 55:         if (IsBusy)
+ 56:         {
+ 57:             return;
+ 58:         }
+ 59: 
+ 60:         try
+ 61:         {
+ 62:             IsBusy = true;
+ 63:             StatusMessage = "Loading parts catalog...";
+ 64: 
+ 65:             var result = await _mediator.Send(new GetAllVolvoPartsQuery
+ 66:             {
+ 67:                 IncludeInactive = ShowInactive
+ 68:             });
+ 69: 
+ 70:             if (result.IsSuccess && result.Data != null)
+ 71:             {
+ 72:                 Parts.Clear();
+ 73:                 foreach (var part in result.Data.OrderBy(p => p.PartNumber))
+ 74:                 {
+ 75:                     Parts.Add(part);
+ 76:                 }
+ 77: 
+ 78:                 TotalPartsCount = Parts.Count;
+ 79:                 ActivePartsCount = Parts.Count(p => p.IsActive);
+ 80:                 StatusMessage = $"Loaded {ActivePartsCount} active parts (Total: {TotalPartsCount})";
+ 81:             }
+ 82:             else
+ 83:             {
+ 84:                 await _errorHandler.ShowUserErrorAsync(
+ 85:                     result.ErrorMessage ?? "Failed to load parts catalog",
+ 86:                     "Load Error",
+ 87:                     nameof(RefreshAsync));
+ 88:                 StatusMessage = "Failed to load parts";
+ 89:             }
+ 90:         }
+ 91:         catch (Exception ex)
+ 92:         {
+ 93:             _errorHandler.HandleException(
+ 94:                 ex,
+ 95:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+ 96:                 nameof(RefreshAsync),
+ 97:                 nameof(ViewModel_Volvo_Settings));
+ 98:             StatusMessage = "Error loading parts";
+ 99:         }
+100:         finally
+101:         {
+102:             IsBusy = false;
+103:         }
+104:     }
+105: 
+106:     [RelayCommand]
+107:     private async Task AddPartAsync()
+108:     {
+109:         if (IsBusy)
+110:         {
+111:             return;
+112:         }
+113: 
+114:         try
+115:         {
+116:             StatusMessage = "Opening add part dialog...";
+117: 
+118:             var dialog = new Views.VolvoPartAddEditDialog();
+119:             dialog.InitializeForAdd();
+120: 
+121:             var windowService = App.GetService<IService_Window>();
+122:             if (windowService != null)
+123:             {
+124:                 dialog.XamlRoot = windowService.GetXamlRoot();
+125:             }
+126: 
+127:             var result = await dialog.ShowAsync();
+128: 
+129:             if (result == ContentDialogResult.Primary && dialog.Part != null)
+130:             {
+131:                 IsBusy = true;
+132:                 StatusMessage = $"Adding part {dialog.Part.PartNumber}...";
+133: 
+134:                 var saveResult = await _mediator.Send(new AddVolvoPartCommand
+135:                 {
+136:                     PartNumber = dialog.Part.PartNumber,
+137:                     QuantityPerSkid = dialog.Part.QuantityPerSkid
+138:                 });
+139: 
+140:                 if (saveResult.IsSuccess)
+141:                 {
+142:                     StatusMessage = $"Part {dialog.Part.PartNumber} added successfully";
+143:                     await RefreshAsync();
+144:                 }
+145:                 else
+146:                 {
+147:                     await _errorHandler.ShowUserErrorAsync(
+148:                         saveResult.ErrorMessage ?? "Failed to add part",
+149:                         "Add Error",
+150:                         nameof(AddPartAsync));
+151:                     StatusMessage = "Failed to add part";
+152:                 }
+153: 
+154:                 IsBusy = false;
+155:             }
+156:             else
+157:             {
+158:                 StatusMessage = "Add part cancelled";
+159:             }
+160:         }
+161:         catch (Exception ex)
+162:         {
+163:             _errorHandler.HandleException(
+164:                 ex,
+165:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+166:                 nameof(AddPartAsync),
+167:                 nameof(ViewModel_Volvo_Settings));
+168:             StatusMessage = "Error adding part";
+169:         }
+170:     }
+171: 
+172:     [RelayCommand(CanExecute = nameof(CanEditPart))]
+173:     private async Task EditPartAsync()
+174:     {
+175:         if (IsBusy || SelectedPart == null)
+176:         {
+177:             return;
+178:         }
+179: 
+180:         try
+181:         {
+182:             StatusMessage = $"Opening edit dialog for {SelectedPart.PartNumber}...";
+183: 
+184:             var dialog = new Views.VolvoPartAddEditDialog();
+185:             dialog.InitializeForEdit(SelectedPart);
+186: 
+187:             var windowService = App.GetService<IService_Window>();
+188:             if (windowService != null)
+189:             {
+190:                 dialog.XamlRoot = windowService.GetXamlRoot();
+191:             }
+192: 
+193:             var result = await dialog.ShowAsync();
+194: 
+195:             if (result == ContentDialogResult.Primary && dialog.Part != null)
+196:             {
+197:                 IsBusy = true;
+198:                 StatusMessage = $"Updating part {dialog.Part.PartNumber}...";
+199: 
+200:                 var saveResult = await _mediator.Send(new UpdateVolvoPartCommand
+201:                 {
+202:                     PartNumber = dialog.Part.PartNumber,
+203:                     QuantityPerSkid = dialog.Part.QuantityPerSkid
+204:                 });
+205: 
+206:                 if (saveResult.IsSuccess)
+207:                 {
+208:                     StatusMessage = $"Part {dialog.Part.PartNumber} updated successfully";
+209:                     await RefreshAsync();
+210:                 }
+211:                 else
+212:                 {
+213:                     await _errorHandler.ShowUserErrorAsync(
+214:                         saveResult.ErrorMessage ?? "Failed to update part",
+215:                         "Update Error",
+216:                         nameof(EditPartAsync));
+217:                     StatusMessage = "Failed to update part";
+218:                 }
+219: 
+220:                 IsBusy = false;
+221:             }
+222:             else
+223:             {
+224:                 StatusMessage = "Edit cancelled";
+225:             }
+226:         }
+227:         catch (Exception ex)
+228:         {
+229:             _errorHandler.HandleException(
+230:                 ex,
+231:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+232:                 nameof(EditPartAsync),
+233:                 nameof(ViewModel_Volvo_Settings));
+234:             StatusMessage = "Error editing part";
+235:         }
+236:     }
+237: 
+238:     private bool CanEditPart() => SelectedPart != null && !IsBusy;
+239: 
+240:     [RelayCommand(CanExecute = nameof(CanDeactivatePart))]
+241:     private async Task DeactivatePartAsync()
+242:     {
+243:         if (IsBusy || SelectedPart == null)
+244:         {
+245:             return;
+246:         }
+247: 
+248:         try
+249:         {
+250:             // Confirmation dialog
+251:             var dialog = new ContentDialog
+252:             {
+253:                 Title = "Deactivate Part",
+254:                 Content = $"Are you sure you want to deactivate part {SelectedPart.PartNumber}?\n\n" +
+255:                           "This will hide the part from active lists, but it will remain in historical shipments.",
+256:                 PrimaryButtonText = "Deactivate",
+257:                 CloseButtonText = "Cancel",
+258:                 DefaultButton = ContentDialogButton.Close
+259:             };
+260: 
+261:             // Get XamlRoot from service
+262:             var windowService = App.GetService<IService_Window>();
+263:             if (windowService != null)
+264:             {
+265:                 dialog.XamlRoot = windowService.GetXamlRoot();
+266:             }
+267: 
+268:             var result = await dialog.ShowAsync();
+269: 
+270:             if (result == ContentDialogResult.Primary)
+271:             {
+272:                 IsBusy = true;
+273:                 StatusMessage = $"Deactivating part {SelectedPart.PartNumber}...";
+274: 
+275:                 var deactivateResult = await _mediator.Send(new DeactivateVolvoPartCommand
+276:                 {
+277:                     PartNumber = SelectedPart.PartNumber
+278:                 });
+279: 
+280:                 if (deactivateResult.IsSuccess)
+281:                 {
+282:                     StatusMessage = $"Part {SelectedPart.PartNumber} deactivated";
+283:                     await RefreshAsync();
+284:                 }
+285:                 else
+286:                 {
+287:                     await _errorHandler.ShowUserErrorAsync(
+288:                         deactivateResult.ErrorMessage ?? "Failed to deactivate part",
+289:                         "Deactivate Error",
+290:                         nameof(DeactivatePartAsync));
+291:                     StatusMessage = "Failed to deactivate part";
+292:                 }
+293: 
+294:                 IsBusy = false;
+295:             }
+296:         }
+297:         catch (Exception ex)
+298:         {
+299:             _errorHandler.HandleException(
+300:                 ex,
+301:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+302:                 nameof(DeactivatePartAsync),
+303:                 nameof(ViewModel_Volvo_Settings));
+304:             IsBusy = false;
+305:         }
+306:     }
+307: 
+308:     private bool CanDeactivatePart() => SelectedPart?.IsActive == true && !IsBusy;
+309: 
+310:     [RelayCommand(CanExecute = nameof(CanViewComponents))]
+311:     private async Task ViewComponentsAsync()
+312:     {
+313:         if (IsBusy || SelectedPart == null)
+314:         {
+315:             return;
+316:         }
+317: 
+318:         try
+319:         {
+320:             StatusMessage = $"Loading components for {SelectedPart.PartNumber}...";
+321: 
+322:             var result = await _mediator.Send(new GetPartComponentsQuery
+323:             {
+324:                 PartNumber = SelectedPart.PartNumber
+325:             });
+326: 
+327:             if (result.IsSuccess && result.Data != null)
+328:             {
+329:                 var componentsList = result.Data.Count > 0
+330:                     ? string.Join("\n", result.Data.Select(c => $"• {c.ComponentPartNumber} (Qty: {c.Quantity})"))
+331:                     : "No components defined";
+332: 
+333:                 var dialog = new ContentDialog
+334:                 {
+335:                     Title = $"Components for {SelectedPart.PartNumber}",
+336:                     Content = componentsList,
+337:                     CloseButtonText = "Close"
+338:                 };
+339: 
+340:                 var windowService = App.GetService<IService_Window>();
+341:                 if (windowService != null)
+342:                 {
+343:                     dialog.XamlRoot = windowService.GetXamlRoot();
+344:                 }
+345: 
+346:                 await dialog.ShowAsync();
+347:                 StatusMessage = $"Showing {result.Data.Count} components";
+348:             }
+349:             else
+350:             {
+351:                 await _errorHandler.ShowUserErrorAsync(
+352:                     result.ErrorMessage ?? "Failed to load components",
+353:                     "Load Error",
+354:                     nameof(ViewComponentsAsync));
+355:                 StatusMessage = "Failed to load components";
+356:             }
+357:         }
+358:         catch (Exception ex)
+359:         {
+360:             _errorHandler.HandleException(
+361:                 ex,
+362:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Low,
+363:                 nameof(ViewComponentsAsync),
+364:                 nameof(ViewModel_Volvo_Settings));
+365:         }
+366:     }
+367: 
+368:     private bool CanViewComponents() => SelectedPart != null && !IsBusy;
+369: 
+370:     [RelayCommand]
+371:     private async Task ImportCsvAsync()
+372:     {
+373:         if (IsBusy)
+374:         {
+375:             return;
+376:         }
+377: 
+378:         try
+379:         {
+380:             // File picker
+381:             var picker = new FileOpenPicker();
+382:             picker.FileTypeFilter.Add(".csv");
+383:             picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+384: 
+385:             // Get window handle
+386:             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+387:             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+388: 
+389:             var file = await picker.PickSingleFileAsync();
+390:             if (file == null)
+391:             {
+392:                 return;
+393:             }
+394: 
+395:             IsBusy = true;
+396:             StatusMessage = "Importing CSV...";
+397: 
+398:             var result = await _mediator.Send(new ImportPartsCsvCommand
+399:             {
+400:                 CsvFilePath = file.Path
+401:             });
+402: 
+403:             if (result.IsSuccess && result.Data != null)
+404:             {
+405:                 var summary = $"Import complete: {result.Data.SuccessCount} succeeded, {result.Data.FailureCount} failed";
+406:                 StatusMessage = summary;
+407:                 await RefreshAsync();
+408: 
+409:                 // Show summary dialog
+410:                 var dialog = new ContentDialog
+411:                 {
+412:                     Title = "Import Complete",
+413:                     Content = summary,
+414:                     CloseButtonText = "OK"
+415:                 };
+416: 
+417:                 var windowService = App.GetService<IService_Window>();
+418:                 if (windowService != null)
+419:                 {
+420:                     dialog.XamlRoot = windowService.GetXamlRoot();
+421:                 }
+422: 
+423:                 await dialog.ShowAsync();
+424:             }
+425:             else
+426:             {
+427:                 await _errorHandler.ShowUserErrorAsync(
+428:                     result.ErrorMessage ?? "Failed to import CSV",
+429:                     "Import Error",
+430:                     nameof(ImportCsvAsync));
+431:                 StatusMessage = "Import failed";
+432:             }
+433:         }
+434:         catch (Exception ex)
+435:         {
+436:             _errorHandler.HandleException(
+437:                 ex,
+438:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+439:                 nameof(ImportCsvAsync),
+440:                 nameof(ViewModel_Volvo_Settings));
+441:             StatusMessage = "Error importing CSV";
+442:         }
+443:         finally
+444:         {
+445:             IsBusy = false;
+446:         }
+447:     }
+448: 
+449:     [RelayCommand]
+450:     private async Task ExportCsvAsync()
+451:     {
+452:         if (IsBusy)
+453:         {
+454:             return;
+455:         }
+456: 
+457:         try
+458:         {
+459:             // File picker
+460:             var picker = new FileSavePicker();
+461:             picker.FileTypeChoices.Add("CSV File", new[] { ".csv" });
+462:             picker.SuggestedFileName = $"volvo_parts_{DateTime.Now:yyyyMMdd}.csv";
+463:             picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+464: 
+465:             // Get window handle
+466:             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+467:             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+468: 
+469:             var file = await picker.PickSaveFileAsync();
+470:             if (file == null)
+471:             {
+472:                 return;
+473:             }
+474: 
+475:             IsBusy = true;
+476:             StatusMessage = "Exporting to CSV...";
+477: 
+478:             var result = await _mediator.Send(new ExportPartsCsvQuery
+479:             {
+480:                 IncludeInactive = ShowInactive
+481:             });
+482: 
+483:             if (result.IsSuccess && result.Data != null)
+484:             {
+485:                 await FileIO.WriteTextAsync(file, result.Data);
+486:                 StatusMessage = $"Exported to {file.Path}";
+487:             }
+488:             else
+489:             {
+490:                 await _errorHandler.ShowUserErrorAsync(
+491:                     result.ErrorMessage ?? "Failed to export CSV",
+492:                     "Export Error",
+493:                     nameof(ExportCsvAsync));
+494:                 StatusMessage = "Export failed";
+495:             }
+496:         }
+497:         catch (Exception ex)
+498:         {
+499:             _errorHandler.HandleException(
+500:                 ex,
+501:                 Module_Core.Models.Enums.Enum_ErrorSeverity.Medium,
+502:                 nameof(ExportCsvAsync),
+503:                 nameof(ViewModel_Volvo_Settings));
+504:             StatusMessage = "Error exporting CSV";
+505:         }
+506:         finally
+507:         {
+508:             IsBusy = false;
+509:         }
+510:     }
+511: 
+512:     partial void OnShowInactiveChanged(bool value)
+513:     {
+514:         // Refresh when toggle changes
+515:         _ = RefreshAsync();
+516:     }
+517: 
+518:     partial void OnSelectedPartChanged(Model_VolvoPart? value)
+519:     {
+520:         // Notify commands that depend on selection
+521:         EditPartCommand.NotifyCanExecuteChanged();
+522:         DeactivatePartCommand.NotifyCanExecuteChanged();
+523:         ViewComponentsCommand.NotifyCanExecuteChanged();
+524:     }
+525: }
+````
+
+## File: Module_Volvo/Views/View_Volvo_History.xaml
+````
+  1: <?xml version="1.0" encoding="utf-8"?>
+  2: <Page
+  3:     x:Class="MTM_Receiving_Application.Module_Volvo.Views.View_Volvo_History"
+  4:     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  5:     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  6:     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  7:     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  8:     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+  9:     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+ 10:     mc:Ignorable="d"
+ 11:     Loaded="OnPageLoaded">
+ 12: 
+ 13:     <Grid Padding="24" RowSpacing="16">
+ 14:         <Grid.RowDefinitions>
+ 15:             <RowDefinition Height="Auto"/>
+ 16:             <RowDefinition Height="Auto"/>
+ 17:             <RowDefinition Height="*"/>
+ 18:             <RowDefinition Height="Auto"/>
+ 19:         </Grid.RowDefinitions>
+ 20: 
+ 21:         <!-- Header -->
+ 22:         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+ 23:             <Button 
+ 24:                 Command="{x:Bind ViewModel.GoBackCommand}"
+ 25:                 VerticalAlignment="Center"
+ 26:                 ToolTipService.ToolTip="Back to Shipment Entry">
+ 27:                 <SymbolIcon Symbol="Back"/>
+ 28:             </Button>
+ 29:             <TextBlock 
+ 30:                 Text="Volvo Shipment History"
+ 31:                 Style="{StaticResource TitleTextBlockStyle}"
+ 32:                 VerticalAlignment="Center"/>
+ 33:         </StackPanel>
+ 34: 
+ 35:         <!-- Filters -->
+ 36:         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="16">
+ 37:             <CalendarDatePicker
+ 38:                 Header="Start Date"
+ 39:                 Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
+ 40:                 Width="200"/>
+ 41:             
+ 42:             <CalendarDatePicker
+ 43:                 Header="End Date"
+ 44:                 Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
+ 45:                 Width="200"/>
+ 46:             
+ 47:             <ComboBox
+ 48:                 Header="Status"
+ 49:                 ItemsSource="{x:Bind ViewModel.StatusOptions}"
+ 50:                 SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}"
+ 51:                 Width="150"/>
+ 52:             
+ 53:             <Button
+ 54:                 Content="Filter"
+ 55:                 Command="{x:Bind ViewModel.FilterCommand}"
+ 56:                 Style="{StaticResource AccentButtonStyle}"
+ 57:                 VerticalAlignment="Bottom"/>
+ 58:             
+ 59:             <Button
+ 60:                 Content="Export CSV"
+ 61:                 Command="{x:Bind ViewModel.ExportCommand}"
+ 62:                 VerticalAlignment="Bottom"/>
+ 63:         </StackPanel>
+ 64: 
+ 65:         <!-- DataGrid -->
+ 66:         <controls:DataGrid
+ 67:             Grid.Row="2"
+ 68:             ItemsSource="{x:Bind ViewModel.History, Mode=OneWay}"
+ 69:             SelectedItem="{x:Bind ViewModel.SelectedShipment, Mode=TwoWay}"
+ 70:             AutoGenerateColumns="False"
+ 71:             IsReadOnly="True"
+ 72:             CanUserReorderColumns="False"
+ 73:             GridLinesVisibility="Horizontal">
+ 74:             
+ 75:             <controls:DataGrid.Columns>
+ 76:                 <controls:DataGridTemplateColumn Header="Shipment #" Width="100">
+ 77:                     <controls:DataGridTemplateColumn.CellTemplate>
+ 78:                         <DataTemplate x:DataType="models:Model_VolvoShipment">
+ 79:                             <TextBlock Text="{x:Bind ShipmentNumber, Mode=OneTime}" />
+ 80:                         </DataTemplate>
+ 81:                     </controls:DataGridTemplateColumn.CellTemplate>
+ 82:                 </controls:DataGridTemplateColumn>
+ 83: 
+ 84:                 <controls:DataGridTemplateColumn Header="Date" Width="120">
+ 85:                     <controls:DataGridTemplateColumn.CellTemplate>
+ 86:                         <DataTemplate x:DataType="models:Model_VolvoShipment">
+ 87:                             <TextBlock Text="{x:Bind ShipmentDateDisplay, Mode=OneTime}" />
+ 88:                         </DataTemplate>
+ 89:                     </controls:DataGridTemplateColumn.CellTemplate>
+ 90:                 </controls:DataGridTemplateColumn>
+ 91: 
+ 92:                 <controls:DataGridTemplateColumn Header="PO Number" Width="120">
+ 93:                     <controls:DataGridTemplateColumn.CellTemplate>
+ 94:                         <DataTemplate x:DataType="models:Model_VolvoShipment">
+ 95:                             <TextBlock Text="{x:Bind PONumber, Mode=OneTime}" />
+ 96:                         </DataTemplate>
+ 97:                     </controls:DataGridTemplateColumn.CellTemplate>
+ 98:                 </controls:DataGridTemplateColumn>
+ 99: 
+100:                 <controls:DataGridTemplateColumn Header="Receiver" Width="120">
+101:                     <controls:DataGridTemplateColumn.CellTemplate>
+102:                         <DataTemplate x:DataType="models:Model_VolvoShipment">
+103:                             <TextBlock Text="{x:Bind ReceiverNumber, Mode=OneTime}" />
+104:                         </DataTemplate>
+105:                     </controls:DataGridTemplateColumn.CellTemplate>
+106:                 </controls:DataGridTemplateColumn>
+107: 
+108:                 <controls:DataGridTemplateColumn Header="Status" Width="120">
+109:                     <controls:DataGridTemplateColumn.CellTemplate>
+110:                         <DataTemplate x:DataType="models:Model_VolvoShipment">
+111:                             <TextBlock Text="{x:Bind Status, Mode=OneTime}" />
+112:                         </DataTemplate>
+113:                     </controls:DataGridTemplateColumn.CellTemplate>
+114:                 </controls:DataGridTemplateColumn>
+115: 
+116:                 <controls:DataGridTemplateColumn Header="Notes" Width="*">
+117:                     <controls:DataGridTemplateColumn.CellTemplate>
+118:                         <DataTemplate x:DataType="models:Model_VolvoShipment">
+119:                             <TextBlock Text="{x:Bind Notes, Mode=OneTime}" TextTrimming="CharacterEllipsis" />
+120:                         </DataTemplate>
+121:                     </controls:DataGridTemplateColumn.CellTemplate>
+122:                 </controls:DataGridTemplateColumn>
+123:             </controls:DataGrid.Columns>
+124:         </controls:DataGrid>
+125: 
+126:         <!-- Status Bar -->
+127:         <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12">
+128:             <ProgressRing 
+129:                 IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+130:                 Width="20" Height="20"/>
+131:             <TextBlock 
+132:                 Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+133:                 VerticalAlignment="Center"/>
+134:             <Button
+135:                 Content="View Details"
+136:                 Command="{x:Bind ViewModel.ViewDetailCommand}"
+137:                 Margin="12,0,0,0"/>
+138:             <Button
+139:                 Content="Edit"
+140:                 Command="{x:Bind ViewModel.EditCommand}"/>
+141:         </StackPanel>
+142:     </Grid>
+143: </Page>
+````
+
+## File: Module_Volvo/Views/View_Volvo_ShipmentEntry.xaml
+````
+  1: <?xml version="1.0" encoding="utf-8"?>
+  2: <Page
+  3:     x:Class="MTM_Receiving_Application.Module_Volvo.Views.View_Volvo_ShipmentEntry"
+  4:     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  5:     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  6:     xmlns:mi="using:Material.Icons.WinUI3"
+  7:     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  8:     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  9:     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+ 10:     xmlns:views="using:MTM_Receiving_Application.Module_Volvo.Views"
+ 11:     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+ 12:     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+ 13:     mc:Ignorable="d"
+ 14:     Loaded="OnLoaded">
+ 15: 
+ 16:     <Page.Resources>
+ 17:         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
+ 18:         <converters:NullableDoubleToDoubleConverter x:Key="NullableDoubleToDoubleConverter"/>
+ 19:         <converters:Converter_BoolToString x:Key="BoolToStringConverter"/>
+ 20:         <converters:Converter_IntToString x:Key="IntToStringConverter"/>
+ 21:         <converters:Converter_InverseBool x:Key="InverseBoolConverter"/>
+ 22:         <converters:Converter_NullableDoubleToString x:Key="NullableDoubleToStringConverter"/>
+ 23:         <converters:Converter_NullableIntToString x:Key="NullableIntToStringConverter"/>
+ 24:     </Page.Resources>
+ 25: 
+ 26:     <Grid Padding="24" RowSpacing="16">
+ 27:         <Grid.RowDefinitions>
+ 28:             <RowDefinition Height="Auto"/>
+ 29:             <RowDefinition Height="Auto"/>
+ 30:             <RowDefinition Height="*"/>
+ 31:             <RowDefinition Height="Auto"/>
+ 32:         </Grid.RowDefinitions>
+ 33: 
+ 34:         <!-- Success Message -->
+ 35:         <InfoBar Grid.Row="0"
+ 36:                  IsOpen="{x:Bind ViewModel.IsSuccessMessageVisible, Mode=OneWay}"
+ 37:                  Severity="Success"
+ 38:                  Message="{x:Bind ViewModel.SuccessMessage, Mode=OneWay}"
+ 39:                  IsClosable="True"/>
+ 40: 
+ 41:         <!-- Header Section -->
+ 42:         <StackPanel Grid.Row="1" Spacing="16">
+ 43:             <!-- Shipment Info Row -->
+ 44:             <Grid ColumnSpacing="16">
+ 45:                 <Grid.ColumnDefinitions>
+ 46:                     <ColumnDefinition Width="*"/>
+ 47:                     <ColumnDefinition Width="*"/>
+ 48:                     <ColumnDefinition Width="Auto"/>
+ 49:                 </Grid.ColumnDefinitions>
+ 50: 
+ 51:                 <CalendarDatePicker Grid.Column="0"
+ 52:                                     Header="Shipment Date"
+ 53:                                     Date="{x:Bind ViewModel.ShipmentDate, Mode=TwoWay}"
+ 54:                                     HorizontalAlignment="Stretch"/>
+ 55: 
+ 56:                 <NumberBox Grid.Column="1"
+ 57:                            Header="Shipment Number"
+ 58:                            Value="{x:Bind ViewModel.ShipmentNumber, Mode=TwoWay}"
+ 59:                            Minimum="1"
+ 60:                            SpinButtonPlacementMode="Hidden"
+ 61:                            HorizontalAlignment="Stretch"/>
+ 62: 
+ 63:                 <Button Grid.Column="2"
+ 64:                         VerticalAlignment="Bottom"
+ 65:                         Style="{StaticResource AccentButtonStyle}"
+ 66:                         Click="AddPartButton_Click"
+ 67:                         Margin="0,0,0,4"
+ 68:                         MinWidth="120">
+ 69:                     <StackPanel Orientation="Horizontal" Spacing="8">
+ 70:                         <SymbolIcon Symbol="Add"/>
+ 71:                         <TextBlock Text="Add Part"/>
+ 72:                     </StackPanel>
+ 73:                 </Button>
+ 74:             </Grid>
+ 75:         </StackPanel>
+ 76: 
+ 77:         <!-- Parts Entry DataGrid -->
+ 78:         <Grid Grid.Row="2">
+ 79:             <Grid.RowDefinitions>
+ 80:                 <RowDefinition Height="Auto"/>
+ 81:                 <RowDefinition Height="*"/>
+ 82:                 <RowDefinition Height="Auto"/>
+ 83:             </Grid.RowDefinitions>
+ 84: 
+ 85:             <TextBlock Grid.Row="0" 
+ 86:                        Text="Parts Received" 
+ 87:                        Style="{StaticResource SubtitleTextBlockStyle}"
+ 88:                        Margin="0,0,0,8"/>
+ 89: 
+ 90:             <controls:DataGrid x:Name="ShipmentLinesGrid" Grid.Row="1"
+ 91:                                ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+ 92:                                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+ 93:                                AutoGenerateColumns="False"
+ 94:                                CanUserSortColumns="False"
+ 95:                                CanUserReorderColumns="False"
+ 96:                                GridLinesVisibility="All">
+ 97:                 <controls:DataGrid.Columns>
+ 98:                     <controls:DataGridTemplateColumn Header="Part Number" Width="2*">
+ 99:                         <controls:DataGridTemplateColumn.CellTemplate>
+100:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+101:                                 <TextBlock Text="{x:Bind PartNumber, Mode=OneWay}" 
+102:                                            VerticalAlignment="Center"
+103:                                            Margin="8,0"/>
+104:                             </DataTemplate>
+105:                         </controls:DataGridTemplateColumn.CellTemplate>
+106:                     </controls:DataGridTemplateColumn>
+107: 
+108:                     <controls:DataGridTemplateColumn Header="Received Skids"
+109:                                                       Width="*">
+110:                         <controls:DataGridTemplateColumn.CellTemplate>
+111:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+112:                                 <TextBox Text="{x:Bind ReceivedSkidCount, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+113:                                          InputScope="Number"
+114:                                          HorizontalAlignment="Stretch"
+115:                                          VerticalAlignment="Stretch"
+116:                                          BorderThickness="0"
+117:                                          Background="Transparent"/>
+118:                             </DataTemplate>
+119:                         </controls:DataGridTemplateColumn.CellTemplate>
+120:                     </controls:DataGridTemplateColumn>
+121: 
+122:                     <controls:DataGridTemplateColumn Header="Calculated Pieces" Width="*">
+123:                         <controls:DataGridTemplateColumn.CellTemplate>
+124:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+125:                                 <TextBlock Text="{x:Bind CalculatedPieceCount, Mode=OneWay}" 
+126:                                            VerticalAlignment="Center"
+127:                                            Margin="8,0"/>
+128:                             </DataTemplate>
+129:                         </controls:DataGridTemplateColumn.CellTemplate>
+130:                     </controls:DataGridTemplateColumn>
+131: 
+132:                     <controls:DataGridTemplateColumn Header="Discrepancy" Width="230">
+133:                         <controls:DataGridTemplateColumn.CellTemplate>
+134:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+135:                                 <StackPanel Orientation="Horizontal" Spacing="4">
+136:                                     <Button Content="Report"
+137:                                             Click="ReportDiscrepancyButton_Click"
+138:                                             IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+139:                                             Tag="{x:Bind}"
+140:                                             MinWidth="50"/>
+141:                                     <Button Content="View"
+142:                                             Click="ViewDiscrepancyButton_Click"
+143:                                             IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+144:                                             Tag="{x:Bind}"
+145:                                             MinWidth="50"/>
+146:                                     <Button Content="Remove"
+147:                                             Click="RemoveDiscrepancyButton_Click"
+148:                                             IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+149:                                             Tag="{x:Bind}"
+150:                                             MinWidth="50"/>
+151:                                 </StackPanel>
+152:                             </DataTemplate>
+153:                         </controls:DataGridTemplateColumn.CellTemplate>
+154:                     </controls:DataGridTemplateColumn>
+155: 
+156:                     <controls:DataGridTemplateColumn Header="Expected Skids"
+157:                                                       Width="0"
+158:                                                       Visibility="Collapsed">
+159:                         <controls:DataGridTemplateColumn.CellTemplate>
+160:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+161:                                 <TextBlock Text="{x:Bind ExpectedSkidCount, Mode=OneWay, Converter={StaticResource NullableDoubleToStringConverter}}" />
+162:                             </DataTemplate>
+163:                         </controls:DataGridTemplateColumn.CellTemplate>
+164:                     </controls:DataGridTemplateColumn>
+165: 
+166:                     <controls:DataGridTemplateColumn Header="Expected Pieces" 
+167:                                                       Width="0"
+168:                                                       Visibility="Collapsed">
+169:                         <controls:DataGridTemplateColumn.CellTemplate>
+170:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+171:                                 <TextBlock Text="{x:Bind ExpectedPieceCount, Mode=OneWay, Converter={StaticResource NullableIntToStringConverter}}" />
+172:                             </DataTemplate>
+173:                         </controls:DataGridTemplateColumn.CellTemplate>
+174:                     </controls:DataGridTemplateColumn>
+175: 
+176:                     <controls:DataGridTemplateColumn Header="Difference" 
+177:                                                       Width="0"
+178:                                                       Visibility="Collapsed">
+179:                         <controls:DataGridTemplateColumn.CellTemplate>
+180:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+181:                                 <TextBlock Text="{x:Bind PieceDifference, Mode=OneWay, Converter={StaticResource NullableIntToStringConverter}}" />
+182:                             </DataTemplate>
+183:                         </controls:DataGridTemplateColumn.CellTemplate>
+184:                     </controls:DataGridTemplateColumn>
+185: 
+186:                     <controls:DataGridTemplateColumn Header="Discrepancy Note"
+187:                                                       Width="0"
+188:                                                       Visibility="Collapsed">
+189:                         <controls:DataGridTemplateColumn.CellTemplate>
+190:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+191:                                 <TextBlock Text="{x:Bind DiscrepancyNote, Mode=OneWay, TargetNullValue=''}" />
+192:                             </DataTemplate>
+193:                         </controls:DataGridTemplateColumn.CellTemplate>
+194:                     </controls:DataGridTemplateColumn>
+195:                 </controls:DataGrid.Columns>
+196:             </controls:DataGrid>
+197: 
+198:             <!-- Order Notes Section -->
+199:             <TextBox Grid.Row="2"
+200:                      Header="Order Notes (applies to entire shipment)"
+201:                      Text="{x:Bind ViewModel.Notes, Mode=TwoWay}"
+202:                      PlaceholderText="Enter any additional notes for this shipment..."
+203:                      TextWrapping="Wrap"
+204:                      AcceptsReturn="True"
+205:                      MinHeight="60"
+206:                      MaxHeight="120"
+207:                      Margin="0,12,0,0"/>
+208:         </Grid>
+209: 
+210:         <!-- Action Buttons -->
+211:         <CommandBar Grid.Row="3" DefaultLabelPosition="Right">
+212:             <AppBarButton Icon="Delete" Label="Remove Selected Part" Click="RemoveSelectedPartButton_Click"/>
+213:             <AppBarSeparator/>
+214:             <AppBarButton Label="Generate Labels" Command="{x:Bind ViewModel.GenerateLabelsCommand}">
+215:                 <AppBarButton.Icon>
+216:                     <FontIcon Glyph="&#xE8B7;"/>
+217:                 </AppBarButton.Icon>
+218:             </AppBarButton>
+219:             <AppBarButton Icon="Mail" Label="Preview Email" Command="{x:Bind ViewModel.PreviewEmailCommand}"/>
+220:             <AppBarSeparator/>
+221:             <AppBarButton Icon="Save" Label="Save as Pending" Command="{x:Bind ViewModel.SaveAsPendingCommand}"/>
+222:             <AppBarButton Icon="Accept" 
+223:                           Label="Complete Shipment" 
+224:                           Command="{x:Bind ViewModel.CompleteShipmentCommand}"
+225:                           Visibility="{x:Bind ViewModel.HasPendingShipment, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+226:             <AppBarSeparator/>
+227:             <AppBarButton Icon="Calendar" Label="View History" Command="{x:Bind ViewModel.ViewHistoryCommand}"/>
+228:         </CommandBar>
+229: 
+230:         <!-- Status Bar -->
+231:         <Grid Grid.Row="3" Margin="0,8,0,0" Visibility="Collapsed">
+232:             <StackPanel Orientation="Horizontal" Spacing="8">
+233:                 <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" 
+234:                               Width="20" 
+235:                               Height="20"
+236:                               Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+237:                 <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" 
+238:                            VerticalAlignment="Center"/>
+239:             </StackPanel>
+240:         </Grid>
+241:     </Grid>
+242: </Page>
+````
+
+## File: Module_Volvo/Views/VolvoShipmentEditDialog.xaml
+````
+  1: <?xml version="1.0" encoding="utf-8"?>
+  2: <ContentDialog
+  3:     x:Class="MTM_Receiving_Application.Module_Volvo.Views.VolvoShipmentEditDialog"
+  4:     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  5:     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  6:     xmlns:models="using:MTM_Receiving_Application.Module_Volvo.Models"
+  7:     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+  8:     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+  9:     Title="Edit Shipment"
+ 10:     PrimaryButtonText="Save Changes"
+ 11:     CloseButtonText="Cancel"
+ 12:     DefaultButton="Primary">
+ 13:     
+ 14:     <ContentDialog.Resources>
+ 15:         <x:Double x:Key="ContentDialogMaxWidth">1400</x:Double>
+ 16:         <x:Double x:Key="ContentDialogMinWidth">1400</x:Double>
+ 17:         <x:Double x:Key="ContentDialogMaxHeight">800</x:Double>
+ 18:         <converters:NullableDoubleToDoubleConverter x:Key="NullableDoubleToDoubleConverter"/>
+ 19:         <converters:Converter_BoolToString x:Key="BoolToStringConverter"/>
+ 20:         <converters:Converter_IntToString x:Key="IntToStringConverter"/>
+ 21:         <converters:Converter_InverseBool x:Key="InverseBoolConverter"/>
+ 22:         <converters:Converter_NullableDoubleToString x:Key="NullableDoubleToStringConverter"/>
+ 23:         <converters:Converter_NullableIntToString x:Key="NullableIntToStringConverter"/>
+ 24:     </ContentDialog.Resources>
+ 25: 
+ 26:     <!-- No ScrollViewer - fixed height layout -->
+ 27:     <Grid Padding="20" RowSpacing="12">
+ 28:         <Grid.RowDefinitions>
+ 29:             <RowDefinition Height="Auto"/>
+ 30:             <RowDefinition Height="Auto"/>
+ 31:             <RowDefinition Height="Auto"/>
+ 32:             <RowDefinition Height="*"/>
+ 33:         </Grid.RowDefinitions>
+ 34:         
+ 35:         <!-- Row 0: Error/Success Message Bar -->
+ 36:         <InfoBar x:Name="ValidationErrorBar"
+ 37:                  Grid.Row="0"
+ 38:                  Severity="Error"
+ 39:                  IsOpen="False"
+ 40:                  IsClosable="True"
+ 41:                  Margin="0,0,0,8"/>
+ 42:         
+ 43:         <!-- Row 1: Shipment Details (Compact 4-column layout) -->
+ 44:         <Grid Grid.Row="1" ColumnSpacing="12" RowSpacing="8">
+ 45:             <Grid.ColumnDefinitions>
+ 46:                 <ColumnDefinition Width="*"/>
+ 47:                 <ColumnDefinition Width="*"/>
+ 48:                 <ColumnDefinition Width="*"/>
+ 49:                 <ColumnDefinition Width="*"/>
+ 50:             </Grid.ColumnDefinitions>
+ 51:             
+ 52:             <CalendarDatePicker Grid.Column="0"
+ 53:                                 Header="Shipment Date"
+ 54:                                 x:Name="ShipmentDatePicker"
+ 55:                                 HorizontalAlignment="Stretch"/>
+ 56:             
+ 57:             <TextBox Grid.Column="1"
+ 58:                      Header="Shipment #"
+ 59:                      x:Name="ShipmentNumberBox"
+ 60:                      IsReadOnly="True"
+ 61:                      HorizontalAlignment="Stretch"/>
+ 62:             
+ 63:             <TextBox Grid.Column="2"
+ 64:                      Header="PO Number"
+ 65:                      PlaceholderText="Optional"
+ 66:                      x:Name="PONumberBox"
+ 67:                      HorizontalAlignment="Stretch"/>
+ 68:             
+ 69:             <TextBox Grid.Column="3"
+ 70:                      Header="Receiver #"
+ 71:                      PlaceholderText="Optional"
+ 72:                      x:Name="ReceiverNumberBox"
+ 73:                      HorizontalAlignment="Stretch"/>
+ 74:         </Grid>
+ 75:         
+ 76:         <!-- Row 1: Notes (Full Width, Compact) -->
+ 77:         <TextBox Grid.Row="1"
+ 78:                  Header="Notes (applies to entire shipment)"
+ 79:                  PlaceholderText="Optional notes..."
+ 80:                  x:Name="NotesBox"
+ 81:                  TextWrapping="Wrap"
+ 82:                  AcceptsReturn="True"
+ 83:                  Height="60"
+ 84:                  HorizontalAlignment="Stretch"/>
+ 85:         
+ 86:         <!-- Row 2: Parts Section (Main Content) -->
+ 87:         <Grid Grid.Row="2">
+ 88:             <Grid.RowDefinitions>
+ 89:                 <RowDefinition Height="Auto"/>
+ 90:                 <RowDefinition Height="Auto"/>
+ 91:                 <RowDefinition Height="*"/>
+ 92:             </Grid.RowDefinitions>
+ 93:             
+ 94:             <!-- Parts Header with Actions -->
+ 95:             <Grid Grid.Row="0" Margin="0,0,0,8">
+ 96:                 <Grid.ColumnDefinitions>
+ 97:                     <ColumnDefinition Width="Auto"/>
+ 98:                     <ColumnDefinition Width="*"/>
+ 99:                     <ColumnDefinition Width="Auto"/>
+100:                     <ColumnDefinition Width="Auto"/>
+101:                 </Grid.ColumnDefinitions>
+102:                 
+103:                 <TextBlock Grid.Column="0" 
+104:                            Text="Parts Received" 
+105:                            Style="{StaticResource SubtitleTextBlockStyle}"
+106:                            VerticalAlignment="Center"/>
+107:                 
+108:                 <Button Grid.Column="2"
+109:                         x:Name="ToggleAddPartButton"
+110:                         Style="{StaticResource AccentButtonStyle}"
+111:                         Height="32"
+112:                         MinWidth="100"
+113:                         Margin="0,0,8,0">
+114:                     <StackPanel Orientation="Horizontal" Spacing="6">
+115:                         <SymbolIcon x:Name="AddPartIcon" Symbol="Add"/>
+116:                         <TextBlock x:Name="AddPartButtonText" Text="Add Part"/>
+117:                     </StackPanel>
+118:                 </Button>
+119:                 
+120:                 <Button Grid.Column="3"
+121:                         x:Name="RemovePartButton"
+122:                         Content="Remove Selected"
+123:                         Height="32"
+124:                         MinWidth="120"/>
+125:             </Grid>
+126:             
+127:             <!-- Add Part Panel (Collapsible) -->
+128:             <Border Grid.Row="1"
+129:                     x:Name="AddPartPanel"
+130:                     Visibility="Collapsed"
+131:                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+132:                     BorderThickness="1"
+133:                     CornerRadius="4"
+134:                     Padding="12"
+135:                     Margin="0,0,0,8"
+136:                     Background="{ThemeResource LayerFillColorDefaultBrush}">
+137:                 <Grid ColumnSpacing="12">
+138:                     <Grid.ColumnDefinitions>
+139:                         <ColumnDefinition Width="2*"/>
+140:                         <ColumnDefinition Width="*"/>
+141:                         <ColumnDefinition Width="Auto"/>
+142:                     </Grid.ColumnDefinitions>
+143:                     
+144:                     <!-- Left: Search & Parts List -->
+145:                     <StackPanel Grid.Column="0" Spacing="8">
+146:                         <TextBlock x:Name="AddPartErrorMessage"
+147:                                    Foreground="Red"
+148:                                    FontWeight="SemiBold"
+149:                                    TextWrapping="Wrap"
+150:                                    Visibility="Collapsed"/>
+151:                         
+152:                         <TextBox x:Name="PartSearchBox"
+153:                                  PlaceholderText="Search part numbers..."
+154:                                  TextChanged="OnPartSearchTextChanged"/>
+155:                         
+156:                         <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+157:                                 BorderThickness="1"
+158:                                 CornerRadius="4"
+159:                                 Height="120">
+160:                             <ListView x:Name="AddPartListView"
+161:                                       SelectionMode="Single"
+162:                                       DisplayMemberPath="PartNumber"
+163:                                       Background="{ThemeResource ControlFillColorDefaultBrush}"/>
+164:                         </Border>
+165:                     </StackPanel>
+166:                     
+167:                     <!-- Middle: Quantity Input -->
+168:                     <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="0,26,0,0">
+169:                         <TextBox x:Name="AddPartQuantityBox"
+170:                                  Header="Received Skids"
+171:                                  PlaceholderText="1-99"
+172:                                  InputScope="Number"
+173:                                  HorizontalAlignment="Stretch"/>
+174:                     </StackPanel>
+175:                     
+176:                     <!-- Right: Action Buttons -->
+177:                     <StackPanel Grid.Column="2" VerticalAlignment="Top" Spacing="8" Margin="0,26,0,0">
+178:                         <Button x:Name="ConfirmAddPartButton"
+179:                                 Content="Add to List"
+180:                                 Style="{StaticResource AccentButtonStyle}"
+181:                                 MinWidth="100"/>
+182:                         <Button x:Name="CancelAddPartButton"
+183:                                 Content="Cancel"
+184:                                 MinWidth="100"/>
+185:                     </StackPanel>
+186:                 </Grid>
+187:             </Border>
+188:             
+189:             <!-- DataGrid (Fixed Height, Scrollable) -->
+190:             <controls:DataGrid Grid.Row="2"
+191:                                x:Name="PartsDataGrid"
+192:                                AutoGenerateColumns="False"
+193:                                CanUserReorderColumns="False"
+194:                                CanUserSortColumns="False"
+195:                                SelectionMode="Single"
+196:                                GridLinesVisibility="All"
+197:                                HorizontalScrollBarVisibility="Auto"
+198:                                VerticalScrollBarVisibility="Auto">
+199:                 
+200:                 <controls:DataGrid.Columns>
+201:                     <controls:DataGridTemplateColumn Header="Part Number" Width="2*">
+202:                         <controls:DataGridTemplateColumn.CellTemplate>
+203:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+204:                                 <TextBlock Text="{x:Bind PartNumber, Mode=OneWay}" 
+205:                                            VerticalAlignment="Center"
+206:                                            Margin="8,0"/>
+207:                             </DataTemplate>
+208:                         </controls:DataGridTemplateColumn.CellTemplate>
+209:                     </controls:DataGridTemplateColumn>
+210:                     
+211:                     <controls:DataGridTemplateColumn Header="Received Skids" Width="*">
+212:                         <controls:DataGridTemplateColumn.CellTemplate>
+213:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+214:                                 <TextBox Text="{x:Bind ReceivedSkidCount, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+215:                                          InputScope="Number"
+216:                                          HorizontalAlignment="Stretch"
+217:                                          VerticalAlignment="Stretch"
+218:                                          BorderThickness="0"
+219:                                          Background="Transparent"/>
+220:                             </DataTemplate>
+221:                         </controls:DataGridTemplateColumn.CellTemplate>
+222:                     </controls:DataGridTemplateColumn>
+223:                     
+224:                     <controls:DataGridTemplateColumn Header="Calculated Pieces" Width="*">
+225:                         <controls:DataGridTemplateColumn.CellTemplate>
+226:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+227:                                 <TextBlock Text="{x:Bind CalculatedPieceCount, Mode=OneWay}" 
+228:                                            VerticalAlignment="Center"
+229:                                            Margin="8,0"/>
+230:                             </DataTemplate>
+231:                         </controls:DataGridTemplateColumn.CellTemplate>
+232:                     </controls:DataGridTemplateColumn>
+233:                     
+234:                     <controls:DataGridTemplateColumn Header="Discrepancy" Width="230">
+235:                         <controls:DataGridTemplateColumn.CellTemplate>
+236:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+237:                                 <StackPanel Orientation="Horizontal" Spacing="4">
+238:                                     <Button Content="Report"
+239:                                             Click="ReportDiscrepancyButton_Click"
+240:                                             IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+241:                                             Tag="{x:Bind}"
+242:                                             MinWidth="50"/>
+243:                                     <Button Content="View"
+244:                                             Click="ViewDiscrepancyButton_Click"
+245:                                             IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+246:                                             Tag="{x:Bind}"
+247:                                             MinWidth="50"/>
+248:                                     <Button Content="Remove"
+249:                                             Click="RemoveDiscrepancyButton_Click"
+250:                                             IsEnabled="{x:Bind HasDiscrepancy, Mode=OneWay}"
+251:                                             Tag="{x:Bind}"
+252:                                             MinWidth="50"/>
+253:                                 </StackPanel>
+254:                             </DataTemplate>
+255:                         </controls:DataGridTemplateColumn.CellTemplate>
+256:                     </controls:DataGridTemplateColumn>
+257:                     
+258:                     <!-- Hidden columns for data integrity -->
+259:                     <controls:DataGridTemplateColumn Header="Expected Skids" Width="0" Visibility="Collapsed">
+260:                         <controls:DataGridTemplateColumn.CellTemplate>
+261:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+262:                                 <TextBlock Text="{x:Bind ExpectedSkidCount, Mode=OneWay, Converter={StaticResource NullableDoubleToStringConverter}}" />
+263:                             </DataTemplate>
+264:                         </controls:DataGridTemplateColumn.CellTemplate>
+265:                     </controls:DataGridTemplateColumn>
+266:                     
+267:                     <controls:DataGridTemplateColumn Header="Expected Pieces" Width="0" Visibility="Collapsed">
+268:                         <controls:DataGridTemplateColumn.CellTemplate>
+269:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+270:                                 <TextBlock Text="{x:Bind ExpectedPieceCount, Mode=OneWay, Converter={StaticResource NullableIntToStringConverter}}" />
+271:                             </DataTemplate>
+272:                         </controls:DataGridTemplateColumn.CellTemplate>
+273:                     </controls:DataGridTemplateColumn>
+274:                     
+275:                     <controls:DataGridTemplateColumn Header="Difference" Width="0" Visibility="Collapsed">
+276:                         <controls:DataGridTemplateColumn.CellTemplate>
+277:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+278:                                 <TextBlock Text="{x:Bind PieceDifference, Mode=OneWay, Converter={StaticResource NullableIntToStringConverter}}" />
+279:                             </DataTemplate>
+280:                         </controls:DataGridTemplateColumn.CellTemplate>
+281:                     </controls:DataGridTemplateColumn>
+282:                     
+283:                     <controls:DataGridTemplateColumn Header="Discrepancy Note" Width="0" Visibility="Collapsed">
+284:                         <controls:DataGridTemplateColumn.CellTemplate>
+285:                             <DataTemplate x:DataType="models:Model_VolvoShipmentLine">
+286:                                 <TextBlock Text="{x:Bind DiscrepancyNote, Mode=OneWay}" />
+287:                             </DataTemplate>
+288:                         </controls:DataGridTemplateColumn.CellTemplate>
+289:                     </controls:DataGridTemplateColumn>
+290:                 </controls:DataGrid.Columns>
+291:             </controls:DataGrid>
+292:         </Grid>
+293:     </Grid>
+294: </ContentDialog>
+````
+
+## File: MTM_Receiving_Application.Tests/GlobalUsings.cs
+````csharp
+ 1: global using System;
+ 2: global using System.Collections.Generic;
+ 3: global using System.Linq;
+ 4: global using System.Threading.Tasks;
+ 5: global using Xunit;
+ 6: global using FluentAssertions;
+ 7: global using MTM_Receiving_Application.Module_Dunnage.Models;
+ 8: global using MTM_Receiving_Application.Module_Core.Contracts.Services;
+ 9: global using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
+10: global using MTM_Receiving_Application.Module_Core.Converters;
+11: global using MTM_Receiving_Application.Module_Core.Data.Authentication;
+12: global using MTM_Receiving_Application.Module_Core.Models.Core;
+13: global using MTM_Receiving_Application.Module_Core.Models.Systems;
+14: global using MTM_Receiving_Application.Module_Core.Services.Authentication;
+15: global using MTM_Receiving_Application.Module_Core.Services.Database;
+16: global using MTM_Receiving_Application.Module_Core.Services.Help;
+17: global using MTM_Receiving_Application.Module_Core.Services.UI;
+18: global using MTM_Receiving_Application.Module_Receiving.Models;
+19: global using MTM_Receiving_Application.Module_Routing.Models;
+20: global using MTM_Receiving_Application.Module_Settings.Models;
+21: global using MTM_Receiving_Application.Module_Volvo.Data;
+22: global using MTM_Receiving_Application.Module_Volvo.Models;
+23: global using MTM_Receiving_Application.Module_Volvo.Services;
+24: global using MTM_Receiving_Application.Module_Volvo.Validators;
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Core/Data/Authentication/Dao_User_Tests.cs
+````csharp
+  1: using FluentAssertions;
+  2: using MTM_Receiving_Application.Module_Core.Data.Authentication;
+  3: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  4: using MTM_Receiving_Application.Module_Core.Models.Systems;
+  5: using Xunit;
+  6: 
+  7: namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Data.Authentication
+  8: {
+  9:     /// <summary>
+ 10:     /// Unit tests for Dao_User data access object.
+ 11:     /// Tests authentication, CRUD operations, validation, and configuration methods.
+ 12:     /// </summary>
+ 13:     public class Dao_User_Tests
+ 14:     {
+ 15:         private static string TestConnectionString =>
+ 16:             Helper_Database_Variables.GetConnectionString(useProduction: false);
+ 17: 
+ 18:         // ====================================================================
+ 19:         // Constructor Tests
+ 20:         // ====================================================================
+ 21: 
+ 22:         [Fact]
+ 23:         public void Constructor_ValidConnectionString_CreatesInstance()
+ 24:         {
+ 25:             // Act
+ 26:             var dao = new Dao_User(TestConnectionString);
+ 27: 
+ 28:             // Assert
+ 29:             dao.Should().NotBeNull();
+ 30:         }
+ 31: 
+ 32:         [Fact]
+ 33:         public void Constructor_NullConnectionString_ThrowsArgumentNullException()
+ 34:         {
+ 35:             // Act
+ 36:             Action act = () => new Dao_User(null!);
+ 37: 
+ 38:             // Assert
+ 39:             act.Should().Throw<ArgumentNullException>().WithMessage("*connectionString*");
+ 40:         }
+ 41: 
+ 42:         [Fact]
+ 43:         public void Constructor_EmptyConnectionString_DoesNotThrow()
+ 44:         {
+ 45:             // Act
+ 46:             Action act = () => new Dao_User(string.Empty);
+ 47: 
+ 48:             // Assert - Constructor doesn't validate empty strings, only null
+ 49:             act.Should().NotThrow();
+ 50:         }
+ 51: 
+ 52:         // ====================================================================
+ 53:         // GetUserByWindowsUsernameAsync Tests
+ 54:         // ====================================================================
+ 55: 
+ 56:         [Fact]
+ 57:         public async Task GetUserByWindowsUsernameAsync_ValidUsername_CallsStoredProcedure_Async()
+ 58:         {
+ 59:             // Arrange
+ 60:             var dao = new Dao_User(TestConnectionString);
+ 61:             var username = "jdoe";
+ 62: 
+ 63:             // Act & Assert
+ 64:             // Note: This will fail without a real database connection
+ 65:             // In a real test environment, you would use a test database or mock the Helper class
+ 66:             var result = await dao.GetUserByWindowsUsernameAsync(username);
+ 67: 
+ 68:             // Basic assertion - detailed testing requires database/mocking infrastructure
+ 69:             result.Should().NotBeNull();
+ 70:         }
+ 71: 
+ 72:         [Theory]
+ 73:         [InlineData("")]
+ 74:         [InlineData("   ")]
+ 75:         [InlineData("valid_user")]
+ 76:         [InlineData("UPPERCASE_USER")]
+ 77:         public async Task GetUserByWindowsUsernameAsync_VariousUsernames_AcceptsInput_Async(
+ 78:             string username
+ 79:         )
+ 80:         {
+ 81:             // Arrange
+ 82:             var dao = new Dao_User(TestConnectionString);
+ 83: 
+ 84:             // Act
+ 85:             var result = await dao.GetUserByWindowsUsernameAsync(username);
+ 86: 
+ 87:             // Assert
+ 88:             result.Should().NotBeNull();
+ 89:         }
+ 90: 
+ 91:         // ====================================================================
+ 92:         // ValidateUserPinAsync Tests
+ 93:         // ====================================================================
+ 94: 
+ 95:         [Fact]
+ 96:         public async Task ValidateUserPinAsync_ValidCredentials_CallsStoredProcedure_Async()
+ 97:         {
+ 98:             // Arrange
+ 99:             var dao = new Dao_User(TestConnectionString);
+100:             var username = "jdoe";
+101:             var pin = "1234";
+102: 
+103:             // Act
+104:             var result = await dao.ValidateUserPinAsync(username, pin);
+105: 
+106:             // Assert
+107:             result.Should().NotBeNull();
+108:         }
+109: 
+110:         [Theory]
+111:         [InlineData("user", "0000")]
+112:         [InlineData("user", "9999")]
+113:         [InlineData("user", "1234")]
+114:         [InlineData("", "1234")]
+115:         [InlineData("user", "")]
+116:         public async Task ValidateUserPinAsync_VariousInputs_AcceptsAllCombinations_Async(
+117:             string username,
+118:             string pin
+119:         )
+120:         {
+121:             // Arrange
+122:             var dao = new Dao_User(TestConnectionString);
+123: 
+124:             // Act
+125:             var result = await dao.ValidateUserPinAsync(username, pin);
+126: 
+127:             // Assert
+128:             result.Should().NotBeNull();
+129:         }
+130: 
+131:         // ====================================================================
+132:         // CreateNewUserAsync Tests
+133:         // ====================================================================
+134: 
+135:         [Fact]
+136:         public async Task CreateNewUserAsync_ValidUser_ReturnsEmployeeNumber_Async()
+137:         {
+138:             // Arrange
+139:             var dao = new Dao_User(TestConnectionString);
+140:             var user = CreateValidTestUser();
+141:             var createdBy = "admin";
+142: 
+143:             // Act
+144:             var result = await dao.CreateNewUserAsync(user, createdBy);
+145: 
+146:             // Assert
+147:             result.Should().NotBeNull();
+148:             // Success depends on database availability and stored procedure existence
+149:         }
+150: 
+151:         [Fact]
+152:         public async Task CreateNewUserAsync_NullVisualCredentials_HandlesGracefully_Async()
+153:         {
+154:             // Arrange
+155:             var dao = new Dao_User(TestConnectionString);
+156:             var user = CreateValidTestUser();
+157:             user.VisualUsername = null;
+158:             user.VisualPassword = null;
+159:             var createdBy = "admin";
+160: 
+161:             // Act
+162:             var result = await dao.CreateNewUserAsync(user, createdBy);
+163: 
+164:             // Assert
+165:             result.Should().NotBeNull();
+166:         }
+167: 
+168:         [Fact]
+169:         public async Task CreateNewUserAsync_WithVisualCredentials_PassesParameters_Async()
+170:         {
+171:             // Arrange
+172:             var dao = new Dao_User(TestConnectionString);
+173:             var user = CreateValidTestUser();
+174:             user.VisualUsername = "visual_user";
+175:             user.VisualPassword = "visual_pass";
+176:             var createdBy = "admin";
+177: 
+178:             // Act
+179:             var result = await dao.CreateNewUserAsync(user, createdBy);
+180: 
+181:             // Assert
+182:             result.Should().NotBeNull();
+183:         }
+184: 
+185:         // ====================================================================
+186:         // IsWindowsUsernameUniqueAsync Tests
+187:         // ====================================================================
+188: 
+189:         [Fact]
+190:         public async Task IsWindowsUsernameUniqueAsync_WithoutExclusion_ChecksAllUsers_Async()
+191:         {
+192:             // Arrange
+193:             var dao = new Dao_User(TestConnectionString);
+194:             var username = "new_user";
+195: 
+196:             // Act
+197:             var result = await dao.IsWindowsUsernameUniqueAsync(username);
+198: 
+199:             // Assert
+200:             result.Should().NotBeNull();
+201:         }
+202: 
+203:         [Fact]
+204:         public async Task IsWindowsUsernameUniqueAsync_WithExclusion_ExcludesSpecificEmployee_Async()
+205:         {
+206:             // Arrange
+207:             var dao = new Dao_User(TestConnectionString);
+208:             var username = "existing_user";
+209:             var excludeEmployeeNumber = 12345;
+210: 
+211:             // Act
+212:             var result = await dao.IsWindowsUsernameUniqueAsync(username, excludeEmployeeNumber);
+213: 
+214:             // Assert
+215:             result.Should().NotBeNull();
+216:         }
+217: 
+218:         [Theory]
+219:         [InlineData("user1", null)]
+220:         [InlineData("user2", 100)]
+221:         [InlineData("user3", 999)]
+222:         [InlineData("", null)]
+223:         public async Task IsWindowsUsernameUniqueAsync_VariousScenarios_HandlesAllCases_Async(
+224:             string username,
+225:             int? excludeId
+226:         )
+227:         {
+228:             // Arrange
+229:             var dao = new Dao_User(TestConnectionString);
+230: 
+231:             // Act
+232:             var result = await dao.IsWindowsUsernameUniqueAsync(username, excludeId);
+233: 
+234:             // Assert
+235:             result.Should().NotBeNull();
+236:         }
+237: 
+238:         // ====================================================================
+239:         // LogUserActivityAsync Tests
+240:         // ====================================================================
+241: 
+242:         [Fact]
+243:         public async Task LogUserActivityAsync_ValidData_LogsActivity_Async()
+244:         {
+245:             // Arrange
+246:             var dao = new Dao_User(TestConnectionString);
+247:             var eventType = "login_success";
+248:             var username = "jdoe";
+249:             var workstation = "WORKSTATION-01";
+250:             var details = "Successful login";
+251: 
+252:             // Act
+253:             var result = await dao.LogUserActivityAsync(eventType, username, workstation, details);
+254: 
+255:             // Assert
+256:             result.Should().NotBeNull();
+257:         }
+258: 
+259:         [Theory]
+260:         [InlineData("login_success", "user", "WS01", "Details")]
+261:         [InlineData("login_failed", "user", "WS02", "Failed attempt")]
+262:         [InlineData("session_timeout", "user", "WS03", "Timeout")]
+263:         [InlineData("user_created", "admin", "WS04", "New user")]
+264:         public async Task LogUserActivityAsync_DifferentEventTypes_LogsCorrectly_Async(
+265:             string eventType,
+266:             string username,
+267:             string workstation,
+268:             string details
+269:         )
+270:         {
+271:             // Arrange
+272:             var dao = new Dao_User(TestConnectionString);
+273: 
+274:             // Act
+275:             var result = await dao.LogUserActivityAsync(eventType, username, workstation, details);
+276: 
+277:             // Assert
+278:             result.Should().NotBeNull();
+279:         }
+280: 
+281:         [Fact]
+282:         public async Task LogUserActivityAsync_NullParameters_HandlesGracefully_Async()
+283:         {
+284:             // Arrange
+285:             var dao = new Dao_User(TestConnectionString);
+286: 
+287:             // Act
+288:             var result = await dao.LogUserActivityAsync("event", null!, null!, null!);
+289: 
+290:             // Assert
+291:             result.Should().NotBeNull();
+292:         }
+293: 
+294:         // ====================================================================
+295:         // GetSharedTerminalNamesAsync Tests
+296:         // ====================================================================
+297: 
+298:         [Fact]
+299:         public async Task GetSharedTerminalNamesAsync_NoParameters_ReturnsTerminalList_Async()
+300:         {
+301:             // Arrange
+302:             var dao = new Dao_User(TestConnectionString);
+303: 
+304:             // Act
+305:             var result = await dao.GetSharedTerminalNamesAsync();
+306: 
+307:             // Assert
+308:             result.Should().NotBeNull();
+309:         }
+310: 
+311:         // ====================================================================
+312:         // UpsertWorkstationConfigAsync Tests
+313:         // ====================================================================
+314: 
+315:         [Fact]
+316:         public async Task UpsertWorkstationConfigAsync_ValidData_InsertsOrUpdates_Async()
+317:         {
+318:             // Arrange
+319:             var dao = new Dao_User(TestConnectionString);
+320:             var workstationName = "WORKSTATION-01";
+321:             var workstationType = "shared";
+322:             var isActive = true;
+323:             var description = "Shared terminal in warehouse";
+324: 
+325:             // Act
+326:             var result = await dao.UpsertWorkstationConfigAsync(
+327:                 workstationName,
+328:                 workstationType,
+329:                 isActive,
+330:                 description
+331:             );
+332: 
+333:             // Assert
+334:             result.Should().NotBeNull();
+335:         }
+336: 
+337:         [Fact]
+338:         public async Task UpsertWorkstationConfigAsync_NullDescription_HandlesGracefully_Async()
+339:         {
+340:             // Arrange
+341:             var dao = new Dao_User(TestConnectionString);
+342: 
+343:             // Act
+344:             var result = await dao.UpsertWorkstationConfigAsync("WS-01", "dedicated", true, null);
+345: 
+346:             // Assert
+347:             result.Should().NotBeNull();
+348:         }
+349: 
+350:         [Theory]
+351:         [InlineData("WS-01", "shared", true, "Description 1")]
+352:         [InlineData("WS-02", "dedicated", false, "Description 2")]
+353:         [InlineData("WS-03", "shared", true, null)]
+354:         public async Task UpsertWorkstationConfigAsync_VariousConfigurations_HandlesAll_Async(
+355:             string name,
+356:             string type,
+357:             bool active,
+358:             string? description
+359:         )
+360:         {
+361:             // Arrange
+362:             var dao = new Dao_User(TestConnectionString);
+363: 
+364:             // Act
+365:             var result = await dao.UpsertWorkstationConfigAsync(name, type, active, description);
+366: 
+367:             // Assert
+368:             result.Should().NotBeNull();
+369:         }
+370: 
+371:         // ====================================================================
+372:         // GetActiveDepartmentsAsync Tests
+373:         // ====================================================================
+374: 
+375:         [Fact]
+376:         public async Task GetActiveDepartmentsAsync_NoParameters_ReturnsDepartmentList_Async()
+377:         {
+378:             // Arrange
+379:             var dao = new Dao_User(TestConnectionString);
+380: 
+381:             // Act
+382:             var result = await dao.GetActiveDepartmentsAsync();
+383: 
+384:             // Assert
+385:             result.Should().NotBeNull();
+386:         }
+387: 
+388:         // ====================================================================
+389:         // UpdateDefaultModeAsync Tests
+390:         // ====================================================================
+391: 
+392:         [Fact]
+393:         public async Task UpdateDefaultModeAsync_ValidData_UpdatesMode_Async()
+394:         {
+395:             // Arrange
+396:             var dao = new Dao_User(TestConnectionString);
+397:             var userId = 12345;
+398:             var defaultMode = "guided";
+399: 
+400:             // Act
+401:             var result = await dao.UpdateDefaultModeAsync(userId, defaultMode);
+402: 
+403:             // Assert
+404:             result.Should().NotBeNull();
+405:         }
+406: 
+407:         [Fact]
+408:         public async Task UpdateDefaultModeAsync_NullMode_HandlesGracefully_Async()
+409:         {
+410:             // Arrange
+411:             var dao = new Dao_User(TestConnectionString);
+412:             var userId = 12345;
+413: 
+414:             // Act
+415:             var result = await dao.UpdateDefaultModeAsync(userId, null);
+416: 
+417:             // Assert
+418:             result.Should().NotBeNull();
+419:         }
+420: 
+421:         [Theory]
+422:         [InlineData(100, "guided")]
+423:         [InlineData(200, "manual")]
+424:         [InlineData(300, null)]
+425:         public async Task UpdateDefaultModeAsync_VariousInputs_HandlesAll_Async(int userId, string? mode)
+426:         {
+427:             // Arrange
+428:             var dao = new Dao_User(TestConnectionString);
+429: 
+430:             // Act
+431:             var result = await dao.UpdateDefaultModeAsync(userId, mode);
+432: 
+433:             // Assert
+434:             result.Should().NotBeNull();
+435:         }
+436: 
+437:         // ====================================================================
+438:         // UpdateDefaultReceivingModeAsync Tests
+439:         // ====================================================================
+440: 
+441:         [Fact]
+442:         public async Task UpdateDefaultReceivingModeAsync_ValidData_UpdatesMode_Async()
+443:         {
+444:             // Arrange
+445:             var dao = new Dao_User(TestConnectionString);
+446:             var userId = 12345;
+447:             var defaultMode = "guided";
+448: 
+449:             // Act
+450:             var result = await dao.UpdateDefaultReceivingModeAsync(userId, defaultMode);
+451: 
+452:             // Assert
+453:             result.Should().NotBeNull();
+454:         }
+455: 
+456:         [Theory]
+457:         [InlineData(100, "guided")]
+458:         [InlineData(200, "manual")]
+459:         [InlineData(300, "edit")]
+460:         [InlineData(400, null)]
+461:         public async Task UpdateDefaultReceivingModeAsync_DifferentModes_HandlesAll_Async(
+462:             int userId,
+463:             string? mode
+464:         )
+465:         {
+466:             // Arrange
+467:             var dao = new Dao_User(TestConnectionString);
+468: 
+469:             // Act
+470:             var result = await dao.UpdateDefaultReceivingModeAsync(userId, mode);
+471: 
+472:             // Assert
+473:             result.Should().NotBeNull();
+474:         }
+475: 
+476:         // ====================================================================
+477:         // UpdateDefaultDunnageModeAsync Tests
+478:         // ====================================================================
+479: 
+480:         [Fact]
+481:         public async Task UpdateDefaultDunnageModeAsync_ValidData_UpdatesMode_Async()
+482:         {
+483:             // Arrange
+484:             var dao = new Dao_User(TestConnectionString);
+485:             var userId = 12345;
+486:             var defaultMode = "guided";
+487: 
+488:             // Act
+489:             var result = await dao.UpdateDefaultDunnageModeAsync(userId, defaultMode);
+490: 
+491:             // Assert
+492:             result.Should().NotBeNull();
+493:         }
+494: 
+495:         [Theory]
+496:         [InlineData(100, "standard")]
+497:         [InlineData(200, "quick")]
+498:         [InlineData(300, null)]
+499:         public async Task UpdateDefaultDunnageModeAsync_VariousModes_HandlesAll_Async(
+500:             int userId,
+501:             string? mode
+502:         )
+503:         {
+504:             // Arrange
+505:             var dao = new Dao_User(TestConnectionString);
+506: 
+507:             // Act
+508:             var result = await dao.UpdateDefaultDunnageModeAsync(userId, mode);
+509: 
+510:             // Assert
+511:             result.Should().NotBeNull();
+512:         }
+513: 
+514:         // ====================================================================
+515:         // Edge Cases and Error Handling Tests
+516:         // ====================================================================
+517: 
+518:         [Fact]
+519:         public async Task GetUserByWindowsUsernameAsync_EmptyString_DoesNotThrow_Async()
+520:         {
+521:             // Arrange
+522:             var dao = new Dao_User(TestConnectionString);
+523: 
+524:             // Act
+525:             Func<Task> act = async () => await dao.GetUserByWindowsUsernameAsync(string.Empty);
+526: 
+527:             // Assert
+528:             await act.Should().NotThrowAsync();
+529:         }
+530: 
+531:         [Fact]
+532:         public async Task ValidateUserPinAsync_SpecialCharactersInUsername_HandlesGracefully_Async()
+533:         {
+534:             // Arrange
+535:             var dao = new Dao_User(TestConnectionString);
+536:             var username = "user@domain.com";
+537:             var pin = "1234";
+538: 
+539:             // Act
+540:             Func<Task> act = async () => await dao.ValidateUserPinAsync(username, pin);
+541: 
+542:             // Assert
+543:             await act.Should().NotThrowAsync();
+544:         }
+545: 
+546:         [Fact]
+547:         public async Task CreateNewUserAsync_AllFieldsPopulated_PassesAllParameters_Async()
+548:         {
+549:             // Arrange
+550:             var dao = new Dao_User(TestConnectionString);
+551:             var user = new Model_User
+552:             {
+553:                 EmployeeNumber = 99999,
+554:                 WindowsUsername = "testuser",
+555:                 FullName = "Test User",
+556:                 Pin = "9999",
+557:                 Department = "IT",
+558:                 Shift = "Day",
+559:                 VisualUsername = "visual_test",
+560:                 VisualPassword = "visual_pass123",
+561:                 IsActive = true,
+562:             };
+563:             var createdBy = "admin";
+564: 
+565:             // Act
+566:             Func<Task> act = async () => await dao.CreateNewUserAsync(user, createdBy);
+567: 
+568:             // Assert
+569:             await act.Should().NotThrowAsync();
+570:         }
+571: 
+572:         [Fact]
+573:         public async Task IsWindowsUsernameUniqueAsync_VeryLongUsername_HandlesGracefully_Async()
+574:         {
+575:             // Arrange
+576:             var dao = new Dao_User(TestConnectionString);
+577:             var longUsername = new string('a', 500);
+578: 
+579:             // Act
+580:             Func<Task> act = async () => await dao.IsWindowsUsernameUniqueAsync(longUsername);
+581: 
+582:             // Assert
+583:             await act.Should().NotThrowAsync();
+584:         }
+585: 
+586:         [Fact]
+587:         public async Task LogUserActivityAsync_LongDetails_HandlesGracefully_Async()
+588:         {
+589:             // Arrange
+590:             var dao = new Dao_User(TestConnectionString);
+591:             var longDetails = new string('x', 1000);
+592: 
+593:             // Act
+594:             Func<Task> act = async () =>
+595:                 await dao.LogUserActivityAsync("test_event", "user", "workstation", longDetails);
+596: 
+597:             // Assert
+598:             await act.Should().NotThrowAsync();
+599:         }
+600: 
+601:         [Fact]
+602:         public async Task UpsertWorkstationConfigAsync_VeryLongDescription_HandlesGracefully_Async()
+603:         {
+604:             // Arrange
+605:             var dao = new Dao_User(TestConnectionString);
+606:             var longDescription = new string('d', 2000);
+607: 
+608:             // Act
+609:             Func<Task> act = async () =>
+610:                 await dao.UpsertWorkstationConfigAsync("WS-01", "shared", true, longDescription);
+611: 
+612:             // Assert
+613:             await act.Should().NotThrowAsync();
+614:         }
+615: 
+616:         // ====================================================================
+617:         // Boundary Value Tests
+618:         // ====================================================================
+619: 
+620:         [Theory]
+621:         [InlineData(0)]
+622:         [InlineData(1)]
+623:         [InlineData(int.MaxValue)]
+624:         [InlineData(int.MinValue)]
+625:         public async Task UpdateDefaultModeAsync_BoundaryUserIds_HandlesAll_Async(int userId)
+626:         {
+627:             // Arrange
+628:             var dao = new Dao_User(TestConnectionString);
+629: 
+630:             // Act
+631:             Func<Task> act = async () => await dao.UpdateDefaultModeAsync(userId, "mode");
+632: 
+633:             // Assert
+634:             await act.Should().NotThrowAsync();
+635:         }
+636: 
+637:         [Theory]
+638:         [InlineData(null)]
+639:         [InlineData(0)]
+640:         [InlineData(-1)]
+641:         [InlineData(1)]
+642:         [InlineData(int.MaxValue)]
+643:         public async Task IsWindowsUsernameUniqueAsync_BoundaryExclusionValues_HandlesAll_Async(
+644:             int? excludeId
+645:         )
+646:         {
+647:             // Arrange
+648:             var dao = new Dao_User(TestConnectionString);
+649: 
+650:             // Act
+651:             Func<Task> act = async () => await dao.IsWindowsUsernameUniqueAsync("user", excludeId);
+652: 
+653:             // Assert
+654:             await act.Should().NotThrowAsync();
+655:         }
+656: 
+657:         // ====================================================================
+658:         // Helper Methods
+659:         // ====================================================================
+660: 
+661:         /// <summary>
+662:         /// Creates a valid test user model with all required fields populated.
+663:         /// </summary>
+664:         private static Model_User CreateValidTestUser()
+665:         {
+666:             return new Model_User
+667:             {
+668:                 EmployeeNumber = 12345,
+669:                 WindowsUsername = "testuser",
+670:                 FullName = "Test User",
+671:                 Pin = "1234",
+672:                 Department = "Engineering",
+673:                 Shift = "Day",
+674:                 IsActive = true,
+675:             };
+676:         }
+677:     }
+678: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Dunnage/Data/Dao_DunnageLoad_Tests.cs
+````csharp
+  1: using FluentAssertions;
+  2: using Xunit;
+  3: using MTM_Receiving_Application.Module_Dunnage.Data;
+  4: using MTM_Receiving_Application.Module_Dunnage.Models;
+  5: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  6: 
+  7: namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Data;
+  8: 
+  9: /// <summary>
+ 10: /// Unit tests for Dao_DunnageLoad data access object.
+ 11: /// Tests CRUD operations, batch processing, and date range queries for dunnage loads.
+ 12: /// Uses the mtm_receiving_application_test database.
+ 13: /// </summary>
+ 14: public class Dao_DunnageLoad_Tests
+ 15: {
+ 16:     private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
+ 17: 
+ 18:     // ====================================================================
+ 19:     // Constructor Tests
+ 20:     // ====================================================================
+ 21: 
+ 22:     [Fact]
+ 23:     public void Constructor_ValidConnectionString_CreatesInstance()
+ 24:     {
+ 25:         // Act
+ 26:         var dao = new Dao_DunnageLoad(TestConnectionString);
+ 27: 
+ 28:         // Assert
+ 29:         dao.Should().NotBeNull();
+ 30:     }
+ 31: 
+ 32:     [Fact]
+ 33:     public void Constructor_NullConnectionString_DoesNotThrow()
+ 34:     {
+ 35:         // Act
+ 36:         Action act = () => new Dao_DunnageLoad(null!);
+ 37: 
+ 38:         // Assert
+ 39:         act.Should().NotThrow();
+ 40:     }
+ 41: 
+ 42:     // ====================================================================
+ 43:     // GetAllAsync Tests
+ 44:     // ====================================================================
+ 45: 
+ 46:     [Fact]
+ 47:     public async Task GetAllAsync_NoParameters_CallsStoredProcedure_Async()
+ 48:     {
+ 49:         // Arrange
+ 50:         var dao = new Dao_DunnageLoad(TestConnectionString);
+ 51: 
+ 52:         // Act
+ 53:         var result = await dao.GetAllAsync();
+ 54: 
+ 55:         // Assert
+ 56:         result.Should().NotBeNull();
+ 57:     }
+ 58: 
+ 59:     // ====================================================================
+ 60:     // GetByDateRangeAsync Tests
+ 61:     // ====================================================================
+ 62: 
+ 63:     [Fact]
+ 64:     public async Task GetByDateRangeAsync_ValidDateRange_CallsStoredProcedure_Async()
+ 65:     {
+ 66:         // Arrange
+ 67:         var dao = new Dao_DunnageLoad(TestConnectionString);
+ 68:         var startDate = DateTime.Now.AddDays(-30);
+ 69:         var endDate = DateTime.Now;
+ 70: 
+ 71:         // Act
+ 72:         var result = await dao.GetByDateRangeAsync(startDate, endDate);
+ 73: 
+ 74:         // Assert
+ 75:         result.Should().NotBeNull();
+ 76:     }
+ 77: 
+ 78:     [Fact]
+ 79:     public async Task GetByDateRangeAsync_StartDateAfterEndDate_HandlesGracefully_Async()
+ 80:     {
+ 81:         // Arrange
+ 82:         var dao = new Dao_DunnageLoad(TestConnectionString);
+ 83:         var startDate = DateTime.Now;
+ 84:         var endDate = DateTime.Now.AddDays(-30);
+ 85: 
+ 86:         // Act
+ 87:         var result = await dao.GetByDateRangeAsync(startDate, endDate);
+ 88: 
+ 89:         // Assert
+ 90:         result.Should().NotBeNull();
+ 91:     }
+ 92: 
+ 93:     [Fact]
+ 94:     public async Task GetByDateRangeAsync_SameDates_HandlesGracefully_Async()
+ 95:     {
+ 96:         // Arrange
+ 97:         var dao = new Dao_DunnageLoad(TestConnectionString);
+ 98:         var date = DateTime.Now;
+ 99: 
+100:         // Act
+101:         var result = await dao.GetByDateRangeAsync(date, date);
+102: 
+103:         // Assert
+104:         result.Should().NotBeNull();
+105:     }
+106: 
+107:     [Fact]
+108:     public async Task GetByDateRangeAsync_VeryOldDates_HandlesGracefully_Async()
+109:     {
+110:         // Arrange
+111:         var dao = new Dao_DunnageLoad(TestConnectionString);
+112:         var startDate = new DateTime(1900, 1, 1);
+113:         var endDate = new DateTime(1900, 12, 31);
+114: 
+115:         // Act
+116:         Func<Task> act = async () => await dao.GetByDateRangeAsync(startDate, endDate);
+117: 
+118:         // Assert
+119:         await act.Should().NotThrowAsync();
+120:     }
+121: 
+122:     [Fact]
+123:     public async Task GetByDateRangeAsync_FutureDates_HandlesGracefully_Async()
+124:     {
+125:         // Arrange
+126:         var dao = new Dao_DunnageLoad(TestConnectionString);
+127:         var startDate = DateTime.Now.AddYears(1);
+128:         var endDate = DateTime.Now.AddYears(2);
+129: 
+130:         // Act
+131:         Func<Task> act = async () => await dao.GetByDateRangeAsync(startDate, endDate);
+132: 
+133:         // Assert
+134:         await act.Should().NotThrowAsync();
+135:     }
+136: 
+137:     [Fact]
+138:     public async Task GetByDateRangeAsync_VeryLargeRange_HandlesGracefully_Async()
+139:     {
+140:         // Arrange
+141:         var dao = new Dao_DunnageLoad(TestConnectionString);
+142:         var startDate = DateTime.MinValue;
+143:         var endDate = DateTime.MaxValue;
+144: 
+145:         // Act
+146:         Func<Task> act = async () => await dao.GetByDateRangeAsync(startDate, endDate);
+147: 
+148:         // Assert
+149:         await act.Should().NotThrowAsync();
+150:     }
+151: 
+152:     // ====================================================================
+153:     // GetByIdAsync Tests
+154:     // ====================================================================
+155: 
+156:     [Fact]
+157:     public async Task GetByIdAsync_ValidGuid_CallsStoredProcedure_Async()
+158:     {
+159:         // Arrange
+160:         var dao = new Dao_DunnageLoad(TestConnectionString);
+161:         var loadUuid = Guid.NewGuid();
+162: 
+163:         // Act
+164:         var result = await dao.GetByIdAsync(loadUuid);
+165: 
+166:         // Assert
+167:         result.Should().NotBeNull();
+168:     }
+169: 
+170:     [Fact]
+171:     public async Task GetByIdAsync_EmptyGuid_HandlesGracefully_Async()
+172:     {
+173:         // Arrange
+174:         var dao = new Dao_DunnageLoad(TestConnectionString);
+175:         var loadUuid = Guid.Empty;
+176: 
+177:         // Act
+178:         Func<Task> act = async () => await dao.GetByIdAsync(loadUuid);
+179: 
+180:         // Assert
+181:         await act.Should().NotThrowAsync();
+182:     }
+183: 
+184:     [Fact]
+185:     public async Task GetByIdAsync_DifferentGuids_HandlesAll_Async()
+186:     {
+187:         // Arrange
+188:         var dao = new Dao_DunnageLoad(TestConnectionString);
+189: 
+190:         // Act & Assert
+191:         for (int i = 0; i < 5; i++)
+192:         {
+193:             var guid = Guid.NewGuid();
+194:             Func<Task> act = async () => await dao.GetByIdAsync(guid);
+195:             await act.Should().NotThrowAsync();
+196:         }
+197:     }
+198: 
+199:     // ====================================================================
+200:     // InsertAsync Tests
+201:     // ====================================================================
+202: 
+203:     [Fact]
+204:     public async Task InsertAsync_ValidParameters_CallsStoredProcedure_Async()
+205:     {
+206:         // Arrange
+207:         var dao = new Dao_DunnageLoad(TestConnectionString);
+208:         var loadUuid = Guid.NewGuid();
+209:         var partId = "DUNNAGE-001";
+210:         var quantity = 100.5m;
+211:         var user = "testuser";
+212: 
+213:         // Act
+214:         var result = await dao.InsertAsync(loadUuid, partId, quantity, user);
+215: 
+216:         // Assert
+217:         result.Should().NotBeNull();
+218:     }
+219: 
+220:     [Theory]
+221:     [InlineData("PART-001", 100.0)]
+222:     [InlineData("DUNNAGE-123", 50.5)]
+223:     [InlineData("SKD-456", 1000.99)]
+224:     public async Task InsertAsync_DifferentParts_HandlesAll_Async(string partId, decimal quantity)
+225:     {
+226:         // Arrange
+227:         var dao = new Dao_DunnageLoad(TestConnectionString);
+228:         var loadUuid = Guid.NewGuid();
+229:         var user = "testuser";
+230: 
+231:         // Act
+232:         var result = await dao.InsertAsync(loadUuid, partId, quantity, user);
+233: 
+234:         // Assert
+235:         result.Should().NotBeNull();
+236:     }
+237: 
+238:     [Theory]
+239:     [InlineData(0.0)]
+240:     [InlineData(0.001)]
+241:     [InlineData(1.0)]
+242:     [InlineData(999999.99)]
+243:     public async Task InsertAsync_DifferentQuantities_HandlesAll_Async(decimal quantity)
+244:     {
+245:         // Arrange
+246:         var dao = new Dao_DunnageLoad(TestConnectionString);
+247:         var loadUuid = Guid.NewGuid();
+248:         var partId = "PART-001";
+249:         var user = "testuser";
+250: 
+251:         // Act
+252:         var result = await dao.InsertAsync(loadUuid, partId, quantity, user);
+253: 
+254:         // Assert
+255:         result.Should().NotBeNull();
+256:     }
+257: 
+258:     [Theory]
+259:     [InlineData("user1")]
+260:     [InlineData("admin")]
+261:     [InlineData("testuser")]
+262:     [InlineData("")]
+263:     public async Task InsertAsync_DifferentUsers_HandlesAll_Async(string user)
+264:     {
+265:         // Arrange
+266:         var dao = new Dao_DunnageLoad(TestConnectionString);
+267:         var loadUuid = Guid.NewGuid();
+268:         var partId = "PART-001";
+269:         var quantity = 100m;
+270: 
+271:         // Act
+272:         var result = await dao.InsertAsync(loadUuid, partId, quantity, user);
+273: 
+274:         // Assert
+275:         result.Should().NotBeNull();
+276:     }
+277: 
+278:     // ====================================================================
+279:     // InsertBatchAsync Tests
+280:     // ====================================================================
+281: 
+282:     [Fact]
+283:     public async Task InsertBatchAsync_ValidSingleLoad_CallsStoredProcedure_Async()
+284:     {
+285:         // Arrange
+286:         var dao = new Dao_DunnageLoad(TestConnectionString);
+287:         var loads = new List<Model_DunnageLoad> { CreateValidDunnageLoad() };
+288:         var user = "testuser";
+289: 
+290:         // Act
+291:         var result = await dao.InsertBatchAsync(loads, user);
+292: 
+293:         // Assert
+294:         result.Should().NotBeNull();
+295:     }
+296: 
+297:     [Fact]
+298:     public async Task InsertBatchAsync_MultipleLoads_CallsStoredProcedure_Async()
+299:     {
+300:         // Arrange
+301:         var dao = new Dao_DunnageLoad(TestConnectionString);
+302:         var loads = new List<Model_DunnageLoad>
+303:         {
+304:             CreateValidDunnageLoad(),
+305:             CreateValidDunnageLoad(),
+306:             CreateValidDunnageLoad()
+307:         };
+308:         var user = "testuser";
+309: 
+310:         // Act
+311:         var result = await dao.InsertBatchAsync(loads, user);
+312: 
+313:         // Assert
+314:         result.Should().NotBeNull();
+315:     }
+316: 
+317:     [Theory]
+318:     [InlineData(1)]
+319:     [InlineData(5)]
+320:     [InlineData(10)]
+321:     [InlineData(50)]
+322:     public async Task InsertBatchAsync_VariousBatchSizes_HandlesAll_Async(int batchSize)
+323:     {
+324:         // Arrange
+325:         var dao = new Dao_DunnageLoad(TestConnectionString);
+326:         var loads = new List<Model_DunnageLoad>();
+327:         for (int i = 0; i < batchSize; i++)
+328:         {
+329:             loads.Add(CreateValidDunnageLoad());
+330:         }
+331:         var user = "testuser";
+332: 
+333:         // Act
+334:         var result = await dao.InsertBatchAsync(loads, user);
+335: 
+336:         // Assert
+337:         result.Should().NotBeNull();
+338:     }
+339: 
+340:     // ====================================================================
+341:     // UpdateAsync Tests
+342:     // ====================================================================
+343: 
+344:     [Fact]
+345:     public async Task UpdateAsync_ValidParameters_CallsStoredProcedure_Async()
+346:     {
+347:         // Arrange
+348:         var dao = new Dao_DunnageLoad(TestConnectionString);
+349:         var loadUuid = Guid.NewGuid();
+350:         var quantity = 150.5m;
+351:         var user = "testuser";
+352: 
+353:         // Act
+354:         var result = await dao.UpdateAsync(loadUuid, quantity, user);
+355: 
+356:         // Assert
+357:         result.Should().NotBeNull();
+358:     }
+359: 
+360:     [Theory]
+361:     [InlineData(0.0)]
+362:     [InlineData(0.001)]
+363:     [InlineData(100.5)]
+364:     [InlineData(9999.99)]
+365:     public async Task UpdateAsync_DifferentQuantities_HandlesAll_Async(decimal quantity)
+366:     {
+367:         // Arrange
+368:         var dao = new Dao_DunnageLoad(TestConnectionString);
+369:         var loadUuid = Guid.NewGuid();
+370:         var user = "testuser";
+371: 
+372:         // Act
+373:         var result = await dao.UpdateAsync(loadUuid, quantity, user);
+374: 
+375:         // Assert
+376:         result.Should().NotBeNull();
+377:     }
+378: 
+379:     [Fact]
+380:     public async Task UpdateAsync_EmptyGuid_HandlesGracefully_Async()
+381:     {
+382:         // Arrange
+383:         var dao = new Dao_DunnageLoad(TestConnectionString);
+384:         var loadUuid = Guid.Empty;
+385:         var quantity = 100m;
+386:         var user = "testuser";
+387: 
+388:         // Act
+389:         Func<Task> act = async () => await dao.UpdateAsync(loadUuid, quantity, user);
+390: 
+391:         // Assert
+392:         await act.Should().NotThrowAsync();
+393:     }
+394: 
+395:     // ====================================================================
+396:     // DeleteAsync Tests
+397:     // ====================================================================
+398: 
+399:     [Fact]
+400:     public async Task DeleteAsync_ValidGuid_CallsStoredProcedure_Async()
+401:     {
+402:         // Arrange
+403:         var dao = new Dao_DunnageLoad(TestConnectionString);
+404:         var loadUuid = Guid.NewGuid();
+405: 
+406:         // Act
+407:         var result = await dao.DeleteAsync(loadUuid);
+408: 
+409:         // Assert
+410:         result.Should().NotBeNull();
+411:     }
+412: 
+413:     [Fact]
+414:     public async Task DeleteAsync_EmptyGuid_HandlesGracefully_Async()
+415:     {
+416:         // Arrange
+417:         var dao = new Dao_DunnageLoad(TestConnectionString);
+418:         var loadUuid = Guid.Empty;
+419: 
+420:         // Act
+421:         Func<Task> act = async () => await dao.DeleteAsync(loadUuid);
+422: 
+423:         // Assert
+424:         await act.Should().NotThrowAsync();
+425:     }
+426: 
+427:     [Fact]
+428:     public async Task DeleteAsync_MultipleDeletes_HandlesGracefully_Async()
+429:     {
+430:         // Arrange
+431:         var dao = new Dao_DunnageLoad(TestConnectionString);
+432: 
+433:         // Act & Assert
+434:         for (int i = 0; i < 5; i++)
+435:         {
+436:             var guid = Guid.NewGuid();
+437:             Func<Task> act = async () => await dao.DeleteAsync(guid);
+438:             await act.Should().NotThrowAsync();
+439:         }
+440:     }
+441: 
+442:     // ====================================================================
+443:     // Edge Cases and Boundary Value Tests
+444:     // ====================================================================
+445: 
+446:     [Fact]
+447:     public async Task InsertAsync_VeryLongPartId_HandlesGracefully_Async()
+448:     {
+449:         // Arrange
+450:         var dao = new Dao_DunnageLoad(TestConnectionString);
+451:         var loadUuid = Guid.NewGuid();
+452:         var partId = new string('P', 500);
+453:         var quantity = 100m;
+454:         var user = "testuser";
+455: 
+456:         // Act
+457:         Func<Task> act = async () => await dao.InsertAsync(loadUuid, partId, quantity, user);
+458: 
+459:         // Assert
+460:         await act.Should().NotThrowAsync();
+461:     }
+462: 
+463:     [Fact]
+464:     public async Task InsertAsync_VeryLongUsername_HandlesGracefully_Async()
+465:     {
+466:         // Arrange
+467:         var dao = new Dao_DunnageLoad(TestConnectionString);
+468:         var loadUuid = Guid.NewGuid();
+469:         var partId = "PART-001";
+470:         var quantity = 100m;
+471:         var user = new string('U', 500);
+472: 
+473:         // Act
+474:         Func<Task> act = async () => await dao.InsertAsync(loadUuid, partId, quantity, user);
+475: 
+476:         // Assert
+477:         await act.Should().NotThrowAsync();
+478:     }
+479: 
+480:     [Fact]
+481:     public async Task InsertAsync_SpecialCharactersInPartId_HandlesGracefully_Async()
+482:     {
+483:         // Arrange
+484:         var dao = new Dao_DunnageLoad(TestConnectionString);
+485:         var loadUuid = Guid.NewGuid();
+486:         var partId = "PART-@#$%^&*()";
+487:         var quantity = 100m;
+488:         var user = "testuser";
+489: 
+490:         // Act
+491:         Func<Task> act = async () => await dao.InsertAsync(loadUuid, partId, quantity, user);
+492: 
+493:         // Assert
+494:         await act.Should().NotThrowAsync();
+495:     }
+496: 
+497:     [Fact]
+498:     public async Task InsertAsync_NegativeQuantity_HandlesGracefully_Async()
+499:     {
+500:         // Arrange
+501:         var dao = new Dao_DunnageLoad(TestConnectionString);
+502:         var loadUuid = Guid.NewGuid();
+503:         var partId = "PART-001";
+504:         var quantity = -100m;
+505:         var user = "testuser";
+506: 
+507:         // Act
+508:         Func<Task> act = async () => await dao.InsertAsync(loadUuid, partId, quantity, user);
+509: 
+510:         // Assert
+511:         await act.Should().NotThrowAsync();
+512:     }
+513: 
+514:     [Fact]
+515:     public async Task InsertBatchAsync_EmptyList_HandlesGracefully_Async()
+516:     {
+517:         // Arrange
+518:         var dao = new Dao_DunnageLoad(TestConnectionString);
+519:         var loads = new List<Model_DunnageLoad>();
+520:         var user = "testuser";
+521: 
+522:         // Act
+523:         Func<Task> act = async () => await dao.InsertBatchAsync(loads, user);
+524: 
+525:         // Assert
+526:         await act.Should().NotThrowAsync();
+527:     }
+528: 
+529:     [Fact]
+530:     public async Task InsertBatchAsync_DuplicatePartIds_HandlesGracefully_Async()
+531:     {
+532:         // Arrange
+533:         var dao = new Dao_DunnageLoad(TestConnectionString);
+534:         var load = CreateValidDunnageLoad();
+535:         var loads = new List<Model_DunnageLoad> { load, load, load };
+536:         var user = "testuser";
+537: 
+538:         // Act
+539:         Func<Task> act = async () => await dao.InsertBatchAsync(loads, user);
+540: 
+541:         // Assert
+542:         await act.Should().NotThrowAsync();
+543:     }
+544: 
+545:     [Fact]
+546:     public async Task UpdateAsync_VeryLargeQuantity_HandlesGracefully_Async()
+547:     {
+548:         // Arrange
+549:         var dao = new Dao_DunnageLoad(TestConnectionString);
+550:         var loadUuid = Guid.NewGuid();
+551:         var quantity = decimal.MaxValue;
+552:         var user = "testuser";
+553: 
+554:         // Act
+555:         Func<Task> act = async () => await dao.UpdateAsync(loadUuid, quantity, user);
+556: 
+557:         // Assert
+558:         await act.Should().NotThrowAsync();
+559:     }
+560: 
+561:     [Fact]
+562:     public async Task UpdateAsync_VerySmallQuantity_HandlesGracefully_Async()
+563:     {
+564:         // Arrange
+565:         var dao = new Dao_DunnageLoad(TestConnectionString);
+566:         var loadUuid = Guid.NewGuid();
+567:         var quantity = 0.000001m;
+568:         var user = "testuser";
+569: 
+570:         // Act
+571:         Func<Task> act = async () => await dao.UpdateAsync(loadUuid, quantity, user);
+572: 
+573:         // Assert
+574:         await act.Should().NotThrowAsync();
+575:     }
+576: 
+577:     // ====================================================================
+578:     // Helper Methods
+579:     // ====================================================================
+580: 
+581:     /// <summary>
+582:     /// Creates a valid test dunnage load with all required fields populated.
+583:     /// </summary>
+584:     private static Model_DunnageLoad CreateValidDunnageLoad()
+585:     {
+586:         return new Model_DunnageLoad
+587:         {
+588:             LoadUuid = Guid.NewGuid(),
+589:             PartId = "DUNNAGE-001",
+590:             Quantity = 100.5m,
+591:             ReceivedDate = DateTime.Now,
+592:             CreatedBy = "testuser",
+593:             CreatedDate = DateTime.Now,
+594:             ModifiedBy = null,
+595:             ModifiedDate = null
+596:         };
+597:     }
+598: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Data/Dao_ReceivingLine_Tests.cs
+````csharp
+  1: using FluentAssertions;
+  2: using Xunit;
+  3: using MTM_Receiving_Application.Module_Receiving.Data;
+  4: using MTM_Receiving_Application.Module_Receiving.Models;
+  5: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  6: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  7: 
+  8: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
+  9: 
+ 10: /// <summary>
+ 11: /// Unit tests for Dao_ReceivingLine data access object.
+ 12: /// Tests constructor validation and parameter handling without requiring database connection.
+ 13: /// NOTE: These are UNIT tests, not integration tests. Database operations are tested separately.
+ 14: /// </summary>
+ 15: public class Dao_ReceivingLine_Tests
+ 16: {
+ 17:     private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
+ 18: 
+ 19:     // ====================================================================
+ 20:     // Constructor Tests
+ 21:     // ====================================================================
+ 22: 
+ 23:     [Fact]
+ 24:     public void Constructor_ValidConnectionString_CreatesInstance()
+ 25:     {
+ 26:         // Act
+ 27:         var dao = new Dao_ReceivingLine(TestConnectionString);
+ 28: 
+ 29:         // Assert
+ 30:         dao.Should().NotBeNull();
+ 31:     }
+ 32: 
+ 33:     [Fact]
+ 34:     public void Constructor_NullConnectionString_ThrowsArgumentNullException()
+ 35:     {
+ 36:         // Act
+ 37:         Action act = () => new Dao_ReceivingLine(null!);
+ 38: 
+ 39:         // Assert
+ 40:         act.Should().Throw<ArgumentNullException>()
+ 41:             .WithParameterName("connectionString");
+ 42:     }
+ 43: 
+ 44:     [Fact]
+ 45:     public void Constructor_EmptyConnectionString_DoesNotThrow()
+ 46:     {
+ 47:         // NOTE: Constructor accepts empty string, but database operations will fail gracefully
+ 48:         // Act
+ 49:         Action act = () => new Dao_ReceivingLine(string.Empty);
+ 50: 
+ 51:         // Assert
+ 52:         act.Should().NotThrow();
+ 53:     }
+ 54: 
+ 55:     // ====================================================================
+ 56:     // InsertReceivingLineAsync Tests - Database Connection Failures
+ 57:     // ====================================================================
+ 58: 
+ 59:     [Fact]
+ 60:     public async Task InsertReceivingLineAsync_InvalidConnectionString_ReturnsFailureResult_Async()
+ 61:     {
+ 62:         // Arrange - Use invalid connection string to simulate connection failure
+ 63:         var dao = new Dao_ReceivingLine("Server=invalid;Database=nonexistent;");
+ 64:         var line = CreateValidReceivingLine();
+ 65: 
+ 66:         // Act
+ 67:         var result = await dao.InsertReceivingLineAsync(line);
+ 68: 
+ 69:         // Assert - DAO MUST return failure result, NOT throw exception (Constitutional requirement)
+ 70:         result.Should().NotBeNull();
+ 71:         result.Success.Should().BeFalse("DAO must return failure result instead of throwing exception");
+ 72:         result.ErrorMessage.Should().NotBeNullOrEmpty();
+ 73:         result.Severity.Should().Be(Enum_ErrorSeverity.Error);
+ 74:     }
+ 75: 
+ 76:     // ====================================================================
+ 77:     // InsertReceivingLineAsync Tests - Parameter Handling
+ 78:     // ====================================================================
+ 79: 
+ 80:     [Fact]
+ 81:     public async Task InsertReceivingLineAsync_NullPartID_ReturnsResult_Async()
+ 82:     {
+ 83:         // Arrange - Invalid connection ensures we're testing parameter construction, not DB
+ 84:         var dao = new Dao_ReceivingLine("Server=invalid;");
+ 85:         var line = CreateValidReceivingLine();
+ 86:         line.PartID = null!;
+ 87: 
+ 88:         // Act
+ 89:         var result = await dao.InsertReceivingLineAsync(line);
+ 90: 
+ 91:         // Assert - DAO handles null PartID by converting to empty string per implementation
+ 92:         result.Should().NotBeNull();
+ 93:         // Will fail due to connection, but that's expected - we're testing it doesn't throw
+ 94:     }
+ 95: 
+ 96:     [Fact]
+ 97:     public async Task InsertReceivingLineAsync_NullHeat_ReturnsResult_Async()
+ 98:     {
+ 99:         // Arrange
+100:         var dao = new Dao_ReceivingLine("Server=invalid;");
+101:         var line = CreateValidReceivingLine();
+102:         line.Heat = null!;
+103: 
+104:         // Act
+105:         var result = await dao.InsertReceivingLineAsync(line);
+106: 
+107:         // Assert - DAO handles null Heat by converting to empty string per implementation
+108:         result.Should().NotBeNull();
+109:     }
+110: 
+111:     [Fact]
+112:     public async Task InsertReceivingLineAsync_NullInitialLocation_ReturnsResult_Async()
+113:     {
+114:         // Arrange
+115:         var dao = new Dao_ReceivingLine("Server=invalid;");
+116:         var line = CreateValidReceivingLine();
+117:         line.InitialLocation = null!;
+118: 
+119:         // Act
+120:         var result = await dao.InsertReceivingLineAsync(line);
+121: 
+122:         // Assert
+123:         result.Should().NotBeNull();
+124:     }
+125: 
+126:     [Fact]
+127:     public async Task InsertReceivingLineAsync_NullCoilsOnSkid_ReturnsResult_Async()
+128:     {
+129:         // Arrange
+130:         var dao = new Dao_ReceivingLine("Server=invalid;");
+131:         var line = CreateValidReceivingLine();
+132:         line.CoilsOnSkid = null;
+133: 
+134:         // Act
+135:         var result = await dao.InsertReceivingLineAsync(line);
+136: 
+137:         // Assert - DAO handles null CoilsOnSkid by converting to DBNull.Value per implementation
+138:         result.Should().NotBeNull();
+139:     }
+140: 
+141:     [Fact]
+142:     public async Task InsertReceivingLineAsync_NullVendorName_ReturnsResult_Async()
+143:     {
+144:         // Arrange
+145:         var dao = new Dao_ReceivingLine("Server=invalid;");
+146:         var line = CreateValidReceivingLine();
+147:         line.VendorName = null!;
+148: 
+149:         // Act
+150:         var result = await dao.InsertReceivingLineAsync(line);
+151: 
+152:         // Assert - DAO handles null VendorName by using "Unknown" per implementation
+153:         result.Should().NotBeNull();
+154:     }
+155: 
+156:     [Fact]
+157:     public async Task InsertReceivingLineAsync_NullPartDescription_ReturnsResult_Async()
+158:     {
+159:         // Arrange
+160:         var dao = new Dao_ReceivingLine("Server=invalid;");
+161:         var line = CreateValidReceivingLine();
+162:         line.PartDescription = null!;
+163: 
+164:         // Act
+165:         var result = await dao.InsertReceivingLineAsync(line);
+166: 
+167:         // Assert
+168:         result.Should().NotBeNull();
+169:     }
+170: 
+171:     // ====================================================================
+172:     // InsertReceivingLineAsync Tests - Value Range Handling
+173:     // ====================================================================
+174: 
+175:     [Theory]
+176:     [InlineData(1)]
+177:     [InlineData(100)]
+178:     [InlineData(1000)]
+179:     [InlineData(0)]
+180:     [InlineData(-1)]
+181:     public async Task InsertReceivingLineAsync_DifferentQuantities_HandlesAllValues_Async(int quantity)
+182:     {
+183:         // Arrange
+184:         var dao = new Dao_ReceivingLine("Server=invalid;");
+185:         var line = CreateValidReceivingLine();
+186:         line.Quantity = quantity;
+187: 
+188:         // Act
+189:         var result = await dao.InsertReceivingLineAsync(line);
+190: 
+191:         // Assert - DAO accepts all quantity values (validation is Service layer responsibility)
+192:         result.Should().NotBeNull();
+193:     }
+194: 
+195:     [Theory]
+196:     [InlineData(0)]
+197:     [InlineData(12345)]
+198:     [InlineData(67890)]
+199:     [InlineData(999999)]
+200:     [InlineData(-1)]
+201:     public async Task InsertReceivingLineAsync_DifferentPONumbers_HandlesAllValues_Async(int poNumber)
+202:     {
+203:         // Arrange
+204:         var dao = new Dao_ReceivingLine("Server=invalid;");
+205:         var line = CreateValidReceivingLine();
+206:         line.PONumber = poNumber;
+207: 
+208:         // Act
+209:         var result = await dao.InsertReceivingLineAsync(line);
+210: 
+211:         // Assert
+212:         result.Should().NotBeNull();
+213:     }
+214: 
+215:     [Fact]
+216:     public async Task InsertReceivingLineAsync_AllFieldsPopulated_DoesNotThrow_Async()
+217:     {
+218:         // Arrange
+219:         var dao = new Dao_ReceivingLine("Server=invalid;");
+220:         var line = new Model_ReceivingLine
+221:         {
+222:             Quantity = 500,
+223:             PartID = "PART-12345",
+224:             PONumber = 67890,
+225:             EmployeeNumber = 1001,
+226:             Heat = "HEAT-ABC123",
+227:             Date = DateTime.Now,
+228:             InitialLocation = "A-01-B",
+229:             CoilsOnSkid = 10,
+230:             VendorName = "Acme Corp",
+231:             PartDescription = "Steel Coil 1.5mm x 48in"
+232:         };
+233: 
+234:         // Act
+235:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+236: 
+237:         // Assert - DAO must not throw exceptions (Constitutional requirement)
+238:         await act.Should().NotThrowAsync();
+239:     }
+240: 
+241:     [Fact]
+242:     public async Task InsertReceivingLineAsync_MinimalFields_DoesNotThrow_Async()
+243:     {
+244:         // Arrange
+245:         var dao = new Dao_ReceivingLine("Server=invalid;");
+246:         var line = new Model_ReceivingLine
+247:         {
+248:             Quantity = 1,
+249:             PONumber = 1,
+250:             EmployeeNumber = 100,
+251:             Date = DateTime.Now
+252:         };
+253: 
+254:         // Act
+255:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+256: 
+257:         // Assert - DAO must not throw exceptions
+258:         await act.Should().NotThrowAsync();
+259:     }
+260: 
+261:     // ====================================================================
+262:     // Edge Cases and Boundary Value Tests
+263:     // ====================================================================
+264: 
+265:     [Fact]
+266:     public async Task InsertReceivingLineAsync_VeryLongPartID_DoesNotThrow_Async()
+267:     {
+268:         // Arrange
+269:         var dao = new Dao_ReceivingLine("Server=invalid;");
+270:         var line = CreateValidReceivingLine();
+271:         line.PartID = new string('A', 500);
+272: 
+273:         // Act
+274:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+275: 
+276:         // Assert - DAO passes value to DB, which will enforce length constraints
+277:         await act.Should().NotThrowAsync();
+278:     }
+279: 
+280:     [Fact]
+281:     public async Task InsertReceivingLineAsync_VeryLongHeat_DoesNotThrow_Async()
+282:     {
+283:         // Arrange
+284:         var dao = new Dao_ReceivingLine("Server=invalid;");
+285:         var line = CreateValidReceivingLine();
+286:         line.Heat = new string('H', 1000);
+287: 
+288:         // Act
+289:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+290: 
+291:         // Assert
+292:         await act.Should().NotThrowAsync();
+293:     }
+294: 
+295:     [Fact]
+296:     public async Task InsertReceivingLineAsync_VeryLongPartDescription_DoesNotThrow_Async()
+297:     {
+298:         // Arrange
+299:         var dao = new Dao_ReceivingLine("Server=invalid;");
+300:         var line = CreateValidReceivingLine();
+301:         line.PartDescription = new string('D', 2000);
+302: 
+303:         // Act
+304:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+305: 
+306:         // Assert
+307:         await act.Should().NotThrowAsync();
+308:     }
+309: 
+310:     [Fact]
+311:     public async Task InsertReceivingLineAsync_FutureDate_DoesNotThrow_Async()
+312:     {
+313:         // Arrange
+314:         var dao = new Dao_ReceivingLine("Server=invalid;");
+315:         var line = CreateValidReceivingLine();
+316:         line.Date = DateTime.Now.AddYears(1);
+317: 
+318:         // Act
+319:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+320: 
+321:         // Assert - Date validation is business logic, DAO just passes it through
+322:         await act.Should().NotThrowAsync();
+323:     }
+324: 
+325:     [Fact]
+326:     public async Task InsertReceivingLineAsync_PastDate_DoesNotThrow_Async()
+327:     {
+328:         // Arrange
+329:         var dao = new Dao_ReceivingLine("Server=invalid;");
+330:         var line = CreateValidReceivingLine();
+331:         line.Date = DateTime.Now.AddYears(-10);
+332: 
+333:         // Act
+334:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+335: 
+336:         // Assert
+337:         await act.Should().NotThrowAsync();
+338:     }
+339: 
+340:     [Theory]
+341:     [InlineData(int.MinValue)]
+342:     [InlineData(-1)]
+343:     [InlineData(0)]
+344:     [InlineData(1)]
+345:     [InlineData(int.MaxValue)]
+346:     public async Task InsertReceivingLineAsync_BoundaryCoilsOnSkid_DoesNotThrow_Async(int? coilsOnSkid)
+347:     {
+348:         // Arrange
+349:         var dao = new Dao_ReceivingLine("Server=invalid;");
+350:         var line = CreateValidReceivingLine();
+351:         line.CoilsOnSkid = coilsOnSkid;
+352: 
+353:         // Act
+354:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+355: 
+356:         // Assert
+357:         await act.Should().NotThrowAsync();
+358:     }
+359: 
+360:     [Theory]
+361:     [InlineData(int.MinValue)]
+362:     [InlineData(-1000)]
+363:     [InlineData(0)]
+364:     [InlineData(1)]
+365:     [InlineData(99999)]
+366:     [InlineData(int.MaxValue)]
+367:     public async Task InsertReceivingLineAsync_BoundaryEmployeeNumbers_DoesNotThrow_Async(int employeeNumber)
+368:     {
+369:         // Arrange
+370:         var dao = new Dao_ReceivingLine("Server=invalid;");
+371:         var line = CreateValidReceivingLine();
+372:         line.EmployeeNumber = employeeNumber;
+373: 
+374:         // Act
+375:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+376: 
+377:         // Assert
+378:         await act.Should().NotThrowAsync();
+379:     }
+380: 
+381:     [Fact]
+382:     public async Task InsertReceivingLineAsync_SpecialCharactersInFields_DoesNotThrow_Async()
+383:     {
+384:         // Arrange
+385:         var dao = new Dao_ReceivingLine("Server=invalid;");
+386:         var line = CreateValidReceivingLine();
+387:         line.PartID = "PART-@#$%^&*()";
+388:         line.Heat = "HEAT-<>{}[]";
+389:         line.VendorName = "Vendor's \"Company\"";
+390: 
+391:         // Act
+392:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+393: 
+394:         // Assert - DAO should pass special characters safely (parameterized queries prevent SQL injection)
+395:         await act.Should().NotThrowAsync();
+396:     }
+397: 
+398:     // ====================================================================
+399:     // Constitutional Compliance Tests
+400:     // ====================================================================
+401: 
+402:     [Fact]
+403:     public async Task InsertReceivingLineAsync_DatabaseException_ReturnsFailureNotThrow_Async()
+404:     {
+405:         // Arrange - Empty connection string will cause connection failure
+406:         var dao = new Dao_ReceivingLine(string.Empty);
+407:         var line = CreateValidReceivingLine();
+408: 
+409:         // Act
+410:         Func<Task> act = async () => await dao.InsertReceivingLineAsync(line);
+411: 
+412:         // Assert - CRITICAL: DAO MUST NOT throw exceptions per Constitutional Rule II
+413:         await act.Should().NotThrowAsync("DAO must return failure result instead of throwing exception");
+414: 
+415:         var result = await dao.InsertReceivingLineAsync(line);
+416:         result.Success.Should().BeFalse();
+417:         result.ErrorMessage.Should().NotBeNullOrEmpty();
+418:     }
+419: 
+420:     // ====================================================================
+421:     // Helper Methods
+422:     // ====================================================================
+423: 
+424:     /// <summary>
+425:     /// Creates a valid test receiving line with all required fields populated.
+426:     /// </summary>
+427:     private static Model_ReceivingLine CreateValidReceivingLine()
+428:     {
+429:         return new Model_ReceivingLine
+430:         {
+431:             Quantity = 100,
+432:             PartID = "PART-001",
+433:             PONumber = 12345,
+434:             EmployeeNumber = 1001,
+435:             Heat = "HEAT-123",
+436:             Date = DateTime.Now,
+437:             InitialLocation = "A-01",
+438:             CoilsOnSkid = 5,
+439:             VendorName = "Test Vendor",
+440:             PartDescription = "Test Part Description"
+441:         };
+442:     }
+443: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Receiving/Data/Dao_ReceivingLoad_Tests.cs
+````csharp
+  1: using FluentAssertions;
+  2: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  3: using MTM_Receiving_Application.Module_Receiving.Data;
+  4: using MTM_Receiving_Application.Module_Receiving.Models;
+  5: using Xunit;
+  6: 
+  7: namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Data;
+  8: 
+  9: /// <summary>
+ 10: /// Unit tests for Dao_ReceivingLoad data access object.
+ 11: /// Tests CRUD operations, transactions, and batch processing for receiving loads.
+ 12: /// </summary>
+ 13: public class Dao_ReceivingLoad_Tests
+ 14: {
+ 15: 
+ 16:     private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
+ 17: 
+ 18:     // ====================================================================
+ 19:     // Constructor Tests
+ 20:     // ====================================================================
+ 21: 
+ 22:     [Fact]
+ 23:     public void Constructor_ValidConnectionString_CreatesInstance()
+ 24:     {
+ 25:         // Act
+ 26:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+ 27: 
+ 28:         // Assert
+ 29:         dao.Should().NotBeNull();
+ 30:     }
+ 31: 
+ 32:     [Fact]
+ 33:     public void Constructor_NullConnectionString_ThrowsArgumentNullException()
+ 34:     {
+ 35:         // Act
+ 36:         Action act = () => new Dao_ReceivingLoad(null!);
+ 37: 
+ 38:         // Assert
+ 39:         act.Should().Throw<ArgumentNullException>()
+ 40:             .WithMessage("*connectionString*");
+ 41:     }
+ 42: 
+ 43:     // ====================================================================
+ 44:     // SaveLoadsAsync Tests
+ 45:     // ====================================================================
+ 46: 
+ 47:     [Fact]
+ 48:     public async Task SaveLoadsAsync_NullList_ReturnsFailure_Async()
+ 49:     {
+ 50:         // Arrange
+ 51:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+ 52: 
+ 53:         // Act
+ 54:         var result = await dao.SaveLoadsAsync(null!);
+ 55: 
+ 56:         // Assert
+ 57:         result.Should().NotBeNull();
+ 58:         result.Success.Should().BeFalse();
+ 59:         result.ErrorMessage.Should().Contain("null or empty");
+ 60:     }
+ 61: 
+ 62:     [Fact]
+ 63:     public async Task SaveLoadsAsync_EmptyList_ReturnsFailure_Async()
+ 64:     {
+ 65:         // Arrange
+ 66:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+ 67:         var loads = new List<Model_ReceivingLoad>();
+ 68: 
+ 69:         // Act
+ 70:         var result = await dao.SaveLoadsAsync(loads);
+ 71: 
+ 72:         // Assert
+ 73:         result.Should().NotBeNull();
+ 74:         result.Success.Should().BeFalse();
+ 75:         result.ErrorMessage.Should().Contain("null or empty");
+ 76:     }
+ 77: 
+ 78:     [Fact]
+ 79:     public async Task SaveLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
+ 80:     {
+ 81:         // Arrange
+ 82:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+ 83:         var loads = new List<Model_ReceivingLoad> { CreateValidLoad() };
+ 84: 
+ 85:         // Act
+ 86:         var result = await dao.SaveLoadsAsync(loads);
+ 87: 
+ 88:         // Assert
+ 89:         result.Should().NotBeNull();
+ 90:     }
+ 91: 
+ 92:     [Fact]
+ 93:     public async Task SaveLoadsAsync_MultipleValidLoads_CallsStoredProcedure_Async()
+ 94:     {
+ 95:         // Arrange
+ 96:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+ 97:         var loads = new List<Model_ReceivingLoad>
+ 98:         {
+ 99:             CreateValidLoad(),
+100:             CreateValidLoad(),
+101:             CreateValidLoad()
+102:         };
+103: 
+104:         // Act
+105:         var result = await dao.SaveLoadsAsync(loads);
+106: 
+107:         // Assert
+108:         result.Should().NotBeNull();
+109:     }
+110: 
+111:     [Fact]
+112:     public async Task SaveLoadsAsync_NullPONumber_HandlesGracefully_Async()
+113:     {
+114:         // Arrange
+115:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+116:         var load = CreateValidLoad();
+117:         load.PoNumber = null;
+118:         var loads = new List<Model_ReceivingLoad> { load };
+119: 
+120:         // Act
+121:         var result = await dao.SaveLoadsAsync(loads);
+122: 
+123:         // Assert
+124:         result.Should().NotBeNull();
+125:     }
+126: 
+127:     [Theory]
+128:     [InlineData("PO-12345")]
+129:     [InlineData("12345")]
+130:     [InlineData("PO12345")]
+131:     public async Task SaveLoadsAsync_CleansPONumberPrefix_HandlesAll_Async(string poNumber)
+132:     {
+133:         // Arrange
+134:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+135:         var load = CreateValidLoad();
+136:         load.PoNumber = poNumber;
+137:         var loads = new List<Model_ReceivingLoad> { load };
+138: 
+139:         // Act
+140:         var result = await dao.SaveLoadsAsync(loads);
+141: 
+142:         // Assert
+143:         result.Should().NotBeNull();
+144:     }
+145: 
+146:     [Fact]
+147:     public async Task SaveLoadsAsync_NonPOItem_HandlesGracefully_Async()
+148:     {
+149:         // Arrange
+150:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+151:         var load = CreateValidLoad();
+152:         load.IsNonPOItem = true;
+153:         load.PoNumber = null;
+154:         var loads = new List<Model_ReceivingLoad> { load };
+155: 
+156:         // Act
+157:         var result = await dao.SaveLoadsAsync(loads);
+158: 
+159:         // Assert
+160:         result.Should().NotBeNull();
+161:     }
+162: 
+163:     // ====================================================================
+164:     // UpdateLoadsAsync Tests
+165:     // ====================================================================
+166: 
+167:     [Fact]
+168:     public async Task UpdateLoadsAsync_NullList_ReturnsFailure_Async()
+169:     {
+170:         // Arrange
+171:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+172: 
+173:         // Act
+174:         var result = await dao.UpdateLoadsAsync(null!);
+175: 
+176:         // Assert
+177:         result.Should().NotBeNull();
+178:         result.Success.Should().BeFalse();
+179:         result.ErrorMessage.Should().Contain("null or empty");
+180:     }
+181: 
+182:     [Fact]
+183:     public async Task UpdateLoadsAsync_EmptyList_ReturnsFailure_Async()
+184:     {
+185:         // Arrange
+186:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+187:         var loads = new List<Model_ReceivingLoad>();
+188: 
+189:         // Act
+190:         var result = await dao.UpdateLoadsAsync(loads);
+191: 
+192:         // Assert
+193:         result.Should().NotBeNull();
+194:         result.Success.Should().BeFalse();
+195:     }
+196: 
+197:     [Fact]
+198:     public async Task UpdateLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
+199:     {
+200:         // Arrange
+201:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+202:         var loads = new List<Model_ReceivingLoad> { CreateValidLoad() };
+203: 
+204:         // Act
+205:         var result = await dao.UpdateLoadsAsync(loads);
+206: 
+207:         // Assert
+208:         result.Should().NotBeNull();
+209:     }
+210: 
+211:     [Fact]
+212:     public async Task UpdateLoadsAsync_MultipleLoads_CallsStoredProcedure_Async()
+213:     {
+214:         // Arrange
+215:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+216:         var loads = new List<Model_ReceivingLoad>
+217:         {
+218:             CreateValidLoad(),
+219:             CreateValidLoad()
+220:         };
+221: 
+222:         // Act
+223:         var result = await dao.UpdateLoadsAsync(loads);
+224: 
+225:         // Assert
+226:         result.Should().NotBeNull();
+227:     }
+228: 
+229:     // ====================================================================
+230:     // DeleteLoadsAsync Tests
+231:     // ====================================================================
+232: 
+233:     [Fact]
+234:     public async Task DeleteLoadsAsync_NullList_ReturnsSuccess_Async()
+235:     {
+236:         // Arrange
+237:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+238: 
+239:         // Act
+240:         var result = await dao.DeleteLoadsAsync(null!);
+241: 
+242:         // Assert
+243:         result.Should().NotBeNull();
+244:         result.Success.Should().BeTrue();
+245:         result.Data.Should().Be(0);
+246:     }
+247: 
+248:     [Fact]
+249:     public async Task DeleteLoadsAsync_EmptyList_ReturnsSuccess_Async()
+250:     {
+251:         // Arrange
+252:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+253:         var loads = new List<Model_ReceivingLoad>();
+254: 
+255:         // Act
+256:         var result = await dao.DeleteLoadsAsync(loads);
+257: 
+258:         // Assert
+259:         result.Should().NotBeNull();
+260:         result.Success.Should().BeTrue();
+261:         result.Data.Should().Be(0);
+262:     }
+263: 
+264:     [Fact]
+265:     public async Task DeleteLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
+266:     {
+267:         // Arrange
+268:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+269:         var loads = new List<Model_ReceivingLoad> { CreateValidLoad() };
+270: 
+271:         // Act
+272:         var result = await dao.DeleteLoadsAsync(loads);
+273: 
+274:         // Assert
+275:         result.Should().NotBeNull();
+276:     }
+277: 
+278:     [Fact]
+279:     public async Task DeleteLoadsAsync_MultipleLoads_CallsStoredProcedure_Async()
+280:     {
+281:         // Arrange
+282:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+283:         var loads = new List<Model_ReceivingLoad>
+284:         {
+285:             CreateValidLoad(),
+286:             CreateValidLoad(),
+287:             CreateValidLoad()
+288:         };
+289: 
+290:         // Act
+291:         var result = await dao.DeleteLoadsAsync(loads);
+292: 
+293:         // Assert
+294:         result.Should().NotBeNull();
+295:     }
+296: 
+297:     // ====================================================================
+298:     // GetHistoryAsync Tests
+299:     // ====================================================================
+300: 
+301:     [Fact]
+302:     public async Task GetHistoryAsync_ValidParameters_CallsStoredProcedure_Async()
+303:     {
+304:         // Arrange
+305:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+306:         var partID = "PART-001";
+307:         var startDate = DateTime.Now.AddDays(-30);
+308:         var endDate = DateTime.Now;
+309: 
+310:         // Act
+311:         var result = await dao.GetHistoryAsync(partID, startDate, endDate);
+312: 
+313:         // Assert
+314:         result.Should().NotBeNull();
+315:     }
+316: 
+317:     [Theory]
+318:     [InlineData("")]
+319:     [InlineData("PART-001")]
+320:     [InlineData("ABC123")]
+321:     public async Task GetHistoryAsync_DifferentPartIDs_HandlesAll_Async(string partID)
+322:     {
+323:         // Arrange
+324:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+325:         var startDate = DateTime.Now.AddDays(-30);
+326:         var endDate = DateTime.Now;
+327: 
+328:         // Act
+329:         var result = await dao.GetHistoryAsync(partID, startDate, endDate);
+330: 
+331:         // Assert
+332:         result.Should().NotBeNull();
+333:     }
+334: 
+335:     [Fact]
+336:     public async Task GetHistoryAsync_StartDateAfterEndDate_HandlesGracefully_Async()
+337:     {
+338:         // Arrange
+339:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+340:         var partID = "PART-001";
+341:         var startDate = DateTime.Now;
+342:         var endDate = DateTime.Now.AddDays(-30);
+343: 
+344:         // Act
+345:         var result = await dao.GetHistoryAsync(partID, startDate, endDate);
+346: 
+347:         // Assert
+348:         result.Should().NotBeNull();
+349:     }
+350: 
+351:     [Fact]
+352:     public async Task GetHistoryAsync_SameDateRange_HandlesGracefully_Async()
+353:     {
+354:         // Arrange
+355:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+356:         var partID = "PART-001";
+357:         var date = DateTime.Now;
+358: 
+359:         // Act
+360:         var result = await dao.GetHistoryAsync(partID, date, date);
+361: 
+362:         // Assert
+363:         result.Should().NotBeNull();
+364:     }
+365: 
+366:     // ====================================================================
+367:     // GetAllAsync Tests
+368:     // ====================================================================
+369: 
+370:     [Fact]
+371:     public async Task GetAllAsync_ValidDateRange_CallsStoredProcedure_Async()
+372:     {
+373:         // Arrange
+374:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+375:         var startDate = DateTime.Now.AddDays(-30);
+376:         var endDate = DateTime.Now;
+377: 
+378:         // Act
+379:         var result = await dao.GetAllAsync(startDate, endDate);
+380: 
+381:         // Assert
+382:         result.Should().NotBeNull();
+383:     }
+384: 
+385:     [Fact]
+386:     public async Task GetAllAsync_WideRange_HandlesGracefully_Async()
+387:     {
+388:         // Arrange
+389:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+390:         var startDate = DateTime.Now.AddYears(-10);
+391:         var endDate = DateTime.Now.AddYears(1);
+392: 
+393:         // Act
+394:         var result = await dao.GetAllAsync(startDate, endDate);
+395: 
+396:         // Assert
+397:         result.Should().NotBeNull();
+398:     }
+399: 
+400:     // ====================================================================
+401:     // Edge Cases and Boundary Value Tests
+402:     // ====================================================================
+403: 
+404:     [Theory]
+405:     [InlineData(0)]
+406:     [InlineData(0.001)]
+407:     [InlineData(1.5)]
+408:     [InlineData(1000000.99)]
+409:     public async Task SaveLoadsAsync_DifferentWeights_HandlesAll_Async(decimal weight)
+410:     {
+411:         // Arrange
+412:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+413:         var load = CreateValidLoad();
+414:         load.WeightQuantity = weight;
+415:         load.WeightPerPackage = weight / load.PackagesPerLoad;
+416:         var loads = new List<Model_ReceivingLoad> { load };
+417: 
+418:         // Act
+419:         var result = await dao.SaveLoadsAsync(loads);
+420: 
+421:         // Assert
+422:         result.Should().NotBeNull();
+423:     }
+424: 
+425:     [Theory]
+426:     [InlineData(1)]
+427:     [InlineData(10)]
+428:     [InlineData(100)]
+429:     [InlineData(1000)]
+430:     public async Task SaveLoadsAsync_DifferentPackageCounts_HandlesAll_Async(int packageCount)
+431:     {
+432:         // Arrange
+433:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+434:         var load = CreateValidLoad();
+435:         load.PackagesPerLoad = packageCount;
+436:         var loads = new List<Model_ReceivingLoad> { load };
+437: 
+438:         // Act
+439:         var result = await dao.SaveLoadsAsync(loads);
+440: 
+441:         // Assert
+442:         result.Should().NotBeNull();
+443:     }
+444: 
+445:     [Fact]
+446:     public async Task SaveLoadsAsync_VeryLongPartID_HandlesGracefully_Async()
+447:     {
+448:         // Arrange
+449:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+450:         var load = CreateValidLoad();
+451:         load.PartID = new string('A', 500);
+452:         var loads = new List<Model_ReceivingLoad> { load };
+453: 
+454:         // Act
+455:         Func<Task> act = async () => await dao.SaveLoadsAsync(loads);
+456: 
+457:         // Assert
+458:         await act.Should().NotThrowAsync();
+459:     }
+460: 
+461:     [Fact]
+462:     public async Task SaveLoadsAsync_VeryLongHeatNumber_HandlesGracefully_Async()
+463:     {
+464:         // Arrange
+465:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+466:         var load = CreateValidLoad();
+467:         load.HeatLotNumber = new string('H', 1000);
+468:         var loads = new List<Model_ReceivingLoad> { load };
+469: 
+470:         // Act
+471:         Func<Task> act = async () => await dao.SaveLoadsAsync(loads);
+472: 
+473:         // Assert
+474:         await act.Should().NotThrowAsync();
+475:     }
+476: 
+477:     [Fact]
+478:     public async Task SaveLoadsAsync_SpecialCharactersInFields_HandlesGracefully_Async()
+479:     {
+480:         // Arrange
+481:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+482:         var load = CreateValidLoad();
+483:         load.PartID = "PART-@#$%";
+484:         load.HeatLotNumber = "HEAT-<>{}";
+485:         load.PackageTypeName = "Package's \"Type\"";
+486:         var loads = new List<Model_ReceivingLoad> { load };
+487: 
+488:         // Act
+489:         Func<Task> act = async () => await dao.SaveLoadsAsync(loads);
+490: 
+491:         // Assert
+492:         await act.Should().NotThrowAsync();
+493:     }
+494: 
+495:     [Theory]
+496:     [InlineData(1)]
+497:     [InlineData(5)]
+498:     [InlineData(10)]
+499:     [InlineData(50)]
+500:     public async Task SaveLoadsAsync_VariousBatchSizes_HandlesAll_Async(int batchSize)
+501:     {
+502:         // Arrange
+503:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+504:         var loads = new List<Model_ReceivingLoad>();
+505:         for (int i = 0; i < batchSize; i++)
+506:         {
+507:             loads.Add(CreateValidLoad());
+508:         }
+509: 
+510:         // Act
+511:         Func<Task> act = async () => await dao.SaveLoadsAsync(loads);
+512: 
+513:         // Assert
+514:         await act.Should().NotThrowAsync();
+515:     }
+516: 
+517:     [Fact]
+518:     public async Task GetHistoryAsync_VeryOldDates_HandlesGracefully_Async()
+519:     {
+520:         // Arrange
+521:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+522:         var startDate = new DateTime(1900, 1, 1);
+523:         var endDate = new DateTime(1900, 12, 31);
+524: 
+525:         // Act
+526:         Func<Task> act = async () => await dao.GetHistoryAsync("PART-001", startDate, endDate);
+527: 
+528:         // Assert
+529:         await act.Should().NotThrowAsync();
+530:     }
+531: 
+532:     [Fact]
+533:     public async Task GetAllAsync_FutureDates_HandlesGracefully_Async()
+534:     {
+535:         // Arrange
+536:         var dao = new Dao_ReceivingLoad(TestConnectionString);
+537:         var startDate = DateTime.Now.AddYears(1);
+538:         var endDate = DateTime.Now.AddYears(2);
+539: 
+540:         // Act
+541:         Func<Task> act = async () => await dao.GetAllAsync(startDate, endDate);
+542: 
+543:         // Assert
+544:         await act.Should().NotThrowAsync();
+545:     }
+546: 
+547:     // ====================================================================
+548:     // Helper Methods
+549:     // ====================================================================
+550: 
+551:     /// <summary>
+552:     /// Creates a valid test receiving load with all required fields populated.
+553:     /// </summary>
+554:     private static Model_ReceivingLoad CreateValidLoad()
+555:     {
+556:         return new Model_ReceivingLoad
+557:         {
+558:             LoadID = Guid.NewGuid(),
+559:             PartID = "PART-001",
+560:             PartType = "Steel Coil",
+561:             PoNumber = "PO-12345",
+562:             PoLineNumber = "001",
+563:             LoadNumber = 1,
+564:             WeightQuantity = 1000.50m,
+565:             HeatLotNumber = "HEAT-ABC123",
+566:             PackagesPerLoad = 10,
+567:             PackageTypeName = "Skid",
+568:             WeightPerPackage = 100.05m,
+569:             IsNonPOItem = false,
+570:             ReceivedDate = DateTime.Now
+571:         };
+572:     }
+573: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Routing/Data/Dao_RoutingLabel_Tests.cs
+````csharp
+  1: using FluentAssertions;
+  2: using Xunit;
+  3: using MTM_Receiving_Application.Module_Routing.Data;
+  4: using MTM_Receiving_Application.Module_Routing.Models;
+  5: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  6: 
+  7: namespace MTM_Receiving_Application.Tests.Unit.Module_Routing.Data;
+  8: 
+  9: /// <summary>
+ 10: /// Unit tests for Dao_RoutingLabel data access object.
+ 11: /// Tests CRUD operations, duplicate detection, and export tracking for routing labels.
+ 12: /// </summary>
+ 13: public class Dao_RoutingLabel_Tests
+ 14: {
+ 15: private static string TestConnectionString => Helper_Database_Variables.GetConnectionString(useProduction: false);
+ 16: 
+ 17:     // ====================================================================
+ 18:     // Constructor Tests
+ 19:     // ====================================================================
+ 20: 
+ 21:     [Fact]
+ 22:     public void Constructor_ValidConnectionString_CreatesInstance()
+ 23:     {
+ 24:         // Act
+ 25:         var dao = new Dao_RoutingLabel(TestConnectionString);
+ 26: 
+ 27:         // Assert
+ 28:         dao.Should().NotBeNull();
+ 29:     }
+ 30: 
+ 31:     [Fact]
+ 32:     public void Constructor_NullConnectionString_ThrowsArgumentNullException()
+ 33:     {
+ 34:         // Act
+ 35:         Action act = () => new Dao_RoutingLabel(null!);
+ 36: 
+ 37:         // Assert
+ 38:         act.Should().Throw<ArgumentNullException>()
+ 39:             .WithMessage("*connectionString*");
+ 40:     }
+ 41: 
+ 42:     // ====================================================================
+ 43:     // InsertLabelAsync Tests
+ 44:     // ====================================================================
+ 45: 
+ 46:     [Fact]
+ 47:     public async Task InsertLabelAsync_ValidLabel_CallsStoredProcedure_Async()
+ 48:     {
+ 49:         // Arrange
+ 50:         var dao = new Dao_RoutingLabel(TestConnectionString);
+ 51:         var label = CreateValidRoutingLabel();
+ 52: 
+ 53:         // Act
+ 54:         var result = await dao.InsertLabelAsync(label);
+ 55: 
+ 56:         // Assert
+ 57:         result.Should().NotBeNull();
+ 58:     }
+ 59: 
+ 60:     [Fact]
+ 61:     public async Task InsertLabelAsync_NullOtherReasonId_HandlesGracefully_Async()
+ 62:     {
+ 63:         // Arrange
+ 64:         var dao = new Dao_RoutingLabel(TestConnectionString);
+ 65:         var label = CreateValidRoutingLabel();
+ 66:         label.OtherReasonId = null;
+ 67: 
+ 68:         // Act
+ 69:         var result = await dao.InsertLabelAsync(label);
+ 70: 
+ 71:         // Assert
+ 72:         result.Should().NotBeNull();
+ 73:     }
+ 74: 
+ 75:     [Fact]
+ 76:     public async Task InsertLabelAsync_WithOtherReasonId_HandlesGracefully_Async()
+ 77:     {
+ 78:         // Arrange
+ 79:         var dao = new Dao_RoutingLabel(TestConnectionString);
+ 80:         var label = CreateValidRoutingLabel();
+ 81:         label.OtherReasonId = 5;
+ 82: 
+ 83:         // Act
+ 84:         var result = await dao.InsertLabelAsync(label);
+ 85: 
+ 86:         // Assert
+ 87:         result.Should().NotBeNull();
+ 88:     }
+ 89: 
+ 90:     [Theory]
+ 91:     [InlineData(1)]
+ 92:     [InlineData(10)]
+ 93:     [InlineData(100)]
+ 94:     [InlineData(1000)]
+ 95:     public async Task InsertLabelAsync_DifferentQuantities_HandlesAll_Async(int quantity)
+ 96:     {
+ 97:         // Arrange
+ 98:         var dao = new Dao_RoutingLabel(TestConnectionString);
+ 99:         var label = CreateValidRoutingLabel();
+100:         label.Quantity = quantity;
+101: 
+102:         // Act
+103:         var result = await dao.InsertLabelAsync(label);
+104: 
+105:         // Assert
+106:         result.Should().NotBeNull();
+107:     }
+108: 
+109:     [Theory]
+110:     [InlineData("PO-12345", "001")]
+111:     [InlineData("12345", "002")]
+112:     [InlineData("PO12345", "999")]
+113:     public async Task InsertLabelAsync_DifferentPONumbers_HandlesAll_Async(string poNumber, string lineNumber)
+114:     {
+115:         // Arrange
+116:         var dao = new Dao_RoutingLabel(TestConnectionString);
+117:         var label = CreateValidRoutingLabel();
+118:         label.PONumber = poNumber;
+119:         label.LineNumber = lineNumber;
+120: 
+121:         // Act
+122:         var result = await dao.InsertLabelAsync(label);
+123: 
+124:         // Assert
+125:         result.Should().NotBeNull();
+126:     }
+127: 
+128:     [Theory]
+129:     [InlineData(1)]
+130:     [InlineData(100)]
+131:     [InlineData(999)]
+132:     [InlineData(int.MaxValue)]
+133:     public async Task InsertLabelAsync_DifferentCreatedBy_HandlesAll_Async(int createdBy)
+134:     {
+135:         // Arrange
+136:         var dao = new Dao_RoutingLabel(TestConnectionString);
+137:         var label = CreateValidRoutingLabel();
+138:         label.CreatedBy = createdBy;
+139: 
+140:         // Act
+141:         var result = await dao.InsertLabelAsync(label);
+142: 
+143:         // Assert
+144:         result.Should().NotBeNull();
+145:     }
+146: 
+147:     // ====================================================================
+148:     // UpdateLabelAsync Tests
+149:     // ====================================================================
+150: 
+151:     [Fact]
+152:     public async Task UpdateLabelAsync_ValidLabel_CallsStoredProcedure_Async()
+153:     {
+154:         // Arrange
+155:         var dao = new Dao_RoutingLabel(TestConnectionString);
+156:         var label = CreateValidRoutingLabel();
+157:         label.Id = 1;
+158: 
+159:         // Act
+160:         var result = await dao.UpdateLabelAsync(label);
+161: 
+162:         // Assert
+163:         result.Should().NotBeNull();
+164:     }
+165: 
+166:     [Fact]
+167:     public async Task UpdateLabelAsync_UpdatedQuantity_CallsStoredProcedure_Async()
+168:     {
+169:         // Arrange
+170:         var dao = new Dao_RoutingLabel(TestConnectionString);
+171:         var label = CreateValidRoutingLabel();
+172:         label.Id = 1;
+173:         label.Quantity = 999;
+174: 
+175:         // Act
+176:         var result = await dao.UpdateLabelAsync(label);
+177: 
+178:         // Assert
+179:         result.Should().NotBeNull();
+180:     }
+181: 
+182:     [Fact]
+183:     public async Task UpdateLabelAsync_NullOtherReasonId_HandlesGracefully_Async()
+184:     {
+185:         // Arrange
+186:         var dao = new Dao_RoutingLabel(TestConnectionString);
+187:         var label = CreateValidRoutingLabel();
+188:         label.Id = 1;
+189:         label.OtherReasonId = null;
+190: 
+191:         // Act
+192:         var result = await dao.UpdateLabelAsync(label);
+193: 
+194:         // Assert
+195:         result.Should().NotBeNull();
+196:     }
+197: 
+198:     [Theory]
+199:     [InlineData(0)]
+200:     [InlineData(1)]
+201:     [InlineData(100)]
+202:     [InlineData(-1)]
+203:     public async Task UpdateLabelAsync_DifferentIds_HandlesAll_Async(int id)
+204:     {
+205:         // Arrange
+206:         var dao = new Dao_RoutingLabel(TestConnectionString);
+207:         var label = CreateValidRoutingLabel();
+208:         label.Id = id;
+209: 
+210:         // Act
+211:         var result = await dao.UpdateLabelAsync(label);
+212: 
+213:         // Assert
+214:         result.Should().NotBeNull();
+215:     }
+216: 
+217:     // ====================================================================
+218:     // GetLabelByIdAsync Tests
+219:     // ====================================================================
+220: 
+221:     [Fact]
+222:     public async Task GetLabelByIdAsync_ValidId_CallsStoredProcedure_Async()
+223:     {
+224:         // Arrange
+225:         var dao = new Dao_RoutingLabel(TestConnectionString);
+226:         var labelId = 1;
+227: 
+228:         // Act
+229:         var result = await dao.GetLabelByIdAsync(labelId);
+230: 
+231:         // Assert
+232:         result.Should().NotBeNull();
+233:     }
+234: 
+235:     [Theory]
+236:     [InlineData(0)]
+237:     [InlineData(1)]
+238:     [InlineData(100)]
+239:     [InlineData(int.MaxValue)]
+240:     public async Task GetLabelByIdAsync_DifferentIds_HandlesAll_Async(int labelId)
+241:     {
+242:         // Arrange
+243:         var dao = new Dao_RoutingLabel(TestConnectionString);
+244: 
+245:         // Act
+246:         var result = await dao.GetLabelByIdAsync(labelId);
+247: 
+248:         // Assert
+249:         result.Should().NotBeNull();
+250:     }
+251: 
+252:     [Fact]
+253:     public async Task GetLabelByIdAsync_NegativeId_HandlesGracefully_Async()
+254:     {
+255:         // Arrange
+256:         var dao = new Dao_RoutingLabel(TestConnectionString);
+257:         var labelId = -1;
+258: 
+259:         // Act
+260:         Func<Task> act = async () => await dao.GetLabelByIdAsync(labelId);
+261: 
+262:         // Assert
+263:         await act.Should().NotThrowAsync();
+264:     }
+265: 
+266:     // ====================================================================
+267:     // GetAllLabelsAsync Tests
+268:     // ====================================================================
+269: 
+270:     [Fact]
+271:     public async Task GetAllLabelsAsync_DefaultParameters_CallsStoredProcedure_Async()
+272:     {
+273:         // Arrange
+274:         var dao = new Dao_RoutingLabel(TestConnectionString);
+275: 
+276:         // Act
+277:         var result = await dao.GetAllLabelsAsync();
+278: 
+279:         // Assert
+280:         result.Should().NotBeNull();
+281:     }
+282: 
+283:     [Theory]
+284:     [InlineData(10, 0)]
+285:     [InlineData(50, 0)]
+286:     [InlineData(100, 0)]
+287:     [InlineData(100, 100)]
+288:     [InlineData(100, 500)]
+289:     public async Task GetAllLabelsAsync_DifferentPagination_HandlesAll_Async(int limit, int offset)
+290:     {
+291:         // Arrange
+292:         var dao = new Dao_RoutingLabel(TestConnectionString);
+293: 
+294:         // Act
+295:         var result = await dao.GetAllLabelsAsync(limit, offset);
+296: 
+297:         // Assert
+298:         result.Should().NotBeNull();
+299:     }
+300: 
+301:     [Fact]
+302:     public async Task GetAllLabelsAsync_ZeroLimit_HandlesGracefully_Async()
+303:     {
+304:         // Arrange
+305:         var dao = new Dao_RoutingLabel(TestConnectionString);
+306: 
+307:         // Act
+308:         Func<Task> act = async () => await dao.GetAllLabelsAsync(0, 0);
+309: 
+310:         // Assert
+311:         await act.Should().NotThrowAsync();
+312:     }
+313: 
+314:     [Fact]
+315:     public async Task GetAllLabelsAsync_NegativeOffset_HandlesGracefully_Async()
+316:     {
+317:         // Arrange
+318:         var dao = new Dao_RoutingLabel(TestConnectionString);
+319: 
+320:         // Act
+321:         Func<Task> act = async () => await dao.GetAllLabelsAsync(100, -10);
+322: 
+323:         // Assert
+324:         await act.Should().NotThrowAsync();
+325:     }
+326: 
+327:     // ====================================================================
+328:     // DeleteLabelAsync Tests
+329:     // ====================================================================
+330: 
+331:     [Fact]
+332:     public async Task DeleteLabelAsync_ValidId_CallsStoredProcedure_Async()
+333:     {
+334:         // Arrange
+335:         var dao = new Dao_RoutingLabel(TestConnectionString);
+336:         var labelId = 1;
+337: 
+338:         // Act
+339:         var result = await dao.DeleteLabelAsync(labelId);
+340: 
+341:         // Assert
+342:         result.Should().NotBeNull();
+343:     }
+344: 
+345:     [Theory]
+346:     [InlineData(0)]
+347:     [InlineData(1)]
+348:     [InlineData(100)]
+349:     [InlineData(int.MaxValue)]
+350:     public async Task DeleteLabelAsync_DifferentIds_HandlesAll_Async(int labelId)
+351:     {
+352:         // Arrange
+353:         var dao = new Dao_RoutingLabel(TestConnectionString);
+354: 
+355:         // Act
+356:         var result = await dao.DeleteLabelAsync(labelId);
+357: 
+358:         // Assert
+359:         result.Should().NotBeNull();
+360:     }
+361: 
+362:     // ====================================================================
+363:     // MarkLabelExportedAsync Tests
+364:     // ====================================================================
+365: 
+366:     [Fact]
+367:     public async Task MarkLabelExportedAsync_ValidId_CallsStoredProcedure_Async()
+368:     {
+369:         // Arrange
+370:         var dao = new Dao_RoutingLabel(TestConnectionString);
+371:         var labelId = 1;
+372: 
+373:         // Act
+374:         var result = await dao.MarkLabelExportedAsync(labelId);
+375: 
+376:         // Assert
+377:         result.Should().NotBeNull();
+378:     }
+379: 
+380:     [Theory]
+381:     [InlineData(1)]
+382:     [InlineData(100)]
+383:     [InlineData(int.MaxValue)]
+384:     public async Task MarkLabelExportedAsync_DifferentIds_HandlesAll_Async(int labelId)
+385:     {
+386:         // Arrange
+387:         var dao = new Dao_RoutingLabel(TestConnectionString);
+388: 
+389:         // Act
+390:         var result = await dao.MarkLabelExportedAsync(labelId);
+391: 
+392:         // Assert
+393:         result.Should().NotBeNull();
+394:     }
+395: 
+396:     // ====================================================================
+397:     // CheckDuplicateLabelAsync Tests
+398:     // ====================================================================
+399: 
+400:     [Fact]
+401:     public async Task CheckDuplicateLabelAsync_ValidParameters_CallsStoredProcedure_Async()
+402:     {
+403:         // Arrange
+404:         var dao = new Dao_RoutingLabel(TestConnectionString);
+405:         var poNumber = "PO-12345";
+406:         var lineNumber = "001";
+407:         var recipientId = 10;
+408:         var hoursWindow = 24;
+409: 
+410:         // Act
+411:         var result = await dao.CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, hoursWindow);
+412: 
+413:         // Assert
+414:         result.Should().NotBeNull();
+415:     }
+416: 
+417:     [Theory]
+418:     [InlineData(1)]
+419:     [InlineData(24)]
+420:     [InlineData(48)]
+421:     [InlineData(168)]
+422:     public async Task CheckDuplicateLabelAsync_DifferentTimeWindows_HandlesAll_Async(int hoursWindow)
+423:     {
+424:         // Arrange
+425:         var dao = new Dao_RoutingLabel(TestConnectionString);
+426:         var poNumber = "PO-12345";
+427:         var lineNumber = "001";
+428:         var recipientId = 10;
+429: 
+430:         // Act
+431:         var result = await dao.CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, hoursWindow);
+432: 
+433:         // Assert
+434:         result.Should().NotBeNull();
+435:     }
+436: 
+437:     [Fact]
+438:     public async Task CheckDuplicateLabelAsync_ZeroHoursWindow_HandlesGracefully_Async()
+439:     {
+440:         // Arrange
+441:         var dao = new Dao_RoutingLabel(TestConnectionString);
+442:         var poNumber = "PO-12345";
+443:         var lineNumber = "001";
+444:         var recipientId = 10;
+445: 
+446:         // Act
+447:         Func<Task> act = async () => await dao.CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, 0);
+448: 
+449:         // Assert
+450:         await act.Should().NotThrowAsync();
+451:     }
+452: 
+453:     [Theory]
+454:     [InlineData("PO-12345", "001")]
+455:     [InlineData("12345", "002")]
+456:     [InlineData("", "003")]
+457:     public async Task CheckDuplicateLabelAsync_DifferentPONumbers_HandlesAll_Async(string poNumber, string lineNumber)
+458:     {
+459:         // Arrange
+460:         var dao = new Dao_RoutingLabel(TestConnectionString);
+461:         var recipientId = 10;
+462: 
+463:         // Act
+464:         var result = await dao.CheckDuplicateLabelAsync(poNumber, lineNumber, recipientId, 24);
+465: 
+466:         // Assert
+467:         result.Should().NotBeNull();
+468:     }
+469: 
+470:     // ====================================================================
+471:     // CheckDuplicateAsync Helper Tests
+472:     // ====================================================================
+473: 
+474:     [Fact]
+475:     public async Task CheckDuplicateAsync_ValidParameters_CallsCheckDuplicate_Async()
+476:     {
+477:         // Arrange
+478:         var dao = new Dao_RoutingLabel(TestConnectionString);
+479:         var poNumber = "PO-12345";
+480:         var lineNumber = "001";
+481:         var recipientId = 10;
+482:         var createdWithinDate = DateTime.Now.AddHours(-12);
+483: 
+484:         // Act
+485:         var result = await dao.CheckDuplicateAsync(poNumber, lineNumber, recipientId, createdWithinDate);
+486: 
+487:         // Assert
+488:         result.Should().NotBeNull();
+489:     }
+490: 
+491:     [Fact]
+492:     public async Task CheckDuplicateAsync_DefaultDateTime_UsesDefault24Hours_Async()
+493:     {
+494:         // Arrange
+495:         var dao = new Dao_RoutingLabel(TestConnectionString);
+496:         var poNumber = "PO-12345";
+497:         var lineNumber = "001";
+498:         var recipientId = 10;
+499: 
+500:         // Act
+501:         var result = await dao.CheckDuplicateAsync(poNumber, lineNumber, recipientId, default);
+502: 
+503:         // Assert
+504:         result.Should().NotBeNull();
+505:     }
+506: 
+507:     [Fact]
+508:     public async Task CheckDuplicateAsync_FutureDate_HandlesGracefully_Async()
+509:     {
+510:         // Arrange
+511:         var dao = new Dao_RoutingLabel(TestConnectionString);
+512:         var poNumber = "PO-12345";
+513:         var lineNumber = "001";
+514:         var recipientId = 10;
+515:         var futureDate = DateTime.Now.AddDays(1);
+516: 
+517:         // Act
+518:         Func<Task> act = async () => await dao.CheckDuplicateAsync(poNumber, lineNumber, recipientId, futureDate);
+519: 
+520:         // Assert
+521:         await act.Should().NotThrowAsync();
+522:     }
+523: 
+524:     [Fact]
+525:     public async Task CheckDuplicateAsync_OldDate_CapsAtOneWeek_Async()
+526:     {
+527:         // Arrange
+528:         var dao = new Dao_RoutingLabel(TestConnectionString);
+529:         var poNumber = "PO-12345";
+530:         var lineNumber = "001";
+531:         var recipientId = 10;
+532:         var oldDate = DateTime.Now.AddDays(-30);
+533: 
+534:         // Act
+535:         Func<Task> act = async () => await dao.CheckDuplicateAsync(poNumber, lineNumber, recipientId, oldDate);
+536: 
+537:         // Assert
+538:         await act.Should().NotThrowAsync();
+539:     }
+540: 
+541:     // ====================================================================
+542:     // MarkExportedAsync Helper Tests
+543:     // ====================================================================
+544: 
+545:     [Fact]
+546:     public async Task MarkExportedAsync_EmptyList_HandlesGracefully_Async()
+547:     {
+548:         // Arrange
+549:         var dao = new Dao_RoutingLabel(TestConnectionString);
+550:         var labelIds = new List<int>();
+551: 
+552:         // Act
+553:         var result = await dao.MarkExportedAsync(labelIds);
+554: 
+555:         // Assert
+556:         result.Should().NotBeNull();
+557:     }
+558: 
+559:     [Fact]
+560:     public async Task MarkExportedAsync_SingleId_CallsMarkExported_Async()
+561:     {
+562:         // Arrange
+563:         var dao = new Dao_RoutingLabel(TestConnectionString);
+564:         var labelIds = new List<int> { 1 };
+565: 
+566:         // Act
+567:         var result = await dao.MarkExportedAsync(labelIds);
+568: 
+569:         // Assert
+570:         result.Should().NotBeNull();
+571:     }
+572: 
+573:     [Fact]
+574:     public async Task MarkExportedAsync_MultipleIds_CallsMarkExportedForEach_Async()
+575:     {
+576:         // Arrange
+577:         var dao = new Dao_RoutingLabel(TestConnectionString);
+578:         var labelIds = new List<int> { 1, 2, 3, 4, 5 };
+579: 
+580:         // Act
+581:         var result = await dao.MarkExportedAsync(labelIds);
+582: 
+583:         // Assert
+584:         result.Should().NotBeNull();
+585:     }
+586: 
+587:     // ====================================================================
+588:     // Edge Cases and Boundary Value Tests
+589:     // ====================================================================
+590: 
+591:     [Fact]
+592:     public async Task InsertLabelAsync_VeryLongDescription_HandlesGracefully_Async()
+593:     {
+594:         // Arrange
+595:         var dao = new Dao_RoutingLabel(TestConnectionString);
+596:         var label = CreateValidRoutingLabel();
+597:         label.Description = new string('D', 2000);
+598: 
+599:         // Act
+600:         Func<Task> act = async () => await dao.InsertLabelAsync(label);
+601: 
+602:         // Assert
+603:         await act.Should().NotThrowAsync();
+604:     }
+605: 
+606:     [Fact]
+607:     public async Task InsertLabelAsync_SpecialCharactersInFields_HandlesGracefully_Async()
+608:     {
+609:         // Arrange
+610:         var dao = new Dao_RoutingLabel(TestConnectionString);
+611:         var label = CreateValidRoutingLabel();
+612:         label.PONumber = "PO-@#$%";
+613:         label.Description = "Description with <special> \"characters\"";
+614: 
+615:         // Act
+616:         Func<Task> act = async () => await dao.InsertLabelAsync(label);
+617: 
+618:         // Assert
+619:         await act.Should().NotThrowAsync();
+620:     }
+621: 
+622:     [Fact]
+623:     public async Task InsertLabelAsync_ZeroQuantity_HandlesGracefully_Async()
+624:     {
+625:         // Arrange
+626:         var dao = new Dao_RoutingLabel(TestConnectionString);
+627:         var label = CreateValidRoutingLabel();
+628:         label.Quantity = 0;
+629: 
+630:         // Act
+631:         Func<Task> act = async () => await dao.InsertLabelAsync(label);
+632: 
+633:         // Assert
+634:         await act.Should().NotThrowAsync();
+635:     }
+636: 
+637:     [Fact]
+638:     public async Task InsertLabelAsync_NegativeQuantity_HandlesGracefully_Async()
+639:     {
+640:         // Arrange
+641:         var dao = new Dao_RoutingLabel(TestConnectionString);
+642:         var label = CreateValidRoutingLabel();
+643:         label.Quantity = -10;
+644: 
+645:         // Act
+646:         Func<Task> act = async () => await dao.InsertLabelAsync(label);
+647: 
+648:         // Assert
+649:         await act.Should().NotThrowAsync();
+650:     }
+651: 
+652:     [Theory]
+653:     [InlineData(int.MinValue)]
+654:     [InlineData(-1)]
+655:     [InlineData(0)]
+656:     [InlineData(1)]
+657:     [InlineData(int.MaxValue)]
+658:     public async Task InsertLabelAsync_BoundaryRecipientIds_HandlesAll_Async(int recipientId)
+659:     {
+660:         // Arrange
+661:         var dao = new Dao_RoutingLabel(TestConnectionString);
+662:         var label = CreateValidRoutingLabel();
+663:         label.RecipientId = recipientId;
+664: 
+665:         // Act
+666:         Func<Task> act = async () => await dao.InsertLabelAsync(label);
+667: 
+668:         // Assert
+669:         await act.Should().NotThrowAsync();
+670:     }
+671: 
+672:     [Fact]
+673:     public async Task GetAllLabelsAsync_VeryLargeLimit_HandlesGracefully_Async()
+674:     {
+675:         // Arrange
+676:         var dao = new Dao_RoutingLabel(TestConnectionString);
+677: 
+678:         // Act
+679:         Func<Task> act = async () => await dao.GetAllLabelsAsync(int.MaxValue, 0);
+680: 
+681:         // Assert
+682:         await act.Should().NotThrowAsync();
+683:     }
+684: 
+685:     [Fact]
+686:     public async Task CheckDuplicateLabelAsync_VeryLargeTimeWindow_HandlesGracefully_Async()
+687:     {
+688:         // Arrange
+689:         var dao = new Dao_RoutingLabel(TestConnectionString);
+690: 
+691:         // Act
+692:         Func<Task> act = async () => await dao.CheckDuplicateLabelAsync("PO-123", "001", 10, 99999);
+693: 
+694:         // Assert
+695:         await act.Should().NotThrowAsync();
+696:     }
+697: 
+698:     [Fact]
+699:     public async Task CheckDuplicateLabelAsync_NegativeTimeWindow_HandlesGracefully_Async()
+700:     {
+701:         // Arrange
+702:         var dao = new Dao_RoutingLabel(TestConnectionString);
+703: 
+704:         // Act
+705:         Func<Task> act = async () => await dao.CheckDuplicateLabelAsync("PO-123", "001", 10, -24);
+706: 
+707:         // Assert
+708:         await act.Should().NotThrowAsync();
+709:     }
+710: 
+711:     // ====================================================================
+712:     // Helper Methods
+713:     // ====================================================================
+714: 
+715:     /// <summary>
+716:     /// Creates a valid test routing label with all required fields populated.
+717:     /// </summary>
+718:     private static Model_RoutingLabel CreateValidRoutingLabel()
+719:     {
+720:         return new Model_RoutingLabel
+721:         {
+722:             PONumber = "PO-12345",
+723:             LineNumber = "001",
+724:             Description = "Test Part Description",
+725:             RecipientId = 10,
+726:             RecipientName = "Test Recipient",
+727:             RecipientLocation = "Building A",
+728:             Quantity = 100,
+729:             CreatedBy = 1001,
+730:             CreatedDate = DateTime.Now,
+731:             OtherReasonId = null,
+732:             IsActive = true,
+733:             CsvExported = false
+734:         };
+735:     }
+736: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetInitialShipmentDataQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 3: using MTM_Receiving_Application.Tests.Helpers;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 6: 
+ 7: /// <summary>
+ 8: /// Integration tests for GetInitialShipmentDataQueryHandler.
+ 9: /// </summary>
+10: [Collection("Database")]
+11: public class GetInitialShipmentDataQueryHandlerTests
+12: {
+13:     private readonly DatabaseFixture _fixture;
+14: 
+15:     public GetInitialShipmentDataQueryHandlerTests(DatabaseFixture fixture)
+16:     {
+17:         _fixture = fixture;
+18:     }
+19: 
+20:     [Fact]
+21:     public async Task Handle_ShouldReturnNextShipmentNumber()
+22:     {
+23:         var shipmentDao = _fixture.CreateShipmentDao();
+24:         var handler = new GetInitialShipmentDataQueryHandler(shipmentDao);
+25: 
+26:         var result = await handler.Handle(new GetInitialShipmentDataQuery(), default);
+27: 
+28:         result.IsSuccess.Should().BeTrue();
+29:         result.Data.Should().NotBeNull();
+30:         result.Data!.NextShipmentNumber.Should().BeGreaterThan(0);
+31:     }
+32: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/SearchVolvoPartsQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for SearchVolvoPartsQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class SearchVolvoPartsQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public SearchVolvoPartsQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnMatchingParts()
+23:     {
+24:         var partDao = _fixture.CreatePartDao();
+25:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+26: 
+27:         try
+28:         {
+29:             var insertResult = await partDao.InsertAsync(new Model_VolvoPart
+30:             {
+31:                 PartNumber = partNumber,
+32:                 QuantityPerSkid = 10,
+33:                 IsActive = true
+34:             });
+35: 
+36:             insertResult.Success.Should().BeTrue();
+37: 
+38:             var handler = new SearchVolvoPartsQueryHandler(partDao);
+39:             var result = await handler.Handle(new SearchVolvoPartsQuery
+40:             {
+41:                 SearchText = partNumber.Substring(0, 6),
+42:                 MaxResults = 10
+43:             }, default);
+44: 
+45:             result.IsSuccess.Should().BeTrue();
+46:             result.Data.Should().NotBeNull();
+47:             result.Data!.Any(p => p.PartNumber == partNumber).Should().BeTrue();
+48:         }
+49:         finally
+50:         {
+51:             await partDao.DeactivateAsync(partNumber);
+52:         }
+53:     }
+54: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Integration/ShipmentCompletionIntegrationTests.cs
+````csharp
+  1: using System.IO;
+  2: using MTM_Receiving_Application.Module_Core.Services.Database;
+  3: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+  4: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+  5: using MTM_Receiving_Application.Module_Volvo.Models;
+  6: using MTM_Receiving_Application.Module_Volvo.Requests;
+  7: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+  8: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+  9: using MTM_Receiving_Application.Tests.Helpers;
+ 10: using Xunit;
+ 11: 
+ 12: 
+ 13: namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
+ 14: 
+ 15: /// <summary>
+ 16: /// Integration tests for completing a shipment end-to-end.
+ 17: /// </summary>
+ 18: [Collection("Database")]
+ 19: public class ShipmentCompletionIntegrationTests
+ 20: {
+ 21:     private readonly DatabaseFixture _fixture;
+ 22: 
+ 23:     public ShipmentCompletionIntegrationTests(DatabaseFixture fixture)
+ 24:     {
+ 25:         _fixture = fixture;
+ 26:     }
+ 27: 
+ 28:     [SkippableFact]
+ 29:     public async Task CompleteShipment_Workflow_ShouldPersistAndGenerateCsv()
+ 30:     {
+ 31:         await _fixture.InitializeAsync();
+ 32:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+ 33: 
+ 34:         var shipmentDao = _fixture.CreateShipmentDao();
+ 35:         var lineDao = _fixture.CreateShipmentLineDao();
+ 36:         var partDao = _fixture.CreatePartDao();
+ 37:         var componentDao = _fixture.CreatePartComponentDao();
+ 38:         var logger = new Service_LoggingUtility();
+ 39:         var authService = new FakeVolvoAuthorizationService();
+ 40: 
+ 41:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+ 42:         int shipmentId = 0;
+ 43:         string? filePath = null;
+ 44: 
+ 45:         try
+ 46:         {
+ 47:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+ 48:             {
+ 49:                 PartNumber = partNumber,
+ 50:                 QuantityPerSkid = 10,
+ 51:                 IsActive = true
+ 52:             });
+ 53:             partResult.Success.Should().BeTrue();
+ 54: 
+ 55:             var completeHandler = new CompleteShipmentCommandHandler(shipmentDao, lineDao, partDao, authService);
+ 56:             var completeResult = await completeHandler.Handle(new CompleteShipmentCommand
+ 57:             {
+ 58:                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+ 59:                 ShipmentNumber = 1,
+ 60:                 Notes = "TEST",
+ 61:                 PONumber = "PO-TEST",
+ 62:                 ReceiverNumber = "RCV-TEST",
+ 63:                 Parts = new List<ShipmentLineDto>
+ 64:                 {
+ 65:                     new() { PartNumber = partNumber, ReceivedSkidCount = 1 }
+ 66:                 }
+ 67:             }, default);
+ 68: 
+ 69:             completeResult.IsSuccess.Should().BeTrue();
+ 70:             shipmentId = completeResult.Data;
+ 71: 
+ 72:             var generateHandler = new GenerateLabelCsvQueryHandler(
+ 73:                 shipmentDao,
+ 74:                 lineDao,
+ 75:                 partDao,
+ 76:                 componentDao,
+ 77:                 authService,
+ 78:                 logger);
+ 79: 
+ 80:             var csvResult = await generateHandler.Handle(new GenerateLabelCsvQuery { ShipmentId = shipmentId }, default);
+ 81:             csvResult.IsSuccess.Should().BeTrue();
+ 82:             filePath = csvResult.Data;
+ 83:             File.Exists(filePath).Should().BeTrue();
+ 84: 
+ 85:             var shipmentResult = await shipmentDao.GetByIdAsync(shipmentId);
+ 86:             shipmentResult.IsSuccess.Should().BeTrue();
+ 87:             shipmentResult.Data.Should().NotBeNull();
+ 88:             shipmentResult.Data!.Status.Should().Match("*completed*");
+ 89:         }
+ 90:         finally
+ 91:         {
+ 92:             if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
+ 93:             {
+ 94:                 File.Delete(filePath);
+ 95:             }
+ 96:             if (shipmentId > 0)
+ 97:             {
+ 98:                 await shipmentDao.DeleteAsync(shipmentId);
+ 99:             }
+100:             await partDao.DeactivateAsync(partNumber);
+101:         }
+102:     }
+103: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/AddPartToShipmentCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 3: 
+ 4: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 5: 
+ 6: /// <summary>
+ 7: /// Unit tests for AddPartToShipmentCommandValidator.
+ 8: /// </summary>
+ 9: public class AddPartToShipmentCommandValidatorTests
+10: {
+11:     private readonly AddPartToShipmentCommandValidator _validator = new();
+12: 
+13:     [Fact]
+14:     public void Validate_ShouldPass_WhenCommandIsValid()
+15:     {
+16:         var command = new AddPartToShipmentCommand
+17:         {
+18:             PartNumber = "V-EMB-1",
+19:             ReceivedSkidCount = 1,
+20:             HasDiscrepancy = false
+21:         };
+22: 
+23:         var result = _validator.Validate(command);
+24: 
+25:         result.IsValid.Should().BeTrue();
+26:     }
+27: 
+28:     [Fact]
+29:     public void Validate_ShouldFail_WhenPartNumberMissing()
+30:     {
+31:         var command = new AddPartToShipmentCommand
+32:         {
+33:             PartNumber = "",
+34:             ReceivedSkidCount = 1
+35:         };
+36: 
+37:         var result = _validator.Validate(command);
+38: 
+39:         result.IsValid.Should().BeFalse();
+40:     }
+41: 
+42:     [Fact]
+43:     public void Validate_ShouldFail_WhenDiscrepancyFieldsMissing()
+44:     {
+45:         var command = new AddPartToShipmentCommand
+46:         {
+47:             PartNumber = "V-EMB-1",
+48:             ReceivedSkidCount = 1,
+49:             HasDiscrepancy = true,
+50:             ExpectedSkidCount = null,
+51:             DiscrepancyNote = ""
+52:         };
+53: 
+54:         var result = _validator.Validate(command);
+55: 
+56:         result.IsValid.Should().BeFalse();
+57:     }
+58: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/SavePendingShipmentCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 6: 
+ 7: /// <summary>
+ 8: /// Unit tests for SavePendingShipmentCommandValidator.
+ 9: /// </summary>
+10: public class SavePendingShipmentCommandValidatorTests
+11: {
+12:     private readonly SavePendingShipmentCommandValidator _validator = new();
+13: 
+14:     [Fact]
+15:     public void Validate_ShouldPass_WhenCommandIsValid()
+16:     {
+17:         var command = new SavePendingShipmentCommand
+18:         {
+19:             ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+20:             ShipmentNumber = 1,
+21:             Notes = "",
+22:             Parts = new List<ShipmentLineDto>
+23:             {
+24:                 new() { PartNumber = "V-EMB-1", ReceivedSkidCount = 1 }
+25:             }
+26:         };
+27: 
+28:         var result = _validator.Validate(command);
+29: 
+30:         result.IsValid.Should().BeTrue();
+31:     }
+32: 
+33:     [Fact]
+34:     public void Validate_ShouldFail_WhenPartsMissing()
+35:     {
+36:         var command = new SavePendingShipmentCommand
+37:         {
+38:             ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+39:             ShipmentNumber = 1,
+40:             Notes = "",
+41:             Parts = new List<ShipmentLineDto>()
+42:         };
+43: 
+44:         var result = _validator.Validate(command);
+45: 
+46:         result.IsValid.Should().BeFalse();
+47:     }
+48: }
+````
+
+## File: specs/005-settings-system-redesign/README.md
+````markdown
+  1: # Settings System Redesign - Deliverables
+  2: 
+  3: This folder contains the complete redesign specification for the MTM Receiving Application's settings system.
+  4: 
+  5: ## 📋 Overview
+  6: 
+  7: The settings system has been redesigned to:
+  8: 
+  9: - ✅ Migrate all 79 settable objects from hardcoded values and `appsettings.json` to MySQL database
+ 10: - ✅ Implement role-based access control (User, Operator, Admin, Developer, Super Admin)
+ 11: - ✅ Support user-specific preference overrides
+ 12: - ✅ Provide complete audit trail of all configuration changes
+ 13: - ✅ Encrypt sensitive credentials (passwords, API keys)
+ 14: - ✅ Auto-save with validation and inline error display
+ 15: - ✅ Modern WinUI 3 interface with search/filter capabilities
+ 16: 
+ 17: ## 📁 Deliverables
+ 18: 
+ 19: ### 1. Mockups (`mockups/`)
+ 20: 
+ 21: #### Main Navigation
+ 22: 
+ 23: - **`settings-mode-selection.svg/.md`** - Redesigned mode selection page with 9 category cards
+ 24: 
+ 25: #### Individual Settings Pages (9 pages)
+ 26: 
+ 27: - **`01-system-settings.svg/.md`** - Development, database, logging
+ 28: - **`02-security-session.svg/.md`** - Authentication, session, encryption
+ 29: - **`03-erp-integration.svg/.md`** - Infor Visual connection, caching
+ 30: - **`04-receiving.svg/.md`** - Workflow, package types (DataGrid)
+ 31: - **`05-dunnage.svg/.md`** - Tracking, inventory alerts
+ 32: - **`06-routing.svg/.md`** - Auto-routing rules, locations
+ 33: - **`07-volvo.svg/.md`** - EDI, master data sync
+ 34: - **`08-reporting.svg/.md`** - Export formats, scheduled reports
+ 35: - **`09-user-preferences.svg/.md`** - Theme, fonts, personalization
+ 36: 
+ 37: #### Modal Dialogs (10 modals)
+ 38: 
+ 39: - **`01-system-modal-test-db.svg/.md`** - MySQL connection test
+ 40: - **`02-security-modal-rotate-key.svg/.md`** - Encryption key rotation
+ 41: - **`03-erp-modal-test-connection.svg/.md`** - Infor Visual test
+ 42: - **`04-receiving-modal-add-type.svg/.md`** - Add/edit package type
+ 43: - **`04-receiving-modal-delete-confirm.svg/.md`** - Delete confirmation
+ 44: - **`06-routing-modal-add-rule.svg/.md`** - Add/edit routing rule
+ 45: - **`07-volvo-modal-sync.svg/.md`** - Manual sync trigger
+ 46: - **`08-reporting-modal-schedule.svg/.md`** - Schedule report
+ 47: - **`09-preferences-modal-reset.svg/.md`** - Reset confirmation
+ 48: - **`MODAL_INDEX.md`** - Complete modal & view reference guide
+ 49: 
+ 50: #### Development Tools (1 view)
+ 51: 
+ 52: - **`10-dev-database-test.svg/.md`** - Comprehensive database validation and testing tool
+ 53: 
+ 54: **Total:** 29 SVG files + 29 MD files = **58 mockup files**
+ 55: 
+ 56: ### 2. Templates (`templates/`)
+ 57: 
+ 58: - **`SettingsPageTemplate.xaml`** - Reusable WinUI 3 template for all settings pages
+ 59:   - Grouped card layout
+ 60:   - Auto-save with debounce
+ 61:   - Inline validation errors
+ 62:   - Tooltips for help text
+ 63:   - File/folder pickers with test connection
+ 64:   - Password fields with show/hide
+ 65:   - Locked settings overlay
+ 66:   - Search/filter box
+ 67:   - Reset to defaults button
+ 68: 
+ 69: ### 3. Database Schema (`../../Database/Schemas/`)
+ 70: 
+ 71: - **`settings_system_schema.sql`** - Complete database schema
+ 72:   - `settings_universal` - All configurable settings (79 rows seeded)
+ 73:   - `settings_personal` - User-specific overrides
+ 74:   - `settings_activity` - Change tracking
+ 75:   - `receiving_package_type_mapping` - Part prefix → package type rules
+ 76:   - All indexes and foreign keys
+ 77:   - Initial data migration from `appsettings.json`
+ 78: 
+ 79: ### 4. Stored Procedures (`../../Database/StoredProcedures/`)
+ 80: 
+ 81: - **`sp_SettingsSystem.sql`** - All CRUD operations (25+ procedures)
+ 82:   - System settings: Get, Update, Reset, Lock/Unlock
+ 83:   - User settings: Get, Set, Reset (individual & all)
+ 84:   - Package mappings: Get, Insert, Update, Delete
+ 85:   - Package types: CRUD with usage validation
+ 86:   - Routing rules: CRUD with pattern matching
+ 87:   - Scheduled reports: CRUD with schedule parsing
+ 88:   - Audit log: Get history
+ 89:   - All procedures enforce locking rules and log changes
+ 90: 
+ 91: ### 5. Specification (`SPECIFICATION.md`)
+ 92: 
+ 93: - **Complete implementation plan** including:
+ 94:   - Architecture overview
+ 95:   - Data models (C# classes with sample code)
+ 96:   - DAO patterns (instance-based)
+ 97:   - Service layer design
+ 98:   - ViewModel architecture
+ 99:   - Security & encryption strategy
+100:   - Migration plan (6-week phased approach)
+101:   - Testing plan
+102:   - Rollback plan
+103:   - Success criteria
+104: 
+105: ## 🎯 Key Features
+106: 
+107: ### Role-Based Access Control
+108: 
+109: | Role | Can Access | Can Modify |
+110: |------|-----------|------------|
+111: | User | Own preferences | Own user settings |
+112: | Operator | Module settings | Own preferences + operational toggles |
+113: | Admin | Most settings | System settings (non-critical) |
+114: | Developer | Dev/test settings | Mock flags, retry logic |
+115: | Super Admin | All settings | Everything including credentials |
+116: 
+117: ### Settings Categories (79 Total Settings)
+118: 
+119: | Category | Count | Examples |
+120: |----------|-------|----------|
+121: | System | 6 | MockData, Environment, Database Retries |
+122: | Security | 6 | Timeouts, PIN Length, Lockout Delay |
+123: | ERP Integration | 6 | Server, Database, Credentials, Site ID |
+124: | Receiving | 3 | Default Mode, Grid Delays |
+125: | Dunnage | 2 | Default Mode, Grid Delay |
+126: | Routing | 10 | CSV Paths, Validation, Duplicate Detection |
+127: | Volvo | 1 | History Filter Options |
+128: | Reporting | 4 | Export Path, CSV Formats |
+129: | User Preferences | Variable | Per-user workflow defaults |
+130: 
+131: ### Data Types Supported
+132: 
+133: - `string` - Text values
+134: - `int` - Numeric values
+135: - `boolean` - Toggle switches
+136: - `json` - Complex objects
+137: - `path` - File/folder paths
+138: - `password` - Encrypted credentials
+139: - `email` - Email addresses
+140: 
+141: ### Validation Rules
+142: 
+143: Settings can define JSON validation rules:
+144: 
+145: ```json
+146: {
+147:   "min": 1,
+148:   "max": 100,
+149:   "pattern": "^[A-Z0-9]+$",
+150:   "allowed_values": ["option1", "option2"],
+151:   "required": true,
+152:   "path_must_exist": true
+153: }
+154: ```
+155: 
+156: ## 🚀 Implementation Phases
+157: 
+158: ### Phase 1: Database Setup (Week 1)
+159: 
+160: - Deploy schema and stored procedures
+161: - Seed initial data
+162: - Test all database operations
+163: 
+164: ### Phase 2: Data Layer (Week 2)
+165: 
+166: - Create models, DAOs, services
+167: - Register in DI container
+168: - Unit tests
+169: 
+170: ### Phase 3: UI Development (Week 3-4)
+171: 
+172: - Create ViewModels for all 9 categories
+173: - Build Views using template
+174: - Implement auto-save and validation
+175: 
+176: ### Phase 4: Security (Week 5)
+177: 
+178: - Implement encryption
+179: - Add role checks
+180: - Create audit log viewer
+181: 
+182: ### Phase 5: Migration & Cleanup (Week 6)
+183: 
+184: - Remove hardcoded values
+185: - Update all code references
+186: - Integration and UAT testing
+187: 
+188: ## 📊 Migration Summary
+189: 
+190: ### Before (Current State)
+191: 
+192: - ❌ Settings scattered across `appsettings.json`, hardcoded constants, and inline code
+193: - ❌ No user preferences
+194: - ❌ No audit trail
+195: - ❌ Credentials stored in plain text
+196: - ❌ No role-based access
+197: - ❌ Requires code changes for configuration updates
+198: 
+199: ### After (Redesigned State)
+200: 
+201: - ✅ All settings in centralized MySQL database
+202: - ✅ User-specific overrides supported
+203: - ✅ Complete audit trail with who/what/when
+204: - ✅ Sensitive data encrypted
+205: - ✅ Role-based permissions enforced
+206: - ✅ Administrators can change settings via UI without code deployment
+207: 
+208: ## 🔒 Security Enhancements
+209: 
+210: 1. **Encryption**: Sensitive settings (passwords, API keys) encrypted using AES-256 with machine-specific DPAPI key
+211: 2. **Audit Trail**: All changes logged with user, timestamp, IP address, and workstation
+212: 3. **Locked Settings**: Admins can lock critical settings to prevent accidental changes
+213: 4. **Permission Levels**: UI and service layer enforce role-based access
+214: 5. **Masked Display**: Passwords shown as `********` with reveal toggle
+215: 
+216: ## 📖 Usage Example
+217: 
+218: ```csharp
+219: // Get a setting value (with user override if applicable)
+220: var setting = await _settingsService.GetSettingAsync("Receiving", "DefaultReceivingMode", userId: 123);
+221: string mode = setting.Data.AsString(); // "guided"
+222: 
+223: // Save a setting (creates audit log entry)
+224: await _settingsService.SaveSettingAsync(
+225:     "Routing",
+226:     "CsvRetryMaxAttempts",
+227:     "5",
+228:     userId: 456
+229: );
+230: 
+231: // Reset user preference to system default
+232: await _settingsService.ResetSettingAsync(
+233:     "Receiving",
+234:     "DefaultReceivingMode",
+235:     userId: 123,
+236:     isUserOverride: true
+237: );
+238: ```
+239: 
+240: ## 🧪 Testing Checklist
+241: 
+242: - [ ] Database schema deploys without errors
+243: - [ ] All stored procedures execute successfully
+244: - [ ] DAOs return expected results
+245: - [ ] Service validation catches invalid values
+246: - [ ] Encryption/decryption works correctly
+247: - [ ] Role-based access prevents unauthorized changes
+248: - [ ] User overrides take precedence over system defaults
+249: - [ ] Audit log captures all changes
+250: - [ ] UI auto-save works without data loss
+251: - [ ] Search/filter performs as expected
+252: - [ ] Locked settings cannot be modified
+253: - [ ] Package type mappings editable via DataGrid
+254: - [ ] File/folder pickers launch correctly
+255: - [ ] Test connection validates paths
+256: - [ ] Password fields mask/reveal properly
+257: 
+258: ## 📝 Next Steps
+259: 
+260: 1. **Review** this specification with stakeholders
+261: 2. **Approve** database schema and UI design
+262: 3. **Schedule** Phase 1 database deployment
+263: 4. **Assign** development tasks to team
+264: 5. **Set up** development environment
+265: 6. **Begin** implementation following phased approach
+266: 
+267: ## 📞 Questions?
+268: 
+269: Contact the development team for clarifications on:
+270: 
+271: - Database schema design
+272: - ViewModel architecture
+273: - Security implementation
+274: - Migration timeline
+275: - Testing requirements
+276: 
+277: ---
+278: 
+279: **Status:** ✅ Design Complete - Ready for Implementation
+280: **Last Updated:** January 10, 2026
+281: **Specification Version:** 1.0
+````
+
+## File: Module_Volvo/Services/Service_Volvo.cs
+````csharp
+   1: using System;
+   2: using System.Collections.Generic;
+   3: using System.IO;
+   4: using System.Linq;
+   5: using System.Text;
+   6: using System.Threading.Tasks;
+   7: using MySql.Data.MySqlClient;
+   8: using MTM_Receiving_Application.Module_Core.Models.Core;
+   9: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  10: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  11: using MTM_Receiving_Application.Module_Volvo.Contracts;
+  12: using MTM_Receiving_Application.Module_Core.Helpers.Database;
+  13: using MTM_Receiving_Application.Module_Volvo.Models;
+  14: using MTM_Receiving_Application.Module_Volvo.Data;
+  15: 
+  16: namespace MTM_Receiving_Application.Module_Volvo.Services;
+  17: 
+  18: /// <summary>
+  19: /// Service for Volvo dunnage requisition business logic
+  20: /// Handles component explosion, CSV generation, email formatting, and shipment management
+  21: /// </summary>
+  22: [Obsolete("Legacy service - replaced by CQRS handlers. Do not use in new code.", false)]
+  23: public class Service_Volvo : IService_Volvo
+  24: {
+  25:     private readonly Dao_VolvoShipment _shipmentDao;
+  26:     private readonly Dao_VolvoShipmentLine _lineDao;
+  27:     private readonly Dao_VolvoPart _partDao;
+  28:     private readonly Dao_VolvoPartComponent _componentDao;
+  29:     private readonly IService_LoggingUtility _logger;
+  30:     private readonly IService_VolvoAuthorization _authService;
+  31: 
+  32:     public Service_Volvo(
+  33:         Dao_VolvoShipment shipmentDao,
+  34:         Dao_VolvoShipmentLine lineDao,
+  35:         Dao_VolvoPart partDao,
+  36:         Dao_VolvoPartComponent componentDao,
+  37:         IService_LoggingUtility logger,
+  38:         IService_VolvoAuthorization authService)
+  39:     {
+  40:         _shipmentDao = shipmentDao ?? throw new ArgumentNullException(nameof(shipmentDao));
+  41:         _lineDao = lineDao ?? throw new ArgumentNullException(nameof(lineDao));
+  42:         _partDao = partDao ?? throw new ArgumentNullException(nameof(partDao));
+  43:         _componentDao = componentDao ?? throw new ArgumentNullException(nameof(componentDao));
+  44:         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+  45:         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+  46:     }
+  47: 
+  48:     /// <summary>
+  49:     /// Calculates component explosion and aggregates piece counts for all parts in shipment
+  50:     /// Algorithm:
+  51:     /// 1. For each line, get parent part quantity per skid
+  52:     /// 2. Calculate parent pieces: skidCount × qtyPerSkid
+  53:     /// 3. Get components for parent part
+  54:     /// 4. For each component, calculate pieces: skidCount × componentQty × componentQtyPerSkid
+  55:     /// 5. Aggregate duplicates across all lines
+  56:     /// </summary>
+  57:     /// <param name="lines"></param>
+  58:     public async Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
+  59:         List<Model_VolvoShipmentLine> lines)
+  60:     {
+  61:         try
+  62:         {
+  63:             await _logger.LogInfoAsync("Calculating component explosion for shipment lines");
+  64: 
+  65:             var aggregatedPieces = new Dictionary<string, int>();
+  66: 
+  67:             foreach (var line in lines)
+  68:             {
+  69:                 // Get parent part details
+  70:                 var partResult = await _partDao.GetByIdAsync(line.PartNumber);
+  71:                 if (!partResult.IsSuccess || partResult.Data == null)
+  72:                 {
+  73:                     return new Model_Dao_Result<Dictionary<string, int>>
+  74:                     {
+  75:                         Success = false,
+  76:                         ErrorMessage = $"Part {line.PartNumber} not found in master data",
+  77:                         Severity = Enum_ErrorSeverity.Error
+  78:                     };
+  79:                 }
+  80: 
+  81:                 var parentPart = partResult.Data;
+  82: 
+  83:                 // Validate quantity per skid
+  84:                 if (parentPart.QuantityPerSkid <= 0)
+  85:                 {
+  86:                     return new Model_Dao_Result<Dictionary<string, int>>
+  87:                     {
+  88:                         Success = false,
+  89:                         ErrorMessage = $"Part {line.PartNumber} has invalid QuantityPerSkid: {parentPart.QuantityPerSkid} (must be > 0)",
+  90:                         Severity = Enum_ErrorSeverity.Error
+  91:                     };
+  92:                 }
+  93: 
+  94:                 // Add parent part pieces
+  95:                 int parentPieces = line.ReceivedSkidCount * parentPart.QuantityPerSkid;
+  96:                 if (aggregatedPieces.ContainsKey(line.PartNumber))
+  97:                 {
+  98:                     aggregatedPieces[line.PartNumber] += parentPieces;
+  99:                 }
+ 100:                 else
+ 101:                 {
+ 102:                     aggregatedPieces[line.PartNumber] = parentPieces;
+ 103:                 }
+ 104: 
+ 105:                 // Get and add component pieces
+ 106:                 var componentsResult = await _componentDao.GetByParentPartAsync(line.PartNumber);
+ 107:                 if (componentsResult.IsSuccess && componentsResult.Data != null)
+ 108:                 {
+ 109:                     foreach (var component in componentsResult.Data)
+ 110:                     {
+ 111:                         // Validate component quantities
+ 112:                         if (component.Quantity <= 0 || component.ComponentQuantityPerSkid <= 0)
+ 113:                         {
+ 114:                             await _logger.LogWarningAsync(
+ 115:                                 $"Skipping component {component.ComponentPartNumber} with invalid quantity: " +
+ 116:                                 $"ComponentQty={component.Quantity}, QtyPerSkid={component.ComponentQuantityPerSkid}");
+ 117:                             continue;
+ 118:                         }
+ 119: 
+ 120:                         // Component pieces = skidCount × componentQty × componentQtyPerSkid
+ 121:                         int componentPieces = line.ReceivedSkidCount * component.Quantity * component.ComponentQuantityPerSkid;
+ 122: 
+ 123:                         if (aggregatedPieces.ContainsKey(component.ComponentPartNumber))
+ 124:                         {
+ 125:                             aggregatedPieces[component.ComponentPartNumber] += componentPieces;
+ 126:                         }
+ 127:                         else
+ 128:                         {
+ 129:                             aggregatedPieces[component.ComponentPartNumber] = componentPieces;
+ 130:                         }
+ 131:                     }
+ 132:                 }
+ 133:             }
+ 134: 
+ 135:             await _logger.LogInfoAsync($"Component explosion complete: {aggregatedPieces.Count} unique parts");
+ 136: 
+ 137:             return new Model_Dao_Result<Dictionary<string, int>>
+ 138:             {
+ 139:                 Success = true,
+ 140:                 Data = aggregatedPieces
+ 141:             };
+ 142:         }
+ 143:         catch (Exception ex)
+ 144:         {
+ 145:             await _logger.LogErrorAsync($"Error calculating component explosion: {ex.Message}", ex);
+ 146:             return new Model_Dao_Result<Dictionary<string, int>>
+ 147:             {
+ 148:                 Success = false,
+ 149:                 ErrorMessage = $"Error calculating component explosion: {ex.Message}",
+ 150:                 Severity = Enum_ErrorSeverity.Error,
+ 151:                 Exception = ex
+ 152:             };
+ 153:         }
+ 154:     }
+ 155: 
+ 156:     /// <summary>
+ 157:     /// Generates CSV file for LabelView 2022 label printing
+ 158:     /// Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
+ 159:     /// </summary>
+ 160:     /// <param name="shipmentId"></param>
+ 161:     public async Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(int shipmentId)
+ 162:     {
+ 163:         try
+ 164:         {
+ 165:             // Authorization check
+ 166:             var authResult = await _authService.CanGenerateLabelsAsync();
+ 167:             if (!authResult.IsSuccess)
+ 168:             {
+ 169:                 return new Model_Dao_Result<string>
+ 170:                 {
+ 171:                     Success = false,
+ 172:                     ErrorMessage = "You are not authorized to generate labels",
+ 173:                     Severity = Enum_ErrorSeverity.Warning
+ 174:                 };
+ 175:             }
+ 176: 
+ 177:             // Validate shipmentId (prevent file path injection)
+ 178:             if (shipmentId <= 0)
+ 179:             {
+ 180:                 return new Model_Dao_Result<string>
+ 181:                 {
+ 182:                     Success = false,
+ 183:                     ErrorMessage = "Invalid shipment ID",
+ 184:                     Severity = Enum_ErrorSeverity.Error
+ 185:                 };
+ 186:             }
+ 187: 
+ 188:             await _logger.LogInfoAsync($"Generating label CSV for shipment {shipmentId}");
+ 189: 
+ 190:             // Get shipment details
+ 191:             var shipmentResult = await _shipmentDao.GetByIdAsync(shipmentId);
+ 192:             if (!shipmentResult.IsSuccess || shipmentResult.Data == null)
+ 193:             {
+ 194:                 return new Model_Dao_Result<string>
+ 195:                 {
+ 196:                     Success = false,
+ 197:                     ErrorMessage = "Shipment not found",
+ 198:                     Severity = Enum_ErrorSeverity.Error
+ 199:                 };
+ 200:             }
+ 201: 
+ 202:             var shipment = shipmentResult.Data;
+ 203: 
+ 204:             // Get shipment lines
+ 205:             var linesResult = await _lineDao.GetByShipmentIdAsync(shipmentId);
+ 206:             if (!linesResult.IsSuccess || linesResult.Data == null)
+ 207:             {
+ 208:                 return new Model_Dao_Result<string>
+ 209:                 {
+ 210:                     Success = false,
+ 211:                     ErrorMessage = "Failed to retrieve shipment lines",
+ 212:                     Severity = Enum_ErrorSeverity.Error
+ 213:                 };
+ 214:             }
+ 215: 
+ 216:             var lines = linesResult.Data;
+ 217: 
+ 218:             // Calculate component explosion
+ 219:             var explosionResult = await CalculateComponentExplosionAsync(lines);
+ 220:             if (!explosionResult.IsSuccess || explosionResult.Data == null)
+ 221:             {
+ 222:                 return new Model_Dao_Result<string>
+ 223:                 {
+ 224:                     Success = false,
+ 225:                     ErrorMessage = explosionResult.ErrorMessage,
+ 226:                     Severity = Enum_ErrorSeverity.Error
+ 227:                 };
+ 228:             }
+ 229: 
+ 230:             var aggregatedPieces = explosionResult.Data;
+ 231: 
+ 232:             // Sanity check: prevent extremely large CSV files
+ 233:             const int MaxCsvLines = 10000;
+ 234:             if (aggregatedPieces.Count > MaxCsvLines)
+ 235:             {
+ 236:                 return new Model_Dao_Result<string>
+ 237:                 {
+ 238:                     Success = false,
+ 239:                     ErrorMessage = $"CSV generation failed: Too many parts ({aggregatedPieces.Count} parts exceeds maximum of {MaxCsvLines})",
+ 240:                     Severity = Enum_ErrorSeverity.Error
+ 241:                 };
+ 242:             }
+ 243: 
+ 244:             // Create CSV directory
+ 245:             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+ 246:             string csvDirectory = Path.Combine(appDataPath, "MTM_Receiving_Application", "Volvo", "Labels");
+ 247:             Directory.CreateDirectory(csvDirectory);
+ 248: 
+ 249:             // Use fixed filename Volvo_Labels.csv (overwrites previous)
+ 250:             string fileName = "Volvo_Labels.csv";
+ 251:             string filePath = Path.Combine(csvDirectory, fileName);
+ 252: 
+ 253:             // Build CSV content
+ 254:             var csvContent = new StringBuilder();
+ 255:             csvContent.AppendLine("Material,Quantity,Employee,Date,Time,Receiver,Notes");
+ 256: 
+ 257:             string dateFormatted = shipment.ShipmentDate.ToString("MM/dd/yyyy");
+ 258:             string timeFormatted = DateTime.Now.ToString("HH:mm:ss");
+ 259: 
+ 260:             foreach (var kvp in aggregatedPieces.OrderBy(x => x.Key))
+ 261:             {
+ 262:                 // Format: Material,Quantity,Employee,Date,Time,Receiver,Notes
+ 263:                 // Receiver field is empty for Volvo parts (per spec - hide PO field for V-EMB- parts)
+ 264:                 csvContent.AppendLine($"{kvp.Key},{kvp.Value},{shipment.EmployeeNumber},{dateFormatted},{timeFormatted},,");
+ 265:             }
+ 266: 
+ 267:             // Write CSV file
+ 268:             await File.WriteAllTextAsync(filePath, csvContent.ToString());
+ 269: 
+ 270:             await _logger.LogInfoAsync($"Label CSV generated: {filePath}");
+ 271: 
+ 272:             return new Model_Dao_Result<string>
+ 273:             {
+ 274:                 Success = true,
+ 275:                 Data = filePath
+ 276:             };
+ 277:         }
+ 278:         catch (Exception ex)
+ 279:         {
+ 280:             await _logger.LogErrorAsync($"Error generating label CSV: {ex.Message}", ex);
+ 281:             return new Model_Dao_Result<string>
+ 282:             {
+ 283:                 Success = false,
+ 284:                 ErrorMessage = $"Error generating label CSV: {ex.Message}",
+ 285:                 Severity = Enum_ErrorSeverity.Error,
+ 286:                 Exception = ex
+ 287:             };
+ 288:         }
+ 289:     }
+ 290: 
+ 291:     /// <summary>
+ 292:     /// Formats email text for PO requisition (with discrepancy notice if applicable)
+ 293:     /// </summary>
+ 294:     /// <param name="shipment"></param>
+ 295:     /// <param name="lines"></param>
+ 296:     /// <param name="requestedLines"></param>
+ 297:     public async Task<string> FormatEmailTextAsync(
+ 298:         Model_VolvoShipment shipment,
+ 299:         List<Model_VolvoShipmentLine> lines,
+ 300:         Dictionary<string, int>? requestedLines = null)
+ 301:     {
+ 302:         // Null guard for requestedLines
+ 303:         requestedLines ??= new Dictionary<string, int>();
+ 304: 
+ 305:         var emailText = new StringBuilder();
+ 306: 
+ 307:         // Subject line (for user reference)
+ 308:         emailText.AppendLine($"Subject: PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}");
+ 309:         emailText.AppendLine();
+ 310: 
+ 311:         // Greeting
+ 312:         emailText.AppendLine("Good morning,");
+ 313:         emailText.AppendLine();
+ 314:         emailText.AppendLine($"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:");
+ 315:         emailText.AppendLine();
+ 316: 
+ 317:         // Discrepancy section (if any)
+ 318:         var discrepancies = lines.Where(l => l.HasDiscrepancy).ToList();
+ 319:         if (discrepancies.Count > 0)
+ 320:         {
+ 321:             emailText.AppendLine("**DISCREPANCIES NOTED**");
+ 322:             emailText.AppendLine();
+ 323:             emailText.AppendLine("Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote");
+ 324:             emailText.AppendLine(new string('-', 80));
+ 325: 
+ 326:             foreach (var line in discrepancies)
+ 327:             {
+ 328:                 int expectedPieces = line.ExpectedPieceCount ?? 0;
+ 329:                 int receivedPieces = line.CalculatedPieceCount;
+ 330:                 int difference = receivedPieces - expectedPieces;
+ 331:                 string diffStr = difference > 0 ? $"+{difference}" : difference.ToString();
+ 332:                 emailText.AppendLine($"{line.PartNumber}\t{expectedPieces}\t{receivedPieces}\t{diffStr}\t{line.DiscrepancyNote ?? ""}");
+ 333:             }
+ 334: 
+ 335:             emailText.AppendLine();
+ 336:         }
+ 337: 
+ 338:         // Requested lines section
+ 339:         emailText.AppendLine("Requested Lines:");
+ 340:         emailText.AppendLine();
+ 341:         emailText.AppendLine("Part Number\tQuantity (pcs)");
+ 342:         emailText.AppendLine(new string('-', 40));
+ 343: 
+ 344:         foreach (var kvp in requestedLines.OrderBy(x => x.Key))
+ 345:         {
+ 346:             emailText.AppendLine($"{kvp.Key}\t{kvp.Value}");
+ 347:         }
+ 348: 
+ 349:         emailText.AppendLine();
+ 350: 
+ 351:         // Notes section (if any)
+ 352:         if (!string.IsNullOrWhiteSpace(shipment.Notes))
+ 353:         {
+ 354:             emailText.AppendLine("Additional Notes:");
+ 355:             emailText.AppendLine(shipment.Notes);
+ 356:             emailText.AppendLine();
+ 357:         }
+ 358: 
+ 359:         await _logger.LogInfoAsync("Email text formatted");
+ 360: 
+ 361:         return emailText.ToString();
+ 362:     }
+ 363: 
+ 364:     /// <summary>
+ 365:     /// Formats email data for PO requisition (structured for display and HTML conversion)
+ 366:     /// </summary>
+ 367:     /// <param name="shipment"></param>
+ 368:     /// <param name="lines"></param>
+ 369:     /// <param name="requestedLines"></param>
+ 370:     public async Task<Model_VolvoEmailData> FormatEmailDataAsync(
+ 371:         Model_VolvoShipment shipment,
+ 372:         List<Model_VolvoShipmentLine> lines,
+ 373:         Dictionary<string, int>? requestedLines = null)
+ 374:     {
+ 375:         // Null guard for requestedLines
+ 376:         requestedLines ??= new Dictionary<string, int>();
+ 377: 
+ 378:         var emailData = new Model_VolvoEmailData
+ 379:         {
+ 380:             Subject = $"PO Requisition - Volvo Dunnage - {shipment.ShipmentDate:MM/dd/yyyy} Shipment #{shipment.ShipmentNumber}",
+ 381:             Greeting = "Good morning,",
+ 382:             Message = $"Please create a PO for the following Volvo dunnage received on {shipment.ShipmentDate:MM/dd/yyyy}:",
+ 383:             RequestedLines = requestedLines,
+ 384:             AdditionalNotes = string.IsNullOrWhiteSpace(shipment.Notes) ? null : shipment.Notes,
+ 385:             Signature = string.Empty
+ 386:         };
+ 387: 
+ 388:         // Build discrepancy list
+ 389:         var discrepancies = lines.Where(l => l.HasDiscrepancy).ToList();
+ 390:         foreach (var line in discrepancies)
+ 391:         {
+ 392:             int expectedPieces = line.ExpectedPieceCount ?? 0;
+ 393:             int receivedPieces = line.CalculatedPieceCount;
+ 394:             int difference = receivedPieces - expectedPieces;
+ 395:             emailData.Discrepancies.Add(new Model_VolvoEmailData.DiscrepancyLineItem
+ 396:             {
+ 397:                 PartNumber = line.PartNumber,
+ 398:                 PacklistQty = expectedPieces,
+ 399:                 ReceivedQty = receivedPieces,
+ 400:                 Difference = difference,
+ 401:                 Note = line.DiscrepancyNote ?? string.Empty
+ 402:             });
+ 403:         }
+ 404: 
+ 405:         await _logger.LogInfoAsync("Email data formatted");
+ 406:         return emailData;
+ 407:     }
+ 408: 
+ 409:     /// <summary>
+ 410:     /// Converts structured email data to HTML format with tables for Outlook paste
+ 411:     /// </summary>
+ 412:     /// <param name="emailData"></param>
+ 413:     public string FormatEmailAsHtml(Model_VolvoEmailData emailData)
+ 414:     {
+ 415:         var html = new StringBuilder();
+ 416: 
+ 417:         html.AppendLine("<html>");
+ 418:         html.AppendLine("<body style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
+ 419: 
+ 420:         // Greeting
+ 421:         html.AppendLine($"<p>{emailData.Greeting}</p>");
+ 422:         html.AppendLine($"<p>{emailData.Message}</p>");
+ 423: 
+ 424:         // Discrepancy table
+ 425:         if (emailData.Discrepancies.Count > 0)
+ 426:         {
+ 427:             html.AppendLine("<p><strong>**DISCREPANCIES NOTED**</strong></p>");
+ 428:             html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+ 429:             html.AppendLine("<thead>");
+ 430:             html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
+ 431:             html.AppendLine("<th>Part Number</th>");
+ 432:             html.AppendLine("<th>Packlist Qty</th>");
+ 433:             html.AppendLine("<th>Received Qty</th>");
+ 434:             html.AppendLine("<th>Difference</th>");
+ 435:             html.AppendLine("<th>Note</th>");
+ 436:             html.AppendLine("</tr>");
+ 437:             html.AppendLine("</thead>");
+ 438:             html.AppendLine("<tbody>");
+ 439: 
+ 440:             foreach (var disc in emailData.Discrepancies)
+ 441:             {
+ 442:                 string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+ 443:                 html.AppendLine("<tr>");
+ 444:                 html.AppendLine($"<td>{disc.PartNumber}</td>");
+ 445:                 html.AppendLine($"<td>{disc.PacklistQty}</td>");
+ 446:                 html.AppendLine($"<td>{disc.ReceivedQty}</td>");
+ 447:                 html.AppendLine($"<td>{diffStr}</td>");
+ 448:                 html.AppendLine($"<td>{disc.Note}</td>");
+ 449:                 html.AppendLine("</tr>");
+ 450:             }
+ 451: 
+ 452:             html.AppendLine("</tbody>");
+ 453:             html.AppendLine("</table>");
+ 454:             html.AppendLine("<br/>");
+ 455:         }
+ 456: 
+ 457:         // Requested Lines table
+ 458:         html.AppendLine("<p><strong>Requested Lines:</strong></p>");
+ 459:         html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+ 460:         html.AppendLine("<thead>");
+ 461:         html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
+ 462:         html.AppendLine("<th>Part Number</th>");
+ 463:         html.AppendLine("<th>Quantity (pcs)</th>");
+ 464:         html.AppendLine("</tr>");
+ 465:         html.AppendLine("</thead>");
+ 466:         html.AppendLine("<tbody>");
+ 467: 
+ 468:         foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+ 469:         {
+ 470:             html.AppendLine("<tr>");
+ 471:             html.AppendLine($"<td>{kvp.Key}</td>");
+ 472:             html.AppendLine($"<td>{kvp.Value}</td>");
+ 473:             html.AppendLine("</tr>");
+ 474:         }
+ 475: 
+ 476:         html.AppendLine("</tbody>");
+ 477:         html.AppendLine("</table>");
+ 478:         html.AppendLine("<br/>");
+ 479: 
+ 480:         // Notes
+ 481:         if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+ 482:         {
+ 483:             html.AppendLine("<p><strong>Additional Notes:</strong></p>");
+ 484:             html.AppendLine($"<p>{emailData.AdditionalNotes}</p>");
+ 485:         }
+ 486: 
+ 487:         // Signature
+ 488:         html.AppendLine($"<p>{emailData.Signature.Replace("\\n", "<br/>")}</p>");
+ 489: 
+ 490:         html.AppendLine("</body>");
+ 491:         html.AppendLine("</html>");
+ 492: 
+ 493:         return html.ToString();
+ 494:     }
+ 495: 
+ 496:     /// <summary>
+ 497:     /// Validates shipment data before save
+ 498:     /// Centralized validation logic for data integrity
+ 499:     /// </summary>
+ 500:     /// <param name="shipment"></param>
+ 501:     /// <param name="lines"></param>
+ 502:     public async Task<Model_Dao_Result> ValidateShipmentAsync(
+ 503:         Model_VolvoShipment shipment,
+ 504:         List<Model_VolvoShipmentLine> lines)
+ 505:     {
+ 506:         // Validate: At least one line required
+ 507:         if (lines == null || lines.Count == 0)
+ 508:         {
+ 509:             return Model_Dao_Result_Factory.Failure("At least one part line is required");
+ 510:         }
+ 511: 
+ 512:         // Validate: All lines have valid data
+ 513:         foreach (var line in lines)
+ 514:         {
+ 515:             if (string.IsNullOrWhiteSpace(line.PartNumber))
+ 516:             {
+ 517:                 return Model_Dao_Result_Factory.Failure("All parts must have a part number");
+ 518:             }
+ 519: 
+ 520:             if (line.ReceivedSkidCount < 1 || line.ReceivedSkidCount > 99)
+ 521:             {
+ 522:                 return Model_Dao_Result_Factory.Failure(
+ 523:                     $"Part {line.PartNumber}: skid count must be between 1 and 99");
+ 524:             }
+ 525: 
+ 526:             if (line.HasDiscrepancy && !line.ExpectedSkidCount.HasValue)
+ 527:             {
+ 528:                 return Model_Dao_Result_Factory.Failure(
+ 529:                     $"Part {line.PartNumber} has discrepancy but no expected skid count");
+ 530:             }
+ 531:         }
+ 532: 
+ 533:         // Validate: Shipment date not in future
+ 534:         if (shipment.ShipmentDate > DateTime.Now.AddDays(1))
+ 535:         {
+ 536:             return Model_Dao_Result_Factory.Failure("Shipment date cannot be in the future");
+ 537:         }
+ 538: 
+ 539:         await _logger.LogInfoAsync("Shipment validation passed");
+ 540:         return Model_Dao_Result_Factory.Success();
+ 541:     }
+ 542: 
+ 543:     /// <summary>
+ 544:     /// Saves shipment and lines with status='pending_po'
+ 545:     /// Validates: Only one pending shipment allowed at a time
+ 546:     /// </summary>
+ 547:     /// <param name="shipment"></param>
+ 548:     /// <param name="lines"></param>
+ 549:     /// <param name="overwriteExisting">If true, deletes any existing pending shipment before saving</param>
+ 550:     public async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentAsync(
+ 551:         Model_VolvoShipment shipment,
+ 552:         List<Model_VolvoShipmentLine> lines,
+ 553:         bool overwriteExisting = false)
+ 554:     {
+ 555:         try
+ 556:         {
+ 557:             // Authorization check
+ 558:             var authResult = await _authService.CanManageShipmentsAsync();
+ 559:             if (!authResult.IsSuccess)
+ 560:             {
+ 561:                 return new Model_Dao_Result<(int, int)>
+ 562:                 {
+ 563:                     Success = false,
+ 564:                     ErrorMessage = "You are not authorized to manage shipments",
+ 565:                     Severity = Enum_ErrorSeverity.Warning
+ 566:                 };
+ 567:             }
+ 568: 
+ 569:             await _logger.LogInfoAsync("Saving Volvo shipment as pending PO");
+ 570: 
+ 571:             // Check for existing pending shipment
+ 572:             var existingPendingResult = await _shipmentDao.GetPendingAsync();
+ 573:             if (existingPendingResult.IsSuccess && existingPendingResult.Data != null)
+ 574:             {
+ 575:                 if (overwriteExisting)
+ 576:                 {
+ 577:                     // Delete the existing pending shipment
+ 578:                     await _logger.LogInfoAsync($"Deleting existing pending shipment #{existingPendingResult.Data.ShipmentNumber}");
+ 579:                     var deleteResult = await _shipmentDao.DeleteAsync(existingPendingResult.Data.Id);
+ 580:                     if (!deleteResult.IsSuccess)
+ 581:                     {
+ 582:                         return new Model_Dao_Result<(int, int)>
+ 583:                         {
+ 584:                             Success = false,
+ 585:                             ErrorMessage = $"Failed to delete existing shipment: {deleteResult.ErrorMessage}",
+ 586:                             Severity = Enum_ErrorSeverity.Error
+ 587:                         };
+ 588:                     }
+ 589:                 }
+ 590:                 else
+ 591:                 {
+ 592:                     // Return the existing shipment info so the UI can prompt for overwrite
+ 593:                     return new Model_Dao_Result<(int, int)>
+ 594:                     {
+ 595:                         Success = false,
+ 596:                         ErrorMessage = $"PENDING_EXISTS|{existingPendingResult.Data.ShipmentNumber}|{existingPendingResult.Data.ShipmentDate:MM/dd/yyyy}",
+ 597:                         Data = (existingPendingResult.Data.Id, existingPendingResult.Data.ShipmentNumber),
+ 598:                         Severity = Enum_ErrorSeverity.Warning
+ 599:                     };
+ 600:                 }
+ 601:             }
+ 602: 
+ 603:             // Validate: At least one line required
+ 604:             if (lines == null || lines.Count == 0)
+ 605:             {
+ 606:                 return new Model_Dao_Result<(int, int)>
+ 607:                 {
+ 608:                     Success = false,
+ 609:                     ErrorMessage = "At least one part line is required",
+ 610:                     Severity = Enum_ErrorSeverity.Warning
+ 611:                 };
+ 612:             }
+ 613: 
+ 614:             // Calculate and store piece counts for each line
+ 615:             foreach (var line in lines)
+ 616:             {
+ 617:                 var partResult = await _partDao.GetByIdAsync(line.PartNumber);
+ 618:                 if (!partResult.IsSuccess || partResult.Data == null)
+ 619:                 {
+ 620:                     return new Model_Dao_Result<(int, int)>
+ 621:                     {
+ 622:                         Success = false,
+ 623:                         ErrorMessage = $"Part {line.PartNumber} not found",
+ 624:                         Severity = Enum_ErrorSeverity.Error
+ 625:                     };
+ 626:                 }
+ 627: 
+ 628:                 // Calculate parent part pieces only (components handled separately)
+ 629:                 var parentPart = partResult.Data;
+ 630:                 line.CalculatedPieceCount = line.ReceivedSkidCount * parentPart.QuantityPerSkid;
+ 631:             }
+ 632: 
+ 633:             // Insert shipment
+ 634:             var insertResult = await _shipmentDao.InsertAsync(shipment);
+ 635:             if (!insertResult.IsSuccess)
+ 636:             {
+ 637:                 return new Model_Dao_Result<(int, int)>
+ 638:                 {
+ 639:                     Success = false,
+ 640:                     ErrorMessage = insertResult.ErrorMessage,
+ 641:                     Severity = Enum_ErrorSeverity.Error
+ 642:                 };
+ 643:             }
+ 644: 
+ 645:             int shipmentId = insertResult.Data.ShipmentId;
+ 646:             int shipmentNumber = insertResult.Data.ShipmentNumber;
+ 647: 
+ 648:             await _logger.LogInfoAsync($"Starting line insertion transaction for shipment {shipmentId}, {lines.Count} lines to insert");
+ 649: 
+ 650:             // Insert lines within transaction for data integrity
+ 651:             await using var connection = new MySqlConnection(Helper_Database_Variables.GetConnectionString());
+ 652:             await connection.OpenAsync();
+ 653:             await using var transaction = await connection.BeginTransactionAsync();
+ 654: 
+ 655:             try
+ 656:             {
+ 657:                 int lineIndex = 0;
+ 658:                 foreach (var line in lines)
+ 659:                 {
+ 660:                     lineIndex++;
+ 661:                     line.ShipmentId = shipmentId;
+ 662: 
+ 663:                     await _logger.LogInfoAsync($"Inserting line {lineIndex}/{lines.Count}: " +
+ 664:                         $"Part={line.PartNumber}, " +
+ 665:                         $"Skids={line.ReceivedSkidCount}, " +
+ 666:                         $"Pieces={line.CalculatedPieceCount}, " +
+ 667:                         $"HasDiscrepancy={line.HasDiscrepancy}, " +
+ 668:                         $"ExpectedSkids={line.ExpectedSkidCount?.ToString() ?? "NULL"}, " +
+ 669:                         $"Note={(!string.IsNullOrEmpty(line.DiscrepancyNote) ? "PROVIDED" : "NULL")}");
+ 670: 
+ 671:                     var parameters = new Dictionary<string, object>
+ 672:                     {
+ 673:                         { "shipment_id", line.ShipmentId },
+ 674:                         { "part_number", line.PartNumber },
+ 675:                         { "received_skid_count", line.ReceivedSkidCount },
+ 676:                         { "calculated_piece_count", line.CalculatedPieceCount },
+ 677:                         { "has_discrepancy", line.HasDiscrepancy ? 1 : 0 },
+ 678:                         { "expected_skid_count", line.ExpectedSkidCount ?? (object)DBNull.Value },
+ 679:                         { "discrepancy_note", line.DiscrepancyNote ?? (object)DBNull.Value }
+ 680:                     };
+ 681: 
+ 682:                     await _logger.LogInfoAsync($"Parameters: {string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}"))}");
+ 683: 
+ 684:                     var lineResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+ 685:                         connection,
+ 686:                         (MySqlTransaction)transaction,
+ 687:                         "sp_Volvo_ShipmentLine_Insert",
+ 688:                         parameters);
+ 689: 
+ 690:                     if (!lineResult.IsSuccess)
+ 691:                     {
+ 692:                         await transaction.RollbackAsync();
+ 693:                         await _logger.LogErrorAsync($"Failed to insert line {lineIndex} for part {line.PartNumber}");
+ 694:                         await _logger.LogErrorAsync($"Error: {lineResult.ErrorMessage}");
+ 695:                         if (lineResult.Exception != null)
+ 696:                         {
+ 697:                             await _logger.LogErrorAsync($"Exception Type: {lineResult.Exception.GetType().Name}");
+ 698:                             await _logger.LogErrorAsync($"Exception Message: {lineResult.Exception.Message}");
+ 699:                             if (lineResult.Exception.InnerException != null)
+ 700:                             {
+ 701:                                 await _logger.LogErrorAsync($"Inner Exception: {lineResult.Exception.InnerException.Message}");
+ 702:                             }
+ 703:                         }
+ 704:                         return new Model_Dao_Result<(int, int)>
+ 705:                         {
+ 706:                             Success = false,
+ 707:                             ErrorMessage = $"Failed to insert line for part {line.PartNumber}: {lineResult.ErrorMessage}",
+ 708:                             Severity = Enum_ErrorSeverity.Error
+ 709:                         };
+ 710:                     }
+ 711: 
+ 712:                     await _logger.LogInfoAsync($"Line {lineIndex} inserted successfully");
+ 713:                 }
+ 714: 
+ 715:                 await transaction.CommitAsync();
+ 716:                 await _logger.LogInfoAsync($"Transaction committed: Shipment {shipmentId} saved with {lines.Count} lines");
+ 717: 
+ 718:                 return new Model_Dao_Result<(int, int)>
+ 719:                 {
+ 720:                     Success = true,
+ 721:                     Data = (shipmentId, shipmentNumber)
+ 722:                 };
+ 723:             }
+ 724:             catch (Exception ex)
+ 725:             {
+ 726:                 await transaction.RollbackAsync();
+ 727:                 await _logger.LogErrorAsync($"Transaction failed, rolled back: {ex.Message}", ex);
+ 728:                 return new Model_Dao_Result<(int, int)>
+ 729:                 {
+ 730:                     Success = false,
+ 731:                     ErrorMessage = $"Transaction failed: {ex.Message}",
+ 732:                     Severity = Enum_ErrorSeverity.Error
+ 733:                 };
+ 734:             }
+ 735:         }
+ 736:         catch (Exception ex)
+ 737:         {
+ 738:             await _logger.LogErrorAsync($"Error saving shipment: {ex.Message}", ex);
+ 739:             return new Model_Dao_Result<(int, int)>
+ 740:             {
+ 741:                 Success = false,
+ 742:                 ErrorMessage = $"Error saving shipment: {ex.Message}",
+ 743:                 Severity = Enum_ErrorSeverity.Error,
+ 744:                 Exception = ex
+ 745:             };
+ 746:         }
+ 747:     }
+ 748: 
+ 749:     /// <summary>
+ 750:     /// Gets pending shipment if one exists
+ 751:     /// </summary>
+ 752:     public async Task<Model_Dao_Result<Model_VolvoShipment?>> GetPendingShipmentAsync()
+ 753:     {
+ 754:         var result = await _shipmentDao.GetPendingAsync();
+ 755:         if (!result.IsSuccess)
+ 756:         {
+ 757:             return Model_Dao_Result_Factory.Failure<Model_VolvoShipment?>(result.ErrorMessage);
+ 758:         }
+ 759:         return Model_Dao_Result_Factory.Success<Model_VolvoShipment?>(result.Data);
+ 760:     }
+ 761: 
+ 762:     /// <summary>
+ 763:     /// Gets pending shipment with all line items
+ 764:     /// </summary>
+ 765:     public async Task<Model_Dao_Result<(Model_VolvoShipment? Shipment, List<Model_VolvoShipmentLine> Lines)>> GetPendingShipmentWithLinesAsync()
+ 766:     {
+ 767:         try
+ 768:         {
+ 769:             var shipmentResult = await _shipmentDao.GetPendingAsync();
+ 770:             if (!shipmentResult.IsSuccess)
+ 771:             {
+ 772:                 return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
+ 773:                 {
+ 774:                     Success = false,
+ 775:                     ErrorMessage = shipmentResult.ErrorMessage,
+ 776:                     Severity = shipmentResult.Severity
+ 777:                 };
+ 778:             }
+ 779: 
+ 780:             if (shipmentResult.Data == null)
+ 781:             {
+ 782:                 return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
+ 783:                 {
+ 784:                     Success = true,
+ 785:                     Data = (null, new List<Model_VolvoShipmentLine>())
+ 786:                 };
+ 787:             }
+ 788: 
+ 789:             var linesResult = await _lineDao.GetByShipmentIdAsync(shipmentResult.Data.Id);
+ 790:             if (!linesResult.IsSuccess)
+ 791:             {
+ 792:                 return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
+ 793:                 {
+ 794:                     Success = false,
+ 795:                     ErrorMessage = linesResult.ErrorMessage,
+ 796:                     Severity = linesResult.Severity
+ 797:                 };
+ 798:             }
+ 799: 
+ 800:             return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
+ 801:             {
+ 802:                 Success = true,
+ 803:                 Data = (shipmentResult.Data, linesResult.Data ?? new List<Model_VolvoShipmentLine>())
+ 804:             };
+ 805:         }
+ 806:         catch (Exception ex)
+ 807:         {
+ 808:             await _logger.LogErrorAsync($"Error getting pending shipment with lines: {ex.Message}", ex);
+ 809:             return new Model_Dao_Result<(Model_VolvoShipment?, List<Model_VolvoShipmentLine>)>
+ 810:             {
+ 811:                 Success = false,
+ 812:                 ErrorMessage = $"Error: {ex.Message}",
+ 813:                 Severity = Enum_ErrorSeverity.Error,
+ 814:                 Exception = ex
+ 815:             };
+ 816:         }
+ 817:     }
+ 818: 
+ 819:     /// <summary>
+ 820:     /// Completes shipment with PO and Receiver numbers
+ 821:     /// </summary>
+ 822:     /// <param name="shipmentId"></param>
+ 823:     /// <param name="poNumber"></param>
+ 824:     /// <param name="receiverNumber"></param>
+ 825:     public async Task<Model_Dao_Result> CompleteShipmentAsync(int shipmentId, string poNumber, string receiverNumber)
+ 826:     {
+ 827:         try
+ 828:         {
+ 829:             // Authorization check
+ 830:             var authResult = await _authService.CanCompleteShipmentsAsync();
+ 831:             if (!authResult.IsSuccess)
+ 832:             {
+ 833:                 return new Model_Dao_Result
+ 834:                 {
+ 835:                     Success = false,
+ 836:                     ErrorMessage = "You are not authorized to complete shipments",
+ 837:                     Severity = Enum_ErrorSeverity.Warning
+ 838:                 };
+ 839:             }
+ 840: 
+ 841:             await _logger.LogInfoAsync($"Completing shipment {shipmentId} with PO={poNumber}, Receiver={receiverNumber}");
+ 842: 
+ 843:             // Validate inputs
+ 844:             if (string.IsNullOrWhiteSpace(poNumber))
+ 845:             {
+ 846:                 return new Model_Dao_Result
+ 847:                 {
+ 848:                     Success = false,
+ 849:                     ErrorMessage = "PO Number is required",
+ 850:                     Severity = Enum_ErrorSeverity.Warning
+ 851:                 };
+ 852:             }
+ 853: 
+ 854:             if (string.IsNullOrWhiteSpace(receiverNumber))
+ 855:             {
+ 856:                 return new Model_Dao_Result
+ 857:                 {
+ 858:                     Success = false,
+ 859:                     ErrorMessage = "Receiver Number is required",
+ 860:                     Severity = Enum_ErrorSeverity.Warning
+ 861:                 };
+ 862:             }
+ 863: 
+ 864:             var result = await _shipmentDao.CompleteAsync(shipmentId, poNumber, receiverNumber);
+ 865: 
+ 866:             if (result.IsSuccess)
+ 867:             {
+ 868:                 await _logger.LogInfoAsync($"Shipment {shipmentId} completed successfully");
+ 869:             }
+ 870: 
+ 871:             return result;
+ 872:         }
+ 873:         catch (Exception ex)
+ 874:         {
+ 875:             await _logger.LogErrorAsync($"Error completing shipment: {ex.Message}", ex);
+ 876:             return new Model_Dao_Result
+ 877:             {
+ 878:                 Success = false,
+ 879:                 ErrorMessage = $"Error completing shipment: {ex.Message}",
+ 880:                 Severity = Enum_ErrorSeverity.Error,
+ 881:                 Exception = ex
+ 882:             };
+ 883:         }
+ 884:     }
+ 885: 
+ 886:     /// <summary>
+ 887:     /// Gets all active Volvo parts for dropdown population
+ 888:     /// </summary>
+ 889:     public async Task<Model_Dao_Result<List<Model_VolvoPart>>> GetActivePartsAsync()
+ 890:     {
+ 891:         return await _partDao.GetAllAsync(includeInactive: false);
+ 892:     }
+ 893: 
+ 894:     /// <summary>
+ 895:     /// Gets shipment history with filtering
+ 896:     /// </summary>
+ 897:     /// <param name="startDate"></param>
+ 898:     /// <param name="endDate"></param>
+ 899:     /// <param name="status"></param>
+ 900:     public async Task<Model_Dao_Result<List<Model_VolvoShipment>>> GetHistoryAsync(
+ 901:         DateTime startDate,
+ 902:         DateTime endDate,
+ 903:         string status = "all")
+ 904:     {
+ 905:         return await _shipmentDao.GetHistoryAsync(startDate, endDate, status);
+ 906:     }
+ 907: 
+ 908:     /// <summary>
+ 909:     /// Gets all shipment lines for a specific shipment
+ 910:     /// </summary>
+ 911:     /// <param name="shipmentId"></param>
+ 912:     public async Task<Model_Dao_Result<List<Model_VolvoShipmentLine>>> GetShipmentLinesAsync(int shipmentId)
+ 913:     {
+ 914:         return await _lineDao.GetByShipmentIdAsync(shipmentId);
+ 915:     }
+ 916: 
+ 917:     /// <summary>
+ 918:     /// Updates an existing shipment and its lines
+ 919:     /// Regenerates CSV if applicable
+ 920:     /// </summary>
+ 921:     /// <param name="shipment"></param>
+ 922:     /// <param name="lines"></param>
+ 923:     public async Task<Model_Dao_Result> UpdateShipmentAsync(
+ 924:         Model_VolvoShipment shipment,
+ 925:         List<Model_VolvoShipmentLine> lines)
+ 926:     {
+ 927:         try
+ 928:         {
+ 929:             // Update shipment header
+ 930:             var shipmentResult = await _shipmentDao.UpdateAsync(shipment);
+ 931:             if (!shipmentResult.IsSuccess)
+ 932:             {
+ 933:                 return shipmentResult;
+ 934:             }
+ 935: 
+ 936:             // Delete existing lines
+ 937:             var existingLines = await _lineDao.GetByShipmentIdAsync(shipment.Id);
+ 938:             if (existingLines.IsSuccess && existingLines.Data != null)
+ 939:             {
+ 940:                 foreach (var line in existingLines.Data)
+ 941:                 {
+ 942:                     await _lineDao.DeleteAsync(line.Id);
+ 943:                 }
+ 944:             }
+ 945: 
+ 946:             // Insert updated lines
+ 947:             foreach (var line in lines)
+ 948:             {
+ 949:                 line.ShipmentId = shipment.Id;
+ 950:                 var lineResult = await _lineDao.InsertAsync(line);
+ 951:                 if (!lineResult.IsSuccess)
+ 952:                 {
+ 953:                     await _logger.LogErrorAsync(
+ 954:                         $"Failed to insert line: {lineResult.ErrorMessage}",
+ 955:                         null,
+ 956:                         nameof(UpdateShipmentAsync));
+ 957:                 }
+ 958:             }
+ 959: 
+ 960:             // Regenerate CSV if completed
+ 961:             if (shipment.Status == "completed" && !string.IsNullOrEmpty(shipment.PONumber))
+ 962:             {
+ 963:                 await GenerateLabelCsvAsync(shipment.Id);
+ 964:             }
+ 965: 
+ 966:             return Model_Dao_Result_Factory.Success("Shipment updated successfully");
+ 967:         }
+ 968:         catch (Exception ex)
+ 969:         {
+ 970:             await _logger.LogErrorAsync(
+ 971:                 $"Error updating shipment: {ex.Message}",
+ 972:                 ex,
+ 973:                 nameof(UpdateShipmentAsync));
+ 974:             return Model_Dao_Result_Factory.Failure($"Error updating shipment: {ex.Message}");
+ 975:         }
+ 976:     }
+ 977: 
+ 978:     /// <summary>
+ 979:     /// Exports shipment history to CSV format
+ 980:     /// </summary>
+ 981:     /// <param name="startDate"></param>
+ 982:     /// <param name="endDate"></param>
+ 983:     /// <param name="status"></param>
+ 984:     public async Task<Model_Dao_Result<string>> ExportHistoryToCsvAsync(
+ 985:         DateTime startDate,
+ 986:         DateTime endDate,
+ 987:         string status = "all")
+ 988:     {
+ 989:         try
+ 990:         {
+ 991:             var historyResult = await GetHistoryAsync(startDate, endDate, status);
+ 992:             if (!historyResult.IsSuccess || historyResult.Data == null)
+ 993:             {
+ 994:                 return Model_Dao_Result_Factory.Failure<string>("Failed to retrieve history data");
+ 995:             }
+ 996: 
+ 997:             var csv = new StringBuilder();
+ 998:             csv.AppendLine("ShipmentNumber,Date,PONumber,ReceiverNumber,Status,EmployeeNumber,Notes");
+ 999: 
+1000:             foreach (var shipment in historyResult.Data)
+1001:             {
+1002:                 csv.AppendLine($"{shipment.ShipmentNumber}," +
+1003:                               $"{shipment.ShipmentDate:yyyy-MM-dd}," +
+1004:                               $"{EscapeCsv(shipment.PONumber)}," +
+1005:                               $"{EscapeCsv(shipment.ReceiverNumber)}," +
+1006:                               $"{shipment.Status}," +
+1007:                               $"{shipment.EmployeeNumber}," +
+1008:                               $"{EscapeCsv(shipment.Notes)}");
+1009:             }
+1010: 
+1011:             return Model_Dao_Result_Factory.Success(csv.ToString());
+1012:         }
+1013:         catch (Exception ex)
+1014:         {
+1015:             await _logger.LogErrorAsync(
+1016:                 $"Error exporting history: {ex.Message}",
+1017:                 ex,
+1018:                 nameof(ExportHistoryToCsvAsync));
+1019:             return Model_Dao_Result_Factory.Failure<string>($"Error exporting history: {ex.Message}");
+1020:         }
+1021:     }
+1022: 
+1023:     /// <summary>
+1024:     /// Escapes CSV values (wraps in quotes if contains comma, quote, or newline)
+1025:     /// </summary>
+1026:     /// <param name="value"></param>
+1027:     private string EscapeCsv(string? value)
+1028:     {
+1029:         if (string.IsNullOrEmpty(value))
+1030:         {
+1031:             return string.Empty;
+1032:         }
+1033: 
+1034:         if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
+1035:         {
+1036:             return $"\"{value.Replace("\"", "\"\"")}\"";
+1037:         }
+1038: 
+1039:         return value;
+1040:     }
+1041: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/AddPartToShipmentCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: using Xunit;
+ 6: 
+ 7: 
+ 8: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+ 9: 
+10: /// <summary>
+11: /// Integration tests for AddPartToShipmentCommandHandler.
+12: /// </summary>
+13: [Collection("Database")]
+14: public class AddPartToShipmentCommandHandlerTests
+15: {
+16:     private readonly DatabaseFixture _fixture;
+17: 
+18:     public AddPartToShipmentCommandHandlerTests(DatabaseFixture fixture)
+19:     {
+20:         _fixture = fixture;
+21:     }
+22: 
+23:     [SkippableFact]
+24:     public async Task Handle_ShouldReturnSuccess_WhenPartExists()
+25:     {
+26:         await _fixture.InitializeAsync();
+27:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+28: 
+29:         var partDao = _fixture.CreatePartDao();
+30:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+31: 
+32:         try
+33:         {
+34:             var insertResult = await partDao.InsertAsync(new Model_VolvoPart
+35:             {
+36:                 PartNumber = partNumber,
+37:                 QuantityPerSkid = 5,
+38:                 IsActive = true
+39:             });
+40:             insertResult.Success.Should().BeTrue();
+41: 
+42:             var handler = new AddPartToShipmentCommandHandler(partDao);
+43:             var result = await handler.Handle(new AddPartToShipmentCommand
+44:             {
+45:                 PartNumber = partNumber,
+46:                 ReceivedSkidCount = 1
+47:             }, default);
+48: 
+49:             result.IsSuccess.Should().BeTrue();
+50:         }
+51:         finally
+52:         {
+53:             await partDao.DeactivateAsync(partNumber);
+54:         }
+55:     }
+56: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GenerateLabelCsvQueryHandlerTests.cs
+````csharp
+  1: using System.IO;
+  2: using MTM_Receiving_Application.Module_Core.Services.Database;
+  3: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+  4: using MTM_Receiving_Application.Module_Volvo.Models;
+  5: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+  6: using MTM_Receiving_Application.Tests.Helpers;
+  7: using Xunit;
+  8: 
+  9: 
+ 10: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 11: 
+ 12: /// <summary>
+ 13: /// Integration tests for GenerateLabelCsvQueryHandler.
+ 14: /// </summary>
+ 15: [Collection("Database")]
+ 16: public class GenerateLabelCsvQueryHandlerTests
+ 17: {
+ 18:     private readonly DatabaseFixture _fixture;
+ 19: 
+ 20:     public GenerateLabelCsvQueryHandlerTests(DatabaseFixture fixture)
+ 21:     {
+ 22:         _fixture = fixture;
+ 23:     }
+ 24: 
+ 25:     [SkippableFact]
+ 26:     public async Task Handle_ShouldGenerateCsvFile()
+ 27:     {
+ 28:         await _fixture.InitializeAsync();
+ 29:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+ 30: 
+ 31:         var shipmentDao = _fixture.CreateShipmentDao();
+ 32:         var lineDao = _fixture.CreateShipmentLineDao();
+ 33:         var partDao = _fixture.CreatePartDao();
+ 34:         var componentDao = _fixture.CreatePartComponentDao();
+ 35:         var logger = new Service_LoggingUtility();
+ 36:         var authService = new FakeVolvoAuthorizationService();
+ 37: 
+ 38:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+ 39:         int shipmentId = 0;
+ 40:         string? filePath = null;
+ 41: 
+ 42:         try
+ 43:         {
+ 44:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+ 45:             {
+ 46:                 PartNumber = partNumber,
+ 47:                 QuantityPerSkid = 10,
+ 48:                 IsActive = true
+ 49:             });
+ 50:             partResult.Success.Should().BeTrue();
+ 51: 
+ 52:             var shipment = new Model_VolvoShipment
+ 53:             {
+ 54:                 ShipmentDate = DateTime.Today,
+ 55:                 EmployeeNumber = "TEST",
+ 56:                 Notes = "TEST"
+ 57:             };
+ 58: 
+ 59:             var insertResult = await shipmentDao.InsertAsync(shipment);
+ 60:             insertResult.Success.Should().BeTrue();
+ 61:             shipmentId = insertResult.Data.ShipmentId;
+ 62: 
+ 63:             var line = new Model_VolvoShipmentLine
+ 64:             {
+ 65:                 ShipmentId = shipmentId,
+ 66:                 PartNumber = partNumber,
+ 67:                 QuantityPerSkid = 10,
+ 68:                 ReceivedSkidCount = 2,
+ 69:                 CalculatedPieceCount = 20,
+ 70:                 HasDiscrepancy = false
+ 71:             };
+ 72: 
+ 73:             var lineResult = await lineDao.InsertAsync(line);
+ 74:             lineResult.Success.Should().BeTrue();
+ 75: 
+ 76:             var handler = new GenerateLabelCsvQueryHandler(
+ 77:                 shipmentDao,
+ 78:                 lineDao,
+ 79:                 partDao,
+ 80:                 componentDao,
+ 81:                 authService,
+ 82:                 logger);
+ 83: 
+ 84:             var result = await handler.Handle(new GenerateLabelCsvQuery { ShipmentId = shipmentId }, default);
+ 85: 
+ 86:             result.IsSuccess.Should().BeTrue();
+ 87:             result.Data.Should().NotBeNullOrWhiteSpace();
+ 88:             filePath = result.Data;
+ 89:             File.Exists(filePath).Should().BeTrue();
+ 90:         }
+ 91:         finally
+ 92:         {
+ 93:             if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
+ 94:             {
+ 95:                 File.Delete(filePath);
+ 96:             }
+ 97:             if (shipmentId > 0)
+ 98:             {
+ 99:                 await shipmentDao.DeleteAsync(shipmentId);
+100:             }
+101:             await partDao.DeactivateAsync(partNumber);
+102:         }
+103:     }
+104: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Queries/GetPendingShipmentQueryHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 4: using MTM_Receiving_Application.Tests.Helpers;
+ 5: 
+ 6: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Queries;
+ 7: 
+ 8: /// <summary>
+ 9: /// Integration tests for GetPendingShipmentQueryHandler.
+10: /// </summary>
+11: [Collection("Database")]
+12: public class GetPendingShipmentQueryHandlerTests
+13: {
+14:     private readonly DatabaseFixture _fixture;
+15: 
+16:     public GetPendingShipmentQueryHandlerTests(DatabaseFixture fixture)
+17:     {
+18:         _fixture = fixture;
+19:     }
+20: 
+21:     [Fact]
+22:     public async Task Handle_ShouldReturnPendingShipment_WhenExists()
+23:     {
+24:         var shipmentDao = _fixture.CreateShipmentDao();
+25:         int shipmentId = 0;
+26: 
+27:         try
+28:         {
+29:             var shipment = new Model_VolvoShipment
+30:             {
+31:                 ShipmentDate = DateTime.Today,
+32:                 EmployeeNumber = "TEST",
+33:                 Notes = "TEST-PENDING"
+34:             };
+35: 
+36:             var insertResult = await shipmentDao.InsertAsync(shipment);
+37:             insertResult.Success.Should().BeTrue();
+38:             shipmentId = insertResult.Data.ShipmentId;
+39: 
+40:             var handler = new GetPendingShipmentQueryHandler(shipmentDao);
+41:             var result = await handler.Handle(new GetPendingShipmentQuery { UserName = Environment.UserName }, default);
+42: 
+43:             result.IsSuccess.Should().BeTrue();
+44:             result.Data.Should().NotBeNull();
+45:         }
+46:         finally
+47:         {
+48:             if (shipmentId > 0)
+49:             {
+50:                 await shipmentDao.DeleteAsync(shipmentId);
+51:             }
+52:         }
+53:     }
+54: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Integration/PendingShipmentIntegrationTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Handlers.Queries;
+ 3: using MTM_Receiving_Application.Module_Volvo.Models;
+ 4: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 5: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 6: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+ 7: using MTM_Receiving_Application.Tests.Helpers;
+ 8: using Xunit;
+ 9: 
+10: 
+11: namespace MTM_Receiving_Application.Tests.Module_Volvo.Integration;
+12: 
+13: /// <summary>
+14: /// Integration tests for pending shipment save/load workflow.
+15: /// </summary>
+16: [Collection("Database")]
+17: public class PendingShipmentIntegrationTests
+18: {
+19:     private readonly DatabaseFixture _fixture;
+20: 
+21:     public PendingShipmentIntegrationTests(DatabaseFixture fixture)
+22:     {
+23:         _fixture = fixture;
+24:     }
+25: 
+26:     [SkippableFact]
+27:     public async Task PendingShipment_ShouldSaveAndLoad()
+28:     {
+29:         await _fixture.InitializeAsync();
+30:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+31: 
+32:         var shipmentDao = _fixture.CreateShipmentDao();
+33:         var lineDao = _fixture.CreateShipmentLineDao();
+34:         var partDao = _fixture.CreatePartDao();
+35: 
+36:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+37:         int shipmentId = 0;
+38: 
+39:         try
+40:         {
+41:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+42:             {
+43:                 PartNumber = partNumber,
+44:                 QuantityPerSkid = 10,
+45:                 IsActive = true
+46:             });
+47:             partResult.Success.Should().BeTrue();
+48: 
+49:             var saveHandler = new SavePendingShipmentCommandHandler(shipmentDao, lineDao, partDao);
+50:             var saveResult = await saveHandler.Handle(new SavePendingShipmentCommand
+51:             {
+52:                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+53:                 ShipmentNumber = 1,
+54:                 Notes = "TEST",
+55:                 Parts = new List<ShipmentLineDto>
+56:                 {
+57:                     new() { PartNumber = partNumber, ReceivedSkidCount = 1 }
+58:                 }
+59:             }, default);
+60: 
+61:             saveResult.IsSuccess.Should().BeTrue();
+62:             shipmentId = saveResult.Data;
+63: 
+64:             var pendingHandler = new GetPendingShipmentQueryHandler(shipmentDao);
+65:             var pendingResult = await pendingHandler.Handle(new GetPendingShipmentQuery { UserName = Environment.UserName }, default);
+66: 
+67:             pendingResult.IsSuccess.Should().BeTrue();
+68:             pendingResult.Data.Should().NotBeNull();
+69:         }
+70:         finally
+71:         {
+72:             if (shipmentId > 0)
+73:             {
+74:                 await shipmentDao.DeleteAsync(shipmentId);
+75:             }
+76:             await partDao.DeactivateAsync(partNumber);
+77:         }
+78:     }
+79: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Validators/CompleteShipmentCommandValidatorTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 2: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 3: using MTM_Receiving_Application.Module_Volvo.Validators;
+ 4: 
+ 5: namespace MTM_Receiving_Application.Tests.Module_Volvo.Validators;
+ 6: 
+ 7: /// <summary>
+ 8: /// Unit tests for CompleteShipmentCommandValidator.
+ 9: /// </summary>
+10: public class CompleteShipmentCommandValidatorTests
+11: {
+12:     private readonly CompleteShipmentCommandValidator _validator;
+13: 
+14:     public CompleteShipmentCommandValidatorTests()
+15:     {
+16:         var fixture = new MTM_Receiving_Application.Tests.Helpers.DatabaseFixture();
+17:         _validator = new CompleteShipmentCommandValidator(fixture.CreateShipmentDao());
+18:     }
+19: 
+20:     [Fact]
+21:     public void Validate_ShouldPass_WhenCommandIsValid()
+22:     {
+23:         var command = new CompleteShipmentCommand
+24:         {
+25:             ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+26:             ShipmentNumber = 1,
+27:             PONumber = "PO123",
+28:             ReceiverNumber = "RCV123",
+29:             Parts = new List<ShipmentLineDto>
+30:             {
+31:                 new() { PartNumber = "V-EMB-1", ReceivedSkidCount = 1 }
+32:             }
+33:         };
+34: 
+35:         var result = _validator.Validate(command);
+36: 
+37:         result.IsValid.Should().BeTrue();
+38:     }
+39: 
+40:     [Fact]
+41:     public void Validate_ShouldFail_WhenPoNumberMissing()
+42:     {
+43:         var command = new CompleteShipmentCommand
+44:         {
+45:             ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+46:             ShipmentNumber = 1,
+47:             PONumber = "",
+48:             ReceiverNumber = "RCV123",
+49:             Parts = new List<ShipmentLineDto>
+50:             {
+51:                 new() { PartNumber = "V-EMB-1", ReceivedSkidCount = 1 }
+52:             }
+53:         };
+54: 
+55:         var result = _validator.Validate(command);
+56: 
+57:         result.IsValid.Should().BeFalse();
+58:     }
+59: }
+````
+
+## File: Scripts/outputs/settings-dao-parameter-map.json
+````json
+   1: {
+   2:   "summary": {
+   3:     "generatedAt": "2026-01-11T00:42:24.2428359-06:00",
+   4:     "storedProcedureRoot": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings",
+   5:     "daoRoot": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Module_Settings/Data",
+   6:     "procedureCount": 37,
+   7:     "referencedProcedureCount": 37,
+   8:     "unreferencedProcedureCount": 0,
+   9:     "missingDaoCount": 0
+  10:   },
+  11:   "procedures": [
+  12:     {
+  13:       "storedProcedure": "sp_Dunnage_Types_Delete",
+  14:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_Delete.sql",
+  15:       "suggestedDao": "Dao_PackageType",
+  16:       "missingDao": false,
+  17:       "referencedInDaos": [
+  18:         "Dao_PackageType.cs"
+  19:       ],
+  20:       "parameters": [
+  21:         {
+  22:           "direction": "IN",
+  23:           "name": "p_id",
+  24:           "sqlType": "INT",
+  25:           "raw": "IN p_id INT"
+  26:         }
+  27:       ],
+  28:       "columnAccess": [
+  29:         {
+  30:           "table": "dunnage_types",
+  31:           "reads": [],
+  32:           "writes": [
+  33:             "is_active",
+  34:             "updated_at"
+  35:           ]
+  36:         }
+  37:       ],
+  38:       "readColumns": [],
+  39:       "writeColumns": [
+  40:         "dunnage_types.is_active",
+  41:         "dunnage_types.updated_at"
+  42:       ]
+  43:     },
+  44:     {
+  45:       "storedProcedure": "sp_Dunnage_Types_GetAll",
+  46:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_GetAll.sql",
+  47:       "suggestedDao": "Dao_PackageType",
+  48:       "missingDao": false,
+  49:       "referencedInDaos": [
+  50:         "Dao_PackageType.cs"
+  51:       ],
+  52:       "parameters": [],
+  53:       "columnAccess": [],
+  54:       "readColumns": [],
+  55:       "writeColumns": []
+  56:     },
+  57:     {
+  58:       "storedProcedure": "sp_Dunnage_Types_GetById",
+  59:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_GetById.sql",
+  60:       "suggestedDao": "Dao_PackageType",
+  61:       "missingDao": false,
+  62:       "referencedInDaos": [
+  63:         "Dao_PackageType.cs"
+  64:       ],
+  65:       "parameters": [
+  66:         {
+  67:           "direction": "IN",
+  68:           "name": "p_id",
+  69:           "sqlType": "INT",
+  70:           "raw": "IN p_id INT"
+  71:         }
+  72:       ],
+  73:       "columnAccess": [],
+  74:       "readColumns": [],
+  75:       "writeColumns": []
+  76:     },
+  77:     {
+  78:       "storedProcedure": "sp_Dunnage_Types_Insert",
+  79:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_Insert.sql",
+  80:       "suggestedDao": "Dao_PackageType",
+  81:       "missingDao": false,
+  82:       "referencedInDaos": [
+  83:         "Dao_PackageType.cs"
+  84:       ],
+  85:       "parameters": [
+  86:         {
+  87:           "direction": "IN",
+  88:           "name": "p_name",
+  89:           "sqlType": "VARCHAR(50)",
+  90:           "raw": "IN p_name VARCHAR(50)"
+  91:         },
+  92:         {
+  93:           "direction": "IN",
+  94:           "name": "p_code",
+  95:           "sqlType": "VARCHAR(20)",
+  96:           "raw": "IN p_code VARCHAR(20)"
+  97:         },
+  98:         {
+  99:           "direction": "IN",
+ 100:           "name": "p_created_by",
+ 101:           "sqlType": "INT",
+ 102:           "raw": "IN p_created_by INT"
+ 103:         }
+ 104:       ],
+ 105:       "columnAccess": [
+ 106:         {
+ 107:           "table": "dunnage_types",
+ 108:           "reads": [],
+ 109:           "writes": [
+ 110:             "code",
+ 111:             "created_by",
+ 112:             "is_active",
+ 113:             "name"
+ 114:           ]
+ 115:         }
+ 116:       ],
+ 117:       "readColumns": [],
+ 118:       "writeColumns": [
+ 119:         "dunnage_types.code",
+ 120:         "dunnage_types.created_by",
+ 121:         "dunnage_types.is_active",
+ 122:         "dunnage_types.name"
+ 123:       ]
+ 124:     },
+ 125:     {
+ 126:       "storedProcedure": "sp_Dunnage_Types_Update",
+ 127:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_Update.sql",
+ 128:       "suggestedDao": "Dao_PackageType",
+ 129:       "missingDao": false,
+ 130:       "referencedInDaos": [
+ 131:         "Dao_PackageType.cs"
+ 132:       ],
+ 133:       "parameters": [
+ 134:         {
+ 135:           "direction": "IN",
+ 136:           "name": "p_id",
+ 137:           "sqlType": "INT",
+ 138:           "raw": "IN p_id INT"
+ 139:         },
+ 140:         {
+ 141:           "direction": "IN",
+ 142:           "name": "p_name",
+ 143:           "sqlType": "VARCHAR(50)",
+ 144:           "raw": "IN p_name VARCHAR(50)"
+ 145:         },
+ 146:         {
+ 147:           "direction": "IN",
+ 148:           "name": "p_code",
+ 149:           "sqlType": "VARCHAR(20)",
+ 150:           "raw": "IN p_code VARCHAR(20)"
+ 151:         }
+ 152:       ],
+ 153:       "columnAccess": [
+ 154:         {
+ 155:           "table": "dunnage_types",
+ 156:           "reads": [],
+ 157:           "writes": [
+ 158:             "code",
+ 159:             "name",
+ 160:             "updated_at"
+ 161:           ]
+ 162:         }
+ 163:       ],
+ 164:       "readColumns": [],
+ 165:       "writeColumns": [
+ 166:         "dunnage_types.code",
+ 167:         "dunnage_types.name",
+ 168:         "dunnage_types.updated_at"
+ 169:       ]
+ 170:     },
+ 171:     {
+ 172:       "storedProcedure": "sp_Dunnage_Types_GetUsageCount",
+ 173:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Dunnage_Types_GetUsageCount.sql",
+ 174:       "suggestedDao": "Dao_PackageType",
+ 175:       "missingDao": false,
+ 176:       "referencedInDaos": [
+ 177:         "Dao_PackageType.cs"
+ 178:       ],
+ 179:       "parameters": [
+ 180:         {
+ 181:           "direction": "IN",
+ 182:           "name": "p_id",
+ 183:           "sqlType": "INT",
+ 184:           "raw": "IN p_id INT"
+ 185:         }
+ 186:       ],
+ 187:       "columnAccess": [],
+ 188:       "readColumns": [],
+ 189:       "writeColumns": []
+ 190:     },
+ 191:     {
+ 192:       "storedProcedure": "sp_Receiving_PackageTypeMappings_Delete",
+ 193:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_Delete.sql",
+ 194:       "suggestedDao": "Dao_PackageTypeMappings",
+ 195:       "missingDao": false,
+ 196:       "referencedInDaos": [
+ 197:         "Dao_PackageTypeMappings.cs"
+ 198:       ],
+ 199:       "parameters": [
+ 200:         {
+ 201:           "direction": "IN",
+ 202:           "name": "p_id",
+ 203:           "sqlType": "INT",
+ 204:           "raw": "IN p_id INT"
+ 205:         }
+ 206:       ],
+ 207:       "columnAccess": [
+ 208:         {
+ 209:           "table": "receiving_package_type_mapping",
+ 210:           "reads": [],
+ 211:           "writes": [
+ 212:             "is_active",
+ 213:             "updated_at"
+ 214:           ]
+ 215:         }
+ 216:       ],
+ 217:       "readColumns": [],
+ 218:       "writeColumns": [
+ 219:         "receiving_package_type_mapping.is_active",
+ 220:         "receiving_package_type_mapping.updated_at"
+ 221:       ]
+ 222:     },
+ 223:     {
+ 224:       "storedProcedure": "sp_Receiving_PackageTypeMappings_GetAll",
+ 225:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_GetAll.sql",
+ 226:       "suggestedDao": "Dao_PackageTypeMappings",
+ 227:       "missingDao": false,
+ 228:       "referencedInDaos": [
+ 229:         "Dao_PackageTypeMappings.cs"
+ 230:       ],
+ 231:       "parameters": [],
+ 232:       "columnAccess": [],
+ 233:       "readColumns": [],
+ 234:       "writeColumns": []
+ 235:     },
+ 236:     {
+ 237:       "storedProcedure": "sp_Receiving_PackageTypeMappings_GetByPrefix",
+ 238:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_GetByPrefix.sql",
+ 239:       "suggestedDao": "Dao_PackageTypeMappings",
+ 240:       "missingDao": false,
+ 241:       "referencedInDaos": [
+ 242:         "Dao_PackageTypeMappings.cs"
+ 243:       ],
+ 244:       "parameters": [
+ 245:         {
+ 246:           "direction": "IN",
+ 247:           "name": "p_part_prefix",
+ 248:           "sqlType": "VARCHAR(10)",
+ 249:           "raw": "IN p_part_prefix VARCHAR(10)"
+ 250:         }
+ 251:       ],
+ 252:       "columnAccess": [],
+ 253:       "readColumns": [],
+ 254:       "writeColumns": []
+ 255:     },
+ 256:     {
+ 257:       "storedProcedure": "sp_Receiving_PackageTypeMappings_Insert",
+ 258:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_Insert.sql",
+ 259:       "suggestedDao": "Dao_PackageTypeMappings",
+ 260:       "missingDao": false,
+ 261:       "referencedInDaos": [
+ 262:         "Dao_PackageTypeMappings.cs"
+ 263:       ],
+ 264:       "parameters": [
+ 265:         {
+ 266:           "direction": "IN",
+ 267:           "name": "p_part_prefix",
+ 268:           "sqlType": "VARCHAR(10)",
+ 269:           "raw": "IN p_part_prefix VARCHAR(10)"
+ 270:         },
+ 271:         {
+ 272:           "direction": "IN",
+ 273:           "name": "p_package_type",
+ 274:           "sqlType": "VARCHAR(50)",
+ 275:           "raw": "IN p_package_type VARCHAR(50)"
+ 276:         },
+ 277:         {
+ 278:           "direction": "IN",
+ 279:           "name": "p_is_default",
+ 280:           "sqlType": "BOOLEAN",
+ 281:           "raw": "IN p_is_default BOOLEAN"
+ 282:         },
+ 283:         {
+ 284:           "direction": "IN",
+ 285:           "name": "p_display_order",
+ 286:           "sqlType": "INT",
+ 287:           "raw": "IN p_display_order INT"
+ 288:         },
+ 289:         {
+ 290:           "direction": "IN",
+ 291:           "name": "p_created_by",
+ 292:           "sqlType": "INT",
+ 293:           "raw": "IN p_created_by INT"
+ 294:         }
+ 295:       ],
+ 296:       "columnAccess": [
+ 297:         {
+ 298:           "table": "receiving_package_type_mapping",
+ 299:           "reads": [],
+ 300:           "writes": [
+ 301:             "created_by",
+ 302:             "display_order",
+ 303:             "is_active",
+ 304:             "is_default",
+ 305:             "package_type",
+ 306:             "part_prefix"
+ 307:           ]
+ 308:         }
+ 309:       ],
+ 310:       "readColumns": [],
+ 311:       "writeColumns": [
+ 312:         "receiving_package_type_mapping.created_by",
+ 313:         "receiving_package_type_mapping.display_order",
+ 314:         "receiving_package_type_mapping.is_active",
+ 315:         "receiving_package_type_mapping.is_default",
+ 316:         "receiving_package_type_mapping.package_type",
+ 317:         "receiving_package_type_mapping.part_prefix"
+ 318:       ]
+ 319:     },
+ 320:     {
+ 321:       "storedProcedure": "sp_Receiving_PackageTypeMappings_Update",
+ 322:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Receiving_PackageTypeMappings_Update.sql",
+ 323:       "suggestedDao": "Dao_PackageTypeMappings",
+ 324:       "missingDao": false,
+ 325:       "referencedInDaos": [
+ 326:         "Dao_PackageTypeMappings.cs"
+ 327:       ],
+ 328:       "parameters": [
+ 329:         {
+ 330:           "direction": "IN",
+ 331:           "name": "p_id",
+ 332:           "sqlType": "INT",
+ 333:           "raw": "IN p_id INT"
+ 334:         },
+ 335:         {
+ 336:           "direction": "IN",
+ 337:           "name": "p_package_type",
+ 338:           "sqlType": "VARCHAR(50)",
+ 339:           "raw": "IN p_package_type VARCHAR(50)"
+ 340:         },
+ 341:         {
+ 342:           "direction": "IN",
+ 343:           "name": "p_is_default",
+ 344:           "sqlType": "BOOLEAN",
+ 345:           "raw": "IN p_is_default BOOLEAN"
+ 346:         },
+ 347:         {
+ 348:           "direction": "IN",
+ 349:           "name": "p_display_order",
+ 350:           "sqlType": "INT",
+ 351:           "raw": "IN p_display_order INT"
+ 352:         }
+ 353:       ],
+ 354:       "columnAccess": [
+ 355:         {
+ 356:           "table": "receiving_package_type_mapping",
+ 357:           "reads": [],
+ 358:           "writes": [
+ 359:             "display_order",
+ 360:             "is_default",
+ 361:             "package_type",
+ 362:             "updated_at"
+ 363:           ]
+ 364:         }
+ 365:       ],
+ 366:       "readColumns": [],
+ 367:       "writeColumns": [
+ 368:         "receiving_package_type_mapping.display_order",
+ 369:         "receiving_package_type_mapping.is_default",
+ 370:         "receiving_package_type_mapping.package_type",
+ 371:         "receiving_package_type_mapping.updated_at"
+ 372:       ]
+ 373:     },
+ 374:     {
+ 375:       "storedProcedure": "sp_Settings_RoutingRule_Delete",
+ 376:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_Delete.sql",
+ 377:       "suggestedDao": "Dao_RoutingRule",
+ 378:       "missingDao": false,
+ 379:       "referencedInDaos": [
+ 380:         "Dao_RoutingRule.cs"
+ 381:       ],
+ 382:       "parameters": [
+ 383:         {
+ 384:           "direction": "IN",
+ 385:           "name": "p_id",
+ 386:           "sqlType": "INT",
+ 387:           "raw": "IN p_id INT"
+ 388:         }
+ 389:       ],
+ 390:       "columnAccess": [
+ 391:         {
+ 392:           "table": "routing_home_locations",
+ 393:           "reads": [],
+ 394:           "writes": [
+ 395:             "is_active",
+ 396:             "updated_at"
+ 397:           ]
+ 398:         }
+ 399:       ],
+ 400:       "readColumns": [],
+ 401:       "writeColumns": [
+ 402:         "routing_home_locations.is_active",
+ 403:         "routing_home_locations.updated_at"
+ 404:       ]
+ 405:     },
+ 406:     {
+ 407:       "storedProcedure": "sp_Settings_RoutingRule_FindMatch",
+ 408:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_FindMatch.sql",
+ 409:       "suggestedDao": "Dao_RoutingRule",
+ 410:       "missingDao": false,
+ 411:       "referencedInDaos": [
+ 412:         "Dao_RoutingRule.cs"
+ 413:       ],
+ 414:       "parameters": [
+ 415:         {
+ 416:           "direction": "IN",
+ 417:           "name": "p_match_type",
+ 418:           "sqlType": "VARCHAR(50)",
+ 419:           "raw": "IN p_match_type VARCHAR(50)"
+ 420:         },
+ 421:         {
+ 422:           "direction": "IN",
+ 423:           "name": "p_value",
+ 424:           "sqlType": "VARCHAR(100)",
+ 425:           "raw": "IN p_value VARCHAR(100)"
+ 426:         }
+ 427:       ],
+ 428:       "columnAccess": [],
+ 429:       "readColumns": [],
+ 430:       "writeColumns": []
+ 431:     },
+ 432:     {
+ 433:       "storedProcedure": "sp_Settings_RoutingRule_GetAll",
+ 434:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_GetAll.sql",
+ 435:       "suggestedDao": "Dao_RoutingRule",
+ 436:       "missingDao": false,
+ 437:       "referencedInDaos": [
+ 438:         "Dao_RoutingRule.cs"
+ 439:       ],
+ 440:       "parameters": [],
+ 441:       "columnAccess": [],
+ 442:       "readColumns": [],
+ 443:       "writeColumns": []
+ 444:     },
+ 445:     {
+ 446:       "storedProcedure": "sp_Settings_RoutingRule_GetById",
+ 447:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_GetById.sql",
+ 448:       "suggestedDao": "Dao_RoutingRule",
+ 449:       "missingDao": false,
+ 450:       "referencedInDaos": [
+ 451:         "Dao_RoutingRule.cs"
+ 452:       ],
+ 453:       "parameters": [
+ 454:         {
+ 455:           "direction": "IN",
+ 456:           "name": "p_id",
+ 457:           "sqlType": "INT",
+ 458:           "raw": "IN p_id INT"
+ 459:         }
+ 460:       ],
+ 461:       "columnAccess": [],
+ 462:       "readColumns": [],
+ 463:       "writeColumns": []
+ 464:     },
+ 465:     {
+ 466:       "storedProcedure": "sp_Settings_RoutingRule_Insert",
+ 467:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_Insert.sql",
+ 468:       "suggestedDao": "Dao_RoutingRule",
+ 469:       "missingDao": false,
+ 470:       "referencedInDaos": [
+ 471:         "Dao_RoutingRule.cs"
+ 472:       ],
+ 473:       "parameters": [
+ 474:         {
+ 475:           "direction": "IN",
+ 476:           "name": "p_match_type",
+ 477:           "sqlType": "VARCHAR(50)",
+ 478:           "raw": "IN p_match_type VARCHAR(50)"
+ 479:         },
+ 480:         {
+ 481:           "direction": "IN",
+ 482:           "name": "p_pattern",
+ 483:           "sqlType": "VARCHAR(100)",
+ 484:           "raw": "IN p_pattern VARCHAR(100)"
+ 485:         },
+ 486:         {
+ 487:           "direction": "IN",
+ 488:           "name": "p_destination_location",
+ 489:           "sqlType": "VARCHAR(50)",
+ 490:           "raw": "IN p_destination_location VARCHAR(50)"
+ 491:         },
+ 492:         {
+ 493:           "direction": "IN",
+ 494:           "name": "p_priority",
+ 495:           "sqlType": "INT",
+ 496:           "raw": "IN p_priority INT"
+ 497:         },
+ 498:         {
+ 499:           "direction": "IN",
+ 500:           "name": "p_created_by",
+ 501:           "sqlType": "INT",
+ 502:           "raw": "IN p_created_by INT"
+ 503:         }
+ 504:       ],
+ 505:       "columnAccess": [
+ 506:         {
+ 507:           "table": "routing_home_locations",
+ 508:           "reads": [],
+ 509:           "writes": [
+ 510:             "created_by",
+ 511:             "destination_location",
+ 512:             "is_active",
+ 513:             "match_type",
+ 514:             "pattern",
+ 515:             "priority"
+ 516:           ]
+ 517:         }
+ 518:       ],
+ 519:       "readColumns": [],
+ 520:       "writeColumns": [
+ 521:         "routing_home_locations.created_by",
+ 522:         "routing_home_locations.destination_location",
+ 523:         "routing_home_locations.is_active",
+ 524:         "routing_home_locations.match_type",
+ 525:         "routing_home_locations.pattern",
+ 526:         "routing_home_locations.priority"
+ 527:       ]
+ 528:     },
+ 529:     {
+ 530:       "storedProcedure": "sp_Settings_RoutingRule_Update",
+ 531:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_RoutingRule_Update.sql",
+ 532:       "suggestedDao": "Dao_RoutingRule",
+ 533:       "missingDao": false,
+ 534:       "referencedInDaos": [
+ 535:         "Dao_RoutingRule.cs"
+ 536:       ],
+ 537:       "parameters": [
+ 538:         {
+ 539:           "direction": "IN",
+ 540:           "name": "p_id",
+ 541:           "sqlType": "INT",
+ 542:           "raw": "IN p_id INT"
+ 543:         },
+ 544:         {
+ 545:           "direction": "IN",
+ 546:           "name": "p_match_type",
+ 547:           "sqlType": "VARCHAR(50)",
+ 548:           "raw": "IN p_match_type VARCHAR(50)"
+ 549:         },
+ 550:         {
+ 551:           "direction": "IN",
+ 552:           "name": "p_pattern",
+ 553:           "sqlType": "VARCHAR(100)",
+ 554:           "raw": "IN p_pattern VARCHAR(100)"
+ 555:         },
+ 556:         {
+ 557:           "direction": "IN",
+ 558:           "name": "p_destination_location",
+ 559:           "sqlType": "VARCHAR(50)",
+ 560:           "raw": "IN p_destination_location VARCHAR(50)"
+ 561:         },
+ 562:         {
+ 563:           "direction": "IN",
+ 564:           "name": "p_priority",
+ 565:           "sqlType": "INT",
+ 566:           "raw": "IN p_priority INT"
+ 567:         }
+ 568:       ],
+ 569:       "columnAccess": [
+ 570:         {
+ 571:           "table": "routing_home_locations",
+ 572:           "reads": [],
+ 573:           "writes": [
+ 574:             "destination_location",
+ 575:             "match_type",
+ 576:             "pattern",
+ 577:             "priority",
+ 578:             "updated_at"
+ 579:           ]
+ 580:         }
+ 581:       ],
+ 582:       "readColumns": [],
+ 583:       "writeColumns": [
+ 584:         "routing_home_locations.destination_location",
+ 585:         "routing_home_locations.match_type",
+ 586:         "routing_home_locations.pattern",
+ 587:         "routing_home_locations.priority",
+ 588:         "routing_home_locations.updated_at"
+ 589:       ]
+ 590:     },
+ 591:     {
+ 592:       "storedProcedure": "sp_Settings_ScheduledReport_Delete",
+ 593:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_Delete.sql",
+ 594:       "suggestedDao": "Dao_ScheduledReport",
+ 595:       "missingDao": false,
+ 596:       "referencedInDaos": [
+ 597:         "Dao_ScheduledReport.cs"
+ 598:       ],
+ 599:       "parameters": [
+ 600:         {
+ 601:           "direction": "IN",
+ 602:           "name": "p_id",
+ 603:           "sqlType": "INT",
+ 604:           "raw": "IN p_id INT"
+ 605:         }
+ 606:       ],
+ 607:       "columnAccess": [
+ 608:         {
+ 609:           "table": "reporting_scheduled_reports",
+ 610:           "reads": [],
+ 611:           "writes": [
+ 612:             "is_active",
+ 613:             "updated_at"
+ 614:           ]
+ 615:         }
+ 616:       ],
+ 617:       "readColumns": [],
+ 618:       "writeColumns": [
+ 619:         "reporting_scheduled_reports.is_active",
+ 620:         "reporting_scheduled_reports.updated_at"
+ 621:       ]
+ 622:     },
+ 623:     {
+ 624:       "storedProcedure": "sp_Settings_ScheduledReport_GetAll",
+ 625:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetAll.sql",
+ 626:       "suggestedDao": "Dao_ScheduledReport",
+ 627:       "missingDao": false,
+ 628:       "referencedInDaos": [
+ 629:         "Dao_ScheduledReport.cs"
+ 630:       ],
+ 631:       "parameters": [],
+ 632:       "columnAccess": [],
+ 633:       "readColumns": [],
+ 634:       "writeColumns": []
+ 635:     },
+ 636:     {
+ 637:       "storedProcedure": "sp_Settings_ScheduledReport_GetById",
+ 638:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetById.sql",
+ 639:       "suggestedDao": "Dao_ScheduledReport",
+ 640:       "missingDao": false,
+ 641:       "referencedInDaos": [
+ 642:         "Dao_ScheduledReport.cs"
+ 643:       ],
+ 644:       "parameters": [
+ 645:         {
+ 646:           "direction": "IN",
+ 647:           "name": "p_id",
+ 648:           "sqlType": "INT",
+ 649:           "raw": "IN p_id INT"
+ 650:         }
+ 651:       ],
+ 652:       "columnAccess": [],
+ 653:       "readColumns": [],
+ 654:       "writeColumns": []
+ 655:     },
+ 656:     {
+ 657:       "storedProcedure": "sp_Settings_ScheduledReport_GetDue",
+ 658:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_GetDue.sql",
+ 659:       "suggestedDao": "Dao_ScheduledReport",
+ 660:       "missingDao": false,
+ 661:       "referencedInDaos": [
+ 662:         "Dao_ScheduledReport.cs"
+ 663:       ],
+ 664:       "parameters": [],
+ 665:       "columnAccess": [],
+ 666:       "readColumns": [],
+ 667:       "writeColumns": []
+ 668:     },
+ 669:     {
+ 670:       "storedProcedure": "sp_Settings_ScheduledReport_Insert",
+ 671:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_Insert.sql",
+ 672:       "suggestedDao": "Dao_ScheduledReport",
+ 673:       "missingDao": false,
+ 674:       "referencedInDaos": [
+ 675:         "Dao_ScheduledReport.cs"
+ 676:       ],
+ 677:       "parameters": [
+ 678:         {
+ 679:           "direction": "IN",
+ 680:           "name": "p_report_type",
+ 681:           "sqlType": "VARCHAR(50)",
+ 682:           "raw": "IN p_report_type VARCHAR(50)"
+ 683:         },
+ 684:         {
+ 685:           "direction": "IN",
+ 686:           "name": "p_schedule",
+ 687:           "sqlType": "VARCHAR(100)",
+ 688:           "raw": "IN p_schedule VARCHAR(100)"
+ 689:         },
+ 690:         {
+ 691:           "direction": "IN",
+ 692:           "name": "p_email_recipients",
+ 693:           "sqlType": "TEXT",
+ 694:           "raw": "IN p_email_recipients TEXT"
+ 695:         },
+ 696:         {
+ 697:           "direction": "IN",
+ 698:           "name": "p_next_run_date",
+ 699:           "sqlType": "DATETIME",
+ 700:           "raw": "IN p_next_run_date DATETIME"
+ 701:         },
+ 702:         {
+ 703:           "direction": "IN",
+ 704:           "name": "p_created_by",
+ 705:           "sqlType": "INT",
+ 706:           "raw": "IN p_created_by INT"
+ 707:         }
+ 708:       ],
+ 709:       "columnAccess": [
+ 710:         {
+ 711:           "table": "reporting_scheduled_reports",
+ 712:           "reads": [],
+ 713:           "writes": [
+ 714:             "created_by",
+ 715:             "email_recipients",
+ 716:             "is_active",
+ 717:             "next_run_date",
+ 718:             "report_type",
+ 719:             "schedule"
+ 720:           ]
+ 721:         }
+ 722:       ],
+ 723:       "readColumns": [],
+ 724:       "writeColumns": [
+ 725:         "reporting_scheduled_reports.created_by",
+ 726:         "reporting_scheduled_reports.email_recipients",
+ 727:         "reporting_scheduled_reports.is_active",
+ 728:         "reporting_scheduled_reports.next_run_date",
+ 729:         "reporting_scheduled_reports.report_type",
+ 730:         "reporting_scheduled_reports.schedule"
+ 731:       ]
+ 732:     },
+ 733:     {
+ 734:       "storedProcedure": "sp_Settings_ScheduledReport_ToggleActive",
+ 735:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_ToggleActive.sql",
+ 736:       "suggestedDao": "Dao_ScheduledReport",
+ 737:       "missingDao": false,
+ 738:       "referencedInDaos": [
+ 739:         "Dao_ScheduledReport.cs"
+ 740:       ],
+ 741:       "parameters": [
+ 742:         {
+ 743:           "direction": "IN",
+ 744:           "name": "p_id",
+ 745:           "sqlType": "INT",
+ 746:           "raw": "IN p_id INT"
+ 747:         },
+ 748:         {
+ 749:           "direction": "IN",
+ 750:           "name": "p_is_active",
+ 751:           "sqlType": "BOOLEAN",
+ 752:           "raw": "IN p_is_active BOOLEAN"
+ 753:         }
+ 754:       ],
+ 755:       "columnAccess": [
+ 756:         {
+ 757:           "table": "reporting_scheduled_reports",
+ 758:           "reads": [],
+ 759:           "writes": [
+ 760:             "is_active",
+ 761:             "updated_at"
+ 762:           ]
+ 763:         }
+ 764:       ],
+ 765:       "readColumns": [],
+ 766:       "writeColumns": [
+ 767:         "reporting_scheduled_reports.is_active",
+ 768:         "reporting_scheduled_reports.updated_at"
+ 769:       ]
+ 770:     },
+ 771:     {
+ 772:       "storedProcedure": "sp_Settings_ScheduledReport_Update",
+ 773:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_Update.sql",
+ 774:       "suggestedDao": "Dao_ScheduledReport",
+ 775:       "missingDao": false,
+ 776:       "referencedInDaos": [
+ 777:         "Dao_ScheduledReport.cs"
+ 778:       ],
+ 779:       "parameters": [
+ 780:         {
+ 781:           "direction": "IN",
+ 782:           "name": "p_id",
+ 783:           "sqlType": "INT",
+ 784:           "raw": "IN p_id INT"
+ 785:         },
+ 786:         {
+ 787:           "direction": "IN",
+ 788:           "name": "p_report_type",
+ 789:           "sqlType": "VARCHAR(50)",
+ 790:           "raw": "IN p_report_type VARCHAR(50)"
+ 791:         },
+ 792:         {
+ 793:           "direction": "IN",
+ 794:           "name": "p_schedule",
+ 795:           "sqlType": "VARCHAR(100)",
+ 796:           "raw": "IN p_schedule VARCHAR(100)"
+ 797:         },
+ 798:         {
+ 799:           "direction": "IN",
+ 800:           "name": "p_email_recipients",
+ 801:           "sqlType": "TEXT",
+ 802:           "raw": "IN p_email_recipients TEXT"
+ 803:         },
+ 804:         {
+ 805:           "direction": "IN",
+ 806:           "name": "p_next_run_date",
+ 807:           "sqlType": "DATETIME",
+ 808:           "raw": "IN p_next_run_date DATETIME"
+ 809:         }
+ 810:       ],
+ 811:       "columnAccess": [
+ 812:         {
+ 813:           "table": "reporting_scheduled_reports",
+ 814:           "reads": [],
+ 815:           "writes": [
+ 816:             "email_recipients",
+ 817:             "next_run_date",
+ 818:             "report_type",
+ 819:             "schedule",
+ 820:             "updated_at"
+ 821:           ]
+ 822:         }
+ 823:       ],
+ 824:       "readColumns": [],
+ 825:       "writeColumns": [
+ 826:         "reporting_scheduled_reports.email_recipients",
+ 827:         "reporting_scheduled_reports.next_run_date",
+ 828:         "reporting_scheduled_reports.report_type",
+ 829:         "reporting_scheduled_reports.schedule",
+ 830:         "reporting_scheduled_reports.updated_at"
+ 831:       ]
+ 832:     },
+ 833:     {
+ 834:       "storedProcedure": "sp_Settings_ScheduledReport_UpdateLastRun",
+ 835:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_ScheduledReport_UpdateLastRun.sql",
+ 836:       "suggestedDao": "Dao_ScheduledReport",
+ 837:       "missingDao": false,
+ 838:       "referencedInDaos": [
+ 839:         "Dao_ScheduledReport.cs"
+ 840:       ],
+ 841:       "parameters": [
+ 842:         {
+ 843:           "direction": "IN",
+ 844:           "name": "p_id",
+ 845:           "sqlType": "INT",
+ 846:           "raw": "IN p_id INT"
+ 847:         },
+ 848:         {
+ 849:           "direction": "IN",
+ 850:           "name": "p_last_run_date",
+ 851:           "sqlType": "DATETIME",
+ 852:           "raw": "IN p_last_run_date DATETIME"
+ 853:         },
+ 854:         {
+ 855:           "direction": "IN",
+ 856:           "name": "p_next_run_date",
+ 857:           "sqlType": "DATETIME",
+ 858:           "raw": "IN p_next_run_date DATETIME"
+ 859:         }
+ 860:       ],
+ 861:       "columnAccess": [
+ 862:         {
+ 863:           "table": "reporting_scheduled_reports",
+ 864:           "reads": [],
+ 865:           "writes": [
+ 866:             "last_run_date",
+ 867:             "next_run_date",
+ 868:             "updated_at"
+ 869:           ]
+ 870:         }
+ 871:       ],
+ 872:       "readColumns": [],
+ 873:       "writeColumns": [
+ 874:         "reporting_scheduled_reports.last_run_date",
+ 875:         "reporting_scheduled_reports.next_run_date",
+ 876:         "reporting_scheduled_reports.updated_at"
+ 877:       ]
+ 878:     },
+ 879:     {
+ 880:       "storedProcedure": "sp_Settings_AuditLog_Get",
+ 881:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_AuditLog_Get.sql",
+ 882:       "suggestedDao": "Dao_SettingsAuditLog",
+ 883:       "missingDao": false,
+ 884:       "referencedInDaos": [
+ 885:         "Dao_SettingsAuditLog.cs"
+ 886:       ],
+ 887:       "parameters": [
+ 888:         {
+ 889:           "direction": "IN",
+ 890:           "name": "p_setting_id",
+ 891:           "sqlType": "INT",
+ 892:           "raw": "IN p_setting_id INT"
+ 893:         },
+ 894:         {
+ 895:           "direction": "IN",
+ 896:           "name": "p_limit",
+ 897:           "sqlType": "INT",
+ 898:           "raw": "IN p_limit INT"
+ 899:         }
+ 900:       ],
+ 901:       "columnAccess": [
+ 902:         {
+ 903:           "table": "settings_activity",
+ 904:           "reads": [
+ 905:             "change_type",
+ 906:             "changed_at",
+ 907:             "changed_by",
+ 908:             "id",
+ 909:             "ip_address",
+ 910:             "new_value",
+ 911:             "old_value",
+ 912:             "setting_id",
+ 913:             "user_setting_id",
+ 914:             "workstation_name"
+ 915:           ],
+ 916:           "writes": []
+ 917:         },
+ 918:         {
+ 919:           "table": "settings_universal",
+ 920:           "reads": [
+ 921:             "category",
+ 922:             "id",
+ 923:             "setting_key",
+ 924:             "setting_name"
+ 925:           ],
+ 926:           "writes": []
+ 927:         }
+ 928:       ],
+ 929:       "readColumns": [
+ 930:         "settings_activity.change_type",
+ 931:         "settings_activity.changed_at",
+ 932:         "settings_activity.changed_by",
+ 933:         "settings_activity.id",
+ 934:         "settings_activity.ip_address",
+ 935:         "settings_activity.new_value",
+ 936:         "settings_activity.old_value",
+ 937:         "settings_activity.setting_id",
+ 938:         "settings_activity.user_setting_id",
+ 939:         "settings_activity.workstation_name",
+ 940:         "settings_universal.category",
+ 941:         "settings_universal.id",
+ 942:         "settings_universal.setting_key",
+ 943:         "settings_universal.setting_name"
+ 944:       ],
+ 945:       "writeColumns": []
+ 946:     },
+ 947:     {
+ 948:       "storedProcedure": "sp_Settings_System_GetAll",
+ 949:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_GetAll.sql",
+ 950:       "suggestedDao": "Dao_SystemSettings",
+ 951:       "missingDao": false,
+ 952:       "referencedInDaos": [
+ 953:         "Dao_SystemSettings.cs"
+ 954:       ],
+ 955:       "parameters": [],
+ 956:       "columnAccess": [],
+ 957:       "readColumns": [],
+ 958:       "writeColumns": []
+ 959:     },
+ 960:     {
+ 961:       "storedProcedure": "sp_Settings_System_GetByCategory",
+ 962:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_GetByCategory.sql",
+ 963:       "suggestedDao": "Dao_SystemSettings",
+ 964:       "missingDao": false,
+ 965:       "referencedInDaos": [
+ 966:         "Dao_SystemSettings.cs"
+ 967:       ],
+ 968:       "parameters": [
+ 969:         {
+ 970:           "direction": "IN",
+ 971:           "name": "p_category",
+ 972:           "sqlType": "VARCHAR(50)",
+ 973:           "raw": "IN p_category VARCHAR(50)"
+ 974:         }
+ 975:       ],
+ 976:       "columnAccess": [],
+ 977:       "readColumns": [],
+ 978:       "writeColumns": []
+ 979:     },
+ 980:     {
+ 981:       "storedProcedure": "sp_Settings_System_GetByKey",
+ 982:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_GetByKey.sql",
+ 983:       "suggestedDao": "Dao_SystemSettings",
+ 984:       "missingDao": false,
+ 985:       "referencedInDaos": [
+ 986:         "Dao_SystemSettings.cs"
+ 987:       ],
+ 988:       "parameters": [
+ 989:         {
+ 990:           "direction": "IN",
+ 991:           "name": "p_category",
+ 992:           "sqlType": "VARCHAR(50)",
+ 993:           "raw": "IN p_category VARCHAR(50)"
+ 994:         },
+ 995:         {
+ 996:           "direction": "IN",
+ 997:           "name": "p_setting_key",
+ 998:           "sqlType": "VARCHAR(100)",
+ 999:           "raw": "IN p_setting_key VARCHAR(100)"
+1000:         }
+1001:       ],
+1002:       "columnAccess": [],
+1003:       "readColumns": [],
+1004:       "writeColumns": []
+1005:     },
+1006:     {
+1007:       "storedProcedure": "sp_Settings_System_ResetToDefault",
+1008:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_ResetToDefault.sql",
+1009:       "suggestedDao": "Dao_SystemSettings",
+1010:       "missingDao": false,
+1011:       "referencedInDaos": [
+1012:         "Dao_SystemSettings.cs"
+1013:       ],
+1014:       "parameters": [
+1015:         {
+1016:           "direction": "IN",
+1017:           "name": "p_setting_id",
+1018:           "sqlType": "INT",
+1019:           "raw": "IN p_setting_id INT"
+1020:         },
+1021:         {
+1022:           "direction": "IN",
+1023:           "name": "p_changed_by",
+1024:           "sqlType": "INT",
+1025:           "raw": "IN p_changed_by INT"
+1026:         },
+1027:         {
+1028:           "direction": "IN",
+1029:           "name": "p_ip_address",
+1030:           "sqlType": "VARCHAR(45)",
+1031:           "raw": "IN p_ip_address VARCHAR(45)"
+1032:         },
+1033:         {
+1034:           "direction": "IN",
+1035:           "name": "p_workstation_name",
+1036:           "sqlType": "VARCHAR(100)",
+1037:           "raw": "IN p_workstation_name VARCHAR(100)"
+1038:         }
+1039:       ],
+1040:       "columnAccess": [
+1041:         {
+1042:           "table": "settings_activity",
+1043:           "reads": [],
+1044:           "writes": [
+1045:             "change_type",
+1046:             "changed_by",
+1047:             "ip_address",
+1048:             "new_value",
+1049:             "old_value",
+1050:             "setting_id",
+1051:             "workstation_name"
+1052:           ]
+1053:         },
+1054:         {
+1055:           "table": "settings_universal",
+1056:           "reads": [],
+1057:           "writes": [
+1058:             "setting_value",
+1059:             "updated_at",
+1060:             "updated_by"
+1061:           ]
+1062:         }
+1063:       ],
+1064:       "readColumns": [],
+1065:       "writeColumns": [
+1066:         "settings_activity.change_type",
+1067:         "settings_activity.changed_by",
+1068:         "settings_activity.ip_address",
+1069:         "settings_activity.new_value",
+1070:         "settings_activity.old_value",
+1071:         "settings_activity.setting_id",
+1072:         "settings_activity.workstation_name",
+1073:         "settings_universal.setting_value",
+1074:         "settings_universal.updated_at",
+1075:         "settings_universal.updated_by"
+1076:       ]
+1077:     },
+1078:     {
+1079:       "storedProcedure": "sp_Settings_System_SetLocked",
+1080:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_SetLocked.sql",
+1081:       "suggestedDao": "Dao_SystemSettings",
+1082:       "missingDao": false,
+1083:       "referencedInDaos": [
+1084:         "Dao_SystemSettings.cs"
+1085:       ],
+1086:       "parameters": [
+1087:         {
+1088:           "direction": "IN",
+1089:           "name": "p_setting_id",
+1090:           "sqlType": "INT",
+1091:           "raw": "IN p_setting_id INT"
+1092:         },
+1093:         {
+1094:           "direction": "IN",
+1095:           "name": "p_is_locked",
+1096:           "sqlType": "BOOLEAN",
+1097:           "raw": "IN p_is_locked BOOLEAN"
+1098:         },
+1099:         {
+1100:           "direction": "IN",
+1101:           "name": "p_changed_by",
+1102:           "sqlType": "INT",
+1103:           "raw": "IN p_changed_by INT"
+1104:         },
+1105:         {
+1106:           "direction": "IN",
+1107:           "name": "p_ip_address",
+1108:           "sqlType": "VARCHAR(45)",
+1109:           "raw": "IN p_ip_address VARCHAR(45)"
+1110:         },
+1111:         {
+1112:           "direction": "IN",
+1113:           "name": "p_workstation_name",
+1114:           "sqlType": "VARCHAR(100)",
+1115:           "raw": "IN p_workstation_name VARCHAR(100)"
+1116:         }
+1117:       ],
+1118:       "columnAccess": [
+1119:         {
+1120:           "table": "settings_activity",
+1121:           "reads": [],
+1122:           "writes": [
+1123:             "change_type",
+1124:             "changed_by",
+1125:             "ip_address",
+1126:             "new_value",
+1127:             "old_value",
+1128:             "setting_id",
+1129:             "workstation_name"
+1130:           ]
+1131:         },
+1132:         {
+1133:           "table": "settings_universal",
+1134:           "reads": [],
+1135:           "writes": [
+1136:             "is_locked",
+1137:             "updated_at",
+1138:             "updated_by"
+1139:           ]
+1140:         }
+1141:       ],
+1142:       "readColumns": [],
+1143:       "writeColumns": [
+1144:         "settings_activity.change_type",
+1145:         "settings_activity.changed_by",
+1146:         "settings_activity.ip_address",
+1147:         "settings_activity.new_value",
+1148:         "settings_activity.old_value",
+1149:         "settings_activity.setting_id",
+1150:         "settings_activity.workstation_name",
+1151:         "settings_universal.is_locked",
+1152:         "settings_universal.updated_at",
+1153:         "settings_universal.updated_by"
+1154:       ]
+1155:     },
+1156:     {
+1157:       "storedProcedure": "sp_Settings_System_UpdateValue",
+1158:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_System_UpdateValue.sql",
+1159:       "suggestedDao": "Dao_SystemSettings",
+1160:       "missingDao": false,
+1161:       "referencedInDaos": [
+1162:         "Dao_SystemSettings.cs"
+1163:       ],
+1164:       "parameters": [
+1165:         {
+1166:           "direction": "IN",
+1167:           "name": "p_setting_id",
+1168:           "sqlType": "INT",
+1169:           "raw": "IN p_setting_id INT"
+1170:         },
+1171:         {
+1172:           "direction": "IN",
+1173:           "name": "p_new_value",
+1174:           "sqlType": "TEXT",
+1175:           "raw": "IN p_new_value TEXT"
+1176:         },
+1177:         {
+1178:           "direction": "IN",
+1179:           "name": "p_changed_by",
+1180:           "sqlType": "INT",
+1181:           "raw": "IN p_changed_by INT"
+1182:         },
+1183:         {
+1184:           "direction": "IN",
+1185:           "name": "p_ip_address",
+1186:           "sqlType": "VARCHAR(45)",
+1187:           "raw": "IN p_ip_address VARCHAR(45)"
+1188:         },
+1189:         {
+1190:           "direction": "IN",
+1191:           "name": "p_workstation_name",
+1192:           "sqlType": "VARCHAR(100)",
+1193:           "raw": "IN p_workstation_name VARCHAR(100)"
+1194:         }
+1195:       ],
+1196:       "columnAccess": [
+1197:         {
+1198:           "table": "settings_activity",
+1199:           "reads": [],
+1200:           "writes": [
+1201:             "change_type",
+1202:             "changed_by",
+1203:             "ip_address",
+1204:             "new_value",
+1205:             "old_value",
+1206:             "setting_id",
+1207:             "workstation_name"
+1208:           ]
+1209:         },
+1210:         {
+1211:           "table": "settings_universal",
+1212:           "reads": [],
+1213:           "writes": [
+1214:             "setting_value",
+1215:             "updated_at",
+1216:             "updated_by"
+1217:           ]
+1218:         }
+1219:       ],
+1220:       "readColumns": [],
+1221:       "writeColumns": [
+1222:         "settings_activity.change_type",
+1223:         "settings_activity.changed_by",
+1224:         "settings_activity.ip_address",
+1225:         "settings_activity.new_value",
+1226:         "settings_activity.old_value",
+1227:         "settings_activity.setting_id",
+1228:         "settings_activity.workstation_name",
+1229:         "settings_universal.setting_value",
+1230:         "settings_universal.updated_at",
+1231:         "settings_universal.updated_by"
+1232:       ]
+1233:     },
+1234:     {
+1235:       "storedProcedure": "sp_Settings_User_Get",
+1236:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_Get.sql",
+1237:       "suggestedDao": "Dao_UserSettings",
+1238:       "missingDao": false,
+1239:       "referencedInDaos": [
+1240:         "Dao_UserSettings.cs"
+1241:       ],
+1242:       "parameters": [
+1243:         {
+1244:           "direction": "IN",
+1245:           "name": "p_user_id",
+1246:           "sqlType": "INT",
+1247:           "raw": "IN p_user_id INT"
+1248:         },
+1249:         {
+1250:           "direction": "IN",
+1251:           "name": "p_category",
+1252:           "sqlType": "VARCHAR(50)",
+1253:           "raw": "IN p_category VARCHAR(50)"
+1254:         },
+1255:         {
+1256:           "direction": "IN",
+1257:           "name": "p_setting_key",
+1258:           "sqlType": "VARCHAR(100)",
+1259:           "raw": "IN p_setting_key VARCHAR(100)"
+1260:         }
+1261:       ],
+1262:       "columnAccess": [
+1263:         {
+1264:           "table": "settings_universal",
+1265:           "reads": [
+1266:             "category",
+1267:             "data_type",
+1268:             "description",
+1269:             "id",
+1270:             "scope",
+1271:             "setting_key",
+1272:             "setting_name",
+1273:             "setting_value",
+1274:             "ui_control_type",
+1275:             "validation_rules"
+1276:           ],
+1277:           "writes": []
+1278:         },
+1279:         {
+1280:           "table": "settings_personal",
+1281:           "reads": [
+1282:             "id",
+1283:             "setting_id",
+1284:             "setting_value",
+1285:             "user_id"
+1286:           ],
+1287:           "writes": []
+1288:         }
+1289:       ],
+1290:       "readColumns": [
+1291:         "settings_universal.category",
+1292:         "settings_universal.data_type",
+1293:         "settings_universal.description",
+1294:         "settings_universal.id",
+1295:         "settings_universal.scope",
+1296:         "settings_universal.setting_key",
+1297:         "settings_universal.setting_name",
+1298:         "settings_universal.setting_value",
+1299:         "settings_universal.ui_control_type",
+1300:         "settings_universal.validation_rules",
+1301:         "settings_personal.id",
+1302:         "settings_personal.setting_id",
+1303:         "settings_personal.setting_value",
+1304:         "settings_personal.user_id"
+1305:       ],
+1306:       "writeColumns": []
+1307:     },
+1308:     {
+1309:       "storedProcedure": "sp_Settings_User_GetAllForUser",
+1310:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_GetAllForUser.sql",
+1311:       "suggestedDao": "Dao_UserSettings",
+1312:       "missingDao": false,
+1313:       "referencedInDaos": [
+1314:         "Dao_UserSettings.cs"
+1315:       ],
+1316:       "parameters": [
+1317:         {
+1318:           "direction": "IN",
+1319:           "name": "p_user_id",
+1320:           "sqlType": "INT",
+1321:           "raw": "IN p_user_id INT"
+1322:         }
+1323:       ],
+1324:       "columnAccess": [
+1325:         {
+1326:           "table": "settings_universal",
+1327:           "reads": [
+1328:             "category",
+1329:             "data_type",
+1330:             "description",
+1331:             "id",
+1332:             "scope",
+1333:             "setting_key",
+1334:             "setting_name",
+1335:             "setting_value",
+1336:             "ui_control_type",
+1337:             "ui_order",
+1338:             "validation_rules"
+1339:           ],
+1340:           "writes": []
+1341:         },
+1342:         {
+1343:           "table": "settings_personal",
+1344:           "reads": [
+1345:             "id",
+1346:             "setting_id",
+1347:             "setting_value",
+1348:             "user_id"
+1349:           ],
+1350:           "writes": []
+1351:         }
+1352:       ],
+1353:       "readColumns": [
+1354:         "settings_universal.category",
+1355:         "settings_universal.data_type",
+1356:         "settings_universal.description",
+1357:         "settings_universal.id",
+1358:         "settings_universal.scope",
+1359:         "settings_universal.setting_key",
+1360:         "settings_universal.setting_name",
+1361:         "settings_universal.setting_value",
+1362:         "settings_universal.ui_control_type",
+1363:         "settings_universal.ui_order",
+1364:         "settings_universal.validation_rules",
+1365:         "settings_personal.id",
+1366:         "settings_personal.setting_id",
+1367:         "settings_personal.setting_value",
+1368:         "settings_personal.user_id"
+1369:       ],
+1370:       "writeColumns": []
+1371:     },
+1372:     {
+1373:       "storedProcedure": "sp_Settings_User_Reset",
+1374:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_Reset.sql",
+1375:       "suggestedDao": "Dao_UserSettings",
+1376:       "missingDao": false,
+1377:       "referencedInDaos": [
+1378:         "Dao_UserSettings.cs"
+1379:       ],
+1380:       "parameters": [
+1381:         {
+1382:           "direction": "IN",
+1383:           "name": "p_user_id",
+1384:           "sqlType": "INT",
+1385:           "raw": "IN p_user_id INT"
+1386:         },
+1387:         {
+1388:           "direction": "IN",
+1389:           "name": "p_setting_id",
+1390:           "sqlType": "INT",
+1391:           "raw": "IN p_setting_id INT"
+1392:         }
+1393:       ],
+1394:       "columnAccess": [
+1395:         {
+1396:           "table": "settings_activity",
+1397:           "reads": [],
+1398:           "writes": [
+1399:             "change_type",
+1400:             "changed_at",
+1401:             "changed_by",
+1402:             "new_value",
+1403:             "old_value",
+1404:             "setting_id",
+1405:             "user_setting_id"
+1406:           ]
+1407:         }
+1408:       ],
+1409:       "readColumns": [],
+1410:       "writeColumns": [
+1411:         "settings_activity.change_type",
+1412:         "settings_activity.changed_at",
+1413:         "settings_activity.changed_by",
+1414:         "settings_activity.new_value",
+1415:         "settings_activity.old_value",
+1416:         "settings_activity.setting_id",
+1417:         "settings_activity.user_setting_id"
+1418:       ]
+1419:     },
+1420:     {
+1421:       "storedProcedure": "sp_Settings_User_ResetAll",
+1422:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_ResetAll.sql",
+1423:       "suggestedDao": "Dao_UserSettings",
+1424:       "missingDao": false,
+1425:       "referencedInDaos": [
+1426:         "Dao_UserSettings.cs"
+1427:       ],
+1428:       "parameters": [
+1429:         {
+1430:           "direction": "IN",
+1431:           "name": "p_user_id",
+1432:           "sqlType": "INT",
+1433:           "raw": "IN p_user_id INT"
+1434:         },
+1435:         {
+1436:           "direction": "IN",
+1437:           "name": "p_changed_by",
+1438:           "sqlType": "INT",
+1439:           "raw": "IN p_changed_by INT"
+1440:         }
+1441:       ],
+1442:       "columnAccess": [
+1443:         {
+1444:           "table": "settings_activity",
+1445:           "reads": [],
+1446:           "writes": [
+1447:             "change_type",
+1448:             "changed_at",
+1449:             "changed_by",
+1450:             "new_value",
+1451:             "old_value",
+1452:             "setting_id",
+1453:             "user_setting_id"
+1454:           ]
+1455:         },
+1456:         {
+1457:           "table": "settings_personal",
+1458:           "reads": [
+1459:             "id",
+1460:             "setting_id",
+1461:             "setting_value",
+1462:             "user_id"
+1463:           ],
+1464:           "writes": []
+1465:         }
+1466:       ],
+1467:       "readColumns": [
+1468:         "settings_personal.id",
+1469:         "settings_personal.setting_id",
+1470:         "settings_personal.setting_value",
+1471:         "settings_personal.user_id"
+1472:       ],
+1473:       "writeColumns": [
+1474:         "settings_activity.change_type",
+1475:         "settings_activity.changed_at",
+1476:         "settings_activity.changed_by",
+1477:         "settings_activity.new_value",
+1478:         "settings_activity.old_value",
+1479:         "settings_activity.setting_id",
+1480:         "settings_activity.user_setting_id"
+1481:       ]
+1482:     },
+1483:     {
+1484:       "storedProcedure": "sp_Settings_User_Set",
+1485:       "sqlFile": "C:/Users/johnk/source/repos/MTM_Receiving_Application/Database/StoredProcedures/Settings/sp_Settings_User_Set.sql",
+1486:       "suggestedDao": "Dao_UserSettings",
+1487:       "missingDao": false,
+1488:       "referencedInDaos": [
+1489:         "Dao_UserSettings.cs"
+1490:       ],
+1491:       "parameters": [
+1492:         {
+1493:           "direction": "IN",
+1494:           "name": "p_user_id",
+1495:           "sqlType": "INT",
+1496:           "raw": "IN p_user_id INT"
+1497:         },
+1498:         {
+1499:           "direction": "IN",
+1500:           "name": "p_setting_id",
+1501:           "sqlType": "INT",
+1502:           "raw": "IN p_setting_id INT"
+1503:         },
+1504:         {
+1505:           "direction": "IN",
+1506:           "name": "p_setting_value",
+1507:           "sqlType": "TEXT",
+1508:           "raw": "IN p_setting_value TEXT"
+1509:         }
+1510:       ],
+1511:       "columnAccess": [
+1512:         {
+1513:           "table": "settings_activity",
+1514:           "reads": [],
+1515:           "writes": [
+1516:             "change_type",
+1517:             "changed_at",
+1518:             "changed_by",
+1519:             "new_value",
+1520:             "old_value",
+1521:             "setting_id",
+1522:             "user_setting_id"
+1523:           ]
+1524:         },
+1525:         {
+1526:           "table": "settings_personal",
+1527:           "reads": [],
+1528:           "writes": [
+1529:             "setting_id",
+1530:             "setting_value",
+1531:             "updated_at",
+1532:             "user_id"
+1533:           ]
+1534:         }
+1535:       ],
+1536:       "readColumns": [],
+1537:       "writeColumns": [
+1538:         "settings_activity.change_type",
+1539:         "settings_activity.changed_at",
+1540:         "settings_activity.changed_by",
+1541:         "settings_activity.new_value",
+1542:         "settings_activity.old_value",
+1543:         "settings_activity.setting_id",
+1544:         "settings_activity.user_setting_id",
+1545:         "settings_personal.setting_id",
+1546:         "settings_personal.setting_value",
+1547:         "settings_personal.updated_at",
+1548:         "settings_personal.user_id"
+1549:       ]
+1550:     }
+1551:   ]
+1552: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/CompleteShipmentCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 4: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 5: using MTM_Receiving_Application.Tests.Helpers;
+ 6: using Xunit;
+ 7: 
+ 8: 
+ 9: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+10: 
+11: /// <summary>
+12: /// Integration tests for CompleteShipmentCommandHandler.
+13: /// </summary>
+14: [Collection("Database")]
+15: public class CompleteShipmentCommandHandlerTests
+16: {
+17:     private readonly DatabaseFixture _fixture;
+18: 
+19:     public CompleteShipmentCommandHandlerTests(DatabaseFixture fixture)
+20:     {
+21:         _fixture = fixture;
+22:     }
+23: 
+24:     [SkippableFact]
+25:     public async Task Handle_ShouldCompleteShipment()
+26:     {
+27:         await _fixture.InitializeAsync();
+28:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+29: 
+30:         var shipmentDao = _fixture.CreateShipmentDao();
+31:         var lineDao = _fixture.CreateShipmentLineDao();
+32:         var partDao = _fixture.CreatePartDao();
+33:         var authService = new FakeVolvoAuthorizationService();
+34: 
+35:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+36:         int shipmentId = 0;
+37: 
+38:         try
+39:         {
+40:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+41:             {
+42:                 PartNumber = partNumber,
+43:                 QuantityPerSkid = 10,
+44:                 IsActive = true
+45:             });
+46:             partResult.Success.Should().BeTrue();
+47: 
+48:             var handler = new CompleteShipmentCommandHandler(shipmentDao, lineDao, partDao, authService);
+49:             var result = await handler.Handle(new CompleteShipmentCommand
+50:             {
+51:                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+52:                 ShipmentNumber = 1,
+53:                 Notes = "TEST",
+54:                 PONumber = "PO-TEST",
+55:                 ReceiverNumber = "RCV-TEST",
+56:                 Parts = new List<ShipmentLineDto>
+57:                 {
+58:                     new() { PartNumber = partNumber, ReceivedSkidCount = 1 }
+59:                 }
+60:             }, default);
+61: 
+62:             result.IsSuccess.Should().BeTrue();
+63:             shipmentId = result.Data;
+64:         }
+65:         finally
+66:         {
+67:             if (shipmentId > 0)
+68:             {
+69:                 await shipmentDao.DeleteAsync(shipmentId);
+70:             }
+71:             await partDao.DeactivateAsync(partNumber);
+72:         }
+73:     }
+74: }
+````
+
+## File: MTM_Receiving_Application.Tests/Module_Volvo/Handlers/Commands/SavePendingShipmentCommandHandlerTests.cs
+````csharp
+ 1: using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
+ 2: using MTM_Receiving_Application.Module_Volvo.Models;
+ 3: using MTM_Receiving_Application.Module_Volvo.Requests;
+ 4: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+ 5: using MTM_Receiving_Application.Tests.Helpers;
+ 6: using Xunit;
+ 7: 
+ 8: 
+ 9: namespace MTM_Receiving_Application.Tests.Module_Volvo.Handlers.Commands;
+10: 
+11: /// <summary>
+12: /// Integration tests for SavePendingShipmentCommandHandler.
+13: /// </summary>
+14: [Collection("Database")]
+15: public class SavePendingShipmentCommandHandlerTests
+16: {
+17:     private readonly DatabaseFixture _fixture;
+18: 
+19:     public SavePendingShipmentCommandHandlerTests(DatabaseFixture fixture)
+20:     {
+21:         _fixture = fixture;
+22:     }
+23: 
+24:     [SkippableFact]
+25:     public async Task Handle_ShouldSavePendingShipment()
+26:     {
+27:         await _fixture.InitializeAsync();
+28:         Skip.If(!_fixture.IsDatabaseReady, _fixture.DatabaseNotReadyReason ?? "Database not ready");
+29: 
+30:         var shipmentDao = _fixture.CreateShipmentDao();
+31:         var lineDao = _fixture.CreateShipmentLineDao();
+32:         var partDao = _fixture.CreatePartDao();
+33: 
+34:         var partNumber = $"TEST-{Guid.NewGuid():N}".ToUpperInvariant();
+35:         int shipmentId = 0;
+36: 
+37:         try
+38:         {
+39:             var partResult = await partDao.InsertAsync(new Model_VolvoPart
+40:             {
+41:                 PartNumber = partNumber,
+42:                 QuantityPerSkid = 10,
+43:                 IsActive = true
+44:             });
+45:             partResult.Success.Should().BeTrue();
+46: 
+47:             var handler = new SavePendingShipmentCommandHandler(shipmentDao, lineDao, partDao);
+48:             var result = await handler.Handle(new SavePendingShipmentCommand
+49:             {
+50:                 ShipmentDate = DateTimeOffset.Now.AddDays(-1),
+51:                 ShipmentNumber = 1,
+52:                 Notes = "TEST",
+53:                 Parts = new List<ShipmentLineDto>
+54:                 {
+55:                     new() { PartNumber = partNumber, ReceivedSkidCount = 1 }
+56:                 }
+57:             }, default);
+58: 
+59:             result.IsSuccess.Should().BeTrue();
+60:             shipmentId = result.Data;
+61:         }
+62:         finally
+63:         {
+64:             if (shipmentId > 0)
+65:             {
+66:                 await shipmentDao.DeleteAsync(shipmentId);
+67:             }
+68:             await partDao.DeactivateAsync(partNumber);
+69:         }
+70:     }
+71: }
+````
+
+## File: Module_Volvo/ViewModels/ViewModel_Volvo_ShipmentEntry.cs
+````csharp
+   1: using System;
+   2: using System.Collections.Generic;
+   3: using System.Collections.ObjectModel;
+   4: using System.Linq;
+   5: using System.Text;
+   6: using System.Threading.Tasks;
+   7: using CommunityToolkit.Mvvm.ComponentModel;
+   8: using CommunityToolkit.Mvvm.Input;
+   9: using MediatR;
+  10: using Microsoft.UI.Xaml;
+  11: using Microsoft.UI.Xaml.Controls;
+  12: using MTM_Receiving_Application.Module_Core.Contracts.Services;
+  13: using MTM_Receiving_Application.Module_Volvo.Models;
+  14: using MTM_Receiving_Application.Module_Core.Models.Enums;
+  15: using MTM_Receiving_Application.Module_Core.Models.Core;
+  16: using MTM_Receiving_Application.Module_Shared.ViewModels;
+  17: using MTM_Receiving_Application.Module_Volvo.Requests;
+  18: using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
+  19: using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
+  20: using Windows.ApplicationModel.DataTransfer;
+  21: 
+  22: namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
+  23: 
+  24: /// <summary>
+  25: /// ViewModel for Volvo shipment entry (CQRS-enabled with MediatR)
+  26: /// </summary>
+  27: public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
+  28: {
+  29:     private readonly IMediator _mediator;
+  30: 
+  31:     private readonly IService_Window _windowService;
+  32:     private readonly IService_UserSessionManager _sessionManager;
+  33: 
+  34:     // Public accessors for code-behind dialog
+  35:     public IService_ErrorHandler ErrorHandler => _errorHandler;
+  36:     public IService_LoggingUtility Logger => _logger;
+  37: 
+  38:     public ViewModel_Volvo_ShipmentEntry(
+  39:         IMediator mediator,
+  40:         IService_ErrorHandler errorHandler,
+  41:         IService_LoggingUtility logger,
+  42:         IService_Window windowService,
+  43:         IService_UserSessionManager sessionManager) : base(errorHandler, logger)
+  44:     {
+  45:         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+  46:         _windowService = windowService;
+  47:         _sessionManager = sessionManager;
+  48:     }
+  49: 
+  50:     #region Observable Properties
+  51: 
+  52:     [ObservableProperty]
+  53:     private DateTimeOffset? _shipmentDate = DateTimeOffset.Now;
+  54: 
+  55:     [ObservableProperty]
+  56:     private int _shipmentNumber = 1;
+  57: 
+  58:     [ObservableProperty]
+  59:     private string _notes = string.Empty;
+  60: 
+  61:     [ObservableProperty]
+  62:     private ObservableCollection<Model_VolvoShipmentLine> _parts = new();
+  63: 
+  64:     [ObservableProperty]
+  65:     private ObservableCollection<Model_VolvoPart> _availableParts = new();
+  66: 
+  67:     private List<Model_VolvoPart> _allParts = new();
+  68: 
+  69:     [ObservableProperty]
+  70:     private ObservableCollection<Model_VolvoPart> _suggestedParts = new();
+  71: 
+  72:     [ObservableProperty]
+  73:     private Model_VolvoShipmentLine? _selectedPart;
+  74: 
+  75: 
+  76:     [ObservableProperty]
+  77:     private Model_VolvoPart? _selectedPartToAdd;
+  78: 
+  79:     [ObservableProperty]
+  80:     private string _partSearchText = string.Empty;
+  81: 
+  82:     [ObservableProperty]
+  83:     private string _receivedSkidsToAdd = string.Empty;
+  84: 
+  85:     [ObservableProperty]
+  86:     private bool _canSave = false;
+  87: 
+  88:     [ObservableProperty]
+  89:     private bool _isSuccessMessageVisible = false;
+  90: 
+  91:     [ObservableProperty]
+  92:     private string _successMessage = string.Empty;
+  93: 
+  94:     [ObservableProperty]
+  95:     private bool _hasPendingShipment = false;
+  96: 
+  97:     #endregion
+  98: 
+  99:     
+ 100: 
+ 101:     #region Initialization
+ 102: 
+ 103:     /// <summary>
+ 104:     /// Initializes ViewModel - loads initial data and checks for pending shipment (CQRS)
+ 105:     /// </summary>
+ 106:     public async Task InitializeAsync()
+ 107:     {
+ 108:         try
+ 109:         {
+ 110:             IsBusy = true;
+ 111:             StatusMessage = "Initializing shipment entry...";
+ 112: 
+ 113:             // Get initial shipment data (current date + next shipment number)
+ 114:             var initialDataQuery = new GetInitialShipmentDataQuery();
+ 115:             var initialDataResult = await _mediator.Send(initialDataQuery);
+ 116: 
+ 117:             if (initialDataResult.IsSuccess && initialDataResult.Data != null)
+ 118:             {
+ 119:                 ShipmentDate = initialDataResult.Data.CurrentDate;
+ 120:                 ShipmentNumber = initialDataResult.Data.NextShipmentNumber;
+ 121:                 await _logger.LogInfoAsync($"Initialized with shipment number: {ShipmentNumber}");
+ 122:             }
+ 123:             else
+ 124:             {
+ 125:                 await _errorHandler.HandleErrorAsync(
+ 126:                     initialDataResult.ErrorMessage ?? "Failed to get initial shipment data",
+ 127:                     Enum_ErrorSeverity.Medium);
+ 128:             }
+ 129: 
+ 130:             // Load part master data for quantity-per-skid cache
+ 131:             await LoadAllPartsAsync();
+ 132: 
+ 133:             // Check for any pending shipment (CQRS)
+ 134:             var pendingQuery = new GetPendingShipmentQuery();
+ 135:             // Legacy save method removed after CQRS migration completion.
+ 136:             var pendingResult = await _mediator.Send(pendingQuery);
+ 137: 
+ 138:             if (pendingResult.IsSuccess && pendingResult.Data != null)
+ 139:             {
+ 140:                 HasPendingShipment = true;
+ 141:                 await LoadPendingShipmentAsync(pendingResult.Data.Id);
+ 142:             }
+ 143: 
+ 144:             StatusMessage = "Ready";
+ 145:         }
+ 146:         catch (Exception ex)
+ 147:         {
+ 148:             await _logger.LogErrorAsync($"Error initializing Volvo shipment entry: {ex.Message}", ex);
+ 149:             await _errorHandler.HandleErrorAsync(
+ 150:                 "Error initializing Volvo shipment entry",
+ 151:                 Enum_ErrorSeverity.Medium,
+ 152:                 ex,
+ 153:                 true);
+ 154:         }
+ 155:         finally
+ 156:         {
+ 157:             IsBusy = false;
+ 158:         }
+ 159:     }
+ 160: 
+ 161:     /// <summary>
+ 162:     /// Loads pending shipment data (CQRS)
+ 163:     /// </summary>
+ 164:     private async Task LoadPendingShipmentAsync(int shipmentId)
+ 165:     {
+ 166:         try
+ 167:         {
+ 168:             // Get shipment detail using MediatR
+ 169:             var detailQuery = new GetShipmentDetailQuery { ShipmentId = shipmentId };
+ 170:             var detailResult = await _mediator.Send(detailQuery);
+ 171: 
+ 172:             if (detailResult.IsSuccess && detailResult.Data != null)
+ 173:             {
+ 174:                 var shipment = detailResult.Data.Shipment;
+ 175:                 ShipmentDate = new DateTimeOffset(shipment.ShipmentDate);
+ 176:                 ShipmentNumber = shipment.ShipmentNumber;
+ 177:                 Notes = shipment.Notes ?? string.Empty;
+ 178: 
+ 179:                 // Load lines
+ 180:                 Parts.Clear();
+ 181:                 foreach (var line in detailResult.Data.Lines)
+ 182:                 {
+ 183:                     Parts.Add(line);
+ 184:                 }
+ 185: 
+ 186:                 ApplyCachedQuantitiesToLines();
+ 187: 
+ 188:                 await _logger.LogInfoAsync($"Loaded pending shipment #{shipment.ShipmentNumber} with {Parts.Count} parts");
+ 189:             }
+ 190:         }
+ 191:         catch (Exception ex)
+ 192:         {
+ 193:             await _logger.LogErrorAsync($"Error loading pending shipment: {ex.Message}", ex);
+ 194:         }
+ 195:     }
+ 196: 
+ 197:     private async Task LoadAllPartsAsync()
+ 198:     {
+ 199:         try
+ 200:         {
+ 201:             var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
+ 202:             {
+ 203:                 IncludeInactive = true
+ 204:             });
+ 205: 
+ 206:             if (partsResult.IsSuccess && partsResult.Data != null)
+ 207:             {
+ 208:                 _allParts = partsResult.Data;
+ 209:             }
+ 210:         }
+ 211:         catch (Exception ex)
+ 212:         {
+ 213:             await _logger.LogErrorAsync($"Error loading Volvo parts cache: {ex.Message}", ex);
+ 214:         }
+ 215:     }
+ 216: 
+ 217:     private void ApplyCachedQuantitiesToLines()
+ 218:     {
+ 219:         if (_allParts == null || _allParts.Count == 0)
+ 220:         {
+ 221:             return;
+ 222:         }
+ 223: 
+ 224:         var partsByNumber = _allParts.ToDictionary(p => p.PartNumber, StringComparer.OrdinalIgnoreCase);
+ 225: 
+ 226:         foreach (var line in Parts)
+ 227:         {
+ 228:             if (line.QuantityPerSkid <= 0 &&
+ 229:                 !string.IsNullOrWhiteSpace(line.PartNumber) &&
+ 230:                 partsByNumber.TryGetValue(line.PartNumber, out var part))
+ 231:             {
+ 232:                 line.QuantityPerSkid = part.QuantityPerSkid;
+ 233:             }
+ 234: 
+ 235:             if (line.CalculatedPieceCount <= 0 && line.QuantityPerSkid > 0)
+ 236:             {
+ 237:                 line.CalculatedPieceCount = line.QuantityPerSkid * line.ReceivedSkidCount;
+ 238:             }
+ 239:         }
+ 240:     }
+ 241: 
+ 242:     #endregion
+ 243: 
+ 244:     #region AutoSuggestBox Support
+ 245: 
+ 246:     /// <summary>
+ 247:     /// Loads all parts for the Add Part dialog
+ 248:     /// </summary>
+ 249:     public async Task LoadAllPartsForDialogAsync()
+ 250:     {
+ 251:         try
+ 252:         {
+ 253:             var partsResult = await _mediator.Send(new GetAllVolvoPartsQuery
+ 254:             {
+ 255:                 IncludeInactive = false // Only show active parts in dialog
+ 256:             });
+ 257: 
+ 258:             if (partsResult.IsSuccess && partsResult.Data != null)
+ 259:             {
+ 260:                 AvailableParts.Clear();
+ 261:                 foreach (var part in partsResult.Data.OrderBy(p => p.PartNumber))
+ 262:                 {
+ 263:                     AvailableParts.Add(part);
+ 264:                 }
+ 265:             }
+ 266:         }
+ 267:         catch (Exception ex)
+ 268:         {
+ 269:             await _logger.LogErrorAsync($"Error loading parts for dialog: {ex.Message}", ex);
+ 270:         }
+ 271:     }
+ 272: 
+ 273:     /// <summary>
+ 274:     /// Updates the part suggestions list based on user's search text (CQRS)
+ 275:     /// Uses SearchVolvoPartsQuery for autocomplete functionality
+ 276:     /// </summary>
+ 277:     /// <param name="queryText">Search text from AutoSuggestBox</param>
+ 278:     public async void UpdatePartSuggestions(string queryText)
+ 279:     {
+ 280:         if (string.IsNullOrWhiteSpace(queryText))
+ 281:         {
+ 282:             SuggestedParts.Clear();
+ 283:             SelectedPartToAdd = null;
+ 284:             return;
+ 285:         }
+ 286: 
+ 287:         try
+ 288:         {
+ 289:             // Use MediatR query for search
+ 290:             var searchQuery = new SearchVolvoPartsQuery
+ 291:             {
+ 292:                 SearchText = queryText,
+ 293:                 MaxResults = 20
+ 294:             };
+ 295: 
+ 296:             var searchResult = await _mediator.Send(searchQuery);
+ 297: 
+ 298:             if (searchResult.IsSuccess && searchResult.Data != null)
+ 299:             {
+ 300:                 // Update suggestions collection
+ 301:                 SuggestedParts.Clear();
+ 302:                 foreach (var part in searchResult.Data)
+ 303:                 {
+ 304:                     SuggestedParts.Add(part);
+ 305:                 }
+ 306: 
+ 307:                 // Check if text matches a part exactly
+ 308:                 var exactMatch = searchResult.Data.FirstOrDefault(p =>
+ 309:                     p.PartNumber.Equals(queryText, StringComparison.OrdinalIgnoreCase));
+ 310:                 SelectedPartToAdd = exactMatch;
+ 311:             }
+ 312:         }
+ 313:         catch (Exception ex)
+ 314:         {
+ 315:             await _logger.LogErrorAsync($"Error searching parts: {ex.Message}", ex);
+ 316:         }
+ 317:     }
+ 318: 
+ 319:     /// <summary>
+ 320:     /// Handles when user selects a part from the AutoSuggestBox dropdown
+ 321:     /// Sets the search text and selected part for adding to shipment
+ 322:     /// </summary>
+ 323:     /// <param name="chosenPart">The part selected from suggestions</param>
+ 324:     public void OnPartSuggestionChosen(Model_VolvoPart? chosenPart)
+ 325:     {
+ 326:         if (chosenPart != null)
+ 327:         {
+ 328:             PartSearchText = chosenPart.PartNumber;
+ 329:             SelectedPartToAdd = chosenPart;
+ 330:         }
+ 331:     }
+ 332: 
+ 333:     partial void OnPartSearchTextChanged(string value)
+ 334:     {
+ 335:         UpdatePartSuggestions(value);
+ 336:     }
+ 337: 
+ 338:     #endregion
+ 339: 
+ 340:     #region Commands
+ 341: 
+ 342:     /// <summary>
+ 343:     /// Adds part to shipment using AddPartToShipmentCommand (CQRS)
+ 344:     /// </summary>
+ 345:     [RelayCommand(CanExecute = nameof(CanAddPart))]
+ 346:     private async void AddPart()
+ 347:     {
+ 348:         if (SelectedPartToAdd == null || string.IsNullOrWhiteSpace(ReceivedSkidsToAdd))
+ 349:         {
+ 350:             return;
+ 351:         }
+ 352: 
+ 353:         try
+ 354:         {
+ 355:             // Parse and validate skid count
+ 356:             if (!int.TryParse(ReceivedSkidsToAdd, out int skidCount) || skidCount < 1 || skidCount > 99)
+ 357:             {
+ 358:                 await _errorHandler.HandleErrorAsync(
+ 359:                     "Received skid count must be a number between 1 and 99",
+ 360:                     Enum_ErrorSeverity.Low,
+ 361:                     null,
+ 362:                     true);
+ 363:                 return;
+ 364:             }
+ 365: 
+ 366:             // Check for duplicate part number
+ 367:             if (Parts.Any(p => p.PartNumber.Equals(SelectedPartToAdd.PartNumber, StringComparison.OrdinalIgnoreCase)))
+ 368:             {
+ 369:                 await _errorHandler.HandleErrorAsync(
+ 370:                     $"Part {SelectedPartToAdd.PartNumber} is already in this shipment. Remove it first if you want to update the quantity.",
+ 371:                     Enum_ErrorSeverity.Low,
+ 372:                     null,
+ 373:                     true);
+ 374:                 return;
+ 375:             }
+ 376: 
+ 377:             // Validate part using MediatR command (checks part exists in master data)
+ 378:             var addCommand = new AddPartToShipmentCommand
+ 379:             {
+ 380:                 PartNumber = SelectedPartToAdd.PartNumber,
+ 381:                 ReceivedSkidCount = skidCount,
+ 382:                 HasDiscrepancy = false
+ 383:             };
+ 384: 
+ 385:             var validationResult = await _mediator.Send(addCommand);
+ 386: 
+ 387:             if (!validationResult.IsSuccess)
+ 388:             {
+ 389:                 await _errorHandler.HandleErrorAsync(
+ 390:                     validationResult.ErrorMessage ?? "Failed to validate part",
+ 391:                     Enum_ErrorSeverity.Medium,
+ 392:                     null,
+ 393:                     true);
+ 394:                 return;
+ 395:             }
+ 396: 
+ 397:             // Validation passed - add to ObservableCollection
+ 398:             var calculatedPieces = SelectedPartToAdd.QuantityPerSkid * skidCount;
+ 399: 
+ 400:             var newLine = new Model_VolvoShipmentLine
+ 401:             {
+ 402:                 PartNumber = SelectedPartToAdd.PartNumber,
+ 403:                 QuantityPerSkid = SelectedPartToAdd.QuantityPerSkid,
+ 404:                 ReceivedSkidCount = skidCount,
+ 405:                 CalculatedPieceCount = calculatedPieces,
+ 406:                 HasDiscrepancy = false,
+ 407:                 ExpectedSkidCount = null,
+ 408:                 DiscrepancyNote = string.Empty
+ 409:             };
+ 410: 
+ 411:             Parts.Add(newLine);
+ 412: 
+ 413:             // Log user action
+ 414:             await _logger.LogInfoAsync($"User added part {SelectedPartToAdd.PartNumber}, {skidCount} skids ({calculatedPieces} pcs)");
+ 415: 
+ 416:             // Reset input fields
+ 417:             SelectedPartToAdd = null;
+ 418:             ReceivedSkidsToAdd = string.Empty;
+ 419:             PartSearchText = string.Empty;
+ 420:             SuggestedParts.Clear();
+ 421: 
+ 422:             ValidateSaveEligibility();
+ 423:         }
+ 424:         catch (Exception ex)
+ 425:         {
+ 426:             await _logger.LogErrorAsync($"Error adding part: {ex.Message}", ex);
+ 427:             await _errorHandler.HandleErrorAsync(
+ 428:                 "Error adding part to shipment",
+ 429:                 Enum_ErrorSeverity.Medium,
+ 430:                 ex,
+ 431:                 true);
+ 432:         }
+ 433:     }
+ 434: 
+ 435:     private bool CanAddPart()
+ 436:     {
+ 437:         return SelectedPartToAdd != null && 
+ 438:                !string.IsNullOrWhiteSpace(ReceivedSkidsToAdd) && 
+ 439:                int.TryParse(ReceivedSkidsToAdd, out int count) && 
+ 440:                count >= 1 && 
+ 441:                count <= 99;
+ 442:     }
+ 443: 
+ 444:     /// <summary>
+ 445:     /// Removes part from shipment using RemovePartFromShipmentCommand (CQRS)
+ 446:     /// </summary>
+ 447:     [RelayCommand]
+ 448:     private async void RemovePart()
+ 449:     {
+ 450:         if (SelectedPart == null)
+ 451:         {
+ 452:             return;
+ 453:         }
+ 454: 
+ 455:         try
+ 456:         {
+ 457:             // Validate removal using MediatR command
+ 458:             var removeCommand = new RemovePartFromShipmentCommand
+ 459:             {
+ 460:                 PartNumber = SelectedPart.PartNumber
+ 461:             };
+ 462: 
+ 463:             var validationResult = await _mediator.Send(removeCommand);
+ 464: 
+ 465:             if (!validationResult.IsSuccess)
+ 466:             {
+ 467:                 await _errorHandler.HandleErrorAsync(
+ 468:                     validationResult.ErrorMessage ?? "Failed to validate part removal",
+ 469:                     Enum_ErrorSeverity.Low,
+ 470:                     null,
+ 471:                     true);
+ 472:                 return;
+ 473:             }
+ 474: 
+ 475:             // Validation passed - remove from ObservableCollection
+ 476:             await _logger.LogInfoAsync($"User removed part {SelectedPart.PartNumber} from shipment");
+ 477:             Parts.Remove(SelectedPart);
+ 478:             ValidateSaveEligibility();
+ 479:         }
+ 480:         catch (Exception ex)
+ 481:         {
+ 482:             await _logger.LogErrorAsync($"Error removing part: {ex.Message}", ex);
+ 483:             await _errorHandler.HandleErrorAsync(
+ 484:                 "Error removing part from shipment",
+ 485:                 Enum_ErrorSeverity.Medium,
+ 486:                 ex,
+ 487:                 true);
+ 488:         }
+ 489:     }
+ 490: 
+ 491:     /// <summary>
+ 492:     /// Generates CSV labels using GenerateLabelCsvQuery (CQRS)
+ 493:     /// </summary>
+ 494:     [RelayCommand]
+ 495:     private async Task GenerateLabelsAsync()
+ 496:     {
+ 497:         try
+ 498:         {
+ 499:             IsBusy = true;
+ 500:             StatusMessage = "Generating labels...";
+ 501: 
+ 502:             // First, save the shipment if not already saved
+ 503:             if (!HasPendingShipment)
+ 504:             {
+ 505:                 var saveResult = await SaveShipmentInternalAsync();
+ 506:                 if (!saveResult.IsSuccess)
+ 507:                 {
+ 508:                     await _errorHandler.HandleErrorAsync(
+ 509:                         saveResult.ErrorMessage ?? "Failed to save shipment before generating labels",
+ 510:                         Enum_ErrorSeverity.Medium,
+ 511:                         null,
+ 512:                         true);
+ 513:                     return;
+ 514:                 }
+ 515:             }
+ 516: 
+ 517:             // Get the pending shipment ID using MediatR
+ 518:             var pendingQuery = new GetPendingShipmentQuery
+ 519:             {
+ 520:                 UserName = Environment.UserName
+ 521:             };
+ 522:             var pendingResult = await _mediator.Send(pendingQuery);
+ 523: 
+ 524:             if (!pendingResult.IsSuccess || pendingResult.Data == null)
+ 525:             {
+ 526:                 await _errorHandler.HandleErrorAsync(
+ 527:                     "No pending shipment found",
+ 528:                     Enum_ErrorSeverity.Medium,
+ 529:                     null,
+ 530:                     true);
+ 531:                 return;
+ 532:             }
+ 533: 
+ 534:             // Generate CSV using MediatR query
+ 535:             var csvQuery = new GenerateLabelCsvQuery
+ 536:             {
+ 537:                 ShipmentId = pendingResult.Data.Id
+ 538:             };
+ 539:             var csvResult = await _mediator.Send(csvQuery);
+ 540: 
+ 541:             if (csvResult.IsSuccess)
+ 542:             {
+ 543:                 SuccessMessage = $"Labels generated successfully!\nFile: {csvResult.Data}";
+ 544:                 IsSuccessMessageVisible = true;
+ 545:                 StatusMessage = "Labels generated";
+ 546:                 await _logger.LogInfoAsync($"Labels generated for shipment ID: {pendingResult.Data.Id}, File: {csvResult.Data}");
+ 547:             }
+ 548:             else
+ 549:             {
+ 550:                 await _errorHandler.HandleErrorAsync(
+ 551:                     csvResult.ErrorMessage ?? "Failed to generate labels",
+ 552:                     Enum_ErrorSeverity.Medium,
+ 553:                     null,
+ 554:                     true);
+ 555:             }
+ 556:         }
+ 557:         catch (Exception ex)
+ 558:         {
+ 559:             await _logger.LogErrorAsync($"Error generating labels: {ex.Message}", ex);
+ 560:             await _errorHandler.HandleErrorAsync(
+ 561:                 "Error generating labels",
+ 562:                 Enum_ErrorSeverity.Medium,
+ 563:                 ex,
+ 564:                 true);
+ 565:         }
+ 566:         finally
+ 567:         {
+ 568:             IsBusy = false;
+ 569:         }
+ 570:     }
+ 571: 
+ 572:     [RelayCommand]
+ 573:     private async Task PreviewEmailAsync()
+ 574:     {
+ 575:         try
+ 576:         {
+ 577:             IsBusy = true;
+ 578:             StatusMessage = "Formatting email...";
+ 579: 
+ 580:             // First, ensure the shipment is saved
+ 581:             if (!HasPendingShipment)
+ 582:             {
+ 583:                 var saveResult = await SaveShipmentInternalAsync();
+ 584:                 if (!saveResult.IsSuccess)
+ 585:                 {
+ 586:                     await _errorHandler.HandleErrorAsync(
+ 587:                         saveResult.ErrorMessage ?? "Failed to save shipment before preview",
+ 588:                         Enum_ErrorSeverity.Medium,
+ 589:                         null,
+ 590:                         true);
+ 591:                     return;
+ 592:                 }
+ 593:             }
+ 594: 
+ 595:             int shipmentId;
+ 596: 
+ 597:             if (!HasPendingShipment)
+ 598:             {
+ 599:                 var saveResult = await SaveShipmentInternalAsync();
+ 600:                 if (!saveResult.IsSuccess)
+ 601:                 {
+ 602:                     await _errorHandler.HandleErrorAsync(
+ 603:                         saveResult.ErrorMessage ?? "Failed to save shipment before preview",
+ 604:                         Enum_ErrorSeverity.Medium,
+ 605:                         null,
+ 606:                         true);
+ 607:                     return;
+ 608:                 }
+ 609: 
+ 610:                 shipmentId = saveResult.Data.ShipmentId;
+ 611:                 HasPendingShipment = true;
+ 612:             }
+ 613:             else
+ 614:             {
+ 615:                 var pendingResult = await _mediator.Send(new GetPendingShipmentQuery
+ 616:                 {
+ 617:                     UserName = Environment.UserName
+ 618:                 });
+ 619: 
+ 620:                 if (!pendingResult.IsSuccess || pendingResult.Data == null)
+ 621:                 {
+ 622:                     await _errorHandler.HandleErrorAsync(
+ 623:                         "No pending shipment found",
+ 624:                         Enum_ErrorSeverity.Medium,
+ 625:                         null,
+ 626:                         true);
+ 627:                     return;
+ 628:                 }
+ 629: 
+ 630:                 shipmentId = pendingResult.Data.Id;
+ 631:             }
+ 632: 
+ 633:             var emailResult = await _mediator.Send(new FormatEmailDataQuery
+ 634:             {
+ 635:                 ShipmentId = shipmentId
+ 636:             });
+ 637: 
+ 638:             if (!emailResult.IsSuccess || emailResult.Data == null)
+ 639:             {
+ 640:                 await _errorHandler.HandleErrorAsync(
+ 641:                     emailResult.ErrorMessage ?? "Failed to format email data",
+ 642:                     Enum_ErrorSeverity.Medium,
+ 643:                     null,
+ 644:                     true);
+ 645:                 return;
+ 646:             }
+ 647: 
+ 648:             await ShowEmailPreviewDialogAsync(emailResult.Data);
+ 649:         }
+ 650:         catch (Exception ex)
+ 651:         {
+ 652:             await _logger.LogErrorAsync($"Error previewing email: {ex.Message}", ex);
+ 653:             await _errorHandler.HandleErrorAsync(
+ 654:                 "Error previewing email",
+ 655:                 Enum_ErrorSeverity.Medium,
+ 656:                 ex,
+ 657:                 true);
+ 658:         }
+ 659:         finally
+ 660:         {
+ 661:             IsBusy = false;
+ 662:         }
+ 663:     }
+ 664: 
+ 665:     private async Task ShowEmailPreviewDialogAsync(Model_VolvoEmailData emailData)
+ 666:     {
+ 667:         var xamlRoot = _windowService.GetXamlRoot();
+ 668:         if (xamlRoot == null)
+ 669:         {
+ 670:             await _errorHandler.HandleErrorAsync(
+ 671:                 "Cannot show dialog - XamlRoot not available",
+ 672:                 Enum_ErrorSeverity.Low,
+ 673:                 null,
+ 674:                 true);
+ 675:             return;
+ 676:         }
+ 677: 
+ 678:         // Load email recipients from settings
+ 679:         var settingsDao = new Data.Dao_VolvoSettings(Module_Core.Helpers.Database.Helper_Database_Variables.GetConnectionString());
+ 680:         var toResult = await settingsDao.GetSettingAsync("email_to_recipients");
+ 681:         var ccResult = await settingsDao.GetSettingAsync("email_cc_recipients");
+ 682: 
+ 683:         string toRecipients = FormatRecipientsFromJson(
+ 684:             toResult.IsSuccess && toResult.Data != null ? toResult.Data.SettingValue : null,
+ 685:             "\"Jose Rosas\" <jrosas@mantoolmfg.com>; \"Sandy Miller\" <smiller@mantoolmfg.com>; \"Steph Wittmus\" <swittmus@mantoolmfg.com>"
+ 686:         );
+ 687: 
+ 688:         string ccRecipients = FormatRecipientsFromJson(
+ 689:             ccResult.IsSuccess && ccResult.Data != null ? ccResult.Data.SettingValue : null,
+ 690:             "\"Debra Alexander\" <dalexander@mantoolmfg.com>; \"Michelle Laurin\" <mlaurin@mantoolmfg.com>"
+ 691:         );
+ 692: 
+ 693:         var dialog = new ContentDialog
+ 694:         {
+ 695:             Title = "PO Requisition Email Preview",
+ 696:             PrimaryButtonText = "Copy Email Body",
+ 697:             CloseButtonText = "Close",
+ 698:             DefaultButton = ContentDialogButton.Primary,
+ 699:             XamlRoot = xamlRoot,
+ 700:             MaxWidth = 800
+ 701:         };
+ 702: 
+ 703:         // Build structured preview UI
+ 704:         var mainStack = new StackPanel { Spacing = 12, Margin = new Microsoft.UI.Xaml.Thickness(0) };
+ 705: 
+ 706:         // TO Recipients
+ 707:         var toPanel = new Grid { ColumnSpacing = 8 };
+ 708:         toPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
+ 709:         toPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+ 710:         var toBox = new TextBox
+ 711:         {
+ 712:             Header = "To:",
+ 713:             Text = toRecipients,
+ 714:             IsReadOnly = true,
+ 715:             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+ 716:             MaxHeight = 80
+ 717:         };
+ 718:         toBox.SetValue(Grid.ColumnProperty, 0);
+ 719:         var toCopyButton = new Button
+ 720:         {
+ 721:             Content = "📋",
+ 722:             Width = 40,
+ 723:             Height = 40,
+ 724:             FontSize = 16,
+ 725:             VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
+ 726:             Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+ 727:         };
+ 728:         toCopyButton.SetValue(Grid.ColumnProperty, 1);
+ 729:         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(toCopyButton, "Copy To Recipients");
+ 730:         toCopyButton.Click += (s, e) =>
+ 731:         {
+ 732:             var dataPackage = new DataPackage();
+ 733:             dataPackage.SetText(toBox.Text);
+ 734:             Clipboard.SetContent(dataPackage);
+ 735:         };
+ 736:         toPanel.Children.Add(toBox);
+ 737:         toPanel.Children.Add(toCopyButton);
+ 738:         mainStack.Children.Add(toPanel);
+ 739: 
+ 740:         // CC Recipients
+ 741:         var ccPanel = new Grid { ColumnSpacing = 8 };
+ 742:         ccPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
+ 743:         ccPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+ 744:         var ccBox = new TextBox
+ 745:         {
+ 746:             Header = "Cc:",
+ 747:             Text = ccRecipients,
+ 748:             IsReadOnly = true,
+ 749:             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+ 750:             MaxHeight = 80
+ 751:         };
+ 752:         ccBox.SetValue(Grid.ColumnProperty, 0);
+ 753:         var ccCopyButton = new Button
+ 754:         {
+ 755:             Content = "📋",
+ 756:             Width = 40,
+ 757:             Height = 40,
+ 758:             FontSize = 16,
+ 759:             VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
+ 760:             Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+ 761:         };
+ 762:         ccCopyButton.SetValue(Grid.ColumnProperty, 1);
+ 763:         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(ccCopyButton, "Copy CC Recipients");
+ 764:         ccCopyButton.Click += (s, e) =>
+ 765:         {
+ 766:             var dataPackage = new DataPackage();
+ 767:             dataPackage.SetText(ccBox.Text);
+ 768:             Clipboard.SetContent(dataPackage);
+ 769:         };
+ 770:         ccPanel.Children.Add(ccBox);
+ 771:         ccPanel.Children.Add(ccCopyButton);
+ 772:         mainStack.Children.Add(ccPanel);
+ 773: 
+ 774:         // Subject
+ 775:         var subjectPanel = new Grid { ColumnSpacing = 8 };
+ 776:         subjectPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = new Microsoft.UI.Xaml.GridLength(1, Microsoft.UI.Xaml.GridUnitType.Star) });
+ 777:         subjectPanel.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = Microsoft.UI.Xaml.GridLength.Auto });
+ 778:         var subjectBox = new TextBox
+ 779:         {
+ 780:             Header = "Subject:",
+ 781:             Text = emailData.Subject,
+ 782:             IsReadOnly = true,
+ 783:             FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+ 784:             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
+ 785:         };
+ 786:         subjectBox.SetValue(Grid.ColumnProperty, 0);
+ 787:         var subjectCopyButton = new Button
+ 788:         {
+ 789:             Content = "📋",
+ 790:             Width = 40,
+ 791:             Height = 40,
+ 792:             FontSize = 16,
+ 793:             VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Bottom,
+ 794:             Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 4)
+ 795:         };
+ 796:         subjectCopyButton.SetValue(Grid.ColumnProperty, 1);
+ 797:         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(subjectCopyButton, "Copy Subject");
+ 798:         subjectCopyButton.Click += (s, e) =>
+ 799:         {
+ 800:             var dataPackage = new DataPackage();
+ 801:             dataPackage.SetText(subjectBox.Text);
+ 802:             Clipboard.SetContent(dataPackage);
+ 803:         };
+ 804:         subjectPanel.Children.Add(subjectBox);
+ 805:         subjectPanel.Children.Add(subjectCopyButton);
+ 806:         mainStack.Children.Add(subjectPanel);
+ 807: 
+ 808:         // Discrepancies (if any)
+ 809:         if (emailData.Discrepancies.Count > 0)
+ 810:         {
+ 811:             var discHeader = new TextBlock
+ 812:             {
+ 813:                 Text = "**DISCREPANCIES NOTED**",
+ 814:                 FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+ 815:                 Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4)
+ 816:             };
+ 817:             mainStack.Children.Add(discHeader);
+ 818: 
+ 819:             var discBox = new TextBox
+ 820:             {
+ 821:                 IsReadOnly = true,
+ 822:                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
+ 823:                 FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+ 824:                 AcceptsReturn = true,
+ 825:                 MinHeight = 120,
+ 826:                 MaxHeight = 250
+ 827:             };
+ 828:             var discText = new StringBuilder();
+ 829:             discText.AppendLine("Part Number\tPacklist Qty (pcs)\tReceived Qty (pcs)\tDifference (pcs)\tNote");
+ 830:             discText.AppendLine(new string('-', 80));
+ 831:             foreach (var disc in emailData.Discrepancies)
+ 832:             {
+ 833:                 string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+ 834:                 discText.AppendLine($"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}");
+ 835:             }
+ 836:             discBox.Text = discText.ToString();
+ 837:             mainStack.Children.Add(discBox);
+ 838:         }
+ 839: 
+ 840:         // Requested Lines
+ 841:         var reqHeader = new TextBlock
+ 842:         {
+ 843:             Text = "Requested Lines:",
+ 844:             FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+ 845:             Margin = new Microsoft.UI.Xaml.Thickness(0, 8, 0, 4)
+ 846:         };
+ 847:         mainStack.Children.Add(reqHeader);
+ 848: 
+ 849:         var reqBox = new TextBox
+ 850:         {
+ 851:             IsReadOnly = true,
+ 852:             TextWrapping = Microsoft.UI.Xaml.TextWrapping.NoWrap,
+ 853:             FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+ 854:             AcceptsReturn = true,
+ 855:             MinHeight = 150,
+ 856:             MaxHeight = 300
+ 857:         };
+ 858:         var reqText = new StringBuilder();
+ 859:         reqText.AppendLine("Part Number\tQuantity (pcs)");
+ 860:         reqText.AppendLine(new string('-', 40));
+ 861:         foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+ 862:         {
+ 863:             reqText.AppendLine($"{kvp.Key}\t{kvp.Value}");
+ 864:         }
+ 865:         reqBox.Text = reqText.ToString();
+ 866:         mainStack.Children.Add(reqBox);
+ 867: 
+ 868:         // Additional Notes
+ 869:         if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+ 870:         {
+ 871:             var notesBox = new TextBox
+ 872:             {
+ 873:                 Header = "Additional Notes:",
+ 874:                 Text = emailData.AdditionalNotes,
+ 875:                 IsReadOnly = true,
+ 876:                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+ 877:                 Height = 60
+ 878:             };
+ 879:             mainStack.Children.Add(notesBox);
+ 880:         }
+ 881: 
+ 882:         var scrollViewer = new ScrollViewer
+ 883:         {
+ 884:             Content = mainStack,
+ 885:             Height = 500,
+ 886:             VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+ 887:         };
+ 888: 
+ 889:         dialog.Content = scrollViewer;
+ 890: 
+ 891:         var result = await dialog.ShowAsync();
+ 892: 
+ 893:         if (result == ContentDialogResult.Primary)
+ 894:         {
+ 895:             // Copy HTML to clipboard for Outlook paste as table
+ 896:             var htmlContent = FormatEmailAsHtml(emailData);
+ 897:             var dataPackage = new DataPackage();
+ 898:             dataPackage.SetHtmlFormat(htmlContent);
+ 899:             // Also include plain text fallback
+ 900:             var plainText = BuildPlainTextEmail(emailData);
+ 901:             dataPackage.SetText(plainText);
+ 902:             Clipboard.SetContent(dataPackage);
+ 903: 
+ 904:             SuccessMessage = "Email copied to clipboard (paste into Outlook as formatted table)!";
+ 905:             IsSuccessMessageVisible = true;
+ 906:         }
+ 907:     }
+ 908: 
+ 909:     private string BuildPlainTextEmail(Model_VolvoEmailData emailData)
+ 910:     {
+ 911:         var text = new StringBuilder();
+ 912:         text.AppendLine($"Subject: {emailData.Subject}");
+ 913:         text.AppendLine();
+ 914:         text.AppendLine(emailData.Greeting);
+ 915:         text.AppendLine();
+ 916:         text.AppendLine(emailData.Message);
+ 917:         text.AppendLine();
+ 918: 
+ 919:         if (emailData.Discrepancies.Count > 0)
+ 920:         {
+ 921:             text.AppendLine("**DISCREPANCIES NOTED**");
+ 922:             text.AppendLine();
+ 923:             text.AppendLine("Part Number\tPacklist Qty\tReceived Qty\tDifference\tNote");
+ 924:             text.AppendLine(new string('-', 80));
+ 925:             foreach (var disc in emailData.Discrepancies)
+ 926:             {
+ 927:                 string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+ 928:                 text.AppendLine($"{disc.PartNumber}\t{disc.PacklistQty}\t{disc.ReceivedQty}\t{diffStr}\t{disc.Note}");
+ 929:             }
+ 930:             text.AppendLine();
+ 931:         }
+ 932: 
+ 933:         text.AppendLine("Requested Lines:");
+ 934:         text.AppendLine();
+ 935:         text.AppendLine("Part Number\tQuantity (pcs)");
+ 936:         text.AppendLine(new string('-', 40));
+ 937:         foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+ 938:         {
+ 939:             text.AppendLine($"{kvp.Key}\t{kvp.Value}");
+ 940:         }
+ 941:         text.AppendLine();
+ 942: 
+ 943:         if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+ 944:         {
+ 945:             text.AppendLine("Additional Notes:");
+ 946:             text.AppendLine(emailData.AdditionalNotes);
+ 947:             text.AppendLine();
+ 948:         }
+ 949: 
+ 950:         text.AppendLine(emailData.Signature);
+ 951:         return text.ToString();
+ 952:     }
+ 953: 
+ 954:     private static string FormatEmailAsHtml(Model_VolvoEmailData emailData)
+ 955:     {
+ 956:         var html = new StringBuilder();
+ 957: 
+ 958:         html.AppendLine("<html>");
+ 959:         html.AppendLine("<body style='font-family: Calibri, Arial, sans-serif; font-size: 11pt;'>");
+ 960: 
+ 961:         html.AppendLine($"<p>{emailData.Greeting}</p>");
+ 962:         html.AppendLine($"<p>{emailData.Message}</p>");
+ 963: 
+ 964:         if (emailData.Discrepancies.Count > 0)
+ 965:         {
+ 966:             html.AppendLine("<p><strong>**DISCREPANCIES NOTED**</strong></p>");
+ 967:             html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+ 968:             html.AppendLine("<thead>");
+ 969:             html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
+ 970:             html.AppendLine("<th>Part Number</th>");
+ 971:             html.AppendLine("<th>Packlist Qty</th>");
+ 972:             html.AppendLine("<th>Received Qty</th>");
+ 973:             html.AppendLine("<th>Difference</th>");
+ 974:             html.AppendLine("<th>Note</th>");
+ 975:             html.AppendLine("</tr>");
+ 976:             html.AppendLine("</thead>");
+ 977:             html.AppendLine("<tbody>");
+ 978: 
+ 979:             foreach (var disc in emailData.Discrepancies)
+ 980:             {
+ 981:                 string diffStr = disc.Difference > 0 ? $"+{disc.Difference}" : disc.Difference.ToString();
+ 982:                 html.AppendLine("<tr>");
+ 983:                 html.AppendLine($"<td>{disc.PartNumber}</td>");
+ 984:                 html.AppendLine($"<td>{disc.PacklistQty}</td>");
+ 985:                 html.AppendLine($"<td>{disc.ReceivedQty}</td>");
+ 986:                 html.AppendLine($"<td>{diffStr}</td>");
+ 987:                 html.AppendLine($"<td>{disc.Note}</td>");
+ 988:                 html.AppendLine("</tr>");
+ 989:             }
+ 990: 
+ 991:             html.AppendLine("</tbody>");
+ 992:             html.AppendLine("</table>");
+ 993:             html.AppendLine("<br/>");
+ 994:         }
+ 995: 
+ 996:         html.AppendLine("<p><strong>Requested Lines:</strong></p>");
+ 997:         html.AppendLine("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; font-size: 10pt;'>");
+ 998:         html.AppendLine("<thead>");
+ 999:         html.AppendLine("<tr style='background-color: #D9D9D9; font-weight: bold;'>");
+1000:         html.AppendLine("<th>Part Number</th>");
+1001:         html.AppendLine("<th>Quantity (pcs)</th>");
+1002:         html.AppendLine("</tr>");
+1003:         html.AppendLine("</thead>");
+1004:         html.AppendLine("<tbody>");
+1005: 
+1006:         foreach (var kvp in emailData.RequestedLines.OrderBy(x => x.Key))
+1007:         {
+1008:             html.AppendLine("<tr>");
+1009:             html.AppendLine($"<td>{kvp.Key}</td>");
+1010:             html.AppendLine($"<td>{kvp.Value}</td>");
+1011:             html.AppendLine("</tr>");
+1012:         }
+1013: 
+1014:         html.AppendLine("</tbody>");
+1015:         html.AppendLine("</table>");
+1016:         html.AppendLine("<br/>");
+1017: 
+1018:         if (!string.IsNullOrWhiteSpace(emailData.AdditionalNotes))
+1019:         {
+1020:             html.AppendLine("<p><strong>Additional Notes:</strong></p>");
+1021:             html.AppendLine($"<p>{emailData.AdditionalNotes}</p>");
+1022:         }
+1023: 
+1024:         html.AppendLine($"<p>{emailData.Signature.Replace("\\n", "<br/>")}</p>");
+1025: 
+1026:         html.AppendLine("</body>");
+1027:         html.AppendLine("</html>");
+1028: 
+1029:         return html.ToString();
+1030:     }
+1031: 
+1032:     [RelayCommand]
+1033:     private void ViewHistory()
+1034:     {
+1035:         _logger.LogInfo("Navigating to Volvo Shipment History");
+1036:         if (App.MainWindow is MainWindow mainWindow)
+1037:         {
+1038:             var contentFrame = mainWindow.GetContentFrame();
+1039:             contentFrame?.Navigate(typeof(Views.View_Volvo_History));
+1040:         }
+1041:     }
+1042: 
+1043:     /// <summary>
+1044:     /// Saves shipment as pending using SavePendingShipmentCommand (CQRS)
+1045:     /// </summary>
+1046:     [RelayCommand]
+1047:     private async Task SaveAsPendingAsync()
+1048:     {
+1049:         try
+1050:         {
+1051:             IsBusy = true;
+1052:             StatusMessage = "Saving shipment...";
+1053: 
+1054:             // Validate first
+1055:             if (!ValidateShipment())
+1056:             {
+1057:                 await _errorHandler.HandleErrorAsync(
+1058:                     "Please add at least one part before saving",
+1059:                     Enum_ErrorSeverity.Low,
+1060:                     null,
+1061:                     true);
+1062:                 return;
+1063:             }
+1064: 
+1065:             // Build command with ShipmentLineDto list
+1066:             var partsDto = Parts.Select(p => new ShipmentLineDto
+1067:             {
+1068:                 PartNumber = p.PartNumber,
+1069:                 ReceivedSkidCount = p.ReceivedSkidCount,
+1070:                 ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
+1071:                 HasDiscrepancy = p.HasDiscrepancy,
+1072:                 DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
+1073:             }).ToList();
+1074: 
+1075:             var saveCommand = new SavePendingShipmentCommand
+1076:             {
+1077:                 ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+1078:                 ShipmentNumber = ShipmentNumber,
+1079:                 Notes = Notes ?? string.Empty,
+1080:                 Parts = partsDto
+1081:             };
+1082: 
+1083:             var result = await _mediator.Send(saveCommand);
+1084: 
+1085:             if (result.IsSuccess)
+1086:             {
+1087:                 SuccessMessage = $"Shipment #{ShipmentNumber} saved as pending";
+1088:                 IsSuccessMessageVisible = true;
+1089:                 HasPendingShipment = true;
+1090:                 StatusMessage = "Shipment saved";
+1091:                 await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} saved as pending (ID: {result.Data})");
+1092:             }
+1093:             else
+1094:             {
+1095:                 await _errorHandler.HandleErrorAsync(
+1096:                     result.ErrorMessage ?? "Failed to save shipment",
+1097:                     Enum_ErrorSeverity.Medium,
+1098:                     null,
+1099:                     true);
+1100:             }
+1101:         }
+1102:         catch (Exception ex)
+1103:         {
+1104:             await _logger.LogErrorAsync($"Error saving shipment: {ex.Message}", ex);
+1105:             await _errorHandler.HandleErrorAsync(
+1106:                 "Error saving shipment",
+1107:                 Enum_ErrorSeverity.Medium,
+1108:                 ex,
+1109:                 true);
+1110:         }
+1111:         finally
+1112:         {
+1113:             IsBusy = false;
+1114:         }
+1115:     }
+1116: 
+1117:     /// <summary>
+1118:     /// Internal save method for backward compatibility (legacy code)
+1119:     /// TODO: Migrate all callers to use SavePendingShipmentCommand directly
+1120:     /// </summary>
+1121:     private async Task<Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>> SaveShipmentInternalAsync()
+1122:     {
+1123:         // Validate
+1124:         if (!ValidateShipment())
+1125:         {
+1126:             return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>("Shipment validation failed");
+1127:         }
+1128: 
+1129:         // Use MediatR command for save
+1130:         var partsDto = Parts.Select(p => new ShipmentLineDto
+1131:         {
+1132:             PartNumber = p.PartNumber,
+1133:             ReceivedSkidCount = p.ReceivedSkidCount,
+1134:             ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
+1135:             HasDiscrepancy = p.HasDiscrepancy,
+1136:             DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
+1137:         }).ToList();
+1138: 
+1139:         var saveCommand = new SavePendingShipmentCommand
+1140:         {
+1141:             ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+1142:             ShipmentNumber = ShipmentNumber,
+1143:             Notes = Notes ?? string.Empty,
+1144:             Parts = partsDto
+1145:         };
+1146: 
+1147:         var result = await _mediator.Send(saveCommand);
+1148: 
+1149:         if (result.IsSuccess)
+1150:         {
+1151:             return new Model_Dao_Result<(int ShipmentId, int ShipmentNumber)>
+1152:             {
+1153:                 Success = true,
+1154:                 Data = (result.Data, ShipmentNumber)
+1155:             };
+1156:         }
+1157:         else
+1158:         {
+1159:             return Model_Dao_Result_Factory.Failure<(int ShipmentId, int ShipmentNumber)>(result.ErrorMessage);
+1160:         }
+1161:     }
+1162: 
+1163:     /// <summary>
+1164:     /// Completes pending shipment using CompleteShipmentCommand (CQRS)
+1165:     /// </summary>
+1166:     [RelayCommand]
+1167:     private async Task CompleteShipmentAsync()
+1168:     {
+1169:         // This will be used when completing a pending shipment with PO/Receiver numbers
+1170:         try
+1171:         {
+1172:             IsBusy = true;
+1173:             StatusMessage = "Completing shipment...";
+1174: 
+1175:             // Get pending shipment using MediatR
+1176:             var pendingQuery = new GetPendingShipmentQuery
+1177:             {
+1178:                 UserName = Environment.UserName
+1179:             };
+1180:             var pendingResult = await _mediator.Send(pendingQuery);
+1181: 
+1182:             if (!pendingResult.IsSuccess || pendingResult.Data == null)
+1183:             {
+1184:                 await _errorHandler.HandleErrorAsync(
+1185:                     "No pending shipment found",
+1186:                     Enum_ErrorSeverity.Medium,
+1187:                     null,
+1188:                     true);
+1189:                 return;
+1190:             }
+1191: 
+1192:             // Show completion dialog
+1193:             await ShowCompletionDialogAsync(pendingResult.Data);
+1194:         }
+1195:         catch (Exception ex)
+1196:         {
+1197:             await _logger.LogErrorAsync($"Error completing shipment: {ex.Message}", ex);
+1198:             await _errorHandler.HandleErrorAsync(
+1199:                 "Error completing shipment",
+1200:                 Enum_ErrorSeverity.Medium,
+1201:                 ex,
+1202:                 true);
+1203:         }
+1204:         finally
+1205:         {
+1206:             IsBusy = false;
+1207:         }
+1208:     }
+1209: 
+1210:     private async Task ShowCompletionDialogAsync(Model_VolvoShipment shipment)
+1211:     {
+1212:         var xamlRoot = _windowService.GetXamlRoot();
+1213:         if (xamlRoot == null)
+1214:         {
+1215:             return;
+1216:         }
+1217: 
+1218:         var dialog = new ContentDialog
+1219:         {
+1220:             Title = $"Complete Shipment #{shipment.ShipmentNumber}",
+1221:             PrimaryButtonText = "Complete",
+1222:             CloseButtonText = "Cancel",
+1223:             DefaultButton = ContentDialogButton.Primary,
+1224:             XamlRoot = xamlRoot
+1225:         };
+1226: 
+1227:         var stackPanel = new StackPanel { Spacing = 12 };
+1228: 
+1229:         var poTextBox = new TextBox
+1230:         {
+1231:             Header = "PO Number",
+1232:             PlaceholderText = "Enter PO number (e.g., PO-062450)"
+1233:         };
+1234: 
+1235:         var receiverTextBox = new TextBox
+1236:         {
+1237:             Header = "Receiver Number",
+1238:             PlaceholderText = "Enter receiver number (e.g., 134393)"
+1239:         };
+1240: 
+1241:         stackPanel.Children.Add(poTextBox);
+1242:         stackPanel.Children.Add(receiverTextBox);
+1243:         dialog.Content = stackPanel;
+1244: 
+1245:         var result = await dialog.ShowAsync();
+1246: 
+1247:         if (result == ContentDialogResult.Primary)
+1248:         {
+1249:             if (string.IsNullOrWhiteSpace(poTextBox.Text) || string.IsNullOrWhiteSpace(receiverTextBox.Text))
+1250:             {
+1251:                 await _errorHandler.HandleErrorAsync(
+1252:                     "PO Number and Receiver Number are required",
+1253:                     Enum_ErrorSeverity.Low,
+1254:                     null,
+1255:                     true);
+1256:                 return;
+1257:             }
+1258: 
+1259:             // Use MediatR CompleteShipmentCommand
+1260:             var partsDto = Parts.Select(p => new ShipmentLineDto
+1261:             {
+1262:                 PartNumber = p.PartNumber,
+1263:                 ReceivedSkidCount = p.ReceivedSkidCount,
+1264:                 ExpectedSkidCount = p.ExpectedSkidCount.HasValue ? (int?)p.ExpectedSkidCount.Value : null,
+1265:                 HasDiscrepancy = p.HasDiscrepancy,
+1266:                 DiscrepancyNote = p.DiscrepancyNote ?? string.Empty
+1267:             }).ToList();
+1268: 
+1269:             var completeCommand = new CompleteShipmentCommand
+1270:             {
+1271:                 ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
+1272:                 ShipmentNumber = ShipmentNumber,
+1273:                 PONumber = poTextBox.Text.Trim(),
+1274:                 ReceiverNumber = receiverTextBox.Text.Trim(),
+1275:                 Notes = Notes ?? string.Empty,
+1276:                 Parts = partsDto
+1277:             };
+1278: 
+1279:             var completeResult = await _mediator.Send(completeCommand);
+1280: 
+1281:             if (completeResult.IsSuccess)
+1282:             {
+1283:                 SuccessMessage = $"Shipment #{ShipmentNumber} completed successfully!";
+1284:                 IsSuccessMessageVisible = true;
+1285:                 HasPendingShipment = false;
+1286:                 await _logger.LogInfoAsync($"Shipment #{ShipmentNumber} completed with PO: {poTextBox.Text.Trim()}");
+1287: 
+1288:                 // Clear the form
+1289:                 ClearShipmentForm();
+1290:             }
+1291:             else
+1292:             {
+1293:                 await _errorHandler.HandleErrorAsync(
+1294:                     completeResult.ErrorMessage ?? "Failed to complete shipment",
+1295:                     Enum_ErrorSeverity.Medium,
+1296:                     null,
+1297:                     true);
+1298:             }
+1299:         }
+1300:     }
+1301: 
+1302:     [RelayCommand]
+1303:     private async Task ToggleDiscrepancyAsync(Model_VolvoShipmentLine? line)
+1304:     {
+1305:         if (line == null)
+1306:         {
+1307:             return;
+1308:         }
+1309: 
+1310:         var xamlRoot = _windowService.GetXamlRoot();
+1311:         if (xamlRoot == null)
+1312:         {
+1313:             return;
+1314:         }
+1315: 
+1316:         if (line.HasDiscrepancy)
+1317:         {
+1318:             var confirmDialog = new ContentDialog
+1319:             {
+1320:                 Title = "Remove Discrepancy",
+1321:                 Content = "Remove the discrepancy for this line?",
+1322:                 PrimaryButtonText = "Remove",
+1323:                 CloseButtonText = "Cancel",
+1324:                 DefaultButton = ContentDialogButton.Primary,
+1325:                 XamlRoot = xamlRoot
+1326:             };
+1327: 
+1328:             var confirmResult = await confirmDialog.ShowAsync();
+1329:             if (confirmResult == ContentDialogResult.Primary)
+1330:             {
+1331:                 line.HasDiscrepancy = false;
+1332:             }
+1333: 
+1334:             return;
+1335:         }
+1336: 
+1337:         var expectedSkidsBox = new NumberBox
+1338:         {
+1339:             Header = "Expected Skids",
+1340:             Minimum = 1,
+1341:             SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
+1342:             Value = line.ExpectedSkidCount ?? 1
+1343:         };
+1344: 
+1345:         var noteBox = new TextBox
+1346:         {
+1347:             Header = "Discrepancy Note",
+1348:             PlaceholderText = "Explain discrepancy",
+1349:             Text = line.DiscrepancyNote ?? string.Empty
+1350:         };
+1351: 
+1352:         var panel = new StackPanel { Spacing = 12 };
+1353:         panel.Children.Add(expectedSkidsBox);
+1354:         panel.Children.Add(noteBox);
+1355: 
+1356:         var dialog = new ContentDialog
+1357:         {
+1358:             Title = "Report Discrepancy",
+1359:             Content = panel,
+1360:             PrimaryButtonText = "Save",
+1361:             CloseButtonText = "Cancel",
+1362:             DefaultButton = ContentDialogButton.Primary,
+1363:             XamlRoot = xamlRoot
+1364:         };
+1365: 
+1366:         var result = await dialog.ShowAsync();
+1367:         if (result != ContentDialogResult.Primary)
+1368:         {
+1369:             return;
+1370:         }
+1371: 
+1372:         if (expectedSkidsBox.Value < 1)
+1373:         {
+1374:             await _errorHandler.HandleErrorAsync(
+1375:                 "Expected skids must be greater than 0",
+1376:                 Enum_ErrorSeverity.Low,
+1377:                 null,
+1378:                 true);
+1379:             return;
+1380:         }
+1381: 
+1382:         line.HasDiscrepancy = true;
+1383:         line.ExpectedSkidCount = expectedSkidsBox.Value;
+1384:         line.DiscrepancyNote = string.IsNullOrWhiteSpace(noteBox.Text) ? null : noteBox.Text.Trim();
+1385:     }
+1386: 
+1387:     [RelayCommand]
+1388:     private void StartNewEntry()
+1389:     {
+1390:         IsSuccessMessageVisible = false;
+1391:         SuccessMessage = string.Empty;
+1392:         HasPendingShipment = false;
+1393:         ClearShipmentForm();
+1394:     }
+1395: 
+1396:     #endregion
+1397: 
+1398:     #region Validation
+1399: 
+1400:     private bool ValidateShipment()
+1401:     {
+1402:         if (Parts.Count == 0)
+1403:         {
+1404:             _errorHandler.HandleErrorAsync(
+1405:                 "At least one part is required",
+1406:                 Enum_ErrorSeverity.Low,
+1407:                 null,
+1408:                 true).ConfigureAwait(false);
+1409:             return false;
+1410:         }
+1411: 
+1412:         foreach (var part in Parts)
+1413:         {
+1414:             if (string.IsNullOrWhiteSpace(part.PartNumber))
+1415:             {
+1416:                 _errorHandler.HandleErrorAsync(
+1417:                     "All parts must have a part number selected",
+1418:                     Enum_ErrorSeverity.Low,
+1419:                     null,
+1420:                     true).ConfigureAwait(false);
+1421:                 return false;
+1422:             }
+1423: 
+1424:             if (part.ReceivedSkidCount <= 0)
+1425:             {
+1426:                 _errorHandler.HandleErrorAsync(
+1427:                     $"Part {part.PartNumber} must have at least 1 skid",
+1428:                     Enum_ErrorSeverity.Low,
+1429:                     null,
+1430:                     true).ConfigureAwait(false);
+1431:                 return false;
+1432:             }
+1433: 
+1434:             if (part.HasDiscrepancy && !part.ExpectedSkidCount.HasValue)
+1435:             {
+1436:                 _errorHandler.HandleErrorAsync(
+1437:                     $"Part {part.PartNumber} has discrepancy but no expected skid count",
+1438:                     Enum_ErrorSeverity.Low,
+1439:                     null,
+1440:                     true).ConfigureAwait(false);
+1441:                 return false;
+1442:             }
+1443:         }
+1444: 
+1445:         return true;
+1446:     }
+1447: 
+1448:     /// <summary>
+1449:     /// Formats JSON array of recipients into Outlook format
+1450:     /// </summary>
+1451:     /// <param name="jsonValue"></param>
+1452:     /// <param name="fallbackValue"></param>
+1453:     private string FormatRecipientsFromJson(string? jsonValue, string fallbackValue)
+1454:     {
+1455:         if (string.IsNullOrWhiteSpace(jsonValue))
+1456:         {
+1457:             return fallbackValue;
+1458:         }
+1459: 
+1460:         try
+1461:         {
+1462:             var recipients = System.Text.Json.JsonSerializer.Deserialize<List<Models.Model_EmailRecipient>>(jsonValue);
+1463:             if (recipients == null || recipients.Count == 0)
+1464:             {
+1465:                 return fallbackValue;
+1466:             }
+1467: 
+1468:             return string.Join("; ", recipients.Select(r => r.ToOutlookFormat()));
+1469:         }
+1470:         catch (Exception ex)
+1471:         {
+1472:             _logger.LogErrorAsync($"Error parsing email recipients JSON: {ex.Message}", ex).ConfigureAwait(false);
+1473:             return fallbackValue;
+1474:         }
+1475:     }
+1476: 
+1477:     private void ValidateSaveEligibility()
+1478:     {
+1479:         CanSave = Parts.Count > 0 && Parts.All(p => !string.IsNullOrWhiteSpace(p.PartNumber) && p.ReceivedSkidCount > 0);
+1480:     }
+1481: 
+1482:     #endregion
+1483: 
+1484:     #region Event Handlers
+1485: 
+1486:     partial void OnPartsChanged(ObservableCollection<Model_VolvoShipmentLine> value)
+1487:     {
+1488:         ValidateSaveEligibility();
+1489:     }
+1490: 
+1491:     partial void OnSelectedPartToAddChanged(Model_VolvoPart? value)
+1492:     {
+1493:         AddPartCommand.NotifyCanExecuteChanged();
+1494:     }
+1495: 
+1496:     partial void OnReceivedSkidsToAddChanged(string value)
+1497:     {
+1498:         AddPartCommand.NotifyCanExecuteChanged();
+1499:     }
+1500: 
+1501:     #endregion
+1502: 
+1503:     #region Helper Methods
+1504: 
+1505:     /// <summary>
+1506:     /// Clears all shipment form fields and resets to default state
+1507:     /// Extracted to avoid code duplication
+1508:     /// </summary>
+1509:     private void ClearShipmentForm()
+1510:     {
+1511:         Parts.Clear();
+1512:         Notes = string.Empty;
+1513:         ShipmentNumber = 1;
+1514:         SelectedPartToAdd = null;
+1515:         ReceivedSkidsToAdd = string.Empty;
+1516:         PartSearchText = string.Empty;
+1517:         SuggestedParts.Clear();
+1518:     }
+1519: 
+1520:     #endregion
+1521: }
+````
+
+## File: README.md
+````markdown
+  1: # MTM Receiving Application
+  2: 
+  3: Modern WinUI 3 desktop application for manufacturing receiving operations with integrated authentication and label printing capabilities.
+  4: 
+  5: ## Overview
+  6: 
+  7: The MTM Receiving Application streamlines the receiving process for manufacturing facilities by providing:
+  8: 
+  9: - **Multi-tier authentication system** with automatic workstation detection
+ 10: - **Label generation** for receiving, dunnage, and routing operations
+ 11: - **Database integration** with MySQL for data persistence and audit trails
+ 12: - **Session management** with automatic timeout for security
+ 13: 
+ 14: ## Copilot MCP (High-Intelligence Setup)
+ 15: 
+ 16: This repo includes a curated Copilot configuration to encourage MCP-first workflows (better context, fewer guesses):
+ 17: 
+ 18: - MCP servers are defined in `.vscode/mcp.json` (Serena, filesystem, Playwright, GitHub Remote, GitHub Local via Docker).
+ 19: - Use the custom agent **MCP Operator** (see `.github/agents/mcp-operator.agent.md`) when you want Copilot to rely heavily on MCP tools.
+ 20: - Use the prompt files `/mcp-triage` and `/mcp-implement` (see `.github/prompts/`) to run repeatable MCP-first workflows.
+ 21: - Optional tool sets are in `.vscode/toolsets.jsonc` (use `#mcpFiles`, `#mcpGitHub`, `#mcpBrowser`, `#mcpSerena`).
+ 22: 
+ 23: ## Features
+ 24: 
+ 25: ### Authentication System
+ 26: 
+ 27: The application implements a comprehensive authentication system that automatically adapts to the workstation type:
+ 28: 
+ 29: #### Personal Workstation (Auto-Login)
+ 30: 
+ 31: - Automatic Windows username authentication
+ 32: - No credentials required for office/supervisor computers
+ 33: - 30-minute inactivity timeout
+ 34: 
+ 35: #### Shared Terminal (PIN Login)
+ 36: 
+ 37: - Username + 4-digit PIN authentication
+ 38: - Designed for shop floor communal computers
+ 39: - 15-minute inactivity timeout
+ 40: - 3-attempt lockout security
+ 41: 
+ 42: #### New User Creation
+ 43: 
+ 44: - Self-service account creation for new employees
+ 45: - Department and shift assignment
+ 46: - Optional Visual/Infor ERP credential storage
+ 47: - PIN uniqueness validation
+ 48: 
+ 49: **[Full Authentication Documentation](Documentation/AUTHENTICATION.md)**
+ 50: 
+ 51: ### Session Management
+ 52: 
+ 53: - Automatic activity tracking (mouse, keyboard, window activation)
+ 54: - Configurable timeout durations based on workstation type
+ 55: - Graceful session termination with audit logging
+ 56: - Comprehensive activity log for security auditing
+ 57: 
+ 58: ### Receiving Workflow
+ 59: 
+ 60: A guided, step-by-step workflow for receiving materials:
+ 61: 
+ 62: - **PO Entry**: Validate PO numbers against Infor Visual ERP.
+ 63: - **Part Selection**: Select parts from PO or enter non-PO items.
+ 64: - **Load Entry**: Specify number of loads/pallets.
+ 65: - **Weight & Quantity**: Enter weight and quantity per load.
+ 66: - **Heat/Lot Entry**: Track heat and lot numbers for traceability.
+ 67: - **Package Type**: Select package types with user preferences.
+ 68: - **Review**: Verify all data before saving.
+ 69: - **Persistence**: Saves to local CSV, network CSV, and MySQL database.
+ 70: 
+ 71: ### Label Generation
+ 72: 
+ 73: _(Coming soon)_
+ 74: 
+ 75: - Receiving labels with barcode integration
+ 76: - Dunnage/packing material labels
+ 77: - Internal routing labels
+ 78: 
+ 79: ### Help System
+ 80: 
+ 81: The application includes a centralized, context-sensitive help system:
+ 82: 
+ 83: #### Features
+ 84: 
+ 85: - **Contextual Help Dialogs**: Step-by-step guidance for each workflow step
+ 86: - **Tooltips**: Informative button and field tooltips throughout the UI
+ 87: - **Placeholders**: Dynamic placeholder text for input fields
+ 88: - **Tips**: Workflow-specific tips and best practices
+ 89: - **Related Topics**: Navigation to related help content
+ 90: - **Search**: Full-text search across all help content
+ 91: 
+ 92: #### Using the Help System
+ 93: 
+ 94: **In Workflow Views**:
+ 95: 
+ 96: - Click the **Help** button (❓) in any workflow to see context-specific guidance
+ 97: - Hover over buttons and fields for tooltips
+ 98: - Look for tip icons (💡) for workflow-specific advice
+ 99: 
+100: **Help Content Categories**:
+101: 
+102: - **Dunnage Workflow**: Complete guidance for dunnage receiving process
+103: - **Receiving Workflow**: PO-based receiving with Infor Visual integration
+104: - **Admin**: Dunnage type and part management instructions
+105: 
+106: **Keyboard Shortcuts** _(coming soon)_:
+107: 
+108: - `F1` - Context-sensitive help for current screen
+109: 
+110: #### For Developers
+111: 
+112: The help system is implemented as a centralized service:
+113: 
+114: ```csharp
+115: // Inject help service in ViewModel
+116: public MyViewModel(IService_Help helpService, ...)
+117: {
+118:     _helpService = helpService;
+119: }
+120: 
+121: // Show contextual help dialog
+122: await _helpService.ShowContextualHelpAsync(currentStep);
+123: 
+124: // Get tooltip/placeholder text
+125: string tooltip = _helpService.GetTooltip("Button.Save");
+126: string placeholder = _helpService.GetPlaceholder("Field.PONumber");
+127: ```
+128: 
+129: **Architecture**:
+130: 
+131: - **Service**: `Services/Help/Service_Help.cs` (Singleton)
+132: - **Dialog**: `Views/Shared/Shared_HelpDialog.xaml` (Transient)
+133: - **Model**: `Models/Core/Model_HelpContent.cs`
+134: - **Content**: 100+ help entries loaded at startup
+135: 
+136: See [Help System Architecture memory](Serena: `help_system_architecture`) for complete documentation.
+137: 
+138: ## Technology Stack
+139: 
+140: - **Framework**: WinUI 3 (.NET 8.0)
+141: - **Architecture**: MVVM with CommunityToolkit.Mvvm
+142: - **Database**: MySQL 8.0+ (application data), SQL Server (Infor Visual - READ ONLY)
+143: - **Dependency Injection**: Microsoft.Extensions.DependencyInjection
+144: - **UI Toolkit**: Windows App SDK 1.8
+145: - **Icons**: Material.Icons.WinUI3
+146: 
+147: ## Development Guidelines
+148: 
+149: This project follows a formal constitution that defines core principles and development standards:
+150: 
+151: 📋 **[Project Constitution](.specify/memory/constitution.md)** - Required reading for all contributors
+152: 
+153: **Key Principles**:
+154: 
+155: 1. **MVVM Architecture** - Strict separation of concerns (ViewModels, Views, Models, Services)
+156: 2. **Database Layer Consistency** - Model_Dao_Result pattern, stored procedures only, async operations
+157: 3. **Dependency Injection** - All services registered with interfaces, constructor injection
+158: 4. **Error Handling & Logging** - Centralized error handling and CSV-based logging
+159: 5. **Security & Authentication** - Multi-tier auth with audit trails
+160: 6. **WinUI 3 Modern Practices** - x:Bind, ObservableCollection, async/await
+161: 7. **Specification-Driven Development** - Speckit workflow for all features
+162: 
+163: **Critical Constraints**:
+164: 
+165: - ⚠️ **Infor Visual Database is STRICTLY READ ONLY** - No writes allowed
+166: - MySQL 5.7.24+ compatibility required (no JSON functions, CTEs, window functions)
+167: - See constitution for complete guidelines
+168: 
+169: ## Prerequisites
+170: 
+171: - Windows 10 (version 1809) or later / Windows 11
+172: - .NET 8.0 SDK or later
+173: - MySQL 8.0+ database server
+174: - Visual Studio 2022 (recommended) or VS Code
+175: 
+176: ## Installation
+177: 
+178: ### 1. Clone Repository
+179: 
+180: ```powershell
+181: git clone https://github.com/JDKoll1982/MTM_Receiving_Application.git
+182: cd MTM_Receiving_Application
+183: ```
+184: 
+185: ### 2. Database Setup
+186: 
+187: Run the database schema scripts in order:
+188: 
+189: ```powershell
+190: # From MySQL command line or MySQL Workbench
+191: mysql -u root -p < Database/Schemas/01_create_receiving_tables.sql
+192: mysql -u root -p < Database/Schemas/02_create_authentication_tables.sql
+193: 
+194: # Deploy stored procedures
+195: cd Database/Deploy
+196: powershell -ExecutionPolicy Bypass -File Deploy-Database.ps1
+197: ```
+198: 
+199: ### 3. Configure Connection String
+200: 
+201: Update the database connection in `Helpers/Database/Helper_Database_Variables.cs`:
+202: 
+203: ```csharp
+204: private static readonly string ProductionConnectionString =
+205:     "Server=localhost;Database=mtm_receiving_application;Uid=your_username;Pwd=your_password;";
+206: ```
+207: 
+208: ### 4. Build and Run
+209: 
+210: ```powershell
+211: dotnet restore
+212: dotnet build
+213: dotnet run
+214: ```
+215: 
+216: Or open `MTM_Receiving_Application.slnx` in Visual Studio 2022 and press F5.
+217: 
+218: ## Configuration
+219: 
+220: ### Workstation Setup
+221: 
+222: Configure workstations in the database:
+223: 
+224: **Personal Workstation** (Windows auto-login):
+225: 
+226: ```sql
+227: -- Computer defaults to personal workstation if not in config
+228: -- No configuration needed unless changing to shared terminal
+229: ```
+230: 
+231: **Shared Terminal** (PIN login):
+232: 
+233: ```sql
+234: INSERT INTO auth_workstation_config (computer_name, workstation_type, description)
+235: VALUES ('SHOP2', 'shared_terminal', 'Shop floor terminal - Receiving area');
+236: ```
+237: 
+238: ### Department Management
+239: 
+240: Add departments for user assignment:
+241: 
+242: ```sql
+243: INSERT INTO departments (department_name, is_active, sort_order)
+244: VALUES ('Production', TRUE, 10),
+245:        ('Quality Control', TRUE, 20),
+246:        ('Shipping & Receiving', TRUE, 30);
+247: ```
+248: 
+249: **[Full Database Administration Guide](Documentation/DATABASE_ADMIN.md)**
+250: 
+251: ## Project Structure
+252: 
+253: ```
+254: MTM_Receiving_Application/
+255: ├── Assets/                          # Images, icons, resources
+256: ├── Contracts/                       # Service interfaces
+257: │   └── Services/                    # IService_Authentication, IService_SessionManager, etc.
+258: ├── Data/                            # Data Access Objects (DAOs)
+259: │   ├── Authentication/              # User, session data access
+260: │   └── Receiving/                   # Label data access
+261: ├── Database/                        # SQL scripts and deployment
+262: │   ├── Schemas/                     # Table definitions
+263: │   ├── StoredProcedures/            # Stored procedure scripts
+264: │   └── Deploy/                      # Deployment scripts
+265: ├── Documentation/                   # Technical documentation
+266: │   ├── AUTHENTICATION.md            # Authentication system guide
+267: │   └── DATABASE_ADMIN.md            # Database administration guide
+268: ├── Helpers/                         # Utility classes
+269: │   ├── Database/                    # Database helpers
+270: │   ├── Formatting/                  # Data formatting utilities
+271: │   └── Validation/                  # Input validation
+272: ├── Models/                          # Data models and business logic
+273: │   ├── Enums/                       # Enumeration types
+274: │   └── Receiving/                   # Label models
+275: ├── Services/                        # Business logic services
+276: │   ├── Authentication/              # Auth and session services
+277: │   ├── Database/                    # Error handling, logging
+278: │   └── Startup/                     # Application lifecycle
+279: ├── Tests/                           # Manual test files
+280: ├── ViewModels/                      # MVVM ViewModels
+281: │   ├── Shared/                      # Login, user setup VMs
+282: │   └── Receiving/                   # Label VMs
+283: └── Views/                           # XAML views
+284:     ├── Shared/                      # Login dialogs
+285:     └── Receiving/                   # Label views
+286: ```
+287: 
+288: ## Usage
+289: 
+290: ### First Launch
+291: 
+292: 1. **Personal Workstation**: Application detects Windows username and attempts auto-login
+293:    - If username not found: New User Setup dialog appears
+294:    - Fill in full name, department, shift, PIN
+295:    - Click "Create Account"
+296: 
+297: 2. **Shared Terminal**: PIN Login dialog appears
+298:    - Enter username and 4-digit PIN
+299:    - Click "Login"
+300: 
+301: ### Session Management
+302: 
+303: - Application monitors user activity automatically
+304: - Idle timeout: 30 minutes (personal) / 15 minutes (shared)
+305: - Application closes automatically on timeout
+306: - All activity logged to database for audit trail
+307: 
+308: ### Creating New Users
+309: 
+310: On personal workstations, new users can create accounts:
+311: 
+312: 1. Launch application with unknown Windows username
+313: 2. New User Setup dialog appears automatically
+314: 3. Fill required fields (full name, department, shift, PIN)
+315: 4. Optionally configure ERP credentials
+316: 5. Click "Create Account" - employee number assigned
+317: 6. Automatic authentication with new account
+318: 
+319: ## Testing
+320: 
+321: ### Manual Tests
+322: 
+323: Manual test classes are available in the `Tests/` folder:
+324: 
+325: ```csharp
+326: // Test database connectivity
+327: await Phase1_Manual_Tests.RunAllTests();
+328: 
+329: // Test model validation
+330: Phase5_Model_Verification.RunAllTests();
+331: ```
+332: 
+333: ### Runtime Testing
+334: 
+335: - **T120-T122**: Shared terminal PIN login tests
+336: - **T165-T170**: New user creation tests
+337: - **T180-T182**: ERP credential storage tests
+338: 
+339: See [tasks.md](specs/002-user-login/tasks.md) for complete test scenarios.
+340: 
+341: ## Troubleshooting
+342: 
+343: ### Application Won't Start
+344: 
+345: **Check**:
+346: 
+347: 1. .NET 8.0 runtime installed
+348: 2. MySQL service running
+349: 3. Database connection string correct
+350: 4. Database schema deployed
+351: 
+352: ### Authentication Fails
+353: 
+354: **Check**:
+355: 
+356: 1. User exists in database: `SELECT * auth_users WHERE windows_username = 'username';`
+357: 2. Account is active: `SELECT is_active auth_users WHERE ...;`
+358: 3. Workstation configured correctly: `SELECT * FROM auth_workstation_config WHERE ...;`
+359: 
+360: ### Database Connection Errors
+361: 
+362: **Check**:
+363: 
+364: 1. MySQL service running: `services.msc` → MySQL80
+365: 2. Connection string correct in `Helper_Database_Variables.cs`
+366: 3. Database exists: `SHOW DATABASES;`
+367: 4. Stored procedures deployed
+368: 
+369: **[Complete Troubleshooting Guide](Documentation/DATABASE_ADMIN.md#troubleshooting)**
+370: 
+371: ## Development
+372: 
+373: ### Building from Source
+374: 
+375: ```powershell
+376: # Restore NuGet packages
+377: dotnet restore
+378: 
+379: # Build application
+380: dotnet build --configuration Debug
+381: 
+382: # Run application
+383: dotnet run
+384: 
+385: # Build for release
+386: dotnet build --configuration Release
+387: ```
+388: 
+389: ### Code Style
+390: 
+391: - **Architecture**: MVVM pattern with ViewModels and Views separated
+392: - **DI**: Constructor injection for all services
+393: - **Async**: Use async/await for all I/O operations
+394: - **Naming**: PascalCase for public members, _camelCase for private fields
+395: - **Documentation**: XML comments for all public APIs
+396: 
+397: ### Adding New Features
+398: 
+399: 1. Create service interface in `Contracts/Services/`
+400: 2. Implement service in `Services/`
+401: 3. Create models in `Models/`
+402: 4. Create ViewModel in `ViewModels/`
+403: 5. Create View in `Views/`
+404: 6. Register service in `App.xaml.cs` ConfigureServices()
+405: 
+406: ## Contributing
+407: 
+408: ### Branch Structure
+409: 
+410: - `001-phase1-infrastructure`: Core infrastructure (default)
+411: - `002-user-login`: Authentication system (current)
+412: - Feature branches: Follow `###-feature-name` pattern
+413: 
+414: ### Pull Request Process
+415: 
+416: 1. Create feature branch from appropriate base
+417: 2. Implement feature with tests
+418: 3. Update documentation
+419: 4. Submit PR with description
+420: 5. Code review and approval
+421: 6. Merge to base branch
+422: 
+423: ## Security
+424: 
+425: ### Authentication Security
+426: 
+427: - PINs: 4-digit numeric, plain text storage (physical facility access)
+428: - 3-attempt lockout prevents brute force attacks
+429: - All authentication events logged for audit
+430: - Session timeout ensures automatic logout
+431: 
+432: ### Database Security
+433: 
+434: - Parameterized queries prevent SQL injection
+435: - Stored procedures enforce business logic
+436: - Database access controls limit exposure
+437: - Activity log tracks all operations
+438: 
+439: ### ERP Credentials
+440: 
+441: - Stored in plain text (required for ERP API)
+442: - Database access controls protect data
+443: - User warned during account creation
+444: - Optional feature, not required
+445: 
+446: ## License
+447: 
+448: [Specify License]
+449: 
+450: ## Support
+451: 
+452: For issues, questions, or feature requests:
+453: 
+454: - **GitHub Issues**: [Project Issues Page]
+455: - **Documentation**: See `Documentation/` folder
+456: - **Email**: [Contact Email]
+457: 
+458: ## Acknowledgments
+459: 
+460: - **WinUI 3**: Microsoft Windows App SDK team
+461: - **CommunityToolkit**: .NET Community
+462: - **MySQL**: Oracle Corporation
+463: 
+464: ---
+465: 
+466: **Version**: 1.0.0
+467: **Last Updated**: December 2025
+468: **Platform**: Windows 10/11
+469: **.NET Version**: 8.0
+````

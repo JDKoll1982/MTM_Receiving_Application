@@ -106,6 +106,7 @@ Directory.Build.props
 **/*.g.i.cs
 **/.repomix-output.*
 repomix-output.*
+**/.repomix/**
 
 # ============================================================
 
