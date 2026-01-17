@@ -19,6 +19,9 @@ files_to_modify:
   - 'Module_Settings/ViewModels/ViewModel_Settings_DatabaseTest.cs'
   - 'Module_Settings/Views/View_Settings_DatabaseTest.xaml'
   - 'Module_Settings/docs/templates/MOCK_FILE_STRUCTURE.md'
+  - 'Database/Schemas/settings_core_schema.sql'
+  - 'Database/StoredProcedures/Settings/sp_SettingsCore.sql'
+  - 'Module_Settings.Core/Defaults/settings.manifest.json'
 code_patterns:
   - 'ViewModel -> IMediator (no direct DAO)'
   - 'Instance-based DAOs returning Model_Dao_Result'
@@ -147,6 +150,8 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 - Delete all legacy settings UI/files; green build before implementing new system
 - Any existing module settings integration with old Module_Settings should be commented/TODOed for later refactor
 - Core exposes a thin service facade; MediatR and FluentValidation remain internal to Module_Settings
+- Core exposes a thin service facade; MediatR and FluentValidation remain internal to Module_Settings.Core only
+- Core Settings ViewModels use IMediator internally; external modules call the facade (no IMediator exposure)
 - Feature modules must maintain their own settings inventory using a template stored in Module_Settings/docs/templates
 - Core vs Feature boundary is enforced: Core only hosts global settings and tooling; feature modules own their settings UI and domain keys
 - Settings Window UX must be discoverable but isolated; use standard WinUI 3 styling and no shared navigation context
@@ -156,6 +161,15 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 - File structure must follow the Module_Settings.Core + Module_Settings.DeveloperTools + Module_Settings.{FeatureName} pattern, each with the same subfolder schema (Data/Models/Services/ViewModels/Views/Enums/Interfaces)
 - DB Test tool lives in Module_Settings.DeveloperTools
 - Manifest fallback behavior: on missing setting, write manifest default to DB and use it for session; on corrupted value, prompt user (setting name + expected type + returned type), reset to manifest default in DB, and use manifest value for session
+- Manifest defaults file: Module_Settings.Core/Defaults/settings.manifest.json (versioned, JSON schema documented in the Feature Settings Guide)
+- Manifest defaults file: Module_Settings.Core/Defaults/settings.manifest.json (versioned, JSON schema documented in the Feature Settings Guide)
+- Cache strategy: in-memory per-session cache keyed by {category,key,userId}; invalidate on write; no TTL unless approved
+- Cache strategy: cache scope uses {scope,category,key,userId?}; system scope omits userId; user scope requires userId
+- Roles/privileges source: core settings schema includes roles + user-role mapping; handlers use IService_UserSessionManager for current user context and do not touch SQL Server
+- Window single-instance behavior: keep a single Settings Window instance stored in a shared service; if already open, bring to front and focus (do not create a new instance)
+- Namespaces: MTM_Receiving_Application.Module_Settings.Core.* and MTM_Receiving_Application.Module_Settings.DeveloperTools.*; update registrations accordingly
+- Encryption approach: use .NET built-in cryptography (no new packages). Store encryption key in DPAPI-protected local app data; support manual rotation via admin dialog
+- Corrupted/missing setting prompt channel: defer to post-startup using notification service + dialog once UI is ready
 
 ### Architecture Decision Records (ADRs)
 
@@ -170,50 +184,61 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 
 ### Tasks
 
-- [ ] Task 1: Purge legacy Module_Settings and reach green build
+- [ ] Task 1: Capture legacy DB test reference before deletion (hard gate)
+  - File: Module_Settings/ViewModels/ViewModel_Settings_DatabaseTest.cs, Module_Settings/Views/View_Settings_DatabaseTest.xaml
+  - Action: Document the existing DB test workflow (screenshots or notes) for use during recreation.
+  - Notes: This preserves intent before deletion. Do not proceed to Task 2 until captured.
+- [ ] Task 2: Purge legacy Module_Settings and reach green build
   - File: Module_Settings/**
   - Action: Delete legacy Settings Views/ViewModels/Services/Interfaces/Enums/Data/Models (old workflow, mode selection, dunnage mode, placeholder, old DAOs/models). Keep only new Module_Settings.Core/DeveloperTools structure to be rebuilt.
-  - Notes: Comment/TODO any feature-module references to old settings APIs.
-- [ ] Task 2: Update MainWindow settings entry point
+  - Notes: Comment/TODO any feature-module references to old settings APIs before deleting; if needed, add temporary stubs to keep build green.
+- [ ] Task 3: Update MainWindow settings entry point
   - File: MainWindow.xaml.cs
   - Action: When `IsSettingsSelected`, launch the separate Core Settings Window (single-instance behavior). Remove any in-frame settings navigation.
   - Notes: Use `WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(1400, 900)` for the Settings Window.
-- [ ] Task 3: DI cleanup and new registrations
+- [ ] Task 4: DI cleanup and new registrations
   - File: App.xaml.cs
   - Action: Remove legacy Module_Settings registrations. Register Core Settings Window, Core Settings ViewModels/Services/DAOs, and DeveloperTools DB Test View/ViewModel.
   - Notes: No DI structure changes beyond new registrations.
-- [ ] Task 4: Establish Module_Settings.Core structure and metadata registry
-  - File: Module_Settings.Core/**
+- [ ] Task 5: Establish Module_Settings.Core structure and metadata registry
+  - File: Module_Settings.Core/**, Module_Settings.Core/Defaults/settings.manifest.json
   - Action: Create Core module folders (Data/Enums/Interfaces/Models/Services/ViewModels/Views/docs/templates) and implement code-first settings metadata registry.
-  - Notes: Define manifest defaults file location and format for fallback (module-local, versioned).
-- [ ] Task 5: Implement Core settings data contracts and DAOs
+  - Notes: Manifest JSON includes key, default, dataType, scope, permissionLevel, isSensitive, validationRules.
+- [ ] Task 6: Define schema + stored procedures for Core Settings
+  - File: Database/Schemas/settings_core_schema.sql, Database/StoredProcedures/Settings/sp_SettingsCore.sql
+  - Action: Create tables for settings_universal, settings_personal, settings_activity, settings_roles, settings_user_roles; add core CRUD + audit procedures.
+  - Notes: Must be idempotent and stored-procedure only.
+- [ ] Task 7: Implement Core settings data contracts and DAOs
   - File: Module_Settings.Core/Models/*, Module_Settings.Core/Data/*
-  - Action: Create models for system/user settings, metadata, audit log; implement instance-based DAOs using stored procedures only.
+  - Action: Create models for system/user settings, metadata, audit log, roles; implement instance-based DAOs using stored procedures only.
   - Notes: DAOs return Model_Dao_Result and never throw.
-- [ ] Task 6: Implement CQRS handlers, validators, and pipeline behaviors
+- [ ] Task 8: Implement CQRS handlers, validators, and pipeline behaviors
   - File: Module_Settings.Core/Services/**, Module_Settings.Core/Validators/**
   - Action: Add MediatR handlers for get/set/reset, audit behavior, validation behavior, and safe logging (no secrets).
   - Notes: Enforce permission checks in handlers.
-- [ ] Task 7: Build Core Settings Window and pages
+- [ ] Task 9: Build Core Settings Window and pages
   - File: Module_Settings.Core/Views/**, Module_Settings.Core/ViewModels/**
   - Action: Create Settings Window shell with NavigationView and global pages (System, Users/Privileges, UI Theme, Database, Logging, Shared Paths).
-  - Notes: Use x:Bind, no code-behind logic beyond wiring; isolated from MainWindow nav context.
-- [ ] Task 8: Recreate DeveloperTools DB Test tool
+  - Notes: Use x:Bind, no code-behind logic beyond wiring; isolated from MainWindow nav context. Users/Privileges page is Core-only and must not access SQL Server.
+- [ ] Task 10: Recreate DeveloperTools DB Test tool
   - File: Module_Settings.DeveloperTools/Views/**, Module_Settings.DeveloperTools/ViewModels/**
   - Action: Re-implement DB test workflow and redesign UI from scratch using the existing DB test as reference.
-  - Notes: New namespace/module; do not relocate old files.
-- [ ] Task 9: Manifest fallback flow
+  - Notes: New namespace/module; do not relocate old files. Debug menu should open this new view.
+- [ ] Task 11: Manifest fallback flow
   - File: Module_Settings.Core/Services/**
   - Action: Implement startup setting resolution: DB → manifest default on missing → prompt and reset on corrupted value.
   - Notes: Prompt must include setting name, intended type, returned type.
-- [ ] Task 10: Documentation and templates
+- [ ] Task 12: Documentation and templates
   - File: Module_Settings/docs/templates/**
   - Action: Add Feature Settings Implementation Guide, Settable Objects Inventory template, and mock file structure.
   - Notes: Must match Module_Settings.Core + Module_Settings.DeveloperTools + Module_Settings.{FeatureName} layout.
-- [ ] Task 11: Tests
+- [ ] Task 13: Tests
   - File: MTM_Receiving_Application.Tests/**
   - Action: Add unit tests for validators/handlers and integration tests for DAOs.
-  - Notes: Follow testing-strategy.instructions.md decision tree.
+  - Notes: Include tests for audit/validation pipeline behaviors and single-instance Settings Window behavior.
+- [ ] Task 14: Dependency verification
+  - File: MTM_Receiving_Application.csproj
+  - Action: Verify MediatR/FluentValidation/Serilog package references; request approval only if missing.
 
 ### Acceptance Criteria
 
@@ -223,8 +248,11 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 - [ ] AC 4: Given a core setting value is corrupted, when the app loads, then the user is prompted with setting name + expected type + returned type, and the setting resets to manifest default.
 - [ ] AC 5: Given valid permissions, when a setting is changed, then validation runs, audit logs are recorded, and cache is invalidated.
 - [ ] AC 6: Given the DB Test tool is accessed (debug menu), when opened, then the DeveloperTools DB Test view is displayed (new implementation).
+- [ ] AC 6a: Given the DB Test tool is accessed, when opened, then it routes to Module_Settings.DeveloperTools (not Module_Settings.Views).
 - [ ] AC 7: Given feature modules need settings UI, when implemented, then they follow Module_Settings.{FeatureName} structure and use the inventory template.
 - [ ] AC 8: Given new docs are required, when the spec is complete, then templates exist under Module_Settings/docs/templates.
+- [ ] AC 9: Given the Settings Window is already open, when Settings is selected again, then the existing window is focused instead of a new one.
+- [ ] AC 10: Given a sensitive setting is stored, when viewed, then the value is masked and only changeable via a dedicated dialog.
 
 ## Additional Context
 
@@ -233,12 +261,14 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 - MediatR, FluentValidation, Serilog (Module_Settings internal; no new packages unless approved)
 - MySQL stored procedures (core settings + audit)
 - Manifest defaults file (module-local, versioned)
+ - Built-in .NET cryptography for sensitive settings encryption (no new packages)
 
 ### Testing Strategy
 
 - Unit tests for validators and handlers that use interface-only dependencies
 - Integration tests for handlers/DAOs that use concrete DAOs or DB access
 - Manual tests: Settings button opens separate window; missing/corrupt setting fallback flow; DB Test tool launches in debug builds
+- Manual tests: repeat Settings button to confirm single-instance behavior; verify masked display + change dialog for sensitive settings
 - Follow testing strategy instructions for classification and naming
 
 ### Notes
@@ -252,6 +282,7 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 - Startup resolution flow: App loads → get setting from DB → if missing, write manifest default to DB and use for session → if corrupted, prompt user with setting name + expected type + returned type, reset to manifest default in DB, use manifest value for session
 - Definition of "recreate": capture the existing workflow intent, then redesign the UI and re-implement from scratch (no direct relocation).
 - Single-instance behavior for Settings Window should focus existing window if already open.
+- Inventory template is documentation-only; registry uses code-first definitions with optional manifest fallback.
 
 ### Pre-mortem Risks & Mitigations
 
