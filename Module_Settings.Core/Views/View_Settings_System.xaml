@@ -5,20 +5,32 @@
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models">
 
-    <Grid Padding="20">
-        <StackPanel Spacing="12">
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Spacing="4">
             <TextBlock Text="System Settings" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="Core system defaults registered in the settings manifest." />
-            <ItemsControl ItemsSource="{x:Bind ViewModel.Definitions, Mode=OneWay}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="models:Model_SettingsDefinition">
-                        <StackPanel Spacing="2" Margin="0,6,0,6">
-                            <TextBlock Text="{x:Bind DisplayName}" FontWeight="SemiBold" />
-                            <TextBlock Text="{x:Bind Key}" Style="{StaticResource CaptionTextBlockStyle}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <TextBlock Text="Core system defaults registered in the settings manifest."
+                       Style="{StaticResource BodyTextBlockStyle}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Spacing="12">
+            <TextBlock Text="Registered Definitions" Style="{StaticResource SubtitleTextBlockStyle}" />
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{x:Bind ViewModel.Definitions, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_SettingsDefinition">
+                            <StackPanel Spacing="2" Margin="0,6,0,6">
+                                <TextBlock Text="{x:Bind DisplayName}" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                <TextBlock Text="{x:Bind Key}" Style="{StaticResource CaptionTextBlockStyle}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </StackPanel>
     </Grid>
 </Page>

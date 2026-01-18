@@ -338,9 +338,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     [RelayCommand]
     private async Task BackToHubAsync()
     {
-        _logger.LogInfo("Returning to Settings Mode Selection from Admin Inventory");
-        var settingsWorkflow = App.GetService<IService_SettingsWorkflow>();
-        settingsWorkflow.GoBack();
+        _logger.LogInfo("Returning to Admin Hub from Admin Inventory");
+        await _adminWorkflow.NavigateToHubAsync();
     }
 
     /// <summary>

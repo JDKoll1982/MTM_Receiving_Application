@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ComfyUI Prompt JSON Builder</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0f1115;
+            --panel: #171a21;
+            --panel-2: #1f2430;
+            --text: #e7eaf0;
+            --muted: #9aa3b2;
+            --accent: #7c9dff;
+            --accent-2: #53d1b6;
+            --border: #2a3040;
+            --danger: #ff6b6b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: radial-gradient(1200px 1200px at 10% -20%, #1b2340 0%, #0f1115 60%);
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        header {
+            padding: 28px 28px 8px;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 24px;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        main {
+            padding: 24px 28px 40px;
+            display: grid;
+            gap: 24px;
+            grid-template-columns: minmax(320px, 1.2fr) minmax(300px, 0.8fr);
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 600;
+            color: #0b0d12;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: var(--panel-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: #120b0b;
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+
+        textarea {
+            min-height: 88px;
+            resize: vertical;
+        }
+
+        .character-card {
+            border: 1px solid var(--border);
+            background: #141820;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+        .character-card h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .inline {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .inline label {
+            margin: 0;
+        }
+
+        .output {
+            background: #0c0f15;
+            border: 1px dashed var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            font-family: "Consolas", "Cascadia Code", monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            color: #e5f0ff;
+        }
+
+        .stack {
+            display: grid;
+            gap: 12px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .copy-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .footer-note {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 1020px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>ComfyUI Prompt JSON Builder</h1>
+        <p>Build per-character JSON, user prompts, and captions using textboxes or combo boxes.</p>
+    </header>
+
+    <main>
+        <section class="panel" id="builder">
+            <div class="toolbar">
+                <button id="addCharacter">Add Character</button>
+                <button class="secondary" id="removeCharacter">Remove Last</button>
+                <span class="small" id="countLabel">1 / 5 characters</span>
+            </div>
+
+            <div class="stack" id="characterList"></div>
+        </section>
+
+        <aside class="panel">
+            <h2>Generated Outputs</h2>
+
+            <div class="stack">
+                <div>
+                    <div class="copy-row">
+                        <strong>Prompt Template JSON</strong>
+                        <button class="secondary" data-copy="promptJson">Copy</button>
+                    </div>
+                    <div class="output" id="promptJson"></div>
+                </div>
+
+                <div>
+                    <div class="copy-row">
+                        <strong>User Prompt</strong>
+                        <button class="secondary" data-copy="userPrompt">Copy</button>
+                    </div>
+                    <div class="output" id="userPrompt"></div>
+                </div>
+
+                <div>
+                    <div class="copy-row">
+                        <strong>Caption</strong>
+                        <button class="secondary" data-copy="caption">Copy</button>
+                    </div>
+                    <div class="output" id="caption"></div>
+                </div>
+
+                <div>
+                    <label>Output Separator</label>
+                    <select id="separator">
+                        <option value="\n\n">Blank line</option>
+                        <option value="\n">New line</option>
+                        <option value=", ">Comma + space</option>
+                    </select>
+                </div>
+            </div>
+
+            <p class="footer-note">Tip: toggle Auto-build to assemble prompts from the combo boxes.</p>
+        </aside>
+    </main>
+
+    <template id="characterTemplate">
+        <div class="character-card">
+            <div class="inline" style="justify-content: space-between;">
+                <h3>Character <span class="char-index"></span></h3>
+                <span class="muted">$character_<span class="char-index"></span>$</span>
+            </div>
+
+            <div class="grid">
+                <div>
+                    <label>Name</label>
+                    <input type="text" data-field="name" placeholder="Roxy Migurdia" />
+                </div>
+                <div>
+                    <label>Image URL / Path</label>
+                    <input type="text" data-field="image" placeholder="optional" />
+                </div>
+                <div>
+                    <label>Role</label>
+                    <select data-field="role">
+                        <option value="">Select</option>
+                        <option>mage</option>
+                        <option>warrior</option>
+                        <option>explorer</option>
+                        <option>engineer</option>
+                        <option>detective</option>
+                        <option>assassin</option>
+                        <option>healer</option>
+                        <option>pilot</option>
+                        <option>royalty</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Age</label>
+                    <select data-field="age">
+                        <option value="">Select</option>
+                        <option>child</option>
+                        <option>teen</option>
+                        <option>young adult</option>
+                        <option>adult</option>
+                        <option>middle-aged</option>
+                        <option>elder</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Gender</label>
+                    <select data-field="gender">
+                        <option value="">Select</option>
+                        <option>woman</option>
+                        <option>man</option>
+                        <option>non-binary</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Archetype</label>
+                    <select data-field="archetype">
+                        <option value="">Select</option>
+                        <option>mysterious</option>
+                        <option>heroic</option>
+                        <option>villainous</option>
+                        <option>whimsical</option>
+                        <option>elegant</option>
+                        <option>rebellious</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Expression</label>
+                    <select data-field="expression">
+                        <option value="">Select</option>
+                        <option>focused</option>
+                        <option>serene</option>
+                        <option>intense</option>
+                        <option>smiling</option>
+                        <option>stern</option>
+                        <option>curious</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Pose</label>
+                    <select data-field="pose">
+                        <option value="">Select</option>
+                        <option>standing</option>
+                        <option>seated</option>
+                        <option>running</option>
+                        <option>casting a spell</option>
+                        <option>mid-action</option>
+                        <option>close-up portrait</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Mood</label>
+                    <select data-field="mood">
+                        <option value="">Select</option>
+                        <option>epic</option>
+                        <option>mysterious</option>
+                        <option>whimsical</option>
+                        <option>dramatic</option>
+                        <option>calm</option>
+                        <option>intense</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Lighting</label>
+                    <select data-field="lighting">
+                        <option value="">Select</option>
+                        <option>soft lighting</option>
+                        <option>harsh chiaroscuro</option>
+                        <option>cinematic lighting</option>
+                        <option>rim lighting</option>
+                        <option>ambient glow</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Camera</label>
+                    <select data-field="camera">
+                        <option value="">Select</option>
+                        <option>wide angle</option>
+                        <option>low angle</option>
+                        <option>high angle</option>
+                        <option>portrait lens</option>
+                        <option>macro</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Style</label>
+                    <select data-field="style">
+                        <option value="">Select</option>
+                        <option>digital illustration</option>
+                        <option>cinematic realism</option>
+                        <option>anime style</option>
+                        <option>painterly</option>
+                        <option>concept art</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Outfit</label>
+                    <input type="text" data-field="outfit" placeholder="crimson robe" />
+                </div>
+                <div>
+                    <label>Colors</label>
+                    <input type="text" data-field="colors" placeholder="cerulean and gold" />
+                </div>
+                <div>
+                    <label>Setting</label>
+                    <input type="text" data-field="setting" placeholder="subterranean crystal cavern" />
+                </div>
+                <div>
+                    <label>Additional Tags</label>
+                    <input type="text" data-field="tags" placeholder="ultra-detailed, 8k, bokeh" />
+                </div>
+            </div>
+
+            <div class="grid" style="margin-top: 12px;">
+                <div>
+                    <label>Region X</label>
+                    <input type="number" data-field="x" value="0" />
+                </div>
+                <div>
+                    <label>Region Y</label>
+                    <input type="number" data-field="y" value="0" />
+                </div>
+                <div>
+                    <label>Region W</label>
+                    <input type="number" data-field="w" value="1000" />
+                </div>
+                <div>
+                    <label>Region H</label>
+                    <input type="number" data-field="h" value="1000" />
+                </div>
+            </div>
+
+            <div class="grid" style="margin-top: 12px;">
+                <div>
+                    <label>Auto-build User Prompt</label>
+                    <select data-field="autoPrompt">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Auto-build Caption</label>
+                    <select data-field="autoCaption">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+                <label>User Prompt (manual or extra)</label>
+                <textarea data-field="userPrompt" placeholder="extra prompt details"></textarea>
+            </div>
+
+            <div style="margin-top: 12px;">
+                <label>Caption (manual or extra)</label>
+                <textarea data-field="caption" placeholder="caption details"></textarea>
+            </div>
+
+            <div class="grid" style="margin-top: 12px;">
+                <div>
+                    <label>Generated User Prompt</label>
+                    <div class="output" data-output="generatedPrompt"></div>
+                </div>
+                <div>
+                    <label>Generated Caption</label>
+                    <div class="output" data-output="generatedCaption"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        const maxCharacters = 5;
+        const characterList = document.getElementById("characterList");
+        const promptJsonEl = document.getElementById("promptJson");
+        const userPromptEl = document.getElementById("userPrompt");
+        const captionEl = document.getElementById("caption");
+        const separatorEl = document.getElementById("separator");
+        const countLabel = document.getElementById("countLabel");
+
+        document.getElementById("addCharacter").addEventListener("click", () => {
+            if (characterList.children.length < maxCharacters) {
+                characterList.appendChild(createCharacterCard());
+                updateAll();
+            }
+        });
+
+        document.getElementById("removeCharacter").addEventListener("click", () => {
+            if (characterList.children.length > 1) {
+                characterList.removeChild(characterList.lastElementChild);
+                updateAll();
+            }
+        });
+
+        separatorEl.addEventListener("change", updateAll);
+
+        document.querySelectorAll("[data-copy]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const target = button.getAttribute("data-copy");
+                const text = document.getElementById(target)?.textContent ?? "";
+                navigator.clipboard.writeText(text);
+                button.textContent = "Copied";
+                setTimeout(() => (button.textContent = "Copy"), 900);
+            });
+        });
+
+        function createCharacterCard() {
+            const template = document.getElementById("characterTemplate");
+            const node = template.content.cloneNode(true);
+            const wrapper = node.querySelector(".character-card");
+            wrapper.querySelectorAll(".char-index").forEach((span) => {
+                span.textContent = String(characterList.children.length + 1);
+            });
+
+            wrapper.querySelectorAll("input, textarea, select").forEach((input) => {
+                input.addEventListener("input", updateAll);
+                input.addEventListener("change", updateAll);
+            });
+
+            return node;
+        }
+
+        function getCharacters() {
+            return Array.from(characterList.children).map((card, index) => {
+                const data = { index: index + 1 };
+                card.querySelectorAll("[data-field]").forEach((input) => {
+                    const key = input.getAttribute("data-field");
+                    let value = input.value;
+                    if (input.type === "number") {
+                        value = Number(value || 0);
+                    }
+                    if (key === "autoPrompt" || key === "autoCaption") {
+                        value = input.value === "true";
+                    }
+                    data[key] = value;
+                });
+                return data;
+            });
+        }
+
+        function buildPromptParts(character) {
+            const parts = [];
+            if (character.name) parts.push(character.name);
+            if (character.role) parts.push(character.role);
+            if (character.age) parts.push(character.age);
+            if (character.gender) parts.push(character.gender);
+            if (character.archetype) parts.push(character.archetype);
+            if (character.outfit) parts.push(character.outfit);
+            if (character.colors) parts.push(character.colors);
+            if (character.expression) parts.push(character.expression);
+            if (character.pose) parts.push(character.pose);
+            if (character.setting) parts.push(character.setting);
+            if (character.lighting) parts.push(character.lighting);
+            if (character.camera) parts.push(character.camera);
+            if (character.style) parts.push(character.style);
+            if (character.mood) parts.push(character.mood);
+            if (character.tags) parts.push(character.tags);
+            return parts;
+        }
+
+        function buildCaption(character) {
+            const parts = buildPromptParts(character);
+            if (!parts.length) return "";
+            return `${parts.join(", ")}.`;
+        }
+
+        function updateCardOutputs(card, character) {
+            const promptParts = buildPromptParts(character);
+            const autoPrompt = character.autoPrompt
+                ? [promptParts.join(", "), character.userPrompt].filter(Boolean).join(", ")
+                : character.userPrompt;
+
+            const autoCaption = character.autoCaption
+                ? [buildCaption(character), character.caption].filter(Boolean).join(" ")
+                : character.caption;
+
+            card.querySelector("[data-output=generatedPrompt]").textContent = autoPrompt || "";
+            card.querySelector("[data-output=generatedCaption]").textContent = autoCaption || "";
+
+            return { userPrompt: autoPrompt, caption: autoCaption };
+        }
+
+        function updateAll() {
+            const separator = separatorEl.value;
+            const characters = getCharacters();
+
+            const promptJson = [];
+            const userPrompts = [];
+            const captions = [];
+
+            Array.from(characterList.children).forEach((card, index) => {
+                const character = characters[index];
+                const outputs = updateCardOutputs(card, character);
+
+                userPrompts.push(outputs.userPrompt || "");
+                captions.push(outputs.caption || "");
+
+                promptJson.push([
+                    character.x ?? 0,
+                    character.y ?? 0,
+                    character.w ?? 1000,
+                    character.h ?? 1000,
+                    {
+                        name: `$character_${character.index}$`,
+                        image: character.image || "",
+                        tags: {
+                            user_prompt: outputs.userPrompt || "",
+                            caption: outputs.caption || "",
+                        },
+                    },
+                ]);
+            });
+
+            promptJsonEl.textContent = JSON.stringify(promptJson, null, 2);
+            userPromptEl.textContent = userPrompts.filter(Boolean).join(separator);
+            captionEl.textContent = captions.filter(Boolean).join(separator);
+
+            countLabel.textContent = `${characters.length} / ${maxCharacters} characters`;
+        }
+
+        characterList.appendChild(createCharacterCard());
+        updateAll();
+    </script>
+</body>
+
+</html>

@@ -4,10 +4,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels">
 
-    <Grid Padding="20">
-        <StackPanel Spacing="12">
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Spacing="4">
             <TextBlock Text="Users &amp; Privileges" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
+            <TextBlock Text="Manage access levels, roles, and workstation privileges."
+                       Style="{StaticResource BodyTextBlockStyle}" />
+        </StackPanel>
+
+        <InfoBar Grid.Row="1"
+                 IsOpen="True"
+                 IsClosable="False"
+                 Severity="Informational"
+                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
+
+        <StackPanel Grid.Row="2" Spacing="8">
+            <TextBlock Text="Overview" Style="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="User and privilege management will follow core security policies."
+                       Style="{StaticResource BodyTextBlockStyle}" />
         </StackPanel>
     </Grid>
 </Page>

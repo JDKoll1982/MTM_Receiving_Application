@@ -1,6 +1,12 @@
 -- Core Settings schema (idempotent)
 
-CREATE TABLE IF NOT EXISTS settings_universal (
+DROP TABLE IF EXISTS settings_user_roles;
+DROP TABLE IF EXISTS settings_roles;
+DROP TABLE IF EXISTS settings_activity;
+DROP TABLE IF EXISTS settings_personal;
+DROP TABLE IF EXISTS settings_universal;
+
+CREATE TABLE settings_universal (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category VARCHAR(100) NOT NULL,
     setting_key VARCHAR(150) NOT NULL,
@@ -13,7 +19,7 @@ CREATE TABLE IF NOT EXISTS settings_universal (
     UNIQUE KEY uq_settings_universal (category, setting_key)
 );
 
-CREATE TABLE IF NOT EXISTS settings_personal (
+CREATE TABLE settings_personal (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -25,7 +31,7 @@ CREATE TABLE IF NOT EXISTS settings_personal (
     UNIQUE KEY uq_settings_personal (user_id, category, setting_key)
 );
 
-CREATE TABLE IF NOT EXISTS settings_activity (
+CREATE TABLE settings_activity (
     id INT AUTO_INCREMENT PRIMARY KEY,
     scope VARCHAR(20) NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -41,14 +47,14 @@ CREATE TABLE IF NOT EXISTS settings_activity (
     INDEX idx_settings_activity_key (category, setting_key)
 );
 
-CREATE TABLE IF NOT EXISTS settings_roles (
+CREATE TABLE settings_roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(255) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS settings_user_roles (
+CREATE TABLE settings_user_roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     role_id INT NOT NULL,

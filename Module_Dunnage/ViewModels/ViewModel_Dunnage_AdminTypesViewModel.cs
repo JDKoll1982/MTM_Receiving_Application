@@ -473,9 +473,8 @@ public partial class ViewModel_Dunnage_AdminTypes : ViewModel_Shared_Base
     {
         try
         {
-            _logger.LogInfo("Returning to Settings Mode Selection from Admin Types");
-            var settingsWorkflow = App.GetService<IService_SettingsWorkflow>();
-            settingsWorkflow.GoBack();
+            _logger.LogInfo("Returning to Admin Hub from Admin Types");
+            await _adminWorkflow.NavigateToHubAsync();
         }
         catch (Exception ex)
         {

@@ -98,6 +98,31 @@ public static class Helper_WindowExtensions
     }
 
     /// <summary>
+    /// Brings the window to the front of the Z-order
+    /// </summary>
+    /// <param name="window">The window to bring to front</param>
+    public static void BringToFront(this Window window)
+    {
+        var appWindow = window.GetAppWindow();
+        appWindow.MoveInZOrderAtTop();
+    }
+
+    /// <summary>
+    /// Sets whether the window should stay above other windows
+    /// </summary>
+    /// <param name="window">The window to configure</param>
+    /// <param name="isAlwaysOnTop">True to keep the window on top</param>
+    public static void SetAlwaysOnTop(this Window window, bool isAlwaysOnTop)
+    {
+        var appWindow = window.GetAppWindow();
+
+        if (appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.IsAlwaysOnTop = isAlwaysOnTop;
+        }
+    }
+
+    /// <summary>
     /// Gets the AppWindow from a WinUI 3 Window
     /// </summary>
     /// <param name="window"></param>
