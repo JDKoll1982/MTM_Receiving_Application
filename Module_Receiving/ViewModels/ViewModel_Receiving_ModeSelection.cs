@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using System;
 using System.Threading.Tasks;
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
@@ -17,6 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_UserPreferences _userPreferencesService;
         private readonly IService_Help _helpService;
         private readonly IService_Window _windowService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private bool _isGuidedModeDefault;
@@ -33,6 +35,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_UserPreferences userPreferencesService,
             IService_Help helpService,
             IService_Window windowService,
+            IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -42,6 +45,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _userPreferencesService = userPreferencesService;
             _helpService = helpService;
             _windowService = windowService;
+            _receivingSettings = receivingSettings;
 
             // Load current default mode
             LoadDefaultMode();
@@ -144,10 +148,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 var dialog = new ContentDialog
                 {
-                    Title = "Confirm Mode Selection",
-                    Content = "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
-                    PrimaryButtonText = "Continue",
-                    CloseButtonText = "Cancel",
+                    Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle),
+                    Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContent),
+                    PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue),
+                    CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel),
                     DefaultButton = ContentDialogButton.Close,
                     XamlRoot = xamlRoot
                 };

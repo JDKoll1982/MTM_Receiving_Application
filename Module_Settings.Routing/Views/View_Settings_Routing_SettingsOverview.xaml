@@ -1,0 +1,22 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Routing.Views.View_Settings_Routing_SettingsOverview"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
+
+    <Grid Padding="24">
+        <StackPanel Spacing="12">
+            <controls:View_SettingsPlaceholderControl
+                TitleText="Routing Settings"
+                DescriptionText="Placeholder overview for Routing module settings (derived from Module_Routing SETTABLE_OBJECTS report)." />
+
+            <Expander Header="Notes (what belongs here)" IsExpanded="True">
+                <StackPanel Spacing="8" Padding="0,8,0,0">
+                    <TextBlock Text="Suggested controls:" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="• Section cards → card Buttons" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Key warnings (config schema drift) → InfoBar" Style="{StaticResource BodyTextBlockStyle}" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Page>

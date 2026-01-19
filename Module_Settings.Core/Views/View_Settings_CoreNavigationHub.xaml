@@ -5,17 +5,10 @@
 
     <Grid Padding="24" RowSpacing="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Spacing="4">
-            <TextBlock Text="Core Settings" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="Choose a settings area to configure global defaults and infrastructure options."
-                       Style="{StaticResource BodyTextBlockStyle}" />
-        </StackPanel>
-
-        <Grid Grid.Row="1" RowSpacing="16" ColumnSpacing="16">
+        <Grid Grid.Row="0" RowSpacing="16" ColumnSpacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

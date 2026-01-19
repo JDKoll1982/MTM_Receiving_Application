@@ -1,0 +1,22 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
+
+    <Grid Padding="24">
+        <StackPanel Spacing="12">
+            <controls:View_SettingsPlaceholderControl
+                TitleText="Volvo - Hardcoded Values to Externalize"
+                DescriptionText="Placeholder UI for tracking hardcoded values that should become configuration." />
+
+            <Expander Header="Notes (what belongs here)" IsExpanded="True">
+                <StackPanel Spacing="8" Padding="0,8,0,0">
+                    <TextBlock Text="Suggested controls (from Volvo SETTABLE_OBJECTS.md):" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="• Backlog list → DataGrid (SettingName, CurrentValue, RecommendedKey, Priority)" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Mark completed / deferred → ToggleSwitch / Button" Style="{StaticResource BodyTextBlockStyle}" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Page>

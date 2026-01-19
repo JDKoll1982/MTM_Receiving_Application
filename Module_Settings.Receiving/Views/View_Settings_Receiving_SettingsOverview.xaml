@@ -1,0 +1,23 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_SettingsOverview"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
+
+    <Grid Padding="24">
+        <StackPanel Spacing="12">
+            <controls:View_SettingsPlaceholderControl
+                TitleText="Receiving Settings"
+                DescriptionText="Placeholder overview for Receiving module settings (derived from Module_Receiving SETTABLE_OBJECTS report)." />
+
+            <Expander Header="Notes (what belongs here)" IsExpanded="True">
+                <StackPanel Spacing="8" Padding="0,8,0,0">
+                    <TextBlock Text="This page should summarize the settings areas and show at-a-glance status (e.g., configured vs default)." Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="Suggested controls:" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="• Quick links to sections → card Buttons" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Health indicators (mock mode enabled, mappings configured) → InfoBar / TeachingTip" Style="{StaticResource BodyTextBlockStyle}" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Page>

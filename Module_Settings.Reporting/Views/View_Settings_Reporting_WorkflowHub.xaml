@@ -1,138 +1,68 @@
 <Page
-    x:Class="MTM_Receiving_Application.Module_Settings.Reporting.Views.View_Settings_Reporting_WorkflowHub"
+    x:Class="MTM_Receiving_Application.Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Reporting.ViewModels"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models">
 
-    <Grid Padding="24" RowSpacing="20">
+    <Grid Padding="24" RowSpacing="16" VerticalAlignment="Center">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Spacing="4">
-            <TextBlock Text="Reporting Workflow" Style="{StaticResource TitleTextBlockStyle}" />
-            <TextBlock Text="Placeholder hub for Reporting settings workflows."
-                       Style="{StaticResource BodyTextBlockStyle}" />
-        </StackPanel>
-
-        <Grid Grid.Row="1" RowSpacing="16" ColumnSpacing="16">
+        <Grid Grid.Row="0" RowSpacing="12" ColumnSpacing="16" HorizontalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
 
-                <Button Grid.Row="0" Grid.Column="0" IsEnabled="False"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8D4;" FontSize="36" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="Overview" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Summary of reporting defaults and workflow status."
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-            </Button>
+            <ItemsRepeater ItemsSource="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).VisibleSteps, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinItemWidth="280" MinItemHeight="180" MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_SettingsNavigationStep">
+                        <Button Click="OnStepClicked"
+                                Width="280" Height="180"
+                                Padding="20"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <StackPanel Spacing="12">
+                                <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                                <TextBlock Text="{x:Bind Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
 
-                <Button Grid.Row="0" Grid.Column="1" IsEnabled="False"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8D7;" FontSize="36" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="Defaults" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Configure scheduling and report templates."
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-            </Button>
-
-                <Button Grid.Row="0" Grid.Column="2" IsEnabled="False"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8FA;" FontSize="36" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="Validation" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Review validation and report filters."
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-            </Button>
-
-                <Button Grid.Row="1" Grid.Column="0" IsEnabled="False"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE7EF;" FontSize="36" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="Permissions" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Role-based access to reporting workflows."
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-            </Button>
-
-                <Button Grid.Row="1" Grid.Column="1" IsEnabled="False"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE9F9;" FontSize="36" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="Audit" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Audit trails for reporting workflow changes."
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-            </Button>
-
-                <Button Grid.Row="1" Grid.Column="2" IsEnabled="False"
-                    Width="280" Height="180"
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon Glyph="&#xE8B3;" FontSize="36" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                    <TextBlock Text="Integrations" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Integrations and exports for reporting workflows."
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-            </Button>
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        Spacing="12"
+                        HorizontalAlignment="Center"
+                        Visibility="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).IsPaginationVisible, Mode=OneWay}">
+                <Button Content="Prev" Click="OnPrevPageClicked" />
+                <TextBlock Text="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).CurrentButtonPage, Mode=OneWay}" VerticalAlignment="Center" />
+                <TextBlock Text="/" VerticalAlignment="Center" />
+                <TextBlock Text="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).TotalButtonPages, Mode=OneWay}" VerticalAlignment="Center" />
+                <Button Content="Next" Click="OnNextPageClicked" />
+            </StackPanel>
         </Grid>
+
+        <Frame Grid.Row="1" x:Name="NavigationFrame" x:FieldModifier="private" />
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="12">
+            <Button Content="Back" Click="OnBackClicked" Visibility="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).IsBackVisible, Mode=OneWay}" />
+            <Button Content="Next" Click="OnNextClicked" Visibility="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).IsNextVisible, Mode=OneWay}" />
+            <Button Content="Save" Click="OnSaveClicked" Visibility="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).IsSaveVisible, Mode=OneWay}" />
+            <Button Content="Reset" Click="OnResetClicked" Visibility="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).IsResetVisible, Mode=OneWay}" />
+            <Button Content="Cancel" Click="OnCancelClicked" Visibility="{x:Bind ((viewmodels:ViewModel_Settings_Reporting_NavigationHub)DataContext).IsCancelVisible, Mode=OneWay}" />
+        </StackPanel>
     </Grid>
 </Page>

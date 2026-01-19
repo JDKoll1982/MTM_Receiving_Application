@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -26,6 +26,17 @@ using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Services;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
+using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Receiving.Views;
+using MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Dunnage.Views;
+using MTM_Receiving_Application.Module_Settings.Routing.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Routing.Views;
+using MTM_Receiving_Application.Module_Settings.Reporting.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Reporting.Views;
+using MTM_Receiving_Application.Module_Settings.Volvo.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Volvo.Views;
 using MTM_Receiving_Application.Module_Settings.DeveloperTools.Data;
 using MTM_Receiving_Application.Module_Settings.DeveloperTools.Services;
 using MTM_Receiving_Application.Module_Settings.DeveloperTools.ViewModels;
@@ -225,6 +236,59 @@ public partial class App : Application
                 });
                 services.AddTransient<IService_UserPreferences, Service_UserPreferences>();
 
+                // Settings Navigation Hub helpers
+                services.AddSingleton<IService_SettingsPagination, Service_SettingsPagination>();
+
+                // Settings Navigation Hub ViewModels + Views
+                services.AddTransient<ViewModel_Settings_Receiving_NavigationHub>();
+                services.AddTransient<View_Settings_Receiving_NavigationHub>();
+                services.AddTransient<ViewModel_Settings_Dunnage_NavigationHub>();
+                services.AddTransient<View_Settings_Dunnage_NavigationHub>();
+                services.AddTransient<ViewModel_Settings_Routing_NavigationHub>();
+                services.AddTransient<View_Settings_Routing_NavigationHub>();
+                services.AddTransient<ViewModel_Settings_Reporting_NavigationHub>();
+                services.AddTransient<View_Settings_Reporting_NavigationHub>();
+                services.AddTransient<ViewModel_Settings_Volvo_NavigationHub>();
+                services.AddTransient<View_Settings_Volvo_NavigationHub>();
+
+                // Feature Settings Placeholder Pages (ViewModels)
+                services.AddTransient<ViewModel_Settings_Receiving_SettingsOverview>();
+                services.AddTransient<ViewModel_Settings_Receiving_Defaults>();
+                services.AddTransient<ViewModel_Settings_Receiving_Validation>();
+                services.AddTransient<ViewModel_Settings_Receiving_UserPreferences>();
+                services.AddTransient<ViewModel_Settings_Receiving_BusinessRules>();
+                services.AddTransient<ViewModel_Settings_Receiving_Integrations>();
+
+                services.AddTransient<ViewModel_Settings_Dunnage_SettingsOverview>();
+                services.AddTransient<ViewModel_Settings_Dunnage_UserPreferences>();
+                services.AddTransient<ViewModel_Settings_Dunnage_UiUx>();
+                services.AddTransient<ViewModel_Settings_Dunnage_Workflow>();
+                services.AddTransient<ViewModel_Settings_Dunnage_Permissions>();
+                services.AddTransient<ViewModel_Settings_Dunnage_Audit>();
+
+                services.AddTransient<ViewModel_Settings_Routing_SettingsOverview>();
+                services.AddTransient<ViewModel_Settings_Routing_FileIO>();
+                services.AddTransient<ViewModel_Settings_Routing_UiUx>();
+                services.AddTransient<ViewModel_Settings_Routing_BusinessRules>();
+                services.AddTransient<ViewModel_Settings_Routing_Resilience>();
+                services.AddTransient<ViewModel_Settings_Routing_UserPreferences>();
+
+                services.AddTransient<ViewModel_Settings_Reporting_SettingsOverview>();
+                services.AddTransient<ViewModel_Settings_Reporting_FileIO>();
+                services.AddTransient<ViewModel_Settings_Reporting_Csv>();
+                services.AddTransient<ViewModel_Settings_Reporting_EmailUx>();
+                services.AddTransient<ViewModel_Settings_Reporting_BusinessRules>();
+                services.AddTransient<ViewModel_Settings_Reporting_Permissions>();
+
+                services.AddTransient<ViewModel_Settings_Volvo_SettingsOverview>();
+                services.AddTransient<ViewModel_Settings_Volvo_DatabaseSettings>();
+                services.AddTransient<ViewModel_Settings_Volvo_ConnectionStrings>();
+                services.AddTransient<ViewModel_Settings_Volvo_FilePaths>();
+                services.AddTransient<ViewModel_Settings_Volvo_UiConfiguration>();
+                services.AddTransient<ViewModel_Settings_Volvo_ExternalizationBacklog>();
+
+                services.AddTransient<View_Settings_CoreNavigationHub>();
+
                 // Startup Service
                 services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
 
@@ -285,6 +349,9 @@ public partial class App : Application
                 services.AddSingleton<IService_SettingsWindowHost, Service_SettingsWindowHost>();
                 services.AddSingleton<Module_Core.Contracts.Services.Navigation.IService_Navigation, Module_Core.Services.Navigation.Service_Navigation>();
                 services.AddSingleton<IService_ViewModelRegistry, Service_ViewModelRegistry>();
+
+                // Module_Receiving settings
+                services.AddSingleton<Module_Receiving.Contracts.IService_ReceivingSettings, Module_Receiving.Services.Service_ReceivingSettings>();
 
                 // ViewModels
                 services.AddTransient<ViewModel_Shared_MainWindow>();
@@ -376,6 +443,42 @@ public partial class App : Application
                 // Core Settings Window
                 services.AddTransient<View_Settings_CoreWindow>();
                 services.AddTransient<View_SettingsDeveloperTools_DatabaseTest>();
+
+                // Feature Settings Placeholder Pages (Views)
+                services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_SettingsOverview>();
+                services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults>();
+                services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Validation>();
+                services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_UserPreferences>();
+                services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules>();
+                services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Integrations>();
+
+                services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_SettingsOverview>();
+                services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences>();
+                services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx>();
+                services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Workflow>();
+                services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Permissions>();
+                services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Audit>();
+
+                services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_SettingsOverview>();
+                services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_FileIO>();
+                services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_UiUx>();
+                services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_BusinessRules>();
+                services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_Resilience>();
+                services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_UserPreferences>();
+
+                services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_SettingsOverview>();
+                services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_FileIO>();
+                services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Csv>();
+                services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailUx>();
+                services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_BusinessRules>();
+                services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Permissions>();
+
+                services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_SettingsOverview>();
+                services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_DatabaseSettings>();
+                services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ConnectionStrings>();
+                services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_FilePaths>();
+                services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_UiConfiguration>();
+                services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog>();
 
                 // Reporting Views (003-reporting-module)
                 services.AddTransient<View_Reporting_Main>();

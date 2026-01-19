@@ -1,0 +1,23 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Volvo.Views.View_Settings_Volvo_DatabaseSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
+
+    <Grid Padding="24">
+        <StackPanel Spacing="12">
+            <controls:View_SettingsPlaceholderControl
+                TitleText="Volvo Database Settings"
+                DescriptionText="Placeholder UI for settings stored in Volvo module settings table(s)." />
+
+            <Expander Header="Notes (what belongs here)" IsExpanded="True">
+                <StackPanel Spacing="8" Padding="0,8,0,0">
+                    <TextBlock Text="Suggested controls (from Volvo SETTABLE_OBJECTS.md):" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="• email_to_recipients (JSON array) → DataGrid (Name, Email) + Add/Remove" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• email_cc_recipients (JSON array) → DataGrid (Name, Email) + Add/Remove" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Reset to defaults → Button" Style="{StaticResource BodyTextBlockStyle}" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Page>

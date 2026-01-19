@@ -1,0 +1,23 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
+
+    <Grid Padding="24">
+        <StackPanel Spacing="12">
+            <controls:View_SettingsPlaceholderControl
+                TitleText="Receiving Defaults"
+                DescriptionText="Placeholder UI for Receiving defaults." />
+
+            <Expander Header="Notes (what belongs here)" IsExpanded="True">
+                <StackPanel Spacing="8" Padding="0,8,0,0">
+                    <TextBlock Text="Suggested controls (based on Module_Receiving SETTABLE_OBJECTS report):" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="• Default receiving mode (guided/manual/edit) → RadioButtons" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Package type labels (Coils/Sheets/Skids) → TextBox / ComboBox" Style="{StaticResource BodyTextBlockStyle}" />
+                    <TextBlock Text="• Part prefix → package type mapping → DataGrid editor (Prefix, PackageType)" Style="{StaticResource BodyTextBlockStyle}" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Page>

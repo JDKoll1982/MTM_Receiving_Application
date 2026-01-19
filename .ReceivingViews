@@ -1,0 +1,1019 @@
+[35m.github/agents/bmd-custom-bmb-workflow-builder.agent.md[m[36m:[m[32m2[m[36m:[mdescription: "Activates the [1;31mWorkflow[m Builder agent persona."
+[35m.github/agents/bmd-custom-bmb-workflow-builder.agent.md[m[36m:[m[32m6[m[36m:[m# [1;31mWorkflow[m Builder Agent
+[35m.github/agents/speckit.module-specify.agent.md[m[36m:[m[32m97[m[36m:[m4. **Extract Current [1;31mWorkflow[ms**:
+[35m.github/agents/speckit.module-specify.agent.md[m[36m:[m[32m117[m[36m:[m### Phase 2: Run Module-Agent [1;31mWorkflow[m
+[35m.github/agents/speckit.module-specify.agent.md[m[36m:[m[32m121[m[36m:[m     - Run Phase 0: Analysis & [1;31mWorkflow[m Extraction
+[35m.github/agents/speckit.module-specify.agent.md[m[36m:[m[32m132[m[36m:[m   - [1;31mWorkflow[m diagrams (PlantUML state machines)
+[35m.github/agents/speckit.module-specify.agent.md[m[36m:[m[32m156[m[36m:[m   ### User Story 1 - [Module] [Primary [1;31mWorkflow[m] with CQRS (Priority: P1)
+[35m.github/copilot-instructions.md[m[36m:[m[32m63[m[36m:[mpublic partial class ViewModel_Receiving_[1;31mWorkflow[m : ViewModel_Shared_Base
+[35m.github/copilot-instructions.md[m[36m:[m[32m65[m[36m:[m    private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.github/copilot-instructions.md[m[36m:[m[32m70[m[36m:[m    public ViewModel_Receiving_[1;31mWorkflow[m(
+[35m.github/copilot-instructions.md[m[36m:[m[32m71[m[36m:[m        IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.github/copilot-instructions.md[m[36m:[m[32m198[m[36m:[mservices.AddTransient<ViewModel_Receiving_[1;31mWorkflow[m>();
+[35m.github/copilot-instructions.md[m[36m:[m[32m209[m[36m:[m- ViewModels: `ViewModel_<Module>_<Feature>` (e.g., `ViewModel_Receiving_[1;31mWorkflow[m`)
+[35m.github/copilot-instructions.md[m[36m:[m[32m210[m[36m:[m- Views: `View_<Module>_<Feature>` or `<Feature>View` (e.g., `View_Receiving_[1;31mWorkflow[m`)
+[35m.github/copilot-instructions.md[m[36m:[m[32m211[m[36m:[m- Services: `Service_<Purpose>` with `IService_<Purpose>` (e.g., `IService_Receiving[1;31mWorkflow[m`)
+[35m.github/instructions/testing-strategy.instructions.md[m[36m:[m[32m287[m[36m:[m### 3. End-to-End [1;31mWorkflow[m Tests
+[35m.github/instructions/testing-strategy.instructions.md[m[36m:[m[32m296[m[36m:[mpublic class {[1;31mWorkflow[m}IntegrationTests : IAsyncLifetime
+[35m.github/instructions/testing-strategy.instructions.md[m[36m:[m[32m301[m[36m:[m    public async Task Complete[1;31mWorkflow[m_ShouldSucceed_WhenDataIsValid()
+[35m.github/instructions/testing-strategy.instructions.md[m[36m:[m[32m388[m[36m:[m│   │   └── {[1;31mWorkflow[m}IntegrationTests.cs
+[35m.github/prompts/mtm-documentation.prepare.prompt.md[m[36m:[m[32m472[m[36m:[m## Serena [1;31mWorkflow[m Summary
+[35m.github/prompts/mtm-documentation.prepare.prompt.md[m[36m:[m[32m474[m[36m:[m**Efficient Preparation [1;31mWorkflow[m Using Serena MCP Server:**
+[35m.github/prompts/mtm-github-reset-documents.prompt.md[m[36m:[m[32m41[m[36m:[m**Example [1;31mWorkflow[m:**
+[35m.github/prompts/mtm-github-reset-documents.prompt.md[m[36m:[m[32m70[m[36m:[m**Example [1;31mWorkflow[m:**
+[35m.github/prompts/mtm-github-reset-documents.prompt.md[m[36m:[m[32m370[m[36m:[m- [1;31mWorkflow[m patterns (iterative refinement, context building, test-driven development)
+[35m.github/prompts/mtm-github-reset-documents.prompt.md[m[36m:[m[32m483[m[36m:[m- **MCP [1;31mWorkflow[ms** (use Serena to explore before coding, use Filesystem to read context)
+[35m.github/prompts/mtm-module-code-review.prompt.md[m[36m:[m[32m47[m[36m:[m## [1;31mWorkflow[m
+[35m.github/prompts/mtm-module-code-review.prompt.md[m[36m:[m[32m202[m[36m:[m| 🎨 | UI DESIGN | [1;31mWorkflow[m improvements, form usability, shortcuts |
+[35m.github/templates/code-review/ModuleSettings.template.md[m[36m:[m[32m113[m[36m:[m- [{{module_name}} [1;31mWorkflow[m Specification](../../specs/{{module_spec_folder}}/)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m57[m[36m:[mpublic Task ShowContextualHelpAsync(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m58[m[36m:[mpublic Task ShowContextualHelpAsync(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m64[m[36m:[mpublic string GetDunnage[1;31mWorkflow[mHelp(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m65[m[36m:[mpublic string GetReceiving[1;31mWorkflow[mHelp(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m500[m[36m:[m## File: Module_Core/Helpers/UI/Helper_[1;31mWorkflow[mHelpContentGenerator.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m502[m[36m:[mpublic static class Helper_[1;31mWorkflow[mHelpContentGenerator
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m504[m[36m:[mpublic static UIElement GenerateHelpContent(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m624[m[36m:[m## File: Module_Core/Models/Enums/Enum_Receiving[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m880[m[36m:[mpublic async Task ShowContextualHelpAsync(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m882[m[36m:[mpublic async Task ShowContextualHelpAsync(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m915[m[36m:[mpublic string GetDunnage[1;31mWorkflow[mHelp(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m917[m[36m:[mpublic string GetReceiving[1;31mWorkflow[mHelp(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m929[m[36m:[m// Dunnage [1;31mWorkflow[m Help Content
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m931[m[36m:[m// Receiving [1;31mWorkflow[m Help Content
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m1256[m[36m:[m## File: Module_Dunnage/Enums/Enum_Dunnage[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m4688[m[36m:[m## File: Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m4690[m[36m:[mpublic class Model_[1;31mWorkflow[mStepResult
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m6058[m[36m:[m## File: Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m6061[m[36m:[m    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m"
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m6448[m[36m:[m## File: Module_Routing/Enums/Enum_Routing_[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9337[m[36m:[m## File: Module_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9339[m[36m:[mpublic interface IService_DunnageAdmin[1;31mWorkflow[m
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9364[m[36m:[m## File: Module_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9366[m[36m:[mpublic interface IService_Dunnage[1;31mWorkflow[m
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9370[m[36m:[mpublic Task<bool> Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9371[m[36m:[mpublic Task<Model_[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m9372[m[36m:[mpublic void GoToStep(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10014[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10107[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToHubAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10116[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10121[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10202[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10209[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.Review);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10223[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10370[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10394[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10509[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10547[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10552[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10554[m[36m:[m_logger.LogInfo($"PartSelection: [1;31mWorkflow[m step changed to {_workflowService.CurrentStep}", "PartSelection");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10615[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10620[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10931[m[36m:[m## File: Module_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10933[m[36m:[mpublic interface IService_Receiving[1;31mWorkflow[m
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10938[m[36m:[mpublic Task<bool> Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10939[m[36m:[mpublic Task<Model_Receiving[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10940[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToPreviousStep();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10941[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToStep(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m10947[m[36m:[mpublic Task Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11122[m[36m:[m## File: Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11124[m[36m:[mpublic class Model_Receiving[1;31mWorkflow[mStepResult
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11126[m[36m:[mpublic static Model_Receiving[1;31mWorkflow[mStepResult SuccessResult(Enum_Receiving[1;31mWorkflow[mStep newStep, string message = "") => new()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11128[m[36m:[mpublic static Model_Receiving[1;31mWorkflow[mStepResult ErrorResult(List<string> errors) => new()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11362[m[36m:[m## File: Module_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11364[m[36m:[mpublic class Service_Receiving[1;31mWorkflow[m : IService_Receiving[1;31mWorkflow[m
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11375[m[36m:[mprivate Enum_Receiving[1;31mWorkflow[mStep _currentStep = Enum_Receiving[1;31mWorkflow[mStep.ModeSelection;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11388[m[36m:[mpublic async Task<bool> Start[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11411[m[36m:[mpublic async Task<Model_Receiving[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11413[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11418[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11443[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11456[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToPreviousStep()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11458[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11460[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11462[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToStep(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11464[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11525[m[36m:[mpublic async Task Reset[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11594[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11830[m[36m:[mawait _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11831[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11865[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11948[m[36m:[mawait _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11949[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m11969[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m12813[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m12815[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m12818[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m12820[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m15657[m[36m:[mvar list = _sut.GetHelpByCategory("Dunnage [1;31mWorkflow[m");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m15659[m[36m:[mlist.All(x => x.Category == "Dunnage [1;31mWorkflow[m").Should().BeTrue();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16026[m[36m:[m## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16028[m[36m:[mpublic class Model_Receiving[1;31mWorkflow[mStepResult_Tests
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16032[m[36m:[mvar result = new Model_Receiving[1;31mWorkflow[mStepResult();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16039[m[36m:[mvar result = Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(step, message);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16046[m[36m:[mvar result = Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(errors);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16108[m[36m:[m## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16110[m[36m:[mpublic class Model_[1;31mWorkflow[mStepResult_Tests
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16114[m[36m:[mvar model = new Model_[1;31mWorkflow[mStepResult();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16741[m[36m:[m## File: Module_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16743[m[36m:[mpublic class Service_DunnageAdmin[1;31mWorkflow[m : IService_DunnageAdmin[1;31mWorkflow[m
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16934[m[36m:[m## File: Module_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16936[m[36m:[mpublic class Service_Dunnage[1;31mWorkflow[m : IService_Dunnage[1;31mWorkflow[m
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16945[m[36m:[mpublic Task<bool> Start[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16953[m[36m:[mpublic Task<Model_[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16955[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Please select a dunnage type." });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16957[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Please select a part." });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16959[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Quantity must be greater than zero." });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16961[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Already at Review step. Use Save to finish." });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16963[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = true, TargetStep = CurrentStep });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16966[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = ex.Message });
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m16968[m[36m:[mpublic void GoToStep(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17012[m[36m:[m_logger.LogInfo($"Added load to session: Part {load.PartId}, Qty {load.Quantity}", "Dunnage[1;31mWorkflow[m");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17025[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17029[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Types);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17036[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Specs);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17041[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Parts);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17046[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.InventoriedList);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17051[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToHubAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17065[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17069[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17094[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17099[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17112[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17116[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17152[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17169[m[36m:[mprivate void ClearTransient[1;31mWorkflow[mData()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17204[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17223[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17284[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17376[m[36m:[m## File: Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17378[m[36m:[m<Page x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_[1;31mWorkflow[mView"
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17698[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17733[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17768[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17877[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17910[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17927[m[36m:[mprivate void ClearTransient[1;31mWorkflow[mData()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17955[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17995[m[36m:[m## File: Module_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17997[m[36m:[mpublic partial class ViewModel_Receiving_[1;31mWorkflow[m : ViewModel_Shared_Base
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m17999[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18005[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18012[m[36m:[mHelpContent = Helper_[1;31mWorkflow[mHelpContentGenerator.GenerateHelpContent(_workflowService.CurrentStep);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18047[m[36m:[mawait _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18076[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18080[m[36m:[mawait _helpService.ShowHelpAsync("Receiving.[1;31mWorkflow[m");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18087[m[36m:[m## File: Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18089[m[36m:[mpublic sealed partial class View_Receiving_[1;31mWorkflow[m : Page
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18103[m[36m:[mworkflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m18105[m[36m:[mworkflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20083[m[36m:[m                <NavigationViewItem Content="Receiving Labels" Tag="Receiving[1;31mWorkflow[mView" Margin="0,0,0,4">
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20372[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20377[m[36m:[m_admin[1;31mWorkflow[m = admin[1;31mWorkflow[m ?? throw new ArgumentNullException(nameof(admin[1;31mWorkflow[m));
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20432[m[36m:[msettings[1;31mWorkflow[m.GoBack();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20442[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20553[m[36m:[msettings[1;31mWorkflow[m.GoBack();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20564[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20569[m[36m:[mprivate async Task Initialize[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20571[m[36m:[mawait _workflowService.Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20577[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20597[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20602[m[36m:[m## File: Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20604[m[36m:[mpublic sealed partial class View_Dunnage_[1;31mWorkflow[mView : Page
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20610[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20638[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20640[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20642[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20644[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20651[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20663[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20669[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20675[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20695[m[36m:[mprivate void Clear[1;31mWorkflow[mData()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m20697[m[36m:[m_logger.LogInfo("[1;31mWorkflow[m data and UI inputs cleared for mode change");
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m22681[m[36m:[mpublic async Task CompleteShipment_[1;31mWorkflow[m_ShouldPersistAndGenerateCsv()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m22776[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m22788[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m22794[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m22800[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m22821[m[36m:[mprivate void Clear[1;31mWorkflow[mData()
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m23337[m[36m:[mContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m));
+[35m.repomix/outputs/code-only/repomix-output-code-only.md[m[36m:[m[32m23343[m[36m:[mContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_[1;31mWorkflow[mView));
+[35m.repomix/outputs/copilot-docs/repomix-output-copilot-docs.md[m[36m:[m[32m631[m[36m:[mModule_Volvo/[1;31mWorkflow[mDiagrams/
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m231[m[36m:[mModule_Core/Helpers/UI/Helper_[1;31mWorkflow[mHelpContentGenerator.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m244[m[36m:[mModule_Core/Models/Enums/Enum_Receiving[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m274[m[36m:[mModule_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m276[m[36m:[mModule_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m287[m[36m:[mModule_Dunnage/Enums/Enum_Dunnage[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m300[m[36m:[mModule_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m302[m[36m:[mModule_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m354[m[36m:[mModule_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m355[m[36m:[mModule_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m360[m[36m:[mModule_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m375[m[36m:[mModule_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m378[m[36m:[mModule_Receiving/Models/Model_[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m384[m[36m:[mModule_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m395[m[36m:[mModule_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m414[m[36m:[mModule_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m415[m[36m:[mModule_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m435[m[36m:[mModule_Routing/Enums/Enum_Routing_[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m703[m[36m:[mMTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m706[m[36m:[mMTM_Receiving_Application.Tests/Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m1767[m[36m:[m 9: **1 Master Builder Agent** | **5 Creation [1;31mWorkflow[ms** | **3 Agent Architectures**
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m1778[m[36m:[m20: - [[1;31mWorkflow[m Architecture](./docs/workflows/index.md) - Design workflows
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m1953[m[36m:[m 1: # Review Story [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m1970[m[36m:[m18: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2021[m[36m:[m15: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2036[m[36m:[m 1: # Retrospective - Epic Completion Review [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2169[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2264[m[36m:[m 37:       "description": "[1;31mWorkflow[m execution mode"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2392[m[36m:[m 1: # Document Project [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2424[m[36m:[m 1: # Deep-Dive Documentation [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2459[m[36m:[m 1: # Full Project Scan [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2727[m[36m:[m 9: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2757[m[36m:[m 9: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2787[m[36m:[m 9: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2817[m[36m:[m 9: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2852[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m2901[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3312[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3361[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3412[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3463[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3521[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3571[m[36m:[m14: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3583[m[36m:[m26:   # [1;31mWorkflow[m behavior
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3617[m[36m:[m 1: # [1;31mWorkflow[m Init - Initial Project Setup
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m3634[m[36m:[m18: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4135[m[36m:[m 1: # [1;31mWorkflow[m Status Template
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4163[m[36m:[m 1: # [1;31mWorkflow[m Status - Master Router and Status Tracker
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4179[m[36m:[m17: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4263[m[36m:[m 5: # Design Thinking [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4265[m[36m:[m 7: **Type:** Interactive Document [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4309[m[36m:[m51: ## [1;31mWorkflow[m Components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4319[m[36m:[m 1: # Design Thinking [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4389[m[36m:[m 5: # Innovation Strategy [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4391[m[36m:[m 7: **Type:** Interactive Document [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4435[m[36m:[m51: ## [1;31mWorkflow[m Components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4445[m[36m:[m 1: # Innovation Strategy [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4480[m[36m:[m 5: # Problem Solving [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4482[m[36m:[m 7: **Type:** Interactive Document [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4526[m[36m:[m51: ## [1;31mWorkflow[m Components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4571[m[36m:[m 1: # Problem Solving [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4602[m[36m:[m  1: # CIS [1;31mWorkflow[ms
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4608[m[36m:[m  7: - [[1;31mWorkflow[m Overview](#workflow-overview)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4613[m[36m:[m 12: ## [1;31mWorkflow[m Overview
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4710[m[36m:[m109: ## [1;31mWorkflow[m Structure
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4749[m[36m:[m 5: # Storytelling [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4751[m[36m:[m 7: **Type:** Interactive Document [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4797[m[36m:[m53: ## [1;31mWorkflow[m Components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4837[m[36m:[m 1: # Storytelling [1;31mWorkflow[m Configuration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4917[m[36m:[m 50: - [1;31mWorkflow[m integration
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m4995[m[36m:[m128: **Agent [1;31mWorkflow[ms:**
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m5146[m[36m:[m 1: <task id="_bmad/core/tasks/validate-workflow.xml" name="Validate [1;31mWorkflow[m Output">
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m5150[m[36m:[m 5:     <input name="workflow" desc="[1;31mWorkflow[m path containing checklist.md" />
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m5239[m[36m:[m  1: <task id="_bmad/core/tasks/workflow.xml" name="Execute [1;31mWorkflow[m">
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m5258[m[36m:[m 20:     <step n="1" title="Load and Initialize [1;31mWorkflow[m">
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m7231[m[36m:[m  7: using MTM_Receiving_Application.Module_Receiving.Models; // For Model_[1;31mWorkflow[mStepResult if needed
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m7250[m[36m:[m 26:     public Task ShowContextualHelpAsync(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m7256[m[36m:[m 32:     public Task ShowContextualHelpAsync(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m7297[m[36m:[m 73:     public string GetDunnage[1;31mWorkflow[mHelp(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m7303[m[36m:[m 79:     public string GetReceiving[1;31mWorkflow[mHelp(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8705[m[36m:[m## File: Module_Core/Helpers/UI/Helper_[1;31mWorkflow[mHelpContentGenerator.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8714[m[36m:[m  8:     public static class Helper_[1;31mWorkflow[mHelpContentGenerator
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8716[m[36m:[m 10:         public static UIElement GenerateHelpContent(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8720[m[36m:[m 14:                 Enum_Receiving[1;31mWorkflow[mStep.ModeSelection => CreateModeSelectionHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8721[m[36m:[m 15:                 Enum_Receiving[1;31mWorkflow[mStep.ManualEntry => CreateManualEntryHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8722[m[36m:[m 16:                 Enum_Receiving[1;31mWorkflow[mStep.POEntry => CreatePOEntryHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8723[m[36m:[m 17:                 Enum_Receiving[1;31mWorkflow[mStep.LoadEntry => CreateLoadEntryHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8724[m[36m:[m 18:                 Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry => CreateWeightQuantityHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8725[m[36m:[m 19:                 Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry => CreateHeatLotHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8726[m[36m:[m 20:                 Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry => CreatePackageTypeHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8727[m[36m:[m 21:                 Enum_Receiving[1;31mWorkflow[mStep.Review => CreateReviewHelp(),
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m8841[m[36m:[m135:                 Text = "Receiving [1;31mWorkflow[m Help",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m9256[m[36m:[m## File: Module_Core/Models/Enums/Enum_Receiving[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m9261[m[36m:[m 4:     /// [1;31mWorkflow[m steps enumeration for Receiving.
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m9263[m[36m:[m 6:     public enum Enum_Receiving[1;31mWorkflow[mStep
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10404[m[36m:[m 97:     public async Task ShowContextualHelpAsync(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10408[m[36m:[m101:             Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection => "Dunnage.ModeSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10409[m[36m:[m102:             Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection => "Dunnage.TypeSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10410[m[36m:[m103:             Enum_Dunnage[1;31mWorkflow[mStep.PartSelection => "Dunnage.PartSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10411[m[36m:[m104:             Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry => "Dunnage.QuantityEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10412[m[36m:[m105:             Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry => "Dunnage.DetailsEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10413[m[36m:[m106:             Enum_Dunnage[1;31mWorkflow[mStep.Review => "Dunnage.Review",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10414[m[36m:[m107:             Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry => "Dunnage.ManualEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10415[m[36m:[m108:             Enum_Dunnage[1;31mWorkflow[mStep.EditMode => "Dunnage.EditMode",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10422[m[36m:[m115:     public async Task ShowContextualHelpAsync(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10426[m[36m:[m119:             Enum_Receiving[1;31mWorkflow[mStep.ModeSelection => "Receiving.ModeSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10427[m[36m:[m120:             Enum_Receiving[1;31mWorkflow[mStep.POEntry => "Receiving.POEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10428[m[36m:[m121:             Enum_Receiving[1;31mWorkflow[mStep.PartSelection => "Receiving.PartSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10429[m[36m:[m122:             Enum_Receiving[1;31mWorkflow[mStep.LoadEntry => "Receiving.LoadEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10430[m[36m:[m123:             Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry => "Receiving.WeightQuantity",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10431[m[36m:[m124:             Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry => "Receiving.HeatLot",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10432[m[36m:[m125:             Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry => "Receiving.PackageType",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10433[m[36m:[m126:             Enum_Receiving[1;31mWorkflow[mStep.Review => "Receiving.Review",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10434[m[36m:[m127:             Enum_Receiving[1;31mWorkflow[mStep.ManualEntry => "Receiving.ManualEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10435[m[36m:[m128:             Enum_Receiving[1;31mWorkflow[mStep.EditMode => "Receiving.EditMode",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10498[m[36m:[m191:     public string GetDunnage[1;31mWorkflow[mHelp(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10502[m[36m:[m195:             Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection => "Dunnage.ModeSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10503[m[36m:[m196:             Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection => "Dunnage.TypeSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10504[m[36m:[m197:             Enum_Dunnage[1;31mWorkflow[mStep.PartSelection => "Dunnage.PartSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10505[m[36m:[m198:             Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry => "Dunnage.QuantityEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10506[m[36m:[m199:             Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry => "Dunnage.DetailsEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10507[m[36m:[m200:             Enum_Dunnage[1;31mWorkflow[mStep.Review => "Dunnage.Review",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10508[m[36m:[m201:             Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry => "Dunnage.ManualEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10509[m[36m:[m202:             Enum_Dunnage[1;31mWorkflow[mStep.EditMode => "Dunnage.EditMode",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10517[m[36m:[m210:     public string GetReceiving[1;31mWorkflow[mHelp(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10521[m[36m:[m214:             Enum_Receiving[1;31mWorkflow[mStep.ModeSelection => "Receiving.ModeSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10522[m[36m:[m215:             Enum_Receiving[1;31mWorkflow[mStep.ManualEntry => "Receiving.ManualEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10523[m[36m:[m216:             Enum_Receiving[1;31mWorkflow[mStep.EditMode => "Receiving.EditMode",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10524[m[36m:[m217:             Enum_Receiving[1;31mWorkflow[mStep.POEntry => "Receiving.POEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10525[m[36m:[m218:             Enum_Receiving[1;31mWorkflow[mStep.PartSelection => "Receiving.PartSelection",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10526[m[36m:[m219:             Enum_Receiving[1;31mWorkflow[mStep.LoadEntry => "Receiving.LoadEntry",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10527[m[36m:[m220:             Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry => "Receiving.WeightQuantity",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10528[m[36m:[m221:             Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry => "Receiving.HeatLot",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10529[m[36m:[m222:             Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry => "Receiving.PackageType",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10530[m[36m:[m223:             Enum_Receiving[1;31mWorkflow[mStep.Review => "Receiving.Review",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10568[m[36m:[m261:         // Dunnage [1;31mWorkflow[m Help Content
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10571[m[36m:[m264:         // Receiving [1;31mWorkflow[m Help Content
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10600[m[36m:[m293:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10616[m[36m:[m309:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10635[m[36m:[m328:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10652[m[36m:[m345:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10675[m[36m:[m368:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10698[m[36m:[m391:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10720[m[36m:[m413:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10744[m[36m:[m437:             Category = "Dunnage [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10767[m[36m:[m460:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10787[m[36m:[m480:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10802[m[36m:[m495:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10826[m[36m:[m519:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10848[m[36m:[m541:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10872[m[36m:[m565:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10897[m[36m:[m590:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10913[m[36m:[m606:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10929[m[36m:[m622:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10945[m[36m:[m638:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10961[m[36m:[m654:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m10977[m[36m:[m670:             Category = "Receiving [1;31mWorkflow[m",
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m11053[m[36m:[m746:         // [1;31mWorkflow[m actions
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m11116[m[36m:[m809:         // [1;31mWorkflow[m View
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m11928[m[36m:[m 2: "bmad-master","BMad Master","BMad Master Executor, Knowledge Custodian, and [1;31mWorkflow[m Orchestrator","🧙","Master Task Executor + BMad Expert + Guiding Facilitator Orchestrator","Master-level expert in the BMAD Core Platform and all loaded modules with comprehensive knowledge of all resources, tasks, and workflows. Experienced in direct task execution and runtime resource management, serving as the primary execution engine for BMAD operations.","Direct and comprehensive, refers to himself in the 3rd person. Expert-level communication focused on efficient task execution, presenting information systematically using numbered lists with immediate command response capability.","- &quot;Load resources at runtime never pre-load, and always present numbered lists for choices.&quot;","core","_bmad/core/agents/bmad-master.md"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m11931[m[36m:[m 5: "workflow-builder","Wendy","[1;31mWorkflow[m Building Master","🔄","[1;31mWorkflow[m Architecture Specialist + Process Design Expert","Master workflow architect with expertise in process design, state management, and workflow optimization. Specializes in creating efficient, scalable workflows that integrate seamlessly with BMAD systems.","Methodical and process-oriented, like a systems engineer. Focuses on flow, efficiency, and error handling. Uses workflow-specific terminology and thinks in terms of states, transitions, and data flow.","- [1;31mWorkflow[ms must be efficient, reliable, and maintainable - Every workflow should have clear entry and exit points - Error handling and edge cases are critical for robust workflows - [1;31mWorkflow[m documentation must be comprehensive and clear - Test workflows thoroughly before deployment - Optimize for both performance and user experience","bmb","_bmad/bmb/agents/workflow-builder.md"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m12444[m[36m:[m5: "validate-workflow","Validate [1;31mWorkflow[m Output","Run a checklist against a document with thorough analysis and produce a validation report","core","_bmad/core/tasks/validate-workflow.xml","false"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m12445[m[36m:[m6: "workflow","Execute [1;31mWorkflow[m","Execute given workflow by loading its configuration, following instructions, and producing output","core","_bmad/core/tasks/workflow.xml","false"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m12538[m[36m:[m21: ### [1;31mWorkflow[ms (Complex Multi-Step Processes)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m12635[m[36m:[m 30:   Module Documentation Specialist + Comprehensive [1;31mWorkflow[m Analyst.
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m12985[m[36m:[m  1: # Edit Module [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13017[m[36m:[m 33: ## [1;31mWorkflow[m Steps
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13044[m[36m:[m 60: ## Integration with Other [1;31mWorkflow[ms
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13063[m[36m:[m 79: ├── workflows/           # [1;31mWorkflow[m definitions
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13108[m[36m:[m124: - [1;31mWorkflow[m files
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13134[m[36m:[m150: [1;31mWorkflow[m: Analyzes BMM → You choose option 8 (add new workflow)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13160[m[36m:[m  1: # Module Brief [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13208[m[36m:[m 49: ## [1;31mWorkflow[m Structure
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13221[m[36m:[m 62: ## [1;31mWorkflow[m Process
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13254[m[36m:[m 95: **[1;31mWorkflow[m Ecosystem Design**
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13257[m[36m:[m 98:   - **Core [1;31mWorkflow[ms**: Essential value-delivery functions (2-3)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13258[m[36m:[m 99:   - **Feature [1;31mWorkflow[ms**: Specialized capabilities (3-5)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13259[m[36m:[m100:   - **Utility [1;31mWorkflow[ms**: Supporting operations (1-3)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13332[m[36m:[m173: 4. **[1;31mWorkflow[m Ecosystem** - Core, feature, and utility workflow specifications
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13531[m[36m:[m 4: saas_b2b,"SaaS,B2B,platform,dashboard,teams,enterprise","Multi-tenant?;Permission model?;Subscription tiers?;Integrations?;Compliance?","tenant_model;rbac_matrix;subscription_tiers;integration_list;compliance_reqs","cli_interface;mobile_first","compliance requirements;integration guides","[1;31mWorkflow[m automation;AI agents"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13535[m[36m:[m 8: game,"game,player,gameplay,level,character","REDIRECT TO USE THE BMad Method Game Module Agent and [1;31mWorkflow[ms - HALT","game-brief;GDD","most_sections","game design patterns","Novel mechanics;Genre mixing"
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m13774[m[36m:[m 1: # Correct Course - Sprint Change Management [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m14199[m[36m:[m15: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m14677[m[36m:[m16: # [1;31mWorkflow[m components
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m17919[m[36m:[m 36:   Module Documentation Specialist + Comprehensive [1;31mWorkflow[m Analyst + Module Self-Sufficiency Validator.
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m18751[m[36m:[m 90:                 <NavigationViewItem Content="Receiving Labels" Tag="Receiving[1;31mWorkflow[mView" Margin="0,0,0,4">
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20029[m[36m:[m396: - **User [1;31mWorkflow[m:** `Documentation/README.md`
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20038[m[36m:[m405: ## [1;31mWorkflow[m Example: Adding a New Feature
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20188[m[36m:[m 94:                     ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m));
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20205[m[36m:[m111:                     case "Receiving[1;31mWorkflow[mView":
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20207[m[36m:[m113:                         ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m));
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20211[m[36m:[m117:                         ContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_[1;31mWorkflow[mView));
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20318[m[36m:[m224:             // If navigated to Receiving[1;31mWorkflow[mView, subscribe to ViewModel changes to update header
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20319[m[36m:[m225:             if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m receivingView)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20344[m[36m:[m250:             // If navigated to Dunnage[1;31mWorkflow[mView, subscribe to ViewModel changes to update header
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20345[m[36m:[m251:             else if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_[1;31mWorkflow[mView dunnageView)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20729[m[36m:[m247:                 // Receiving [1;31mWorkflow[m Services (003-database-foundation)
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20736[m[36m:[m254:                 services.AddSingleton<IService_Receiving[1;31mWorkflow[m, Service_Receiving[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20742[m[36m:[m260:                 services.AddSingleton<IService_Dunnage[1;31mWorkflow[m, Service_Dunnage[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20743[m[36m:[m261:                 services.AddSingleton<IService_DunnageAdmin[1;31mWorkflow[m, Service_DunnageAdmin[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20779[m[36m:[m297:                 // Receiving [1;31mWorkflow[m ViewModels
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20780[m[36m:[m298:                 services.AddTransient<ViewModel_Receiving_[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20791[m[36m:[m309:                 // Dunnage [1;31mWorkflow[m ViewModels
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20806[m[36m:[m324:                 // Volvo [1;31mWorkflow[m ViewModels
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m20820[m[36m:[m338:                 // Routing [1;31mWorkflow[m ViewModels
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m22367[m[36m:[m- Module_Settings/Enums/Enum_Settings[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m22368[m[36m:[m- Module_Settings/Interfaces/IService_Settings[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m22383[m[36m:[m- Module_Settings/Services/Service_Settings[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23138[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/01-complete-shipment-entry.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23139[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/02-pending-shipment-resume.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23140[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/03-part-search-add.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23141[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/04-label-generation-csv.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23142[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/05-cqrs-pipeline-behaviors.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23143[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/Index.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23144[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_VolvoPartAddEditDialog.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23145[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_VolvoShipmentEditDialog.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23146[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_GenerateLabels.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23147[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_History.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23148[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_InitialLoad_PendingResume.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23149[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_PartSearch_AutoSuggest.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23150[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_PreviewEmail.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23151[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_Settings.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23152[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/[1;31mWorkflow[m_Volvo_ShipmentEntry.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23552[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/01-complete-shipment-entry.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23553[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/02-pending-shipment-resume.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23554[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/03-part-search-add.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23555[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/04-label-generation-csv.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23556[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/05-cqrs-pipeline-behaviors.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m23557[m[36m:[m- Module_Volvo/[1;31mWorkflow[mDiagrams/Index.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m25997[m[36m:[m- Database/UseToValidate_App_To_SP_[1;31mWorkflow[m.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26002[m[36m:[m- Module_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26004[m[36m:[m- Module_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26005[m[36m:[m- Module_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26011[m[36m:[m- Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26013[m[36m:[m- Module_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26021[m[36m:[m- Module_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26022[m[36m:[m- Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26069[m[36m:[m- Module_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26071[m[36m:[m- Module_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26090[m[36m:[m- Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26097[m[36m:[m- Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26103[m[36m:[m- Module_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26114[m[36m:[m- Module_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26116[m[36m:[m- Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26299[m[36m:[m- Database/UseToValidate_App_To_SP_[1;31mWorkflow[m.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26637[m[36m:[m- MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m26640[m[36m:[m- MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m27829[m[36m:[m- Database/UseToValidate_App_To_SP_[1;31mWorkflow[m.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m28397[m[36m:[m- Database/UseToValidate_App_To_SP_[1;31mWorkflow[m.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m28414[m[36m:[m- Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m29051[m[36m:[m- Module_Settings/ViewModels/ViewModel_Settings_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m29060[m[36m:[m- Module_Settings/Views/View_Settings_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m29061[m[36m:[m- Module_Settings/Views/View_Settings_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m29677[m[36m:[m- Module_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m29679[m[36m:[m- Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m29680[m[36m:[m- Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m33228[m[36m:[m- Database/UseToValidate_App_To_SP_[1;31mWorkflow[m.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.1.md[m[36m:[m[32m33339[m[36m:[m- Database/UseToValidate_App_To_SP_[1;31mWorkflow[m.md
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m229[m[36m:[mModule_Core/Helpers/UI/Helper_[1;31mWorkflow[mHelpContentGenerator.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m242[m[36m:[mModule_Core/Models/Enums/Enum_Receiving[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m272[m[36m:[mModule_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m274[m[36m:[mModule_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m285[m[36m:[mModule_Dunnage/Enums/Enum_Dunnage[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m298[m[36m:[mModule_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m300[m[36m:[mModule_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m352[m[36m:[mModule_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m353[m[36m:[mModule_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m358[m[36m:[mModule_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m373[m[36m:[mModule_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m376[m[36m:[mModule_Receiving/Models/Model_[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m382[m[36m:[mModule_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m393[m[36m:[mModule_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m412[m[36m:[mModule_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m413[m[36m:[mModule_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m433[m[36m:[mModule_Routing/Enums/Enum_Routing_[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m701[m[36m:[mMTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m704[m[36m:[mMTM_Receiving_Application.Tests/Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m755[m[36m:[m## File: Module_Dunnage/Enums/Enum_Dunnage[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m759[m[36m:[m 3:     public enum Enum_Dunnage[1;31mWorkflow[mStep
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m5919[m[36m:[m## File: Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m5925[m[36m:[m 5:     public class Model_[1;31mWorkflow[mStepResult
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m5929[m[36m:[m 9:         public Enum_Dunnage[1;31mWorkflow[mStep? TargetStep { get; set; }
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m7486[m[36m:[m## File: Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m7489[m[36m:[m  2:     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m"
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m8001[m[36m:[m## File: Module_Routing/Enums/Enum_Routing_[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m8006[m[36m:[m 4: /// [1;31mWorkflow[m steps for the routing label workflow
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m8008[m[36m:[m 6: public enum Enum_Routing_[1;31mWorkflow[mStep
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m12907[m[36m:[m## File: Module_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m12915[m[36m:[m 7: using MTM_Receiving_Application.Module_Receiving.Models; // For Model_[1;31mWorkflow[mStepResult if needed
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m12924[m[36m:[m16: public interface IService_DunnageAdmin[1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13075[m[36m:[m## File: Module_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13083[m[36m:[m 7: using MTM_Receiving_Application.Module_Receiving.Models; // For Model_[1;31mWorkflow[mStepResult if needed
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13088[m[36m:[m12:     public interface IService_Dunnage[1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13090[m[36m:[m14:         public Enum_Dunnage[1;31mWorkflow[mStep CurrentStep { get; }
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13096[m[36m:[m20:         public Task<bool> Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13097[m[36m:[m21:         public Task<Model_[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m13098[m[36m:[m22:         public void GoToStep(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15047[m[36m:[m 25:     private readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15057[m[36m:[m 35:         IService_DunnageAdmin[1;31mWorkflow[m admin[1;31mWorkflow[m,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15065[m[36m:[m 43:         _admin[1;31mWorkflow[m = admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15507[m[36m:[m485:             await _admin[1;31mWorkflow[m.NavigateToHubAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15558[m[36m:[m 23:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15564[m[36m:[m 29:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15577[m[36m:[m 42:         _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15580[m[36m:[m 45:     private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15582[m[36m:[m 47:         if (_workflowService.CurrentStep == Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15864[m[36m:[m329:         _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15900[m[36m:[m365:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.Review);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15975[m[36m:[m 28:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m15985[m[36m:[m 38:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m16605[m[36m:[m658:                 _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m16701[m[36m:[m 23:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m16708[m[36m:[m 30:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17176[m[36m:[m498:                 _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17303[m[36m:[m 23:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17307[m[36m:[m 27:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17320[m[36m:[m 40:         _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17324[m[36m:[m 44:     private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17326[m[36m:[m 46:         _logger.LogInfo($"PartSelection: [1;31mWorkflow[m step changed to {_workflowService.CurrentStep}", "PartSelection");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17327[m[36m:[m 47:         if (_workflowService.CurrentStep == Enum_Dunnage[1;31mWorkflow[mStep.PartSelection)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17559[m[36m:[m279:         _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m17580[m[36m:[m300:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18309[m[36m:[m## File: Module_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18324[m[36m:[m 14:     public interface IService_Receiving[1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18345[m[36m:[m 35:         public Enum_Receiving[1;31mWorkflow[mStep CurrentStep { get; }
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18377[m[36m:[m 67:         public Task<bool> Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18383[m[36m:[m 73:         public Task<Model_Receiving[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18389[m[36m:[m 79:         public Model_Receiving[1;31mWorkflow[mStepResult GoToPreviousStep();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18396[m[36m:[m 86:         public Model_Receiving[1;31mWorkflow[mStepResult GoToStep(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m18429[m[36m:[m119:         public Task Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19247[m[36m:[m## File: Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19257[m[36m:[m 9:     public class Model_Receiving[1;31mWorkflow[mStepResult
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19260[m[36m:[m12:         public Enum_Receiving[1;31mWorkflow[mStep NewStep { get; set; }
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19264[m[36m:[m16:         public static Model_Receiving[1;31mWorkflow[mStepResult SuccessResult(Enum_Receiving[1;31mWorkflow[mStep newStep, string message = "") => new()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19271[m[36m:[m23:         public static Model_Receiving[1;31mWorkflow[mStepResult ErrorResult(List<string> errors) => new()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19866[m[36m:[m## File: Module_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19885[m[36m:[m 18:     public class Service_Receiving[1;31mWorkflow[m : IService_Receiving[1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19903[m[36m:[m 36:         private Enum_Receiving[1;31mWorkflow[mStep _currentStep = Enum_Receiving[1;31mWorkflow[mStep.ModeSelection;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19904[m[36m:[m 37:         public Enum_Receiving[1;31mWorkflow[mStep CurrentStep
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19924[m[36m:[m 57:         public Service_Receiving[1;31mWorkflow[m(
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19940[m[36m:[m 73:         public async Task<bool> Start[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19951[m[36m:[m 84:                 CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.Review; // Default to review if session exists
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19969[m[36m:[m102:                         CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.POEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19973[m[36m:[m106:                         CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.ManualEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19977[m[36m:[m110:                         CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.EditMode;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19982[m[36m:[m115:                         CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.ModeSelection;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19990[m[36m:[m123:                 CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.ModeSelection;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m19997[m[36m:[m130:         public async Task<Model_Receiving[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20004[m[36m:[m137:                 case Enum_Receiving[1;31mWorkflow[mStep.ModeSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20006[m[36m:[m139:                     return Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20008[m[36m:[m141:                 case Enum_Receiving[1;31mWorkflow[mStep.ManualEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20011[m[36m:[m144:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.Saving;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20012[m[36m:[m145:                     return Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20014[m[36m:[m147:                 case Enum_Receiving[1;31mWorkflow[mStep.EditMode:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20016[m[36m:[m149:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.Saving;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20017[m[36m:[m150:                     return Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20019[m[36m:[m152:                 case Enum_Receiving[1;31mWorkflow[mStep.POEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20023[m[36m:[m156:                         return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20028[m[36m:[m161:                         return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20035[m[36m:[m168:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.LoadEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20038[m[36m:[m171:                 case Enum_Receiving[1;31mWorkflow[mStep.LoadEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20042[m[36m:[m175:                         return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20045[m[36m:[m178:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20048[m[36m:[m181:                 case Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20059[m[36m:[m192:                         return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20061[m[36m:[m194:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20064[m[36m:[m197:                 case Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20075[m[36m:[m208:                         return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20077[m[36m:[m210:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20080[m[36m:[m213:                 case Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20095[m[36m:[m228:                         return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20097[m[36m:[m230:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.Review;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20100[m[36m:[m233:                 case Enum_Receiving[1;31mWorkflow[mStep.Review:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20102[m[36m:[m235:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.Saving;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20105[m[36m:[m238:                 case Enum_Receiving[1;31mWorkflow[mStep.Saving:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20106[m[36m:[m239:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.Complete;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20111[m[36m:[m244:                     return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20119[m[36m:[m252:             return Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20150[m[36m:[m283:         public Model_Receiving[1;31mWorkflow[mStepResult GoToPreviousStep()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20154[m[36m:[m287:                 case Enum_Receiving[1;31mWorkflow[mStep.LoadEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20155[m[36m:[m288:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.POEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20158[m[36m:[m291:                 case Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20159[m[36m:[m292:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.LoadEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20162[m[36m:[m295:                 case Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20163[m[36m:[m296:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20166[m[36m:[m299:                 case Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20167[m[36m:[m300:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20170[m[36m:[m303:                 case Enum_Receiving[1;31mWorkflow[mStep.Review:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20171[m[36m:[m304:                     CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20175[m[36m:[m308:                     return Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20178[m[36m:[m311:             return Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20180[m[36m:[m313:         public Model_Receiving[1;31mWorkflow[mStepResult GoToStep(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20183[m[36m:[m316:             return Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20198[m[36m:[m331:             CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.POEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20365[m[36m:[m498:         public async Task Reset[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20369[m[36m:[m502:             CurrentStep = Enum_Receiving[1;31mWorkflow[mStep.POEntry;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20555[m[36m:[m 23:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m20615[m[36m:[m 83:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21372[m[36m:[m840:                     await _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21373[m[36m:[m841:                     _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21461[m[36m:[m 18:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21475[m[36m:[m 32:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21756[m[36m:[m313:                     await _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21757[m[36m:[m314:                     _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21758[m[36m:[m315:                     // The Receiving[1;31mWorkflow[mViewModel will handle the visibility update through StepChanged event
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21811[m[36m:[m 18:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21836[m[36m:[m 43:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m21854[m[36m:[m 61:             if (_workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24247[m[36m:[m 70:     private bool _isOther[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24275[m[36m:[m 98:             IsOther[1;31mWorkflow[m = false;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24285[m[36m:[m108:             IsOther[1;31mWorkflow[m = true;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24511[m[36m:[m 76:                                        Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24513[m[36m:[m 78:                                        Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24516[m[36m:[m 81:                                        Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m24518[m[36m:[m 83:                                        Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28256[m[36m:[m## File: Module_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28275[m[36m:[m 18: public class Service_DunnageAdmin[1;31mWorkflow[m : IService_DunnageAdmin[1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28910[m[36m:[m## File: Module_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28927[m[36m:[m 16:     public class Service_Dunnage[1;31mWorkflow[m : IService_Dunnage[1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28936[m[36m:[m 25:         public Enum_Dunnage[1;31mWorkflow[mStep CurrentStep { get; private set; }
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28942[m[36m:[m 31:         public Service_Dunnage[1;31mWorkflow[m(
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28958[m[36m:[m 47:         public Task<bool> Start[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28970[m[36m:[m 59:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28974[m[36m:[m 63:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28978[m[36m:[m 67:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28983[m[36m:[m 72:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28984[m[36m:[m 73:                         StatusMessageRaised?.Invoke(this, "[1;31mWorkflow[m started");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28991[m[36m:[m 80:                 GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28992[m[36m:[m 81:                 StatusMessageRaised?.Invoke(this, "[1;31mWorkflow[m started");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m28998[m[36m:[m 87:         public Task<Model_[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29004[m[36m:[m 93:                     case Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29005[m[36m:[m 94:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29008[m[36m:[m 97:                     case Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29011[m[36m:[m100:                             return Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Please select a dunnage type." });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29013[m[36m:[m102:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29016[m[36m:[m105:                     case Enum_Dunnage[1;31mWorkflow[mStep.PartSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29019[m[36m:[m108:                             return Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Please select a part." });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29021[m[36m:[m110:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29024[m[36m:[m113:                     case Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29027[m[36m:[m116:                             return Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Quantity must be greater than zero." });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29029[m[36m:[m118:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29032[m[36m:[m121:                     case Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29035[m[36m:[m124:                         GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.Review);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29038[m[36m:[m127:                     case Enum_Dunnage[1;31mWorkflow[mStep.Review:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29039[m[36m:[m128:                         return Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Already at Review step. Use Save to finish." });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29042[m[36m:[m131:                 return Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = true, TargetStep = CurrentStep });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29047[m[36m:[m136:                 return Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = ex.Message });
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29051[m[36m:[m140:         public void GoToStep(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29200[m[36m:[m289:                     _logger.LogInfo($"Added load to session: Part {load.PartId}, Qty {load.Quantity}", "Dunnage[1;31mWorkflow[m");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29262[m[36m:[m 19:     private readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29265[m[36m:[m 22:         IService_DunnageAdmin[1;31mWorkflow[m admin[1;31mWorkflow[m,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29269[m[36m:[m 26:         _admin[1;31mWorkflow[m = admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29272[m[36m:[m 29:         _admin[1;31mWorkflow[m.SectionChanged += OnSectionChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29273[m[36m:[m 30:         _admin[1;31mWorkflow[m.StatusMessageRaised += OnStatusMessageRaised;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29311[m[36m:[m 68:             await _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Types);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29341[m[36m:[m 98:             await _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Specs);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29371[m[36m:[m128:             await _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Parts);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29401[m[36m:[m158:             await _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.InventoriedList);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29431[m[36m:[m188:             await _admin[1;31mWorkflow[m.NavigateToHubAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29505[m[36m:[m 19:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29510[m[36m:[m 24:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29521[m[36m:[m 35:         _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29524[m[36m:[m 38:     private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29526[m[36m:[m 40:         if (_workflowService.CurrentStep == Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29637[m[36m:[m151:         _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29659[m[36m:[m173:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29725[m[36m:[m 22:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29730[m[36m:[m 27:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29745[m[36m:[m 42:         _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29748[m[36m:[m 45:     private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29750[m[36m:[m 47:         if (_workflowService.CurrentStep == Enum_Dunnage[1;31mWorkflow[mStep.Review)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29913[m[36m:[m210:             ClearTransient[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29916[m[36m:[m213:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m29970[m[36m:[m267:     private void ClearTransient[1;31mWorkflow[mData()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30123[m[36m:[m420:         _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30142[m[36m:[m439:         _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30196[m[36m:[m 24:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30203[m[36m:[m 31:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30400[m[36m:[m228:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30753[m[36m:[m## File: Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m30755[m[36m:[m  1: <Page x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_[1;31mWorkflow[mView"
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31275[m[36m:[m 18:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31283[m[36m:[m 26:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31299[m[36m:[m 42:             if (_workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31344[m[36m:[m 87:             // Validation logic is handled by Service_Receiving[1;31mWorkflow[m when advancing
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31397[m[36m:[m14:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31409[m[36m:[m26:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31434[m[36m:[m51:             if (_workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.LoadEntry)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31506[m[36m:[m 21:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31552[m[36m:[m 67:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31891[m[36m:[m 18:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31929[m[36m:[m 56:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m31947[m[36m:[m 74:             if (_workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.Review)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32049[m[36m:[m176:                 ClearTransient[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32057[m[36m:[m184:                 _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32111[m[36m:[m238:         private void ClearTransient[1;31mWorkflow[mData()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32234[m[36m:[m 18:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32252[m[36m:[m 36:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32270[m[36m:[m 54:             if (_workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32386[m[36m:[m## File: Module_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32404[m[36m:[m 17:     public partial class ViewModel_Receiving_[1;31mWorkflow[m : ViewModel_Shared_Base
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32406[m[36m:[m 19:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32464[m[36m:[m 77:         public ViewModel_Receiving_[1;31mWorkflow[m(
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32465[m[36m:[m 78:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32477[m[36m:[m 90:             _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32481[m[36m:[m 94:             On[1;31mWorkflow[mStepChanged(this, EventArgs.Empty);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32484[m[36m:[m 97:         private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32488[m[36m:[m101:             if (_workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.Saving)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32514[m[36m:[m127:                 case Enum_Receiving[1;31mWorkflow[mStep.ModeSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32518[m[36m:[m131:                 case Enum_Receiving[1;31mWorkflow[mStep.ManualEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32522[m[36m:[m135:                 case Enum_Receiving[1;31mWorkflow[mStep.EditMode:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32526[m[36m:[m139:                 case Enum_Receiving[1;31mWorkflow[mStep.POEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32530[m[36m:[m143:                 case Enum_Receiving[1;31mWorkflow[mStep.PartSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32534[m[36m:[m147:                 case Enum_Receiving[1;31mWorkflow[mStep.LoadEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32538[m[36m:[m151:                 case Enum_Receiving[1;31mWorkflow[mStep.WeightQuantityEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32542[m[36m:[m155:                 case Enum_Receiving[1;31mWorkflow[mStep.HeatLotEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32546[m[36m:[m159:                 case Enum_Receiving[1;31mWorkflow[mStep.PackageTypeEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32550[m[36m:[m163:                 case Enum_Receiving[1;31mWorkflow[mStep.Review:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32554[m[36m:[m167:                 case Enum_Receiving[1;31mWorkflow[mStep.Saving:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32558[m[36m:[m171:                 case Enum_Receiving[1;31mWorkflow[mStep.Complete:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32569[m[36m:[m182:             HelpContent = Helper_[1;31mWorkflow[mHelpContentGenerator.GenerateHelpContent(_workflowService.CurrentStep);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32654[m[36m:[m267:             await _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32745[m[36m:[m358:                 await _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32746[m[36m:[m359:                 _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32747[m[36m:[m360:                 ShowStatus("[1;31mWorkflow[m cleared. Please select a mode.", InfoBarSeverity.Informational);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32757[m[36m:[m370:             await _helpService.ShowHelpAsync("Receiving.[1;31mWorkflow[m");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32771[m[36m:[m## File: Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32782[m[36m:[m10:     public sealed partial class View_Receiving_[1;31mWorkflow[m : Page
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32784[m[36m:[m12:         public ViewModel_Receiving_[1;31mWorkflow[m ViewModel { get; }
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32785[m[36m:[m13:         private readonly IService_Receiving[1;31mWorkflow[m? _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32788[m[36m:[m16:         public View_Receiving_[1;31mWorkflow[m()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32790[m[36m:[m18:             ViewModel = App.GetService<ViewModel_Receiving_[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32793[m[36m:[m21:             _workflowService = App.GetService<IService_Receiving[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32814[m[36m:[m42:             var workflowService = App.GetService<IService_Receiving[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32818[m[36m:[m46:             if (workflowService.CurrentStep == Enum_Receiving[1;31mWorkflow[mStep.ModeSelection &&
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32828[m[36m:[m56:                         workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m32832[m[36m:[m60:                         workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m33867[m[36m:[m 65: ## [1;31mWorkflow[ms
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m33869[m[36m:[m 67: ### 🎯 Wizard Mode (Primary [1;31mWorkflow[m)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35557[m[36m:[m 27:     private readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35574[m[36m:[m 44:         IService_DunnageAdmin[1;31mWorkflow[m admin[1;31mWorkflow[m,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35582[m[36m:[m 52:         _admin[1;31mWorkflow[m = admin[1;31mWorkflow[m ?? throw new ArgumentNullException(nameof(admin[1;31mWorkflow[m));
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35872[m[36m:[m342:         var settings[1;31mWorkflow[m = App.GetService<IService_Settings[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35873[m[36m:[m343:         settings[1;31mWorkflow[m.GoBack();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35915[m[36m:[m 28:     private readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35921[m[36m:[m 34:         IService_DunnageAdmin[1;31mWorkflow[m admin[1;31mWorkflow[m,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m35928[m[36m:[m 41:         _admin[1;31mWorkflow[m = admin[1;31mWorkflow[m;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36364[m[36m:[m477:             var settings[1;31mWorkflow[m = App.GetService<IService_Settings[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36365[m[36m:[m478:             settings[1;31mWorkflow[m.GoBack();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36422[m[36m:[m 19:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36426[m[36m:[m 23:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36434[m[36m:[m 31:         _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36440[m[36m:[m 37:         _ = Initialize[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36446[m[36m:[m 43:     private async Task Initialize[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36450[m[36m:[m 47:             await _workflowService.Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36457[m[36m:[m 54:                 nameof(Initialize[1;31mWorkflow[mAsync),
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36500[m[36m:[m 97:     private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36515[m[36m:[m112:             case Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36519[m[36m:[m116:             case Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36523[m[36m:[m120:             case Enum_Dunnage[1;31mWorkflow[mStep.PartSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36527[m[36m:[m124:             case Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36531[m[36m:[m128:             case Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36535[m[36m:[m132:             case Enum_Dunnage[1;31mWorkflow[mStep.Review:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36539[m[36m:[m136:             case Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36543[m[36m:[m140:             case Enum_Dunnage[1;31mWorkflow[mStep.EditMode:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36615[m[36m:[m212:         _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36629[m[36m:[m## File: Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36641[m[36m:[m 11: public sealed partial class View_Dunnage_[1;31mWorkflow[mView : Page
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36644[m[36m:[m 14:     private IService_Dunnage[1;31mWorkflow[m? _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36648[m[36m:[m 18:     public View_Dunnage_[1;31mWorkflow[mView()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36655[m[36m:[m 25:         _workflowService = App.GetService<IService_Dunnage[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36657[m[36m:[m 27:         _workflowService.StepChanged += On[1;31mWorkflow[mStepChanged;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36662[m[36m:[m 32:     private void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36685[m[36m:[m 55:         var workflowService = App.GetService<IService_Dunnage[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36720[m[36m:[m 90:             var workflowService = App.GetService<IService_Dunnage[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36740[m[36m:[m110:         var workflowService = App.GetService<IService_Dunnage[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36745[m[36m:[m115:             case Enum_Dunnage[1;31mWorkflow[mStep.PartSelection:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36746[m[36m:[m116:                 workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36748[m[36m:[m118:             case Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36749[m[36m:[m119:                 workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36751[m[36m:[m121:             case Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36752[m[36m:[m122:                 workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36754[m[36m:[m124:             case Enum_Dunnage[1;31mWorkflow[mStep.Review:
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36755[m[36m:[m125:                 workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36778[m[36m:[m 15:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36794[m[36m:[m 31:             IService_Receiving[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36831[m[36m:[m 68:                 Clear[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36832[m[36m:[m 69:                 _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36843[m[36m:[m 80:                 Clear[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36844[m[36m:[m 81:                 _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36855[m[36m:[m 92:                 Clear[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36856[m[36m:[m 93:                 _workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36931[m[36m:[m168:         private void Clear[1;31mWorkflow[mData()
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m36944[m[36m:[m181:                 _logger.LogInfo("[1;31mWorkflow[m data and UI inputs cleared for mode change");
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m37993[m[36m:[m 20:     private readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38000[m[36m:[m 27:         IService_Dunnage[1;31mWorkflow[m workflowService,
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38058[m[36m:[m 85:             Clear[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38059[m[36m:[m 86:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38070[m[36m:[m 97:             Clear[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38071[m[36m:[m 98:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38082[m[36m:[m109:             Clear[1;31mWorkflow[mData();
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38083[m[36m:[m110:             _workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/full-context/repomix-output-full-context.2.md[m[36m:[m[32m38160[m[36m:[m187:     private void Clear[1;31mWorkflow[mData()
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m229[m[36m:[mModule_Core/Helpers/UI/Helper_[1;31mWorkflow[mHelpContentGenerator.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m242[m[36m:[mModule_Core/Models/Enums/Enum_Receiving[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m272[m[36m:[mModule_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m274[m[36m:[mModule_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m285[m[36m:[mModule_Dunnage/Enums/Enum_Dunnage[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m298[m[36m:[mModule_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m300[m[36m:[mModule_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m352[m[36m:[mModule_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m353[m[36m:[mModule_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m358[m[36m:[mModule_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m373[m[36m:[mModule_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m376[m[36m:[mModule_Receiving/Models/Model_[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m382[m[36m:[mModule_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m393[m[36m:[mModule_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m412[m[36m:[mModule_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m413[m[36m:[mModule_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m433[m[36m:[mModule_Routing/Enums/Enum_Routing_[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m701[m[36m:[mMTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m704[m[36m:[mMTM_Receiving_Application.Tests/Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m6764[m[36m:[m59:             var list = _sut.GetHelpByCategory("Dunnage [1;31mWorkflow[m");
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m6768[m[36m:[m63:             list.All(x => x.Category == "Dunnage [1;31mWorkflow[m").Should().BeTrue();
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7722[m[36m:[m## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7733[m[36m:[m10:     /// Unit tests for Model_Receiving[1;31mWorkflow[mStepResult.
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7738[m[36m:[m15:     public class Model_Receiving[1;31mWorkflow[mStepResult_Tests
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7744[m[36m:[m21:             var result = new Model_Receiving[1;31mWorkflow[mStepResult();
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7756[m[36m:[m33:             var step = Enum_Receiving[1;31mWorkflow[mStep.Review;
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7758[m[36m:[m35:             var result = Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(step, message);
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7771[m[36m:[m48:             var result = Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(errors);
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7967[m[36m:[m## File: MTM_Receiving_Application.Tests/Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7977[m[36m:[m 9:     /// Unit tests for Model_[1;31mWorkflow[mStepResult.
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7982[m[36m:[m14:     public class Model_[1;31mWorkflow[mStepResult_Tests
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m7988[m[36m:[m20:             var model = new Model_[1;31mWorkflow[mStepResult();
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m8000[m[36m:[m32:             var model = new Model_[1;31mWorkflow[mStepResult();
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m8001[m[36m:[m33:             var step = Enum_Dunnage[1;31mWorkflow[mStep.Review;
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9047[m[36m:[m113: - `ViewModel_Receiving_[1;31mWorkflow[m_Tests.cs`
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9165[m[36m:[m231:     public class ViewModel_Receiving_[1;31mWorkflow[m_Tests
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9167[m[36m:[m233:         private readonly Mock<IService_Receiving[1;31mWorkflow[m> _mock[1;31mWorkflow[mService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9170[m[36m:[m236:         private readonly ViewModel_Receiving_[1;31mWorkflow[m _viewModel;
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9172[m[36m:[m238:         public ViewModel_Receiving_[1;31mWorkflow[m_Tests()
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9174[m[36m:[m240:             _mock[1;31mWorkflow[mService = new Mock<IService_Receiving[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9178[m[36m:[m244:             _viewModel = new ViewModel_Receiving_[1;31mWorkflow[m(
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9179[m[36m:[m245:                 _mock[1;31mWorkflow[mService.Object,
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9195[m[36m:[m261:             _mock[1;31mWorkflow[mService
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9244[m[36m:[m310:     public class Receiving[1;31mWorkflow[m_Integration_Tests : IClassFixture<ServiceCollectionFixture>
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9247[m[36m:[m313:         private readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9249[m[36m:[m315:         public Receiving[1;31mWorkflow[m_Integration_Tests(
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9255[m[36m:[m321:                 .GetRequiredService<IService_Receiving[1;31mWorkflow[m>();
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9259[m[36m:[m325:         public async Task Complete[1;31mWorkflow[m_ValidData_Success()
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9265[m[36m:[m331:             var result = await _workflowService.Start[1;31mWorkflow[mAsync(poNumber);
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9321[m[36m:[m387:     └── ViewModel_Receiving_[1;31mWorkflow[m.cs    └── ViewModel_Receiving_[1;31mWorkflow[m_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m9328[m[36m:[m394: ├── Receiving[1;31mWorkflow[m_Integration_Tests.cs
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m19746[m[36m:[m 29:     public async Task CompleteShipment_[1;31mWorkflow[m_ShouldPersistAndGenerateCsv()
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m19968[m[36m:[m 30: - **`04-receiving.svg/.md`** - [1;31mWorkflow[m, package types (DataGrid)
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m24932[m[36m:[m 58: ### Receiving [1;31mWorkflow[m
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m24962[m[36m:[m 88: - **Tips**: [1;31mWorkflow[m-specific tips and best practices
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m24968[m[36m:[m 94: **In [1;31mWorkflow[m Views**:
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m24976[m[36m:[m102: - **Dunnage [1;31mWorkflow[m**: Complete guidance for dunnage receiving process
+[35m.repomix/outputs/full-context/repomix-output-full-context.3.md[m[36m:[m[32m24977[m[36m:[m103: - **Receiving [1;31mWorkflow[m**: PO-based receiving with Infor Visual integration
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m57[m[36m:[mpublic Task ShowContextualHelpAsync(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m58[m[36m:[mpublic Task ShowContextualHelpAsync(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m64[m[36m:[mpublic string GetDunnage[1;31mWorkflow[mHelp(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m65[m[36m:[mpublic string GetReceiving[1;31mWorkflow[mHelp(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m500[m[36m:[m## File: Module_Core/Helpers/UI/Helper_[1;31mWorkflow[mHelpContentGenerator.cs
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m502[m[36m:[mpublic static class Helper_[1;31mWorkflow[mHelpContentGenerator
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m504[m[36m:[mpublic static UIElement GenerateHelpContent(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m624[m[36m:[m## File: Module_Core/Models/Enums/Enum_Receiving[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m880[m[36m:[mpublic async Task ShowContextualHelpAsync(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m882[m[36m:[mpublic async Task ShowContextualHelpAsync(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m915[m[36m:[mpublic string GetDunnage[1;31mWorkflow[mHelp(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m917[m[36m:[mpublic string GetReceiving[1;31mWorkflow[mHelp(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m929[m[36m:[m// Dunnage [1;31mWorkflow[m Help Content
+[35m.repomix/outputs/modules/Module_Core-code-only.md[m[36m:[m[32m931[m[36m:[m// Receiving [1;31mWorkflow[m Help Content
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6[m[36m:[m## File: Module_Dunnage/Enums/Enum_Dunnage[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3388[m[36m:[m## File: Module_Dunnage/Contracts/IService_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3390[m[36m:[mpublic interface IService_DunnageAdmin[1;31mWorkflow[m
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3415[m[36m:[m## File: Module_Dunnage/Contracts/IService_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3417[m[36m:[mpublic interface IService_Dunnage[1;31mWorkflow[m
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3421[m[36m:[mpublic Task<bool> Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3422[m[36m:[mpublic Task<Model_[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m3423[m[36m:[mpublic void GoToStep(Enum_Dunnage[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4065[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4158[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToHubAsync();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4167[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4172[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4253[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4260[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.Review);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4274[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4421[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4445[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4560[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4598[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4603[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4605[m[36m:[m_logger.LogInfo($"PartSelection: [1;31mWorkflow[m step changed to {_workflowService.CurrentStep}", "PartSelection");
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4666[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m4671[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5136[m[36m:[m## File: Module_Dunnage/Services/Service_DunnageAdmin[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5138[m[36m:[mpublic class Service_DunnageAdmin[1;31mWorkflow[m : IService_DunnageAdmin[1;31mWorkflow[m
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5329[m[36m:[m## File: Module_Dunnage/Services/Service_Dunnage[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5331[m[36m:[mpublic class Service_Dunnage[1;31mWorkflow[m : IService_Dunnage[1;31mWorkflow[m
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5340[m[36m:[mpublic Task<bool> Start[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5348[m[36m:[mpublic Task<Model_[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync()
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5350[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Please select a dunnage type." });
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5352[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Please select a part." });
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5354[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Quantity must be greater than zero." });
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5356[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = "Already at Review step. Use Save to finish." });
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5358[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = true, TargetStep = CurrentStep });
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5361[m[36m:[mreturn Task.FromResult(new Model_[1;31mWorkflow[mStepResult { IsSuccess = false, ErrorMessage = ex.Message });
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5363[m[36m:[mpublic void GoToStep(Enum_Dunnage[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5407[m[36m:[m_logger.LogInfo($"Added load to session: Part {load.PartId}, Qty {load.Quantity}", "Dunnage[1;31mWorkflow[m");
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5420[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5424[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Types);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5431[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Specs);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5436[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.Parts);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5441[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToSectionAsync(Enum_DunnageAdminSection.InventoriedList);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5446[m[36m:[mawait _admin[1;31mWorkflow[m.NavigateToHubAsync();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5460[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5464[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5489[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5494[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5507[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5511[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5547[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5564[m[36m:[mprivate void ClearTransient[1;31mWorkflow[mData()
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5599[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5618[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5679[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5771[m[36m:[m## File: Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5773[m[36m:[m<Page x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_[1;31mWorkflow[mView"
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5961[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m5966[m[36m:[m_admin[1;31mWorkflow[m = admin[1;31mWorkflow[m ?? throw new ArgumentNullException(nameof(admin[1;31mWorkflow[m));
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6021[m[36m:[msettings[1;31mWorkflow[m.GoBack();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6031[m[36m:[mprivate readonly IService_DunnageAdmin[1;31mWorkflow[m _admin[1;31mWorkflow[m;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6142[m[36m:[msettings[1;31mWorkflow[m.GoBack();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6153[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6158[m[36m:[mprivate async Task Initialize[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6160[m[36m:[mawait _workflowService.Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6166[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6186[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6191[m[36m:[m## File: Module_Dunnage/Views/View_Dunnage_[1;31mWorkflow[mView.xaml.cs
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6193[m[36m:[mpublic sealed partial class View_Dunnage_[1;31mWorkflow[mView : Page
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6199[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6227[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6229[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.PartSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6231[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.QuantityEntry);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6233[m[36m:[mworkflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.DetailsEntry);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6240[m[36m:[mprivate readonly IService_Dunnage[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6252[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.TypeSelection);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6258[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6264[m[36m:[m_workflowService.GoToStep(Enum_Dunnage[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/modules/Module_Dunnage-code-only.md[m[36m:[m[32m6285[m[36m:[mprivate void Clear[1;31mWorkflow[mData()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m56[m[36m:[m## File: Module_Receiving/Models/Model_[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m58[m[36m:[mpublic class Model_[1;31mWorkflow[mStepResult
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1426[m[36m:[m## File: Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1429[m[36m:[m    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_[1;31mWorkflow[m"
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1625[m[36m:[m## File: Module_Receiving/Contracts/IService_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1627[m[36m:[mpublic interface IService_Receiving[1;31mWorkflow[m
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1632[m[36m:[mpublic Task<bool> Start[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1633[m[36m:[mpublic Task<Model_Receiving[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1634[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToPreviousStep();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1635[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToStep(Enum_Receiving[1;31mWorkflow[mStep step);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1641[m[36m:[mpublic Task Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1816[m[36m:[m## File: Module_Receiving/Models/Model_Receiving[1;31mWorkflow[mStepResult.cs
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1818[m[36m:[mpublic class Model_Receiving[1;31mWorkflow[mStepResult
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1820[m[36m:[mpublic static Model_Receiving[1;31mWorkflow[mStepResult SuccessResult(Enum_Receiving[1;31mWorkflow[mStep newStep, string message = "") => new()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m1822[m[36m:[mpublic static Model_Receiving[1;31mWorkflow[mStepResult ErrorResult(List<string> errors) => new()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2056[m[36m:[m## File: Module_Receiving/Services/Service_Receiving[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2058[m[36m:[mpublic class Service_Receiving[1;31mWorkflow[m : IService_Receiving[1;31mWorkflow[m
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2069[m[36m:[mprivate Enum_Receiving[1;31mWorkflow[mStep _currentStep = Enum_Receiving[1;31mWorkflow[mStep.ModeSelection;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2082[m[36m:[mpublic async Task<bool> Start[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2105[m[36m:[mpublic async Task<Model_Receiving[1;31mWorkflow[mStepResult> AdvanceToNextStepAsync()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2107[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2112[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(validationErrors);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2137[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2150[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToPreviousStep()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2152[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2154[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2156[m[36m:[mpublic Model_Receiving[1;31mWorkflow[mStepResult GoToStep(Enum_Receiving[1;31mWorkflow[mStep step)
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2158[m[36m:[mreturn Model_Receiving[1;31mWorkflow[mStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2219[m[36m:[mpublic async Task Reset[1;31mWorkflow[mAsync()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2288[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2524[m[36m:[mawait _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2525[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2559[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2642[m[36m:[mawait _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2643[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2663[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2943[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m2978[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3013[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3122[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3155[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3172[m[36m:[mprivate void ClearTransient[1;31mWorkflow[mData()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3200[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3240[m[36m:[m## File: Module_Receiving/ViewModels/ViewModel_Receiving_[1;31mWorkflow[m.cs
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3242[m[36m:[mpublic partial class ViewModel_Receiving_[1;31mWorkflow[m : ViewModel_Shared_Base
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3244[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3250[m[36m:[mprivate void On[1;31mWorkflow[mStepChanged(object? sender, EventArgs e)
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3257[m[36m:[mHelpContent = Helper_[1;31mWorkflow[mHelpContentGenerator.GenerateHelpContent(_workflowService.CurrentStep);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3292[m[36m:[mawait _workflowService.Reset[1;31mWorkflow[mAsync();
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3321[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ModeSelection);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3325[m[36m:[mawait _helpService.ShowHelpAsync("Receiving.[1;31mWorkflow[m");
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3332[m[36m:[m## File: Module_Receiving/Views/View_Receiving_[1;31mWorkflow[m.xaml.cs
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3334[m[36m:[mpublic sealed partial class View_Receiving_[1;31mWorkflow[m : Page
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3348[m[36m:[mworkflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3350[m[36m:[mworkflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3357[m[36m:[mprivate readonly IService_Receiving[1;31mWorkflow[m _workflowService;
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3369[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.POEntry);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3375[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.ManualEntry);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3381[m[36m:[m_workflowService.GoToStep(Enum_Receiving[1;31mWorkflow[mStep.EditMode);
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3401[m[36m:[mprivate void Clear[1;31mWorkflow[mData()
+[35m.repomix/outputs/modules/Module_Receiving-code-only.md[m[36m:[m[32m3403[m[36m:[m_logger.LogInfo("[1;31mWorkflow[m data and UI inputs cleared for mode change");
+[35m.repomix/outputs/modules/Module_Routing-code-only.md[m[36m:[m[32m43[m[36m:[m## File: Module_Routing/Enums/Enum_Routing_[1;31mWorkflow[mStep.cs
+[35m.repomix/outputs/modules/Module_Routing-code-only.md[m[36m:[m[32m1559[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+[35m.repomix/outputs/modules/Module_Routing-code-only.md[m[36m:[m[32m1561[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+[35m.repomix/outputs/modules/Module_Routing-code-only.md[m[36m:[m[32m1564[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+[35m.repomix/outputs/modules/Module_Routing-code-only.md[m[36m:[m[32m1566[m[36m:[m                                       Visibility="{x:Bind ViewModel.IsOther[1;31mWorkflow[m, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>

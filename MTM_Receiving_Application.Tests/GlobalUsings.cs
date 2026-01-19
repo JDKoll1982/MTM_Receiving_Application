@@ -17,7 +17,7 @@ global using MTM_Receiving_Application.Module_Core.Services.Help;
 global using MTM_Receiving_Application.Module_Core.Services.UI;
 global using MTM_Receiving_Application.Module_Receiving.Models;
 global using MTM_Receiving_Application.Module_Routing.Models;
-global using MTM_Receiving_Application.Module_Settings.Models;
+global using MTM_Receiving_Application.Module_Settings.Core.Models;
 global using MTM_Receiving_Application.Module_Volvo.Data;
 global using MTM_Receiving_Application.Module_Volvo.Models;
 global using MTM_Receiving_Application.Module_Volvo.Services;

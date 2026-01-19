@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -22,6 +23,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -69,7 +71,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_LoggingUtility logger,
             IService_Help helpService,
             IService_ViewModelRegistry viewModelRegistry,
-            Microsoft.Extensions.Configuration.IConfiguration configuration)
+            Microsoft.Extensions.Configuration.IConfiguration configuration,
+            IService_ReceivingSettings receivingSettings)
             : base(errorHandler, logger)
         {
             _inforVisualService = inforVisualService;
@@ -77,6 +80,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _viewModelRegistry = viewModelRegistry;
             _configuration = configuration;
+            _receivingSettings = receivingSettings;
 
             _viewModelRegistry.Register(this);
 
@@ -135,7 +139,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (string.IsNullOrWhiteSpace(PoNumber))
             {
-                await _errorHandler.HandleErrorAsync("Please enter a PO number.", Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoRequired), Enum_ErrorSeverity.Warning);
                 return;
             }
 
@@ -165,13 +169,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         Parts.Add(part);
                     }
 
-                    _workflowService.RaiseStatusMessage($"Purchase Order {PoNumber} loaded with {Parts.Count} parts.");
+                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts, PoNumber, Parts.Count);
+                    _workflowService.RaiseStatusMessage(msg);
                 }
                 else
                 {
                     var errorMessage = !string.IsNullOrWhiteSpace(result.ErrorMessage)
                         ? result.ErrorMessage
-                        : "PO not found or contains no parts.";
+                        : await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoNotFound);
                     await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
                     Parts.Clear();
                 }
@@ -198,7 +203,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (string.IsNullOrWhiteSpace(PartID))
             {
-                await _errorHandler.HandleErrorAsync("Please enter a Part ID.", Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartIdRequired), Enum_ErrorSeverity.Warning);
                 return;
             }
 
@@ -213,11 +218,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     // Setting SelectedPart directly is enough for the workflow, but the UI might want to show it.
                     Parts.Clear();
                     Parts.Add(result.Data);
-                    _workflowService.RaiseStatusMessage($"Part {PartID} found.");
+                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPartFound, PartID);
+                    _workflowService.RaiseStatusMessage(msg);
                 }
                 else
                 {
-                    await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? "Part not found.", Enum_ErrorSeverity.Error);
+                    await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartNotFound), Enum_ErrorSeverity.Error);
                     SelectedPart = null;
                     Parts.Clear();
                 }
@@ -304,7 +310,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             // Auto-detect package type based on Part ID prefix
             if (string.IsNullOrWhiteSpace(value))
             {
-                PackageType = "Skids"; // Default
+                PackageType = "Skids";
                 return;
             }
 

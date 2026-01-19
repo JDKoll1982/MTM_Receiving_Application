@@ -67,6 +67,84 @@
             "permissionLevel": "Admin",
             "isSensitive": true,
             "validationRules": "Sensitive"
+    },
+
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.GuidedTitle",
+      "displayName": "Mode Selection - Guided Title",
+      "defaultValue": "Guided Wizard",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.GuidedDescription",
+      "displayName": "Mode Selection - Guided Description",
+      "defaultValue": "Step-by-step process for standard receiving workflow.",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.ManualTitle",
+      "displayName": "Mode Selection - Manual Title",
+      "defaultValue": "Manual Entry",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.ManualDescription",
+      "displayName": "Mode Selection - Manual Description",
+      "defaultValue": "Customizable grid for bulk data entry and editing.",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.EditTitle",
+      "displayName": "Mode Selection - Edit Title",
+      "defaultValue": "Edit Mode",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.EditDescription",
+      "displayName": "Mode Selection - Edit Description",
+      "defaultValue": "Edit existing loads without adding new ones.",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.ModeSelection.SetDefault",
+      "displayName": "Mode Selection - Set Default",
+      "defaultValue": "Set as default mode",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "String"
         }
     ]
 }

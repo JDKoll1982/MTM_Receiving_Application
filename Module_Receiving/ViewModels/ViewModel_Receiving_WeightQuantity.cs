@@ -10,6 +10,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_Help _helpService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -37,6 +39,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingValidation validationService,
             IService_InforVisual inforVisualService,
             IService_Help helpService,
+            IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger)
             : base(errorHandler, logger)
@@ -45,6 +48,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _validationService = validationService;
             _inforVisualService = inforVisualService;
             _helpService = helpService;
+            _receivingSettings = receivingSettings;
 
             _workflowService.StepChanged += OnStepChanged;
         }
@@ -69,15 +73,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
             }
 
-            UpdatePOQuantityInfo();
+            await UpdatePOQuantityInfoAsync();
             await CheckSameDayReceivingAsync();
         }
 
-        private void UpdatePOQuantityInfo()
+        private async Task UpdatePOQuantityInfoAsync()
         {
             if (_workflowService.CurrentSession.IsNonPO)
             {
-                PoQuantityInfo = "Non-PO Item";
+                PoQuantityInfo = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.InfoNonPoItem);
             }
             else if (_workflowService.CurrentPart != null)
             {
@@ -113,7 +117,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (result.IsSuccess && result.Data > 0)
                 {
                     HasWarning = true;
-                    WarningMessage = $"Warning: {result.Data:N2} of this part has already been received today on this PO.";
+                    WarningMessage = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.WarningSameDayReceiving, result.Data);
                 }
             }
             catch (Exception ex)
@@ -141,7 +145,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var totalWeight = Loads.Sum(l => l.WeightQuantity);
                 if (totalWeight > _workflowService.CurrentPart.QtyOrdered)
                 {
-                    WarningMessage = $"Warning: Total quantity ({totalWeight:N2}) exceeds PO ordered amount ({_workflowService.CurrentPart.QtyOrdered:N2}).";
+                    WarningMessage = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.WarningExceedsOrdered, totalWeight, _workflowService.CurrentPart.QtyOrdered);
                     HasWarning = true;
                 }
             }

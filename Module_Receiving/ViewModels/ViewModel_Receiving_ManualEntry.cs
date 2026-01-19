@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_MySQL_Receiving _mysqlService;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
@@ -34,13 +36,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
-            IService_Help helpService)
+            IService_Help helpService,
+            IService_ReceivingSettings receivingSettings)
             : base(errorHandler, logger)
         {
             _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
             _helpService = helpService;
+            _receivingSettings = receivingSettings;
             _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
         }
 
@@ -198,10 +202,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = "Add Multiple Rows",
+                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleTitle),
                 Content = inputTextBox,
-                PrimaryButtonText = "Add",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleAdd),
+                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleCancel),
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
                 XamlRoot = xamlRoot
             };

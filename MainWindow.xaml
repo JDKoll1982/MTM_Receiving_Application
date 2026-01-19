@@ -28,7 +28,7 @@
             
             <!-- App Icon and Title -->
             <StackPanel Orientation="Horizontal" Spacing="12" Margin="16,0,0,0">
-                <Image Source="/Assets/app-icon.ico" 
+                <Image Source="/MTMIcon.ico" 
                        Width="16" 
                        Height="16" 
                        VerticalAlignment="Center"/>

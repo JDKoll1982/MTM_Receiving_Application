@@ -2,7 +2,8 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-        <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
+        <ApplicationIcon>MTMIcon.ico</ApplicationIcon>
+        <EnableDefaultPageItems>true</EnableDefaultPageItems>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RootNamespace>MTM_Receiving_Application</RootNamespace>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -61,7 +62,6 @@
         <None Include=".github\prompts\module-models-optimize-and-test.prompt.md" />
         <None Include=".github\prompts\service-unit-tests.prompt.md" />
         <None Include=".github\prompts\viewmodel-unit-tests.prompt.md" />
-        <None Include="Assets\\app-icon.ico" />
         <None Include="Assets\\app-icon.svg" />
     </ItemGroup>
     <ItemGroup>
@@ -127,14 +127,14 @@
     <ItemGroup>
         <None Include="Properties\launchSettings.json" />
         <None Include="Scripts\Add-AsyncSuffix.ps1" />
+        <None Include="Scripts\PlanApp.md" />
     </ItemGroup>
     <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
     package has not yet been restored.
   -->
-    <ItemGroup
-        Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <ProjectCapability Include="Msix" />
     </ItemGroup>
     <ItemGroup>
@@ -244,6 +244,11 @@
         <Content Include="Themes\**\*.xaml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Remove="Assets\Icon.jpg" />
+      <Content Remove="Assets\MTMIcon.ico" />
+      <Content Remove="Assets\MTMRecv.ico" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include=".github\instructions\" />

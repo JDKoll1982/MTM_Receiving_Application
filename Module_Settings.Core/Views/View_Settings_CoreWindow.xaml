@@ -21,7 +21,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Spacing="12" Margin="16,0,0,0">
-                <Image Source="/Assets/app-icon.ico"
+                <Image Source="/MTMIcon.ico"
                        Width="16"
                        Height="16"
                        VerticalAlignment="Center" />
@@ -43,9 +43,11 @@
 
             <NavigationView.Header>
                 <StackPanel Spacing="6" Margin="12,0,12,12">
-                    <TextBlock Text="Configuration"
+                    <TextBlock x:Name="HeaderTitleText"
+                               Text="Configuration"
                                Style="{StaticResource TitleTextBlockStyle}" />
-                    <TextBlock Text="Manage core system defaults, users, and infrastructure settings."
+                    <TextBlock x:Name="HeaderDescriptionText"
+                               Text="Manage core system defaults, users, and infrastructure settings."
                                Style="{StaticResource BodyTextBlockStyle}" />
                 </StackPanel>
             </NavigationView.Header>
@@ -57,27 +59,27 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItemSeparator />
-                <NavigationViewItem Content="Receiving Workflow" Tag="ReceivingSettingsHub" Margin="0,0,0,4">
+                <NavigationViewItem Content="Receiving Navigation" Tag="ReceivingSettingsHub" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Dunnage Workflow" Tag="DunnageSettingsHub" Margin="0,0,0,4">
+                <NavigationViewItem Content="Dunnage Navigation" Tag="DunnageSettingsHub" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7B8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Routing Workflow" Tag="RoutingSettingsHub" Margin="0,0,0,4">
+                <NavigationViewItem Content="Routing Navigation" Tag="RoutingSettingsHub" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE724;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Reporting Workflow" Tag="ReportingSettingsHub" Margin="0,0,0,4">
+                <NavigationViewItem Content="Reporting Navigation" Tag="ReportingSettingsHub" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE9F9;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Volvo Workflow" Tag="VolvoSettingsHub" Margin="0,0,0,4">
+                <NavigationViewItem Content="Volvo Navigation" Tag="VolvoSettingsHub" Margin="0,0,0,4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7C1;" />
                     </NavigationViewItem.Icon>
