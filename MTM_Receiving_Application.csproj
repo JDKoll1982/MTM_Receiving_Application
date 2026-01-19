@@ -252,5 +252,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include=".github\instructions\" />
+        <Folder Include="Module_Receiving\Settings\" />
     </ItemGroup>
 </Project>
