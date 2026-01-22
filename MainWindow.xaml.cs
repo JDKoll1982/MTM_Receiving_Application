@@ -285,6 +285,14 @@ namespace MTM_Receiving_Application
         }
 
         /// <summary>
+        /// Toggle the NavigationView pane when the custom pane toggle button is clicked
+        /// </summary>
+        private void PaneToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavView.IsPaneOpen = !NavView.IsPaneOpen;
+        }
+
+        /// <summary>
         /// Update user display from current session
         /// Call this after session is created during startup
         /// </summary>
