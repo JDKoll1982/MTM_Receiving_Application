@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Waitlist - Core Questions (All Roles)</title>
+    <style>
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                font-size: 12pt;
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #2980b9;
+            margin-top: 20px;
+        }
+
+        .header-info {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .question-block {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .why-matters {
+            background-color: #e8f4f8;
+            border-left: 3px solid #17a2b8;
+            padding: 10px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .example {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .answer-area {
+            border: 2px dashed #6c757d;
+            min-height: 60px;
+            padding: 10px;
+            margin: 15px 0;
+            background-color: white;
+        }
+
+        .answer-area textarea {
+            width: 100%;
+            min-height: 50px;
+            border: 1px solid #ced4da;
+            padding: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .checkbox-group label {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 200px;
+            margin: 0 10px;
+        }
+
+        .export-button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .export-button:hover {
+            background-color: #218838;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>MTM Waitlist Application – Core Questions (All Roles)</h1>
+
+    <div class="header-info">
+        <strong>Date:</strong> January 21, 2026<br>
+        <strong>Version:</strong> 1.0<br>
+        <strong>Audience:</strong> All stakeholders
+    </div>
+
+    <div class="instructions">
+        <h3>Instructions</h3>
+        <p>This questionnaire covers features that affect everyone using the system, regardless of role. Please fill
+            this out along with your role-specific questionnaire.</p>
+
+        <p><strong>Current State:</strong> You're using tablesready.com right now. We're building a custom app to
+            replace it.</p>
+
+        <p><strong>How to Answer:</strong></p>
+        <ul>
+            <li>Keep it simple - explain like you're talking to someone on the floor</li>
+            <li>Tell us what works with tablesready.com and what doesn't</li>
+            <li>If you're not sure, pick what seems best and say who needs to approve it</li>
+            <li>Write down who decided and when</li>
+            <li><strong>These are ideas, not final</strong> - feel free to suggest different approaches</li>
+        </ul>
+    </div>
+
+    <button class="export-button no-print" onclick="exportAnswers()">Export Answers</button>
+
+    <h2>Current System Feedback</h2>
+
+    <h3>What Works with tablesready.com?</h3>
+    <div class="answer-area">
+        <textarea id="works_current"
+            placeholder="List the things that work well now that we should keep in the new system..."></textarea>
+    </div>
+
+    <h3>What Doesn't Work with tablesready.com?</h3>
+    <div class="answer-area">
+        <textarea id="doesnt_work_current"
+            placeholder="List the pain points, frustrations, or missing features..."></textarea>
+    </div>
+
+    <h3>Must-Have Features</h3>
+    <div class="answer-area">
+        <textarea id="must_have"
+            placeholder="What features are absolutely critical for the new system to have?"></textarea>
+    </div>
+
+    <h2>Section 1: Login & Access</h2>
+
+    <div class="question-block">
+        <h3>1.1 How Should People Log In?</h3>
+        <p><strong>Note:</strong> All operator computers are shared workstations.</p>
+        <p><strong>We're considering these options:</strong></p>
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="login_windows"> Windows/AD (automatic login using your computer
+                login)</label>
+            <label><input type="checkbox" id="login_password"> Username and password (type it in each time)</label>
+            <label><input type="checkbox" id="login_hybrid"> Hybrid (Windows where it works, username/password as
+                backup)</label>
+            <label><input type="checkbox" id="login_other"> Other: <input type="text" id="login_other_text"></label>
+        </div>
+
+        <div class="why-matters">
+            <strong>Why This Matters:</strong><br>
+            This choice affects setup cost and how much support is needed (like password resets). Windows/AD means no
+            passwords to manage, but it needs the right network setup.
+        </div>
+
+        <div class="example">
+            <strong>Example:</strong><br>
+            If the floor PCs are shared kiosks without AD, we'll need username/password. If supervisors use office PCs
+            with Windows login, that could work automatically.
+        </div>
+
+        <div class="answer-area">
+            <textarea id="login_answer" placeholder="Your Answer:"></textarea>
+        </div>
+
+        <p><strong>Decided By:</strong> <input type="text" id="login_decided_by" class="signature-line">
+            <strong>Date:</strong> <input type="date" id="login_date"></p>
+    </div>
+
+    <!-- Additional sections would follow the same pattern -->
+    <!-- For brevity, showing structure for one complete section -->
+
+    <h2>Completion Information</h2>
+    <p><strong>Completed By:</strong> <span class="signature-line"><input type="text" id="completed_by"
+                style="width: 250px;"></span></p>
+    <p><strong>Department:</strong> <span class="signature-line"><input type="text" id="department"
+                style="width: 250px;"></span></p>
+    <p><strong>Role:</strong> <span class="signature-line"><input type="text" id="role" style="width: 250px;"></span>
+    </p>
+    <p><strong>Date:</strong> <input type="date" id="completion_date"></p>
+
+    <button class="export-button no-print" onclick="exportAnswers()">Export Answers</button>
+
+    <script>
+        function exportAnswers() {
+            // Collect all answers
+            const answers = {
+                questionnaire_type: 'Core - All Roles',
+                submission_date: new Date().toISOString(),
+                completed_by: document.getElementById('completed_by').value,
+                department: document.getElementById('department').value,
+                role: document.getElementById('role').value,
+                completion_date: document.getElementById('completion_date').value,
+
+                current_system_feedback: {
+                    works_well: document.getElementById('works_current').value,
+                    doesnt_work: document.getElementById('doesnt_work_current').value,
+                    must_have_features: document.getElementById('must_have').value
+                },
+
+                login_access: {
+                    login_windows: document.getElementById('login_windows').checked,
+                    login_password: document.getElementById('login_password').checked,
+                    login_hybrid: document.getElementById('login_hybrid').checked,
+                    login_other: document.getElementById('login_other').checked,
+                    login_other_text: document.getElementById('login_other_text').value,
+                    answer: document.getElementById('login_answer').value,
+                    decided_by: document.getElementById('login_decided_by').value,
+                    decision_date: document.getElementById('login_date').value
+                }
+
+                // Additional sections would be added here
+            };
+
+            // Convert to JSON
+            const jsonData = JSON.stringify(answers, null, 2);
+
+            // Create blob and download
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `MTM_Waitlist_Core_${answers.completed_by || 'Anonymous'}_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // ALSO send to server endpoint
+            // %%EXPORT_DESTINATION%% - Replace this placeholder with your actual endpoint
+            sendToServer(jsonData);
+        }
+
+        function sendToServer(jsonData) {
+            const exportEndpoint = '%%EXPORT_DESTINATION%%'; // REPLACE THIS WITH YOUR ACTUAL ENDPOINT
+
+            fetch(exportEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: jsonData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('Answers exported successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Local file downloaded. Server upload failed - please submit manually.');
+                });
+        }
+
+        // Auto-save to localStorage every 30 seconds
+        setInterval(function () {
+            const formData = {
+                works_current: document.getElementById('works_current').value,
+                doesnt_work_current: document.getElementById('doesnt_work_current').value,
+                // Add all other fields
+            };
+            localStorage.setItem('mtm_waitlist_core_autosave', JSON.stringify(formData));
+        }, 30000);
+
+        // Load autosaved data on page load
+        window.addEventListener('load', function () {
+            const saved = localStorage.getItem('mtm_waitlist_core_autosave');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (confirm('Found autosaved answers. Would you like to restore them?')) {
+                    document.getElementById('works_current').value = data.works_current || '';
+                    document.getElementById('doesnt_work_current').value = data.doesnt_work_current || '';
+                    // Restore all other fields
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,273 @@
+{
+    "title": "MTM Waitlist - Core Questions (All Roles)",
+    "subtitle": "Current State: Using tablesready.com → Building Custom Solution",
+    "instructions": "Keep answers simple. Tell us what works with tablesready.com and what doesn't. These are ideas, not final decisions.",
+    "date": "January 21, 2026",
+    "questions": [
+        {
+            "id": "user_info",
+            "type": "text",
+            "question": "Your Name",
+            "description": "Who is completing this questionnaire?",
+            "placeholder": "John Doe",
+            "required": true
+        },
+        {
+            "id": "department",
+            "type": "dropdown",
+            "question": "Your Department",
+            "description": "Which department do you work in?",
+            "options": [
+                "Production",
+                "Material Handling",
+                "Die Shop",
+                "Fabrication & Welding",
+                "Assembly",
+                "Quality Control",
+                "Setup Technicians",
+                "Inventory Specialist",
+                "Outside Service Coordinator",
+                "IT Department",
+                "Management",
+                "Other"
+            ],
+            "allowOther": true,
+            "required": true
+        },
+        {
+            "id": "shift",
+            "type": "dropdown",
+            "question": "Your Shift",
+            "options": [
+                "1st",
+                "2nd",
+                "3rd",
+                "Weekend"
+            ],
+            "required": true
+        },
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How Should People Log In?",
+            "description": "All operator computers are shared workstations.",
+            "whyMatters": "This choice affects setup cost and support needs (like password resets). Windows/AD means no passwords to manage, but needs the right network setup.",
+            "example": "If floor PCs are shared kiosks without AD, we'll need username/password. If supervisors use office PCs with Windows login, that could work automatically.",
+            "note": "Consider that operator computers are ALL shared - multiple people use the same machine.",
+            "options": [
+                "Windows/AD (automatic login using computer login)",
+                "Username and password (type it in each time)",
+                "Hybrid (Windows where it works, username/password as backup)"
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Can One Person Have Multiple Roles?",
+            "description": "Can someone be assigned multiple roles at once (like both Material Handler and Material Handler Lead)?",
+            "whyMatters": "If people can have multiple roles, it changes what screens they see and what they can do.",
+            "example": "A Production Lead who also runs a press during slow times might need both the Lead dashboard and the Operator screens.",
+            "options": [
+                "Yes - people can have multiple roles",
+                "No - one role per person only",
+                "Depends on the role combination"
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What Information Is Required to Submit a Request?",
+            "description": "Check all fields that MUST be filled out before someone can submit a request.",
+            "whyMatters": "Missing info means handlers have to hunt for details before they start. But too many required fields slow down creating requests.",
+            "example": "Without a zone, the handler doesn't know where to go. Without a work order, the request might not tie to the right job.",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work order number"
+                },
+                {
+                    "value": "part_number",
+                    "label": "Part number"
+                },
+                {
+                    "value": "zone",
+                    "label": "Zone/location"
+                },
+                {
+                    "value": "priority",
+                    "label": "Priority level"
+                },
+                {
+                    "value": "description",
+                    "label": "Description/notes"
+                },
+                {
+                    "value": "quantity",
+                    "label": "Quantity needed"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can Requests Be Changed After Assignment?",
+            "description": "After a request is assigned to someone, can the requester still edit or cancel it?",
+            "whyMatters": "Blocking changes means handlers know the request won't shift on them. Allowing changes gives flexibility for quick fixes but might mean redoing work.",
+            "example": "An operator submits a request for coils, then realizes they typed the wrong part number after a handler already accepted it. Can they fix it?",
+            "options": [
+                "No changes after assignment",
+                "Can cancel only (not edit)",
+                "Can change until handler starts work",
+                "Can change anytime (handler gets notified)"
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "How Many Recent Requests to Keep?",
+            "description": "How many of a user's recent requests should be saved for quick resubmit?",
+            "whyMatters": "Favorites and recents make it faster to submit common requests. But too many clutter the list.",
+            "example": "Keep the last 10 requests for 7 days so people can quickly resubmit 'Coils for Press 5'.",
+            "placeholder": "10",
+            "min": 5,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How Many Days to Keep Recent Requests?",
+            "description": "After how many days should old requests be removed from the recents list?",
+            "placeholder": "7",
+            "min": 1,
+            "max": 90
+        },
+        {
+            "id": "timeout_kiosk",
+            "type": "range",
+            "question": "Auto-Logout Time for Shared Kiosks (Minutes)",
+            "description": "How long should someone be able to sit idle on a shared floor kiosk before auto-logout?",
+            "whyMatters": "Short timeouts are more secure but might annoy people. Long timeouts are convenient but risky on shared computers.",
+            "example": "A kiosk on the floor might log out after 5 minutes to prevent the next person from seeing someone else's stuff.",
+            "min": 1,
+            "max": 60,
+            "default": 5,
+            "minLabel": "1 min",
+            "maxLabel": "60 min"
+        },
+        {
+            "id": "timeout_office",
+            "type": "range",
+            "question": "Auto-Logout Time for Office PCs (Minutes)",
+            "description": "How long can office users (Leads, Managers) sit idle before auto-logout?",
+            "min": 5,
+            "max": 120,
+            "default": 30,
+            "minLabel": "5 min",
+            "maxLabel": "2 hrs"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What Are the Top Daily Metrics? (Pick Top 5)",
+            "description": "Which numbers matter most day-to-day for monitoring performance?",
+            "whyMatters": "Focusing on key metrics drives the right behavior. Too many overwhelms people.",
+            "example": "Top 5: Wait time, SLA breaches, backlog by category, handler utilization, cancellation rate. Show these on the Lead dashboard.",
+            "options": [
+                "Average wait time (request to handler acceptance)",
+                "Average completion time (acceptance to done)",
+                "SLA breaches (tasks over target time)",
+                "Current backlog (open task count)",
+                "Handler utilization (% of time on tasks)",
+                "Cancellation rate (% cancelled)",
+                "Rework/error rate (tasks redone)",
+                "Zone load (task count by zone)"
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "satisfaction_rating",
+            "type": "rating",
+            "question": "Overall Priority of This Feature",
+            "description": "On a scale of 1-5 stars, how important is this questionnaire topic to your daily work?",
+            "whyMatters": "Helps us prioritize development efforts."
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How Should the App Notify Users? (Visual Only - Plant is Too Loud for Sound)",
+            "description": "Select all notification methods that make sense. Remember: NO audio notifications possible.",
+            "note": "Plant environment is very loud - all notifications MUST be visual.",
+            "options": [
+                {
+                    "value": "popup",
+                    "label": "In-app popup/toast"
+                },
+                {
+                    "value": "badge",
+                    "label": "Badge count on icon"
+                },
+                {
+                    "value": "color",
+                    "label": "Color changes (green/yellow/red)"
+                },
+                {
+                    "value": "flash",
+                    "label": "Flashing/pulsing indicators"
+                },
+                {
+                    "value": "email",
+                    "label": "Email"
+                },
+                {
+                    "value": "sms",
+                    "label": "SMS/text"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "completion_date",
+            "type": "date",
+            "question": "Completion Date",
+            "description": "When are you filling this out?",
+            "required": true
+        },
+        {
+            "id": "works_current",
+            "type": "textarea",
+            "question": "What Works with tablesready.com?",
+            "description": "List the things that work well now that we should keep in the new system.",
+            "placeholder": "Example: Easy to submit requests, can see task status, etc.",
+            "rows": 6,
+            "required": false
+        },
+        {
+            "id": "doesnt_work_current",
+            "type": "textarea",
+            "question": "What Doesn't Work with tablesready.com?",
+            "description": "List the pain points, frustrations, or missing features.",
+            "placeholder": "Example: Too many clicks, can't see who's working on my request, etc.",
+            "rows": 6,
+            "required": false
+        },
+        {
+            "id": "must_have_features",
+            "type": "textarea",
+            "question": "Must-Have Features",
+            "description": "What features are absolutely critical for the new system to have?",
+            "placeholder": "List your top requirements...",
+            "rows": 6,
+            "required": true
+        }
+    ]
+}

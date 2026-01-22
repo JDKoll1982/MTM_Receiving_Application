@@ -2,28 +2,33 @@
 
 ## User Request
 
-Start work on `TASK-001-fix-build-output-issues.md`.
+Continue clarification work for the MTM Waitlist Application documentation. Current focus is updating `docs/MTM_Waitlist_Application/CLARIFICATION-Database.md` and aligning the other clarification files as needed.
 
 ## Context
 
-Refactoring code to remove `App.GetService<T>()` calls (Service Locator pattern) and switch to Constructor Injection.
-Targeting .NET 8 / WinUI 3.
+- Clarification files exist for Analytics, Authentication, Database, Roles/Privileges, UI/UX, and Workflows in `docs/MTM_Waitlist_Application`.
+- Memory bank directory not found in the repository; proceeding with available project docs.
 
 ## Action Plan
 
-1. **[COMPLETED]** Refactor `Module_Volvo\ViewModels\ViewModel_Volvo_Settings.cs`.
-   - Injected `IService_Window` via constructor.
-   - Removed `App.GetService<IService_Window>()`.
-2. **[COMPLETED]** Refactor `Module_Receiving\ViewModels\ViewModel_Receiving_ModeSelection.cs`.
-   - Removed useless `ClearAllUIInputs` logic that relied on `App.GetService` for transient ViewModels.
-3. **[COMPLETED]** Refactor `Module_Dunnage\ViewModels\ViewModel_Dunnage_ModeSelectionViewModel.cs`.
-   - Removed `App.GetService` calls in `ClearAllUIInputs`.
-4. **[COMPLETED]** Refactor `Module_Dunnage\ViewModels\ViewModel_Dunnage_ReviewViewModel.cs`.
-   - Removed `App.GetService` calls in `ClearUIInputsForNewEntry`.
-5. **[EXECUTION]** Refactor `Module_Receiving\Services\Service_ReceivingWorkflow.cs`. (Pending)
-6. **[EXECUTION]** Refactor `Module_Core\Services\Help\Service_Help.cs`. (Pending)
-7. **[VERIFICATION]** Verify builds after each significant change.
+1. [x] Inventory existing clarification files (Analytics, Authentication, Database, Roles/Privileges, UI/UX, Workflows) to identify gaps and inconsistencies. _Dependency: access `docs/MTM_Waitlist_Application` folder._
+2. [x] Update `CLARIFICATION-Database.md` with latest decisions, open questions, and next steps. _Dependency: output of Task 1._
+3. [x] Align related clarification documents if overlapping topics emerge. _Dependency: outputs of Tasks 1-2._
+4. [x] Summarize changes and next actions. _Dependency: completion of Tasks 1-3._
+
+## Execution Notes
+
+- Inventory: All clarification files are present; most items remain open-ended. Only database section 1.1 has partial answers.
+- Database doc updated with decisions-to-date, open questions snapshot, and corrected action item numbering; no cross-document alignment needs identified after review.
+
+## Summary
+
+- Added decision and open-question snapshots to `CLARIFICATION-Database.md` for faster stakeholder review.
+- Corrected action item numbering and highlighted priority dependencies.
+- Consolidated meeting-ready questionnaire for all roles in `docs/MTM_Waitlist_Application/CLARIFICATION-EndUser-Interview.md` mapping directly to open clarification items.
+- No changes required in other clarification documents pending stakeholder answers.
+- Next steps: collect answers on zone management, audit scope, auto-assignment rules, Infor Visual validation approach, archival strategy, and the new interview checklist items.
 
 ## Current Phase
 
-Executing Subtask 1.4: Refactor Services (`Service_ReceivingWorkflow` and `Service_Help`).
+Summary

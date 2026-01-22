@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Waitlist Questionnaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .wizard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .wizard-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .wizard-header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px 30px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            background: #4CAF50;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .question-container {
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .question {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            margin-bottom: 25px;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .question-description {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.why-matters {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+
+        .info-box.example {
+            background: #f1f8e9;
+            border-color: #8bc34a;
+        }
+
+        .info-box.note {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .question-type-radio .option {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .question-type-radio .option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .question-type-radio .option input[type="radio"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .question-type-radio .option.selected {
+            background: #e8eaf6;
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .question-type-checkbox .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .question-type-checkbox .option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .question-type-checkbox .option input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .question-type-checkbox .option.selected {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .question-type-dropdown select {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-type-dropdown select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .question-type-text input[type="text"],
+        .question-type-number input[type="number"],
+        .question-type-date input[type="date"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-type-text input:focus,
+        .question-type-number input:focus,
+        .question-type-date input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .question-type-textarea textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-type-textarea textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .question-type-range {
+            padding: 20px 0;
+        }
+
+        .question-type-range input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e9ecef;
+            outline: none;
+        }
+
+        .question-type-range input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .range-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .question-type-rating {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .stars {
+            font-size: 48px;
+            cursor: pointer;
+        }
+
+        .stars .star {
+            color: #ddd;
+            transition: color 0.2s ease;
+        }
+
+        .stars .star.filled {
+            color: #ffc107;
+        }
+
+        .stars .star:hover,
+        .stars .star:hover~.star {
+            color: #ffc107;
+        }
+
+        .decision-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .decision-section h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .decision-inputs {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .decision-inputs input {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .nav-btn {
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-previous {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-previous:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .btn-next {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background: #5568d3;
+        }
+
+        .btn-review {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-review:hover {
+            background: #f57c00;
+        }
+
+        .btn-finish {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-finish:hover {
+            background: #45a049;
+        }
+
+        .review-container {
+            display: none;
+        }
+
+        .review-container.active {
+            display: block;
+        }
+
+        .review-section {
+            margin-bottom: 30px;
+        }
+
+        .review-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .review-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .review-item .question-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .review-item .answer-value {
+            color: #555;
+        }
+
+        .edit-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-btn:hover {
+            background: #5568d3;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .wizard-container {
+                box-shadow: none;
+            }
+
+            .wizard-navigation,
+            .nav-btn,
+            .edit-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wizard-container">
+        <div class="wizard-header">
+            <h1 id="wizard-title">MTM Waitlist Questionnaire</h1>
+            <p class="subtitle" id="wizard-subtitle">Please answer all questions thoughtfully</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 10</div>
+        </div>
+
+        <div class="question-container" id="questionContainer"></div>
+
+        <div class="review-container" id="reviewContainer">
+            <div style="padding: 40px;">
+                <h2 style="color: #667eea; margin-bottom: 30px;">Review Your Answers</h2>
+                <div id="reviewContent"></div>
+            </div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            <h2>Thank You!</h2>
+            <p>Your answers have been submitted successfully.</p>
+            <p style="margin-top: 20px;">A copy has been downloaded to your device.</p>
+        </div>
+
+        <div class="wizard-navigation">
+            <button class="nav-btn btn-previous" id="btnPrevious" onclick="previousQuestion()">&larr; Previous</button>
+            <button class="nav-btn btn-review" id="btnReview" onclick="showReview()" style="display: none;">Review
+                Answers</button>
+            <div style="flex: 1;"></div>
+            <button class="nav-btn btn-next" id="btnNext" onclick="nextQuestion()">Next &rarr;</button>
+            <button class="nav-btn btn-finish" id="btnFinish" onclick="finishQuestionnaire()"
+                style="display: none;">Finish & Export</button>
+        </div>
+    </div>
+
+    <script>
+        // %%JSON_DATA_PLACEHOLDER%%
+
+        let currentQuestionIndex = 0;
+        let answers = {};
+
+        function renderQuestion(index) {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+
+            if (index < 0 || index >= QUESTIONNAIRE_DATA.questions.length) return;
+
+            const q = QUESTIONNAIRE_DATA.questions[index];
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question active';
+            questionDiv.id = `question-${index}`;
+
+            let html = `
+                <div class="question-header">
+                    <span class="question-number">Question ${index + 1} of ${QUESTIONNAIRE_DATA.questions.length}</span>
+                    <h2 class="question-title">${q.question}${q.required ? ' <span style="color: #e74c3c;">*</span>' : ''}</h2>
+                    ${q.description ? `<p class="question-description">${q.description}</p>` : ''}
+                    ${q.required ? '<p style="color: #e74c3c; font-size: 14px; margin-top: 5px;"><em>* Required</em></p>' : ''}
+                </div>
+            `;
+
+            if (q.whyMatters) {
+                html += `<div class="info-box why-matters"><strong>Why This Matters:</strong>${q.whyMatters}</div>`;
+            }
+
+            if (q.example) {
+                html += `<div class="info-box example"><strong>Example:</strong>${q.example}</div>`;
+            }
+
+            if (q.note) {
+                html += `<div class="info-box note"><strong>Note:</strong>${q.note}</div>`;
+            }
+
+            html += `<div class="question-type-${q.type}">`;
+
+            switch (q.type) {
+                case 'radio':
+                    html += renderRadio(q, index);
+                    break;
+                case 'checkbox':
+                    html += renderCheckbox(q, index);
+                    break;
+                case 'dropdown':
+                    html += renderDropdown(q, index);
+                    break;
+                case 'text':
+                case 'number':
+                case 'date':
+                    html += renderInput(q, index);
+                    break;
+                case 'textarea':
+                    html += renderTextarea(q, index);
+                    break;
+                case 'range':
+                    html += renderRange(q, index);
+                    break;
+                case 'rating':
+                    html += renderRating(q, index);
+                    break;
+            }
+
+            html += `</div>`;
+
+            if (q.requiresDecision) {
+                html += `
+                    <div class="decision-section">
+                        <h4>Decision Information</h4>
+                        <div class="decision-inputs">
+                            <input type="text" placeholder="Decided By (Name/Role)" id="decided-by-${index}" value="${answers[q.id]?.decidedBy || ''}">
+                            <input type="date" id="decision-date-${index}" value="${answers[q.id]?.decisionDate || ''}">
+                        </div>
+                    </div>
+                `;
+            }
+
+            questionDiv.innerHTML = html;
+            container.appendChild(questionDiv);
+
+            restoreAnswer(index);
+        }
+
+        function renderRadio(q, index) {
+            let html = '';
+            q.options.forEach((option, i) => {
+                const optionId = `q${index}_option${i}`;
+                html += `
+                    <label class="option" for="${optionId}" onclick="selectOption(this)">
+                        <input type="radio" name="q${index}" id="${optionId}" value="${option.value || option}">
+                        <span>${option.label || option}</span>
+                    </label>
+                `;
+            });
+            if (q.allowOther) {
+                html += `
+                    <label class="option" for="q${index}_other" onclick="selectOption(this)">
+                        <input type="radio" name="q${index}" id="q${index}_other" value="__other__">
+                        <span>Other: <input type="text" id="q${index}_other_text" placeholder="Please specify..." style="margin-left: 10px; padding: 5px;"></span>
+                    </label>
+                `;
+            }
+            return html;
+        }
+
+        function renderCheckbox(q, index) {
+            let html = '';
+            q.options.forEach((option, i) => {
+                const optionId = `q${index}_option${i}`;
+                html += `
+                    <label class="option" for="${optionId}" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="${optionId}" value="${option.value || option}">
+                        <span>${option.label || option}</span>
+                    </label>
+                `;
+            });
+            if (q.allowOther) {
+                html += `
+                    <label class="option" for="q${index}_other">
+                        <input type="checkbox" id="q${index}_other" value="__other__">
+                        <span>Other: <input type="text" id="q${index}_other_text" placeholder="Please specify..." style="margin-left: 10px; padding: 5px;"></span>
+                    </label>
+                `;
+            }
+            return html;
+        }
+
+        function renderDropdown(q, index) {
+            let html = `<select id="q${index}_select" onchange="handleDropdownChange(${index}, this.value)">`;
+            html += `<option value="">-- Please Select --</option>`;
+            q.options.forEach(option => {
+                html += `<option value="${option.value || option}">${option.label || option}</option>`;
+            });
+            html += `</select>`;
+            if (q.allowOther) {
+                html += `<div id="q${index}_other_container" style="display: none; margin-top: 15px;">
+                    <input type="text" id="q${index}_other_text" placeholder="Please specify your department..." 
+                           style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #e9ecef; border-radius: 8px;">
+                </div>`;
+            }
+            return html;
+        }
+
+        function handleDropdownChange(index, value) {
+            const q = QUESTIONNAIRE_DATA.questions[index];
+            if (q.allowOther) {
+                const otherContainer = document.getElementById(`q${index}_other_container`);
+                if (value === 'Other') {
+                    otherContainer.style.display = 'block';
+                    document.getElementById(`q${index}_other_text`).focus();
+                } else {
+                    otherContainer.style.display = 'none';
+                }
+            }
+        }
+
+        function renderInput(q, index) {
+            return `<input type="${q.type}" id="q${index}_input" placeholder="${q.placeholder || ''}" ${q.min ? `min="${q.min}"` : ''} ${q.max ? `max="${q.max}"` : ''}>`;
+        }
+
+        function renderTextarea(q, index) {
+            return `<textarea id="q${index}_textarea" placeholder="${q.placeholder || 'Enter your answer here...'}" rows="${q.rows || 5}"></textarea>`;
+        }
+
+        function renderRange(q, index) {
+            return `
+                <input type="range" id="q${index}_range" min="${q.min || 0}" max="${q.max || 100}" value="${q.default || 50}" oninput="updateRangeValue(${index})">
+                <div class="range-labels">
+                    <span>${q.minLabel || q.min}</span>
+                    <span>${q.maxLabel || q.max}</span>
+                </div>
+                <div class="range-value" id="q${index}_range_value">${q.default || 50}</div>
+            `;
+        }
+
+        function renderRating(q, index) {
+            let html = `<div class="stars" id="q${index}_stars" onclick="setRating(event, ${index})">`;
+            for (let i = 5; i >= 1; i--) {
+                html += `<span class="star" data-value="${i}">★</span>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        function selectOption(element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function toggleCheckbox(element) {
+            element.classList.toggle('selected');
+        }
+
+        function updateRangeValue(index) {
+            const range = document.getElementById(`q${index}_range`);
+            const display = document.getElementById(`q${index}_range_value`);
+            display.textContent = range.value;
+        }
+
+        function setRating(event, index) {
+            if (event.target.classList.contains('star')) {
+                const value = parseInt(event.target.dataset.value);
+                const stars = document.getElementById(`q${index}_stars`).querySelectorAll('.star');
+                stars.forEach(star => {
+                    star.classList.toggle('filled', parseInt(star.dataset.value) <= value);
+                });
+            }
+        }
+
+        function saveAnswer(index) {
+            const q = QUESTIONNAIRE_DATA.questions[index];
+            const answer = { questionId: q.id, question: q.question };
+
+            switch (q.type) {
+                case 'radio':
+                    const radioChecked = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (radioChecked) {
+                        answer.value = radioChecked.value;
+                        if (radioChecked.value === '__other__') {
+                            answer.otherText = document.getElementById(`q${index}_other_text`).value;
+                        }
+                    }
+                    break;
+
+                case 'checkbox':
+                    const checkboxes = document.querySelectorAll(`#question-${index} input[type="checkbox"]:checked`);
+                    answer.value = Array.from(checkboxes).map(cb => {
+                        if (cb.value === '__other__') {
+                            return { value: '__other__', text: document.getElementById(`q${index}_other_text`).value };
+                        }
+                        return cb.value;
+                    });
+                    break;
+
+                case 'dropdown':
+                    answer.value = document.getElementById(`q${index}_select`).value;
+                    if (answer.value === 'Other' && q.allowOther) {
+                        answer.otherText = document.getElementById(`q${index}_other_text`).value;
+                    }
+                    break;
+
+                case 'text':
+                case 'number':
+                case 'date':
+                    answer.value = document.getElementById(`q${index}_input`).value;
+                    break;
+
+                case 'textarea':
+                    answer.value = document.getElementById(`q${index}_textarea`).value;
+                    break;
+
+                case 'range':
+                    answer.value = document.getElementById(`q${index}_range`).value;
+                    break;
+
+                case 'rating':
+                    const filled = document.querySelectorAll(`#q${index}_stars .star.filled`);
+                    answer.value = filled.length;
+                    break;
+            }
+
+            if (q.requiresDecision) {
+                answer.decidedBy = document.getElementById(`decided-by-${index}`).value;
+                answer.decisionDate = document.getElementById(`decision-date-${index}`).value;
+            }
+
+            answers[q.id] = answer;
+            localStorage.setItem('mtm_wizard_answers', JSON.stringify(answers));
+        }
+
+        function restoreAnswer(index) {
+            const q = QUESTIONNAIRE_DATA.questions[index];
+            const answer = answers[q.id];
+            if (!answer) return;
+
+            setTimeout(() => {
+                switch (q.type) {
+                    case 'radio':
+                        const radio = document.querySelector(`input[name="q${index}"][value="${answer.value}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                            radio.parentElement.classList.add('selected');
+                            if (answer.value === '__other__' && answer.otherText) {
+                                document.getElementById(`q${index}_other_text`).value = answer.otherText;
+                            }
+                        }
+                        break;
+
+                    case 'checkbox':
+                        if (Array.isArray(answer.value)) {
+                            answer.value.forEach(val => {
+                                if (typeof val === 'object' && val.value === '__other__') {
+                                    const checkbox = document.getElementById(`q${index}_other`);
+                                    checkbox.checked = true;
+                                    checkbox.parentElement.classList.add('selected');
+                                    document.getElementById(`q${index}_other_text`).value = val.text;
+                                } else {
+                                    const checkbox = document.querySelector(`#question-${index} input[type="checkbox"][value="${val}"]`);
+                                    if (checkbox) {
+                                        checkbox.checked = true;
+                                        checkbox.parentElement.classList.add('selected');
+                                    }
+                                }
+                            });
+                        }
+                        break;
+
+                    case 'dropdown':
+                        document.getElementById(`q${index}_select`).value = answer.value;
+                        if (answer.value === 'Other' && answer.otherText && q.allowOther) {
+                            const otherContainer = document.getElementById(`q${index}_other_container`);
+                            otherContainer.style.display = 'block';
+                            document.getElementById(`q${index}_other_text`).value = answer.otherText;
+                        }
+                        break;
+
+                    case 'text':
+                    case 'number':
+                    case 'date':
+                        document.getElementById(`q${index}_input`).value = answer.value;
+                        break;
+
+                    case 'textarea':
+                        document.getElementById(`q${index}_textarea`).value = answer.value;
+                        break;
+
+                    case 'range':
+                        document.getElementById(`q${index}_range`).value = answer.value;
+                        updateRangeValue(index);
+                        break;
+
+                    case 'rating':
+                        const stars = document.getElementById(`q${index}_stars`).querySelectorAll('.star');
+                        stars.forEach(star => {
+                            star.classList.toggle('filled', parseInt(star.dataset.value) <= answer.value);
+                        });
+                        break;
+                }
+            }, 100);
+        }
+
+        function validateCurrentQuestion() {
+            const q = QUESTIONNAIRE_DATA.questions[currentQuestionIndex];
+            if (!q.required) return true;
+
+            const index = currentQuestionIndex;
+            let hasValue = false;
+
+            switch (q.type) {
+                case 'radio':
+                    hasValue = document.querySelector(`input[name="q${index}"]:checked`) !== null;
+                    break;
+
+                case 'checkbox':
+                    hasValue = document.querySelectorAll(`#question-${index} input[type="checkbox"]:checked`).length > 0;
+                    break;
+
+                case 'dropdown':
+                    const dropdown = document.getElementById(`q${index}_select`);
+                    hasValue = dropdown && dropdown.value !== '';
+                    if (hasValue && dropdown.value === 'Other' && q.allowOther) {
+                        const otherText = document.getElementById(`q${index}_other_text`);
+                        hasValue = otherText && otherText.value.trim() !== '';
+                    }
+                    break;
+
+                case 'text':
+                case 'number':
+                case 'date':
+                    const input = document.getElementById(`q${index}_input`);
+                    hasValue = input && input.value.trim() !== '';
+                    break;
+
+                case 'textarea':
+                    const textarea = document.getElementById(`q${index}_textarea`);
+                    hasValue = textarea && textarea.value.trim() !== '';
+                    break;
+
+                case 'range':
+                    hasValue = true;
+                    break;
+
+                case 'rating':
+                    hasValue = document.querySelectorAll(`#q${index}_stars .star.filled`).length > 0;
+                    break;
+            }
+
+            if (!hasValue) {
+                alert('This question is required. Please provide an answer before continuing.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function nextQuestion() {
+            if (!validateCurrentQuestion()) return;
+
+            saveAnswer(currentQuestionIndex);
+            if (currentQuestionIndex < QUESTIONNAIRE_DATA.questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion(currentQuestionIndex);
+                updateProgress();
+                updateNavigation();
+            }
+        }
+
+        function previousQuestion() {
+            saveAnswer(currentQuestionIndex);
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion(currentQuestionIndex);
+                updateProgress();
+                updateNavigation();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / QUESTIONNAIRE_DATA.questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Question ${currentQuestionIndex + 1} of ${QUESTIONNAIRE_DATA.questions.length}`;
+        }
+
+        function updateNavigation() {
+            document.getElementById('btnPrevious').disabled = currentQuestionIndex === 0;
+
+            const isLastQuestion = currentQuestionIndex === QUESTIONNAIRE_DATA.questions.length - 1;
+            document.getElementById('btnNext').style.display = isLastQuestion ? 'none' : 'inline-block';
+            document.getElementById('btnReview').style.display = isLastQuestion ? 'inline-block' : 'none';
+        }
+
+        function showReview() {
+            saveAnswer(currentQuestionIndex);
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('reviewContainer').classList.add('active');
+            document.getElementById('btnPrevious').style.display = 'none';
+            document.getElementById('btnReview').style.display = 'none';
+            document.getElementById('btnFinish').style.display = 'inline-block';
+
+            renderReview();
+        }
+
+        function renderReview() {
+            const reviewContent = document.getElementById('reviewContent');
+            let html = '';
+
+            QUESTIONNAIRE_DATA.questions.forEach((q, index) => {
+                const answer = answers[q.id];
+                if (!answer) return;
+
+                html += `
+                    <div class="review-item">
+                        <div class="question-label">Q${index + 1}: ${q.question}</div>
+                        <div class="answer-value">${formatAnswer(answer, q)}</div>
+                        ${answer.decidedBy ? `<div style="margin-top: 10px; font-size: 14px; color: #666;">Decided by: ${answer.decidedBy} on ${answer.decisionDate}</div>` : ''}
+                        <button class="edit-btn" onclick="editQuestion(${index})">Edit Answer</button>
+                    </div>
+                `;
+            });
+
+            reviewContent.innerHTML = html;
+        }
+
+        function formatAnswer(answer, question) {
+            if (!answer.value) return '<em>No answer provided</em>';
+
+            switch (question.type) {
+                case 'checkbox':
+                    if (Array.isArray(answer.value)) {
+                        return answer.value.map(v => {
+                            if (typeof v === 'object') return v.text;
+                            return v;
+                        }).join(', ');
+                    }
+                    return answer.value;
+
+                case 'radio':
+                    return answer.value === '__other__' ? `Other: ${answer.otherText}` : answer.value;
+
+                case 'dropdown':
+                    return answer.value === 'Other' && answer.otherText ? `Other: ${answer.otherText}` : answer.value;
+
+                case 'rating':
+                    return '★'.repeat(answer.value) + '☆'.repeat(5 - answer.value);
+
+                default:
+                    return answer.value;
+            }
+        }
+
+        function editQuestion(index) {
+            currentQuestionIndex = index;
+            document.getElementById('reviewContainer').classList.remove('active');
+            document.getElementById('questionContainer').style.display = 'block';
+            document.getElementById('btnPrevious').style.display = 'inline-block';
+            document.getElementById('btnFinish').style.display = 'none';
+            renderQuestion(index);
+            updateProgress();
+            updateNavigation();
+        }
+
+        function finishQuestionnaire() {
+            const exportData = {
+                questionnaire: QUESTIONNAIRE_DATA.title,
+                submittedAt: new Date().toISOString(),
+                answers: answers
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const fileName = `MTM_Waitlist_${QUESTIONNAIRE_DATA.title.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            document.getElementById('reviewContainer').classList.remove('active');
+            document.querySelector('.wizard-navigation').style.display = 'none';
+            document.getElementById('successMessage').classList.add('active');
+
+            localStorage.removeItem('mtm_wizard_answers');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('mtm_wizard_answers');
+            if (saved) {
+                answers = JSON.parse(saved);
+            }
+
+            document.getElementById('wizard-title').textContent = QUESTIONNAIRE_DATA.title;
+            document.getElementById('wizard-subtitle').textContent = QUESTIONNAIRE_DATA.subtitle;
+
+            renderQuestion(0);
+            updateProgress();
+            updateNavigation();
+        });
+    </script>
+</body>
+
+</html>
