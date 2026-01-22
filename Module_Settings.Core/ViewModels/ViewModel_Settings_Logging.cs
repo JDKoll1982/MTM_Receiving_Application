@@ -14,7 +14,8 @@ public partial class ViewModel_Settings_Logging : ViewModel_Shared_Base
 
     public ViewModel_Settings_Logging(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
     }
 }

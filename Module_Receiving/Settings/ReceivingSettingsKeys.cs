@@ -231,4 +231,59 @@ public static class ReceivingSettingsKeys
         public const string ReviewAddAnother = "Receiving.Accessibility.Review.AddAnother";
         public const string ReviewSaveToDatabase = "Receiving.Accessibility.Review.SaveToDatabase";
     }
+
+    public static class Validation
+    {
+        public const string RequirePoNumber = "Receiving.Validation.RequirePoNumber";
+        public const string RequirePartId = "Receiving.Validation.RequirePartId";
+        public const string RequireQuantity = "Receiving.Validation.RequireQuantity";
+        public const string RequireHeatLot = "Receiving.Validation.RequireHeatLot";
+        public const string AllowNegativeQuantity = "Receiving.Validation.AllowNegativeQuantity";
+        public const string ValidatePoExists = "Receiving.Validation.ValidatePoExists";
+        public const string ValidatePartExists = "Receiving.Validation.ValidatePartExists";
+        public const string WarnOnQuantityExceedsPo = "Receiving.Validation.WarnOnQuantityExceedsPo";
+        public const string WarnOnSameDayReceiving = "Receiving.Validation.WarnOnSameDayReceiving";
+        public const string MinLoadCount = "Receiving.Validation.MinLoadCount";
+        public const string MaxLoadCount = "Receiving.Validation.MaxLoadCount";
+        public const string MinQuantity = "Receiving.Validation.MinQuantity";
+        public const string MaxQuantity = "Receiving.Validation.MaxQuantity";
+    }
+
+    public static class BusinessRules
+    {
+        public const string AutoSaveEnabled = "Receiving.BusinessRules.AutoSaveEnabled";
+        public const string AutoSaveIntervalSeconds = "Receiving.BusinessRules.AutoSaveIntervalSeconds";
+        public const string SaveToCsvEnabled = "Receiving.BusinessRules.SaveToCsvEnabled";
+        public const string SaveToNetworkCsvEnabled = "Receiving.BusinessRules.SaveToNetworkCsvEnabled";
+        public const string SaveToDatabaseEnabled = "Receiving.BusinessRules.SaveToDatabaseEnabled";
+        public const string DefaultModeOnStartup = "Receiving.BusinessRules.DefaultModeOnStartup";
+        public const string RememberLastMode = "Receiving.BusinessRules.RememberLastMode";
+        public const string ConfirmModeChange = "Receiving.BusinessRules.ConfirmModeChange";
+        public const string AutoFillHeatLotEnabled = "Receiving.BusinessRules.AutoFillHeatLotEnabled";
+        public const string SavePackageTypeAsDefault = "Receiving.BusinessRules.SavePackageTypeAsDefault";
+        public const string ShowReviewTableByDefault = "Receiving.BusinessRules.ShowReviewTableByDefault";
+        public const string AllowEditAfterSave = "Receiving.BusinessRules.AllowEditAfterSave";
+    }
+
+    public static class Defaults
+    {
+        public const string DefaultPackageType = "Receiving.Defaults.DefaultPackageType";
+        public const string DefaultPackagesPerLoad = "Receiving.Defaults.DefaultPackagesPerLoad";
+        public const string DefaultWeightPerPackage = "Receiving.Defaults.DefaultWeightPerPackage";
+        public const string DefaultUnitOfMeasure = "Receiving.Defaults.DefaultUnitOfMeasure";
+        public const string DefaultLocation = "Receiving.Defaults.DefaultLocation";
+        public const string DefaultLoadNumberPrefix = "Receiving.Defaults.DefaultLoadNumberPrefix";
+        public const string DefaultReceivingMode = "Receiving.Defaults.DefaultReceivingMode";
+    }
+
+    public static class Integrations
+    {
+        public const string ErpSyncEnabled = "Receiving.Integrations.ErpSyncEnabled";
+        public const string AutoPullPoDataEnabled = "Receiving.Integrations.AutoPullPoDataEnabled";
+        public const string AutoPullPartDataEnabled = "Receiving.Integrations.AutoPullPartDataEnabled";
+        public const string SyncToInforVisual = "Receiving.Integrations.SyncToInforVisual";
+        public const string ErpConnectionTimeout = "Receiving.Integrations.ErpConnectionTimeout";
+        public const string RetryFailedSyncs = "Receiving.Integrations.RetryFailedSyncs";
+        public const string MaxSyncRetries = "Receiving.Integrations.MaxSyncRetries";
+    }
 }

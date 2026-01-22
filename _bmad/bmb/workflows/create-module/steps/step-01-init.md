@@ -10,13 +10,13 @@ modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module
 
 # Step 1: Workflow Initialization
 
-## STEP GOAL:
+## STEP GOAL
 
 To initialize the create-module workflow by getting the module name from the user, checking for existing work, handling continuation if needed, and creating the initial module plan document.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -24,35 +24,35 @@ To initialize the create-module workflow by getting the module name from the use
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and BMAD Systems Specialist
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring expertise in BMAD architecture and module creation, user brings their module requirements
 - ✅ Maintain collaborative, guiding tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on initialization, getting module name, and setting up tracking
 - 🚫 FORBIDDEN to look ahead to future steps
 - 💬 Handle initialization professionally
 - 🚪 DETECT existing workflow state and handle continuation properly
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Module brief discovery happens in this step
 
-## SEQUENCE OF INSTRUCTIONS:
+## SEQUENCE OF INSTRUCTIONS
 
 ### 1. Welcome and Get Module Name
 
@@ -117,13 +117,13 @@ If proceeding:
 
 Display: **Proceeding to define your module concept...**
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is an initialization step with no user choices (after inputs handled)
 - Proceed directly to next step after setup
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - After setup completion, add step-01-init to the end of the stepsCompleted array in module plan frontmatter, then load, read entire file, then execute `{nextStepFile}` to define the module concept
 
@@ -131,7 +131,7 @@ Display: **Proceeding to define your module concept...**
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Module name obtained and validated through collaborative dialogue
 - Module plan document created from template with frontmatter initialized
@@ -141,7 +141,7 @@ Display: **Proceeding to define your module concept...**
 - Ready to proceed to step 2
 - OR existing workflow properly routed to step-01b-continue.md
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with step 2 without module plan creation
 - Not checking for existing documents properly

@@ -39,7 +39,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base
         IService_Window windowService,
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
         _paginationService = paginationService;

@@ -149,6 +149,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         /// </summary>
         public string PONumberDisplay =>
             string.IsNullOrEmpty(PoNumber) ? "N/A" : PoNumber;
+
+        /// <summary>
+        /// Display property for load number (used in DataTemplates where x:Bind cannot call into the parent ViewModel).
+        /// </summary>
+        public string LoadDisplayText => $"Load {LoadNumber}";
     }
 }
 

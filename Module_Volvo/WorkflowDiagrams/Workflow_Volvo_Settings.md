@@ -1,6 +1,7 @@
 # Volvo Parts Master Data Workflow
 
 ## Diagram (Mermaid)
+
 ```mermaid
 flowchart TD
     Start([Start]) --> Open["Open Volvo Settings (Parts Catalog)"]
@@ -48,6 +49,7 @@ flowchart TD
 Is there an Activate Part? branch, to activate a deactivated part?
 
 ## User-Friendly Steps
+
 1. Open Volvo Settings to manage the parts catalog.
 2. Use Refresh to load the latest parts.
 3. Toggle Show Inactive if you need to see inactive parts.
@@ -58,6 +60,7 @@ Is there an Activate Part? branch, to activate a deactivated part?
 8. Import CSV to bulk-add/update parts, Export CSV to download the current list.
 
 ## Required Info for Fixing Incorrect Workflows
+
 | Step | UI / Action | Command / Query | Validator Rules (Actual) | Handler / Data Path | Actual Data (from code) |
 |---|---|---|---|---|---|
 | Refresh list | Refresh button | GetAllVolvoPartsQuery | n/a | ViewModel: ViewModel_Volvo_Settings.RefreshAsync | ShowInactive controls IncludeInactive |

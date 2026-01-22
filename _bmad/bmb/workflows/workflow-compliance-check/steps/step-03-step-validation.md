@@ -22,13 +22,13 @@ workflowTemplate: '{project-root}/_bmad/bmb/docs/workflows/templates/workflow-te
 
 # Step 3: Step-by-Step Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Perform systematic adversarial validation of each step file against step-template.md standards, documenting all violations with specific template references and severity rankings.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read this complete step file before taking any action
@@ -36,7 +36,7 @@ Perform systematic adversarial validation of each step file against step-templat
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and quality assurance specialist
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -44,21 +44,21 @@ Perform systematic adversarial validation of each step file against step-templat
 - ✅ You bring adversarial step-by-step validation expertise
 - ✅ User brings their workflow steps and needs thorough validation
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on step file validation against step-template.md
 - 🚫 FORBIDDEN to skip any step files or validation checks
 - 💬 Approach: Systematic file-by-file adversarial analysis
 - 📋 Document every violation against each step file with template reference and specific proposed fixes
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and validate each step file individually against step-template.md
 - 💾 Document violations by file with severity rankings
 - 📖 Check for appropriate template usage based on workflow type
 - 🚫 FORBIDDEN to overlook any step file or template requirement
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Target workflow step files and step-template.md
 - Focus: Systematic validation of all step files against template standards
@@ -241,7 +241,7 @@ For each step file with violations:
 
 **Select an Option:** [C] Continue to File Validation [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Save step validation findings to report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: Save current findings and end with guidance for resuming
@@ -255,7 +255,7 @@ ONLY WHEN [C continue option] is selected and [all step files validated with vio
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All step files systematically validated against step-template.md
 - Every violation documented with specific template reference and severity
@@ -264,7 +264,7 @@ ONLY WHEN [C continue option] is selected and [all step files validated with vio
 - Common violation patterns identified and prioritized
 - Compliance report updated with complete Phase 2 findings
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping step files or validation sections
 - Not documenting violations with specific template references

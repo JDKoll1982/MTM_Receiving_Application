@@ -8,9 +8,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 5: Plan Module Configuration
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -18,7 +18,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Configuration Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -26,32 +26,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD installation patterns, user brings their module requirements
 - ✅ Maintain collaborative, planning-focused tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on planning configuration fields
 - 🚫 FORBIDDEN to create installer files in this step
 - 💬 Present configuration options clearly
 - 🚫 FORBIDDEN to finalize without user input
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Consider what users might want to configure
 - 💾 Document all configuration field plans
 - 📖 Add "step-05-config" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Module concept and components from previous steps
 - Standard BMAD installer configuration patterns
 - Focus on planning, not implementation
 - Consider user customization needs
 
-## STEP GOAL:
+## STEP GOAL
 
 To determine what configuration settings the module needs and plan how they'll be implemented in the installer.
 
-## CONFIGURATION PLANNING PROCESS:
+## CONFIGURATION PLANNING PROCESS
 
 ### 1. Initialize Configuration Planning
 
@@ -194,14 +194,14 @@ The module.yaml will generate:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to explore additional configuration options
 - IF P: Execute {partyModeWorkflow} to get input on user experience
 - IF C: Save configuration plan to module-plan.md, add step-05-config to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -212,7 +212,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All necessary configuration fields identified
 - Field types and prompts clearly defined
@@ -220,7 +220,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Configuration structure documented
 - Ready for installer implementation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping configuration planning for modules that need it
 - Over-configuring (too many options)

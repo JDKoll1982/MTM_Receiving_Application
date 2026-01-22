@@ -24,6 +24,7 @@ namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
 public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_Window _windowService;
 
     [ObservableProperty]
     private ObservableCollection<Model_VolvoPart> _parts = new();
@@ -43,10 +44,12 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
     public ViewModel_Volvo_Settings(
         IMediator mediator,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService,
+        IService_Window windowService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
     }
 
     [RelayCommand]
@@ -118,10 +121,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             var dialog = new Views.VolvoPartAddEditDialog();
             dialog.InitializeForAdd();
 
-            var windowService = App.GetService<IService_Window>();
-            if (windowService != null)
+            if (_windowService != null)
             {
-                dialog.XamlRoot = windowService.GetXamlRoot();
+                dialog.XamlRoot = _windowService.GetXamlRoot();
             }
 
             var result = await dialog.ShowAsync();
@@ -184,10 +186,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             var dialog = new Views.VolvoPartAddEditDialog();
             dialog.InitializeForEdit(SelectedPart);
 
-            var windowService = App.GetService<IService_Window>();
-            if (windowService != null)
+            if (_windowService != null)
             {
-                dialog.XamlRoot = windowService.GetXamlRoot();
+                dialog.XamlRoot = _windowService.GetXamlRoot();
             }
 
             var result = await dialog.ShowAsync();
@@ -259,10 +260,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
             };
 
             // Get XamlRoot from service
-            var windowService = App.GetService<IService_Window>();
-            if (windowService != null)
+            if (_windowService != null)
             {
-                dialog.XamlRoot = windowService.GetXamlRoot();
+                dialog.XamlRoot = _windowService.GetXamlRoot();
             }
 
             var result = await dialog.ShowAsync();
@@ -337,10 +337,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     CloseButtonText = "Close"
                 };
 
-                var windowService = App.GetService<IService_Window>();
-                if (windowService != null)
+                if (_windowService != null)
                 {
-                    dialog.XamlRoot = windowService.GetXamlRoot();
+                    dialog.XamlRoot = _windowService.GetXamlRoot();
                 }
 
                 await dialog.ShowAsync();
@@ -414,10 +413,9 @@ public partial class ViewModel_Volvo_Settings : ViewModel_Shared_Base
                     CloseButtonText = "OK"
                 };
 
-                var windowService = App.GetService<IService_Window>();
-                if (windowService != null)
+                if (_windowService != null)
                 {
-                    dialog.XamlRoot = windowService.GetXamlRoot();
+                    dialog.XamlRoot = _windowService.GetXamlRoot();
                 }
 
                 await dialog.ShowAsync();

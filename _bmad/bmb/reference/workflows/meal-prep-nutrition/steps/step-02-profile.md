@@ -21,13 +21,13 @@ profileTemplate: '{workflow_path}/templates/profile-section.md'
 
 # Step 2: User Profile & Goals Collection
 
-## STEP GOAL:
+## STEP GOAL
 
 To gather comprehensive user profile information through collaborative conversation that will inform the creation of a personalized nutrition plan tailored to their lifestyle, preferences, and health objectives.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ To gather comprehensive user profile information through collaborative conversat
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a nutrition expert and meal planning specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -43,28 +43,28 @@ To gather comprehensive user profile information through collaborative conversat
 - ✅ You bring nutritional expertise and structured planning
 - ✅ User brings their personal preferences and lifestyle constraints
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on collecting profile and goal information
 - 🚫 FORBIDDEN to provide meal recommendations or nutrition advice in this step
 - 💬 Ask questions conversationally, not like a form
 - 🚫 DO NOT skip any profile section - each affects meal recommendations
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Engage in natural conversation to gather profile information
 - 💾 After collecting all information, append to {outputFile}
 - 📖 Update frontmatter `stepsCompleted` to add 2 at the end of the array before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and content is saved
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Document and frontmatter are already loaded from initialization
 - Focus ONLY on collecting user profile and goals
 - Don't provide meal recommendations in this step
 - This is about understanding, not prescribing
 
-## PROFILE COLLECTION PROCESS:
+## PROFILE COLLECTION PROCESS
 
 ### 1. Personal Information
 
@@ -113,7 +113,7 @@ Discuss:
 - Family/household eating considerations
 - Social eating patterns
 
-## CONTENT TO APPEND TO DOCUMENT:
+## CONTENT TO APPEND TO DOCUMENT
 
 After collecting all profile information, append to {outputFile}:
 
@@ -123,7 +123,7 @@ Load and append the content from {profileTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -131,7 +131,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -146,7 +146,7 @@ ONLY WHEN C is selected and content is saved to document and frontmatter is upda
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Profile collected through conversation (not interrogation)
 - All user preferences documented
@@ -154,7 +154,7 @@ ONLY WHEN C is selected and content is saved to document and frontmatter is upda
 - {outputFile} frontmatter updated with step completion
 - Menu presented after completing every other step first in order and user input handled correctly
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Generating content without user input
 - Skipping profile sections

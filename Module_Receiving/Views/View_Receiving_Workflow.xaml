@@ -60,43 +60,43 @@
                 <FontIcon Glyph="&#xE783;" FontSize="64" Foreground="{ThemeResource SystemFillColorCriticalBrush}" 
                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
 
-                <TextBlock Text="Success!" 
+                <TextBlock Text="{x:Bind ViewModel.CompletionSuccessTitleText, Mode=OneWay}" 
                            Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"
                            Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <TextBlock Text="Save Failed" 
+                <TextBlock Text="{x:Bind ViewModel.CompletionFailureTitleText, Mode=OneWay}" 
                            Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"
                            Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
 
                 <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" HorizontalAlignment="Center">
                     <Run Text="{x:Bind ViewModel.LastSaveResult.LoadsSaved, Mode=OneWay}"/>
-                    <Run Text=" loads saved successfully."/>
+                    <Run Text="{x:Bind ViewModel.CompletionLoadsSavedSuffixText, Mode=OneWay}"/>
                 </TextBlock>
 
                 <StackPanel Spacing="8" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8">
-                    <TextBlock Text="Save Details:" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                    <TextBlock Text="{x:Bind ViewModel.CompletionSaveDetailsTitleText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                     
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="Local CSV:"/>
-                        <TextBlock Text="Saved" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionLocalCsvLabelText, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.LocalCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="Network CSV:"/>
-                        <TextBlock Text="Saved" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionNetworkCsvLabelText, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.NetworkCSVSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="Database:"/>
-                        <TextBlock Text="Saved" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="Failed" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionDatabaseLabelText, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionSavedText, Mode=OneWay}" Foreground="Green" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{x:Bind ViewModel.CompletionFailedText, Mode=OneWay}" Foreground="Red" Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                     </StackPanel>
                 </StackPanel>
                 
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
-                    <Button Content="Start New Entry" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"/>
-                    <Button Content="Reset CSV" Command="{x:Bind ViewModel.ResetCSVCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetCSV'), Mode=OneWay}"/>
+                    <Button Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}" Command="{x:Bind ViewModel.StartNewEntryCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}"/>
+                    <Button Content="{x:Bind ViewModel.WorkflowResetCsvText, Mode=OneWay}" Command="{x:Bind ViewModel.ResetCSVCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetCSV'), Mode=OneWay}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -110,11 +110,11 @@
             
             <!-- Left-aligned buttons -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12">
-                <Button Content="Mode Selection" 
+                <Button Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                         Background="Transparent" 
                         BorderBrush="{ThemeResource SystemAccentColor}"/>
-                <Button Content="Reset CSV" 
+                <Button Content="{x:Bind ViewModel.WorkflowResetCsvText, Mode=OneWay}" 
                         Command="{x:Bind ViewModel.ResetCSVCommand}" 
                         Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
                         Background="Transparent" 
@@ -134,14 +134,14 @@
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE946;" FontSize="16"/>
-                    <TextBlock Text="Help"/>
+                    <TextBlock Text="{x:Bind ViewModel.WorkflowHelpText, Mode=OneWay}"/>
                 </StackPanel>
             </Button>
             
             <!-- Right-aligned navigation buttons -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
-                <Button Content="Back" Command="{x:Bind ViewModel.PreviousStepCommand}"/>
-                <Button Content="Next" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="{x:Bind ViewModel.WorkflowBackText, Mode=OneWay}" Command="{x:Bind ViewModel.PreviousStepCommand}"/>
+                <Button Content="{x:Bind ViewModel.WorkflowNextText, Mode=OneWay}" Command="{x:Bind ViewModel.NextStepCommand}" Style="{StaticResource AccentButtonStyle}"/>
             </StackPanel>
         </Grid>
     </Grid>

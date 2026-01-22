@@ -9,9 +9,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 9: Create Module Documentation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -19,7 +19,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Technical Writer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -27,32 +27,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in documentation best practices, user brings their module knowledge
 - ✅ Maintain collaborative, clear tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on creating comprehensive README documentation
 - 🚫 FORBIDDEN to create docs in other locations
 - 💬 Generate content based on module plan
 - 🚫 FORBIDDEN to skip standard sections
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Use all gathered module information
 - 💾 Update the placeholder README.md file
 - 📖 Add "step-09-documentation" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All module information from previous steps
 - Module structure and components already created
 - Focus on README.md, not other documentation
 - Generate content dynamically from plan
 
-## STEP GOAL:
+## STEP GOAL
 
 To create comprehensive README.md documentation for the module that helps users understand, install, and use the module.
 
-## DOCUMENTATION CREATION PROCESS:
+## DOCUMENTATION CREATION PROCESS
 
 ### 1. Initialize Documentation
 
@@ -270,14 +270,14 @@ Update module-plan.md with documentation section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to improve documentation clarity
 - IF P: Execute {partyModeWorkflow} to get input on user experience
 - IF C: Save documentation info to module-plan.md, add step-09-documentation to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -288,7 +288,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - README.md fully populated with all sections
 - Content accurately reflects module structure
@@ -296,7 +296,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Examples provide helpful guidance
 - Development status honestly represented
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Leaving placeholder content in README
 - Not updating with actual module details

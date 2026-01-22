@@ -601,6 +601,9 @@ indent_size = 4
 trim_trailing_whitespace = false
 
 # Ignore unused parameters in XAML code-behind files (VS Code linking issue)
+# Also suppress CS0618 (Service Locator pattern) in Views since WinUI 3 XAML-based Views
+# are often instantiated by the framework and require App.GetService for dependency resolution
 [*.xaml.cs]
 dotnet_diagnostic.RCS1163.severity = none
 dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.CS0618.severity = none

@@ -10,16 +10,16 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Progress: Step 4 of 4** - Final Step
 
-## RULES:
+## RULES
 
 - MUST NOT skip steps.
 - MUST NOT optimize sequence.
 - MUST follow exact instructions.
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## CONTEXT:
+## CONTEXT
 
-- Requires `{wipFile}` from Step 3. 
+- Requires `{wipFile}` from Step 3.
 - MUST present COMPLETE spec content. Iterate until user is satisfied.
 - **Criteria**: The spec MUST meet the **READY FOR DEVELOPMENT** standard defined in `workflow.md`.
 
@@ -79,9 +79,10 @@ a) Update `{wipFile}` frontmatter:
    ```
 
 b) **Rename WIP file to final filename:**
-   - Using the `slug` extracted in Section 1
-   - Rename `{wipFile}` → `{implementation_artifacts}/tech-spec-{slug}.md`
-   - Store this as `finalFile` for use in menus below
+
+- Using the `slug` extracted in Section 1
+- Rename `{wipFile}` → `{implementation_artifacts}/tech-spec-{slug}.md`
+- Store this as `finalFile` for use in menus below
 
 ### 4. Present Final Menu
 
@@ -117,7 +118,7 @@ This ensures the dev agent has clean context focused solely on implementation.
 
 b) **HALT and wait for user selection.**
 
-#### Menu Handling:
+#### Menu Handling
 
 - **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
 - **[b]**: Load and execute `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
@@ -159,13 +160,13 @@ Ship it!"
 
 ---
 
-## REQUIRED OUTPUTS:
+## REQUIRED OUTPUTS
 
 - MUST update status to 'ready-for-dev'.
 - MUST rename file to `tech-spec-{slug}.md`.
 - MUST provide clear next-step guidance and recommend fresh context for dev.
 
-## VERIFICATION CHECKLIST:
+## VERIFICATION CHECKLIST
 
 - [ ] Complete spec presented for review.
 - [ ] Requested changes implemented.

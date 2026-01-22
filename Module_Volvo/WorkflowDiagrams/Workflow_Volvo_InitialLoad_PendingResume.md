@@ -1,6 +1,7 @@
 # Volvo Shipment Entry Initial Load & Pending Resume Workflow
 
 ## Diagram (Mermaid)
+
 ```mermaid
 flowchart TD
     Start([Start]) --> Open[Open Volvo Dunnage Requisition screen]
@@ -16,6 +17,7 @@ flowchart TD
 ```
 
 ## User-Friendly Steps
+
 1. Open the Volvo Dunnage Requisition screen.
 2. The system loads today’s date and the next shipment number.
 3. The system loads part master data for quantity-per-skid lookups.
@@ -23,6 +25,7 @@ flowchart TD
 5. If none exists, the screen is ready for a new shipment.
 
 ## Required Info for Fixing Incorrect Workflows
+
 | Step | UI / Action | Command / Query | Validator Rules (Actual) | Handler / Data Path | Actual Data (from code) |
 |---|---|---|---|---|---|
 | Initial data | Page load | GetInitialShipmentDataQuery | n/a | ViewModel: ViewModel_Volvo_ShipmentEntry.InitializeAsync | Sets ShipmentDate and ShipmentNumber |

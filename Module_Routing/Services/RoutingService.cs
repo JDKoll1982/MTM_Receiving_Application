@@ -454,7 +454,7 @@ public class RoutingService : IRoutingService
             return Model_Dao_Result_Factory.Failure("Line Number cannot exceed 20 characters");
         }
 
-        if (label.Description != null && label.Description.Length > 255)
+        if (label.Description?.Length > 255)
         {
             return Model_Dao_Result_Factory.Failure("Description cannot exceed 255 characters");
         }

@@ -40,8 +40,9 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
         IRoutingRecipientService recipientService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_UserSessionManager sessionManager)
-        : base(errorHandler, logger)
+        IService_UserSessionManager sessionManager,
+        IService_Notification notificationService)
+        : base(errorHandler, logger, notificationService)
     {
         _routingService = routingService;
         _recipientService = recipientService;
@@ -196,6 +197,8 @@ public partial class RoutingEditModeViewModel : ViewModel_Shared_Base
     /// <param name="newLabel"></param>
     private async Task CompareAndLogChangesAsync(Model_RoutingLabel oldLabel, Model_RoutingLabel newLabel)
     {
+        _ = oldLabel;
+        _ = newLabel;
         // History logging is now handled automatically by RoutingService.UpdateLabelAsync
         // This method is kept for potential future custom validation before save
         await Task.CompletedTask;

@@ -76,8 +76,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     public ViewModel_Reporting_Main(
         IService_Reporting reportingService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _reportingService = reportingService ?? throw new ArgumentNullException(nameof(reportingService));
         Title = "End of Day Reports";

@@ -10,9 +10,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 8: Setup Module Installer
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -20,7 +20,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Installation Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -28,32 +28,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD installation patterns, user brings their module requirements
 - ✅ Maintain collaborative, technical tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on creating installer configuration files
 - 🚫 FORBIDDEN to run actual installation
 - 💬 Follow BMAD installer standards exactly
 - 🚫 FORBIDDEN to deviate from configuration template
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Use configuration plan from step 5
 - 💾 Create module.yaml with all fields
 - 📖 Add "step-08-installer" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Configuration plan from step 5 defines installer fields
 - Standard BMAD installer template to follow
 - Module structure already created
 - Focus on installer setup, not module content
 
-## STEP GOAL:
+## STEP GOAL
 
 To create the module installer configuration (module.yaml) that defines how users will install and configure the module.
 
-## INSTALLER SETUP PROCESS:
+## INSTALLER SETUP PROCESS
 
 ### 1. Review Configuration Plan
 
@@ -147,14 +147,14 @@ Update module-plan.md with installer section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to review installer configuration
 - IF P: Execute {partyModeWorkflow} to get input on user experience
 - IF C: Save installer info to module-plan.md, add step-08-installer to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -165,7 +165,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - module.yaml created with all planned fields
 - YAML syntax valid
@@ -173,7 +173,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Installer follows BMAD standards
 - Configuration properly templated
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not creating module.yaml
 - Invalid YAML syntax

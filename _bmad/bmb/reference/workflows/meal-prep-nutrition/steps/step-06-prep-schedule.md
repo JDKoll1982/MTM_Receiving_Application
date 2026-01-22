@@ -24,7 +24,7 @@ prepScheduleTemplate: '{workflow_path}/templates/prep-schedule-section.md'
 
 Create a realistic meal prep schedule that fits the user's lifestyle and ensures success.
 
-## 📋 MANDATORY EXECUTION RULES (READ FIRST):
+## 📋 MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER suggest a prep schedule that requires more time than user has available
 - 📖 CRITICAL: Base schedule on user's actual cooking frequency
@@ -73,47 +73,47 @@ Sunday (2 hours):
 4:00-4:15: Clean and organize refrigerator
 ```
 
-## 📦 Storage Guidelines:
+## 📦 Storage Guidelines
 
-### Protein Storage:
+### Protein Storage
 
 - Cooked chicken: 4 days refrigerated, 3 months frozen
 - Ground meat: 3 days refrigerated, 3 months frozen
 - Fish: Best fresh, 2 days refrigerated
 
-### Vegetable Storage:
+### Vegetable Storage
 
 - Cut vegetables: 3-4 days in airtight containers
 - Hard vegetables: Up to 1 week (carrots, bell peppers)
 - Leafy greens: 2-3 days with paper towels
 
-### Meal Assembly:
+### Meal Assembly
 
 - Keep sauces separate until eating
 - Consider texture changes when reheating
 - Label with preparation date
 
-## 🔧 ADAPTATION STRATEGIES:
+## 🔧 ADAPTATION STRATEGIES
 
-### For Busy Weeks:
+### For Busy Weeks
 
 - Emergency freezer meals
 - Quick backup options
 - 15-minute meal alternatives
 
-### For Low Energy Days:
+### For Low Energy Days
 
 - No-cook meal options
 - Smoothie packs
 - Assembly-only meals
 
-### For Social Events:
+### For Social Events
 
 - Flexible meal timing
 - Restaurant integration
 - "Off-plan" guilt-free guidelines
 
-## ✅ SUCCESS METRICS:
+## ✅ SUCCESS METRICS
 
 - Realistic time commitment
 - Clear instructions for each prep session
@@ -121,7 +121,7 @@ Sunday (2 hours):
 - Backup plans for busy weeks
 - Sustainable long-term approach
 
-## ❌ FAILURE MODES TO AVOID:
+## ❌ FAILURE MODES TO AVOID
 
 - Overly ambitious prep schedule
 - Not accounting for cleaning time
@@ -129,7 +129,7 @@ Sunday (2 hours):
 - No flexibility for unexpected events
 - Complex instructions for beginners
 
-## 💬 SAMPLE DIALOG STYLE:
+## 💬 SAMPLE DIALOG STYLE
 
 **✅ GOOD (Intent-based):**
 "Based on your 2-hour Sunday availability, we could create a prep schedule that sets you up for the week. We'll batch cook proteins and grains, then do quick assembly each evening. How does that sound with your energy levels?"
@@ -137,13 +137,13 @@ Sunday (2 hours):
 **❌ AVOID (Prescriptive):**
 "You must prep every Sunday from 2-4 PM. No exceptions."
 
-## 📝 FINAL TEMPLATE OUTPUT:
+## 📝 FINAL TEMPLATE OUTPUT
 
 Complete {outputFile} by loading and appending content from {prepScheduleTemplate}
 
-## 🎯 WORKFLOW COMPLETION:
+## 🎯 WORKFLOW COMPLETION
 
-### Update workflow.md frontmatter:
+### Update workflow.md frontmatter
 
 ```yaml
 stepsCompleted: ['init', 'assessment', 'strategy', 'shopping', 'prep-schedule']
@@ -152,11 +152,11 @@ completionDate: [current date]
 userSatisfaction: [to be rated]
 ```
 
-### Final Message Template:
+### Final Message Template
 
 "Congratulations! Your personalized nutrition plan is complete. Remember, this is a living document that we can adjust as your needs change. Check in weekly for the first month to fine-tune your approach!"
 
-## 📊 NEXT STEPS FOR USER:
+## 📊 NEXT STEPS FOR USER
 
 1. Review complete plan
 2. Shop for ingredients
@@ -168,7 +168,7 @@ userSatisfaction: [to be rated]
 
 Display: **Select an Option:** [A] Advanced Prep Techniques [P] Coach Perspectives [C] Complete Workflow
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -176,7 +176,7 @@ Display: **Select an Option:** [A] Advanced Prep Techniques [P] Coach Perspectiv
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - HALT and AWAIT ANSWER
 - IF A: Execute `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`

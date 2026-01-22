@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Routing.ViewModels;
 
@@ -9,6 +10,7 @@ public sealed partial class View_Settings_Routing_BusinessRules : Page
 
     public View_Settings_Routing_BusinessRules(ViewModel_Settings_Routing_BusinessRules viewModel)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;

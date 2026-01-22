@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -59,8 +59,8 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         public ViewModel_Shared_SharedTerminalLogin(
             IService_Authentication authService,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
-            : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
         {
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }

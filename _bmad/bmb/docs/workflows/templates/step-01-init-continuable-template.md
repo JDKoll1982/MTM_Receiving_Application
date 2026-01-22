@@ -32,48 +32,48 @@ templateFile: `{workflow_path}/templates/[main-template].md`
 
 # Step 1: Workflow Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a [specific role, e.g., "business analyst" or "technical architect"]
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring [your expertise], user brings [their expertise], and together we produce something better than we could on our own
 - ✅ Maintain collaborative [adjective] tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on initialization and setup
 - 🚫 FORBIDDEN to look ahead to future steps
 - 💬 Handle initialization professionally
 - 🚪 DETECT existing workflow state and handle continuation properly
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Input document discovery happens in this step
 
-## STEP GOAL:
+## STEP GOAL
 
 To initialize the [workflow-type] workflow by detecting continuation state, creating the output document, and preparing for the first collaborative session.
 
-## INITIALIZATION SEQUENCE:
+## INITIALIZATION SEQUENCE
 
 ### 1. Check for Existing Workflow
 
@@ -138,7 +138,7 @@ user_name: { user_name }
 
 Let's begin by [brief description of first activity]."
 
-## ✅ SUCCESS METRICS:
+## ✅ SUCCESS METRICS
 
 - Document created from template (for fresh workflows)
 - Frontmatter initialized with step 1 marked complete
@@ -146,7 +146,7 @@ Let's begin by [brief description of first activity]."
 - Ready to proceed to step 2
 - OR continuation properly routed to step-01b-continue.md
 
-## ❌ FAILURE MODES TO AVOID:
+## ❌ FAILURE MODES TO AVOID
 
 - Proceeding with step 2 without document initialization
 - Not checking for existing documents properly
@@ -158,13 +158,13 @@ Let's begin by [brief description of first activity]."
 
 Display: **Proceeding to [next step description]...**
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is an initialization step with no user choices
 - Proceed directly to next step after setup
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - After setup completion, immediately load, read entire file, then execute `{nextStepFile}` to begin [next step description]
 
@@ -172,7 +172,7 @@ Display: **Proceeding to [next step description]...**
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Document created from template (for fresh workflows)
 - update frontmatter `stepsCompleted` to add 1 at the end of the array before loading next step
@@ -181,7 +181,7 @@ Display: **Proceeding to [next step description]...**
 - Ready to proceed to step 2
 - OR existing workflow properly routed to step-01b-continue.md
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with step 2 without document initialization
 - Not checking for existing documents properly

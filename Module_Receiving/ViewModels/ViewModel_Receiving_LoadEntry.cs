@@ -5,6 +5,8 @@ using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Receiving.Settings;
+using System;
 using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
@@ -15,6 +17,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private int _numberOfLoads = 1;
@@ -22,22 +25,54 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _selectedPartInfo = string.Empty;
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _loadEntryHeaderText = "Number of Loads (1-99)";
+
+        [ObservableProperty]
+        private string _loadEntryInstructionText = "Enter the total number of skids/loads for this part.";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _numberOfLoadsAccessibilityName = "Number of Loads";
+
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,
+            IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_ViewModelRegistry viewModelRegistry)
-            : base(errorHandler, logger)
+            IService_ViewModelRegistry viewModelRegistry,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _validationService = validationService;
             _helpService = helpService;
+            _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
 
             _workflowService.StepChanged += OnStepChanged;
             _viewModelRegistry.Register(this);
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                LoadEntryHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryHeader);
+                LoadEntryInstructionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryInstruction);
+                NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads);
+
+                _logger.LogInfo("Load Entry UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Load Entry UI text from settings: {ex.Message}", ex);
+            }
         }
 
         public void ResetToDefaults()

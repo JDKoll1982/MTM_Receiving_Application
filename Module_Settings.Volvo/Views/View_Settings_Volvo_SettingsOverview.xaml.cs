@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Volvo.ViewModels;
 
@@ -9,6 +10,7 @@ public sealed partial class View_Settings_Volvo_SettingsOverview : Page
 
     public View_Settings_Volvo_SettingsOverview(ViewModel_Settings_Volvo_SettingsOverview viewModel)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;

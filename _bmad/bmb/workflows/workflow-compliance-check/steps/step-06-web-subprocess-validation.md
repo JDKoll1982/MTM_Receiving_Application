@@ -23,13 +23,13 @@ intentSpectrum: '{project-root}/_bmad/bmb/docs/workflows/intent-vs-prescriptive-
 
 # Step 6: Web Search & Subprocess Optimization Analysis
 
-## STEP GOAL:
+## STEP GOAL
 
 Analyze each workflow step for optimal web search utilization and subprocess usage patterns, ensuring LLM resources are used efficiently while avoiding unnecessary searches or processing delays.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -37,7 +37,7 @@ Analyze each workflow step for optimal web search utilization and subprocess usa
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a performance optimization specialist and resource efficiency analyst
 - ✅ If you already have been given a name, communication_style, and persona, continue to use those while playing this new role
@@ -45,21 +45,21 @@ Analyze each workflow step for optimal web search utilization and subprocess usa
 - ✅ You bring expertise in LLM optimization, web search strategy, and subprocess utilization
 - ✅ User brings their workflow and needs efficiency recommendations
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on web search necessity and subprocess optimization opportunities
 - 🚫 FORBIDDEN to recommend web searches when LLM knowledge is sufficient
 - 💬 Approach: Analytical and optimization-focused with clear efficiency rationale
 - 📋 Use subprocesses when analyzing multiple steps to improve efficiency
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze each step for web search appropriateness vs. LLM knowledge sufficiency
 - 💾 Identify subprocess optimization opportunities for parallel processing
 - 📖 Use subprocesses/subagents when analyzing multiple steps for efficiency
 - 🚫 FORBIDDEN to overlook inefficiencies or recommend unnecessary searches
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: All workflow step files and subprocess availability
 - Focus: Web search optimization and subprocess utilization analysis
@@ -325,7 +325,7 @@ Append to {complianceReportFile}:
 
 **Select an Option:** [C] Continue to Holistic Analysis [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Save optimization findings to report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: Save current findings and end with guidance for resuming
@@ -339,7 +339,7 @@ ONLY WHEN [C continue option] is selected and [web search and subprocess analysi
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Intelligent assessment of web search necessity vs. LLM knowledge sufficiency
 - Identification of unnecessary web searches that waste user time
@@ -349,7 +349,7 @@ ONLY WHEN [C continue option] is selected and [web search and subprocess analysi
 - Performance impact assessment with estimated improvements
 - User experience benefits clearly articulated
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Recommending web searches when LLM knowledge is sufficient
 - Missing subprocess optimization opportunities

@@ -34,6 +34,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _poQuantityInfo = string.Empty;
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _weightQuantityHeaderText = "Weight/Quantity";
+
+        [ObservableProperty]
+        private string _weightQuantityPlaceholderText = "Enter whole number";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _weightQuantityAccessibilityName = "Weight Quantity";
+
         public ViewModel_Receiving_WeightQuantity(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
@@ -41,8 +52,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
-            : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _validationService = validationService;
@@ -51,6 +63,24 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _receivingSettings = receivingSettings;
 
             _workflowService.StepChanged += OnStepChanged;
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                WeightQuantityHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WeightQuantityHeader);
+                WeightQuantityPlaceholderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WeightQuantityPlaceholder);
+                WeightQuantityAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.WeightQuantityInput);
+
+                _logger.LogInfo("Weight/Quantity UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Weight/Quantity UI text from settings: {ex.Message}", ex);
+            }
         }
 
         private void OnStepChanged(object? sender, EventArgs e)

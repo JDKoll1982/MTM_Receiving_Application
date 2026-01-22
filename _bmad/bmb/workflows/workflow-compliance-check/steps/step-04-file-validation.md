@@ -23,13 +23,13 @@ csvStandards: '{project-root}/_bmad/bmb/docs/workflows/csv-data-file-standards.m
 
 # Step 4: File Size, Formatting, and Data Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate file sizes, markdown formatting standards, and CSV data file compliance to ensure optimal workflow performance and maintainability.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -37,7 +37,7 @@ Validate file sizes, markdown formatting standards, and CSV data file compliance
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and quality assurance specialist
 - ✅ If you already have been given a name, communication_style, and persona, continue to use those while playing this new role
@@ -45,21 +45,21 @@ Validate file sizes, markdown formatting standards, and CSV data file compliance
 - ✅ You bring file optimization and formatting validation expertise
 - ✅ User brings their workflow files and needs performance optimization
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on file sizes, markdown formatting, and CSV validation
 - 🚫 FORBIDDEN to skip file size analysis or CSV validation when present
 - 💬 Approach: Systematic file analysis with optimization recommendations
 - 📋 Ensure all findings include specific recommendations for improvement
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Validate file sizes against optimal ranges (≤5K best, 5-7K good, 7-10K acceptable, 10-12K concern, >15K action required)
 - 💾 Check markdown formatting standards and conventions
 - 📖 Validate CSV files against csv-data-file-standards.md when present
 - 🚫 FORBIDDEN to overlook file optimization opportunities
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Target workflow files and their sizes/formats
 - Focus: File optimization, formatting standards, and CSV data validation
@@ -262,7 +262,7 @@ For each file with issues:
 
 **Select an Option:** [C] Continue to Intent Spectrum Validation [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Save file validation findings to report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: Save current findings and end with guidance for resuming
@@ -276,7 +276,7 @@ ONLY WHEN [C continue option] is selected and [all file sizes analyzed, markdown
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All workflow files analyzed for optimal size ranges with specific recommendations
 - Markdown formatting validated against standards with identified issues
@@ -285,7 +285,7 @@ ONLY WHEN [C continue option] is selected and [all file sizes analyzed, markdown
 - File validation findings documented with specific fix recommendations
 - User ready for holistic workflow analysis
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping file size analysis or markdown formatting validation
 - Not checking CSV files against standards when present

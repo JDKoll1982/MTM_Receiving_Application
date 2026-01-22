@@ -23,13 +23,13 @@ intentSpectrum: '{project-root}/_bmad/bmb/docs/workflows/intent-vs-prescriptive-
 
 # Step 7: Holistic Workflow Analysis
 
-## STEP GOAL:
+## STEP GOAL
 
 Perform comprehensive workflow analysis including flow validation, goal alignment assessment, optimization opportunities, and meta-workflow failure identification to provide complete compliance picture.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -37,7 +37,7 @@ Perform comprehensive workflow analysis including flow validation, goal alignmen
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and quality assurance specialist
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -45,21 +45,21 @@ Perform comprehensive workflow analysis including flow validation, goal alignmen
 - ✅ You bring holistic workflow analysis and optimization expertise
 - ✅ User brings their workflow and needs comprehensive assessment
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on holistic analysis beyond template compliance
 - 🚫 FORBIDDEN to skip flow validation or optimization assessment
 - 💬 Approach: Systematic end-to-end workflow analysis
 - 📋 Identify meta-workflow failures and improvement opportunities
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze complete workflow flow from start to finish
 - 💾 Validate goal alignment and optimization opportunities
 - 📖 Identify what meta-workflows (create/edit) should have caught
 - 🚫 FORBIDDEN to provide superficial analysis without specific recommendations
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete workflow analysis from previous phases
 - Focus: Holistic workflow optimization and meta-process improvement
@@ -225,7 +225,7 @@ Evaluate workflow from user perspective:
 
 **Select an Option:** [C] Continue to Report Generation [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Save holistic analysis findings to report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: Save current findings and end with guidance for resuming
@@ -239,7 +239,7 @@ ONLY WHEN [C continue option] is selected and [holistic analysis complete with m
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Complete workflow flow validation with all paths traced
 - Goal alignment assessment with specific gap analysis
@@ -248,7 +248,7 @@ ONLY WHEN [C continue option] is selected and [holistic analysis complete with m
 - Strategic recommendations provided by severity priority
 - User ready for comprehensive report generation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping flow validation or goal alignment analysis
 - Not identifying meta-workflow failure opportunities

@@ -1,31 +1,53 @@
-using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Dunnage.ViewModels;
-using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using System;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
+/// <summary>
+/// Main workflow view for Dunnage module.
+/// Coordinates wizard steps and manages workflow navigation.
+/// </summary>
 public sealed partial class View_Dunnage_WorkflowView : Page
 {
     public ViewModel_Dunnage_WorkFlowViewModel ViewModel { get; }
-    private IService_DunnageWorkflow? _workflowService;
-    private IService_Help? _helpService;
+    
+    private readonly IService_DunnageWorkflow _workflowService;
+    private readonly IService_Help _helpService;
     private readonly IService_Focus _focusService;
 
-    public View_Dunnage_WorkflowView()
+    /// <summary>
+    /// Initializes a new instance of the View_Dunnage_WorkflowView class.
+    /// </summary>
+    /// <param name="viewModel">The workflow view model.</param>
+    /// <param name="workflowService">The dunnage workflow service.</param>
+    /// <param name="helpService">The help service.</param>
+    /// <param name="focusService">The focus service.</param>
+    public View_Dunnage_WorkflowView(
+        ViewModel_Dunnage_WorkFlowViewModel viewModel,
+        IService_DunnageWorkflow workflowService,
+        IService_Help helpService,
+        IService_Focus focusService)
     {
-        ViewModel = App.GetService<ViewModel_Dunnage_WorkFlowViewModel>();
-        _focusService = App.GetService<IService_Focus>();
+        ArgumentNullException.ThrowIfNull(viewModel);
+        ArgumentNullException.ThrowIfNull(workflowService);
+        ArgumentNullException.ThrowIfNull(helpService);
+        ArgumentNullException.ThrowIfNull(focusService);
+
+        ViewModel = viewModel;
+        _workflowService = workflowService;
+        _helpService = helpService;
+        _focusService = focusService;
+
         InitializeComponent();
+        DataContext = ViewModel;
 
         // Subscribe to workflow step changes
-        _workflowService = App.GetService<IService_DunnageWorkflow>();
-        _helpService = App.GetService<IService_Help>();
         _workflowService.StepChanged += OnWorkflowStepChanged;
-
         _focusService.AttachFocusOnVisibility(this);
     }
 
@@ -52,8 +74,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private async void OnNextClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var workflowService = App.GetService<IService_DunnageWorkflow>();
-        var result = await workflowService.AdvanceToNextStepAsync();
+        var result = await _workflowService.AdvanceToNextStepAsync();
 
         if (!result.IsSuccess)
         {
@@ -87,8 +108,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         if (confirmResult == ContentDialogResult.Primary)
         {
             // User confirmed, proceed to next step
-            var workflowService = App.GetService<IService_DunnageWorkflow>();
-            var result = await workflowService.AdvanceToNextStepAsync();
+            var result = await _workflowService.AdvanceToNextStepAsync();
 
             if (!result.IsSuccess)
             {

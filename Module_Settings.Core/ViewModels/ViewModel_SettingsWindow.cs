@@ -14,7 +14,8 @@ public partial class ViewModel_SettingsWindow : ViewModel_Shared_Base
 
     public ViewModel_SettingsWindow(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
     }
 }

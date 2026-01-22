@@ -1,23 +1,27 @@
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
+using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
 
 public sealed partial class ViewModel_Settings_Receiving_NavigationHub : ViewModel_SettingsNavigationHubBase
 {
+    public ISettingsNavigationActions? CurrentActions { get; set; }
+
     public ViewModel_Settings_Receiving_NavigationHub(
         IService_SettingsPagination pagination,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(pagination, errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService)
+        : base(pagination, errorHandler, logger, notificationService)
     {
         NavigationTitle = "Receiving Navigation";
         CurrentStepTitle = NavigationTitle;
 
-        // Placeholder steps until the Receiving settings pages are implemented.
         SetSteps(
             new Model_SettingsNavigationStep("Overview", typeof(Views.View_Settings_Receiving_SettingsOverview)),
             new Model_SettingsNavigationStep("Defaults", typeof(Views.View_Settings_Receiving_Defaults)),
@@ -27,23 +31,53 @@ public sealed partial class ViewModel_Settings_Receiving_NavigationHub : ViewMod
             new Model_SettingsNavigationStep("ERP Integration", typeof(Views.View_Settings_Receiving_Integrations)));
     }
 
-    public new void Save()
+    public async Task SaveAsync()
     {
+        if (CurrentActions is null)
+        {
+            return;
+        }
+
+        await CurrentActions.SaveAsync();
     }
 
-    public new void Reset()
+    public async Task ResetAsync()
     {
+        if (CurrentActions is null)
+        {
+            return;
+        }
+
+        await CurrentActions.ResetAsync();
     }
 
-    public new void Cancel()
+    public async Task CancelAsync()
     {
+        if (CurrentActions is null)
+        {
+            return;
+        }
+
+        await CurrentActions.CancelAsync();
     }
 
-    public new void Back()
+    public async Task BackAsync()
     {
+        if (CurrentActions is null)
+        {
+            return;
+        }
+
+        await CurrentActions.BackAsync();
     }
 
-    public new void Next()
+    public async Task NextAsync()
     {
+        if (CurrentActions is null)
+        {
+            return;
+        }
+
+        await CurrentActions.NextAsync();
     }
 }

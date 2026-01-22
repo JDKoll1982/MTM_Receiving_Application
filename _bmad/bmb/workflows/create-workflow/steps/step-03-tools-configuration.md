@@ -24,13 +24,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 3: Tools Configuration
 
-## STEP GOAL:
+## STEP GOAL
 
 To comprehensively configure all tools needed for the workflow (core tools, memory, external tools) and determine installation requirements.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -38,7 +38,7 @@ To comprehensively configure all tools needed for the workflow (core tools, memo
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and integration specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -46,28 +46,28 @@ To comprehensively configure all tools needed for the workflow (core tools, memo
 - ✅ You bring expertise in BMAD tools and integration patterns
 - ✅ User brings their workflow requirements and preferences
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on configuring tools based on workflow requirements
 - 🚫 FORBIDDEN to skip tool categories - each affects workflow design
 - 💬 Present options clearly, let user make informed choices
 - 🚫 DO NOT hardcode tool descriptions - reference CSV
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load tools dynamically from CSV, not hardcoded
 - 💾 Document all tool choices in workflow plan
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Requirements from step 2 inform tool selection
 - All tool choices affect workflow design
 - This is the ONLY tools configuration step
 - Installation requirements affect implementation decisions
 
-## TOOLS CONFIGURATION PROCESS:
+## TOOLS CONFIGURATION PROCESS
 
 ### 1. Initialize Tools Configuration
 
@@ -119,19 +119,19 @@ These capabilities enhance what your workflow can do:"
 
 From CSV (`propose='always'` LLM features):
 
-4. **Web-Browsing**
+1. **Web-Browsing**
    - Capability: [description from CSV]
    - When needed: [ask user about real-time data needs]
 
-5. **File I/O**
+2. **File I/O**
    - Capability: [description from CSV]
    - Operations: [ask user about file operations needed]
 
-6. **Sub-Agents**
+3. **Sub-Agents**
    - Capability: [description from CSV]
    - Use cases: [ask user about delegation needs]
 
-7. **Sub-Processes**
+4. **Sub-Processes**
    - Capability: [description from CSV]
    - Use cases: [ask user about parallel processing needs]
 
@@ -143,7 +143,7 @@ Determine if your workflow needs to maintain state between sessions:"
 
 From CSV memory tools:
 
-8. **Sidecar File**
+1. **Sidecar File**
    - Use case: [description from CSV]
    - Needed when: [ask about session continuity, agent initialization]
 
@@ -210,7 +210,7 @@ Append to {workflowPlanFile}:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -218,7 +218,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -233,7 +233,7 @@ ONLY WHEN C is selected and tools configuration is saved will you load {nextStep
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All tool categories configured based on requirements
 - User made informed choices for each tool
@@ -241,7 +241,7 @@ ONLY WHEN C is selected and tools configuration is saved will you load {nextStep
 - Installation requirements identified
 - Ready to proceed to plan review
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping tool categories
 - Hardcoding tool descriptions instead of using CSV

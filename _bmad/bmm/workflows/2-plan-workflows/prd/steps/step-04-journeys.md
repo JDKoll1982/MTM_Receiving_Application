@@ -20,7 +20,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 4 of 11** - Next: Domain Requirements
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -32,7 +32,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 CRITICAL: No journey = no functional requirements = product doesn't exist
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating journey content
@@ -40,7 +40,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -48,25 +48,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to map comprehensive user journeys
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Success criteria and scope already defined
 - Input documents from step-01 are available (product briefs with user personas)
 - Every human interaction with the system needs a journey
 
-## YOUR TASK:
+## YOUR TASK
 
 Create compelling narrative user journeys that leverage existing personas from product briefs and identify additional user types needed for comprehensive coverage.
 
-## JOURNEY MAPPING SEQUENCE:
+## JOURNEY MAPPING SEQUENCE
 
 ### 1. Leverage Existing Users & Identify Additional Types
 
@@ -108,7 +108,7 @@ What user types should we map for this product?"
 
 For each user type, create compelling narrative journeys that tell their story:
 
-#### Narrative Journey Creation Process:
+#### Narrative Journey Creation Process
 
 **If Using Existing Persona from Input Documents:**
 "Let's tell {{persona_name}}'s story with {{project_name}}.
@@ -191,7 +191,7 @@ Ask: "Another journey? We should cover [suggest uncovered user type]"
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -221,7 +221,7 @@ Show the generated journey content and present choices:
 
 ### 8. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current journey content
 - Process the enhanced journey insights that come back
@@ -229,7 +229,7 @@ Show the generated journey content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current journeys
 - Process the collaborative journey improvements and additions
@@ -237,17 +237,17 @@ Show the generated journey content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: add this step name to the end of the steps completed array
 - Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-05-domain.md` (or determine if step is optional based on domain complexity)
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Existing personas from product briefs leveraged when available
 ✅ All user types identified (not just primary users)
@@ -258,7 +258,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Ignoring existing personas from product briefs
 ❌ Only mapping primary user journeys and missing secondary users
@@ -274,7 +274,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## JOURNEY TYPES TO ENSURE:
+## JOURNEY TYPES TO ENSURE
 
 **Minimum Coverage:**
 
@@ -284,7 +284,7 @@ When user selects 'C', append the content directly to the document using the str
 4. **Support/Troubleshooting**: Help, investigation, issue resolution
 5. **API/Integration** (if applicable): Developer/technical user journey
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-05-domain.md`.
 

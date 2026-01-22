@@ -86,8 +86,9 @@ public partial class ViewModel_Dunnage_AddTypeDialog : ViewModel_Shared_Base
     public ViewModel_Dunnage_AddTypeDialog(
         IService_MySQL_Dunnage dunnageService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService)
+        : base(errorHandler, logger, notificationService)
     {
         _dunnageService = dunnageService;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();

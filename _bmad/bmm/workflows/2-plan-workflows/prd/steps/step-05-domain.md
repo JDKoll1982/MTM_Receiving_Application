@@ -23,7 +23,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 5 of 11** - Next: Innovation Focus
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -35,7 +35,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 OPTIONAL STEP: Only proceed if complexity_level = "high" from step-02
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating domain content
@@ -43,7 +43,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -51,21 +51,21 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring domain expertise perspectives to explore requirements
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Domain complexity from step-02 should be "high" to justify this step
 - Domain-specific CSV data will be loaded in this step
 - Focus on compliance, regulations, and domain-specific constraints
 
-## OPTIONAL STEP CHECK:
+## OPTIONAL STEP CHECK
 
 Before proceeding with this step, verify:
 
@@ -74,11 +74,11 @@ Before proceeding with this step, verify:
 
 If NO to these questions, skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`.
 
-## YOUR TASK:
+## YOUR TASK
 
 Explore domain-specific requirements for complex domains that need specialized compliance, regulatory, or industry-specific considerations.
 
-## DOMAIN EXPLORATION SEQUENCE:
+## DOMAIN EXPLORATION SEQUENCE
 
 ### 1. Load Domain Configuration Data
 
@@ -106,7 +106,7 @@ This step will help us understand regulatory requirements, compliance needs, and
 
 For each concern in `key_concerns` from the CSV:
 
-#### Domain Concern Exploration:
+#### Domain Concern Exploration
 
 - Ask the user about their approach to this concern
 - Discuss implications for the product design and requirements
@@ -127,7 +127,7 @@ Ask about each:
 
 Based on the conversation, synthesize domain requirements that will shape everything:
 
-#### Categories to Document:
+#### Categories to Document
 
 - **Regulatory requirements** (from key_concerns)
 - **Compliance needs** (from key_concerns)
@@ -147,7 +147,7 @@ Explain how these inform:
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -206,7 +206,7 @@ Show the generated domain content and present choices:
 
 ### 8. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current domain content
 - Process the enhanced domain insights that come back
@@ -214,7 +214,7 @@ Show the generated domain content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current domain requirements
 - Process the collaborative domain expertise and validation
@@ -222,17 +222,17 @@ Show the generated domain content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the content to `{outputFile}`
 - Update frontmatter: add this step name to the end of the steps completed array
 - Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Domain complexity properly validated as high before proceeding
 ✅ All key concerns from CSV explored with user input
@@ -242,7 +242,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Proceeding with domain exploration when complexity is not high
 ❌ Not loading or using CSV domain configuration properly
@@ -256,7 +256,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## SKIP CONDITIONS:
+## SKIP CONDITIONS
 
 Skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md` if:
 
@@ -264,7 +264,7 @@ Skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd
 - Domain has no specific regulatory/compliance requirements
 - User confirms domain exploration is not needed
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`.
 

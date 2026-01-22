@@ -35,7 +35,7 @@
                                 <FontIcon Glyph="&#xE8A5;" 
                                          FontSize="16"
                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                <TextBlock Text="Purchase Order Number" 
+                                <TextBlock Text="{x:Bind ViewModel.PoNumberHeaderText, Mode=OneWay}" 
                                           Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </StackPanel>
                             
@@ -46,7 +46,7 @@
                                     HorizontalAlignment="Stretch"
                                     TabIndex="0"
                                     LostFocus="POTextBox_LostFocus"
-                                    AutomationProperties.Name="Purchase Order Number"/>
+                                    AutomationProperties.Name="{x:Bind ViewModel.PoNumberAccessibilityName, Mode=OneWay}"/>
                             
                             <!-- Validation Message -->
                             <TextBlock Text="{x:Bind ViewModel.PoValidationMessage, Mode=OneWay}" 
@@ -63,7 +63,7 @@
                                     Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8C9;" FontSize="14"/>
-                                    <TextBlock Text="Status:" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBlock Text="{x:Bind ViewModel.PoStatusLabelText, Mode=OneWay}" FontWeight="SemiBold" FontSize="12"/>
                                     <TextBlock Text="{x:Bind ViewModel.PoStatusDescription, Mode=OneWay}" 
                                               FontSize="12"
                                               FontWeight="SemiBold"/>
@@ -82,16 +82,16 @@
                                    Command="{x:Bind ViewModel.LoadPOCommand}" 
                                    IsEnabled="{x:Bind ViewModel.IsLoadPOEnabled, Mode=OneWay}"
                                    Style="{StaticResource AccentButtonStyle}"
-                                   AutomationProperties.Name="Load Purchase Order"
+                                   AutomationProperties.Name="{x:Bind ViewModel.LoadPoAccessibilityName, Mode=OneWay}"
                                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadPO'), Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE896;" FontSize="16"/>
-                                    <TextBlock Text="Load PO"/>
+                                    <TextBlock Text="{x:Bind ViewModel.LoadPoButtonText, Mode=OneWay}"/>
                                 </StackPanel>
                             </Button>
                             
                             <Button Grid.Column="1"
-                                   Content="Switch to Non-PO" 
+                                Content="{x:Bind ViewModel.SwitchToNonPoButtonText, Mode=OneWay}" 
                                    Command="{x:Bind ViewModel.ToggleNonPOCommand}"
                                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToNonPO'), Mode=OneWay}"/>
                         </Grid>
@@ -113,7 +113,7 @@
                                 <FontIcon Glyph="&#xE8B7;" 
                                          FontSize="16"
                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                <TextBlock Text="Part Identifier" 
+                                <TextBlock Text="{x:Bind ViewModel.PartIdentifierHeaderText, Mode=OneWay}" 
                                           Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </StackPanel>
                             
@@ -122,7 +122,7 @@
                                     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartID'), Mode=OneWay}"
                                     MaxWidth="400"
                                     HorizontalAlignment="Stretch"
-                                    AutomationProperties.Name="Part Identifier"/>
+                                    AutomationProperties.Name="{x:Bind ViewModel.PartIdAccessibilityName, Mode=OneWay}"/>
                         </StackPanel>
 
                         <!-- Package Type Display (Auto-detected) -->
@@ -131,7 +131,7 @@
                                 <FontIcon Glyph="&#xE7B8;" 
                                          FontSize="16"
                                          Foreground="{ThemeResource AccentTextFillColorSecondaryBrush}"/>
-                                <TextBlock Text="Package Type (Auto-detected)" 
+                                <TextBlock Text="{x:Bind ViewModel.PackageTypeAutoHeaderText, Mode=OneWay}" 
                                           Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </StackPanel>
                             
@@ -150,16 +150,16 @@
                             <Button Grid.Column="0"
                                    Command="{x:Bind ViewModel.LookupPartCommand}" 
                                    Style="{StaticResource AccentButtonStyle}"
-                                   AutomationProperties.Name="Look Up Part"
+                                   AutomationProperties.Name="{x:Bind ViewModel.LookupPartAccessibilityName, Mode=OneWay}"
                                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LookupPart'), Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE721;" FontSize="16"/>
-                                    <TextBlock Text="Look Up Part"/>
+                                    <TextBlock Text="{x:Bind ViewModel.LookupPartButtonText, Mode=OneWay}"/>
                                 </StackPanel>
                             </Button>
                             
                             <Button Grid.Column="1"
-                                   Content="Switch to PO Entry" 
+                                Content="{x:Bind ViewModel.SwitchToPoButtonText, Mode=OneWay}" 
                                    Command="{x:Bind ViewModel.ToggleNonPOCommand}"
                                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SwitchToPO'), Mode=OneWay}"/>
                         </Grid>
@@ -193,7 +193,7 @@
                     <FontIcon Glyph="&#xE8FD;" 
                              FontSize="16"
                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                    <TextBlock Text="Available Parts" 
+                    <TextBlock Text="{x:Bind ViewModel.AvailablePartsHeaderText, Mode=OneWay}" 
                               Style="{ThemeResource SubtitleTextBlockStyle}"/>
                 </StackPanel>
                 
@@ -205,21 +205,21 @@
                                   GridLinesVisibility="Horizontal"
                                   HeadersVisibility="Column"
                                   SelectionMode="Single"
-                                  AutomationProperties.Name="Parts List">
+                                  AutomationProperties.Name="{x:Bind ViewModel.PartsListAccessibilityName, Mode=OneWay}">
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="Part ID" 
+                        <controls:DataGridTextColumn Header="{x:Bind ViewModel.ColumnPartIdHeaderText, Mode=OneWay}" 
                                                     Binding="{Binding PartID}" 
                                                     Width="150"/>
-                        <controls:DataGridTextColumn Header="Description" 
+                        <controls:DataGridTextColumn Header="{x:Bind ViewModel.ColumnDescriptionHeaderText, Mode=OneWay}" 
                                                     Binding="{Binding Description}" 
                                                     Width="*"/>
-                        <controls:DataGridTextColumn Header="Remaining Qty" 
+                        <controls:DataGridTextColumn Header="{x:Bind ViewModel.ColumnRemainingQtyHeaderText, Mode=OneWay}" 
                                                     Binding="{Binding RemainingQuantity}" 
                                                     Width="120"/>
-                        <controls:DataGridTextColumn Header="Qty Ordered" 
+                        <controls:DataGridTextColumn Header="{x:Bind ViewModel.ColumnQtyOrderedHeaderText, Mode=OneWay}" 
                                                     Binding="{Binding QtyOrdered, Converter={StaticResource DecimalToIntConverter}}" 
                                                     Width="120"/>
-                        <controls:DataGridTextColumn Header="Line #" 
+                        <controls:DataGridTextColumn Header="{x:Bind ViewModel.ColumnLineNumberHeaderText, Mode=OneWay}" 
                                                     Binding="{Binding POLineNumber}" 
                                                     Width="80"/>
                     </controls:DataGrid.Columns>

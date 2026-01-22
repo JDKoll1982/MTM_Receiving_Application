@@ -11,34 +11,35 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Edit Step 3f: Validation Summary (Before Edit)
 
-## STEP GOAL:
+## STEP GOAL
 
 Display all validation findings from the previous 5 validation steps to the user. Present findings clearly and await confirmation to proceed.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Read editPlan to collect all validation findings
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Display all validation findings clearly organized
 - 📊 Aggregate findings from all 5 validation steps
 - 💬 Present options for handling any issues found
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Read editPlan to get validation findings
 - 📊 Display organized summary
 - 💾 Allow user to decide how to proceed
 - ➡️ Proceed to edit plan on [C]
 
-## Sequence of Instructions:
+## Sequence of Instructions
 
 ### 1. Load Validation Findings
 
 Read `{editPlan}` frontmatter to collect:
+
 - validationBefore.metadata.status and findings
 - validationBefore.persona.status and findings
 - validationBefore.menu.status and findings
@@ -83,7 +84,7 @@ Read `{editPlan}` frontmatter to collect:
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Edit Plan"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
@@ -91,7 +92,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 - IF C: Save validation summary to {editPlan}, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#4-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -105,13 +106,13 @@ ONLY WHEN [C continue option] is selected and [validation summary displayed], wi
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All validation findings displayed clearly
 - User given options for handling issues
 - Validation summary saved to editPlan
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Findings not displayed to user
 - Proceeding without user acknowledgment

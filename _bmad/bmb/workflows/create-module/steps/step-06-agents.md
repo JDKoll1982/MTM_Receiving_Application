@@ -10,9 +10,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 6: Create Module Agents
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -20,7 +20,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Agent Designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -28,32 +28,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD agent patterns, user brings their domain requirements
 - ✅ Maintain collaborative, creative tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on creating proper YAML agent files following the template
 - 🚫 FORBIDDEN to use create-agent workflow (it's problematic)
 - 💬 Create placeholder workflow folders with README.md for each agent
 - 🚫 FORBIDDEN to create full workflows in this step
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Follow agent.template.md exactly for structure
 - 💾 Save agents as .yaml files to module's agents folder
 - 📖 Create workflow folders with README.md plans
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Component plan from step 3 defines which agents to create
 - Agent template provides the required YAML structure
 - Module structure already created
 - Focus on agent creation and workflow placeholders
 
-## STEP GOAL:
+## STEP GOAL
 
 To create the primary agent(s) for the module using the proper agent template and create placeholder workflow folders for each agent.
 
-## AGENT CREATION PROCESS:
+## AGENT CREATION PROCESS
 
 ### 1. Review Agent Plan
 
@@ -257,14 +257,14 @@ Update module-plan.md with agents section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to refine agent designs
 - IF P: Execute {partyModeWorkflow} to get creative input on agent personas
 - IF C: Save agent creation status to module-plan.md, add step-06-agents to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -275,7 +275,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All planned agents created with proper YAML structure
 - Each agent follows agent.template.md format exactly
@@ -283,7 +283,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Agent menu items properly reference workflow paths
 - Users confirmed each agent draft before creation
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Using create-agent workflow instead of template
 - Creating XML agents instead of YAML

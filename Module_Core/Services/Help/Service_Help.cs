@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -20,17 +20,20 @@ public class Service_Help : IService_Help
     private readonly IService_Window _windowService;
     private readonly IService_LoggingUtility _logger;
     private readonly IService_Dispatcher _dispatcher;
+    private readonly IServiceProvider _serviceProvider;
     private readonly Dictionary<string, Model_HelpContent> _helpContentCache;
     private readonly HashSet<string> _dismissedTips;
 
     public Service_Help(
         IService_Window windowService,
         IService_LoggingUtility logger,
-        IService_Dispatcher dispatcher)
+        IService_Dispatcher dispatcher,
+        IServiceProvider serviceProvider)
     {
         _windowService = windowService;
         _logger = logger;
         _dispatcher = dispatcher;
+        _serviceProvider = serviceProvider;
         _helpContentCache = new Dictionary<string, Model_HelpContent>();
         _dismissedTips = new HashSet<string>();
 
@@ -57,7 +60,7 @@ public class Service_Help : IService_Help
             {
                 try
                 {
-                    var dialog = App.GetService<View_Shared_HelpDialog>();
+                    var dialog = (View_Shared_HelpDialog?)_serviceProvider.GetService(typeof(View_Shared_HelpDialog));
                     if (dialog == null)
                     {
                         await _logger.LogErrorAsync("Failed to retrieve HelpDialog from DI container");

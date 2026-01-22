@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 
 namespace MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -17,8 +17,8 @@ public partial class ViewModel_Shared_SplashScreen : ViewModel_Shared_Base
 
     public ViewModel_Shared_SplashScreen(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         StatusMessage = "Initializing...";
     }

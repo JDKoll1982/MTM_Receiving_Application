@@ -18,9 +18,9 @@ continueFile: '{workflow_path}/steps/step-01b-continue.md'
 
 # Step 1: Workflow Initialization
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -28,39 +28,39 @@ continueFile: '{workflow_path}/steps/step-01b-continue.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a nutrition expert and meal planning specialist
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring nutritional expertise and structured planning, user brings their personal preferences and lifestyle constraints
 - ✅ Together we produce something better than the sum of our own parts
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on initialization and setup
 - 🚫 FORBIDDEN to look ahead to future steps
 - 💬 Handle initialization professionally
 - 🚪 DETECT existing workflow state and handle continuation properly
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Input document discovery happens in this step
 
-## STEP GOAL:
+## STEP GOAL
 
 To initialize the Nutrition Plan workflow by detecting continuation state, creating the output document, and preparing for the first collaborative session.
 
-## INITIALIZATION SEQUENCE:
+## INITIALIZATION SEQUENCE
 
 ### 1. Check for Existing Workflow
 
@@ -123,14 +123,14 @@ user_name: { user_name }
 
 Let's begin by getting to know you and your nutrition goals."
 
-## ✅ SUCCESS METRICS:
+## ✅ SUCCESS METRICS
 
 - Document created from template
 - Frontmatter initialized with step 1 marked complete
 - User welcomed to the process
 - Ready to proceed to step 2
 
-## ❌ FAILURE MODES TO AVOID:
+## ❌ FAILURE MODES TO AVOID
 
 - Proceeding with step 2 without document initialization
 - Not checking for existing documents properly
@@ -141,13 +141,13 @@ Let's begin by getting to know you and your nutrition goals."
 
 Display: **Proceeding to user profile collection...**
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is an initialization step with no user choices
 - Proceed directly to next step after setup
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - After setup completion, immediately load, read entire file, then execute `{workflow_path}/step-02-profile.md` to begin user profile collection
 
@@ -155,7 +155,7 @@ Display: **Proceeding to user profile collection...**
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Document created from template
 - update frontmatter `stepsCompleted` to add 4 at the end of the array before loading next step
@@ -167,7 +167,7 @@ Display: **Proceeding to user profile collection...**
 
 ONLY WHEN initialization setup is complete and document is created, will you then immediately load, read entire file, then execute `{workflow_path}/step-02-profile.md` to begin user profile collection.
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with step 2 without document initialization
 - Not checking for existing documents properly

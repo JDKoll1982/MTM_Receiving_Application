@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -7,9 +8,10 @@ public sealed partial class View_Settings_SharedPaths : Page
 {
     public ViewModel_Settings_SharedPaths ViewModel { get; }
 
-    public View_Settings_SharedPaths()
+    public View_Settings_SharedPaths(ViewModel_Settings_SharedPaths viewModel)
     {
-        ViewModel = App.GetService<ViewModel_Settings_SharedPaths>();
+        ArgumentNullException.ThrowIfNull(viewModel);
+        ViewModel = viewModel;
         InitializeComponent();
     }
 }

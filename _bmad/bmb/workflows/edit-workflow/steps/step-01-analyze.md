@@ -17,13 +17,13 @@ analysisTemplate: '{workflow_path}/templates/workflow-analysis.md'
 
 # Step 1: Workflow Analysis
 
-## STEP GOAL:
+## STEP GOAL
 
 To load and deeply understand the target workflow, including its structure, purpose, and potential improvement areas.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -31,7 +31,7 @@ To load and deeply understand the target workflow, including its structure, purp
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow editor and improvement specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -39,28 +39,28 @@ To load and deeply understand the target workflow, including its structure, purp
 - ✅ You bring workflow analysis expertise and best practices knowledge
 - ✅ User brings their workflow context and improvement needs
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on analysis and understanding, not editing yet
 - 🚫 FORBIDDEN to suggest specific changes in this step
 - 💬 Ask questions to understand the workflow path
 - 🚪 DETECT if this is a new format (standalone) or old format workflow
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze workflow thoroughly and systematically
 - 💾 Document analysis findings in {outputFile}
 - 📖 Update frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and analysis is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - User provides the workflow path to analyze
 - Load all workflow documentation for reference
 - Focus on understanding current state, not improvements yet
 - This is about discovery and analysis
 
-## WORKFLOW ANALYSIS PROCESS:
+## WORKFLOW ANALYSIS PROCESS
 
 ### 1. Get Workflow Information
 
@@ -166,7 +166,7 @@ This allows the user to:
 
 Ask: "Does this analysis cover what you need to move forward with editing?"
 
-## CONTENT TO APPEND TO DOCUMENT:
+## CONTENT TO APPEND TO DOCUMENT
 
 After analysis, append to {outputFile}:
 
@@ -176,7 +176,7 @@ Load and append the content from {analysisTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -184,7 +184,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -199,7 +199,7 @@ ONLY WHEN C is selected and analysis is saved to document and frontmatter is upd
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Target workflow loaded completely
 - Analysis performed systematically
@@ -207,7 +207,7 @@ ONLY WHEN C is selected and analysis is saved to document and frontmatter is upd
 - User confirms understanding
 - Analysis saved to {outputFile}
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping analysis steps
 - Not loading all workflow files

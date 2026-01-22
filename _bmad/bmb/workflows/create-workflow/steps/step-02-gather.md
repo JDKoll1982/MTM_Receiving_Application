@@ -21,13 +21,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 2: Requirements Gathering
 
-## STEP GOAL:
+## STEP GOAL
 
 To gather comprehensive requirements through collaborative conversation that will inform the design of a structured workflow tailored to the user's needs and use case.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ To gather comprehensive requirements through collaborative conversation that wil
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -43,28 +43,28 @@ To gather comprehensive requirements through collaborative conversation that wil
 - ✅ You bring workflow design expertise and best practices
 - ✅ User brings their domain knowledge and specific requirements
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on collecting requirements and understanding needs
 - 🚫 FORBIDDEN to propose workflow solutions or step designs in this step
 - 💬 Ask questions conversationally, not like a form
 - 🚫 DO NOT skip any requirement area - each affects workflow design
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Engage in natural conversation to gather requirements
 - 💾 Store all requirements information for workflow design
 - 📖 Proceed to next step with 'C' selection
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Workflow name and target location from initialization
 - Focus ONLY on collecting requirements and understanding needs
 - Don't provide workflow designs in this step
 - This is about understanding, not designing
 
-## REQUIREMENTS GATHERING PROCESS:
+## REQUIREMENTS GATHERING PROCESS
 
 ### 1. Workflow Purpose and Scope
 
@@ -164,7 +164,7 @@ Define what makes the workflow successful:
 - Are there measurable outcomes?
 - What would make a user satisfied with the result?
 
-#### STORE REQUIREMENTS:
+#### STORE REQUIREMENTS
 
 After collecting all requirements, append them to {workflowPlanFile} in a format that will be be used later to design in more detail and create the workflow structure.
 
@@ -172,7 +172,7 @@ After collecting all requirements, append them to {workflowPlanFile} in a format
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -180,7 +180,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -195,14 +195,14 @@ ONLY WHEN C is selected and requirements are stored in the output file, will you
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Requirements collected through conversation (not interrogation)
 - All workflow aspects documented
 - Requirements stored using template
 - Menu presented and user input handled correctly
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Generating workflow designs without requirements
 - Skipping requirement areas

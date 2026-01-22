@@ -40,7 +40,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
-        IService_UserSessionManager sessionManager) : base(errorHandler, logger)
+        IService_UserSessionManager sessionManager,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _windowService = windowService;
@@ -96,7 +97,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     #endregion
 
-    
+
 
     #region Initialization
 
@@ -434,10 +435,10 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     private bool CanAddPart()
     {
-        return SelectedPartToAdd != null && 
-               !string.IsNullOrWhiteSpace(ReceivedSkidsToAdd) && 
-               int.TryParse(ReceivedSkidsToAdd, out int count) && 
-               count >= 1 && 
+        return SelectedPartToAdd != null &&
+               !string.IsNullOrWhiteSpace(ReceivedSkidsToAdd) &&
+               int.TryParse(ReceivedSkidsToAdd, out int count) &&
+               count >= 1 &&
                count <= 99;
     }
 
@@ -727,7 +728,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         };
         toCopyButton.SetValue(Grid.ColumnProperty, 1);
         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(toCopyButton, "Copy To Recipients");
-        toCopyButton.Click += (s, e) =>
+        toCopyButton.Click += (_, _) =>
         {
             var dataPackage = new DataPackage();
             dataPackage.SetText(toBox.Text);
@@ -761,7 +762,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         };
         ccCopyButton.SetValue(Grid.ColumnProperty, 1);
         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(ccCopyButton, "Copy CC Recipients");
-        ccCopyButton.Click += (s, e) =>
+        ccCopyButton.Click += (_, _) =>
         {
             var dataPackage = new DataPackage();
             dataPackage.SetText(ccBox.Text);
@@ -795,7 +796,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         };
         subjectCopyButton.SetValue(Grid.ColumnProperty, 1);
         Microsoft.UI.Xaml.Controls.ToolTipService.SetToolTip(subjectCopyButton, "Copy Subject");
-        subjectCopyButton.Click += (s, e) =>
+        subjectCopyButton.Click += (_, _) =>
         {
             var dataPackage = new DataPackage();
             dataPackage.SetText(subjectBox.Text);

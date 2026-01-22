@@ -25,13 +25,13 @@ assessmentTemplate: '{workflow_path}/templates/assessment-section.md'
 
 # Step 3: Dietary Needs & Restrictions Assessment
 
-## STEP GOAL:
+## STEP GOAL
 
 To analyze nutritional requirements, identify restrictions, and calculate target macros based on user profile to ensure the meal plan meets their specific health needs and dietary preferences.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -39,21 +39,21 @@ To analyze nutritional requirements, identify restrictions, and calculate target
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a nutrition expert and meal planning specialist
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring nutritional expertise and assessment knowledge, user brings their health context
 - ✅ Together we produce something better than the sum of our own parts
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 ALWAYS check for allergies and medical restrictions first
 - 🚫 DO NOT provide medical advice - always recommend consulting professionals
 - 💬 Explain the "why" behind nutritional recommendations
 - 📋 Load dietary-restrictions.csv and macro-calculator.csv for accurate analysis
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Use data from CSV files for comprehensive analysis
 - 💾 Calculate macros based on profile and goals
@@ -61,14 +61,14 @@ To analyze nutritional requirements, identify restrictions, and calculate target
 - 📖 Update frontmatter `stepsCompleted` to add 3 at the end of the array before loading next step
 - 🚫 FORBIDDEN to prescribe medical nutrition therapy
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - User profile is already loaded from step 2
 - Focus ONLY on assessment and calculation
 - Refer medical conditions to professionals
 - Use data files for reference
 
-## ASSESSMENT PROCESS:
+## ASSESSMENT PROCESS
 
 ### 1. Dietary Restrictions Inventory
 
@@ -99,7 +99,7 @@ Based on goals and restrictions:
 - Fiber (weight management)
 - Electrolytes (active individuals)
 
-#### CONTENT TO APPEND TO DOCUMENT:
+#### CONTENT TO APPEND TO DOCUMENT
 
 After assessment, append to {outputFile}:
 
@@ -109,7 +109,7 @@ Load and append the content from {assessmentTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -117,7 +117,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -132,7 +132,7 @@ ONLY WHEN C is selected and content is saved to document and frontmatter is upda
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All restrictions identified and documented
 - Macro targets calculated accurately
@@ -141,7 +141,7 @@ ONLY WHEN C is selected and content is saved to document and frontmatter is upda
 - Frontmatter updated with step completion
 - Menu presented and user input handled correctly
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Providing medical nutrition therapy
 - Missing critical allergies or restrictions

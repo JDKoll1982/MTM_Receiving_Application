@@ -61,7 +61,8 @@ public partial class ViewModel_SettingsDeveloperTools_DatabaseTest : ViewModel_S
     public ViewModel_SettingsDeveloperTools_DatabaseTest(
         IMediator mediator,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator;
         Title = "Settings DB Test";

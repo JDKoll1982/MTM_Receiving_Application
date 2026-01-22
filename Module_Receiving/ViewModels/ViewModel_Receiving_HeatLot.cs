@@ -10,6 +10,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Settings;
+using System;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -18,23 +20,76 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
+
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _heatLotHeaderText = "Load Entries";
+
+        [ObservableProperty]
+        private string _heatLotAutoFillText = "Auto-Fill";
+
+        [ObservableProperty]
+        private string _heatLotAutoFillTooltipText = "Fill blank heat numbers from rows above";
+
+        [ObservableProperty]
+        private string _heatLotLoadPrefixText = "Load #{0}";
+
+        [ObservableProperty]
+        private string _heatLotFieldHeaderText = "Heat/Lot Number (Optional)";
+
+        [ObservableProperty]
+        private string _heatLotFieldPlaceholderText = "Enter heat/lot number or leave blank";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _heatLotAccessibilityName = "Heat Lot Number";
 
         public ViewModel_Receiving_HeatLot(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,
+            IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
-            : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _validationService = validationService;
             _helpService = helpService;
+            _receivingSettings = receivingSettings;
 
             _workflowService.StepChanged += OnStepChanged;
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                HeatLotHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotHeader);
+                HeatLotAutoFillText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotAutoFill);
+                HeatLotAutoFillTooltipText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotAutoFillTooltip);
+                HeatLotLoadPrefixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotLoadPrefix);
+                HeatLotFieldHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotFieldHeader);
+                HeatLotFieldPlaceholderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotFieldPlaceholder);
+                HeatLotAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.HeatLotNumber);
+
+                _logger.LogInfo("Heat/Lot UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Heat/Lot UI text from settings: {ex.Message}", ex);
+            }
+        }
+
+        public string FormatHeatLotLoadLabel(int loadNumber)
+        {
+            return string.Format(HeatLotLoadPrefixText, loadNumber);
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)

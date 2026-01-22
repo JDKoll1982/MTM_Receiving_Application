@@ -7,7 +7,8 @@ public sealed partial class ViewModel_Settings_Volvo_DatabaseSettings : ViewMode
 {
     public ViewModel_Settings_Volvo_DatabaseSettings(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         Title = "Volvo Database Settings";
     }

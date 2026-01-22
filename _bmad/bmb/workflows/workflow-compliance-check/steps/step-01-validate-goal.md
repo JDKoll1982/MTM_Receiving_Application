@@ -21,13 +21,13 @@ workflowTemplate: '{project-root}/_bmad/bmb/docs/workflows/templates/workflow-te
 
 # Step 1: Goal Confirmation and Workflow Target
 
-## STEP GOAL:
+## STEP GOAL
 
 Confirm the target workflow path and validation objectives before proceeding with systematic compliance analysis.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ Confirm the target workflow path and validation objectives before proceeding wit
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and quality assurance specialist
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -43,21 +43,21 @@ Confirm the target workflow path and validation objectives before proceeding wit
 - ✅ You bring compliance expertise and systematic validation skills
 - ✅ User brings their workflow and specific compliance concerns
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on confirming workflow path and validation scope
 - 🚫 FORBIDDEN to proceed without clear target confirmation
 - 💬 Approach: Systematic and thorough confirmation of validation objectives
 - 📋 Ensure user understands the compliance checking process and scope
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Confirm target workflow path exists and is accessible
 - 💾 Establish clear validation objectives and scope
 - 📖 Explain the three-phase compliance checking process
 - 🚫 FORBIDDEN to proceed without user confirmation of goals
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: User-provided workflow path and validation concerns
 - Focus: Goal confirmation and target validation setup
@@ -121,7 +121,7 @@ Once user provides path:
 
 **Select an Option:** [C] Continue [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Initialize compliance report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: End workflow gracefully with guidance on running again later
@@ -135,7 +135,7 @@ ONLY WHEN [C continue option] is selected and [workflow path validated and scope
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Workflow path successfully validated and accessible
 - User confirms validation scope and objectives
@@ -143,7 +143,7 @@ ONLY WHEN [C continue option] is selected and [workflow path validated and scope
 - User understands the three-phase validation process
 - Clear next steps established for systematic analysis
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding without valid workflow path confirmation
 - Not ensuring user understands validation scope and process

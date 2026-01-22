@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
 
@@ -9,6 +10,7 @@ public sealed partial class View_Settings_Receiving_Validation : Page
 
     public View_Settings_Receiving_Validation(ViewModel_Settings_Receiving_Validation viewModel)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;

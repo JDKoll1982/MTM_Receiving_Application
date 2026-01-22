@@ -14,6 +14,7 @@ public sealed partial class View_Settings_CoreWindow : Window
 {
     public ViewModel_SettingsWindow? ViewModel { get; }
     private bool _hasSetTitleBarDragRegion;
+    private bool _isHandlingSelectionChanged;
     private readonly IServiceProvider _serviceProvider;
 
     public View_Settings_CoreWindow(ViewModel_SettingsWindow viewModel, IServiceProvider serviceProvider)
@@ -21,6 +22,8 @@ public sealed partial class View_Settings_CoreWindow : Window
         InitializeComponent();
         ViewModel = viewModel;
         _serviceProvider = serviceProvider;
+
+        SettingsFrame.Navigated += OnSettingsFrameNavigated;
 
         Title = ViewModel.Title;
         WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1400, 900);
@@ -31,6 +34,98 @@ public sealed partial class View_Settings_CoreWindow : Window
         SettingsNavView.SelectedItem = SettingsNavView.MenuItems[0];
         NavigateToCoreHub();
         SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
+        UpdateHeaderActions();
+    }
+
+    private void OnSettingsFrameNavigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        UpdateHeaderActions();
+    }
+
+    private void UpdateHeaderActions()
+    {
+        var selectedTag = (SettingsNavView.SelectedItem as NavigationViewItem)?.Tag?.ToString();
+        if (TryGetModuleContext(selectedTag, out var moduleNamespacePrefix, out var hubViewType) is false)
+        {
+            BackToHubButton.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        if (SettingsFrame.Content is null || hubViewType is null)
+        {
+            BackToHubButton.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        if (SettingsFrame.Content.GetType() == hubViewType)
+        {
+            BackToHubButton.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        if (SettingsFrame.Content is FrameworkElement element
+            && element.GetType().Namespace?.StartsWith(moduleNamespacePrefix, StringComparison.Ordinal) == true)
+        {
+            BackToHubButton.Visibility = Visibility.Visible;
+            return;
+        }
+
+        BackToHubButton.Visibility = Visibility.Collapsed;
+    }
+
+    private static bool TryGetModuleContext(string? selectedTag, out string moduleNamespacePrefix, out Type? hubViewType)
+    {
+        moduleNamespacePrefix = string.Empty;
+        hubViewType = null;
+
+        if (string.IsNullOrWhiteSpace(selectedTag))
+        {
+            return false;
+        }
+
+        switch (selectedTag)
+        {
+            case "ReceivingSettingsHub":
+                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Receiving.Views";
+                hubViewType = typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub);
+                return true;
+            case "DunnageSettingsHub":
+                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Dunnage.Views";
+                hubViewType = typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub);
+                return true;
+            case "RoutingSettingsHub":
+                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Routing.Views";
+                hubViewType = typeof(Module_Settings.Routing.Views.View_Settings_Routing_NavigationHub);
+                return true;
+            case "ReportingSettingsHub":
+                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Reporting.Views";
+                hubViewType = typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub);
+                return true;
+            case "VolvoSettingsHub":
+                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.Volvo.Views";
+                hubViewType = typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub);
+                return true;
+            case "DeveloperToolsSettingsHub":
+                moduleNamespacePrefix = "MTM_Receiving_Application.Module_Settings.DeveloperTools.Views";
+                hubViewType = typeof(Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void OnBackToHubClicked(object sender, RoutedEventArgs e)
+    {
+        var selectedTag = (SettingsNavView.SelectedItem as NavigationViewItem)?.Tag?.ToString();
+        if (!TryGetModuleContext(selectedTag, out _, out var hubViewType) || hubViewType is null)
+        {
+            return;
+        }
+
+        // Avoid walking the back stack which can transiently null `Content`.
+        // Instead, replace the content with the hub page for the currently selected module.
+        SettingsFrame.Content = _serviceProvider.GetRequiredService(hubViewType);
+        UpdateHeaderActions();
     }
 
     private void NavigateToCoreHub()
@@ -81,7 +176,7 @@ public sealed partial class View_Settings_CoreWindow : Window
     {
         try
         {
-            if (AppWindow.TitleBar != null && AppTitleBar != null && AppTitleBar.XamlRoot != null)
+            if (AppWindow.TitleBar is not null && AppTitleBar?.XamlRoot is not null)
             {
                 var scale = AppTitleBar.XamlRoot.RasterizationScale;
                 var titleBarHeight = (int)(AppTitleBar.ActualHeight * scale);
@@ -105,35 +200,59 @@ public sealed partial class View_Settings_CoreWindow : Window
 
     private void OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        if (args.SelectedItem is NavigationViewItem item)
+        if (_isHandlingSelectionChanged)
         {
-            switch (item.Tag?.ToString())
+            return;
+        }
+
+        _isHandlingSelectionChanged = true;
+        try
+        {
+            if (args.SelectedItem is NavigationViewItem item)
             {
-                case "CoreSettingsHub":
-                    SettingsFrame.Content = _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
-                    SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
-                    break;
-                case "ReceivingSettingsHub":
-                    SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
-                    SetHeader("Receiving Navigation", "Manage Receiving module defaults and configuration pages.");
-                    break;
-                case "DunnageSettingsHub":
-                    SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
-                    SetHeader("Dunnage Navigation", "Manage Dunnage module defaults and configuration pages.");
-                    break;
-                case "RoutingSettingsHub":
-                    SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Routing.Views.View_Settings_Routing_NavigationHub>();
-                    SetHeader("Routing Navigation", "Manage Routing module defaults and configuration pages.");
-                    break;
-                case "ReportingSettingsHub":
-                    SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
-                    SetHeader("Reporting Navigation", "Manage Reporting module defaults and configuration pages.");
-                    break;
-                case "VolvoSettingsHub":
-                    SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
-                    SetHeader("Volvo Navigation", "Manage Volvo module defaults and configuration pages.");
-                    break;
+                switch (item.Tag?.ToString())
+                {
+                    case "CoreSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<View_Settings_CoreNavigationHub>();
+                        SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
+                        UpdateHeaderActions();
+                        break;
+                    case "ReceivingSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
+                        SetHeader("Receiving Navigation", "Manage Receiving module defaults and configuration pages.");
+                        UpdateHeaderActions();
+                        break;
+                    case "DunnageSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
+                        SetHeader("Dunnage Navigation", "Manage Dunnage module defaults and configuration pages.");
+                        UpdateHeaderActions();
+                        break;
+                    case "RoutingSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Routing.Views.View_Settings_Routing_NavigationHub>();
+                        SetHeader("Routing Navigation", "Manage Routing module defaults and configuration pages.");
+                        UpdateHeaderActions();
+                        break;
+                    case "ReportingSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
+                        SetHeader("Reporting Navigation", "Manage Reporting module defaults and configuration pages.");
+                        UpdateHeaderActions();
+                        break;
+                    case "VolvoSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+                        SetHeader("Volvo Navigation", "Manage Volvo module defaults and configuration pages.");
+                        UpdateHeaderActions();
+                        break;
+                    case "DeveloperToolsSettingsHub":
+                        SettingsFrame.Content = _serviceProvider.GetRequiredService<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
+                        SetHeader("Developer Tools", "Access diagnostic and developer utilities.");
+                        UpdateHeaderActions();
+                        break;
+                }
             }
+        }
+        finally
+        {
+            _isHandlingSelectionChanged = false;
         }
     }
 

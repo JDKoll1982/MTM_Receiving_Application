@@ -9,9 +9,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 3: Plan Module Components
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -19,7 +19,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Systems Designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -27,32 +27,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD component design patterns, user brings their domain requirements
 - ✅ Maintain collaborative, design-focused tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on planning component architecture
 - 🚫 FORBIDDEN to create actual components in this step
 - 💬 Present component options with reasoning
 - 🚫 FORBIDDEN to finalize component list without user agreement
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Reference agent examples for patterns
 - 💾 Document component plan in detail
 - 📖 Add "step-03-components" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Module concept from step 2 is available
 - Focus on planning, not implementation
 - Consider BMAD patterns and best practices
 - Reference examples but don't copy exactly
 
-## STEP GOAL:
+## STEP GOAL
 
 To design the component architecture for the module, determining what agents, workflows, and tasks are needed to fulfill the module's purpose.
 
-## COMPONENT PLANNING PROCESS:
+## COMPONENT PLANNING PROCESS
 
 ### 1. Initialize Component Planning
 
@@ -227,14 +227,14 @@ Update module-plan.md with component section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to explore alternative component architectures
 - IF P: Execute {partyModeWorkflow} to get creative input on component design
 - IF C: Save component plan to module-plan.md, add step-03-components to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -245,7 +245,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Component architecture planned and documented
 - Agent types and purposes clearly defined
@@ -253,7 +253,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Integration patterns established
 - Development priority set (MVP vs enhancements)
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Planning components without module purpose context
 - Not considering BMAD patterns and examples

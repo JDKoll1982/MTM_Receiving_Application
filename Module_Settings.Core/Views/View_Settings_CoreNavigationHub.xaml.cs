@@ -10,33 +10,49 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         InitializeComponent();
     }
 
+    private Frame? GetHostFrame()
+    {
+        var parent = Parent;
+        while (parent != null)
+        {
+            if (parent is Frame frame)
+            {
+                return frame;
+            }
+
+            parent = (parent as FrameworkElement)?.Parent;
+        }
+
+        return null;
+    }
+
     private void OnNavigateSystem(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(View_Settings_System));
+        GetHostFrame()?.Navigate(typeof(View_Settings_System));
     }
 
     private void OnNavigateUsers(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(View_Settings_Users));
+        GetHostFrame()?.Navigate(typeof(View_Settings_Users));
     }
 
     private void OnNavigateTheme(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(View_Settings_Theme));
+        GetHostFrame()?.Navigate(typeof(View_Settings_Theme));
     }
 
     private void OnNavigateDatabase(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(View_Settings_Database));
+        GetHostFrame()?.Navigate(typeof(View_Settings_Database));
     }
 
     private void OnNavigateLogging(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(View_Settings_Logging));
+        GetHostFrame()?.Navigate(typeof(View_Settings_Logging));
     }
 
     private void OnNavigateSharedPaths(object sender, RoutedEventArgs e)
     {
-        Frame?.Navigate(typeof(View_Settings_SharedPaths));
+        GetHostFrame()?.Navigate(typeof(View_Settings_SharedPaths));
     }
 }

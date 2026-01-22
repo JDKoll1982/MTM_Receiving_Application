@@ -9,31 +9,31 @@ expertValidation: ../data/expert-agent-validation.md
 
 # Edit Step 3e: Validate Sidecar (Before Edit)
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate the agent's sidecar structure if Expert type. Record findings to editPlan and auto-advance.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Read editPlan and expertValidation first
 - 🚫 NO MENU in this step - record findings and auto-advance
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate sidecar structure for Expert agents
 - 📊 Record findings to editPlan frontmatter
 - 🚫 FORBIDDEN to present menu - auto-advance when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load expertValidation.md reference
 - 📊 Validate sidecar if Expert type, skip for Simple/Module
 - 💾 Record findings to editPlan
 - ➡️ Auto-advance to validation summary when complete
 
-## Sequence of Instructions:
+## Sequence of Instructions
 
 ### 1. Load References
 
@@ -43,11 +43,13 @@ Read `{editPlan}` to get agent type.
 ### 2. Conditional Validation
 
 **IF agentType == expert:**
+
 - Check metadata.sidecar-folder is present
 - Check sidecar-path is correct format
 - Verify sidecar files exist at specified path
 
 **IF agentType != expert:**
+
 - Mark as N/A (not applicable)
 - Skip detailed checks
 

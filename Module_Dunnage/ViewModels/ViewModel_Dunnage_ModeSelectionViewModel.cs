@@ -30,7 +30,8 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         IService_UserPreferences userPreferencesService,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _helpService = helpService;
@@ -210,44 +211,9 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
     /// </summary>
     private void ClearAllUIInputs()
     {
-        try
-        {
-            // Clear TypeSelection ViewModel
-            var typeSelectionVM = App.GetService<ViewModel_dunnage_typeselection>();
-            if (typeSelectionVM != null)
-            {
-                typeSelectionVM.SelectedType = null;
-            }
-
-            // Clear PartSelection ViewModel
-            var partSelectionVM = App.GetService<ViewModel_Dunnage_PartSelection>();
-            if (partSelectionVM != null)
-            {
-                partSelectionVM.SelectedPart = null;
-            }
-
-            // Clear DetailsEntry ViewModel
-            var detailsEntryVM = App.GetService<ViewModel_Dunnage_DetailsEntry>();
-            if (detailsEntryVM != null)
-            {
-                detailsEntryVM.PoNumber = string.Empty;
-                detailsEntryVM.Location = string.Empty;
-                detailsEntryVM.SpecInputs?.Clear();
-            }
-
-            // Clear QuantityEntry ViewModel
-            var quantityEntryVM = App.GetService<ViewModel_Dunnage_QuantityEntry>();
-            if (quantityEntryVM != null)
-            {
-                quantityEntryVM.Quantity = 1;
-            }
-
-            _logger.LogInfo("UI inputs cleared across all Dunnage ViewModels");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex);
-        }
+        // Transient ViewModels cannot be cleared this way as GetService returns a new instance.
+        // State should represent the current session which is cleared in ClearWorkflowData.
+        _logger.LogInfo("UI inputs cleared via session reset.");
     }
 
     #endregion

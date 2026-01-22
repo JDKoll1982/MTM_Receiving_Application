@@ -20,7 +20,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 8 of 11** - Next: Functional Requirements
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -32,7 +32,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 EMPHASIZE lean MVP thinking while preserving long-term vision
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 📚 Review the complete PRD document built so far
@@ -41,7 +41,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -49,25 +49,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to ensure comprehensive scope decisions
 - **C (Continue)**: Save the scoping decisions and proceed to functional requirements
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete PRD document built so far is available for review
 - User journeys, success criteria, and domain requirements are documented
 - Focus on strategic scope decisions, not feature details
 - Balance between user value and implementation feasibility
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct comprehensive scoping exercise to define MVP boundaries and prioritize features across development phases.
 
-## SCOPING SEQUENCE:
+## SCOPING SEQUENCE
 
 ### 1. Review Current PRD State
 
@@ -192,7 +192,7 @@ Identify and mitigate scoping risks:
 
 Prepare comprehensive scoping section:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Project Scoping & Phased Development
@@ -242,7 +242,7 @@ Show the scoping decisions and present choices:
 
 ### 8. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with current scoping analysis
 - Process enhanced scoping insights that come back
@@ -250,7 +250,7 @@ Show the scoping decisions and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with scoping context
 - Process collaborative insights on MVP and roadmap decisions
@@ -258,17 +258,17 @@ Show the scoping decisions and present choices:
 - If yes: Update content, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: add this step name to the end of the steps completed array
 - Load `./step-09-functional.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 6.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Complete PRD document analyzed for scope implications
 ✅ Strategic MVP approach defined and justified
@@ -279,7 +279,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not analyzing the complete PRD before making scoping decisions
 ❌ Making scope decisions without strategic rationale
@@ -292,7 +292,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-09-functional.md`.
 

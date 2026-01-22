@@ -4,19 +4,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
 
-    <Grid Padding="24">
-        <StackPanel Spacing="12">
-            <controls:View_SettingsPlaceholderControl
-                TitleText="Receiving User Preferences"
-                DescriptionText="Placeholder UI for user-scoped preferences." />
+        <ScrollViewer>
+            <Grid Padding="24">
+                <StackPanel HorizontalAlignment="Center" Width="960" Spacing="16">
+                    <TextBlock Text="Receiving User Preferences" Style="{StaticResource TitleTextBlockStyle}" />
+                    <TextBlock Text="User-scoped preferences for Receiving. (UI pending implementation)"
+                               Style="{StaticResource BodyTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap" />
 
-            <Expander Header="Notes (what belongs here)" IsExpanded="True">
-                <StackPanel Spacing="8" Padding="0,8,0,0">
-                    <TextBlock Text="Suggested controls:" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                    <TextBlock Text="• Default receiving mode (guided/manual/edit) → RadioButtons" Style="{StaticResource BodyTextBlockStyle}" />
-                    <TextBlock Text="• Optional per-user validation preference → ToggleSwitch" Style="{StaticResource BodyTextBlockStyle}" />
+                    <controls:View_SettingsPlaceholderControl
+                        TitleText="Preferences"
+                        DescriptionText="This area will contain user-specific Receiving preferences." />
                 </StackPanel>
-            </Expander>
-        </StackPanel>
-    </Grid>
+            </Grid>
+        </ScrollViewer>
 </Page>

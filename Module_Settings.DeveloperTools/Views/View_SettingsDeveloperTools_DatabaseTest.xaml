@@ -12,6 +12,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="Back" Click="OnBackClicked" />
             <TextBlock Text="Settings Database Test" Style="{StaticResource TitleTextBlockStyle}" />
             <Button Content="Run Tests"
                     Command="{x:Bind ViewModel.RunAllTestsCommand}" />

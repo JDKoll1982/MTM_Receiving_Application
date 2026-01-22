@@ -30,7 +30,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
         IService_Help helpService,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;
@@ -300,44 +301,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base
     /// </summary>
     private void ClearUIInputsForNewEntry()
     {
-        try
-        {
-            // Clear TypeSelection ViewModel
-            var typeSelectionVM = App.GetService<ViewModel_dunnage_typeselection>();
-            if (typeSelectionVM != null)
-            {
-                typeSelectionVM.SelectedType = null;
-            }
-
-            // Clear PartSelection ViewModel
-            var partSelectionVM = App.GetService<ViewModel_Dunnage_PartSelection>();
-            if (partSelectionVM != null)
-            {
-                partSelectionVM.SelectedPart = null;
-            }
-
-            // Clear DetailsEntry ViewModel
-            var detailsEntryVM = App.GetService<ViewModel_Dunnage_DetailsEntry>();
-            if (detailsEntryVM != null)
-            {
-                detailsEntryVM.PoNumber = string.Empty;
-                detailsEntryVM.Location = string.Empty;
-                detailsEntryVM.SpecInputs?.Clear();
-            }
-
-            // Clear QuantityEntry ViewModel
-            var quantityEntryVM = App.GetService<ViewModel_Dunnage_QuantityEntry>();
-            if (quantityEntryVM != null)
-            {
-                quantityEntryVM.Quantity = 1;
-            }
-
-            _logger.LogInfo("UI inputs cleared for new entry (loads preserved)", "Review");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex, "Review");
-        }
+        // Transient ViewModels state reset is handled by the transient nature or session clearing.
+        // Direct property manipulation via Service Locator is removed.
+        _logger.LogInfo("UI inputs cleared via session reset (loads preserved).");
     }
 
     [RelayCommand]

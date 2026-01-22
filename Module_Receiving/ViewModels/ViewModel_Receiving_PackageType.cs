@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_MySQL_PackagePreferences _preferencesService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -39,21 +41,87 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private bool _isSaveAsDefault;
         private static readonly System.Text.RegularExpressions.Regex _regex = new System.Text.RegularExpressions.Regex(@"^[\w\s\-\.\(\)]+$");
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _packageTypeHeaderText = "Package Type (Applied to all loads)";
+
+        [ObservableProperty]
+        private string _packageTypeComboHeaderText = "Type";
+
+        [ObservableProperty]
+        private string _packageTypeCustomHeaderText = "Custom Name";
+
+        [ObservableProperty]
+        private string _packageTypeSaveAsDefaultText = "Save as default for this part";
+
+        [ObservableProperty]
+        private string _packageTypeLoadNumberPrefixText = "#{0}";
+
+        [ObservableProperty]
+        private string _packageTypePackagesPerLoadText = "Packages per Load";
+
+        [ObservableProperty]
+        private string _packageTypeWeightPerPackageText = "Weight per Package";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _packageTypeComboAccessibilityName = "Package Type";
+
+        [ObservableProperty]
+        private string _packageTypeCustomAccessibilityName = "Custom Package Name";
+
+        [ObservableProperty]
+        private string _packageTypePackagesPerLoadAccessibilityName = "Packages per Load";
+
         public ViewModel_Receiving_PackageType(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_PackagePreferences preferencesService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,
+            IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
-            : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _preferencesService = preferencesService;
             _validationService = validationService;
             _helpService = helpService;
+            _receivingSettings = receivingSettings;
 
             _workflowService.StepChanged += OnStepChanged;
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                PackageTypeHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeHeader);
+                PackageTypeComboHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeComboHeader);
+                PackageTypeCustomHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeCustomHeader);
+                PackageTypeSaveAsDefaultText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault);
+                PackageTypeLoadNumberPrefixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeLoadNumberPrefix);
+                PackageTypePackagesPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypePackagesPerLoad);
+                PackageTypeWeightPerPackageText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeWeightPerPackage);
+
+                PackageTypeComboAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypeCombo);
+                PackageTypeCustomAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypeCustomName);
+                PackageTypePackagesPerLoadAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypePackagesPerLoad);
+
+                _logger.LogInfo("Package Type UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Package Type UI text from settings: {ex.Message}", ex);
+            }
+        }
+
+        public string FormatPackageTypeLoadLabel(int loadNumber)
+        {
+            return string.Format(PackageTypeLoadNumberPrefixText, loadNumber);
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)

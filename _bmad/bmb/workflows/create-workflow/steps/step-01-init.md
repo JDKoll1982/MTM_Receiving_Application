@@ -19,13 +19,13 @@ workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Step 1: Workflow Creation Initialization
 
-## STEP GOAL:
+## STEP GOAL
 
 To initialize the workflow creation process by understanding project context, determining a unique workflow name, and preparing for collaborative workflow design.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -33,7 +33,7 @@ To initialize the workflow creation process by understanding project context, de
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -41,28 +41,28 @@ To initialize the workflow creation process by understanding project context, de
 - ✅ You bring workflow design expertise, user brings their specific requirements
 - ✅ Together we will create a structured, repeatable workflow
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on initialization and project understanding
 - 🚫 FORBIDDEN to start designing workflow steps in this step
 - 💬 Ask questions conversationally to understand context
 - 🚪 ENSURE unique workflow naming to avoid conflicts
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show analysis before taking any action
 - 💾 Initialize document and update frontmatter
 - 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
 - 🚫 FORBIDDEN to load next step until initialization is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Variables from workflow.md are available in memory
 - Previous context = what's in output document + frontmatter
 - Don't assume knowledge from other steps
 - Input discovery happens in this step
 
-## INITIALIZATION SEQUENCE:
+## INITIALIZATION SEQUENCE
 
 ### 1. Project Discovery
 
@@ -127,13 +127,13 @@ This plan will capture all requirements and design details before building the a
 
 Display: **Proceeding to requirements gathering...**
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - This is an initialization step with no user choices
 - Proceed directly to next step after setup
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - After setup completion and the workflow folder with the workflow plan file created already, only then immediately load, read entire file, and then execute `{workflow_path}/steps/step-02-gather.md` to begin requirements gathering
 
@@ -141,14 +141,14 @@ Display: **Proceeding to requirements gathering...**
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Workflow name confirmed and validated
 - Target folder location determined
 - User welcomed and project context understood
 - Ready to proceed to step 2
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding with step 2 without workflow name
 - Not checking for existing workflow folders

@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using System;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
         private readonly IService_Window _windowService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -31,6 +33,101 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private Model_ReceivingLoad? _currentEntry;
+
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _reviewEntryLabelText = "Entry";
+
+        [ObservableProperty]
+        private string _reviewOfLabelText = "of";
+
+        [ObservableProperty]
+        private string _reviewLoadNumberText = "Load Number";
+
+        [ObservableProperty]
+        private string _reviewPurchaseOrderNumberText = "Purchase Order Number";
+
+        [ObservableProperty]
+        private string _reviewPartIdText = "Part ID";
+
+        [ObservableProperty]
+        private string _reviewRemainingQuantityText = "Remaining Quantity";
+
+        [ObservableProperty]
+        private string _reviewWeightQuantityText = "Weight/Quantity";
+
+        [ObservableProperty]
+        private string _reviewHeatLotNumberText = "Heat/Lot Number";
+
+        [ObservableProperty]
+        private string _reviewPackagesPerLoadText = "Packages Per Load";
+
+        [ObservableProperty]
+        private string _reviewPackageTypeText = "Package Type";
+
+        [ObservableProperty]
+        private string _reviewPreviousLabelText = "Previous";
+
+        [ObservableProperty]
+        private string _reviewNextLabelText = "Next";
+
+        [ObservableProperty]
+        private string _reviewTableViewLabelText = "Table View";
+
+        [ObservableProperty]
+        private string _reviewSingleViewLabelText = "Single View";
+
+        [ObservableProperty]
+        private string _reviewAddAnotherText = "Add Another Part/PO";
+
+        [ObservableProperty]
+        private string _reviewSaveToDatabaseText = "Save to Database";
+
+        [ObservableProperty]
+        private string _reviewColumnLoadNumberText = "Load #";
+
+        [ObservableProperty]
+        private string _reviewColumnPoNumberText = "PO Number";
+
+        [ObservableProperty]
+        private string _reviewColumnPartIdText = "Part ID";
+
+        [ObservableProperty]
+        private string _reviewColumnRemainingQtyText = "Remaining Qty";
+
+        [ObservableProperty]
+        private string _reviewColumnWeightQtyText = "Weight/Qty";
+
+        [ObservableProperty]
+        private string _reviewColumnHeatLotText = "Heat/Lot #";
+
+        [ObservableProperty]
+        private string _reviewColumnPkgsText = "Pkgs";
+
+        [ObservableProperty]
+        private string _reviewColumnPkgTypeText = "Pkg Type";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _reviewPreviousEntryAccessibilityName = "Previous Entry";
+
+        [ObservableProperty]
+        private string _reviewNextEntryAccessibilityName = "Next Entry";
+
+        [ObservableProperty]
+        private string _reviewSwitchToTableAccessibilityName = "Switch to Table View";
+
+        [ObservableProperty]
+        private string _reviewSwitchToSingleAccessibilityName = "Switch to Single View";
+
+        [ObservableProperty]
+        private string _reviewEntriesTableAccessibilityName = "Receiving Entries Table";
+
+        [ObservableProperty]
+        private string _reviewAddAnotherAccessibilityName = "Add Another Part or PO";
+
+        [ObservableProperty]
+        private string _reviewSaveToDatabaseAccessibilityName = "Save to Database";
 
         /// <summary>
         /// Display index (1-based) for UI
@@ -57,16 +154,67 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingValidation validationService,
             IService_Help helpService,
             IService_Window windowService,
+            IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
-            : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _validationService = validationService;
             _helpService = helpService;
             _windowService = windowService;
+            _receivingSettings = receivingSettings;
 
             _workflowService.StepChanged += OnStepChanged;
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                ReviewEntryLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewEntryLabel);
+                ReviewOfLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewOfLabel);
+                ReviewLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewLoadNumber);
+                ReviewPurchaseOrderNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewPurchaseOrderNumber);
+                ReviewPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewPartId);
+                ReviewRemainingQuantityText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewRemainingQuantity);
+                ReviewWeightQuantityText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewWeightQuantity);
+                ReviewHeatLotNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewHeatLotNumber);
+                ReviewPackagesPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewPackagesPerLoad);
+                ReviewPackageTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewPackageType);
+                ReviewPreviousLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewPreviousLabel);
+                ReviewNextLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewNextLabel);
+                ReviewTableViewLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewTableViewLabel);
+                ReviewSingleViewLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewSingleViewLabel);
+                ReviewAddAnotherText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewAddAnother);
+                ReviewSaveToDatabaseText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewSaveToDatabase);
+
+                ReviewColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnLoadNumber);
+                ReviewColumnPoNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnPoNumber);
+                ReviewColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnPartId);
+                ReviewColumnRemainingQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnRemainingQty);
+                ReviewColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnWeightQty);
+                ReviewColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnHeatLot);
+                ReviewColumnPkgsText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnPkgs);
+                ReviewColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ReviewColumnPkgType);
+
+                ReviewPreviousEntryAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewPreviousEntry);
+                ReviewNextEntryAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewNextEntry);
+                ReviewSwitchToTableAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewSwitchToTable);
+                ReviewSwitchToSingleAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewSwitchToSingle);
+                ReviewEntriesTableAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewEntriesTable);
+                ReviewAddAnotherAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewAddAnother);
+                ReviewSaveToDatabaseAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ReviewSaveToDatabase);
+
+                _logger.LogInfo("Review UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Review UI text from settings: {ex.Message}", ex);
+            }
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)
@@ -213,10 +361,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 var dialog = new ContentDialog
                 {
-                    Title = "Add Another Part/PO",
-                    Content = "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
-                    PrimaryButtonText = "Continue",
-                    CloseButtonText = "Cancel",
+                    Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ReviewAddAnotherTitle),
+                    Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ReviewAddAnotherContent),
+                    PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ReviewAddAnotherContinue),
+                    CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ReviewAddAnotherCancel),
                     DefaultButton = ContentDialogButton.Primary,
                     XamlRoot = xamlRoot
                 };

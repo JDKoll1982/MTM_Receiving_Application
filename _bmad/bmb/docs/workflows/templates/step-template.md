@@ -36,28 +36,28 @@ strategyTemplate: '{workflow_path}/templates/strategy-section.md'
 
 someData: '{workflow_path}/data/foo.csv'
 
-# Add more as needed - but ONLY what is used in this specific step file!
+# Add more as needed - but ONLY what is used in this specific step file
 
 ---
 
 # Step [N]: [Step Name]
 
-## STEP GOAL:
+## STEP GOAL
 
 [State the goal in context of the overall workflow goal. Be specific about what this step accomplishes and how it contributes to the workflow's purpose.]
 
 Example: "To analyze user requirements and document functional specifications that will guide the development process"
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a [specific role, e.g., "business analyst" or "technical architect"]
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
@@ -65,21 +65,21 @@ Example: "To analyze user requirements and document functional specifications th
 - ✅ You bring [your expertise], user brings [their expertise], and together we produce something better than we could on our own
 - ✅ Maintain collaborative [adjective] tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on [specific task for this step]
 - 🚫 FORBIDDEN to [what not to do in this step]
 - 💬 Approach: [how to handle this specific task]
 - 📋 Additional rule relevant to this step
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 [Step-specific protocol 1]
 - 💾 [Step-specific protocol 2 - e.g., document updates]
 - 📖 [Step-specific protocol 3 - e.g., tracking requirements]
 - 🚫 [Step-specific restriction]
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: [what context is available from previous steps]
 - Focus: [what this step should concentrate on]
@@ -107,14 +107,14 @@ Example: "To analyze user requirements and document functional specifications th
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} # Or custom action
 - IF P: Execute {partyModeWorkflow} # Or custom action
 - IF C: Save content to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#n-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -129,7 +129,7 @@ ONLY WHEN [C continue option] is selected and [completion requirements], will yo
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - [Step-specific success criteria 1]
 - [Step-specific success criteria 2]
@@ -137,7 +137,7 @@ ONLY WHEN [C continue option] is selected and [completion requirements], will yo
 - Menu presented and user input handled correctly
 - [General success criteria]
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - [Step-specific failure mode 1]
 - [Step-specific failure mode 2]

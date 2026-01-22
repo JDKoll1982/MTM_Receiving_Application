@@ -17,11 +17,13 @@ This document specifies authorization requirements for Module_Volvo operations. 
 ## 🔐 Authorization Service
 
 ### Service_VolvoAuthorization
+
 **Interface:** `IService_VolvoAuthorization`  
 **Purpose:** Centralized authorization logic for Volvo module operations  
 **Location:** `Module_Volvo/Services/Service_VolvoAuthorization.cs`
 
 **Key Methods:**
+
 ```csharp
 public interface IService_VolvoAuthorization
 {
@@ -43,6 +45,7 @@ public interface IService_VolvoAuthorization
 ```
 
 **Implementation Notes:**
+
 - Service reads from Windows Authentication context or `IService_UserSessionManager`
 - Role checks are performed against configured role groups
 - Authorization failures should trigger UI disabling (buttons, menu items) rather than runtime exceptions
@@ -52,9 +55,11 @@ public interface IService_VolvoAuthorization
 ## 👥 Privilege Roles
 
 ### Role: Volvo.Operator
+
 **Purpose:** Standard receiving operator role for Volvo shipments
 
 **Permissions:**
+
 - ✅ Create new shipments
 - ✅ Add/remove parts from shipments
 - ✅ Mark discrepancies
@@ -69,6 +74,7 @@ public interface IService_VolvoAuthorization
 - ❌ Edit completed shipments
 
 **Authorization Check:**
+
 ```csharp
 if (!_volvoAuthService.CanUserManageShipments())
 {
@@ -83,9 +89,11 @@ if (!_volvoAuthService.CanUserManageShipments())
 ---
 
 ### Role: Volvo.Manager
+
 **Purpose:** Supervisor/manager role with elevated privileges
 
 **Permissions:**
+
 - ✅ All Volvo.Operator permissions
 - ✅ Edit parts catalog (add/edit/deactivate parts)
 - ✅ Import/export parts catalog CSV
@@ -95,6 +103,7 @@ if (!_volvoAuthService.CanUserManageShipments())
 - ✅ View part components
 
 **Authorization Check:**
+
 ```csharp
 if (!_volvoAuthService.CanUserEditParts())
 {
@@ -109,9 +118,11 @@ if (!_volvoAuthService.CanUserEditParts())
 ---
 
 ### Role: Volvo.Admin
+
 **Purpose:** System administrator role for Volvo module
 
 **Permissions:**
+
 - ✅ All Volvo.Manager permissions
 - ✅ Modify database settings directly
 - ✅ Reset settings to defaults
@@ -163,6 +174,7 @@ Since Module_Volvo does not use explicit `[Authorize]` attributes on handlers, a
 ## 🎨 UI Authorization Patterns
 
 ### Button/Command Disabling
+
 ViewModels should disable commands when user lacks permissions:
 
 ```csharp
@@ -179,6 +191,7 @@ private bool CanEditPart()
 ```
 
 **XAML Binding:**
+
 ```xml
 <Button 
     Content="Edit Part"
@@ -189,6 +202,7 @@ private bool CanEditPart()
 ---
 
 ### Menu Item Visibility
+
 Use visibility bindings to hide menu items for unauthorized users:
 
 ```csharp
@@ -196,6 +210,7 @@ public bool IsManagerUser => _volvoAuthService.CanUserEditParts();
 ```
 
 **XAML Binding:**
+
 ```xml
 <MenuFlyoutItem 
     Text="Import Parts"
@@ -210,6 +225,7 @@ public bool IsManagerUser => _volvoAuthService.CanUserEditParts();
 ### Adding Authorization to New Commands/Queries
 
 **Step 1: Define Permission Method in IService_VolvoAuthorization**
+
 ```csharp
 public interface IService_VolvoAuthorization
 {
@@ -221,6 +237,7 @@ public interface IService_VolvoAuthorization
 ```
 
 **Step 2: Implement Check in Service_VolvoAuthorization**
+
 ```csharp
 public class Service_VolvoAuthorization : IService_VolvoAuthorization
 {
@@ -235,6 +252,7 @@ public class Service_VolvoAuthorization : IService_VolvoAuthorization
 ```
 
 **Step 3: Inject Service into ViewModel**
+
 ```csharp
 public partial class ViewModel_Volvo_CustomFeature : ViewModel_Shared_Base
 {
@@ -251,6 +269,7 @@ public partial class ViewModel_Volvo_CustomFeature : ViewModel_Shared_Base
 ```
 
 **Step 4: Enforce in ViewModel Command**
+
 ```csharp
 [RelayCommand]
 private async Task CustomOperationAsync()
@@ -274,14 +293,16 @@ private async Task CustomOperationAsync()
 
 ## 🚨 Security Considerations
 
-### ✅ DO:
+### ✅ DO
+
 - ✅ Always check permissions **before** calling `IMediator.Send()`
 - ✅ Disable UI elements (buttons, menu items) for unauthorized users
 - ✅ Log authorization failures for security auditing
 - ✅ Use consistent role names across all modules
 - ✅ Test authorization logic with different user roles
 
-### ❌ DO NOT:
+### ❌ DO NOT
+
 - ❌ Rely solely on UI disabling (always check in ViewModel)
 - ❌ Hard-code user names or roles in authorization checks
 - ❌ Expose sensitive data in error messages (e.g., "User X cannot access Y")
@@ -293,6 +314,7 @@ private async Task CustomOperationAsync()
 ## 🧪 Testing Authorization
 
 ### Unit Test Example (FluentAssertions)
+
 ```csharp
 [Fact]
 public async Task EditPartCommand_WithoutManagerRole_ShouldShowAccessDenied()
@@ -360,16 +382,20 @@ public async Task EditPartCommand_WithoutManagerRole_ShouldShowAccessDenied()
 **Future State:** Handler-level authorization with `[Authorize]` attributes or pipeline behaviors
 
 **Migration Steps:**
+
 1. Create `VolvoAuthorizationBehavior<TRequest, TResponse>` implementing `IPipelineBehavior`
 2. Add `[Authorize(Roles = "Volvo.Manager")]` attributes to handler classes
 3. Register behavior in `App.xaml.cs`:
+
    ```csharp
    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(VolvoAuthorizationBehavior<,>));
    ```
+
 4. Remove authorization checks from ViewModels
 5. Update PRIVILEGES.md with new attribute-based authorization
 
 **Benefits:**
+
 - ✅ Declarative authorization (easier to audit)
 - ✅ Consistent enforcement (no ViewModel bypass)
 - ✅ Centralized authorization logic (via pipeline behavior)
@@ -428,6 +454,7 @@ authorize:
 ---
 
 **For more details, see:**
+
 - `Module_Volvo/QUICK_REF.md` - CQRS components inventory
 - `Module_Volvo/SETTABLE_OBJECTS.md` - Configuration inventory
 - `.github/copilot-instructions.md` - Project-wide standards

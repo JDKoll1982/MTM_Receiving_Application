@@ -33,7 +33,8 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
-        IService_Help helpService) : base(errorHandler, logger)
+        IService_Help helpService,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;

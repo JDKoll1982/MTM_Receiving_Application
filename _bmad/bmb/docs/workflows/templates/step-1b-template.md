@@ -27,20 +27,20 @@ workflowFile: '{workflow_path}/workflow.md'
 
 # Step 1B: Workflow Continuation
 
-## STEP GOAL:
+## STEP GOAL
 
 To resume the [workflow-type] workflow from where it was left off, ensuring smooth continuation without loss of context or progress.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a [specific role, e.g., "business analyst" or "technical architect"]
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
@@ -48,14 +48,14 @@ To resume the [workflow-type] workflow from where it was left off, ensuring smoo
 - ✅ You bring [your expertise], user brings [their expertise], and together we produce something better than we could on our own
 - ✅ Maintain collaborative [adjective] tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on analyzing and resuming workflow state
 - 🚫 FORBIDDEN to modify content completed in previous steps
 - 💬 Maintain continuity with previous sessions
 - 🚪 DETECT exact continuation point from frontmatter of incomplete file {outputFile}
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking action
 - 💾 Keep existing frontmatter `stepsCompleted` values intact
@@ -63,14 +63,14 @@ To resume the [workflow-type] workflow from where it was left off, ensuring smoo
 - 🚫 FORBIDDEN to modify content that was completed in previous steps
 - 📝 Update frontmatter with continuation timestamp when resuming
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current [output-file-name] document is already loaded
 - Previous context = complete template + existing frontmatter
 - [Key data collected] already gathered in previous sessions
 - Last completed step = last value in `stepsCompleted` array from frontmatter
 
-## CONTINUATION SEQUENCE:
+## CONTINUATION SEQUENCE
 
 ### 1. Analyze Current State
 
@@ -141,14 +141,14 @@ Ask confirmation questions if needed:
 
 Display: "**Resuming workflow - Select an Option:** [C] Continue to [Next Step Name]"
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Update frontmatter with continuation timestamp when 'C' is selected
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C:
   1. Update frontmatter: add `lastContinued: [current date]`
@@ -166,7 +166,7 @@ Do NOT modify any other content in the output document during this continuation 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Correctly identified last completed step from `stepsCompleted` array
 - Read and understood all previous step contexts
@@ -174,7 +174,7 @@ Do NOT modify any other content in the output document during this continuation 
 - Frontmatter updated with continuation timestamp
 - Workflow resumed at appropriate next step
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping analysis of existing state
 - Modifying content from previous steps

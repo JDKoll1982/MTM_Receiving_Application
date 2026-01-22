@@ -23,7 +23,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 6 of 11** - Next: Project Type Analysis
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -35,7 +35,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 OPTIONAL STEP: Only proceed if innovation signals are detected
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating innovation content
@@ -43,7 +43,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -51,21 +51,21 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring creative perspectives to explore innovation opportunities
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Project type from step-02 is available for innovation signal matching
 - Project-type CSV data will be loaded in this step
 - Focus on detecting genuine innovation, not forced creativity
 
-## OPTIONAL STEP CHECK:
+## OPTIONAL STEP CHECK
 
 Before proceeding with this step, scan for innovation signals:
 
@@ -74,11 +74,11 @@ Before proceeding with this step, scan for innovation signals:
 - Look for novel approaches or unique combinations
 - If no innovation detected, skip this step
 
-## YOUR TASK:
+## YOUR TASK
 
 Detect and explore innovation patterns in the product, focusing on what makes it truly novel and how to validate the innovative aspects.
 
-## INNOVATION DISCOVERY SEQUENCE:
+## INNOVATION DISCOVERY SEQUENCE
 
 ### 1. Load Project-Type Innovation Data
 
@@ -93,7 +93,7 @@ Load innovation signals specific to this project type:
 
 Monitor conversation for both general and project-type-specific innovation signals:
 
-#### General Innovation Language:
+#### General Innovation Language
 
 - "Nothing like this exists"
 - "We're rethinking how [X] works"
@@ -101,7 +101,7 @@ Monitor conversation for both general and project-type-specific innovation signa
 - "Novel approach to [problem]"
 - "No one has done [concept] before"
 
-#### Project-Type-Specific Signals (from CSV):
+#### Project-Type-Specific Signals (from CSV)
 
 Match user descriptions against innovation_signals for their project_type:
 
@@ -127,7 +127,7 @@ What aspects of {{project_name}} feel most innovative to you?"
 
 If innovation signals are found, explore deeply:
 
-#### Innovation Discovery Questions:
+#### Innovation Discovery Questions
 
 - "What makes it unique compared to existing solutions?"
 - "What assumption are you challenging?"
@@ -135,7 +135,7 @@ If innovation signals are found, explore deeply:
 - "What's the fallback if it doesn't?"
 - "Has anyone tried this before?"
 
-#### Market Context Research:
+#### Market Context Research
 
 If relevant innovation detected, consider web search for context:
 Use `web_search_triggers` from project-type CSV:
@@ -145,7 +145,7 @@ Use `web_search_triggers` from project-type CSV:
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -185,7 +185,7 @@ Show the generated innovation content and present choices:
 
 ### 7. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current innovation content
 - Process the enhanced innovation insights that come back
@@ -193,7 +193,7 @@ Show the generated innovation content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current innovation content
 - Process the collaborative innovation exploration and ideation
@@ -201,13 +201,13 @@ Show the generated innovation content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: add this step name to the end of the steps completed array
 - Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md`
 
-## NO INNOVATION DETECTED:
+## NO INNOVATION DETECTED
 
 If no genuine innovation signals are found after exploration:
 "After exploring {{project_name}}, I don't see clear innovation signals that warrant a dedicated innovation section. This is perfectly fine - many successful products are excellent executions of existing concepts rather than breakthrough innovations.
@@ -218,11 +218,11 @@ If no genuine innovation signals are found after exploration:
 
 If user selects 'A', proceed with content generation anyway. If 'C', skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md`.
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Innovation signals properly detected from user conversation
 ✅ Project-type innovation signals used to guide discovery
@@ -232,7 +232,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Forced innovation when none genuinely exists
 ❌ Not using project-type innovation signals from CSV
@@ -246,7 +246,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## SKIP CONDITIONS:
+## SKIP CONDITIONS
 
 Skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md` if:
 
@@ -255,7 +255,7 @@ Skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd
 - User confirms innovation exploration is not needed
 - Project-type CSV has no innovation signals for this type
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document (or step is skipped), load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md`.
 

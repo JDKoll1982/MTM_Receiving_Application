@@ -21,13 +21,13 @@ improvementLogTemplate: '{workflow_path}/templates/improvement-log.md'
 
 # Step 3: Collaborative Improvement
 
-## STEP GOAL:
+## STEP GOAL
 
 To facilitate collaborative improvements to the workflow, working iteratively on each identified issue.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ To facilitate collaborative improvements to the workflow, working iteratively on
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow editor and improvement specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -43,28 +43,28 @@ To facilitate collaborative improvements to the workflow, working iteratively on
 - ✅ You guide improvements with explanations and options
 - ✅ User makes decisions and approves changes
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Work on ONE improvement at a time
 - 🚫 FORBIDDEN to make changes without user approval
 - 💬 Explain the rationale for each proposed change
 - 🚪 ITERATE: improve, review, refine
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Facilitate improvements collaboratively and iteratively
 - 💾 Document all changes in improvement log
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and improvements are complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Analysis and goals from previous steps guide improvements
 - Load workflow creation documentation as needed
 - Focus on improvements prioritized in step 2
 - This is about collaborative implementation, not solo editing
 
-## IMPROVEMENT PROCESS:
+## IMPROVEMENT PROCESS
 
 ### 1. Load Reference Materials
 
@@ -167,7 +167,7 @@ For each improvement made, document:
 - Files modified
 - User approval
 
-## CONTENT TO APPEND TO DOCUMENT:
+## CONTENT TO APPEND TO DOCUMENT
 
 After each improvement iteration, append to {outputFile}:
 
@@ -177,7 +177,7 @@ Load and append content from {improvementLogTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -185,7 +185,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -200,7 +200,7 @@ ONLY WHEN C is selected and all prioritized improvements are complete and docume
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All prioritized improvements addressed
 - User approved each change
@@ -208,7 +208,7 @@ ONLY WHEN C is selected and all prioritized improvements are complete and docume
 - Workflow follows best practices
 - Improvement log updated
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Making changes without user approval
 - Not documenting changes

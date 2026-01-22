@@ -51,8 +51,9 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
     public ViewModel_Volvo_History(
         IMediator mediator,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService)
+        : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
@@ -67,7 +68,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
         if (App.MainWindow is MainWindow mainWindow)
         {
             var contentFrame = mainWindow.GetContentFrame();
-            if (contentFrame != null && contentFrame.CanGoBack)
+            if (contentFrame?.CanGoBack == true)
             {
                 contentFrame.GoBack();
             }

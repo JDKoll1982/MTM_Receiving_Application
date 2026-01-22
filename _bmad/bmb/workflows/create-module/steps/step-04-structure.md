@@ -8,9 +8,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 4: Create Module Structure
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -18,7 +18,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Systems Organizer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -26,32 +26,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD structure patterns, user brings their component requirements
 - ✅ Maintain collaborative, organized tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on creating directory structure and determining complexity
 - 🚫 FORBIDDEN to create actual component files in this step
 - 💬 Explain structure decisions clearly
 - 🚫 FORBIDDEN to proceed without confirming structure
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Use component count to determine module type
 - 💾 Create all required directories
 - 📖 Add "step-04-structure" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Component plan from step 3 is available
 - Standard BMAD module structure to follow
 - Focus on structure creation, not content
 - Module folder already exists from step 1
 
-## STEP GOAL:
+## STEP GOAL
 
 To determine the module's complexity type and create the complete directory structure for the module.
 
-## MODULE STRUCTURE CREATION PROCESS:
+## MODULE STRUCTURE CREATION PROCESS
 
 ### 1. Determine Module Complexity
 
@@ -189,14 +189,14 @@ Update module-plan.md with structure section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to explore alternative structure approaches
 - IF P: Execute {partyModeWorkflow} to get creative input on organization
 - IF C: Save structure info to module-plan.md, add step-04-structure to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -207,7 +207,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Module complexity correctly determined
 - All required directories created
@@ -215,7 +215,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Placeholder README created
 - Structure documented in plan
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not creating all required directories
 - Incorrectly categorizing module complexity

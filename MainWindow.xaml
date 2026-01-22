@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d"
+    
     x:Name="MainWindowRoot"
     Title="MTM_Receiving_Application">
 
@@ -16,38 +17,76 @@
     </Window.SystemBackdrop>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
         <!-- Custom Title Bar Area (when ExtendsContentIntoTitleBar = true) -->
         <Grid x:Name="AppTitleBar" 
-              Height="48" 
-              VerticalAlignment="Top" 
-              Canvas.ZIndex="1">
+              Grid.Row="0"
+              Height="48">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition x:Name="PaneToggleColumn" Width="Auto"/>
+                <ColumnDefinition x:Name="IconColumn" Width="Auto"/>
+                <ColumnDefinition x:Name="TitleColumn" Width="Auto"/>
+                <ColumnDefinition x:Name="LeftDragColumn" Width="*"/>
+                <ColumnDefinition x:Name="SearchColumn" Width="4*" MinWidth="220"/>
+                <ColumnDefinition x:Name="RightDragColumn" Width="*" MinWidth="48"/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
             
-            <!-- App Icon and Title -->
-            <StackPanel Orientation="Horizontal" Spacing="12" Margin="16,0,0,0">
-                <Image Source="/MTMIcon.ico" 
-                       Width="16" 
-                       Height="16" 
-                       VerticalAlignment="Center"/>
-                <TextBlock Text="MTM Receiving Application" 
-                           VerticalAlignment="Center"
-                           Style="{StaticResource CaptionTextBlockStyle}"/>
-            </StackPanel>
+            <!-- NavigationView Pane Toggle Button -->
+            <Button x:Name="PaneToggleButton"
+                    Grid.Column="1"
+                    Width="48"
+                    Height="48"
+                    Style="{StaticResource PaneToggleButtonStyle}"
+                    Click="PaneToggleButton_Click"
+                    VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE700;" FontSize="16"/>
+            </Button>
+            
+            <!-- App Icon -->
+            <Image x:Name="TitleBarIcon" 
+                   Source="Assets/MTMIcon.ico"
+                   Grid.Column="2"
+                   Width="16" 
+                   Height="16" 
+                   Margin="8,0,4,0"/>
+            
+            <!-- App Title -->
+            <TextBlock x:Name="TitleBarTextBlock"
+                       Text="MTM Receiving Application"
+                       FontSize="16"
+                       Grid.Column="3"
+                       VerticalAlignment="Center"
+                       Margin="4,0,0,0"
+                       Style="{StaticResource TitleTextBlockStyle }"/>
+            
+            <!-- Search Box -->
+            <AutoSuggestBox x:Name="TitleBarSearchBox" 
+                            Grid.Column="5" 
+                            QueryIcon="Find"
+                            PlaceholderText="Search"
+                            VerticalAlignment="Center"
+                            MaxWidth="600"
+                            Margin="8,0,8,0"/>
         </Grid>
 
         <NavigationView x:Name="NavView"
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,20,20,20"
                         PaneDisplayMode="Left"
                         IsSettingsVisible="True"
+                        IsPaneToggleButtonVisible="False"
+                        IsBackButtonVisible="Collapsed"
                         SelectionChanged="NavView_SelectionChanged">
-            <NavigationView.PaneHeader>
-                <TextBlock Text="MTM Receiving" 
-                           Style="{StaticResource TitleTextBlockStyle}"
-                           Margin="12,0,0,0"/>
-            </NavigationView.PaneHeader>
-            
+
+
+           
             <NavigationView.Header>
                 <StackPanel>
                     <Grid>
@@ -76,7 +115,8 @@
                                        Style="{StaticResource BodyStrongTextBlockStyle}"/>
                         </StackPanel>
                     </Grid>
-                    <InfoBar IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
+                    <InfoBar x:Name="StatusInfoBar"
+                             IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
                              Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}"
                              Message="{x:Bind ViewModel.NotificationService.StatusMessage, Mode=OneWay}"
                              IsClosable="True"

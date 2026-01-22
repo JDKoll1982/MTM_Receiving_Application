@@ -97,6 +97,7 @@ criticalActionsRef = read(criticalActions)
 ```
 
 **Action:** Present discovery status:
+
 ```markdown
 🔍 SIDECAR VALIDATION INITIALIZED
 
@@ -121,6 +122,7 @@ Status: {✅ Folder Found | ❌ Folder Missing}
 ```
 
 If missing:
+
 ```markdown
 ❌ **CRITICAL ISSUE:** Sidecar folder not found!
 
@@ -140,6 +142,7 @@ If missing:
 ### B. Sidecar File Inventory
 
 If folder exists, list all files:
+
 ```bash
 sidecarFiles = listFiles(sidecarPath)
 ```
@@ -156,6 +159,7 @@ Found {count} files in sidecar:
 ### C. Cross-Reference Validation
 
 Extract all sidecar path references from agent YAML:
+
 ```yaml
 # Common sidecar reference patterns
 sidecar:
@@ -165,6 +169,7 @@ sidecar:
 ```
 
 Validate each reference:
+
 ```markdown
 ## 🔗 PATH REFERENCE VALIDATION
 
@@ -181,6 +186,7 @@ Validate each reference:
 For each sidecar file found, check:
 
 ### A. File Completeness
+
 ```markdown
 ## 📋 FILE CONTENT VALIDATION
 
@@ -194,6 +200,7 @@ For each sidecar file found, check:
 ### B. Critical Actions File (if present)
 
 Special validation for critical-actions.md:
+
 ```markdown
 ## 🎯 CRITICAL ACTIONS VALIDATION
 
@@ -213,6 +220,7 @@ Special validation for critical-actions.md:
 ### C. Module Files (if present)
 
 If sidecar contains modules:
+
 ```markdown
 ## 📚 MODULE VALIDATION
 
@@ -334,6 +342,7 @@ Which option? [1/2/3]:
 ```
 
 **For Broken Path References:**
+
 ```markdown
 ### 🔧 FIXING: Invalid Path Reference
 
@@ -351,6 +360,7 @@ Which option? [1/2/3]:
 ```
 
 **For Empty/Malformed Files:**
+
 ```markdown
 ### 🔧 FIXING: {filename} - {Issue}
 
@@ -367,6 +377,7 @@ Ready to view and fix? [Y/N]:
 ```
 
 After each fix:
+
 - Re-validate the specific component
 - Confirm resolution
 - Move to next issue
@@ -413,6 +424,7 @@ ONLY WHEN [C continue option] is selected and [validation complete with any find
 8. ⚠️  **CRITICAL:** Sidecar must be complete for agent to function
 
 **DO NOT PROCEED IF:**
+
 - Sidecar folder completely missing
 - Critical files absent (actions, core modules)
 - User unaware of sidecar issues
@@ -420,7 +432,8 @@ ONLY WHEN [C continue option] is selected and [validation complete with any find
 
 # SUCCESS METRICS
 
-## Step Complete When:
+## Step Complete When
+
 - [ ] Sidecar folder validated
 - [ ] All path references checked
 - [ ] File contents verified
@@ -428,14 +441,16 @@ ONLY WHEN [C continue option] is selected and [validation complete with any find
 - [ ] Issues resolved or accepted
 - [ ] User ready to proceed
 
-## Quality Indicators:
+## Quality Indicators
+
 - Thoroughness of file inventory
 - Accuracy of path reference validation
 - Clarity of issue identification
 - Actionability of remediation steps
 - User confidence in sidecar completeness
 
-## Failure Modes:
+## Failure Modes
+
 - Missing sidecar folder completely
 - Skipping file existence checks
 - Not validating path references
@@ -448,12 +463,14 @@ ONLY WHEN [C continue option] is selected and [validation complete with any find
 ## 🎓 NOTE: Expert Agent Sidecars
 
 Sidecars are what make Expert agents powerful. They enable:
+
 - Modular architecture
 - Separation of concerns
 - Easier updates and maintenance
 - Shared components across agents
 
 A validated sidecar ensures your Expert agent will:
+
 - Load correctly at runtime
 - Find all referenced resources
 - Execute critical actions as defined

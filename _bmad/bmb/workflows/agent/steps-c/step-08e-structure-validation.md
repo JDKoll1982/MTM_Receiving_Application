@@ -99,6 +99,7 @@ compilationRules = read(agentCompilation)
 ```
 
 **Action:** Present a brief status message:
+
 ```
 🔍 LOADING VALIDATION FRAMEWORK
    Agent Type: {detected type}
@@ -111,23 +112,27 @@ compilationRules = read(agentCompilation)
 Run systematic checks against the validation checklist:
 
 ### A. YAML Syntax Validation
+
 - Parse YAML without errors
 - Check indentation consistency
 - Validate proper escaping of special characters
 - Verify no duplicate keys
 
 ### B. Frontmatter Validation
+
 - All required fields present
 - Field values correct type (string, boolean, array)
 - No empty required fields
 - Proper array formatting
 
 ### C. Section Completeness
+
 - All required sections present (based on agent type)
 - Sections not empty unless explicitly optional
 - Proper markdown heading hierarchy
 
 ### D. Field-Level Validation
+
 - Path references exist and are valid
 - Boolean fields are actual booleans (not strings)
 - Array fields properly formatted
@@ -136,11 +141,13 @@ Run systematic checks against the validation checklist:
 ### E. Agent Type Specific Checks
 
 **For Simple Agents:**
+
 - No sidecar requirements
 - Basic fields complete
 - No advanced configuration
 
 **For Expert Agents:**
+
 - Sidecar flag set correctly
 - Sidecar folder path specified
 - All expert fields present
@@ -198,7 +205,7 @@ All required fields present and correctly formatted.
 
 Display: "**Select an Option:** [A] Advanced Elicitation [F] Fix Findings [P] Party Mode [C] Continue"
 
-### Menu Handling Logic:
+### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF F: Apply auto-fixes to {builtYaml} for identified issues, then redisplay the menu
@@ -206,7 +213,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [F] Fix Findings [P] Pa
 - IF C: Proceed to next validation step, update frontmatter, then only then load, read entire file, then execute {nextStepFileExpert} or {nextStepFileSimple}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#4-present-menu-options)
 
-### EXECUTION RULES:
+### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -214,6 +221,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [F] Fix Findings [P] Pa
 - User can chat or ask questions - always respond and then end with display again of the menu options
 
 If [F] selected: Work through issues systematically
+
 - Load specific section needing fix
 - Present current state
 - Apply auto-fixes or guide user through corrections
@@ -221,6 +229,7 @@ If [F] selected: Work through issues systematically
 - Confirm resolution and re-present menu
 
 If [C] selected:
+
 - Warn about implications if issues exist
 - Get explicit confirmation if critical issues
 - Document acceptance of issues
@@ -253,6 +262,7 @@ else:
 ```
 
 **Action:** Present routing decision and transition:
+
 ```markdown
 # 🚀 VALIDATION COMPLETE - ROUTING DECISION
 
@@ -278,27 +288,31 @@ ONLY WHEN [C continue option] is selected and [validation complete with any find
 6. ⚠️  **CRITICAL:** For simple agents, verify hasSidecar is FALSE before routing to 8
 
 **DO NOT PROCEED IF:**
+
 - YAML has critical syntax errors preventing loading
 - User has not acknowledged validation results
 - Routing logic is unclear or conflicting
 
 # SUCCESS METRICS
 
-## Step Complete When:
+## Step Complete When
+
 - [ ] Validation report generated and presented
 - [ ] User has reviewed findings
 - [ ] Critical issues resolved or accepted
 - [ ] Routing decision communicated and confirmed
 - [ ] Next step path verified and ready
 
-## Quality Indicators:
+## Quality Indicators
+
 - Validation thoroughness (all checklist items covered)
 - Issue identification clarity and specificity
 - User satisfaction with resolution process
 - Correct routing logic applied
 - Clear transition to next step
 
-## Failure Modes:
+## Failure Modes
+
 - Skipping validation checks
 - Auto-fixing without permission
 - Incorrect routing (simple→7F or expert→8 with sidecar)

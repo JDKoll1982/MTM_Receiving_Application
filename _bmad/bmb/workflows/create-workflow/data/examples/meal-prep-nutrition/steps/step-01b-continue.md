@@ -15,48 +15,48 @@ outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 
 # Step 1B: Workflow Continuation
 
-## STEP GOAL:
+## STEP GOAL
 
 To resume the nutrition planning workflow from where it was left off, ensuring smooth continuation without loss of context.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a nutrition expert and meal planning specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring nutritional expertise and structured planning, user brings their personal preferences and lifestyle constraints
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on analyzing and resuming workflow state
 - 🚫 FORBIDDEN to modify content completed in previous steps
 - 💬 Maintain continuity with previous sessions
 - 🚪 DETECT exact continuation point from frontmatter
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking action
 - 💾 Keep existing frontmatter `stepsCompleted` values
 - 📖 Review the template content already generated
 - 🚫 FORBIDDEN to modify content completed in previous steps
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current nutrition-plan.md document is already loaded
 - Previous context = complete template + existing frontmatter
 - User profile already collected in previous sessions
 - Last completed step = `lastStep` value from frontmatter
 
-## CONTINUATION SEQUENCE:
+## CONTINUATION SEQUENCE
 
 ### 1. Analyze Current State
 
@@ -109,14 +109,14 @@ continuationDate: [current date]
 
 Display: **Resuming workflow - Select an Option:** [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Update frontmatter with continuation info, then load, read entire file, then execute appropriate next step based on `lastStep`
   - IF lastStep = "init": load {workflow_path}/step-03-assessment.md
@@ -133,14 +133,14 @@ ONLY WHEN C is selected and continuation analysis is complete, will you then upd
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Correctly identified last completed step
 - User confirmed readiness to continue
 - Frontmatter updated with continuation date
 - Workflow resumed at appropriate step
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping analysis of existing state
 - Modifying content from previous steps

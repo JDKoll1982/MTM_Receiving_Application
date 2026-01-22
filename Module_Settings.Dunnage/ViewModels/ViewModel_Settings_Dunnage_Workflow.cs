@@ -7,7 +7,8 @@ public sealed partial class ViewModel_Settings_Dunnage_Workflow : ViewModel_Shar
 {
     public ViewModel_Settings_Dunnage_Workflow(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         Title = "Dunnage Workflow";
     }

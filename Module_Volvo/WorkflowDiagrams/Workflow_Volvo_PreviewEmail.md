@@ -1,6 +1,7 @@
 # Volvo Preview Email Workflow
 
 ## Diagram (Mermaid)
+
 ```mermaid
 flowchart TD
     Start([Start]) --> Click[Click Preview Email]
@@ -20,6 +21,7 @@ flowchart TD
 ```
 
 ## User-Friendly Steps
+
 1. Click Preview Email.
 2. If the shipment isn’t saved yet, it’s saved as pending first (or updated if one already exists).
 3. The system formats the email content.
@@ -27,6 +29,7 @@ flowchart TD
 5. Click Copy to put the formatted email on your clipboard.
 
 ## Required Info for Fixing Incorrect Workflows
+
 | Step | UI / Action | Command / Query | Validator Rules (Actual) | Handler / Data Path | Actual Data (from code) |
 |---|---|---|---|---|---|
 | Preview Email | Preview Email button | FormatEmailDataQuery | n/a | ViewModel: ViewModel_Volvo_ShipmentEntry.PreviewEmailAsync | If HasPendingShipment is false, SaveShipmentInternalAsync runs first (updates existing pending if found) |

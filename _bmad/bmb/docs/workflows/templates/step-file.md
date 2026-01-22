@@ -29,20 +29,20 @@ partyModeWorkflow: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
 
 # Step {{stepNumber}}: {{stepTitle}}
 
-## STEP GOAL:
+## STEP GOAL
 
 {{stepGoal}}
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a {{aiRole}}
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -50,21 +50,21 @@ partyModeWorkflow: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
 - ✅ You bring {{aiExpertise}}, user brings {{userExpertise}}
 - ✅ Maintain collaborative {{collaborationStyle}} tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on {{stepFocus}}
 - 🚫 FORBIDDEN to {{forbiddenAction}}
 - 💬 Approach: {{stepApproach}}
 - 📋 {{additionalRule}}
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 {{#executionProtocols}}
 
 - 🎯 {{.}}
   {{/executionProtocols}}
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: {{availableContext}}
 - Focus: {{contextFocus}}
@@ -81,7 +81,7 @@ partyModeWorkflow: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
 
 {{#hasContentToAppend}}
 
-#### Content to Append (if applicable):
+#### Content to Append (if applicable)
 
 ```markdown
 {{contentToAppend}}
@@ -97,7 +97,7 @@ partyModeWorkflow: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
 
 Display: **{{menuDisplay}}**
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -105,7 +105,7 @@ Display: **{{menuDisplay}}**
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 {{#menuOptions}}
 
@@ -122,14 +122,14 @@ Display: **{{menuDisplay}}**
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 {{#successCriteria}}
 
 - {{.}}
   {{/successCriteria}}
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 {{#failureModes}}
 

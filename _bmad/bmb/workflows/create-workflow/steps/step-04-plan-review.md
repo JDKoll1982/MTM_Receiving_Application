@@ -22,13 +22,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 4: Plan Review and Approval
 
-## STEP GOAL:
+## STEP GOAL
 
 To present the complete workflow plan (requirements and tools configuration) for user review and approval before proceeding to design.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -36,7 +36,7 @@ To present the complete workflow plan (requirements and tools configuration) for
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -44,28 +44,28 @@ To present the complete workflow plan (requirements and tools configuration) for
 - ✅ You bring expertise in workflow design review and quality assurance
 - ✅ User brings their specific requirements and approval authority
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on reviewing and refining the plan
 - 🚫 FORBIDDEN to start designing workflow steps in this step
 - 💬 Present plan clearly and solicit feedback
 - 🚫 DO NOT proceed to design without user approval
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Present complete plan summary from {workflowPlanFile}
 - 💾 Capture any modifications or refinements
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until user approves plan
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All requirements from step 2 are available
 - Tools configuration from step 3 is complete
 - Focus ONLY on review and approval
 - This is the final check before design phase
 
-## PLAN REVIEW PROCESS:
+## PLAN REVIEW PROCESS
 
 ### 1. Initialize Plan Review
 
@@ -174,7 +174,7 @@ Based on your requirements:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Design
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -182,7 +182,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -199,7 +199,7 @@ ONLY WHEN C is selected AND the user has explicitly approved the plan and the pl
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Complete plan presented clearly from {workflowPlanFile}
 - User feedback collected and documented
@@ -207,7 +207,7 @@ ONLY WHEN C is selected AND the user has explicitly approved the plan and the pl
 - User explicitly approves the plan
 - Plan ready for design phase
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not loading plan from {workflowPlanFile}
 - Skipping review categories

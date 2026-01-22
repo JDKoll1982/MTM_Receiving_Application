@@ -9,9 +9,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 2: Define Module Concept and Scope
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -19,7 +19,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Business Analyst
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -27,32 +27,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in module design and BMAD patterns, user brings their domain knowledge
 - ✅ Maintain collaborative, educational tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on defining the module concept and scope
 - 🚫 FORBIDDEN to start designing components in this step
 - 💬 Ask questions conversationally to understand vision
 - 🚫 FORBIDDEN to proceed without clear module identity
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and study module structure guide for context
 - 💾 Document all module identity details in plan
 - 📖 Add "step-02-concept" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Module name and location from step 1
 - Input documents (brief/brainstorming) if any
 - Focus ONLY on concept and scope definition
 - Don't assume module details beyond what user provides
 
-## STEP GOAL:
+## STEP GOAL
 
 To articulate the module's vision, define its identity, and establish clear boundaries for what it will and won't do.
 
-## MODULE CONCEPT DEFINITION PROCESS:
+## MODULE CONCEPT DEFINITION PROCESS
 
 ### 1. Load Context and Briefs
 
@@ -178,14 +178,14 @@ Update module-plan.md with concept section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to explore alternative concept approaches
 - IF P: Execute {partyModeWorkflow} to get creative input on module identity
 - IF C: Save concept to module-plan.md, add step-02-concept to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -196,7 +196,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Module purpose clearly articulated
 - Module identity established (name, audience, scope)
@@ -204,7 +204,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Concept documented in module plan
 - User feels the concept matches their vision
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Proceeding without clear module purpose
 - Not defining scope boundaries

@@ -41,8 +41,8 @@ public partial class RoutingManualEntryViewModel : ViewModel_Shared_Base
         IRoutingRecipientService recipientService,
         IRoutingUsageTrackingService usageTrackingService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _routingService = routingService;
         _inforVisualService = inforVisualService;

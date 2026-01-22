@@ -11,7 +11,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Progress: Step 3 of 4** - Next: Review & Finalize
 
-## RULES:
+## RULES
 
 - MUST NOT skip steps.
 - MUST NOT optimize sequence.
@@ -19,7 +19,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 - MUST NOT implement anything - just document.
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## CONTEXT:
+## CONTEXT
 
 - Requires `{wipFile}` with defined "Overview" and "Context for Development" sections.
 - Focus: Create the implementation sequence that addresses the requirement delta using the captured technical context.
@@ -116,13 +116,13 @@ stepsCompleted: [1, 2, 3]
 
 c) **Load and execute `{nextStepFile}` (Step 4)**
 
-## REQUIRED OUTPUTS:
+## REQUIRED OUTPUTS
 
 - Tasks MUST be specific, actionable, ordered logically, with files to modify.
 - ACs MUST be testable, using Given/When/Then format.
 - Status MUST be updated to 'review'.
 
-## VERIFICATION CHECKLIST:
+## VERIFICATION CHECKLIST
 
 - [ ] `stepsCompleted: [1, 2, 3]` set in frontmatter.
 - [ ] Spec meets the **READY FOR DEVELOPMENT** standard.

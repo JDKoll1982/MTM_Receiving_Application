@@ -7,7 +7,8 @@ public sealed partial class ViewModel_Settings_Routing_UserPreferences : ViewMod
 {
     public ViewModel_Settings_Routing_UserPreferences(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         Title = "Routing User Preferences";
     }

@@ -1,24 +1,84 @@
 <Page
     x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_Integrations"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:MTM_Receiving_Application.Module_Settings.Core.Views.Controls">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Padding="24">
-        <StackPanel Spacing="12">
-            <controls:View_SettingsPlaceholderControl
-                TitleText="Receiving ERP Integration"
-                DescriptionText="Placeholder UI for integration-related settings." />
+    <ScrollViewer>
+        <Grid Padding="24">
+            <StackPanel HorizontalAlignment="Center" Width="960" Spacing="16">
+                <TextBlock Text="Receiving Integrations" Style="{StaticResource TitleTextBlockStyle}" />
+                <TextBlock Text="Configure ERP synchronization and automated data pulls."
+                           Style="{StaticResource BodyTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           TextWrapping="Wrap" />
 
-            <Expander Header="Notes (what belongs here)" IsExpanded="True">
-                <StackPanel Spacing="8" Padding="0,8,0,0">
-                    <TextBlock Text="Suggested controls:" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                    <TextBlock Text="• Use Infor Visual mock data (Dev/Test) → ToggleSwitch" Style="{StaticResource BodyTextBlockStyle}" />
-                    <TextBlock Text="• Default mock PO number (Dev/Test) → TextBox" Style="{StaticResource BodyTextBlockStyle}" />
-                    <TextBlock Text="• ERP defaults (UOM, site) → TextBox (System scope)" Style="{StaticResource BodyTextBlockStyle}" />
-                    <TextBlock Text="• Connection test (read-only) → Button + InfoBar (results)" Style="{StaticResource BodyTextBlockStyle}" />
-                </StackPanel>
-            </Expander>
-        </StackPanel>
-    </Grid>
+                <Border Padding="16"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="ERP Sync" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                        <Grid ColumnSpacing="12" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <ToggleSwitch Grid.Row="0" Grid.Column="0" Header="ERP Sync Enabled"
+                                          ToolTipService.ToolTip="When turned on, the app can talk to the ERP system to check or update information."
+                                          IsOn="{x:Bind ViewModel.ErpSyncEnabled, Mode=TwoWay}" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" Header="Sync To Infor Visual"
+                                          ToolTipService.ToolTip="When turned on, the app will send receiving information back to Infor Visual (if available)."
+                                          IsOn="{x:Bind ViewModel.SyncToInforVisual, Mode=TwoWay}" />
+
+                            <ToggleSwitch Grid.Row="1" Grid.Column="0" Header="Auto-Pull PO Data"
+                                          ToolTipService.ToolTip="When turned on, the app can fill in PO details automatically after you enter a PO number."
+                                          IsOn="{x:Bind ViewModel.AutoPullPoDataEnabled, Mode=TwoWay}" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" Header="Auto-Pull Part Data"
+                                          ToolTipService.ToolTip="When turned on, the app can fill in part details automatically after you enter a part number."
+                                          IsOn="{x:Bind ViewModel.AutoPullPartDataEnabled, Mode=TwoWay}" />
+
+                            <ToggleSwitch Grid.Row="2" Grid.Column="0" Header="Retry Failed Syncs"
+                                          ToolTipService.ToolTip="When turned on, the app will try again automatically if an ERP sync fails."
+                                          IsOn="{x:Bind ViewModel.RetryFailedSyncs, Mode=TwoWay}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Padding="16"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Connection &amp; Retries" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                        <Grid ColumnSpacing="12" RowSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox Grid.Row="0" Grid.Column="0" Header="ERP Connection Timeout (Seconds)"
+                                     ToolTipService.ToolTip="How long the app will wait for the ERP system before giving up. Increase this if the network is slow."
+                                     Text="{x:Bind ViewModel.ErpConnectionTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Header="Max Sync Retries"
+                                     ToolTipService.ToolTip="How many times the app will retry a sync before stopping and showing an error."
+                                     Text="{x:Bind ViewModel.MaxSyncRetries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

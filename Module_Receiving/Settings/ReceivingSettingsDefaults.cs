@@ -226,5 +226,77 @@ public static class ReceivingSettingsDefaults
         [ReceivingSettingsKeys.Accessibility.ReviewEntriesTable] = "Receiving Entries Table",
         [ReceivingSettingsKeys.Accessibility.ReviewAddAnother] = "Add Another Part or PO",
         [ReceivingSettingsKeys.Accessibility.ReviewSaveToDatabase] = "Save to Database",
+
+        // Defaults for non-UI settings
+        [ReceivingSettingsKeys.Defaults.DefaultPackageType] = "Pallet",
+        [ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad] = "1",
+        [ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage] = "0",
+        [ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure] = "LBS",
+        [ReceivingSettingsKeys.Defaults.DefaultLocation] = "RECEIVING",
+        [ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix] = "L",
+        [ReceivingSettingsKeys.Defaults.DefaultReceivingMode] = "Guided",
+
+        // Integrations defaults
+        [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = "30",
+        [ReceivingSettingsKeys.Integrations.MaxSyncRetries] = "3",
+
+        // Validation defaults
+        [ReceivingSettingsKeys.Validation.MinLoadCount] = "1",
+        [ReceivingSettingsKeys.Validation.MaxLoadCount] = "99",
+        [ReceivingSettingsKeys.Validation.MinQuantity] = "0",
+        [ReceivingSettingsKeys.Validation.MaxQuantity] = "999999",
+
+        // Business Rules defaults
+        [ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds] = "300",
+        [ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup] = "ModeSelection",
+    };
+
+    public static IReadOnlyDictionary<string, bool> BoolDefaults { get; } = new Dictionary<string, bool>
+    {
+        // Validation
+        [ReceivingSettingsKeys.Validation.RequirePoNumber] = false,
+        [ReceivingSettingsKeys.Validation.RequirePartId] = true,
+        [ReceivingSettingsKeys.Validation.RequireQuantity] = true,
+        [ReceivingSettingsKeys.Validation.RequireHeatLot] = false,
+        [ReceivingSettingsKeys.Validation.AllowNegativeQuantity] = false,
+        [ReceivingSettingsKeys.Validation.ValidatePoExists] = true,
+        [ReceivingSettingsKeys.Validation.ValidatePartExists] = true,
+        [ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo] = true,
+        [ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving] = true,
+
+        // Business Rules
+        [ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled] = false,
+        [ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled] = true,
+        [ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled] = true,
+        [ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled] = true,
+        [ReceivingSettingsKeys.BusinessRules.RememberLastMode] = true,
+        [ReceivingSettingsKeys.BusinessRules.ConfirmModeChange] = true,
+        [ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled] = true,
+        [ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault] = false,
+        [ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault] = false,
+        [ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave] = true,
+
+        // Integrations
+        [ReceivingSettingsKeys.Integrations.ErpSyncEnabled] = true,
+        [ReceivingSettingsKeys.Integrations.AutoPullPoDataEnabled] = true,
+        [ReceivingSettingsKeys.Integrations.AutoPullPartDataEnabled] = true,
+        [ReceivingSettingsKeys.Integrations.SyncToInforVisual] = false,
+        [ReceivingSettingsKeys.Integrations.RetryFailedSyncs] = true,
+    };
+
+    public static IReadOnlyDictionary<string, int> IntDefaults { get; } = new Dictionary<string, int>
+    {
+        // Validation
+        [ReceivingSettingsKeys.Validation.MinLoadCount] = 1,
+        [ReceivingSettingsKeys.Validation.MaxLoadCount] = 99,
+        [ReceivingSettingsKeys.Validation.MinQuantity] = 0,
+        [ReceivingSettingsKeys.Validation.MaxQuantity] = 999999,
+
+        // Business Rules
+        [ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds] = 300,
+
+        // Integrations
+        [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = 30,
+        [ReceivingSettingsKeys.Integrations.MaxSyncRetries] = 3,
     };
 }

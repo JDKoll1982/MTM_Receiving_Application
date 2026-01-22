@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using System.Collections.Generic;
 using System.IO;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -25,6 +26,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_CSVWriter _csvWriter;
         private readonly IService_Pagination _paginationService;
         private readonly IService_Help _helpService;
+        private readonly IService_ReceivingSettings _receivingSettings;
 
         private readonly List<Model_ReceivingLoad> _allLoads = new();
         private List<Model_ReceivingLoad> _filteredLoads = new();
@@ -40,6 +42,73 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _selectAllButtonText = "Select All";
+
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _editModeLoadDataFromText = "Load Data From:";
+
+        [ObservableProperty]
+        private string _editModeCurrentMemoryText = "Current Memory";
+
+        [ObservableProperty]
+        private string _editModeCurrentLabelsText = "Current Labels";
+
+        [ObservableProperty]
+        private string _editModeHistoryText = "History";
+
+        [ObservableProperty]
+        private string _editModeFilterDateText = "Filter Date:";
+
+        [ObservableProperty]
+        private string _editModeToText = "to";
+
+        [ObservableProperty]
+        private string _editModeLastWeekText = "Last Week";
+
+        [ObservableProperty]
+        private string _editModeTodayText = "Today";
+
+        [ObservableProperty]
+        private string _editModeThisWeekText = "This Week";
+
+        [ObservableProperty]
+        private string _editModeShowAllText = "Show All";
+
+        [ObservableProperty]
+        private string _editModePageText = "Page";
+
+        [ObservableProperty]
+        private string _editModeOfText = "of";
+
+        [ObservableProperty]
+        private string _editModeGoText = "Go";
+
+        [ObservableProperty]
+        private string _editModeSaveAndFinishText = "Save & Finish";
+
+        [ObservableProperty]
+        private string _editModeRemoveRowText = "Remove Row";
+
+        [ObservableProperty]
+        private string _editModeColumnLoadNumberText = "Load #";
+
+        [ObservableProperty]
+        private string _editModeColumnPartIdText = "Part ID";
+
+        [ObservableProperty]
+        private string _editModeColumnWeightQtyText = "Weight/Qty";
+
+        [ObservableProperty]
+        private string _editModeColumnHeatLotText = "Heat/Lot";
+
+        [ObservableProperty]
+        private string _editModeColumnPkgTypeText = "Pkg Type";
+
+        [ObservableProperty]
+        private string _editModeColumnPkgsPerLoadText = "Pkgs/Load";
+
+        [ObservableProperty]
+        private string _editModeColumnWtPerPkgText = "Wt/Pkg";
 
         [ObservableProperty]
         private DateTimeOffset _filterStartDate = DateTimeOffset.Now.AddDays(-7);
@@ -79,6 +148,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="logger"></param>
         /// <param name="windowService"></param>
         /// <param name="helpService"></param>
+        /// <param name="receivingSettings"></param>
+        /// <param name="notificationService"></param>
         public ViewModel_Receiving_EditMode(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
@@ -87,8 +158,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
-            IService_Help helpService)
-            : base(errorHandler, logger)
+            IService_Help helpService,
+            IService_ReceivingSettings receivingSettings,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _windowService = windowService;
             _workflowService = workflowService;
@@ -96,6 +169,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _csvWriter = csvWriter;
             _paginationService = paginationService;
             _helpService = helpService;
+            _receivingSettings = receivingSettings;
 
             _loads = new ObservableCollection<Model_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
@@ -104,6 +178,44 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _paginationService.PageSize = 20;
 
             _logger.LogInfo("Edit Mode initialized");
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                EditModeLoadDataFromText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeLoadDataFrom);
+                EditModeCurrentMemoryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeCurrentMemory);
+                EditModeCurrentLabelsText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeCurrentLabels);
+                EditModeHistoryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeHistory);
+                EditModeFilterDateText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeFilterDate);
+                EditModeToText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeTo);
+                EditModeLastWeekText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeLastWeek);
+                EditModeTodayText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeToday);
+                EditModeThisWeekText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeThisWeek);
+                EditModeShowAllText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeShowAll);
+                EditModePageText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModePage);
+                EditModeOfText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeOf);
+                EditModeGoText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeGo);
+                EditModeSaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeSaveAndFinish);
+                EditModeRemoveRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeRemoveRow);
+
+                EditModeColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnLoadNumber);
+                EditModeColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPartId);
+                EditModeColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnWeightQty);
+                EditModeColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnHeatLot);
+                EditModeColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPkgType);
+                EditModeColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPkgsPerLoad);
+                EditModeColumnWtPerPkgText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg);
+
+                _logger.LogInfo("Edit Mode UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Edit Mode UI text from settings: {ex.Message}", ex);
+            }
         }
 
         /// <summary>

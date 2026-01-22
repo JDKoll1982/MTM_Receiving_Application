@@ -18,15 +18,19 @@
         <Nullable>enable</Nullable>
         <WindowsPackageType>None</WindowsPackageType>
         <UseRidGraph>true</UseRidGraph>
-        <NoWarn>RCS1060;CS8012</NoWarn><!-- Compilation Performance Optimizations -->
+        
+        <!-- Warning Suppressions (Global) -->
+        <!-- TODO: Consider suppressing warnings at specific usage sites with #pragma instead of globally -->
+        <!-- RCS1060: Disabled condition in pattern matching - Required for C# guard clauses (e.g., 'is not null') -->
+        <!-- CS8012: Missing assembly reference warning - Expected in self-contained deployment model -->
+        <!-- CS1591: Missing XML documentation - Suppressed in Release build configuration -->
+        <NoWarn>RCS1060;CS8012</NoWarn>
+        <!-- Compilation Performance Optimizations -->
         <BuildInParallel>true</BuildInParallel>
         <MaxCpuCount>0</MaxCpuCount>
         <IncrementalBuild>true</IncrementalBuild>
         <Deterministic>true</Deterministic>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly><!-- XAML Compilation
-        Optimizations -->
-        <XamlDebuggingInformation>false</XamlDebuggingInformation>
-        <EnableXamlCompilerOptimizations>true</EnableXamlCompilerOptimizations>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
     <!-- WindowsAppSDKSelfContained ensures the Windows App SDK runtime is included in the output -->
     <PropertyGroup>
@@ -44,25 +48,47 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    <!-- Configuration Files -->
+    <ItemGroup>
+        <None Include="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="appsettings.*.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+    </ItemGroup>
+    <!-- Copy icon file to output directory -->
+    <ItemGroup>
+        <None Include="Assets\MTMIcon.ico">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <!-- Exclude .github folder from PRI generation -->
+    <ItemGroup>
+        <PRIResource Remove=".github\**" />
+    </ItemGroup>
     <!-- Exclude test project files from compilation -->
     <ItemGroup>
         <Compile Remove="MTM_Receiving_Application.Tests\**" />
+        <Compile Remove="Properties\**" />
         <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
+        <EmbeddedResource Remove="Properties\**" />
         <None Remove="MTM_Receiving_Application.Tests\**" />
+        <None Remove="Properties\**" />
         <Page Remove="MTM_Receiving_Application.Tests\**" />
+        <Page Remove="Properties\**" />
     </ItemGroup>
     <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon
     property) -->
     <ItemGroup>
-        <None Include=".github\prompts\converter-unit-tests.prompt.md" />
-        <None Include=".github\prompts\dao-unit-tests.prompt.md" />
-        <None Include=".github\prompts\generate-all-tests.prompt.md" />
-        <None Include=".github\prompts\helper-unit-tests.prompt.md" />
-        <None Include=".github\prompts\model-unit-tests.prompt.md" />
-        <None Include=".github\prompts\module-models-optimize-and-test.prompt.md" />
-        <None Include=".github\prompts\service-unit-tests.prompt.md" />
-        <None Include=".github\prompts\viewmodel-unit-tests.prompt.md" />
-        <None Include="Assets\\app-icon.svg" />
+        <!-- GitHub configuration and documentation files -->
+        <None Include=".github\**\*.json" />
+        <None Include=".github\**\*.md" />
+        <None Include=".github\**\*.sql" />
+        <None Include=".github\.last-agent-run" />
+        <!-- Assets -->
+        <None Include="Assets\app-icon.svg" />
     </ItemGroup>
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
@@ -86,29 +112,11 @@
         <None Remove="obj\**" />
         <None Remove="bin\**" />
     </ItemGroup>
-    <ItemGroup>
-        <None Include=".github\agents\speckit.analyze.agent.md" />
-        <None Include=".github\agents\speckit.checklist.agent.md" />
-        <None Include=".github\agents\speckit.clarify.agent.md" />
-        <None Include=".github\agents\speckit.constitution.agent.md" />
-        <None Include=".github\agents\speckit.implement.agent.md" />
-        <None Include=".github\agents\speckit.plan.agent.md" />
-        <None Include=".github\agents\speckit.specify.agent.md" />
-        <None Include=".github\agents\speckit.tasks.agent.md" />
-        <None Include=".github\prompts\speckit.analyze.prompt.md" />
-        <None Include=".github\prompts\speckit.checklist.prompt.md" />
-        <None Include=".github\prompts\speckit.clarify.prompt.md" />
-        <None Include=".github\prompts\speckit.constitution.prompt.md" />
-        <None Include=".github\prompts\speckit.implement.prompt.md" />
-        <None Include=".github\prompts\speckit.plan.prompt.md" />
-        <None Include=".github\prompts\speckit.specify.prompt.md" />
-        <None Include=".github\prompts\speckit.tasks.prompt.md" />
-    </ItemGroup>
     <!-- Specify Configuration Files -->
     <ItemGroup>
         <None Include=".specify\memory\constitution.md" />
         <None Include=".specify\scripts\powershell\check-prerequisites.ps1" />
-        <None Include=".specify\scripts\powershell\common. ps1" />
+        <None Include=".specify\scripts\powershell\common.ps1" />
         <None Include=".specify\scripts\powershell\create-new-feature.ps1" />
         <None Include=".specify\scripts\powershell\setup-plan.ps1" />
         <None Include=".specify\scripts\powershell\update-agent-context.ps1" />
@@ -120,12 +128,10 @@
     </ItemGroup>
     <!-- VS Code Settings -->
     <ItemGroup>
-        <None Include=".vscode\settings. json" />
-        <None Include="MTM_Receiving_Application_fixed.slnx" />
+        <None Include=".vscode\settings.json" />
     </ItemGroup>
     <!-- Properties Files -->
     <ItemGroup>
-        <None Include="Properties\launchSettings.json" />
         <None Include="Scripts\Add-AsyncSuffix.ps1" />
         <None Include="Scripts\PlanApp.md" />
     </ItemGroup>
@@ -157,11 +163,13 @@
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
         <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
 
         <PackageReference Include="Material.Icons.WinUI3" Version="2.4.1" />
         <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
@@ -176,22 +184,28 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
     </ItemGroup>
     <!-- Analyzer Performance Optimizations -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <!-- Run analyzers in background to avoid blocking build -->
-        <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+        <!-- Enable analyzers during development for immediate feedback -->
+        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
         <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
         <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+        <!-- Enable XAML debugging in Debug builds -->
+        <XamlDebuggingInformation>true</XamlDebuggingInformation>
+        <EnableXamlCompilerOptimizations>false</EnableXamlCompilerOptimizations>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <!-- Full analysis in Release builds -->
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <!-- Disable XAML debugging in Release builds for performance -->
+        <XamlDebuggingInformation>false</XamlDebuggingInformation>
+        <EnableXamlCompilerOptimizations>true</EnableXamlCompilerOptimizations>
+        <!-- Generate XML documentation for public APIs -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <!-- Suppress missing XML comment warnings for now -->
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
     <!-- Deferring loading of MEF extensions until after the initial project load speeds up solution
     load -->
@@ -208,23 +222,31 @@
     </PropertyGroup>
     <!-- Publish Properties -->
     <PropertyGroup>
-        <!-- Disable ReadyToRun for WinUI 3 - causes COM interop issues -->
+        <!-- 
+        WinUI 3 Application Publishing Configuration
+        
+        NOTE: These optimizations are disabled due to known WinUI 3 framework limitations.
+        Before enabling, thoroughly test with:
+        - XAML data binding and x:Bind expressions
+        - Dependency injection and reflection-based services
+        - JSON serialization (System.Text.Json)
+        - COM interop components
+        -->
+        
+        <!-- ReadyToRun: Disabled - causes COM interop crashes in WinUI 3 -->
         <PublishReadyToRun>False</PublishReadyToRun>
-        <!-- Disable trimming for WinUI 3 apps - causes issues with XAML binding, reflection, and
-        JSON serialization -->
+        
+        <!-- Trimming: Disabled - breaks XAML binding, DI, and JSON serialization -->
+        <!-- TODO: Future optimization - test with TrimMode=partial and DynamicallyAccessedMembers attributes -->
         <PublishTrimmed>False</PublishTrimmed>
-        <!-- Suppress trim warnings from third-party libraries -->
+        
+        <!-- Trim Analysis: Enabled warnings suppressed - re-enable when implementing partial trimming -->
         <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
         <!-- Disable single-file publishing -->
         <PublishSingleFile>false</PublishSingleFile>
         <!-- Keep debugging symbols for crash analysis -->
         <DebugType>embedded</DebugType>
         <DebugSymbols>true</DebugSymbols>
-    </PropertyGroup>
-    <!-- Release Configuration Tweaks for WinUI 3 Compatibility -->
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <!--  Use same optimization settings as Debug to avoid COM interop issues -->
-        <Optimize>false</Optimize>
     </PropertyGroup>
     <!-- Debug Configuration Optimizations -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -246,12 +268,6 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <Content Remove="Assets\Icon.jpg" />
-      <Content Remove="Assets\MTMIcon.ico" />
-      <Content Remove="Assets\MTMRecv.ico" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include=".github\instructions\" />
-        <Folder Include="Module_Receiving\Settings\" />
+      <PRIResource Remove="Properties\**" />
     </ItemGroup>
 </Project>

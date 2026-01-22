@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 
@@ -27,19 +28,26 @@ public abstract partial class ViewModel_Shared_Base : ObservableObject
     [ObservableProperty]
     private string _title = string.Empty;
 
+    private readonly IService_Notification _notificationService;
+
     protected ViewModel_Shared_Base(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService)
     {
+        ArgumentNullException.ThrowIfNull(errorHandler);
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(notificationService);
+
         _errorHandler = errorHandler;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     public void ShowStatus(string message, InfoBarSeverity severity = InfoBarSeverity.Informational)
     {
         // Update global notification
-        var notificationService = App.GetService<IService_Notification>();
-        notificationService?.ShowStatus(message, severity);
+        _notificationService.ShowStatus(message, severity);
 
         // Update local properties
         StatusMessage = message;

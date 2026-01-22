@@ -15,7 +15,7 @@ outputFile: '{planning_artifacts}/prd.md'
 
 **Final Step - Complete the PRD**
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - ✅ THIS IS A FINAL STEP - Workflow completion required
 
@@ -27,14 +27,14 @@ outputFile: '{planning_artifacts}/prd.md'
 - 🎯 UPDATE workflow status files with completion information
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - 💾 Update the main workflow status file with completion information
 - 📖 Suggest potential next workflow steps for the user
 - 🚫 DO NOT load additional steps after this one
 
-## TERMINATION STEP PROTOCOLS:
+## TERMINATION STEP PROTOCOLS
 
 - This is a FINAL step - workflow completion required
 - Output any remaining content if needed (none for this step)
@@ -42,18 +42,18 @@ outputFile: '{planning_artifacts}/prd.md'
 - Suggest potential next steps for the user
 - Mark workflow as complete in status tracking
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Complete PRD document is available from all previous steps
 - Workflow frontmatter shows all completed steps
 - All collaborative content has been generated and saved
 - Focus on completion, validation, and next steps
 
-## YOUR TASK:
+## YOUR TASK
 
 Complete the PRD workflow, update status files, and suggest next steps for the project.
 
-## WORKFLOW COMPLETION SEQUENCE:
+## WORKFLOW COMPLETION SEQUENCE
 
 ### 1. Announce Workflow Completion
 
@@ -136,7 +136,7 @@ Perform final validation of the PRD:
 - Confirm completion with user and summarize what you have done.
 - Update frontmatter: add this final step name to the end of the steps completed array.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ PRD document contains all required sections
 ✅ All collaborative content properly saved to document
@@ -145,7 +145,7 @@ Perform final validation of the PRD:
 ✅ Document quality validation completed
 ✅ User acknowledges completion and understands next options
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not updating workflow status file with completion information
 ❌ Missing clear next step guidance for user
@@ -157,9 +157,9 @@ Perform final validation of the PRD:
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## WORKFLOW COMPLETION CHECKLIST:
+## WORKFLOW COMPLETION CHECKLIST
 
-### Document Structure Complete:
+### Document Structure Complete
 
 - [ ] Executive Summary with vision and differentiator
 - [ ] Success Criteria with measurable outcomes
@@ -171,7 +171,7 @@ Perform final validation of the PRD:
 - [ ] Functional Requirements (capability contract)
 - [ ] Non-Functional Requirements
 
-### Process Complete:
+### Process Complete
 
 - [ ] All steps completed with user confirmation
 - [ ] All content saved to document
@@ -179,7 +179,7 @@ Perform final validation of the PRD:
 - [ ] Workflow status file updated
 - [ ] Next steps clearly communicated
 
-## FINAL REMINDER:
+## FINAL REMINDER
 
 This workflow is now complete. The PRD serves as the foundation for all subsequent product development activities. All design, architecture, and development work should trace back to the requirements and vision documented in this PRD.
 

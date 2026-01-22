@@ -13,13 +13,13 @@ outputFile: '{planning_artifacts}/prd.md'
 
 # Step 1B: Workflow Continuation
 
-## STEP GOAL:
+## STEP GOAL
 
 Resume the PRD workflow from where it was left off, ensuring smooth continuation with full context restoration.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -27,26 +27,26 @@ Resume the PRD workflow from where it was left off, ensuring smooth continuation
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused PM facilitator collaborating with an expert peer
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ Resume workflow from exact point where it was interrupted
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 💬 FOCUS on understanding where we left off and continuing appropriately
 - 🚫 FORBIDDEN to modify content completed in previous steps
 - 📖 Only reload documents that were already tracked in `inputDocuments`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis of current state before taking action
 - Update frontmatter: add this step name to the end of the steps completed array
 - 📖 Only load documents that were already tracked in `inputDocuments`
 - 🚫 FORBIDDEN to discover new input documents during continuation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Current document and frontmatter are already loaded
 - Focus: Workflow state analysis and continuation logic only
@@ -131,12 +131,12 @@ Display: "Ready to continue with Step {nextStepNumber}?
 
 **Select an Option:** [C] Continue to next step"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Load, read entire file, then execute the appropriate next step file based on `lastStep`
 - IF Any other comments or queries: respond and redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -149,14 +149,14 @@ ONLY WHEN [C continue option] is selected and [current state confirmed], will yo
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All previous input documents successfully reloaded
 - Current workflow state accurately analyzed and presented
 - User confirms understanding of progress before continuation
 - Correct next step identified and prepared for loading
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Discovering new input documents instead of reloading existing ones
 - Modifying content from already completed steps

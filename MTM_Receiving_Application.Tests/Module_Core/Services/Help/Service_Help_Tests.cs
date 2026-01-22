@@ -26,8 +26,9 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Services.Help
             _mockWindow = new Mock<IService_Window>();
             _mockLogger = new Mock<IService_LoggingUtility>();
             _mockDispatcher = new Mock<IService_Dispatcher>();
+            var mockServiceProvider = new Mock<IServiceProvider>();
 
-        _sut = new Service_Help(_mockWindow.Object, _mockLogger.Object, _mockDispatcher.Object);
+            _sut = new Service_Help(_mockWindow.Object, _mockLogger.Object, _mockDispatcher.Object, mockServiceProvider.Object);
         }
 
         [Fact]
@@ -85,7 +86,7 @@ namespace MTM_Receiving_Application.Tests.Module_Core.Services.Help
             results.Should().BeEmpty();
         }
 
-         [Fact]
+        [Fact]
         public void TipRetreival_ReturnsContent()
         {
             // Act

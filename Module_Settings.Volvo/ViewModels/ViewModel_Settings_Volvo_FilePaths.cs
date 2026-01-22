@@ -7,7 +7,8 @@ public sealed partial class ViewModel_Settings_Volvo_FilePaths : ViewModel_Share
 {
     public ViewModel_Settings_Volvo_FilePaths(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         Title = "Volvo File Paths";
     }

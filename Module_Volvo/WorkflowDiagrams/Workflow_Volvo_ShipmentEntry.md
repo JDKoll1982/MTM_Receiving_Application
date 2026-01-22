@@ -58,6 +58,7 @@ flowchart TD
 - Resolved: Completing shipment clears pending status (status updated to completed).
 
 ## User-Friendly Steps
+
 1. Open the Volvo Dunnage Requisition screen. The app auto-fills today’s date and the next shipment number.
 2. If a pending shipment already exists, it loads automatically and hydrates quantity-per-skid values from master data.
 3. Start typing a part number and pick it from the suggestions.
@@ -71,6 +72,7 @@ flowchart TD
 11. When you have PO and Receiver numbers, click Complete Shipment to finalize and clear the form.
 
 ## Required Info for Fixing Incorrect Workflows
+
 | Step | UI / Action | Command / Query | Validator Rules (Actual) | Handler / Data Path | Actual Data (from code) |
 |---|---|---|---|---|---|
 | Initialize screen | OnLoaded → InitializeAsync | GetInitialShipmentDataQuery, GetPendingShipmentQuery, GetAllVolvoPartsQuery | n/a | ViewModel: ViewModel_Volvo_ShipmentEntry.InitializeAsync | Loads part master cache; auto-sets ShipmentDate/ShipmentNumber; loads pending if found and hydrates quantity per skid |

@@ -24,13 +24,13 @@ step1bTemplate: '{project-root}/_bmad/bmb/docs/workflows/templates/step-1b-templ
 
 # Step 7: Workflow File Generation
 
-## STEP GOAL:
+## STEP GOAL
 
 To generate all the workflow files (workflow.md, step files, templates, and supporting files) based on the approved plan from the previous design step.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -38,7 +38,7 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -46,28 +46,28 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 - ✅ You bring implementation expertise and best practices
 - ✅ User brings their specific requirements and design approvals
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on generating files based on approved design
 - 🚫 FORBIDDEN to modify the design without user consent
 - 💬 Generate files collaboratively, getting approval at each stage
 - 🚪 CREATE files in the correct target location
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Generate files systematically from design
 - 💾 Document all generated files and their locations
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and build is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved plan from step 6 guides implementation
 - Generate files in target workflow location
 - Load templates and documentation as needed during build
 - Follow step-file architecture principles
 
-## BUILD REFERENCE MATERIALS:
+## BUILD REFERENCE MATERIALS
 
 - When building each step file, you must follow template `{project-root}/_bmad/bmb/docs/workflows/templates/step-template.md`
 - When building continuable step-01-init.md files, use template `{project-root}/_bmad/bmb/docs/workflows/templates/step-01-init-continuable-template.md`
@@ -75,7 +75,7 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 - When building the main workflow.md file, you must follow template `{project-root}/_bmad/bmb/docs/workflows/templates/workflow-template.md`
 - Example step files from {project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md for patterns - this is an idealized workflow so all files can give good insight into format and structure to be followed
 
-## FILE GENERATION SEQUENCE:
+## FILE GENERATION SEQUENCE
 
 ### 1. Confirm Build Readiness
 
@@ -184,6 +184,7 @@ For document workflows:
 - Ensure variable naming consistency
 
 Remember that the output format design we aligned on chose one of the following - and what it means practically when creating the workflow steps:
+
 1. **Strict Template** - Must follow exact format with specific fields
    1. This is similar to the example where there are multiple template fragements that are specific with all fields to be in the final output.
    2. generally there will be 1 fragment to a step to complete in the overall template.
@@ -225,7 +226,7 @@ Create a summary of what was generated:
 - Identify any manual steps needed
 - Provide next steps for testing
 
-## QUALITY CHECKS DURING BUILD:
+## QUALITY CHECKS DURING BUILD
 
 ### Frontmatter Validation
 
@@ -248,7 +249,7 @@ Create a summary of what was generated:
 - Dependencies are correctly defined
 - No orphaned references exist
 
-## BUILD PRINCIPLES:
+## BUILD PRINCIPLES
 
 ### Follow Design Exactly
 
@@ -271,7 +272,7 @@ Create a summary of what was generated:
 - Make code readable and maintainable
 - Provide examples where helpful
 
-## CONTENT TO APPEND TO PLAN:
+## CONTENT TO APPEND TO PLAN
 
 After generating all files, append to {workflowPlanFile}:
 
@@ -286,13 +287,13 @@ Create a build summary including:
 
 Display: **Build Complete - Select an Option:** [C] Continue to Review
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - Build complete - all files generated
 - Present simple completion status
 - User selects [C] to continue to review step
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF C: Save build summary to {workflowPlanFile}, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: respond and redisplay menu
@@ -305,7 +306,7 @@ ONLY WHEN C is selected and content is saved to plan and frontmatter is updated,
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All workflow files generated in correct locations
 - Files follow step-file architecture principles
@@ -313,7 +314,7 @@ ONLY WHEN C is selected and content is saved to plan and frontmatter is updated,
 - Build documented in {workflowPlanFile}
 - Frontmatter updated with step completion
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Generating files without user approval
 - Deviating from approved plan

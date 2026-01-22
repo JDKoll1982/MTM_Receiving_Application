@@ -28,24 +28,24 @@
             <!-- Main Toolbar Area -->
             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                 <!-- Load Data Section -->
-                <TextBlock Text="Load Data From:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
+                <TextBlock Text="{x:Bind ViewModel.EditModeLoadDataFromText, Mode=OneWay}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,4,0"/>
                 
                 <Button Command="{x:Bind ViewModel.LoadFromCurrentMemoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadSessionMemory'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8A7;"/>
-                        <TextBlock Text="Current Memory"/>
+                        <TextBlock Text="{x:Bind ViewModel.EditModeCurrentMemoryText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadRecentCSV'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE8E5;"/>
-                        <TextBlock Text="Current Labels"/>
+                        <TextBlock Text="{x:Bind ViewModel.EditModeCurrentLabelsText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadHistoricalData'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74C;"/>
-                        <TextBlock Text="History"/>
+                        <TextBlock Text="{x:Bind ViewModel.EditModeHistoryText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
 
@@ -62,7 +62,7 @@
                 <Button Command="{x:Bind ViewModel.RemoveRowCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveRow'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
-                        <TextBlock Text="Remove Row"/>
+                        <TextBlock Text="{x:Bind ViewModel.EditModeRemoveRowText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -71,24 +71,24 @@
         <!-- Date Filter Toolbar -->
         <Grid Grid.Row="1" Margin="0,0,0,12">
             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <TextBlock Text="Filter Date:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBlock Text="{x:Bind ViewModel.EditModeFilterDateText, Mode=OneWay}" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 
                 <CalendarDatePicker Date="{x:Bind ViewModel.FilterStartDate, Mode=TwoWay}" 
                                    PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.StartDate'), Mode=OneWay}"
                                    Width="140"/>
-                <TextBlock Text="to" VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind ViewModel.EditModeToText, Mode=OneWay}" VerticalAlignment="Center"/>
                 <CalendarDatePicker Date="{x:Bind ViewModel.FilterEndDate, Mode=TwoWay}" 
                                    PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.EndDate'), Mode=OneWay}"
                                    Width="140"/>
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
-                <Button Content="Last Week" Command="{x:Bind ViewModel.SetFilterLastWeekCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterLastWeek'), Mode=OneWay}"/>
-                <Button Content="Today" Command="{x:Bind ViewModel.SetFilterTodayCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}"/>
-                <Button Content="This Week" Command="{x:Bind ViewModel.SetFilterThisWeekCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}"/>
+                <Button Content="{x:Bind ViewModel.EditModeLastWeekText, Mode=OneWay}" Command="{x:Bind ViewModel.SetFilterLastWeekCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterLastWeek'), Mode=OneWay}"/>
+                <Button Content="{x:Bind ViewModel.EditModeTodayText, Mode=OneWay}" Command="{x:Bind ViewModel.SetFilterTodayCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}"/>
+                <Button Content="{x:Bind ViewModel.EditModeThisWeekText, Mode=OneWay}" Command="{x:Bind ViewModel.SetFilterThisWeekCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}"/>
                 <Button Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneWay}" Command="{x:Bind ViewModel.SetFilterThisMonthCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisMonth'), Mode=OneWay}"/>
                 <Button Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneWay}" Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisQuarter'), Mode=OneWay}"/>
-                <Button Content="Show All" Command="{x:Bind ViewModel.SetFilterShowAllCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ClearFilters'), Mode=OneWay}"/>
+                <Button Content="{x:Bind ViewModel.EditModeShowAllText, Mode=OneWay}" Command="{x:Bind ViewModel.SetFilterShowAllCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ClearFilters'), Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 
@@ -118,13 +118,13 @@
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTextColumn Header="Load #" Binding="{Binding LoadNumber}" IsReadOnly="True" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Part ID" Binding="{Binding PartID}" Width="*"/>
-                <controls:DataGridTextColumn Header="Weight/Qty" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Heat/Lot" Binding="{Binding HeatLotNumber}" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Pkg Type" Binding="{Binding PackageType}" IsReadOnly="True" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Pkgs/Load" Binding="{Binding PackagesPerLoad}" Width="Auto"/>
-                <controls:DataGridTextColumn Header="Wt/Pkg" Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}" IsReadOnly="True" Width="Auto"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnLoadNumberText, Mode=OneWay}" Binding="{Binding LoadNumber}" IsReadOnly="True" Width="Auto"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnPartIdText, Mode=OneWay}" Binding="{Binding PartID}" Width="*"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnWeightQtyText, Mode=OneWay}" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}" Width="Auto"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnHeatLotText, Mode=OneWay}" Binding="{Binding HeatLotNumber}" Width="Auto"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnPkgTypeText, Mode=OneWay}" Binding="{Binding PackageType}" IsReadOnly="True" Width="Auto"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnPkgsPerLoadText, Mode=OneWay}" Binding="{Binding PackagesPerLoad}" Width="Auto"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.EditModeColumnWtPerPkgText, Mode=OneWay}" Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}" IsReadOnly="True" Width="Auto"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
@@ -146,12 +146,12 @@
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
-                <TextBlock Text="Page" VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind ViewModel.EditModePageText, Mode=OneWay}" VerticalAlignment="Center"/>
                 <TextBox Text="{x:Bind ViewModel.GotoPageNumber, Mode=TwoWay}" Width="60" HorizontalContentAlignment="Center"/>
-                <TextBlock Text="of" VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind ViewModel.EditModeOfText, Mode=OneWay}" VerticalAlignment="Center"/>
                 <TextBlock Text="{x:Bind ViewModel.TotalPages, Mode=OneWay}" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 
-                <Button Content="Go" Command="{x:Bind ViewModel.GoToPageCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.GoToPage'), Mode=OneWay}"/>
+                <Button Content="{x:Bind ViewModel.EditModeGoText, Mode=OneWay}" Command="{x:Bind ViewModel.GoToPageCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.GoToPage'), Mode=OneWay}"/>
                 
                 <Rectangle Width="1" Height="24" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" Margin="8,0"/>
                 
@@ -165,7 +165,7 @@
 
             <!-- Save Button -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
-                <Button Content="Save &amp; Finish" Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
+                <Button Content="{x:Bind ViewModel.EditModeSaveAndFinishText, Mode=OneWay}" Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
             </StackPanel>
         </Grid>
     </Grid>

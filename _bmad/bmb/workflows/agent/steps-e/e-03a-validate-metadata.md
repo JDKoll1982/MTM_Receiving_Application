@@ -9,31 +9,31 @@ agentMetadata: ../data/agent-metadata.md
 
 # Edit Step 3a: Validate Metadata (Before Edit)
 
-## STEP GOAL:
+## STEP GOAL
 
 Validate the agent's metadata properties against BMAD standards. Record findings to editPlan and auto-advance to next validation step.
 
-## MANDATORY EXECUTION RULES:
+## MANDATORY EXECUTION RULES
 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Read editPlan and agentMetadata first
 - 🚫 NO MENU in this step - record findings and auto-advance
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Validate metadata against agentMetadata.md rules
 - 📊 Record findings to editPlan frontmatter
 - 🚫 FORBIDDEN to present menu - auto-advance when complete
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load agentMetadata.md reference
 - 📊 Validate all metadata fields
 - 💾 Record findings to editPlan
 - ➡️ Auto-advance to next validation step when complete
 
-## Sequence of Instructions:
+## Sequence of Instructions
 
 ### 1. Load References
 
@@ -43,6 +43,7 @@ Read `{editPlan}` to get agent file path and metadata.
 ### 2. Validate Metadata
 
 Perform checks on:
+
 - **id**: kebab-case, no spaces
 - **name**: display name, clear branding
 - **title**: concise function description

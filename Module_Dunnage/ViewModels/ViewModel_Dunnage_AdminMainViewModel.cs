@@ -21,7 +21,8 @@ public partial class ViewModel_Dunnage_AdminMain : ViewModel_Shared_Base
     public ViewModel_Dunnage_AdminMain(
         IService_DunnageAdminWorkflow adminWorkflow,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _adminWorkflow = adminWorkflow;
 

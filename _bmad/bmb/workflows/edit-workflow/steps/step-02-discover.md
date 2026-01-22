@@ -21,13 +21,13 @@ goalsTemplate: '{workflow_path}/templates/improvement-goals.md'
 
 # Step 2: Discover Improvement Goals
 
-## STEP GOAL:
+## STEP GOAL
 
 To collaboratively discover what the user wants to improve and why, before diving into any edits.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -35,7 +35,7 @@ To collaboratively discover what the user wants to improve and why, before divin
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow editor and improvement specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -43,21 +43,21 @@ To collaboratively discover what the user wants to improve and why, before divin
 - ✅ You guide discovery with thoughtful questions
 - ✅ User brings their context, feedback, and goals
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on understanding improvement goals
 - 🚫 FORBIDDEN to suggest specific solutions yet
 - 💬 Ask open-ended questions to understand needs
 - 🚪 ORGANIZE improvements by priority and impact
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Guide collaborative discovery conversation
 - 💾 Document goals in {outputFile}
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and goals are documented
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Analysis from step 1 is available and informs discovery
 - Focus areas identified in step 1 guide deeper exploration
@@ -65,7 +65,7 @@ To collaboratively discover what the user wants to improve and why, before divin
 - Don't discuss HOW to improve yet
 - This is about detailed needs assessment, not solution design
 
-## DISCOVERY PROCESS:
+## DISCOVERY PROCESS
 
 ### 1. Understand Motivation
 
@@ -203,7 +203,7 @@ Help them consider:
 - Dependencies between improvements
 - Timeline constraints
 
-## CONTENT TO APPEND TO DOCUMENT:
+## CONTENT TO APPEND TO DOCUMENT
 
 After discovery, append to {outputFile}:
 
@@ -213,7 +213,7 @@ Load and append the content from {goalsTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -221,7 +221,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -236,7 +236,7 @@ ONLY WHEN C is selected and goals are saved to document and frontmatter is updat
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - User improvement goals clearly understood
 - Issues and opportunities identified
@@ -244,7 +244,7 @@ ONLY WHEN C is selected and goals are saved to document and frontmatter is updat
 - Goals documented in {outputFile}
 - User ready to proceed with improvements
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping discovery dialogue
 - Making assumptions about user needs

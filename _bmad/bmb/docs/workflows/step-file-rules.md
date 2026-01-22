@@ -17,6 +17,7 @@ BMAD workflow step files follow a strict structure to ensure consistency, progre
 **CRITICAL:** Keep step files **LT 200 lines** (250 lines absolute maximum).
 
 If a step exceeds this limit:
+
 - Consider splitting into multiple steps
 - Extract content to `/data/` reference files
 - Optimize verbose explanations
@@ -193,6 +194,7 @@ BMAD workflows use a fixed menu structure:
 | Other  | Custom               | Defined per step (e.g., F = Fix, X = Exit)           |
 
 **Rules:**
+
 - A and P MUST always be present
 - C MUST be present except in final step (use X or similar for exit)
 - After A/P → redisplay menu
@@ -210,6 +212,7 @@ BMAD workflows use a fixed menu structure:
 1. **Never pre-load future steps** - Only load `nextStepFile` when user selects [C]
 
 2. **Mode-aware routing** (for shared steps):
+
    ```markdown
    ## MODE-AWARE ROUTING:
    ### If entered from CREATE mode:
@@ -298,6 +301,7 @@ You MUST respond in **{language}** throughout this step.
 ### Reading Language Preference
 
 From tracking file frontmatter:
+
 ```yaml
 ---
 userPreferences:
@@ -347,7 +351,7 @@ Key points from that file:
 
 ## Common Pitfalls to Avoid
 
-### ❌ DON'T:
+### ❌ DON'T
 
 - Pre-load future steps (violates progressive disclosure)
 - Exceed 250 lines without splitting
@@ -356,7 +360,7 @@ Key points from that file:
 - Skip mode checking in shared steps
 - Use vague menu option letters (stick to A/P/C plus 1-2 custom)
 
-### ✅ DO:
+### ✅ DO
 
 - Keep files under 200 lines
 - Read tracking file first thing

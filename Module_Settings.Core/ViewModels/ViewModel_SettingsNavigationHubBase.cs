@@ -26,7 +26,8 @@ public abstract partial class ViewModel_SettingsNavigationHubBase : ViewModel_Sh
     protected ViewModel_SettingsNavigationHubBase(
         IService_SettingsPagination pagination,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _pagination = pagination;
         Steps = new ObservableCollection<Model_SettingsNavigationStep>();

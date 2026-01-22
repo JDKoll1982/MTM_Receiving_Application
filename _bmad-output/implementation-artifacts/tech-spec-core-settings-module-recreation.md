@@ -167,7 +167,7 @@ Rebuild Module_Settings as a core infrastructure module using CQRS (MediatR), Fl
 - Cache strategy: cache scope uses {scope,category,key,userId?}; system scope omits userId; user scope requires userId
 - Roles/privileges source: core settings schema includes roles + user-role mapping; handlers use IService_UserSessionManager for current user context and do not touch SQL Server
 - Window single-instance behavior: keep a single Settings Window instance stored in a shared service; if already open, bring to front and focus (do not create a new instance)
-- Namespaces: MTM_Receiving_Application.Module_Settings.Core.* and MTM_Receiving_Application.Module_Settings.DeveloperTools.*; update registrations accordingly
+- Namespaces: MTM_Receiving_Application.Module_Settings.Core.*and MTM_Receiving_Application.Module_Settings.DeveloperTools.*; update registrations accordingly
 - Encryption approach: use .NET built-in cryptography (no new packages). Store encryption key in DPAPI-protected local app data; support manual rotation via admin dialog
 - Corrupted/missing setting prompt channel: defer to post-startup using notification service + dialog once UI is ready
 

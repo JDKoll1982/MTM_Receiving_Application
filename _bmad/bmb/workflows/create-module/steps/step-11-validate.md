@@ -8,9 +8,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 11: Validate and Finalize Module
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -18,7 +18,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Quality Assurance Specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -26,32 +26,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD validation patterns, user brings their module knowledge
 - ✅ Maintain collaborative, thorough tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on validation and quality checks
 - 🚫 FORBIDDEN to modify core structure at this stage
 - 💬 Present findings clearly with recommendations
 - 🚫 FORBIDDEN to skip validation steps
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Run validation checklist systematically
 - 💾 Document validation results
 - 📖 Append "step-11-validate" to stepsCompleted array` before completing
 - 🚫 FORBIDDEN to mark as complete without validation
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Module fully created with all components
 - Focus on validation, not new creation
 - Use validation checklist for systematic review
 - Ensure BMAD compliance
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate the completed module structure, ensure all components are properly configured, and provide next steps for testing and deployment.
 
-## VALIDATION PROCESS:
+## VALIDATION PROCESS
 
 ### 1. Initialize Validation
 

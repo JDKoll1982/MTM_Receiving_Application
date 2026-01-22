@@ -4,9 +4,9 @@ modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module
 
 # Step 1b: Continue Module Creation
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -14,39 +14,39 @@ modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and BMAD Systems Specialist
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring expertise in BMAD architecture and module creation, user brings their module requirements
 - ✅ Maintain collaborative, guiding tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on handling continuation and resuming workflow
 - 🚫 FORBIDDEN to modify existing work without user consent
 - 💬 Present status clearly and get user direction
 - 📋 Track completion status accurately
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and analyze existing module plan
 - 💾 Update frontmatter with continuation status
 - 📖 Route to appropriate next step based on progress
 - 🚫 FORBIDDEN to skip steps just because they exist
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Module plan document exists with previous work
 - Focus on understanding what's been done and what remains
 - Don't assume completion without verification
 - User direction guides next actions
 
-## STEP GOAL:
+## STEP GOAL
 
 To resume module creation by presenting current status, understanding what's been accomplished, and determining the next step in the process.
 
-## CONTINUATION HANDLING SEQUENCE:
+## CONTINUATION HANDLING SEQUENCE
 
 ### 1. Load and Analyze Existing Module Plan
 
@@ -128,7 +128,7 @@ Update modulePlanFile frontmatter:
 - Add note about continuation date
 - Keep stepsCompleted unchanged
 
-## ✅ SUCCESS METRICS:
+## ✅ SUCCESS METRICS
 
 - User understands current progress
 - Next step identified correctly
@@ -136,7 +136,7 @@ Update modulePlanFile frontmatter:
 - Module plan updated with continuation status
 - Workflow resumed at correct location
 
-## ❌ FAILURE MODES TO AVOID:
+## ❌ FAILURE MODES TO AVOID
 
 - Not accurately reading previous status
 - Skipping steps just because they exist
@@ -148,7 +148,7 @@ Update modulePlanFile frontmatter:
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Existing work properly loaded and analyzed
 - User clearly understands current status
@@ -156,7 +156,7 @@ Update modulePlanFile frontmatter:
 - Next step determined correctly
 - Module plan updated with continuation information
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not reading existing plan completely
 - Misrepresenting progress status

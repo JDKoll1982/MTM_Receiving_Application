@@ -49,7 +49,7 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
                 .ToList();
 
             // If any validation failures, throw ValidationException (short-circuits handler execution)
-            if (failures.Any())
+            if (failures.Count > 0)
             {
                 throw new ValidationException(failures);
             }

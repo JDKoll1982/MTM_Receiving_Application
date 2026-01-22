@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Reporting.ViewModels;
 
@@ -9,6 +10,7 @@ public sealed partial class View_Settings_Reporting_FileIO : Page
 
     public View_Settings_Reporting_FileIO(ViewModel_Settings_Reporting_FileIO viewModel)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using Microsoft.UI.Xaml.Controls;
@@ -18,8 +18,7 @@ public partial class ViewModel_Shared_MainWindow : ViewModel_Shared_Base
         IService_UserSessionManager sessionManager,
         IService_Notification notificationService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger) : base(errorHandler, logger, notificationService)
     {
         _sessionManager = sessionManager;
         NotificationService = notificationService;

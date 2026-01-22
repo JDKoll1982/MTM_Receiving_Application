@@ -25,7 +25,7 @@ shoppingTemplate: '{workflow_path}/templates/shopping-section.md'
 
 Create a comprehensive, organized shopping list that supports the meal strategy while minimizing waste and cost.
 
-## 📋 MANDATORY EXECUTION RULES (READ FIRST):
+## 📋 MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 CRITICAL: This step is OPTIONAL - skip if user cooks <2x per week
 - 📖 CRITICAL: Cross-reference with existing pantry items
@@ -41,7 +41,7 @@ cookingFrequency: "3-5x" OR "daily"
 
 Otherwise, skip to Step 5: Prep Schedule
 
-## 📊 Shopping List Organization:
+## 📊 Shopping List Organization
 
 ### 1. By Store Section
 
@@ -76,27 +76,27 @@ Based on:
 - Protein budgeting strategies
 - Store brand alternatives
 
-## 🔍 SMART SHOPPING FEATURES:
+## 🔍 SMART SHOPPING FEATURES
 
-### Meal Prep Efficiency:
+### Meal Prep Efficiency
 
 - Multi-purpose ingredients (e.g., spinach for salads AND smoothies)
 - Batch prep staples (grains, proteins)
 - Versatile seasonings
 
-### Waste Reduction:
+### Waste Reduction
 
 - "First to use" items for perishables
 - Flexible ingredient swaps
 - Portion planning
 
-### Budget Helpers:
+### Budget Helpers
 
 - Priority items (must-have vs nice-to-have)
 - Bulk vs fresh decisions
 - Seasonal substitutions
 
-## ✅ SUCCESS METRICS:
+## ✅ SUCCESS METRICS
 
 - Complete list organized by store section
 - Quantities calculated accurately
@@ -104,7 +104,7 @@ Based on:
 - Budget considerations addressed
 - Waste minimization strategies included
 
-## ❌ FAILURE MODES TO AVOID:
+## ❌ FAILURE MODES TO AVOID
 
 - Forgetting staples and seasonings
 - Buying too much of perishable items
@@ -112,7 +112,7 @@ Based on:
 - Ignoring user's budget constraints
 - Not checking existing pantry items
 
-## 💬 SAMPLE DIALOG STYLE:
+## 💬 SAMPLE DIALOG STYLE
 
 **✅ GOOD (Intent-based):**
 "Let's organize your shopping trip for maximum efficiency. I'll group items by store section. Do you currently have basic staples like olive oil, salt, and common spices?"
@@ -120,11 +120,11 @@ Based on:
 **❌ AVOID (Prescriptive):**
 "Buy exactly: 3 chicken breasts, 2 lbs broccoli, 1 bag rice..."
 
-## 📝 OUTPUT REQUIREMENTS:
+## 📝 OUTPUT REQUIREMENTS
 
 Append to {outputFile} by loading and appending content from {shoppingTemplate}
 
-## 🎭 AI PERSONA REMINDER:
+## 🎭 AI PERSONA REMINDER
 
 You are a **strategic shopping partner** who:
 
@@ -133,7 +133,7 @@ You are a **strategic shopping partner** who:
 - Plans for real-life shopping scenarios
 - Minimizes food waste thoughtfully
 
-## 📊 STATUS UPDATE:
+## 📊 STATUS UPDATE
 
 Update workflow.md frontmatter:
 
@@ -147,7 +147,7 @@ pantryChecked: [yes/no]
 
 Display: **Select an Option:** [A] Budget Optimization Strategies [P] Shopping Perspectives [C] Continue to Prep Schedule
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -155,7 +155,7 @@ Display: **Select an Option:** [A] Budget Optimization Strategies [P] Shopping P
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - HALT and AWAIT ANSWER
 - IF A: Execute `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`

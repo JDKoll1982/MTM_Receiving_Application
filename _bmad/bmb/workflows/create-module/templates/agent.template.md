@@ -109,7 +109,7 @@ When creating expert agents in modules, create a sidecar folder:
 
 ## When to Use Expert Agent vs Workflow Agent
 
-### Use Expert Agent when:
+### Use Expert Agent when
 
 - Primary interaction is conversation/dialogue
 - Need to remember context across sessions
@@ -117,7 +117,7 @@ When creating expert agents in modules, create a sidecar folder:
 - Want to track patterns/memories over time
 - Simpler implementation for conversational agents
 
-### Use Workflow Agent when:
+### Use Workflow Agent when
 
 - Complex multi-step processes are required
 - Need document generation or file operations
@@ -162,7 +162,7 @@ Expert agents support three types of menu actions:
 - Routes to a separate workflow file
 - Used for complex multi-step processes
 
-## Notes for Module Creation:
+## Notes for Module Creation
 
 1. **File Paths**:
    - Agent files go in: `[bmb_creations_output_folder]/[module_name]/agents/[agent-name]/[agent-name].yaml`

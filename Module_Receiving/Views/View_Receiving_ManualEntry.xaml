@@ -33,25 +33,25 @@
                 <Button x:Name="AddRowButton" Command="{x:Bind ViewModel.AddRowCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddRow'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE710;"/>
-                        <TextBlock Text="Add Row"/>
+                        <TextBlock Text="{x:Bind ViewModel.ManualEntryAddRowText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{x:Bind ViewModel.AddMultipleRowsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddMultipleRows'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE710;"/>
-                        <TextBlock Text="Add Multiple"/>
+                        <TextBlock Text="{x:Bind ViewModel.ManualEntryAddMultipleText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{x:Bind ViewModel.RemoveRowCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveRow'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74D;"/>
-                        <TextBlock Text="Remove Row"/>
+                        <TextBlock Text="{x:Bind ViewModel.ManualEntryRemoveRowText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{x:Bind ViewModel.AutoFillCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AutoFill'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE74E;"/>
-                        <TextBlock Text="Auto-Fill"/>
+                        <TextBlock Text="{x:Bind ViewModel.ManualEntryAutoFillText, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -72,19 +72,19 @@
                           CurrentCellChanged="ManualEntryDataGrid_CurrentCellChanged"
                           Tapped="ManualEntryDataGrid_Tapped">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Load #" Binding="{Binding LoadNumber}" IsReadOnly="True"/>
-                <controls:DataGridTextColumn Header="Part ID" Binding="{Binding PartID}" Width="*"/>
-                <controls:DataGridTextColumn Header="Weight/Qty" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"/>
-                <controls:DataGridTextColumn Header="Heat/Lot" Binding="{Binding HeatLotNumber}"/>
-                <controls:DataGridTextColumn Header="Pkg Type" Binding="{Binding PackageType}" IsReadOnly="True"/>
-                <controls:DataGridTextColumn Header="Pkgs/Load" Binding="{Binding PackagesPerLoad}"/>
-                <controls:DataGridTextColumn Header="Wt/Pkg" Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}" IsReadOnly="True"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnLoadNumberText, Mode=OneWay}" Binding="{Binding LoadNumber}" IsReadOnly="True"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPartIdText, Mode=OneWay}" Binding="{Binding PartID}" Width="*"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnWeightQtyText, Mode=OneWay}" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnHeatLotText, Mode=OneWay}" Binding="{Binding HeatLotNumber}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgTypeText, Mode=OneWay}" Binding="{Binding PackageType}" IsReadOnly="True"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgsPerLoadText, Mode=OneWay}" Binding="{Binding PackagesPerLoad}"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnWtPerPkgText, Mode=OneWay}" Binding="{Binding WeightPerPackage, Converter={StaticResource DecimalToStringConverter}}" IsReadOnly="True"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
         <!-- Navigation -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="12">
-            <Button Content="Save &amp; Finish" Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
+            <Button Content="{x:Bind ViewModel.ManualEntrySaveAndFinishText, Mode=OneWay}" Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
         </StackPanel>
     </Grid>
 </UserControl>

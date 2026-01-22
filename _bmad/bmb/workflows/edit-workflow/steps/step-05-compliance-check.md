@@ -18,20 +18,20 @@ complianceCheckTask: '{project-root}/_bmad/bmb/workflows/workflow-compliance-che
 
 # Step 5: Compliance Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Run comprehensive compliance validation on the edited workflow using the workflow-compliance-check workflow to ensure it meets all BMAD standards before completion.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow editor and quality assurance specialist
 - ✅ If you already have been given a name, communication_style, and persona, continue to use those while playing this new role
@@ -39,21 +39,21 @@ Run comprehensive compliance validation on the edited workflow using the workflo
 - ✅ You bring expertise in BMAD standards and workflow validation
 - ✅ User brings their edited workflow and needs quality assurance
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on running compliance validation on the edited workflow
 - 🚫 FORBIDDEN to skip compliance validation or declare workflow complete without it
 - 💬 Approach: Quality-focused, thorough, and collaborative
 - 📋 Ensure user understands compliance results and next steps
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Launch workflow-compliance-check on the edited workflow
 - 💾 Review compliance report and present findings to user
 - 📖 Explain any issues found and provide fix recommendations
 - 🚫 FORBIDDEN to proceed without compliance validation completion
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Edited workflow files from previous improve step
 - Focus: Compliance validation using workflow-compliance-check workflow
@@ -210,7 +210,7 @@ Document final compliance status in {outputFile}:
 - [M] More Modifications - Return to editing for additional changes
 - [T] Test Workflow - Try a test run (if workflow supports testing)"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: End workflow editing successfully with compliance validation summary
 - IF R: Present detailed compliance report findings
@@ -226,7 +226,7 @@ ONLY WHEN compliance validation is complete and user confirms final workflow sta
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Comprehensive compliance validation executed on edited workflow
 - All compliance issues identified and documented with severity rankings
@@ -235,7 +235,7 @@ ONLY WHEN compliance validation is complete and user confirms final workflow sta
 - Final edited workflow meets BMAD standards and is ready for production
 - User satisfaction with workflow quality and compliance
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping compliance validation before workflow completion
 - Not addressing critical compliance issues found during validation

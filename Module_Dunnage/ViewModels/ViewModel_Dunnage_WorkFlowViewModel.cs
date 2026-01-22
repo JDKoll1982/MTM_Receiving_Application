@@ -23,8 +23,9 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel : ViewModel_Shared_Base
         IService_DunnageWorkflow workflowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Window windowService)
-        : base(errorHandler, logger)
+        IService_Window windowService,
+        IService_Notification notificationService)
+        : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _windowService = windowService;

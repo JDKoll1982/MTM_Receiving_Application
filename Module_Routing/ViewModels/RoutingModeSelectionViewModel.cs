@@ -34,8 +34,8 @@ public partial class RoutingModeSelectionViewModel : ViewModel_Shared_Base
         IService_Navigation navigationService,
         IService_ErrorHandler errorHandler,
         IService_UserSessionManager sessionManager,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _sessionManager = sessionManager;
         _userPreferenceService = userPreferenceService;

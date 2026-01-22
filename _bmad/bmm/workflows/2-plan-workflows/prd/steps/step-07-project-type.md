@@ -23,7 +23,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 7 of 11** - Next: Scoping
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -35,7 +35,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 DATA-DRIVEN: Use CSV configuration to guide discovery
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating project-type content
@@ -43,7 +43,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -51,25 +51,25 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring technical perspectives to explore project-specific requirements
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Project type from step-02 is available for configuration loading
 - Project-type CSV data will be loaded in this step
 - Focus on technical and functional requirements specific to this project type
 
-## YOUR TASK:
+## YOUR TASK
 
 Conduct project-type specific discovery using CSV-driven guidance to define technical requirements.
 
-## PROJECT-TYPE DISCOVERY SEQUENCE:
+## PROJECT-TYPE DISCOVERY SEQUENCE
 
 ### 1. Load Project-Type Configuration Data
 
@@ -87,7 +87,7 @@ Load project-type specific configuration:
 
 Parse `key_questions` from CSV and explore each:
 
-#### Question-Based Discovery:
+#### Question-Based Discovery
 
 For each question in `key_questions` from CSV:
 
@@ -108,7 +108,7 @@ Ask naturally:
 
 Based on user answers to key_questions, synthesize comprehensive requirements:
 
-#### Requirement Categories:
+#### Requirement Categories
 
 Cover the areas indicated by `required_sections` from CSV:
 
@@ -116,7 +116,7 @@ Cover the areas indicated by `required_sections` from CSV:
 - Document specific requirements, constraints, and decisions
 - Connect to product differentiator when relevant
 
-#### Skip Irrelevant Sections:
+#### Skip Irrelevant Sections
 
 Skip areas indicated by `skip_sections` from CSV to avoid wasting time on irrelevant aspects.
 
@@ -124,7 +124,7 @@ Skip areas indicated by `skip_sections` from CSV to avoid wasting time on irrele
 
 Parse `required_sections` list from the matched CSV row. For each section name, generate corresponding content:
 
-#### Common CSV Section Mappings:
+#### Common CSV Section Mappings
 
 - "endpoint_specs" or "endpoint_specification" → API endpoints documentation
 - "auth_model" or "authentication_model" → Authentication approach
@@ -133,7 +133,7 @@ Parse `required_sections` list from the matched CSV row. For each section name, 
 - "tenant_model" → Multi-tenancy approach
 - "rbac_matrix" or "permission_matrix" → Permission structure
 
-#### Template Variable Strategy:
+#### Template Variable Strategy
 
 - For sections matching common template variables: generate specific content
 - For sections without template matches: include in main project_type_requirements
@@ -143,7 +143,7 @@ Parse `required_sections` list from the matched CSV row. For each section name, 
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -181,7 +181,7 @@ Show the generated project-type content and present choices:
 
 ### 7. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current project-type content
 - Process the enhanced technical insights that come back
@@ -189,7 +189,7 @@ Show the generated project-type content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current project-type requirements
 - Process the collaborative technical expertise and validation
@@ -197,17 +197,17 @@ Show the generated project-type content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: add this step name to the end of the steps completed array
 - Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 5.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ Project-type configuration loaded and used effectively
 ✅ All key questions from CSV explored with user input
@@ -217,7 +217,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Not loading or using project-type CSV configuration
 ❌ Missing key questions from CSV in discovery process
@@ -231,7 +231,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## PROJECT-TYPE EXAMPLES:
+## PROJECT-TYPE EXAMPLES
 
 **For api_backend:**
 
@@ -251,7 +251,7 @@ When user selects 'C', append the content directly to the document using the str
 - Skip mobile-first considerations unless relevant
 - Generate enterprise-specific requirements
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md` to define project scope.
 

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -7,9 +8,10 @@ public sealed partial class View_Settings_System : Page
 {
     public ViewModel_Settings_System ViewModel { get; }
 
-    public View_Settings_System()
+    public View_Settings_System(ViewModel_Settings_System viewModel)
     {
-        ViewModel = App.GetService<ViewModel_Settings_System>();
+        ArgumentNullException.ThrowIfNull(viewModel);
+        ViewModel = viewModel;
         InitializeComponent();
     }
 }

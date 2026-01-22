@@ -15,20 +15,20 @@ installationDocs: 'https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/m
 
 # Step 9: Celebration and Installation Guidance
 
-## STEP GOAL:
+## STEP GOAL
 
 Celebrate the successful agent creation, recap the agent's capabilities, provide installation guidance, and mark workflow completion.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a celebration coordinator who guides users through agent installation and activation
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
@@ -36,7 +36,7 @@ Celebrate the successful agent creation, recap the agent's capabilities, provide
 - ✅ You bring installation expertise, user brings their excitement about their new agent, together we ensure successful agent installation and usage
 - ✅ Maintain collaborative celebratory tone throughout
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on celebrating completion and guiding installation
 - 🚫 FORBIDDEN to end without marking workflow completion in frontmatter
@@ -44,7 +44,7 @@ Celebrate the successful agent creation, recap the agent's capabilities, provide
 - 📋 Ensure user understands installation steps and agent capabilities
 - 🔗 Always provide installation documentation link for reference
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎉 Celebrate agent creation achievement enthusiastically
 - 💾 Mark workflow completion in frontmatter
@@ -52,7 +52,7 @@ Celebrate the successful agent creation, recap the agent's capabilities, provide
 - 🔗 Share installation documentation link
 - 🚫 FORBIDDEN to end workflow without proper completion marking
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete, validated, and built agent from previous steps
 - Focus: Celebration, installation guidance, and workflow completion
@@ -118,12 +118,14 @@ Present enthusiastic celebration:
 "To make your agent installable and sharable, you'll need to package it as a standalone BMAD content module. Here's what you need to know:"
 
 **Key Steps:**
+
 1. **Create a module folder:** Name it something descriptive (e.g., `my-custom-stuff`)
 2. **Add module.yaml:** Include a `module.yaml` file with `unitary: true`
 3. **Structure your agent:** Place your agent file in `agents/{agent-name}/{agent-name}.agent.yaml`
 4. **Include sidecar (if Expert):** For Expert agents, include the `_memory/{sidecar-folder}/` structure
 
 **Module Structure Example:**
+
 ```
 my-custom-stuff/
 ├── module.yaml          # Contains: unitary: true
@@ -142,6 +144,7 @@ my-custom-stuff/
 **Note:** Your custom module can contain agents, workflows, or both. The `agents/` and `workflows/` folders are siblings alongside `module.yaml`.
 
 **Installation Methods:**
+
 - **New projects:** The BMAD installer will prompt for local custom modules
 - **Existing projects:** Use "Modify BMAD Installation" to add your module
 
@@ -152,7 +155,7 @@ my-custom-stuff/
 
 ### 5. Final Documentation
 
-#### Content to Append (if applicable):
+#### Content to Append (if applicable)
 
 ```markdown
 ## Agent Creation Complete! 🎉
@@ -198,14 +201,14 @@ Save this content to `{outputFile}` for reference.
 
 Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [X] Exit Workflow"
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF X: Save content to {outputFile}, update frontmatter with workflow completion, then end workflow gracefully
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY complete workflow when user selects 'X'
@@ -220,7 +223,7 @@ ONLY WHEN [X exit option] is selected and [workflow completion marked in frontma
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Enthusiastic celebration of agent creation achievement
 - Clear installation guidance provided
@@ -232,7 +235,7 @@ ONLY WHEN [X exit option] is selected and [workflow completion marked in frontma
 - Content properly saved to output file
 - Menu presented with exit option
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Ending without marking workflow completion
 - Not providing clear installation guidance

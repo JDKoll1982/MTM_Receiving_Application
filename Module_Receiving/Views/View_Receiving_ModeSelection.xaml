@@ -19,11 +19,11 @@
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
-                            AutomationProperties.Name="Guided Wizard Mode">
+                            AutomationProperties.Name="{x:Bind ViewModel.GuidedAccessibilityName, Mode=OneWay}">
                         <StackPanel Spacing="12">
                             <FontIcon Glyph="&#xE771;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock Text="Guided Wizard" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Step-by-step process for standard receiving workflow." 
+                            <TextBlock Text="{x:Bind ViewModel.GuidedTitleText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind ViewModel.GuidedDescriptionText, Mode=OneWay}" 
                                        Style="{StaticResource BodyTextBlockStyle}" 
                                        TextWrapping="Wrap" 
                                        TextAlignment="Center"
@@ -32,7 +32,7 @@
                     </Button>
                     
                     <!-- Guided Mode Checkbox -->
-                    <CheckBox Content="Set as default mode"
+                    <CheckBox Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
                               IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
                               Command="{x:Bind ViewModel.SetGuidedAsDefaultCommand}"
                               CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
@@ -49,11 +49,11 @@
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
-                            AutomationProperties.Name="Manual Entry Mode">
+                            AutomationProperties.Name="{x:Bind ViewModel.ManualAccessibilityName, Mode=OneWay}">
                         <StackPanel Spacing="12">
                             <FontIcon Glyph="&#xE7F0;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock Text="Manual Entry" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Customizable grid for bulk data entry and editing." 
+                            <TextBlock Text="{x:Bind ViewModel.ManualTitleText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind ViewModel.ManualDescriptionText, Mode=OneWay}" 
                                        Style="{StaticResource BodyTextBlockStyle}" 
                                        TextWrapping="Wrap" 
                                        TextAlignment="Center"
@@ -62,7 +62,7 @@
                     </Button>
                     
                     <!-- Manual Mode Checkbox -->
-                    <CheckBox Content="Set as default mode"
+                    <CheckBox Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
                               IsChecked="{x:Bind ViewModel.IsManualModeDefault, Mode=TwoWay}"
                               Command="{x:Bind ViewModel.SetManualAsDefaultCommand}"
                               CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
@@ -79,11 +79,11 @@
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
-                            AutomationProperties.Name="Edit Mode">
+                            AutomationProperties.Name="{x:Bind ViewModel.EditAccessibilityName, Mode=OneWay}">
                         <StackPanel Spacing="12">
                             <FontIcon Glyph="&#xE70F;" FontSize="48" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock Text="Edit Mode" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Edit existing loads without adding new ones." 
+                            <TextBlock Text="{x:Bind ViewModel.EditTitleText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind ViewModel.EditDescriptionText, Mode=OneWay}" 
                                        Style="{StaticResource BodyTextBlockStyle}" 
                                        TextWrapping="Wrap" 
                                        TextAlignment="Center"
@@ -92,7 +92,7 @@
                     </Button>
                     
                     <!-- Edit Mode Checkbox -->
-                    <CheckBox Content="Set as default mode"
+                    <CheckBox Content="{x:Bind ViewModel.SetAsDefaultText, Mode=OneWay}"
                               IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
                               Command="{x:Bind ViewModel.SetEditAsDefaultCommand}"
                               CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"

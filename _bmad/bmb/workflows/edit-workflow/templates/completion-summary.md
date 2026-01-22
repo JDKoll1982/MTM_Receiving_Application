@@ -1,4 +1,4 @@
-## Workflow Edit Complete!
+## Workflow Edit Complete
 
 ### Transformation Summary
 
@@ -66,7 +66,7 @@
 - **Date**: {{completionDate}}
 - **Documentation**: {{outputFile}}
 
-### Thank You!
+### Thank You
 
 Thank you for collaboratively improving this workflow. Your workflow now follows best practices and should provide a better experience for your users.
 

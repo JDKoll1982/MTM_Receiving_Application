@@ -29,7 +29,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base
         IService_Dispatcher dispatcher,
         IService_Help helpService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _workflowService = workflowService;
         _dunnageService = dunnageService;

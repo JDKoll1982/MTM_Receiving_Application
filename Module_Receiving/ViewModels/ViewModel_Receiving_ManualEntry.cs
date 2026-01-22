@@ -28,6 +28,43 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private Model_ReceivingLoad? _selectedLoad;
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _manualEntryAddRowText = "Add Row";
+
+        [ObservableProperty]
+        private string _manualEntryAddMultipleText = "Add Multiple";
+
+        [ObservableProperty]
+        private string _manualEntryRemoveRowText = "Remove Row";
+
+        [ObservableProperty]
+        private string _manualEntryAutoFillText = "Auto-Fill";
+
+        [ObservableProperty]
+        private string _manualEntrySaveAndFinishText = "Save & Finish";
+
+        [ObservableProperty]
+        private string _manualEntryColumnLoadNumberText = "Load #";
+
+        [ObservableProperty]
+        private string _manualEntryColumnPartIdText = "Part ID";
+
+        [ObservableProperty]
+        private string _manualEntryColumnWeightQtyText = "Weight/Qty";
+
+        [ObservableProperty]
+        private string _manualEntryColumnHeatLotText = "Heat/Lot";
+
+        [ObservableProperty]
+        private string _manualEntryColumnPkgTypeText = "Pkg Type";
+
+        [ObservableProperty]
+        private string _manualEntryColumnPkgsPerLoadText = "Pkgs/Load";
+
+        [ObservableProperty]
+        private string _manualEntryColumnWtPerPkgText = "Wt/Pkg";
+
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
 
         public ViewModel_Receiving_ManualEntry(
@@ -37,8 +74,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_LoggingUtility logger,
             IService_Window windowService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings)
-            : base(errorHandler, logger)
+            IService_ReceivingSettings receivingSettings,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _windowService = windowService;
             _workflowService = workflowService;
@@ -46,6 +84,34 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
+
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                ManualEntryAddRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAddRow);
+                ManualEntryAddMultipleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAddMultiple);
+                ManualEntryRemoveRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryRemoveRow);
+                ManualEntryAutoFillText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAutoFill);
+                ManualEntrySaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntrySaveAndFinish);
+
+                ManualEntryColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnLoadNumber);
+                ManualEntryColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPartId);
+                ManualEntryColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWeightQty);
+                ManualEntryColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnHeatLot);
+                ManualEntryColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPkgType);
+                ManualEntryColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPkgsPerLoad);
+                ManualEntryColumnWtPerPkgText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg);
+
+                _logger.LogInfo("Manual Entry UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Manual Entry UI text from settings: {ex.Message}", ex);
+            }
         }
 
         [RelayCommand]
@@ -299,10 +365,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = "Change Mode?",
-                Content = "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
-                PrimaryButtonText = "Yes, Change Mode",
-                CloseButtonText = "Cancel",
+                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle),
+                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm),
+                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel),
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
                 XamlRoot = xamlRoot
             };

@@ -9,9 +9,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 10: Generate Development Roadmap
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -19,7 +19,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Project Planner
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -27,32 +27,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in development planning, user brings their module vision
 - ✅ Maintain collaborative, forward-looking tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on creating actionable roadmap and TODO
 - 🚫 FORBIDDEN to create actual components
 - 💬 Prioritize tasks for successful launch
 - 🚫 FORBIDDEN to set time estimates
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Use component status to determine next steps
 - 💾 Create clear TODO.md with actionable items
 - 📖 Add "step-10-roadmap" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All module information from previous steps
 - Current implementation status
 - Focus on planning, not implementation
 - Avoid time-based estimates
 
-## STEP GOAL:
+## STEP GOAL
 
 To create a development roadmap and TODO list that guides the next steps for completing the module.
 
-## ROADMAP GENERATION PROCESS:
+## ROADMAP GENERATION PROCESS
 
 ### 1. Review Current Status
 
@@ -298,14 +298,14 @@ Update module-plan.md with roadmap section:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to explore development approaches
 - IF P: Execute {partyModeWorkflow} to get creative input on implementation
 - IF C: Save roadmap info to module-plan.md, add step-10-roadmap to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -316,7 +316,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - TODO.md created with clear phases
 - Tasks prioritized by importance
@@ -324,7 +324,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - Development guidance provided
 - Actionable next steps identified
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not creating TODO.md file
 - Including time estimates

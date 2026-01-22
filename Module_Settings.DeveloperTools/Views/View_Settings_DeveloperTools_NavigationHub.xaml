@@ -1,0 +1,71 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="24" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" RowSpacing="16" ColumnSpacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Click="OnStep0Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[0].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Developer tools overview and quick actions." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="0" Grid.Column="1" Click="OnStep1Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[1].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Placeholder configuration page." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="0" Grid.Column="2" Click="OnStep2Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[2].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Placeholder configuration page." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="0" Click="OnStep3Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[3].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Placeholder configuration page." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="1" Click="OnStep4Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[4].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Placeholder configuration page." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="2" Click="OnStep5Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE964;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[5].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Run connectivity and stored procedure checks." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</Page>

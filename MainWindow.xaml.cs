@@ -4,6 +4,9 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using System;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Input;
+using Windows.Graphics;
 
 namespace MTM_Receiving_Application
 {
@@ -41,8 +44,11 @@ namespace MTM_Receiving_Application
             // Center window on screen
             CenterWindow();
 
-            // Configure title bar to blend with UI (drag region will be set on first activation)
+            // Configure custom title bar
             ConfigureTitleBar();
+
+            // Set window icon
+            SetWindowIcon();
 
             // Set user display from current session
             if (_sessionManager.CurrentSession?.User != null)
@@ -65,6 +71,10 @@ namespace MTM_Receiving_Application
             // Subscribe to navigation events once
             ContentFrame.Navigated += ContentFrame_Navigated;
 
+            // Wire up title bar events
+            AppTitleBar.Loaded += AppTitleBar_Loaded;
+            AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+
             // Show development tools in debug builds
 #if DEBUG
             DatabaseTestMenuItem.Visibility = Visibility.Visible;
@@ -79,12 +89,21 @@ namespace MTM_Receiving_Application
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
+            // Update title bar text color based on activation state
+            if (args.WindowActivationState == WindowActivationState.Deactivated)
+            {
+                TitleBarTextBlock.Foreground =
+                    (Microsoft.UI.Xaml.Media.SolidColorBrush)App.Current.Resources["WindowCaptionForegroundDisabled"];
+            }
+            else
+            {
+                TitleBarTextBlock.Foreground =
+                    (Microsoft.UI.Xaml.Media.SolidColorBrush)App.Current.Resources["WindowCaptionForeground"];
+            }
+
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
                 _sessionManager.UpdateLastActivity();
-
-                // Set title bar drag region on first activation (XamlRoot will be available)
-                SetTitleBarDragRegion();
 
                 // Navigate to Receiving workflow on first activation
                 if (!_hasNavigatedOnStartup)
@@ -94,6 +113,14 @@ namespace MTM_Receiving_Application
                     ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                 }
             }
+        }
+
+        /// <summary>
+        /// Handle pane toggle button click
+        /// </summary>
+        private void PaneToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavView.IsPaneOpen = !NavView.IsPaneOpen;
         }
 
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -313,72 +340,172 @@ namespace MTM_Receiving_Application
         }
 
         /// <summary>
-        /// Configure title bar to blend with the application UI
+        /// Configure custom title bar according to Windows App SDK best practices
         /// </summary>
         private void ConfigureTitleBar()
         {
-            try
+            // Hide the default system title bar and extend content into the title bar area
+            ExtendsContentIntoTitleBar = true;
+
+            if (AppWindowTitleBar.IsCustomizationSupported())
             {
-                if (AppWindow.TitleBar != null)
-                {
-                    // Make title bar transparent to blend with Mica backdrop
-                    AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+                var titleBar = AppWindow.TitleBar;
 
-                    // Set the title bar drag region to the AppTitleBar element
-                    AppWindow.TitleBar.PreferredHeightOption = Microsoft.UI.Windowing.TitleBarHeightOption.Tall;
+                // Set title bar to tall mode for better touch interaction
+                titleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-                    // Set button colors to match theme
-                    var transparentColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+                // Make caption buttons transparent to show Mica backdrop
+                var transparentColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+                titleBar.ButtonBackgroundColor = transparentColor;
+                titleBar.ButtonInactiveBackgroundColor = transparentColor;
 
-                    // Button colors (will use theme colors)
-                    AppWindow.TitleBar.ButtonBackgroundColor = transparentColor;
-                    AppWindow.TitleBar.ButtonInactiveBackgroundColor = transparentColor;
-
-                    // Foreground colors for buttons
-                    var foregroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-                    AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
-                    AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
-                    AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
-
-                    // Drag region will be set after window loads (in MainWindow_Loaded)
-                }
-            }
-            catch
-            {
-                // Ignore title bar customization errors
+                // Set button foreground colors
+                var foregroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                titleBar.ButtonForegroundColor = foregroundColor;
+                titleBar.ButtonHoverForegroundColor = foregroundColor;
+                titleBar.ButtonPressedForegroundColor = foregroundColor;
+                titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
             }
         }
 
         /// <summary>
-        /// Set the drag region for the custom title bar
-        /// MUST be called after window is fully loaded (XamlRoot will be available)
+        /// Set the custom window icon
         /// </summary>
-        private void SetTitleBarDragRegion()
+        private void SetWindowIcon()
         {
             try
             {
-                if (AppWindow.TitleBar != null && AppTitleBar != null && AppTitleBar.XamlRoot != null)
+                // Try multiple icon paths
+                var iconPaths = new[]
                 {
-                    // Get the title bar height
-                    var scale = AppTitleBar.XamlRoot.RasterizationScale;
-                    var titleBarHeight = (int)(AppTitleBar.ActualHeight * scale);
+                    System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "MTMIcon.ico"),
+                    System.IO.Path.Combine(AppContext.BaseDirectory, "MTMIcon.ico"),
+                    "Assets/MTMIcon.ico",
+                    "MTMIcon.ico"
+                };
 
-                    // The entire AppTitleBar is draggable
-                    var dragRect = new Windows.Graphics.RectInt32
+                string? foundIconPath = null;
+                foreach (var path in iconPaths)
+                {
+                    if (System.IO.File.Exists(path))
                     {
-                        X = 0,
-                        Y = 0,
-                        Width = (int)(AppTitleBar.ActualWidth * scale),
-                        Height = titleBarHeight
-                    };
+                        foundIconPath = path;
+                        break;
+                    }
+                }
 
-                    AppWindow.TitleBar.SetDragRectangles(new[] { dragRect });
+                if (foundIconPath != null)
+                {
+                    AppWindow.SetIcon(foundIconPath);
+                    _logger?.LogInfo($"Window icon set successfully: {foundIconPath}", "MainWindow");
+                }
+                else
+                {
+                    _logger?.LogWarning($"Icon file not found. Searched paths: {string.Join(", ", iconPaths)}", "MainWindow");
+                    _logger?.LogWarning($"Current directory: {AppContext.BaseDirectory}", "MainWindow");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore drag region setup errors
+                _logger?.LogError($"Failed to set window icon: {ex.Message}", ex, "MainWindow");
             }
+        }
+
+        /// <summary>
+        /// Called when the AppTitleBar element is loaded
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ExtendsContentIntoTitleBar)
+            {
+                // Set the initial interactive regions
+                SetRegionsForCustomTitleBar();
+            }
+        }
+
+        /// <summary>
+        /// Called when the AppTitleBar element size changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AppTitleBar_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+        {
+            if (ExtendsContentIntoTitleBar)
+            {
+                // Update interactive regions if the size of the window changes
+                SetRegionsForCustomTitleBar();
+            }
+        }
+
+        /// <summary>
+        /// Define drag regions and interactive areas for the custom title bar
+        /// </summary>
+        private void SetRegionsForCustomTitleBar()
+        {
+            try
+            {
+                // Ensure XamlRoot is available
+                if (AppTitleBar?.XamlRoot == null)
+                {
+                    return;
+                }
+
+                double scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale;
+
+                // Set padding columns for caption buttons
+                RightPaddingColumn.Width = new Microsoft.UI.Xaml.GridLength(AppWindow.TitleBar.RightInset / scaleAdjustment);
+                LeftPaddingColumn.Width = new Microsoft.UI.Xaml.GridLength(AppWindow.TitleBar.LeftInset / scaleAdjustment);
+
+                // Define passthrough regions for interactive elements
+                var rectArray = new System.Collections.Generic.List<RectInt32>();
+
+                // Add PaneToggleButton region
+                if (PaneToggleButton != null)
+                {
+                    var transform = PaneToggleButton.TransformToVisual(null);
+                    var bounds = transform.TransformBounds(new Windows.Foundation.Rect(0, 0,
+                                                                 PaneToggleButton.ActualWidth,
+                                                                 PaneToggleButton.ActualHeight));
+                    rectArray.Add(GetRect(bounds, scaleAdjustment));
+                }
+
+                // Add AutoSuggestBox region
+                if (TitleBarSearchBox != null)
+                {
+                    var transform = TitleBarSearchBox.TransformToVisual(null);
+                    var bounds = transform.TransformBounds(new Windows.Foundation.Rect(0, 0,
+                                                                 TitleBarSearchBox.ActualWidth,
+                                                                 TitleBarSearchBox.ActualHeight));
+                    rectArray.Add(GetRect(bounds, scaleAdjustment));
+                }
+
+                // Set the interactive regions
+                if (rectArray.Count > 0)
+                {
+                    InputNonClientPointerSource nonClientInputSrc =
+                        InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray.ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning($"Failed to set title bar regions: {ex.Message}", "MainWindow");
+            }
+        }
+
+        /// <summary>
+        /// Helper method to convert bounds to RectInt32 with scale adjustment
+        /// </summary>
+        private RectInt32 GetRect(Windows.Foundation.Rect bounds, double scale)
+        {
+            return new RectInt32(
+                _X: (int)Math.Round(bounds.X * scale),
+                _Y: (int)Math.Round(bounds.Y * scale),
+                _Width: (int)Math.Round(bounds.Width * scale),
+                _Height: (int)Math.Round(bounds.Height * scale)
+            );
         }
     }
 }

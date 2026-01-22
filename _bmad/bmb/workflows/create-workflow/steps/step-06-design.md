@@ -22,13 +22,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 6: Workflow Structure Design
 
-## STEP GOAL:
+## STEP GOAL
 
 To collaboratively design the workflow structure, step sequence, and interaction patterns based on the approved plan and output format requirements.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -36,7 +36,7 @@ To collaboratively design the workflow structure, step sequence, and interaction
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -44,21 +44,21 @@ To collaboratively design the workflow structure, step sequence, and interaction
 - ✅ You bring workflow design patterns and architectural expertise
 - ✅ User brings their domain requirements and workflow preferences
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on designing structure, not implementation details
 - 🚫 FORBIDDEN to write actual step content or code in this step
 - 💬 Collaboratively design the flow and sequence
 - 🚫 DO NOT finalize design without user agreement
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Guide collaborative design process
 - 💾 After completing design, append to {workflowPlanFile}
 - 📖 Update plan frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and design is saved
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved plan from step 4 is available and should inform design
 - Output format design from step 5 (if completed) guides structure
@@ -67,7 +67,7 @@ To collaboratively design the workflow structure, step sequence, and interaction
 - Don't implement actual files in this step
 - This is about designing the blueprint, not building
 
-## DESIGN REFERENCE MATERIALS:
+## DESIGN REFERENCE MATERIALS
 
 When designing, you may load these documents as needed:
 
@@ -77,7 +77,7 @@ When designing, you may load these documents as needed:
 - `{project-root}/_bmad/bmb/docs/workflows/templates/workflow-template.md` - Workflow configuration
 - `{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md` - Complete example
 
-## WORKFLOW DESIGN PROCESS:
+## WORKFLOW DESIGN PROCESS
 
 ### 1. Step Structure Design
 
@@ -191,7 +191,7 @@ Present the design for review:
 - Ensure all requirements are addressed
 - Get user agreement on the design
 
-## DESIGN PRINCIPLES TO APPLY:
+## DESIGN PRINCIPLES TO APPLY
 
 ### Micro-File Architecture
 
@@ -231,7 +231,7 @@ Append to {workflowPlanFile}:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -239,7 +239,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -254,7 +254,7 @@ ONLY WHEN C is selected and design is saved will you load {nextStepFile} to begi
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Workflow structure designed collaboratively
 - All steps clearly defined and sequenced
@@ -262,7 +262,7 @@ ONLY WHEN C is selected and design is saved will you load {nextStepFile} to begi
 - File structure planned
 - User agreement on design
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Designing without user collaboration
 - Skipping design principles

@@ -9,9 +9,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 7: Review Workflow Plans
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -19,7 +19,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a Module Architect and Workflow Designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -27,32 +27,32 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - ✅ You bring expertise in BMAD workflow patterns, user brings their workflow requirements
 - ✅ Maintain collaborative, review-focused tone
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on reviewing existing workflow README files from Step 6
 - 🚫 FORBIDDEN to use create-workflow workflow in this step
 - 💬 Review and refine workflow plans, not create new ones
 - 🚫 FORBIDDEN to create actual workflow steps
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Review workflow README files created in Step 6
 - 💾 Update README files based on user feedback
 - 📖 Add "step-07-workflows" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Workflow README files were created in Step 6 for each agent
 - These README files contain workflow plans for later implementation
 - Module structure already created with workflow folders
 - Focus on reviewing and refining, not creating from scratch
 
-## STEP GOAL:
+## STEP GOAL
 
 To review and refine the workflow README files created in Step 6, ensuring they have clear plans for later implementation with the create-workflow workflow.
 
-## WORKFLOW REVIEW PROCESS:
+## WORKFLOW REVIEW PROCESS
 
 ### 1. List Workflow Folders Created
 
@@ -189,14 +189,14 @@ The README.md in each folder serves as your blueprint for implementation."
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask} to refine workflow designs
 - IF P: Execute {partyModeWorkflow} to get creative input on workflow processes
 - IF C: Save workflow plan status to module-plan.md, add step-07-workflows to the end of the stepsCompleted array in frontmatter, then load nextStepFile
 - IF Any other comments or queries: help user respond then redisplay menu
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -207,7 +207,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All workflow README files reviewed with user
 - Each workflow plan has clear purpose and steps
@@ -215,7 +215,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - README files updated based on feedback
 - Clear implementation guidance provided
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping review of workflow README files
 - Not updating plans based on user feedback

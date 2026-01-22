@@ -22,7 +22,8 @@ public partial class ViewModel_Settings_System : ViewModel_Shared_Base
     public ViewModel_Settings_System(
         ISettingsMetadataRegistry registry,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _registry = registry;
         Definitions = new ObservableCollection<Model_SettingsDefinition>(

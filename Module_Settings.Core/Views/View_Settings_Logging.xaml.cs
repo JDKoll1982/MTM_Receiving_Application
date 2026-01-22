@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -7,9 +8,10 @@ public sealed partial class View_Settings_Logging : Page
 {
     public ViewModel_Settings_Logging ViewModel { get; }
 
-    public View_Settings_Logging()
+    public View_Settings_Logging(ViewModel_Settings_Logging viewModel)
     {
-        ViewModel = App.GetService<ViewModel_Settings_Logging>();
+        ArgumentNullException.ThrowIfNull(viewModel);
+        ViewModel = viewModel;
         InitializeComponent();
     }
 }

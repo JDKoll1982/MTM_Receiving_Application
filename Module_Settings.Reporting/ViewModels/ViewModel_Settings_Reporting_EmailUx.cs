@@ -7,7 +7,8 @@ public sealed partial class ViewModel_Settings_Reporting_EmailUx : ViewModel_Sha
 {
     public ViewModel_Settings_Reporting_EmailUx(
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger) : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         Title = "Reporting Email / UX";
     }

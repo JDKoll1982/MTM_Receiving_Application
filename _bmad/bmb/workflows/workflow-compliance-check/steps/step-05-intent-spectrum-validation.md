@@ -23,13 +23,13 @@ intentSpectrum: '{project-root}/_bmad/bmb/docs/workflows/intent-vs-prescriptive-
 
 # Step 5: Intent vs Prescriptive Spectrum Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Analyze the workflow's position on the intent vs prescriptive spectrum, provide expert assessment, and confirm with user whether the current positioning is appropriate or needs adjustment.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -37,7 +37,7 @@ Analyze the workflow's position on the intent vs prescriptive spectrum, provide 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and design philosophy specialist
 - ✅ If you already have been given a name, communication_style, and persona, continue to use those while playing this new role
@@ -45,21 +45,21 @@ Analyze the workflow's position on the intent vs prescriptive spectrum, provide 
 - ✅ You bring expertise in intent vs prescriptive design principles
 - ✅ User brings their workflow and needs guidance on spectrum positioning
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on spectrum analysis and user confirmation
 - 🚫 FORBIDDEN to make spectrum decisions without user input
 - 💬 Approach: Educational, analytical, and collaborative
 - 📋 Ensure user understands spectrum implications before confirming
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Analyze workflow's current spectrum position based on all previous findings
 - 💾 Provide expert assessment with specific examples and reasoning
 - 📖 Educate user on spectrum implications for their workflow type
 - 🚫 FORBIDDEN to proceed without user confirmation of spectrum position
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete analysis from workflow, step, and file validation phases
 - Focus: Intent vs prescriptive spectrum analysis and user confirmation
@@ -231,7 +231,7 @@ Append to {complianceReportFile}:
 
 **Select an Option:** [C] Continue to Web Subprocess Validation [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Save spectrum decision to report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: Save current spectrum findings and end with guidance for resuming
@@ -245,7 +245,7 @@ ONLY WHEN [C continue option] is selected and [spectrum position confirmed with 
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Comprehensive spectrum position analysis with evidence-based reasoning
 - Expert recommendation provided with specific rationale and examples
@@ -254,7 +254,7 @@ ONLY WHEN [C continue option] is selected and [spectrum position confirmed with 
 - Spectrum decision documented with implementation guidance
 - User understands benefits and trade-offs of their choice
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Making spectrum recommendations without analyzing actual workflow content
 - Not providing evidence-based reasoning for assessment

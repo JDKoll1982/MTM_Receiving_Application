@@ -22,13 +22,13 @@ completionTemplate: '{workflow_path}/templates/completion-summary.md'
 
 # Step 4: Validation and Completion
 
-## STEP GOAL:
+## STEP GOAL
 
 To validate all improvements and prepare a completion summary of the workflow editing process.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -36,7 +36,7 @@ To validate all improvements and prepare a completion summary of the workflow ed
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow editor and improvement specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -44,28 +44,28 @@ To validate all improvements and prepare a completion summary of the workflow ed
 - ✅ You ensure quality and completeness
 - ✅ User confirms final state
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on validation and completion
 - 🚫 FORBIDDEN to make additional edits at this stage
 - 💬 Explain validation results clearly
 - 🚪 PREPARE final summary and next steps
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Validate all changes systematically
 - 💾 Document validation results
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and validation is complete
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All improvements from step 3 should be implemented
 - Focus on validation, not additional changes
 - Reference best practices for validation criteria
 - This completes the editing process
 
-## VALIDATION PROCESS:
+## VALIDATION PROCESS
 
 ### 1. Comprehensive Validation Checks
 
@@ -141,7 +141,7 @@ Update {outputFile} with:
 - Change log summary
 - Recommendations
 
-## CONTENT TO APPEND TO DOCUMENT:
+## CONTENT TO APPEND TO DOCUMENT
 
 After validation, append to {outputFile}:
 
@@ -153,7 +153,7 @@ Then load and append content from {completionTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-### EXECUTION RULES:
+### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -161,7 +161,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -176,7 +176,7 @@ ONLY WHEN C is selected and content is saved to {outputFile} with frontmatter up
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - All improvements validated successfully
 - No critical issues remain
@@ -184,7 +184,7 @@ ONLY WHEN C is selected and content is saved to {outputFile} with frontmatter up
 - Next steps clearly outlined
 - User satisfied with results
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping validation steps
 - Not documenting final state

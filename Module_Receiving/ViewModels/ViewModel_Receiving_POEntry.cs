@@ -64,6 +64,65 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private bool _isPartsListVisible;
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _poNumberHeaderText = "Purchase Order Number";
+
+        [ObservableProperty]
+        private string _poStatusLabelText = "Status:";
+
+        [ObservableProperty]
+        private string _loadPoButtonText = "Load PO";
+
+        [ObservableProperty]
+        private string _switchToNonPoButtonText = "Switch to Non-PO";
+
+        [ObservableProperty]
+        private string _partIdentifierHeaderText = "Part Identifier";
+
+        [ObservableProperty]
+        private string _packageTypeAutoHeaderText = "Package Type (Auto-detected)";
+
+        [ObservableProperty]
+        private string _lookupPartButtonText = "Look Up Part";
+
+        [ObservableProperty]
+        private string _switchToPoButtonText = "Switch to PO Entry";
+
+        [ObservableProperty]
+        private string _availablePartsHeaderText = "Available Parts";
+
+        [ObservableProperty]
+        private string _columnPartIdHeaderText = "Part ID";
+
+        [ObservableProperty]
+        private string _columnDescriptionHeaderText = "Description";
+
+        [ObservableProperty]
+        private string _columnRemainingQtyHeaderText = "Remaining Qty";
+
+        [ObservableProperty]
+        private string _columnQtyOrderedHeaderText = "Qty Ordered";
+
+        [ObservableProperty]
+        private string _columnLineNumberHeaderText = "Line #";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _poNumberAccessibilityName = "Purchase Order Number";
+
+        [ObservableProperty]
+        private string _loadPoAccessibilityName = "Load Purchase Order";
+
+        [ObservableProperty]
+        private string _partIdAccessibilityName = "Part Identifier";
+
+        [ObservableProperty]
+        private string _lookupPartAccessibilityName = "Look Up Part";
+
+        [ObservableProperty]
+        private string _partsListAccessibilityName = "Parts List";
+
         public ViewModel_Receiving_POEntry(
             IService_InforVisual inforVisualService,
             IService_ReceivingWorkflow workflowService,
@@ -72,8 +131,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Help helpService,
             IService_ViewModelRegistry viewModelRegistry,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
-            IService_ReceivingSettings receivingSettings)
-            : base(errorHandler, logger)
+            IService_ReceivingSettings receivingSettings,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _inforVisualService = inforVisualService;
             _workflowService = workflowService;
@@ -87,8 +147,45 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             // Update visibility when parts collection changes
             Parts.CollectionChanged += (s, e) => IsPartsListVisible = Parts.Count > 0;
 
+            // Load UI text from settings
+            _ = LoadUITextAsync();
+
             // Auto-fill PO number if using mock data
             InitializeAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                PoNumberHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPurchaseOrderNumber);
+                PoStatusLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryStatusLabel);
+                LoadPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryLoadPo);
+                SwitchToNonPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntrySwitchToNonPo);
+                PartIdentifierHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPartIdentifier);
+                PackageTypeAutoHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPackageTypeAuto);
+                LookupPartButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryLookupPart);
+                SwitchToPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntrySwitchToPo);
+                AvailablePartsHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryAvailableParts);
+
+                ColumnPartIdHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnPartId);
+                ColumnDescriptionHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnDescription);
+                ColumnRemainingQtyHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty);
+                ColumnQtyOrderedHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered);
+                ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber);
+
+                PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPONumber);
+                LoadPoAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryLoadPo);
+                PartIdAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPartId);
+                LookupPartAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryLookupPart);
+                PartsListAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPartsList);
+
+                _logger.LogInfo("PO Entry UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading PO Entry UI text from settings: {ex.Message}", ex);
+            }
         }
 
         public void ResetToDefaults()

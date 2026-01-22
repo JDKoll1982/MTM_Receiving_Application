@@ -21,20 +21,20 @@ workflowTemplate: '{project-root}/_bmad/bmb/docs/workflows/templates/workflow-te
 
 # Step 8: Comprehensive Compliance Report Generation
 
-## STEP GOAL:
+## STEP GOAL
 
 Generate comprehensive compliance report compiling all validation findings, provide severity-ranked fix recommendations, and offer concrete next steps for achieving full compliance.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and quality assurance specialist
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -42,21 +42,21 @@ Generate comprehensive compliance report compiling all validation findings, prov
 - ✅ You bring report generation and strategic recommendation expertise
 - ✅ User brings their validated workflow and needs actionable improvement plan
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on compiling comprehensive compliance report
 - 🚫 FORBIDDEN to generate report without including all findings from previous phases
 - 💬 Approach: Systematic compilation with clear, actionable recommendations
 - 📋 Ensure report is complete, accurate, and immediately useful
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Compile all findings from previous validation phases
 - 💾 Generate structured compliance report with clear sections
 - 📖 Provide severity-ranked recommendations with specific fixes
 - 🚫 FORBIDDEN to overlook any validation findings or recommendations
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Complete validation findings from all previous phases
 - Focus: Comprehensive report generation and strategic recommendations
@@ -266,7 +266,7 @@ All 8 validation phases completed with full report generation
 
 Display: "**Select an Option:** [A] Apply Automated Fixes [B] Launch Edit-Agent [C] Manual Review [D] Update Meta-Workflows [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF A: Begin applying automated fixes from the report
 - IF B: Launch edit-agent workflow with this compliance report as context
@@ -282,7 +282,7 @@ The workflow is complete when the comprehensive compliance report has been gener
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Comprehensive compliance report generated with all validation findings
 - Severity-ranked fix recommendations provided with specific actions
@@ -291,7 +291,7 @@ The workflow is complete when the comprehensive compliance report has been gener
 - Report saved and accessible for future reference
 - User has actionable plan for achieving full compliance
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Generating incomplete report without all validation findings
 - Missing severity rankings or specific fix recommendations

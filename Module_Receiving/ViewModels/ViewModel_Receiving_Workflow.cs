@@ -66,6 +66,52 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _saveProgressMessage = "Initializing...";
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _workflowHelpText = "Help";
+
+        [ObservableProperty]
+        private string _workflowBackText = "Back";
+
+        [ObservableProperty]
+        private string _workflowNextText = "Next";
+
+        [ObservableProperty]
+        private string _workflowModeSelectionText = "Mode Selection";
+
+        [ObservableProperty]
+        private string _workflowResetCsvText = "Reset CSV";
+
+        [ObservableProperty]
+        private string _completionSuccessTitleText = "Success!";
+
+        [ObservableProperty]
+        private string _completionFailureTitleText = "Save Failed";
+
+        [ObservableProperty]
+        private string _completionLoadsSavedSuffixText = " loads saved successfully.";
+
+        [ObservableProperty]
+        private string _completionSaveDetailsTitleText = "Save Details:";
+
+        [ObservableProperty]
+        private string _completionLocalCsvLabelText = "Local CSV:";
+
+        [ObservableProperty]
+        private string _completionNetworkCsvLabelText = "Network CSV:";
+
+        [ObservableProperty]
+        private string _completionDatabaseLabelText = "Database:";
+
+        [ObservableProperty]
+        private string _completionSavedText = "Saved";
+
+        [ObservableProperty]
+        private string _completionFailedText = "Failed";
+
+        [ObservableProperty]
+        private string _completionStartNewEntryText = "Start New Entry";
+
         [ObservableProperty]
         private double _saveProgressValue = 0;
 
@@ -84,8 +130,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Dispatcher dispatcherService,
             IService_Window windowService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings)
-            : base(errorHandler, logger)
+            IService_ReceivingSettings receivingSettings,
+            IService_Notification notificationService)
+            : base(errorHandler, logger, notificationService)
         {
             _dispatcherService = dispatcherService;
             _windowService = windowService;
@@ -105,6 +152,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
+                WorkflowHelpText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowHelp);
+                WorkflowBackText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowBack);
+                WorkflowNextText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowNext);
+                WorkflowModeSelectionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowModeSelection);
+                WorkflowResetCsvText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WorkflowResetCsv);
+
+                CompletionSuccessTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSuccessTitle);
+                CompletionFailureTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailureTitle);
+                CompletionLoadsSavedSuffixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLoadsSavedSuffix);
+                CompletionSaveDetailsTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaveDetailsTitle);
+                CompletionLocalCsvLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionLocalCsvLabel);
+                CompletionNetworkCsvLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionNetworkCsvLabel);
+                CompletionDatabaseLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionDatabaseLabel);
+                CompletionSavedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionSaved);
+                CompletionFailedText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionFailed);
+                CompletionStartNewEntryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.CompletionStartNewEntry);
+
                 _stepTitles[Enum_ReceivingWorkflowStep.ModeSelection] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleModeSelection);
                 _stepTitles[Enum_ReceivingWorkflowStep.ManualEntry] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleManualEntry);
                 _stepTitles[Enum_ReceivingWorkflowStep.EditMode] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleEditMode);
@@ -117,6 +181,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _stepTitles[Enum_ReceivingWorkflowStep.Review] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleReviewAndSave);
                 _stepTitles[Enum_ReceivingWorkflowStep.Saving] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleSaving);
                 _stepTitles[Enum_ReceivingWorkflowStep.Complete] = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.StepTitleComplete);
+
+                SaveProgressMessage = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Workflow.SaveProgressInitializing);
 
                 _dispatcherService.TryEnqueue(() =>
                 {

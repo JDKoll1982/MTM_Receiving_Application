@@ -5,78 +5,69 @@
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Settings.Receiving.ViewModels"
     xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models">
 
-    <Grid Padding="24" RowSpacing="16" VerticalAlignment="Center">
+    <Grid Padding="24" RowSpacing="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" RowSpacing="12" ColumnSpacing="16" HorizontalAlignment="Center">
+        <Grid Grid.Row="0" RowSpacing="16" ColumnSpacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.VisibleSteps, Mode=OneWay}">
-                <ItemsRepeater.Layout>
-                    <UniformGridLayout MinItemWidth="280" MinItemHeight="180" MaximumRowsOrColumns="3" Orientation="Horizontal" />
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="models:Model_SettingsNavigationStep">
-                        <Button Click="OnStepClicked"
-                                Width="280" Height="180"
-                                Padding="20"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="8">
-                            <StackPanel Spacing="12">
-                                <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                                <TextBlock Text="{x:Bind Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
+            <Button Grid.Row="0" Grid.Column="0" Click="OnStep0Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[0].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Configure overview settings." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
 
-            <StackPanel Grid.Row="1"
-                        Orientation="Horizontal"
-                        Spacing="12"
-                        HorizontalAlignment="Center"
-                        Visibility="{x:Bind ViewModel.IsPaginationVisible, Mode=OneWay}">
-                <Button Content="Prev"
-                        Click="OnPrevPageClicked" />
-                <TextBlock Text="{x:Bind ViewModel.CurrentButtonPage, Mode=OneWay}"
-                           VerticalAlignment="Center" />
-                <TextBlock Text="/" VerticalAlignment="Center" />
-                <TextBlock Text="{x:Bind ViewModel.TotalButtonPages, Mode=OneWay}"
-                           VerticalAlignment="Center" />
-                <Button Content="Next"
-                        Click="OnNextPageClicked" />
-            </StackPanel>
+            <Button Grid.Row="0" Grid.Column="1" Click="OnStep1Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[1].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Manage defaults and common values." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="0" Grid.Column="2" Click="OnStep2Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[2].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Review validation and constraints." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="0" Click="OnStep3Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[3].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Adjust user preferences and behavior." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="1" Click="OnStep4Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[4].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Manage business rules and policies." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="2" Click="OnStep5Clicked" Width="280" Height="180" Padding="20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon Glyph="&#xE8D4;" FontSize="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.Steps[5].Title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Manage integrations and supporting settings." Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" TextAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Button>
         </Grid>
-
-        <Frame Grid.Row="1" x:Name="NavigationFrame" x:FieldModifier="private" />
-
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Center"
-                    Spacing="12">
-            <Button Content="Back"
-                    Click="OnBackClicked"
-                    Visibility="{x:Bind ViewModel.IsBackVisible, Mode=OneWay}" />
-            <Button Content="Next"
-                    Click="OnNextClicked"
-                    Visibility="{x:Bind ViewModel.IsNextVisible, Mode=OneWay}" />
-            <Button Content="Save"
-                    Click="OnSaveClicked"
-                    Visibility="{x:Bind ViewModel.IsSaveVisible, Mode=OneWay}" />
-            <Button Content="Reset"
-                    Click="OnResetClicked"
-                    Visibility="{x:Bind ViewModel.IsResetVisible, Mode=OneWay}" />
-            <Button Content="Cancel"
-                    Click="OnCancelClicked"
-                    Visibility="{x:Bind ViewModel.IsCancelVisible, Mode=OneWay}" />
-        </StackPanel>
     </Grid>
 </Page>

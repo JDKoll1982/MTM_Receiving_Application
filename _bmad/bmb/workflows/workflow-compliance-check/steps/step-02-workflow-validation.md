@@ -22,13 +22,13 @@ workflowTemplate: '{project-root}/_bmad/bmb/docs/workflows/templates/workflow-te
 
 # Step 2: Workflow.md Validation
 
-## STEP GOAL:
+## STEP GOAL
 
 Perform adversarial validation of the target workflow.md against workflow-template.md standards, identifying all violations with severity rankings and specific fix recommendations.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -36,7 +36,7 @@ Perform adversarial validation of the target workflow.md against workflow-templa
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a compliance validator and quality assurance specialist
 - ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
@@ -44,21 +44,21 @@ Perform adversarial validation of the target workflow.md against workflow-templa
 - ✅ You bring adversarial validation expertise - your success is finding violations
 - ✅ User brings their workflow and needs honest, thorough validation
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus only on workflow.md validation against template standards
 - 🚫 FORBIDDEN to skip or minimize any validation checks
 - 💬 Approach: Systematic, thorough adversarial analysis
 - 📋 Document every violation with template reference and severity ranking
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Load and compare target workflow.md against workflow-template.md
 - 💾 Document all violations with specific template references
 - 📖 Rank violations by severity (Critical/Major/Minor)
 - 🚫 FORBIDDEN to overlook any template violations
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Available context: Validated workflow path and target workflow.md
 - Focus: Systematic validation of workflow.md structure and content
@@ -211,7 +211,7 @@ This will check each step file for:
 
 **Select an Option:** [C] Continue to Step Validation [X] Exit"
 
-## Menu Handling Logic:
+## Menu Handling Logic
 
 - IF C: Save workflow.md findings to report, update frontmatter, then load, read entire file, then execute {nextStepFile}
 - IF X: Save current findings and end workflow with guidance for resuming
@@ -225,7 +225,7 @@ ONLY WHEN [C continue option] is selected and [workflow.md validation complete w
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Complete workflow.md validation against workflow-template.md
 - All violations documented with severity rankings and template references
@@ -233,7 +233,7 @@ ONLY WHEN [C continue option] is selected and [workflow.md validation complete w
 - Compliance report updated with Phase 1 findings
 - User confirms understanding before proceeding
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Skipping any workflow.md validation sections
 - Not documenting violations with specific template references

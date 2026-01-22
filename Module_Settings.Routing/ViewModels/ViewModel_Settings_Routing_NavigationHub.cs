@@ -11,8 +11,9 @@ public sealed partial class ViewModel_Settings_Routing_NavigationHub : ViewModel
     public ViewModel_Settings_Routing_NavigationHub(
         IService_SettingsPagination pagination,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(pagination, errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService)
+        : base(pagination, errorHandler, logger, notificationService)
     {
         NavigationTitle = "Routing Navigation";
         CurrentStepTitle = NavigationTitle;
@@ -26,9 +27,9 @@ public sealed partial class ViewModel_Settings_Routing_NavigationHub : ViewModel
             new Model_SettingsNavigationStep("User Preferences", typeof(Views.View_Settings_Routing_UserPreferences)));
     }
 
-    public new void Save() { }
-    public new void Reset() { }
-    public new void Cancel() { }
-    public new void Back() { }
-    public new void Next() { }
+    public void Save() { }
+    public void Reset() { }
+    public void Cancel() { }
+    public void Back() { }
+    public void Next() { }
 }

@@ -13,6 +13,7 @@ using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Dunnage.Views;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -33,6 +34,8 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     [ObservableProperty]
     private Model_InventoriedDunnage? _selectedInventoriedPart;
 
+    private readonly Func<View_Dunnage_Dialog_AddToInventoriedListDialog> _addToListDialogFactory;
+
     /// <summary>
     /// Gets whether a part is currently selected
     /// </summary>
@@ -44,13 +47,16 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
         IService_DunnageAdminWorkflow adminWorkflow,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger)
-        : base(errorHandler, logger)
+        IService_LoggingUtility logger,
+        IService_Notification notificationService,
+        Func<View_Dunnage_Dialog_AddToInventoriedListDialog> addToListDialogFactory)
+        : base(errorHandler, logger, notificationService)
     {
         _daoInventory = daoInventory ?? throw new ArgumentNullException(nameof(daoInventory));
         _daoPart = daoPart ?? throw new ArgumentNullException(nameof(daoPart));
         _adminWorkflow = adminWorkflow ?? throw new ArgumentNullException(nameof(adminWorkflow));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
+        _addToListDialogFactory = addToListDialogFactory ?? throw new ArgumentNullException(nameof(addToListDialogFactory));
 
         _inventoriedParts = new ObservableCollection<Model_InventoriedDunnage>();
     }
@@ -122,7 +128,7 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     {
         try
         {
-            var dialog = App.GetService<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
+            var dialog = _addToListDialogFactory();
 
             var result = await dialog.ShowAsync();
 

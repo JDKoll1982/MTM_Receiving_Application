@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Reporting.ViewModels;
 
@@ -9,6 +10,7 @@ public sealed partial class View_Settings_Reporting_BusinessRules : Page
 
     public View_Settings_Reporting_BusinessRules(ViewModel_Settings_Reporting_BusinessRules viewModel)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;

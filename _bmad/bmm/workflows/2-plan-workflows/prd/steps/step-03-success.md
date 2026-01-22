@@ -20,7 +20,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 3 of 11** - Next: User Journey Mapping
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER generate content without user input
 
@@ -32,7 +32,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 COLLABORATIVE discovery, not assumption-based goal setting
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating success criteria content
@@ -40,7 +40,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -48,14 +48,14 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to define comprehensive success criteria
 - **C (Continue)**: Save the content to the document and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from previous steps are available
 - Executive Summary and Project Classification already exist in document
@@ -64,11 +64,11 @@ This step will generate content and present choices:
 - Focus on measurable, specific success criteria
 - LEVERAGE existing input documents to inform success criteria
 
-## YOUR TASK:
+## YOUR TASK
 
 Define comprehensive success criteria that cover user success, business success, and technical success, using input documents as a foundation while allowing user refinement.
 
-## SUCCESS DISCOVERY SEQUENCE:
+## SUCCESS DISCOVERY SEQUENCE
 
 ### 1. Begin Success Definition Conversation
 
@@ -173,7 +173,7 @@ For complex domains, include compliance minimums in MVP."
 
 Prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 When saving to document, append these Level 2 and Level 3 sections:
 
@@ -227,7 +227,7 @@ Show the generated content and present choices:
 
 ### 9. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### If 'A' (Advanced Elicitation)
 
 - Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current success criteria content
 - Process the enhanced success metrics that come back
@@ -235,7 +235,7 @@ Show the generated content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### If 'P' (Party Mode)
 
 - Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current success criteria
 - Process the collaborative improvements to metrics and scope
@@ -243,17 +243,17 @@ Show the generated content and present choices:
 - If yes: Update content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### If 'C' (Continue)
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: add this step to the end of the steps completed array
 - Load `./step-04-journeys.md`
 
-## APPEND TO DOCUMENT:
+## APPEND TO DOCUMENT
 
 When user selects 'C', append the content directly to the document using the structure from step 7.
 
-## SUCCESS METRICS:
+## SUCCESS METRICS
 
 ✅ User success criteria clearly identified and made measurable
 ✅ Business success metrics defined with specific targets
@@ -262,7 +262,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 
-## FAILURE MODES:
+## FAILURE MODES
 
 ❌ Accepting vague success metrics without pushing for specificity
 ❌ Not connecting success criteria back to product differentiator
@@ -275,7 +275,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
-## DOMAIN CONSIDERATIONS:
+## DOMAIN CONSIDERATIONS
 
 If working in regulated domains (healthcare, fintech, govtech):
 
@@ -283,7 +283,7 @@ If working in regulated domains (healthcare, fintech, govtech):
 - Add regulatory approval timelines to MVP scope
 - Consider audit requirements as technical success metrics
 
-## NEXT STEP:
+## NEXT STEP
 
 After user selects 'C' and content is saved to document, load `./step-04-journeys.md` to map user journeys.
 

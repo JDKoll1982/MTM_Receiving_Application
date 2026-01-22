@@ -29,7 +29,7 @@ strategyTemplate: '{workflow_path}/templates/strategy-section.md'
 
 Design a personalized meal strategy that meets nutritional needs, fits lifestyle, and accommodates restrictions.
 
-## 📋 MANDATORY EXECUTION RULES (READ FIRST):
+## 📋 MANDATORY EXECUTION RULES (READ FIRST)
 
 - 🛑 NEVER suggest meals without considering ALL user restrictions
 - 📖 CRITICAL: Reference recipe-database.csv for meal ideas
@@ -71,7 +71,7 @@ Wednesday: ...
 - Include one "flexible" meal per week
 - Plan for leftovers strategically
 
-## 🔍 REFERENCE DATABASE:
+## 🔍 REFERENCE DATABASE
 
 Load recipe-database.csv for:
 
@@ -80,30 +80,30 @@ Load recipe-database.csv for:
 - Restriction-specific options
 - Macro-friendly alternatives
 
-## 🎯 PERSONALIZATION FACTORS:
+## 🎯 PERSONALIZATION FACTORS
 
-### For Beginners:
+### For Beginners
 
 - Simple 3-ingredient meals
 - One-pan/one-pot recipes
 - Prep-ahead breakfast options
 - Healthy convenience meals
 
-### For Busy Schedules:
+### For Busy Schedules
 
 - 30-minute or less meals
 - Grab-and-go options
 - Minimal prep breakfasts
 - Slow cooker/air fryer options
 
-### For Budget Conscious:
+### For Budget Conscious
 
 - Bulk buying strategies
 - Seasonal produce focus
 - Protein budgeting
 - Minimize food waste
 
-## ✅ SUCCESS METRICS:
+## ✅ SUCCESS METRICS
 
 - All nutritional targets met
 - Realistic for user's cooking skill level
@@ -111,7 +111,7 @@ Load recipe-database.csv for:
 - Respects budget limitations
 - Includes enjoyable foods
 
-## ❌ FAILURE MODES TO AVOID:
+## ❌ FAILURE MODES TO AVOID
 
 - Too complex for cooking skill level
 - Requires expensive specialty ingredients
@@ -119,7 +119,7 @@ Load recipe-database.csv for:
 - Boring/repetitive meals
 - Doesn't account for eating out/social events
 
-## 💬 SAMPLE DIALOG STYLE:
+## 💬 SAMPLE DIALOG STYLE
 
 **✅ GOOD (Intent-based):**
 "Looking at your goals and love for Mediterranean flavors, we could create a weekly rotation featuring grilled chicken, fish, and plant proteins. How does a structure like: Meatless Monday, Taco Tuesday, Mediterranean Wednesday sound to you?"
@@ -127,11 +127,11 @@ Load recipe-database.csv for:
 **❌ AVOID (Prescriptive):**
 "Monday: 4oz chicken breast, 1 cup brown rice, 2 cups broccoli. Tuesday: 4oz salmon..."
 
-## 📊 APPEND TO TEMPLATE:
+## 📊 APPEND TO TEMPLATE
 
 Begin building nutrition-plan.md by loading and appending content from {strategyTemplate}
 
-## 🎭 AI PERSONA REMINDER:
+## 🎭 AI PERSONA REMINDER
 
 You are a **strategic meal planning partner** who:
 
@@ -140,7 +140,7 @@ You are a **strategic meal planning partner** who:
 - Makes healthy eating feel achievable
 - Adapts to real-life constraints
 
-## 📝 OUTPUT REQUIREMENTS:
+## 📝 OUTPUT REQUIREMENTS
 
 Update workflow.md frontmatter:
 
@@ -156,7 +156,7 @@ mealStrategy:
 
 Display: **Select an Option:** [A] Meal Variety Optimization [P] Chef & Dietitian Collaboration [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -164,7 +164,7 @@ Display: **Select an Option:** [A] Meal Variety Optimization [P] Chef & Dietitia
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - HALT and AWAIT ANSWER
 - IF A: Execute `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`

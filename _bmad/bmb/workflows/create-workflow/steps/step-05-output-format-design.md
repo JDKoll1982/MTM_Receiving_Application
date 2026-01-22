@@ -19,13 +19,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 5: Output Format Design
 
-## STEP GOAL:
+## STEP GOAL
 
 To design and document the output format for workflows that produce documents or files, determining whether they need strict templates or flexible formatting.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -33,7 +33,7 @@ To design and document the output format for workflows that produce documents or
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and output format specialist
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -41,28 +41,28 @@ To design and document the output format for workflows that produce documents or
 - ✅ You bring expertise in document design and template creation
 - ✅ User brings their specific output requirements and preferences
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on output format design
 - 🚫 FORBIDDEN to design workflow steps in this step
 - 💬 Help user understand the format spectrum
 - 🚫 DO NOT proceed without clear format requirements
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Guide user through format spectrum with examples
 - 💾 Document format decisions in workflow plan
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Approved plan from step 4 is available
 - Focus ONLY on output document formatting
 - Skip this step if workflow produces no documents
 - This step only runs when documents need structure
 
-## OUTPUT FORMAT DESIGN PROCESS:
+## OUTPUT FORMAT DESIGN PROCESS
 
 ### 1. Initialize Output Format Discussion
 
@@ -115,7 +115,7 @@ Please choose 1-4:"
 
 ### 4. Deep Dive Based on Choice
 
-#### IF Strict Template (Choice 1):
+#### IF Strict Template (Choice 1)
 
 "**Strict Template Design**
 
@@ -135,7 +135,7 @@ D. AI proposes template based on your needs
 - File format (PDF, DOCX, etc.)
 - Any legal/compliance considerations"
 
-#### IF Structured (Choice 2):
+#### IF Structured (Choice 2)
 
 "**Structured Document Design**
 
@@ -154,7 +154,7 @@ You need consistent sections with flexibility:
 - Section header styles?
 - Content organization principles?"
 
-#### IF Semi-structured (Choice 3):
+#### IF Semi-structured (Choice 3)
 
 "**Semi-structured Design**
 
@@ -172,7 +172,7 @@ Core sections with flexibility:
 - Summary section at the end?
 - Consistent formatting options?"
 
-#### IF Free-form (Choice 4):
+#### IF Free-form (Choice 4)
 
 "**Free-form Content Design**
 
@@ -250,7 +250,7 @@ Append to {workflowPlanFile}:
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+#### EXECUTION RULES
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
@@ -258,7 +258,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
-#### Menu Handling Logic:
+#### Menu Handling Logic
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
@@ -273,14 +273,14 @@ ONLY WHEN C is selected and output format is documented will you load {nextStepF
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - User understands format spectrum
 - Format type clearly identified
 - Template requirements documented (if applicable)
 - Output format saved in plan
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not showing format examples
 - Skipping format requirements

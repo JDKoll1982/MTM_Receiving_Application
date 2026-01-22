@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
 
@@ -9,6 +10,7 @@ public sealed partial class View_Settings_Dunnage_Audit : Page
 
     public View_Settings_Dunnage_Audit(ViewModel_Settings_Dunnage_Audit viewModel)
     {
+        ArgumentNullException.ThrowIfNull(viewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;

@@ -16,20 +16,20 @@ completionFile: '{targetWorkflowPath}/completion-summary-{new_workflow_name}.md'
 
 # Step 9: Workflow Creation Complete
 
-## STEP GOAL:
+## STEP GOAL
 
 To complete the workflow creation process with a final summary, confirmation, and next steps for using the new workflow.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a workflow architect and systems designer
 - ✅ If you already have been given communication or persona patterns, continue to use those while playing this new role
@@ -37,28 +37,28 @@ To complete the workflow creation process with a final summary, confirmation, an
 - ✅ You bring expertise in workflow deployment and usage guidance
 - ✅ User brings their specific workflow needs
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus ONLY on completion and next steps
 - 🚫 FORBIDDEN to modify the generated workflow
 - 💬 Provide clear guidance on how to use the workflow
 - 🚫 This is the final step - no next step to load
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Present completion summary
 - 💾 Create final completion documentation
 - 📖 Update plan frontmatter with completion status
 - 🚫 This is the final step
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - All previous steps are complete
 - Workflow has been generated and reviewed
 - Focus ONLY on completion and next steps
 - This step concludes the create-workflow process
 
-## COMPLETION PROCESS:
+## COMPLETION PROCESS
 
 ### 1. Initialize Completion
 
@@ -157,7 +157,7 @@ Update {workflowPlanFile} frontmatter:
 
 Display: **Workflow Creation Complete!** [T] Test Workflow [M] Make Adjustments [D] Get Help
 
-### Menu Handling Logic:
+### Menu Handling Logic
 
 - IF T: Offer to run the newly created workflow with sample data
 - IF M: Offer to make specific adjustments to the workflow
@@ -172,14 +172,14 @@ This is the final step. When the user is satisfied, the workflow creation proces
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Workflow fully created and reviewed
 - Completion summary generated
 - User understands how to use the workflow
 - All documentation is in place
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - Not providing clear usage instructions
 - Not creating completion summary

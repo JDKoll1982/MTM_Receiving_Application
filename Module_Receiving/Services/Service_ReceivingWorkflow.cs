@@ -23,6 +23,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_ReceivingValidation _validation;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly IService_UserSessionManager _userSessionManager;
         private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
 
         public event EventHandler? StepChanged;
@@ -60,7 +61,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_MySQL_Receiving mysqlReceiving,
             IService_ReceivingValidation validation,
             IService_LoggingUtility logger,
-            IService_ViewModelRegistry viewModelRegistry)
+            IService_ViewModelRegistry viewModelRegistry,
+            IService_UserSessionManager userSessionManager)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _csvWriter = csvWriter ?? throw new ArgumentNullException(nameof(csvWriter));
@@ -68,6 +70,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _validation = validation ?? throw new ArgumentNullException(nameof(validation));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _viewModelRegistry = viewModelRegistry ?? throw new ArgumentNullException(nameof(viewModelRegistry));
+            _userSessionManager = userSessionManager ?? throw new ArgumentNullException(nameof(userSessionManager));
         }
 
         public async Task<bool> StartWorkflowAsync()
@@ -90,8 +93,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             NumberOfLoads = 1;
 
             // Check if user has a default receiving mode set
-            var userSessionManager = App.GetService<IService_UserSessionManager>();
-            var currentUser = userSessionManager?.CurrentSession?.User;
+            var currentUser = _userSessionManager?.CurrentSession?.User;
 
             if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultReceivingMode))
             {

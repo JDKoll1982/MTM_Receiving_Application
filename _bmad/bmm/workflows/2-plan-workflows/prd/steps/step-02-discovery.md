@@ -24,13 +24,13 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 **Progress: Step 2 of 11** - Next: Success Criteria Definition
 
-## STEP GOAL:
+## STEP GOAL
 
 Conduct comprehensive project discovery that leverages existing input documents while allowing user refinement, with data-driven classification, and generate the Executive Summary content.
 
-## MANDATORY EXECUTION RULES (READ FIRST):
+## MANDATORY EXECUTION RULES (READ FIRST)
 
-### Universal Rules:
+### Universal Rules
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
@@ -38,20 +38,20 @@ Conduct comprehensive project discovery that leverages existing input documents 
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Role Reinforcement:
+### Role Reinforcement
 
 - ✅ You are a product-focused PM facilitator collaborating with an expert peer
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
 
-### Step-Specific Rules:
+### Step-Specific Rules
 
 - 🎯 Focus on project classification and vision alignment only
 - 🚫 FORBIDDEN to generate content without real user input
 - 💬 APPROACH: Adapt questions based on document context (brownfield vs greenfield)
 - 🎯 LOAD classification data BEFORE starting discovery conversation
 
-## EXECUTION PROTOCOLS:
+## EXECUTION PROTOCOLS
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating executive summary content
@@ -59,7 +59,7 @@ Conduct comprehensive project discovery that leverages existing input documents 
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
+## COLLABORATION MENUS (A/P/C)
 
 This step will generate content and present choices:
 
@@ -67,14 +67,14 @@ This step will generate content and present choices:
 - **P (Party Mode)**: Bring multiple perspectives to discuss and improve the generated content
 - **C (Continue)**: Append and save the content to the `{outputFile}` and proceed to next step
 
-## PROTOCOL INTEGRATION:
+## PROTOCOL INTEGRATION
 
 - When 'A' selected: Execute {advancedElicitationTask}
 - When 'P' selected: Execute {partyModeWorkflow}
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
-## CONTEXT BOUNDARIES:
+## CONTEXT BOUNDARIES
 
 - Current document and frontmatter from step 1 are available
 - Input documents already loaded are in memory (product briefs, research, brainstorming, project docs)
@@ -224,7 +224,7 @@ Compare user description against `signals` from `domain-complexity.csv`:
 
 ---
 
-#### IF PATH A was used (briefCount > 0):
+#### IF PATH A was used (briefCount > 0)
 
 "Based on your product brief and our discussion, I'm classifying this as:
 
@@ -246,7 +246,7 @@ Combined with our conversation, this suggests the above classification. Does thi
 
 ---
 
-#### IF PATH B was used (briefCount == 0 AND projectDocsCount > 0):
+#### IF PATH B was used (briefCount == 0 AND projectDocsCount > 0)
 
 "Based on your existing project documentation and our discussion about new features:
 
@@ -260,7 +260,7 @@ I'll ensure the PRD aligns with your existing architecture patterns. Does this c
 
 ---
 
-#### IF PATH C was used (briefCount == 0 AND projectDocsCount == 0):
+#### IF PATH C was used (briefCount == 0 AND projectDocsCount == 0)
 
 "Based on our conversation, I'm hearing this as:
 
@@ -278,7 +278,7 @@ Does this sound right to you? I want to make sure we're on the same page before 
 
 ---
 
-#### IF PATH A was used (briefCount > 0):
+#### IF PATH A was used (briefCount > 0)
 
 "From your product brief, I understand that what makes this special is:
 {{extracted_differentiator_from_brief}}
@@ -291,7 +291,7 @@ Let's explore this deeper:
 
 ---
 
-#### IF PATH B was used (briefCount == 0 AND projectDocsCount > 0):
+#### IF PATH B was used (briefCount == 0 AND projectDocsCount > 0)
 
 "Your existing system already provides certain capabilities. Now let's define what makes these **new additions** special:
 
@@ -302,7 +302,7 @@ Let's explore this deeper:
 
 ---
 
-#### IF PATH C was used (briefCount == 0 AND projectDocsCount == 0):
+#### IF PATH C was used (briefCount == 0 AND projectDocsCount == 0)
 
 Ask focused questions to capture the product's unique value:
 
@@ -317,7 +317,7 @@ Ask focused questions to capture the product's unique value:
 
 Based on the conversation, prepare the content to append to the document:
 
-#### Content Structure:
+#### Content Structure
 
 ```markdown
 ## Executive Summary
@@ -355,7 +355,7 @@ Show the generated content to the user and present:
 
 ### 9. Handle Menu Selection
 
-#### IF A (Advanced Elicitation):
+#### IF A (Advanced Elicitation)
 
 - Execute {advancedElicitationTask} with the current content
 - Process the enhanced content that comes back
@@ -363,7 +363,7 @@ Show the generated content to the user and present:
 - If yes: Update the content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### IF P (Party Mode):
+#### IF P (Party Mode)
 
 - Execute {partyModeWorkflow} with the current content
 - Process the collaborative improvements that come back
@@ -371,7 +371,7 @@ Show the generated content to the user and present:
 - If yes: Update the content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### IF C (Continue):
+#### IF C (Continue)
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: add this step name to the end of the steps completed array
@@ -385,7 +385,7 @@ ONLY WHEN [C continue option] is selected and [executive summary content finaliz
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-### ✅ SUCCESS:
+### ✅ SUCCESS
 
 - Document counts read from frontmatter and announced
 - Classification data loaded and used effectively
@@ -398,7 +398,7 @@ ONLY WHEN [C continue option] is selected and [executive summary content finaliz
 - Content properly appended to document when C selected
 - Frontmatter updated with stepsCompleted: [1, 2]
 
-### ❌ SYSTEM FAILURE:
+### ❌ SYSTEM FAILURE
 
 - **Not reading documentCounts from frontmatter first**
 - **Executing multiple discovery paths instead of exactly one**
@@ -412,7 +412,7 @@ ONLY WHEN [C continue option] is selected and [executive summary content finaliz
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.
 
-## COMPLEXITY HANDLING:
+## COMPLEXITY HANDLING
 
 If `complexity_level = "high"`:
 

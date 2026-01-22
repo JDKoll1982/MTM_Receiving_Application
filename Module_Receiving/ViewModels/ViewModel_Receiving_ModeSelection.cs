@@ -29,6 +29,38 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private bool _isEditModeDefault;
 
+        // UI Text Properties (Loaded from Settings)
+        [ObservableProperty]
+        private string _guidedTitleText = "Guided Wizard";
+
+        [ObservableProperty]
+        private string _guidedDescriptionText = "Step-by-step process for standard receiving workflow.";
+
+        [ObservableProperty]
+        private string _manualTitleText = "Manual Entry";
+
+        [ObservableProperty]
+        private string _manualDescriptionText = "Customizable grid for bulk data entry and editing.";
+
+        [ObservableProperty]
+        private string _editTitleText = "Edit Mode";
+
+        [ObservableProperty]
+        private string _editDescriptionText = "Edit existing loads without adding new ones.";
+
+        [ObservableProperty]
+        private string _setAsDefaultText = "Set as default mode";
+
+        // Accessibility Properties
+        [ObservableProperty]
+        private string _guidedAccessibilityName = "Guided Wizard Mode";
+
+        [ObservableProperty]
+        private string _manualAccessibilityName = "Manual Entry Mode";
+
+        [ObservableProperty]
+        private string _editAccessibilityName = "Edit Mode";
+
         public ViewModel_Receiving_ModeSelection(
             IService_ReceivingWorkflow workflowService,
             IService_UserSessionManager sessionManager,
@@ -37,8 +69,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Window windowService,
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
-            IService_LoggingUtility logger)
-            : base(errorHandler, logger)
+            IService_LoggingUtility logger,
+            IService_Notification notificationService) : base(errorHandler, logger, notificationService)
         {
             _workflowService = workflowService;
             _sessionManager = sessionManager;
@@ -49,6 +81,36 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             // Load current default mode
             LoadDefaultMode();
+
+            // Load UI text from settings
+            _ = LoadUITextAsync();
+        }
+
+        private async Task LoadUITextAsync()
+        {
+            try
+            {
+                // Load UI text
+                GuidedTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionGuidedTitle);
+                GuidedDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionGuidedDescription);
+                ManualTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionManualTitle);
+                ManualDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionManualDescription);
+                EditTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionEditTitle);
+                EditDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionEditDescription);
+                SetAsDefaultText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionSetDefault);
+
+                // Load accessibility text
+                GuidedAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionGuidedButton);
+                ManualAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionManualButton);
+                EditAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionEditButton);
+
+                _logger.LogInfo("Mode Selection UI text loaded from settings successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading UI text from settings: {ex.Message}", ex);
+                // Defaults are already set in the property declarations
+            }
         }
 
         private void LoadDefaultMode()
@@ -195,55 +257,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         private void ClearAllUIInputs()
         {
-            try
-            {
-                // Clear POEntry ViewModel
-                var poEntryVM = App.GetService<ViewModel_Receiving_POEntry>();
-                if (poEntryVM != null)
-                {
-                    poEntryVM.PoNumber = string.Empty;
-                    poEntryVM.PartID = string.Empty;
-                    poEntryVM.SelectedPart = null;
-                    poEntryVM.IsNonPOItem = false;
-                    poEntryVM.Parts?.Clear();
-                }
-
-                // Clear PackageType ViewModel
-                var packageTypeVM = App.GetService<ViewModel_Receiving_PackageType>();
-                if (packageTypeVM != null)
-                {
-                    packageTypeVM.SelectedPackageType = string.Empty;
-                    packageTypeVM.CustomPackageTypeName = string.Empty;
-                    packageTypeVM.IsCustomTypeVisible = false;
-                }
-
-                // Clear LoadEntry ViewModel
-                var loadEntryVM = App.GetService<ViewModel_Receiving_LoadEntry>();
-                if (loadEntryVM != null)
-                {
-                    loadEntryVM.NumberOfLoads = 1;
-                }
-
-                // Clear WeightQuantity ViewModel
-                var weightQuantityVM = App.GetService<ViewModel_Receiving_WeightQuantity>();
-                if (weightQuantityVM != null)
-                {
-                    weightQuantityVM.Loads?.Clear();
-                }
-
-                // Clear HeatLot ViewModel
-                var heatLotVM = App.GetService<ViewModel_Receiving_HeatLot>();
-                if (heatLotVM != null)
-                {
-                    heatLotVM.Loads?.Clear();
-                }
-
-                _logger.LogInfo("UI inputs cleared across all Receiving ViewModels");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error clearing UI inputs: {ex.Message}", ex);
-            }
+            // Transient ViewModels cannot be cleared this way as GetService returns a new instance.
+            // State should represent the current session which is cleared in ClearWorkflowData.
+            _logger.LogInfo("UI inputs cleared via session reset.");
         }
 
         [RelayCommand]
