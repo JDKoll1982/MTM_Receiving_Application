@@ -108,7 +108,7 @@
 
         <!-- Navigation -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="12">
-            <Button Content="Saving..." 
+            <Button Content="{x:Bind ViewModel.ManualEntrySaveAndFinishText, Mode=OneWay}" 
                     Command="{x:Bind ViewModel.SaveCommand}" 
                     Style="{StaticResource AccentButtonStyle}" 
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
