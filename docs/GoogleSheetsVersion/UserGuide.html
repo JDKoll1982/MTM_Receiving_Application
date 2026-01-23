@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .section h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .checkbox-section {
+            background: #e8f4fd;
+            border-left: 5px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #667eea;
+            color: white;
+        }
+        .progress-bars {
+            background: #f8f9fa;
+            border: 2px solid #28a745;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        ul li {
+            margin-bottom: 8px;
+        }
+        ol li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 MTM Inventory Management System</h1>
+        <p><strong>User Guide - Complete Instructions</strong></p>
+        <p>Last Updated: 2025-08-25 17:59:58 UTC | Current User: John Koll</p>
+    </div>
+
+    <div class="section">
+        <h2>🎯 What This Spreadsheet Does</h2>
+        <p>This Google Sheets system helps you track inventory items through two main worksheets (<strong>Expo</strong> and <strong>Vits</strong>) and automatically saves completed records to a <strong>History 2025</strong> sheet for permanent storage.</p>
+        
+        <div class="success">
+            <strong>Key Features:</strong>
+            <ul>
+                <li>Automatic date formatting (shows as 08/25/2025)</li>
+                <li>Auto-fill employee names and dates</li>
+                <li>Smart data sorting for printing</li>
+                <li>One-click transfer to permanent history</li>
+                <li>Real-time progress tracking</li>
+                <li>Automatic summary calculations</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Column Layout (Same for Both Expo and Vits Sheets)</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Name</th>
+                    <th>What Goes Here</th>
+                    <th>Auto-Filled?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>A</strong></td>
+                    <td>Quantity</td>
+                    <td>How many items (numbers only)</td>
+                    <td>❌ Manual entry</td>
+                </tr>
+                <tr>
+                    <td><strong>B</strong></td>
+                    <td>Material ID</td>
+                    <td>Part number or item code</td>
+                    <td>❌ Manual entry</td>
+                </tr>
+                <tr>
+                    <td><strong>C</strong></td>
+                    <td>PO Number</td>
+                    <td>Purchase order reference</td>
+                    <td>❌ Manual entry</td>
+                </tr>
+                <tr>
+                    <td><strong>D</strong></td>
+                    <td>Employee</td>
+                    <td>Who handled this item</td>
+                    <td>✅ Auto-filled with "Employee ID (Cell K1)"</td>
+                </tr>
+                <tr>
+                    <td><strong>E</strong></td>
+                    <td>Heat</td>
+                    <td>Heat number or batch code</td>
+                    <td>❌ Manual entry</td>
+                </tr>
+                <tr>
+                    <td><strong>F</strong></td>
+                    <td>Date</td>
+                    <td>When this was processed</td>
+                    <td>✅ Auto-filled with today (08/25/2025)</td>
+                </tr>
+                <tr>
+                    <td><strong>G</strong></td>
+                    <td>Initial Location</td>
+                    <td>Where the item was placed</td>
+                    <td>❌ Manual entry</td>
+                </tr>
+                <tr>
+                    <td><strong>H</strong></td>
+                    <td>Label #</td>
+                    <td>Auto-generated label codes</td>
+                    <td>✅ Automatically calculated</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>🔧 The Three Magic Checkboxes</h2>
+        <p>In columns I and J, you'll find three powerful tools that make your work easier:</p>
+
+        <div class="checkbox-section">
+            <h3>✅ Checkbox 1: Save to History (Row 2)</h3>
+            <p><strong>What it does:</strong> Moves all your completed data to the permanent History 2025 sheet and clears the current sheet for new entries.</p>
+            <div class="progress-bars">
+                <strong>Progress Tracking (J2):</strong> Reading... → Preparing... → Copy 1/1 → Clearing... → Finishing... → Complete!
+            </div>
+            <p><strong>When to use:</strong> When you've finished entering all items for the day and want to save them permanently.</p>
+        </div>
+
+        <div class="checkbox-section">
+            <h3>✅ Checkbox 2: Fill Blank Spaces (Row 3)</h3>
+            <p><strong>What it does:</strong> Automatically fills in missing information like employee names, dates, and repeats data from the row above.</p>
+            <div class="progress-bars">
+                <strong>Progress Tracking (J3):</strong> Starting... → Reading... → Preparing... → Fill 1/8... Fill 2/8... → Writing... → Complete!
+            </div>
+            <p><strong>When to use:</strong> After entering several rows of data to fill in any missing dates or employee names.</p>
+        </div>
+
+        <div class="checkbox-section">
+            <h3>✅ Checkbox 3: Sort for Printing (Row 4)</h3>
+            <p><strong>What it does:</strong> Organizes your data in a logical order: by Material ID first, then by most common Heat numbers, making it easy to print and find items.</p>
+            <div class="progress-bars">
+                <strong>Progress Tracking (J4):</strong> Starting... → Reading... → Analyzing... → Sorting... → Writing... → Complete!
+            </div>
+            <p><strong>When to use:</strong> Before printing reports or when you need data organized for easier reading.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🚀 How to Use the System (Step by Step)</h2>
+        
+        <h3>📝 Daily Data Entry</h3>
+        <ol>
+            <li><strong>Choose your sheet:</strong> Click on either "Expo" or "Vits" tab at the bottom</li>
+            <li><strong>Start entering data in row 2:</strong>
+                <ul>
+                    <li>Column A: Enter the quantity (e.g., 100, 250, 1500)</li>
+                    <li>Column B: Enter the Material ID (e.g., FHS-0420-12, 25086399)</li>
+                    <li>Column C: Enter PO Number if you have one</li>
+                    <li>Column E: Enter Heat number</li>
+                    <li>Column G: Enter where you put the item (e.g., RECV, STORE-A1)</li>
+                </ul>
+            </li>
+            <li><strong>Don't worry about:</strong> Employee names, dates, or label numbers - these fill automatically</li>
+            <li><strong>Continue adding rows:</strong> Each new item gets its own row</li>
+        </ol>
+
+        <h3>🔄 Clean Up Your Data</h3>
+        <ol>
+            <li><strong>Click the "Fill Blank Spaces" checkbox (Row 3)</strong></li>
+            <li><strong>Watch the progress:</strong> J3 will show the progress</li>
+            <li><strong>Result:</strong> All missing employee names and dates are filled in</li>
+        </ol>
+
+        <h3>📊 Organize for Printing</h3>
+        <ol>
+            <li><strong>Click the "Sort for Printing" checkbox (Row 4)</strong></li>
+            <li><strong>Watch the progress:</strong> J4 will show the sorting progress</li>
+            <li><strong>Result:</strong> Data is organized by Material ID and Heat frequency</li>
+        </ol>
+
+        <h3>💾 Save to Permanent Storage</h3>
+        <ol>
+            <li><strong>Click the "Save to History" checkbox (Row 2)</strong></li>
+            <li><strong>Watch the progress:</strong> J2 will show the transfer progress</li>
+            <li><strong>Result:</strong> All data moves to History 2025 sheet, current sheet is cleared for new entries</li>
+        </ol>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong> Once you save to history, the data is permanently moved. Make sure your data is complete and correct before saving!
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📈 Understanding the Summary Section</h2>
+        <p>Below your data (starting around row 10), you'll see a "Total Item Weights" section that automatically calculates:</p>
+        <ul>
+            <li><strong>Unique part counts:</strong> How many different Material IDs you have</li>
+            <li><strong>Total quantities:</strong> Combined quantities for each Material ID</li>
+            <li><strong>Real-time updates:</strong> Changes automatically as you add or modify data</li>
+        </ul>
+        
+        <div class="success">
+            <strong>Note:</strong> This summary automatically excludes header rows and only counts actual inventory data.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎉 Quick Start Summary</h2>
+        <div class="success">
+            <strong>For new users - your first 5 minutes:</strong>
+            <ol>
+                <li>Click on "Expo" or "Vits" tab</li>
+                <li>Start typing in row 2: Quantity, Material ID, PO Number, Heat, Location</li>
+                <li>Add a few more rows of data</li>
+                <li>Click "Fill Blank Spaces" checkbox and wait for completion</li>
+                <li>Click "Sort for Printing" checkbox to organize</li>
+                <li>When finished for the day, click "Save to History"</li>
+            </ol>
+            <p><strong>That's it!</strong> You're now managing inventory like a pro! 🚀</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📞 System Information</h2>
+        <div class="success">
+            <p><strong>Current Settings:</strong></p>
+            <ul>
+                <li><strong>Default Employee:</strong> Employee ID (Cell K1)</li>
+                <li><strong>Date Format:</strong> MM/DD/YYYY (e.g., 08/25/2025)</li>
+                <li><strong>Current Date:</strong> August 25, 2025</li>
+                <li><strong>History Sheet:</strong> History 2025</li>
+                <li><strong>Auto-formatting:</strong> Enabled on spreadsheet open</li>
+            </ul>
+        </div>
+        
+        <p><strong>Last System Update:</strong> August 25, 2025 at 5:59 PM UTC</p>
+        <p><strong>System Status:</strong> ✅ All functions operational</p>
+    </div>
+</body>
+</html>

@@ -18,6 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
+        private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
@@ -70,6 +71,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ViewModel_Receiving_ManualEntry(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
+            IService_ReceivingValidation validationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
@@ -81,6 +83,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _windowService = windowService;
             _workflowService = workflowService;
             _mysqlService = mysqlService;
+            _validationService = validationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
             _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
@@ -339,6 +342,30 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     {
                         load.HeatLotNumber = "Nothing Entered";
                     }
+
+                    // Check for quality hold requirement on each load
+                    if (!string.IsNullOrWhiteSpace(load.PartID))
+                    {
+                        var (isRestricted, restrictionType) = await _validationService.IsRestrictedPartAsync(load.PartID);
+                        if (isRestricted)
+                        {
+                            load.IsQualityHoldRequired = true;
+                            load.QualityHoldRestrictionType = restrictionType;
+                        }
+                    }
+                }
+
+                // Check if any loads have quality holds
+                var loadsWithHolds = Loads.Where(l => l.IsQualityHoldRequired).ToList();
+                if (loadsWithHolds.Count > 0)
+                {
+                    // Show confirmation dialog for quality hold acknowledgment
+                    var acknowledged = await ShowQualityHoldConfirmationAsync(loadsWithHolds);
+                    if (!acknowledged)
+                    {
+                        _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
+                        return; // Block save if user doesn't acknowledge
+                    }
                 }
 
                 // In manual mode, we skip step-by-step validation and go straight to saving
@@ -350,6 +377,46 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogError($"Failed to save manual entry data: {ex.Message}");
                 await _errorHandler.HandleErrorAsync("Failed to save receiving data", Enum_ErrorSeverity.Critical, ex);
             }
+        }
+
+        /// <summary>
+        /// Shows a confirmation dialog for quality hold acknowledgment before allowing save.
+        /// </summary>
+        /// <param name="loadsWithHolds">List of loads requiring quality acknowledgment</param>
+        /// <returns>True if user acknowledges; false if cancelled</returns>
+        private async Task<bool> ShowQualityHoldConfirmationAsync(System.Collections.Generic.List<Model_ReceivingLoad> loadsWithHolds)
+        {
+            ArgumentNullException.ThrowIfNull(loadsWithHolds);
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
+            {
+                _logger.LogError("Cannot show quality hold dialog: XamlRoot is null");
+                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                return false;
+            }
+
+            // Build list of restricted parts
+            var restrictedPartsList = string.Join(
+                "\n",
+                loadsWithHolds.Select(l => $"  • {l.PartID} ({l.QualityHoldRestrictionType})")
+            );
+
+            var content = $"The following parts require quality hold acknowledgment:\n\n{restrictedPartsList}\n\n" +
+                         "You must contact quality immediately and quality MUST accept the load before any paperwork is signed.\n\n" +
+                         "Has quality accepted these loads?";
+
+            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+            {
+                Title = "Quality Hold Acknowledgment Required",
+                Content = content,
+                PrimaryButtonText = "Yes - Quality Accepted",
+                CloseButtonText = "Cancel - Do Not Save",
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                XamlRoot = xamlRoot
+            };
+
+            var result = await dialog.ShowAsync().AsTask();
+            return result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary;
         }
 
         [RelayCommand]

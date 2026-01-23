@@ -166,6 +166,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 Debug.WriteLine($"[ManualEntryView] SelectFirstEditableCell: Grid has no items (Count={itemCount})");
             }
         }
+
+        /// <summary>
+        /// LoadingRow event handler for applying row-level highlighting based on quality holds.
+        /// Fallback method when binding converters are insufficient.
+        /// </summary>
+        private void ManualEntryDataGrid_LoadingRow(object? sender, DataGridRowEventArgs e)
+        {
+            if (e.Row.DataContext is Model_ReceivingLoad load && load.IsQualityHoldRequired)
+            {
+                // Apply light red background to highlight quality hold rows
+                e.Row.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                    Microsoft.UI.Color.FromArgb(255, 255, 230, 230)  // #FFE6E6
+                );
+            }
+        }
     }
 }
 

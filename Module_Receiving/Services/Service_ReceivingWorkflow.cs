@@ -143,6 +143,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 case Enum_ReceivingWorkflowStep.ManualEntry:
                     // Manual entry goes directly to saving/review
                     // Validation happens on save
+                    // Check for quality holds and block if not acknowledged
+                    var loadsWithHolds = CurrentSession.Loads.Where(l => l.IsQualityHoldRequired).ToList();
+                    if (loadsWithHolds.Count > 0)
+                    {
+                        validationErrors.Add($"Quality hold acknowledgment required for {loadsWithHolds.Count} load(s) before proceeding.");
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                    }
                     CurrentStep = Enum_ReceivingWorkflowStep.Saving;
                     return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
 

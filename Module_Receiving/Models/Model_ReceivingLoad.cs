@@ -61,6 +61,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         [ObservableProperty]
         private string? _userId;
 
+        [ObservableProperty]
+        private bool _isQualityHoldRequired;
+
+        [ObservableProperty]
+        private string _qualityHoldRestrictionType = string.Empty;
+
         partial void OnPartIDChanged(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

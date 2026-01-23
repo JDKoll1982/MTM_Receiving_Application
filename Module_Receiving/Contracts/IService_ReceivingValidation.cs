@@ -98,5 +98,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="partID">Part ID to check</param>
         /// <returns>Validation result</returns>
         public Task<Model_ReceivingValidationResult> ValidatePartExistsInVisualAsync(string partID);
+
+        /// <summary>
+        /// Checks if a part ID is restricted and requires quality hold acknowledgment.
+        /// Restricted parts: MMFSR (Sheet - Quality Required), MMCSR (Coil - Quality Required).
+        /// </summary>
+        /// <param name="partID">Part ID to check</param>
+        /// <returns>Tuple of (IsRestricted, RestrictionType)</returns>
+        public Task<(bool IsRestricted, string RestrictionType)> IsRestrictedPartAsync(string partID);
     }
 }
+

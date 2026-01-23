@@ -17,6 +17,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     {
         private readonly IService_InforVisual _inforVisualService;
         private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}$", RegexOptions.IgnoreCase);
+        private static readonly Regex _qualityHoldRegex = new Regex(@"(MMFSR|MMCSR)", RegexOptions.IgnoreCase);
 
         public Service_ReceivingValidation(IService_InforVisual inforVisualService)
         {
@@ -226,6 +227,30 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             return Model_ReceivingValidationResult.Success();
         }
+
+        /// <summary>
+        /// Checks if a part ID is restricted and requires quality hold acknowledgment.
+        /// Restricted parts: MMFSR (Sheet - Quality Required), MMCSR (Coil - Quality Required).
+        /// </summary>
+        /// <param name="partID">Part ID to check</param>
+        /// <returns>Tuple of (IsRestricted, RestrictionType)</returns>
+        public Task<(bool IsRestricted, string RestrictionType)> IsRestrictedPartAsync(string partID)
+        {
+            if (string.IsNullOrWhiteSpace(partID))
+            {
+                return Task.FromResult((false, string.Empty));
+            }
+
+            var match = _qualityHoldRegex.Match(partID);
+            if (match.Success)
+            {
+                var restrictionType = match.Groups[1].Value.ToUpperInvariant();
+                return Task.FromResult((true, restrictionType));
+            }
+
+            return Task.FromResult((false, string.Empty));
+        }
     }
 }
+
 

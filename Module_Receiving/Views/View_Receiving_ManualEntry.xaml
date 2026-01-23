@@ -13,6 +13,8 @@
 
     <UserControl.Resources>
         <converters:Converter_DecimalToString x:Key="DecimalToStringConverter"/>
+        <converters:Converter_PartIDToQualityHoldBrush x:Key="PartIDToQualityHoldBrushConverter"/>
+        <converters:Converter_PartIDToQualityHoldTextColor x:Key="PartIDToQualityHoldTextColorConverter"/>
     </UserControl.Resources>
 
     <Grid>
@@ -70,10 +72,11 @@
                           SelectionMode="Single"
                           KeyDown="ManualEntryDataGrid_KeyDown"
                           CurrentCellChanged="ManualEntryDataGrid_CurrentCellChanged"
-                          Tapped="ManualEntryDataGrid_Tapped">
+                          Tapped="ManualEntryDataGrid_Tapped"
+                          LoadingRow="ManualEntryDataGrid_LoadingRow">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnLoadNumberText, Mode=OneWay}" Binding="{Binding LoadNumber}" IsReadOnly="True"/>
-                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPartIdText, Mode=OneWay}" Binding="{Binding PartID}" Width="*"/>
+                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPartIdText, Mode=OneWay}" Binding="{Binding PartID}" Width="*" Foreground="{Binding PartID, Converter={StaticResource PartIDToQualityHoldTextColorConverter}}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnWeightQtyText, Mode=OneWay}" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnHeatLotText, Mode=OneWay}" Binding="{Binding HeatLotNumber}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgTypeText, Mode=OneWay}" Binding="{Binding PackageType}" IsReadOnly="True"/>
