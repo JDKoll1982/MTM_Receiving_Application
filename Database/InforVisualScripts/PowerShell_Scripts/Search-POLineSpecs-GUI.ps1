@@ -3,6 +3,9 @@
 #
 # Features:
 # - Search across ALL POs (leave PO Number blank) or filter to specific PO
+# - Filter by PO Status: Firmed (F), Released (R), Closed (C), Cancelled (X)
+#   * None selected = All statuses (no filter)
+#   * Select one or more to filter results
 # - Case-insensitive wildcard search in specification text
 # - Read-only connection to Infor Visual database
 # - Auto-formats PO numbers with "PO-" prefix
@@ -11,7 +14,8 @@
 # 1. Enter database credentials (Server, Database, Username, Password)
 # 2. Enter search text (required) - e.g., "MMFSR", "quality hold", "sheet"
 # 3. Optionally enter specific PO Number to narrow search
-# 4. Click Search to find matching PO lines
+# 4. Select PO Status filters (default = all checked = all statuses)
+# 5. Click Search to find matching PO lines
 
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
@@ -65,6 +69,7 @@ $xaml = @"
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Row 0: Server and Database -->
@@ -92,8 +97,34 @@ $xaml = @"
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="Search Text:" FontWeight="Bold" VerticalAlignment="Center" Margin="20,5,0,5"/>
                 <TextBox Grid.Row="2" Grid.Column="3" Name="SearchTextBox" Margin="10,5" Padding="5"/>
 
-                <!-- Row 3: Search Button -->
-                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
+                <!-- Row 3: PO Status Filters -->
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="PO Status:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="10,5">
+                    <CheckBox Name="StatusFirmedCheckBox" Content="Firmed" Margin="0,0,15,0" IsChecked="True">
+                        <CheckBox.ToolTip>
+                            <ToolTip Content="Status = F"/>
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                    <CheckBox Name="StatusReleasedCheckBox" Content="Released" Margin="0,0,15,0" IsChecked="True">
+                        <CheckBox.ToolTip>
+                            <ToolTip Content="Status = R"/>
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                    <CheckBox Name="StatusClosedCheckBox" Content="Closed" Margin="0,0,15,0" IsChecked="True">
+                        <CheckBox.ToolTip>
+                            <ToolTip Content="Status = C"/>
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                    <CheckBox Name="StatusCancelledCheckBox" Content="Cancelled" Margin="0,0,15,0" IsChecked="True">
+                        <CheckBox.ToolTip>
+                            <ToolTip Content="Status = X"/>
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                    <TextBlock Text="(None selected = All)" Foreground="#999" VerticalAlignment="Center" Margin="10,0,0,0" FontStyle="Italic"/>
+                </StackPanel>
+
+                <!-- Row 4: Search Button -->
+                <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" 
                         Name="SearchButton" 
                         Content="Search" 
                         Width="120" 
@@ -192,6 +223,10 @@ $usernameTextBox = $window.FindName("UsernameTextBox")
 $passwordBox = $window.FindName("PasswordBox")
 $poNumberTextBox = $window.FindName("PONumberTextBox")
 $searchTextBox = $window.FindName("SearchTextBox")
+$statusFirmedCheckBox = $window.FindName("StatusFirmedCheckBox")
+$statusReleasedCheckBox = $window.FindName("StatusReleasedCheckBox")
+$statusClosedCheckBox = $window.FindName("StatusClosedCheckBox")
+$statusCancelledCheckBox = $window.FindName("StatusCancelledCheckBox")
 $searchButton = $window.FindName("SearchButton")
 $resultsGrid = $window.FindName("ResultsGrid")
 $statusText = $window.FindName("StatusText")
@@ -310,6 +345,20 @@ WHERE
     CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) LIKE @SearchPattern
 "@
 
+            # Build PO Status filter
+            $selectedStatuses = @()
+            if ($statusFirmedCheckBox.IsChecked) { $selectedStatuses += 'F' }
+            if ($statusReleasedCheckBox.IsChecked) { $selectedStatuses += 'R' }
+            if ($statusClosedCheckBox.IsChecked) { $selectedStatuses += 'C' }
+            if ($statusCancelledCheckBox.IsChecked) { $selectedStatuses += 'X' }
+
+            # If at least one status is selected, add filter
+            # If none selected, treat as "all" (no filter)
+            if ($selectedStatuses.Count -gt 0) {
+                $statusList = ($selectedStatuses | ForEach-Object { "'$_'" }) -join ','
+                $sqlQuery += "`n    AND po.STATUS IN ($statusList)"
+            }
+
             # Add PO Number filter if provided
             if (-not [string]::IsNullOrWhiteSpace($poNumber)) {
                 $sqlQuery += "`n    AND po.ID = @PONumber"
@@ -343,13 +392,32 @@ WHERE
             # Display results
             if ($rowCount -gt 0) {
                 $resultsGrid.ItemsSource = $dataSet.Tables[0].DefaultView
-                $searchScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "all POs" } else { "PO $poNumber" }
-                $statusText.Text = "Found $rowCount matching line(s) in $searchScope"
+                
+                # Build status description
+                $poScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "all POs" } else { "PO $poNumber" }
+                
+                $statusNames = @()
+                if ($statusFirmedCheckBox.IsChecked) { $statusNames += "Firmed" }
+                if ($statusReleasedCheckBox.IsChecked) { $statusNames += "Released" }
+                if ($statusClosedCheckBox.IsChecked) { $statusNames += "Closed" }
+                if ($statusCancelledCheckBox.IsChecked) { $statusNames += "Cancelled" }
+                
+                if ($statusNames.Count -eq 0 -or $statusNames.Count -eq 4) {
+                    $statusScope = "all statuses"
+                }
+                elseif ($statusNames.Count -eq 1) {
+                    $statusScope = "$($statusNames[0]) status"
+                }
+                else {
+                    $statusScope = "$($statusNames -join ', ') statuses"
+                }
+                
+                $statusText.Text = "Found $rowCount matching line(s) in $poScope with $statusScope"
             }
             else {
                 $resultsGrid.ItemsSource = $null
-                $searchScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "any PO" } else { "PO $poNumber" }
-                $statusText.Text = "No results found in $searchScope - try different search criteria"
+                $poScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "any PO" } else { "PO $poNumber" }
+                $statusText.Text = "No results found in $poScope - try different search criteria"
             }
         
             $progressBar.Visibility = "Collapsed"
