@@ -1,0 +1,184 @@
+{
+    "departmentName": "Fabrication & Welding",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How should Fabrication & Welding workers log in?",
+            "options": [
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan (fastest, hands-free)"
+                },
+                {
+                    "value": "employee_number",
+                    "label": "Employee Number + PIN"
+                },
+                {
+                    "value": "touchscreen_name",
+                    "label": "Touchscreen Name Selection"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should one person be able to sign up for multiple fabrication/welding tasks at once?",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Allow multiple tasks"
+                },
+                {
+                    "value": "no",
+                    "label": "No - One task at a time"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What information should be REQUIRED when assigning a fabrication/welding task?",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work Order Number"
+                },
+                {
+                    "value": "part_number",
+                    "label": "Part Number"
+                },
+                {
+                    "value": "job_type",
+                    "label": "Job Type (Fabrication, Welding, Both)"
+                },
+                {
+                    "value": "quantity",
+                    "label": "Quantity"
+                },
+                {
+                    "value": "material_type",
+                    "label": "Material Type"
+                },
+                {
+                    "value": "welding_process",
+                    "label": "Welding Process (MIG, TIG, Stick)"
+                },
+                {
+                    "value": "certifications",
+                    "label": "Required Certifications"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can Fab/Welding workers edit task details AFTER assignment?",
+            "options": [
+                {
+                    "value": "yes_all",
+                    "label": "Yes - Edit all details"
+                },
+                {
+                    "value": "yes_some",
+                    "label": "Yes - But only certain fields (notes, quantity)"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Supervisor must edit"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "Maximum number of 'favorite' fabrication tasks to save?",
+            "description": "For frequently fabricated parts",
+            "placeholder": "10",
+            "min": 0,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How many days should favorites be kept?",
+            "placeholder": "60",
+            "min": 1,
+            "max": 90
+        },
+        {
+            "id": "timeout_kiosk",
+            "type": "range",
+            "question": "Auto-logout timeout for fabrication/welding kiosks?",
+            "description": "How long before the system automatically logs out an inactive user?",
+            "min": 5,
+            "max": 60,
+            "default": 15,
+            "minLabel": "5 min",
+            "maxLabel": "60 min"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should Fab/Welding workers see on their dashboard?",
+            "description": "Select top 3-5 most important",
+            "options": [
+                {
+                    "value": "parts_completed_today",
+                    "label": "Parts Completed Today"
+                },
+                {
+                    "value": "current_job_progress",
+                    "label": "Current Job Progress"
+                },
+                {
+                    "value": "quality_metrics",
+                    "label": "Quality/Rework Rate"
+                },
+                {
+                    "value": "avg_cycle_time",
+                    "label": "Average Cycle Time"
+                },
+                {
+                    "value": "material_usage",
+                    "label": "Material Usage"
+                },
+                {
+                    "value": "efficiency",
+                    "label": "Efficiency Score"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should Fab/Welding workers receive task notifications?",
+            "options": [
+                {
+                    "value": "screen_popup",
+                    "label": "On-screen popup"
+                },
+                {
+                    "value": "sound_alert",
+                    "label": "Sound alert"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile device push notification"
+                },
+                {
+                    "value": "andon_light",
+                    "label": "Andon light system"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

@@ -1,0 +1,254 @@
+{
+    "departmentName": "Material Handling",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How should Material Handlers log in?",
+            "options": [
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan (fastest, hands-free)"
+                },
+                {
+                    "value": "employee_number",
+                    "label": "Employee Number + PIN"
+                },
+                {
+                    "value": "touchscreen_name",
+                    "label": "Touchscreen Name Selection"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should one person be able to sign up for multiple roles/tasks at once?",
+            "description": "Example: Material Handler + Forklift Operator",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Allow multiple roles"
+                },
+                {
+                    "value": "no",
+                    "label": "No - One role at a time"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What information should be REQUIRED when assigning a task?",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work Order Number"
+                },
+                {
+                    "value": "part_number",
+                    "label": "Part Number"
+                },
+                {
+                    "value": "quantity",
+                    "label": "Quantity"
+                },
+                {
+                    "value": "location",
+                    "label": "Location/Cell"
+                },
+                {
+                    "value": "priority",
+                    "label": "Priority Level"
+                },
+                {
+                    "value": "equipment",
+                    "label": "Equipment/Forklift ID"
+                },
+                {
+                    "value": "notes",
+                    "label": "Notes/Instructions"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can workers edit task details AFTER assignment?",
+            "options": [
+                {
+                    "value": "yes_all",
+                    "label": "Yes - Edit all details"
+                },
+                {
+                    "value": "yes_some",
+                    "label": "Yes - But only certain fields (notes, status)"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Supervisor must edit"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "Maximum number of 'favorite' tasks to save?",
+            "description": "For frequently repeated assignments",
+            "placeholder": "5",
+            "min": 0,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How many days should favorites be kept?",
+            "placeholder": "30",
+            "min": 1,
+            "max": 90
+        },
+        {
+            "id": "timeout_kiosk",
+            "type": "range",
+            "question": "Auto-logout timeout for kiosk mode (forklift/mobile)?",
+            "description": "How long before the system automatically logs out an inactive user?",
+            "min": 5,
+            "max": 60,
+            "default": 15,
+            "minLabel": "5 min",
+            "maxLabel": "60 min"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should Material Handlers see on their dashboard?",
+            "description": "Select top 3-5 most important",
+            "options": [
+                {
+                    "value": "tasks_completed_today",
+                    "label": "Tasks Completed Today"
+                },
+                {
+                    "value": "pending_tasks",
+                    "label": "Pending Tasks"
+                },
+                {
+                    "value": "avg_task_time",
+                    "label": "Average Task Time"
+                },
+                {
+                    "value": "equipment_status",
+                    "label": "Equipment/Forklift Status"
+                },
+                {
+                    "value": "safety_incidents",
+                    "label": "Safety Incidents"
+                },
+                {
+                    "value": "efficiency_score",
+                    "label": "Efficiency Score"
+                },
+                {
+                    "value": "priority_tasks",
+                    "label": "High Priority Tasks"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should Material Handlers receive task notifications?",
+            "options": [
+                {
+                    "value": "screen_popup",
+                    "label": "On-screen popup"
+                },
+                {
+                    "value": "sound_alert",
+                    "label": "Sound alert"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile device push notification"
+                },
+                {
+                    "value": "email",
+                    "label": "Email"
+                },
+                {
+                    "value": "sms",
+                    "label": "Text message (SMS)"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "forklift_inspection_digital",
+            "type": "radio",
+            "question": "Should forklift pre-shift inspections be DIGITAL (in the waitlist app)?",
+            "description": "Instead of paper checklists",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Digital inspections in app"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Keep paper checklists"
+                },
+                {
+                    "value": "optional",
+                    "label": "Make it optional (both methods available)"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "forklift_inspection_frequency",
+            "type": "radio",
+            "question": "How often should forklift inspections be required?",
+            "options": [
+                {
+                    "value": "every_shift",
+                    "label": "Every shift (before each use)"
+                },
+                {
+                    "value": "daily",
+                    "label": "Once per day"
+                },
+                {
+                    "value": "weekly",
+                    "label": "Weekly"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "forklift_inspection_prompting",
+            "type": "radio",
+            "question": "Should the system BLOCK forklift task assignment without a completed inspection?",
+            "options": [
+                {
+                    "value": "block",
+                    "label": "Yes - Block task assignment (hard requirement)"
+                },
+                {
+                    "value": "warn",
+                    "label": "Warn but allow override"
+                },
+                {
+                    "value": "none",
+                    "label": "No - Just remind/suggest"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

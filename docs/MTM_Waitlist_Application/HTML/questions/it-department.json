@@ -1,0 +1,93 @@
+{
+    "departmentName": "IT Department",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "Preferred login method for IT staff?",
+            "options": [
+                {
+                    "value": "sso",
+                    "label": "Single Sign-On (SSO)"
+                },
+                {
+                    "value": "active_directory",
+                    "label": "Active Directory"
+                },
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan"
+                },
+                {
+                    "value": "username_password",
+                    "label": "Username/Password"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should IT staff be able to access multiple system roles?",
+            "description": "For testing and administration purposes",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Full multi-role access"
+                },
+                {
+                    "value": "limited",
+                    "label": "Limited - Only admin roles"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Single role only"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "timeout_office",
+            "type": "range",
+            "question": "Auto-logout timeout for office/desktop mode?",
+            "description": "Longer timeout for desk work",
+            "min": 15,
+            "max": 120,
+            "default": 60,
+            "minLabel": "15 min",
+            "maxLabel": "2 hrs"
+        },
+        {
+            "id": "admin_dashboard",
+            "type": "checkbox",
+            "question": "What should IT admins see on their dashboard?",
+            "options": [
+                {
+                    "value": "system_health",
+                    "label": "System Health Status"
+                },
+                {
+                    "value": "active_users",
+                    "label": "Active Users Count"
+                },
+                {
+                    "value": "error_logs",
+                    "label": "Recent Error Logs"
+                },
+                {
+                    "value": "database_status",
+                    "label": "Database Connection Status"
+                },
+                {
+                    "value": "api_performance",
+                    "label": "API Performance Metrics"
+                },
+                {
+                    "value": "user_activity",
+                    "label": "User Activity Log"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

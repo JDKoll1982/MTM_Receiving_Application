@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync Dashboard - MTM Waitlist</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="window">
+        <div class="window-header">
+            <h1 class="window-title">LeanKit Sync Dashboard</h1>
+            <button class="window-close" onclick="window.location.href='index.html'">✕</button>
+        </div>
+        
+        <div class="window-content">
+            <!-- Sync Status Section -->
+            <section class="section">
+                <h2 class="section-title">Sync Status</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 24px; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 4px;">Auto-Sync</div>
+                        <div id="autosync-status" style="font-size: 18px; font-weight: 600; color: #107C10;">● ENABLED</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 4px;">Last Sync</div>
+                        <div style="font-size: 16px; font-weight: 500;">5 minutes ago</div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary);">2026-01-20 10:55:00 AM</div>
+                    </div>
+                    <div>
+                        <button id="sync-now-btn" class="btn-primary" onclick="syncAll()">Sync Now</button>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; text-align: center;">Next: in 10 min</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Statistics Section -->
+            <section class="section">
+                <h2 class="section-title">Statistics (Last 24 Hours)</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Syncs</div>
+                        <div class="stat-value" id="total-syncs">48</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Successful</div>
+                        <div class="stat-value" style="color: #107C10;" id="successful-syncs">46</div>
+                        <div class="stat-change positive">95.8%</div>
+                        <div class="progress-bar" style="margin-top: 8px;">
+                            <div class="progress-fill" style="width: 95.8%;"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Failed</div>
+                        <div class="stat-value" style="color: #E74856;" id="failed-syncs">2</div>
+                        <div class="stat-change negative">4.2%</div>
+                        <div class="progress-bar" style="margin-top: 8px;">
+                            <div class="progress-fill error" style="width: 4.2%;"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Conflicts Resolved</div>
+                        <div class="stat-value">1</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Duration</div>
+                        <div class="stat-value" style="font-size: 20px;">2.3s</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Recent Sync History -->
+            <section class="section">
+                <h2 class="section-title">Recent Sync History</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Entry</th>
+                                <th>Direction</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sync-history-tbody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button class="btn-secondary">Load More</button>
+                    <button class="btn-secondary">Export to CSV</button>
+                    <button class="btn-secondary">Clear History</button>
+                </div>
+            </section>
+            
+            <!-- Active Errors Section -->
+            <section class="section" style="border-left: 4px solid var(--color-error);">
+                <h2 class="section-title" style="color: var(--color-error);">Active Errors (1)</h2>
+                <div style="background: #FDE7E9; padding: 16px; border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">
+                        Entry #103: Network timeout during card creation
+                    </div>
+                    <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 8px;">
+                        Last Attempt: 10:40 AM<br />
+                        Retry Count: 2/3
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-primary" onclick="retrySync(103)">Retry Now</button>
+                        <button class="btn-secondary" onclick="window.location.href='4_sync_error_detail.html'">View Details</button>
+                        <button class="btn-link">Mark Resolved</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="window-footer">
+            <button class="btn-secondary" onclick="window.location.href='index.html'">Back to Index</button>
+            <button class="btn-secondary" onclick="window.location.href='2_waitlist_with_sync_status.html'">View Waitlist</button>
+            <button class="btn-secondary" onclick="window.location.href='1_leankit_configuration.html'">Settings</button>
+        </div>
+    </div>
+    
+    <script src="assets/scripts.js"></script>
+</body>
+</html>

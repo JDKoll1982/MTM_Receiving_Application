@@ -1,0 +1,145 @@
+{
+    "departmentName": "Management",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "Preferred login method for Management?",
+            "options": [
+                {
+                    "value": "sso",
+                    "label": "Single Sign-On (SSO)"
+                },
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan"
+                },
+                {
+                    "value": "username_password",
+                    "label": "Username/Password"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should managers be able to view multiple department dashboards?",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - All departments"
+                },
+                {
+                    "value": "assigned_only",
+                    "label": "Only assigned departments"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Single view only"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "timeout_office",
+            "type": "range",
+            "question": "Auto-logout timeout for management workstations?",
+            "min": 15,
+            "max": 120,
+            "default": 30,
+            "minLabel": "15 min",
+            "maxLabel": "2 hrs"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should managers see on their dashboard?",
+            "description": "Select most important KPIs",
+            "options": [
+                {
+                    "value": "overall_efficiency",
+                    "label": "Overall Department Efficiency"
+                },
+                {
+                    "value": "labor_utilization",
+                    "label": "Labor Utilization %"
+                },
+                {
+                    "value": "task_completion_rate",
+                    "label": "Task Completion Rate"
+                },
+                {
+                    "value": "quality_metrics",
+                    "label": "Quality Metrics"
+                },
+                {
+                    "value": "safety_incidents",
+                    "label": "Safety Incidents"
+                },
+                {
+                    "value": "overtime_hours",
+                    "label": "Overtime Hours"
+                },
+                {
+                    "value": "attendance",
+                    "label": "Attendance/Absenteeism"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should managers receive critical notifications?",
+            "options": [
+                {
+                    "value": "email",
+                    "label": "Email"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile Push Notification"
+                },
+                {
+                    "value": "sms",
+                    "label": "Text Message (SMS)"
+                },
+                {
+                    "value": "dashboard_alert",
+                    "label": "Dashboard Alert Banner"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "reporting_frequency",
+            "type": "radio",
+            "question": "How often should automated reports be generated?",
+            "options": [
+                {
+                    "value": "realtime",
+                    "label": "Real-time (continuous)"
+                },
+                {
+                    "value": "hourly",
+                    "label": "Every hour"
+                },
+                {
+                    "value": "shift",
+                    "label": "End of each shift"
+                },
+                {
+                    "value": "daily",
+                    "label": "Daily summary"
+                },
+                {
+                    "value": "weekly",
+                    "label": "Weekly summary"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

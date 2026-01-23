@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTM Waitlist - Kanban System Mockups</title>
+    <link rel="stylesheet" href="assets/kanban-styles.css">
+</head>
+<body>
+    <div class="navigation-container">
+        <h1>MTM Waitlist Application - Internal Kanban System</h1>
+        <p class="subtitle">Interactive Mockups - Visual Workflow Management</p>
+        
+        <div class="mockup-grid">
+            <div class="mockup-card featured">
+                <div class="mockup-number">1</div>
+                <div class="mockup-icon">📋</div>
+                <h2>Kanban Board View</h2>
+                <p>Main visual board with drag-and-drop lanes and cards. Full-featured kanban interface with WIP limits and swimlanes.</p>
+                <a href="kanban_board_view.html" class="btn-primary">View Mockup →</a>
+            </div>
+            
+            <div class="mockup-card">
+                <div class="mockup-number">2</div>
+                <div class="mockup-icon">🎴</div>
+                <h2>Card Detail Panel</h2>
+                <p>Comprehensive card details with comments, activity history, and attachments</p>
+                <a href="kanban_card_detail.html" class="btn-primary">View Mockup →</a>
+            </div>
+            
+            <div class="mockup-card">
+                <div class="mockup-number">3</div>
+                <div class="mockup-icon">⚙️</div>
+                <h2>Board Configuration</h2>
+                <p>Customize lanes, colors, WIP limits, and swimlane settings</p>
+                <a href="kanban_board_config.html" class="btn-primary">View Mockup →</a>
+            </div>
+            
+            <div class="mockup-card">
+                <div class="mockup-number">4</div>
+                <div class="mockup-icon">📊</div>
+                <h2>List View</h2>
+                <p>Alternative table view of all cards with sorting and filtering</p>
+                <a href="kanban_list_view.html" class="btn-primary">View Mockup →</a>
+            </div>
+            
+            <div class="mockup-card">
+                <div class="mockup-number">5</div>
+                <div class="mockup-icon">📈</div>
+                <h2>Analytics Dashboard</h2>
+                <p>Cycle time, lead time, cumulative flow, and bottleneck analysis</p>
+                <a href="kanban_analytics.html" class="btn-primary">View Mockup →</a>
+            </div>
+            
+            <div class="mockup-card">
+                <div class="mockup-number">6</div>
+                <div class="mockup-icon">📅</div>
+                <h2>Calendar View</h2>
+                <p>Due date focused view with drag-and-drop scheduling</p>
+                <a href="kanban_calendar_view.html" class="btn-primary">View Mockup →</a>
+            </div>
+        </div>
+        
+        <div class="workflow-diagram">
+            <h2>Kanban System Workflow</h2>
+            <div class="kanban-flow">
+                <div class="flow-column">
+                    <div class="flow-header backlog">BACKLOG</div>
+                    <div class="flow-card">New entries</div>
+                    <div class="flow-card">Pending work</div>
+                    <div class="flow-card">Future items</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-column">
+                    <div class="flow-header in-progress">IN PROGRESS</div>
+                    <div class="flow-card">Active work</div>
+                    <div class="flow-card">WIP Limited</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-column">
+                    <div class="flow-header review">REVIEW</div>
+                    <div class="flow-card">QC Check</div>
+                    <div class="flow-card">Approval</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-column">
+                    <div class="flow-header done">COMPLETED</div>
+                    <div class="flow-card">Finished</div>
+                    <div class="flow-card">Archived</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>🎯 Drag & Drop</h3>
+                <p>Move cards between lanes with smooth animations and visual feedback</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ WIP Limits</h3>
+                <p>Prevent bottlenecks with work-in-progress limits and warnings</p>
+            </div>
+            <div class="feature-card">
+                <h3>🏊 Swimlanes</h3>
+                <p>Group cards by priority, customer, or assigned user</p>
+            </div>
+            <div class="feature-card">
+                <h3>💬 Comments</h3>
+                <p>Team collaboration with threaded discussions on cards</p>
+            </div>
+            <div class="feature-card">
+                <h3>📎 Attachments</h3>
+                <p>Link files and documents to cards</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Analytics</h3>
+                <p>Track cycle time, lead time, and identify bottlenecks</p>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>About This Kanban System</h3>
+            <ul>
+                <li>✅ <strong>Fully Internal</strong> - No external dependencies</li>
+                <li>✅ <strong>Customizable Boards</strong> - Create multiple boards with custom lanes</li>
+                <li>✅ <strong>Real-time Updates</strong> - Changes reflect immediately</li>
+                <li>✅ <strong>Mobile Responsive</strong> - Works on desktop and tablets</li>
+                <li>✅ <strong>MySQL Backend</strong> - All data persisted to database</li>
+                <li>✅ <strong>WinUI 3 Native</strong> - Full Windows App SDK integration</li>
+            </ul>
+        </div>
+        
+        <div class="tech-stack">
+            <h3>Technology Stack</h3>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-logo">🪟</div>
+                    <div class="tech-name">WinUI 3</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-logo">#</div>
+                    <div class="tech-name">C# 12</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-logo">🗄️</div>
+                    <div class="tech-name">MySQL 8.0</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-logo">⚙️</div>
+                    <div class="tech-name">.NET 8</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/kanban-scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+{
+    "departmentName": "Maintenance",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How should Maintenance staff log in?",
+            "options": [
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan (fastest, hands-free)"
+                },
+                {
+                    "value": "employee_number",
+                    "label": "Employee Number + PIN"
+                },
+                {
+                    "value": "touchscreen_name",
+                    "label": "Touchscreen Name Selection"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should one person be able to sign up for multiple maintenance tasks at once?",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Allow multiple tasks"
+                },
+                {
+                    "value": "no",
+                    "label": "No - One task at a time"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What information should be REQUIRED when assigning a maintenance task?",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work Order Number"
+                },
+                {
+                    "value": "equipment_id",
+                    "label": "Equipment/Machine ID"
+                },
+                {
+                    "value": "task_type",
+                    "label": "Task Type (PM, Repair, Breakdown)"
+                },
+                {
+                    "value": "location",
+                    "label": "Location/Area"
+                },
+                {
+                    "value": "priority",
+                    "label": "Priority Level"
+                },
+                {
+                    "value": "parts_needed",
+                    "label": "Parts/Materials Needed"
+                },
+                {
+                    "value": "estimated_time",
+                    "label": "Estimated Time"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can maintenance workers edit task details AFTER assignment?",
+            "options": [
+                {
+                    "value": "yes_all",
+                    "label": "Yes - Edit all details"
+                },
+                {
+                    "value": "yes_some",
+                    "label": "Yes - But only certain fields (notes, parts used)"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Supervisor must edit"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "Maximum number of 'favorite' maintenance tasks to save?",
+            "description": "For frequently performed preventive maintenance",
+            "placeholder": "10",
+            "min": 0,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How many days should favorites be kept?",
+            "placeholder": "60",
+            "min": 1,
+            "max": 90
+        },
+        {
+            "id": "timeout_kiosk",
+            "type": "range",
+            "question": "Auto-logout timeout for maintenance kiosks?",
+            "description": "How long before the system automatically logs out an inactive user?",
+            "min": 5,
+            "max": 60,
+            "default": 15,
+            "minLabel": "5 min",
+            "maxLabel": "60 min"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should Maintenance staff see on their dashboard?",
+            "description": "Select top 3-5 most important",
+            "options": [
+                {
+                    "value": "tasks_completed_today",
+                    "label": "Tasks Completed Today"
+                },
+                {
+                    "value": "pending_pm",
+                    "label": "Pending Preventive Maintenance"
+                },
+                {
+                    "value": "emergency_repairs",
+                    "label": "Emergency Repairs Open"
+                },
+                {
+                    "value": "avg_repair_time",
+                    "label": "Average Repair Time"
+                },
+                {
+                    "value": "equipment_downtime",
+                    "label": "Equipment Downtime"
+                },
+                {
+                    "value": "parts_inventory",
+                    "label": "Parts Inventory Status"
+                },
+                {
+                    "value": "safety_incidents",
+                    "label": "Safety Incidents"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should Maintenance staff receive task notifications?",
+            "options": [
+                {
+                    "value": "screen_popup",
+                    "label": "On-screen popup"
+                },
+                {
+                    "value": "sound_alert",
+                    "label": "Sound alert"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile device push notification"
+                },
+                {
+                    "value": "email",
+                    "label": "Email"
+                },
+                {
+                    "value": "sms",
+                    "label": "Text message (SMS)"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

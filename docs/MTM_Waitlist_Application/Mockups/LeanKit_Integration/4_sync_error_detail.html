@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync Error Details - MTM Waitlist</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="window" style="max-width: 700px;">
+        <div class="window-header">
+            <h1 class="window-title">Sync Error Details - Entry #103</h1>
+            <button class="window-close" onclick="window.location.href='2_waitlist_with_sync_status.html'">✕</button>
+        </div>
+        
+        <div class="window-content">
+            <!-- Error Information -->
+            <section class="section" style="border-left: 4px solid var(--color-error);">
+                <h2 class="section-title">Error Information</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px;">Waitlist Entry</div>
+                        <div style="font-weight: 600;">#103 - MegaSupply</div>
+                        <div style="font-size: 14px; color: var(--color-text-secondary);">PO #12347</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px;">LeanKit Card ID</div>
+                        <div style="font-weight: 600; color: var(--color-text-disabled);">Not Created</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px;">Error Type</div>
+                        <div><span class="badge badge-error">NetworkError</span></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px;">Occurred At</div>
+                        <div style="font-weight: 500;">2026-01-20 10:40:15 AM</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px;">Retry Attempts</div>
+                        <div style="font-weight: 600;">2 of 3</div>
+                        <div class="progress-bar" style="margin-top: 4px;">
+                            <div class="progress-fill warning" style="width: 66.67%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 24px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Error Message:</div>
+                    <div class="code-block">
+The operation has timed out after 30 seconds.
+Failed to establish connection to LeanKit API.
+
+Endpoint: https://mtmfg.leankit.com/io/card
+HTTP Status: 504 Gateway Timeout
+
+Request Details:
+  Method: POST
+  Timestamp: 2026-01-20T10:40:15.123Z
+  Timeout: 30000ms
+  Retries: 2/3
+                    </div>
+                </div>
+                
+                <details style="margin-top: 16px;">
+                    <summary style="cursor: pointer; font-weight: 600; padding: 8px; background: var(--color-bg-secondary); border-radius: 4px;">
+                        Stack Trace (Click to expand)
+                    </summary>
+                    <div class="code-block" style="margin-top: 8px;">
+at Service_LeanKit_SyncEngine.SyncWaitlistEntryToLeankitAsync(Int32 entryId)
+at Dao_LeanKit_Card.CreateCardAsync(Model_LeanKit_CardCreateRequest request)
+at HttpClient.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+System.Net.Http.HttpRequestException: The operation was canceled
+  ---> System.Threading.Tasks.TaskCanceledException: A task was canceled
+  ---> System.TimeoutException: The operation has timed out
+                    </div>
+                </details>
+            </section>
+            
+            <!-- Recommended Actions -->
+            <section class="info-panel">
+                <h3>Recommended Actions</h3>
+                <ul>
+                    <li>✓ Check your internet connection</li>
+                    <li>✓ Verify LeanKit service status at <a href="https://status.leankit.com" target="_blank">status.leankit.com</a></li>
+                    <li>✓ Try again in a few minutes</li>
+                    <li>✓ Contact support if problem persists (>3 failures)</li>
+                </ul>
+            </section>
+            
+            <!-- Network Diagnostics -->
+            <section class="section">
+                <h2 class="section-title">Network Diagnostics</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary);">Internet Connection</div>
+                        <div style="font-weight: 600; color: var(--color-success);">● Connected</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary);">LeanKit API Reachable</div>
+                        <div style="font-weight: 600; color: var(--color-error);">● Timeout</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary);">Last Successful Sync</div>
+                        <div style="font-weight: 500;">9:30 AM (1h 10m ago)</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary);">Next Retry Attempt</div>
+                        <div style="font-weight: 500;">In 20 seconds</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="window-footer">
+            <button class="btn-link" onclick="copyErrorDetails()">Copy Error Details</button>
+            <button class="btn-secondary" onclick="window.location.href='3_sync_dashboard.html'">Close</button>
+            <button class="btn-secondary" onclick="window.open('mailto:support@mtmfg.com?subject=LeanKit Sync Error - Entry 103')">Get Help</button>
+            <button class="btn-primary" onclick="retrySync(103); window.location.href='2_waitlist_with_sync_status.html'">Retry Now</button>
+        </div>
+    </div>
+    
+    <script src="assets/scripts.js"></script>
+</body>
+</html>

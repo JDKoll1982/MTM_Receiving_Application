@@ -519,6 +519,16 @@
             <div class="progress-text" id="progressText">Question 1 of 10</div>
         </div>
 
+        <div class="wizard-navigation">
+            <button class="nav-btn btn-previous" id="btnPrevious" onclick="previousQuestion()">&larr; Previous</button>
+            <button class="nav-btn btn-review" id="btnReview" onclick="showReview()" style="display: none;">Review
+                Answers</button>
+            <div style="flex: 1;"></div>
+            <button class="nav-btn btn-next" id="btnNext" onclick="nextQuestion()">Next &rarr;</button>
+            <button class="nav-btn btn-finish" id="btnFinish" onclick="finishQuestionnaire()"
+                style="display: none;">Finish & Export</button>
+        </div>
+
         <div class="question-container" id="questionContainer"></div>
 
         <div class="review-container" id="reviewContainer">
@@ -534,16 +544,6 @@
             <p>Your answers have been submitted successfully.</p>
             <p style="margin-top: 20px;">A copy has been downloaded to your device.</p>
         </div>
-
-        <div class="wizard-navigation">
-            <button class="nav-btn btn-previous" id="btnPrevious" onclick="previousQuestion()">&larr; Previous</button>
-            <button class="nav-btn btn-review" id="btnReview" onclick="showReview()" style="display: none;">Review
-                Answers</button>
-            <div style="flex: 1;"></div>
-            <button class="nav-btn btn-next" id="btnNext" onclick="nextQuestion()">Next &rarr;</button>
-            <button class="nav-btn btn-finish" id="btnFinish" onclick="finishQuestionnaire()"
-                style="display: none;">Finish & Export</button>
-        </div>
     </div>
 
     <script>
@@ -551,21 +551,125 @@
 
         let currentQuestionIndex = 0;
         let answers = {};
+        let orderedQuestions = [];
+        let checkpointInserted = false;
+
+        // Department relevance mapping
+        const departmentRelevance = {
+            "Production": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "favorites_count", "favorites_duration", "timeout_kiosk", "top_metrics", "notification_methods"],
+            "Material Handling": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "favorites_count", "favorites_duration", "timeout_kiosk", "top_metrics", "notification_methods", "forklift_inspection_digital", "forklift_inspection_frequency", "forklift_inspection_prompting"],
+            "Die Shop": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "favorites_count", "favorites_duration", "timeout_kiosk", "top_metrics", "notification_methods"],
+            "Fabrication & Welding": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "favorites_count", "favorites_duration", "timeout_kiosk", "top_metrics", "notification_methods"],
+            "Assembly": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "favorites_count", "favorites_duration", "timeout_kiosk", "top_metrics", "notification_methods"],
+            "Quality Control": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "timeout_office", "top_metrics", "notification_methods"],
+            "Maintenance": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "timeout_kiosk", "top_metrics", "notification_methods", "forklift_inspection_digital"],
+            "Setup Technicians": ["login_method", "multi_role", "required_fields", "post_assignment_edit", "favorites_count", "favorites_duration", "timeout_kiosk", "top_metrics", "notification_methods"],
+            "Inventory Specialist": ["login_method", "multi_role", "required_fields", "timeout_office", "top_metrics", "notification_methods"],
+            "Outside Service Coordinator": ["login_method", "timeout_office", "top_metrics", "notification_methods"],
+            "IT Department": ["login_method", "multi_role", "timeout_office"],
+            "Management": ["login_method", "multi_role", "timeout_office", "top_metrics", "notification_methods"]
+        };
+
+        function reorderQuestionsForDepartment(department) {
+            const demographicQuestions = QUESTIONNAIRE_DATA.questions.filter(q =>
+                ['user_info', 'department', 'shift'].includes(q.id)
+            );
+
+            const relevantIds = departmentRelevance[department] || [];
+            const relevantQuestions = QUESTIONNAIRE_DATA.questions.filter(q =>
+                relevantIds.includes(q.id)
+            );
+
+            const otherQuestions = QUESTIONNAIRE_DATA.questions.filter(q =>
+                !['user_info', 'department', 'shift'].includes(q.id) &&
+                !relevantIds.includes(q.id) &&
+                q.id !== 'completion_date' &&
+                q.id !== 'works_current' &&
+                q.id !== 'doesnt_work_current' &&
+                q.id !== 'must_have_features'
+            );
+
+            const feedbackQuestions = QUESTIONNAIRE_DATA.questions.filter(q =>
+                ['completion_date', 'works_current', 'doesnt_work_current', 'must_have_features'].includes(q.id)
+            );
+
+            // Create checkpoint question
+            const checkpointQuestion = {
+                id: 'department_checkpoint',
+                type: 'checkpoint',
+                question: 'Department-Specific Questions Complete',
+                description: `You've completed all questions relevant to ${department}. Would you like to continue with additional questions that may not directly apply to your role?`,
+                options: [
+                    { value: 'stop', label: 'Stop here and submit my answers' },
+                    { value: 'continue', label: 'Continue to see all remaining questions' }
+                ]
+            };
+
+            orderedQuestions = [
+                ...demographicQuestions,
+                ...relevantQuestions,
+                checkpointQuestion,
+                ...otherQuestions,
+                ...feedbackQuestions
+            ];
+
+            checkpointInserted = true;
+        }
+
+        function getActiveQuestions() {
+            if (orderedQuestions.length === 0) {
+                return QUESTIONNAIRE_DATA.questions;
+            }
+            return orderedQuestions;
+        }
 
         function renderQuestion(index) {
             const container = document.getElementById('questionContainer');
             container.innerHTML = '';
 
-            if (index < 0 || index >= QUESTIONNAIRE_DATA.questions.length) return;
+            const activeQuestions = getActiveQuestions();
+            if (index < 0 || index >= activeQuestions.length) return;
 
-            const q = QUESTIONNAIRE_DATA.questions[index];
+            const q = activeQuestions[index];
+
+            // Handle checkpoint question
+            if (q.type === 'checkpoint') {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question active';
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <h2 class="question-title" style="color: #4CAF50;">&check; ${q.question}</h2>
+                        <p class="question-description">${q.description}</p>
+                    </div>
+                    <div class="info-box" style="background: #e8f5e9; border-color: #4CAF50;">
+                        <strong>You have two options:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Stop here:</strong> Your answers will be submitted now. Perfect if you only want to provide input on questions relevant to your department.</li>
+                            <li><strong>Continue:</strong> See all remaining questions and provide additional feedback if desired. These questions may be more relevant to other departments.</li>
+                        </ul>
+                    </div>
+                    <div class="question-type-checkpoint" style="margin-top: 30px;">
+                        <label class="option" for="q${index}_stop" onclick="selectOption(this)" style="padding: 20px; font-size: 18px;">
+                            <input type="radio" name="q${index}" id="q${index}_stop" value="stop">
+                            <span>&#x2714; Stop here and submit my answers</span>
+                        </label>
+                        <label class="option" for="q${index}_continue" onclick="selectOption(this)" style="padding: 20px; font-size: 18px;">
+                            <input type="radio" name="q${index}" id="q${index}_continue" value="continue">
+                            <span>Continue to see all remaining questions &rarr;</span>
+                        </label>
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+                return;
+            }
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question active';
             questionDiv.id = `question-${index}`;
 
             let html = `
                 <div class="question-header">
-                    <span class="question-number">Question ${index + 1} of ${QUESTIONNAIRE_DATA.questions.length}</span>
+                    <span class="question-number">Question ${index + 1} of ${activeQuestions.length}</span>
                     <h2 class="question-title">${q.question}${q.required ? ' <span style="color: #e74c3c;">*</span>' : ''}</h2>
                     ${q.description ? `<p class="question-description">${q.description}</p>` : ''}
                     ${q.required ? '<p style="color: #e74c3c; font-size: 14px; margin-top: 5px;"><em>* Required</em></p>' : ''}
@@ -760,10 +864,18 @@
         }
 
         function saveAnswer(index) {
-            const q = QUESTIONNAIRE_DATA.questions[index];
+            const activeQuestions = getActiveQuestions();
+            const q = activeQuestions[index];
             const answer = { questionId: q.id, question: q.question };
 
             switch (q.type) {
+                case 'checkpoint':
+                    const checkpointChoice = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (checkpointChoice) {
+                        answer.value = checkpointChoice.value;
+                    }
+                    break;
+
                 case 'radio':
                     const radioChecked = document.querySelector(`input[name="q${index}"]:checked`);
                     if (radioChecked) {
@@ -821,7 +933,8 @@
         }
 
         function restoreAnswer(index) {
-            const q = QUESTIONNAIRE_DATA.questions[index];
+            const activeQuestions = getActiveQuestions();
+            const q = activeQuestions[index];
             const answer = answers[q.id];
             if (!answer) return;
 
@@ -892,7 +1005,18 @@
         }
 
         function validateCurrentQuestion() {
-            const q = QUESTIONNAIRE_DATA.questions[currentQuestionIndex];
+            const activeQuestions = getActiveQuestions();
+            const q = activeQuestions[currentQuestionIndex];
+
+            if (q.type === 'checkpoint') {
+                const hasSelection = document.querySelector(`input[name="q${currentQuestionIndex}"]:checked`) !== null;
+                if (!hasSelection) {
+                    alert('Please select an option to continue.');
+                    return false;
+                }
+                return true;
+            }
+
             if (!q.required) return true;
 
             const index = currentQuestionIndex;
@@ -949,7 +1073,29 @@
             if (!validateCurrentQuestion()) return;
 
             saveAnswer(currentQuestionIndex);
-            if (currentQuestionIndex < QUESTIONNAIRE_DATA.questions.length - 1) {
+
+            // Trigger reordering AFTER shift question
+            const activeQuestions = getActiveQuestions();
+            if (activeQuestions[currentQuestionIndex].id === 'shift' && orderedQuestions.length === 0) {
+                const departmentAnswer = answers['department'];
+                if (departmentAnswer && departmentAnswer.value) {
+                    const departmentValue = departmentAnswer.otherText || departmentAnswer.value;
+                    const mappedDepartment = departmentValue === 'Other' ? 'Management' : departmentValue;
+                    reorderQuestionsForDepartment(mappedDepartment);
+                }
+            }
+
+            // Check if user chose to stop at checkpoint
+            if (activeQuestions[currentQuestionIndex].type === 'checkpoint') {
+                const checkpointChoice = answers['department_checkpoint']?.value;
+                if (checkpointChoice === 'stop') {
+                    showReview();
+                    return;
+                }
+            }
+
+            const newActiveQuestions = getActiveQuestions();
+            if (currentQuestionIndex < newActiveQuestions.length - 1) {
                 currentQuestionIndex++;
                 renderQuestion(currentQuestionIndex);
                 updateProgress();
@@ -968,15 +1114,17 @@
         }
 
         function updateProgress() {
-            const progress = ((currentQuestionIndex + 1) / QUESTIONNAIRE_DATA.questions.length) * 100;
+            const activeQuestions = getActiveQuestions();
+            const progress = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `Question ${currentQuestionIndex + 1} of ${QUESTIONNAIRE_DATA.questions.length}`;
+            document.getElementById('progressText').textContent = `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`;
         }
 
         function updateNavigation() {
+            const activeQuestions = getActiveQuestions();
             document.getElementById('btnPrevious').disabled = currentQuestionIndex === 0;
 
-            const isLastQuestion = currentQuestionIndex === QUESTIONNAIRE_DATA.questions.length - 1;
+            const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
             document.getElementById('btnNext').style.display = isLastQuestion ? 'none' : 'inline-block';
             document.getElementById('btnReview').style.display = isLastQuestion ? 'inline-block' : 'none';
         }
@@ -994,9 +1142,11 @@
 
         function renderReview() {
             const reviewContent = document.getElementById('reviewContent');
+            const activeQuestions = getActiveQuestions();
             let html = '';
 
-            QUESTIONNAIRE_DATA.questions.forEach((q, index) => {
+            activeQuestions.forEach((q, index) => {
+                if (q.type === 'checkpoint') return;
                 const answer = answers[q.id];
                 if (!answer) return;
 

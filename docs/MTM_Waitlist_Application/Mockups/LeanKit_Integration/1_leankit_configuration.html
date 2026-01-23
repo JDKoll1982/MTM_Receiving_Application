@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeanKit Configuration - MTM Waitlist</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="window">
+        <div class="window-header">
+            <h1 class="window-title">LeanKit Integration Settings</h1>
+            <button class="window-close" onclick="window.location.href='index.html'">✕</button>
+        </div>
+        
+        <div class="window-content">
+            <!-- Connection Settings -->
+            <section class="section">
+                <h2 class="section-title">Connection Settings</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="account-name">Account Name</label>
+                    <input type="text" id="account-name" class="form-input" value="mtmfg" />
+                    <span class="form-help">Your LeanKit account subdomain</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="api-url">API Base URL</label>
+                    <input type="text" id="api-url" class="form-input" value="https://mtmfg.leankit.com/io" readonly />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="board-id">Board ID</label>
+                    <input type="text" id="board-id" class="form-input" value="1490772554" />
+                    <span class="form-help">Find this in your LeanKit board URL</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Authentication Method</label>
+                    <div>
+                        <input type="radio" id="auth-token" name="auth-method" checked />
+                        <label for="auth-token">Token (Recommended)</label>
+                        <input type="radio" id="auth-password" name="auth-method" style="margin-left: 20px;" />
+                        <label for="auth-password">Email/Password</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="api-token">API Token</label>
+                    <input type="password" id="api-token" class="form-input" value="2a0ec41e4fca6a10727a33je4f409545870c0ce199fd8cde287a027acdf671d73da3f5af1ee983441d1993dc3a2181302690885c0b46692e39b6c9e29bd132eb" />
+                    <button class="btn-link" style="margin-top: 8px;" onclick="window.open('https://mtmfg.leankit.com', '_blank')">Generate New Token in LeanKit ↗</button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Connection Status</label>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span id="connection-status" class="connection-status connected">● Connected</span>
+                        <button id="test-connection-btn" class="btn-secondary" onclick="testConnection()">Test Connection</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Synchronization Settings -->
+            <section class="section">
+                <h2 class="section-title">Synchronization Settings</h2>
+                
+                <div class="form-group">
+                    <input type="checkbox" id="enable-autosync" class="form-checkbox" checked onchange="toggleAutoSync()" />
+                    <label for="enable-autosync">Enable Auto-Sync</label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sync-interval">Sync Interval (minutes)</label>
+                    <input type="number" id="sync-interval" class="form-input" value="15" min="5" max="60" style="width: 150px;" />
+                    <span class="form-help">How often to automatically synchronize data</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Last Sync</label>
+                    <div>2026-01-20 10:45:23 AM</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Next Sync</label>
+                    <div>2026-01-20 11:00:23 AM</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Retry Settings</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label for="max-retries" style="display: block; margin-bottom: 4px;">Max Retries</label>
+                            <input type="number" id="max-retries" class="form-input" value="3" min="1" max="10" />
+                        </div>
+                        <div>
+                            <label for="retry-delay" style="display: block; margin-bottom: 4px;">Retry Delay (seconds)</label>
+                            <input type="number" id="retry-delay" class="form-input" value="5" min="1" max="60" />
+                        </div>
+                    </div>
+                    <span class="form-help">Exponential backoff will be applied</span>
+                </div>
+            </section>
+            
+            <!-- Lane Mapping -->
+            <section class="section">
+                <h2 class="section-title">Lane Mapping</h2>
+                <p style="margin-bottom: 16px; color: var(--color-text-secondary);">
+                    Map waitlist statuses to LeanKit board lanes
+                </p>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Waitlist Status</th>
+                                <th style="text-align: center;">→</th>
+                                <th>LeanKit Lane</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Pending</strong></td>
+                                <td style="text-align: center;">→</td>
+                                <td>
+                                    <select class="form-select">
+                                        <option value="lane-1" selected>Backlog</option>
+                                        <option value="lane-2">In Progress</option>
+                                        <option value="lane-3">Blocked</option>
+                                        <option value="lane-4">Done</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>In Progress</strong></td>
+                                <td style="text-align: center;">→</td>
+                                <td>
+                                    <select class="form-select">
+                                        <option value="lane-1">Backlog</option>
+                                        <option value="lane-2" selected>In Progress</option>
+                                        <option value="lane-3">Blocked</option>
+                                        <option value="lane-4">Done</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>On Hold</strong></td>
+                                <td style="text-align: center;">→</td>
+                                <td>
+                                    <select class="form-select">
+                                        <option value="lane-1">Backlog</option>
+                                        <option value="lane-2">In Progress</option>
+                                        <option value="lane-3" selected>Blocked</option>
+                                        <option value="lane-4">Done</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Completed</strong></td>
+                                <td style="text-align: center;">→</td>
+                                <td>
+                                    <select class="form-select">
+                                        <option value="lane-1">Backlog</option>
+                                        <option value="lane-2">In Progress</option>
+                                        <option value="lane-3">Blocked</option>
+                                        <option value="lane-4" selected>Done</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="btn-secondary" style="margin-top: 16px;" onclick="refreshLanes()">
+                    Refresh Lanes from LeanKit
+                </button>
+            </section>
+        </div>
+        
+        <div class="window-footer">
+            <button class="btn-secondary" onclick="window.location.href='index.html'">Cancel</button>
+            <button class="btn-primary" onclick="saveConfiguration()">Save Settings</button>
+        </div>
+    </div>
+    
+    <script src="assets/scripts.js"></script>
+</body>
+</html>

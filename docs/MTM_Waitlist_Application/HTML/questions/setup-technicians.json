@@ -1,0 +1,184 @@
+{
+    "departmentName": "Setup Technicians",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How should Setup Technicians log in?",
+            "options": [
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan (fastest, hands-free)"
+                },
+                {
+                    "value": "employee_number",
+                    "label": "Employee Number + PIN"
+                },
+                {
+                    "value": "touchscreen_name",
+                    "label": "Touchscreen Name Selection"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should one Setup Tech be able to sign up for multiple setup tasks at once?",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Allow multiple tasks"
+                },
+                {
+                    "value": "no",
+                    "label": "No - One task at a time"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What information should be REQUIRED when assigning a setup task?",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work Order Number"
+                },
+                {
+                    "value": "machine_number",
+                    "label": "Machine Number"
+                },
+                {
+                    "value": "part_number",
+                    "label": "Part Number"
+                },
+                {
+                    "value": "setup_type",
+                    "label": "Setup Type (New Job, Changeover, Tool Change)"
+                },
+                {
+                    "value": "tooling_list",
+                    "label": "Tooling/Fixture List"
+                },
+                {
+                    "value": "program_number",
+                    "label": "Program Number"
+                },
+                {
+                    "value": "priority",
+                    "label": "Priority Level"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can Setup Techs edit task details AFTER assignment?",
+            "options": [
+                {
+                    "value": "yes_all",
+                    "label": "Yes - Edit all details"
+                },
+                {
+                    "value": "yes_some",
+                    "label": "Yes - But only certain fields (notes, actual time)"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Supervisor must edit"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "Maximum number of 'favorite' setup tasks to save?",
+            "description": "For frequently run jobs",
+            "placeholder": "15",
+            "min": 0,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How many days should favorites be kept?",
+            "placeholder": "90",
+            "min": 1,
+            "max": 180
+        },
+        {
+            "id": "timeout_kiosk",
+            "type": "range",
+            "question": "Auto-logout timeout for setup kiosks?",
+            "description": "How long before the system automatically logs out an inactive user?",
+            "min": 5,
+            "max": 60,
+            "default": 20,
+            "minLabel": "5 min",
+            "maxLabel": "60 min"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should Setup Techs see on their dashboard?",
+            "description": "Select top 3-5 most important",
+            "options": [
+                {
+                    "value": "setups_completed_today",
+                    "label": "Setups Completed Today"
+                },
+                {
+                    "value": "avg_setup_time",
+                    "label": "Average Setup Time"
+                },
+                {
+                    "value": "pending_setups",
+                    "label": "Pending Setups"
+                },
+                {
+                    "value": "machines_down",
+                    "label": "Machines Down Waiting for Setup"
+                },
+                {
+                    "value": "first_piece_approval",
+                    "label": "First Piece Approval Rate"
+                },
+                {
+                    "value": "efficiency",
+                    "label": "Setup Efficiency"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should Setup Techs receive task notifications?",
+            "options": [
+                {
+                    "value": "screen_popup",
+                    "label": "On-screen popup"
+                },
+                {
+                    "value": "sound_alert",
+                    "label": "Sound alert"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile device push notification"
+                },
+                {
+                    "value": "two_way_radio",
+                    "label": "Two-way radio call"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

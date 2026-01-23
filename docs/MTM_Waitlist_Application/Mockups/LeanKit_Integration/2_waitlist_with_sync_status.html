@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waitlist with Sync Status - MTM Waitlist</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="window">
+        <div class="window-header">
+            <h1 class="window-title">MTM Waitlist</h1>
+            <button class="window-close" onclick="window.location.href='index.html'">✕</button>
+        </div>
+        
+        <div class="window-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <input type="text" class="form-input" placeholder="Search..." style="width: 300px;" />
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn-secondary" onclick="window.location.href='3_sync_dashboard.html'">
+                        Sync Dashboard
+                    </button>
+                    <button class="btn-primary">+ New Entry</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>LeanKit Status</th>
+                                <th>Last Sync</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>101</strong></td>
+                                <td>
+                                    <div><strong>Acme Corp</strong></div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">PO #12345</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">Updated 10m ago</div>
+                                </td>
+                                <td><span class="badge badge-info">In Progress</span></td>
+                                <td><span class="badge badge-error">High</span></td>
+                                <td>
+                                    <span id="sync-status-101" class="badge badge-success">
+                                        <span class="status-icon status-icon-success"></span> Synced
+                                    </span>
+                                </td>
+                                <td id="last-sync-101">10:45 AM</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn-secondary" style="padding: 4px 12px;">⋮</button>
+                                        <div class="dropdown-menu" style="display: none;">
+                                            <a href="#" onclick="syncEntry(101); return false;">Edit Entry</a>
+                                            <a href="#" onclick="viewInLeanKit('card-789'); return false;">View in LeanKit ↗</a>
+                                            <hr />
+                                            <a href="#" onclick="syncEntry(101); return false;">Sync to LeanKit Now</a>
+                                            <a href="3_sync_dashboard.html">View Sync History</a>
+                                            <hr />
+                                            <a href="#" style="color: var(--color-error);">Delete Entry</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>102</strong></td>
+                                <td>
+                                    <div><strong>GlobalTech</strong></div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">PO #12346</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">Created 1h ago</div>
+                                </td>
+                                <td><span class="badge badge-neutral">Pending</span></td>
+                                <td><span class="badge badge-warning">Medium</span></td>
+                                <td>
+                                    <span id="sync-status-102" class="badge badge-warning">
+                                        <span class="status-icon status-icon-pending"></span> Pending
+                                    </span>
+                                </td>
+                                <td id="last-sync-102">—</td>
+                                <td>
+                                    <button class="btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="syncEntry(102)">
+                                        Sync Now
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>103</strong></td>
+                                <td>
+                                    <div><strong>MegaSupply</strong></div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">PO #12347</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">Updated 2h ago</div>
+                                </td>
+                                <td><span class="badge badge-warning">On Hold</span></td>
+                                <td><span class="badge badge-success">Low</span></td>
+                                <td>
+                                    <span id="sync-status-103" class="badge badge-error">
+                                        <span class="status-icon status-icon-error"></span> Error
+                                    </span>
+                                </td>
+                                <td id="last-sync-103">9:30 AM</td>
+                                <td>
+                                    <button class="btn-link" onclick="window.location.href='4_sync_error_detail.html'">
+                                        View Error
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>104</strong></td>
+                                <td>
+                                    <div><strong>TechStart</strong></div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">PO #12348</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">Completed today</div>
+                                </td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td><span class="badge badge-error">High</span></td>
+                                <td>
+                                    <span id="sync-status-104" class="badge badge-success">
+                                        <span class="status-icon status-icon-success"></span> Synced
+                                    </span>
+                                </td>
+                                <td id="last-sync-104">11:15 AM</td>
+                                <td>
+                                    <button class="btn-link" onclick="viewInLeanKit('card-123')">
+                                        View in LeanKit ↗
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>105</strong></td>
+                                <td>
+                                    <div><strong>InnovateCo</strong></div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">PO #12349</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">Created just now</div>
+                                </td>
+                                <td><span class="badge badge-neutral">Pending</span></td>
+                                <td><span class="badge badge-warning">Medium</span></td>
+                                <td>
+                                    <span id="sync-status-105" class="badge badge-neutral">
+                                        <span class="status-icon status-icon-not-synced"></span> Not Synced
+                                    </span>
+                                </td>
+                                <td id="last-sync-105">—</td>
+                                <td>
+                                    <button class="btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="syncEntry(105)">
+                                        Sync Now
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="info-panel" style="margin-top: 24px;">
+                <h3>Sync Status Legend</h3>
+                <ul style="list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                    <li>
+                        <span class="badge badge-success">
+                            <span class="status-icon status-icon-success"></span> Synced
+                        </span>
+                        — Successfully synced with LeanKit
+                    </li>
+                    <li>
+                        <span class="badge badge-warning">
+                            <span class="status-icon status-icon-pending"></span> Pending
+                        </span>
+                        — Waiting for next sync
+                    </li>
+                    <li>
+                        <span class="badge badge-error">
+                            <span class="status-icon status-icon-error"></span> Error
+                        </span>
+                        — Sync failed (click for details)
+                    </li>
+                    <li>
+                        <span class="badge badge-neutral">
+                            <span class="status-icon status-icon-not-synced"></span> Not Synced
+                        </span>
+                        — Never synced to LeanKit
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="window-footer">
+            <button class="btn-secondary" onclick="window.location.href='index.html'">Back to Index</button>
+            <button class="btn-primary" onclick="syncAll()">Sync All to LeanKit</button>
+        </div>
+    </div>
+    
+    <script src="assets/scripts.js"></script>
+</body>
+</html>

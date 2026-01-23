@@ -1,0 +1,180 @@
+{
+    "departmentName": "Assembly",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How should Assembly workers log in?",
+            "options": [
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan (fastest, hands-free)"
+                },
+                {
+                    "value": "employee_number",
+                    "label": "Employee Number + PIN"
+                },
+                {
+                    "value": "touchscreen_name",
+                    "label": "Touchscreen Name Selection"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should one person be able to sign up for multiple assembly tasks at once?",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Allow multiple tasks"
+                },
+                {
+                    "value": "no",
+                    "label": "No - One task at a time"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What information should be REQUIRED when assigning an assembly task?",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work Order Number"
+                },
+                {
+                    "value": "part_number",
+                    "label": "Part Number"
+                },
+                {
+                    "value": "assembly_type",
+                    "label": "Assembly Type/Station"
+                },
+                {
+                    "value": "quantity",
+                    "label": "Quantity"
+                },
+                {
+                    "value": "location",
+                    "label": "Assembly Cell/Line"
+                },
+                {
+                    "value": "takt_time",
+                    "label": "Takt Time/Target Rate"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can assembly workers edit task details AFTER assignment?",
+            "options": [
+                {
+                    "value": "yes_all",
+                    "label": "Yes - Edit all details"
+                },
+                {
+                    "value": "yes_some",
+                    "label": "Yes - But only certain fields (notes, quantity)"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Supervisor must edit"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "Maximum number of 'favorite' assembly tasks to save?",
+            "description": "For frequently assembled parts",
+            "placeholder": "10",
+            "min": 0,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How many days should favorites be kept?",
+            "placeholder": "60",
+            "min": 1,
+            "max": 90
+        },
+        {
+            "id": "timeout_kiosk",
+            "type": "range",
+            "question": "Auto-logout timeout for assembly kiosks?",
+            "description": "How long before the system automatically logs out an inactive user?",
+            "min": 5,
+            "max": 60,
+            "default": 15,
+            "minLabel": "5 min",
+            "maxLabel": "60 min"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should Assembly workers see on their dashboard?",
+            "description": "Select top 3-5 most important",
+            "options": [
+                {
+                    "value": "units_completed_today",
+                    "label": "Units Completed Today"
+                },
+                {
+                    "value": "current_job_progress",
+                    "label": "Current Job Progress"
+                },
+                {
+                    "value": "quality_metrics",
+                    "label": "Quality/Rework Rate"
+                },
+                {
+                    "value": "takt_time_performance",
+                    "label": "Takt Time Performance"
+                },
+                {
+                    "value": "line_efficiency",
+                    "label": "Line Efficiency"
+                },
+                {
+                    "value": "downtime",
+                    "label": "Downtime/Stops"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should Assembly workers receive task notifications?",
+            "options": [
+                {
+                    "value": "screen_popup",
+                    "label": "On-screen popup"
+                },
+                {
+                    "value": "sound_alert",
+                    "label": "Sound alert"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile device push notification"
+                },
+                {
+                    "value": "andon_light",
+                    "label": "Andon light system"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

@@ -127,6 +127,8 @@ VALUES
 - LeanKit API Documentation: <https://support.leankit.com/hc/en-us/articles/360019280651>
 - LeanKit .NET SDK: <https://github.com/LeanKit/LeanKit.API.Client.Library>
 - Authentication Guide: <https://support.leankit.com/hc/en-us/articles/360019371472>
+- LeanKit API: <https://github.com/LeanKit/leankit-node-client>
+- Leankit API Documentation: <https://docs.leankit.com/display/LM/LeanKit+API+Documentation>
 
 ---
 

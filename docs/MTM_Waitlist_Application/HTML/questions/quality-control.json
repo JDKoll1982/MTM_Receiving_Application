@@ -1,0 +1,180 @@
+{
+    "departmentName": "Quality Control",
+    "questions": [
+        {
+            "id": "login_method",
+            "type": "radio",
+            "question": "How should Quality Control staff log in?",
+            "options": [
+                {
+                    "value": "badge_scan",
+                    "label": "Badge Scan (fastest, hands-free)"
+                },
+                {
+                    "value": "employee_number",
+                    "label": "Employee Number + PIN"
+                },
+                {
+                    "value": "touchscreen_name",
+                    "label": "Touchscreen Name Selection"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "multi_role",
+            "type": "radio",
+            "question": "Should one person be able to sign up for multiple inspection tasks at once?",
+            "options": [
+                {
+                    "value": "yes",
+                    "label": "Yes - Allow multiple tasks"
+                },
+                {
+                    "value": "no",
+                    "label": "No - One task at a time"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "required_fields",
+            "type": "checkbox",
+            "question": "What information should be REQUIRED when assigning an inspection task?",
+            "options": [
+                {
+                    "value": "work_order",
+                    "label": "Work Order Number"
+                },
+                {
+                    "value": "part_number",
+                    "label": "Part Number"
+                },
+                {
+                    "value": "inspection_type",
+                    "label": "Inspection Type (First Article, In-Process, Final)"
+                },
+                {
+                    "value": "quantity",
+                    "label": "Sample Size/Quantity"
+                },
+                {
+                    "value": "location",
+                    "label": "Location/Cell"
+                },
+                {
+                    "value": "specifications",
+                    "label": "Specifications/Standards"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "post_assignment_edit",
+            "type": "radio",
+            "question": "Can QC staff edit task details AFTER assignment?",
+            "options": [
+                {
+                    "value": "yes_all",
+                    "label": "Yes - Edit all details"
+                },
+                {
+                    "value": "yes_some",
+                    "label": "Yes - But only certain fields (notes, findings)"
+                },
+                {
+                    "value": "no",
+                    "label": "No - Supervisor must edit"
+                }
+            ],
+            "requiresDecision": true
+        },
+        {
+            "id": "favorites_count",
+            "type": "number",
+            "question": "Maximum number of 'favorite' inspection tasks to save?",
+            "description": "For frequently inspected parts",
+            "placeholder": "15",
+            "min": 0,
+            "max": 50
+        },
+        {
+            "id": "favorites_duration",
+            "type": "number",
+            "question": "How many days should favorites be kept?",
+            "placeholder": "60",
+            "min": 1,
+            "max": 90
+        },
+        {
+            "id": "timeout_office",
+            "type": "range",
+            "question": "Auto-logout timeout for QC workstations?",
+            "description": "Longer timeout for inspection documentation",
+            "min": 15,
+            "max": 120,
+            "default": 30,
+            "minLabel": "15 min",
+            "maxLabel": "2 hrs"
+        },
+        {
+            "id": "top_metrics",
+            "type": "checkbox",
+            "question": "What metrics should QC staff see on their dashboard?",
+            "description": "Select top 3-5 most important",
+            "options": [
+                {
+                    "value": "inspections_completed",
+                    "label": "Inspections Completed Today"
+                },
+                {
+                    "value": "pending_inspections",
+                    "label": "Pending Inspections"
+                },
+                {
+                    "value": "defect_rate",
+                    "label": "Defect Rate"
+                },
+                {
+                    "value": "first_pass_yield",
+                    "label": "First Pass Yield"
+                },
+                {
+                    "value": "holds_rejections",
+                    "label": "Holds/Rejections"
+                },
+                {
+                    "value": "customer_complaints",
+                    "label": "Customer Complaints"
+                }
+            ],
+            "allowOther": true,
+            "requiresDecision": true
+        },
+        {
+            "id": "notification_methods",
+            "type": "checkbox",
+            "question": "How should QC staff receive task notifications?",
+            "options": [
+                {
+                    "value": "screen_popup",
+                    "label": "On-screen popup"
+                },
+                {
+                    "value": "sound_alert",
+                    "label": "Sound alert"
+                },
+                {
+                    "value": "mobile_push",
+                    "label": "Mobile device push notification"
+                },
+                {
+                    "value": "email",
+                    "label": "Email"
+                }
+            ],
+            "requiresDecision": true
+        }
+    ]
+}

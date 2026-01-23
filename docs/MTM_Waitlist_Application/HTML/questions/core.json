@@ -1,0 +1,140 @@
+{
+    "title": "MTM Waitlist - Core Questions",
+    "subtitle": "Building a Custom Waitlist Solution",
+    "questions": [
+        {
+            "id": "user_info",
+            "type": "text",
+            "question": "Your Name",
+            "description": "Help us know who provided this feedback",
+            "placeholder": "First Last",
+            "required": true
+        },
+        {
+            "id": "department",
+            "type": "dropdown",
+            "question": "Which department do you work in?",
+            "description": "This helps us show you relevant questions",
+            "options": [
+                {
+                    "value": "Production",
+                    "label": "Production"
+                },
+                {
+                    "value": "Material Handling",
+                    "label": "Material Handling"
+                },
+                {
+                    "value": "Die Shop",
+                    "label": "Die Shop"
+                },
+                {
+                    "value": "Fabrication & Welding",
+                    "label": "Fabrication & Welding"
+                },
+                {
+                    "value": "Assembly",
+                    "label": "Assembly"
+                },
+                {
+                    "value": "Quality Control",
+                    "label": "Quality Control"
+                },
+                {
+                    "value": "Maintenance",
+                    "label": "Maintenance"
+                },
+                {
+                    "value": "Setup Technicians",
+                    "label": "Setup Technicians"
+                },
+                {
+                    "value": "Inventory Specialist",
+                    "label": "Inventory Specialist"
+                },
+                {
+                    "value": "Outside Service Coordinator",
+                    "label": "Outside Service Coordinator"
+                },
+                {
+                    "value": "IT Department",
+                    "label": "IT Department"
+                },
+                {
+                    "value": "Management",
+                    "label": "Management"
+                },
+                {
+                    "value": "Other",
+                    "label": "Other (please specify below)"
+                }
+            ],
+            "allowOther": true,
+            "required": true
+        },
+        {
+            "id": "shift",
+            "type": "dropdown",
+            "question": "Which shift do you typically work?",
+            "options": [
+                {
+                    "value": "1st Shift (Day)",
+                    "label": "1st Shift (Day)"
+                },
+                {
+                    "value": "2nd Shift (Afternoon)",
+                    "label": "2nd Shift (Afternoon)"
+                },
+                {
+                    "value": "3rd Shift (Night)",
+                    "label": "3rd Shift (Night)"
+                },
+                {
+                    "value": "Rotating",
+                    "label": "Rotating Shifts"
+                },
+                {
+                    "value": "Other",
+                    "label": "Other"
+                }
+            ],
+            "required": true
+        },
+        {
+            "id": "satisfaction",
+            "type": "rating",
+            "question": "Overall, how satisfied are you with the IDEA of a custom MTM waitlist system?",
+            "whyMatters": "Helps us understand enthusiasm for this project."
+        },
+        {
+            "id": "works_current",
+            "type": "textarea",
+            "question": "What works WELL with the current tablesready.com system?",
+            "placeholder": "Tell us what features or workflows you like and want to keep...",
+            "rows": 4,
+            "required": false
+        },
+        {
+            "id": "doesnt_work_current",
+            "type": "textarea",
+            "question": "What DOESN'T work well with tablesready.com?",
+            "placeholder": "Tell us pain points, frustrations, or limitations...",
+            "rows": 4,
+            "required": false
+        },
+        {
+            "id": "must_have_features",
+            "type": "textarea",
+            "question": "What features are MUST-HAVES for you in the new system?",
+            "description": "Think about your daily workflow - what would make your job easier?",
+            "placeholder": "List any features that would be critical for you...",
+            "rows": 5
+        },
+        {
+            "id": "completion_date",
+            "type": "date",
+            "question": "Date Completed",
+            "required": true
+        }
+    ]
+}
