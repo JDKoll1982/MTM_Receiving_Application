@@ -3,6 +3,7 @@
 #
 # Features:
 # - Search across ALL POs (leave PO Number blank) or filter to specific PO
+# - Fuzzy search by Vendor (e.g., 'acme' matches 'ACME Corp', 'Acme Industries')
 # - Filter by PO Status: Firmed (F), Released (R), Closed (C), Cancelled (X)
 #   * None selected = All statuses (no filter)
 #   * Select one or more to filter results
@@ -14,8 +15,9 @@
 # 1. Enter database credentials (Server, Database, Username, Password)
 # 2. Enter search text (required) - e.g., "MMFSR", "quality hold", "sheet"
 # 3. Optionally enter specific PO Number to narrow search
-# 4. Select PO Status filters (default = all checked = all statuses)
-# 5. Click Search to find matching PO lines
+# 4. Optionally enter Vendor name (fuzzy match) - e.g., "acme", "smith"
+# 5. Select PO Status filters (default = all checked = all statuses)
+# 6. Click Search to find matching PO lines
 
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
@@ -70,6 +72,7 @@ $xaml = @"
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Row 0: Server and Database -->
@@ -86,7 +89,7 @@ $xaml = @"
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="Password:" FontWeight="Bold" VerticalAlignment="Center" Margin="20,5,0,5"/>
                 <PasswordBox Grid.Row="1" Grid.Column="3" Name="PasswordBox" Margin="10,5" Padding="5"/>
 
-                <!-- Row 2: PO Number and Search String -->
+                <!-- Row 2: PO Number and Vendor -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="PO Number:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
                 <TextBox Grid.Row="2" Grid.Column="1" Name="PONumberTextBox" Margin="10,5" Padding="5">
                     <TextBox.ToolTip>
@@ -94,12 +97,20 @@ $xaml = @"
                     </TextBox.ToolTip>
                 </TextBox>
 
-                <TextBlock Grid.Row="2" Grid.Column="2" Text="Search Text:" FontWeight="Bold" VerticalAlignment="Center" Margin="20,5,0,5"/>
-                <TextBox Grid.Row="2" Grid.Column="3" Name="SearchTextBox" Margin="10,5" Padding="5"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="Vendor:" FontWeight="Bold" VerticalAlignment="Center" Margin="20,5,0,5"/>
+                <TextBox Grid.Row="2" Grid.Column="3" Name="VendorTextBox" Margin="10,5" Padding="5">
+                    <TextBox.ToolTip>
+                        <ToolTip Content="Optional - Fuzzy search (e.g., 'acme' matches 'ACME Corp')"/>
+                    </TextBox.ToolTip>
+                </TextBox>
 
-                <!-- Row 3: PO Status Filters -->
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="PO Status:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
-                <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="10,5">
+                <!-- Row 3: Search Text -->
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Search Text:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Name="SearchTextBox" Margin="10,5" Padding="5"/>
+
+                <!-- Row 4: PO Status Filters -->
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="PO Status:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
+                <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="10,5">
                     <CheckBox Name="StatusFirmedCheckBox" Content="Firmed" Margin="0,0,15,0" IsChecked="True">
                         <CheckBox.ToolTip>
                             <ToolTip Content="Status = F"/>
@@ -123,8 +134,8 @@ $xaml = @"
                     <TextBlock Text="(None selected = All)" Foreground="#999" VerticalAlignment="Center" Margin="10,0,0,0" FontStyle="Italic"/>
                 </StackPanel>
 
-                <!-- Row 4: Search Button -->
-                <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" 
+                <!-- Row 5: Search Button -->
+                <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" 
                         Name="SearchButton" 
                         Content="Search" 
                         Width="120" 
@@ -174,6 +185,7 @@ $xaml = @"
                           SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="PO Number" Binding="{Binding PO_Number}" Width="100"/>
+                        <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor_ID}" Width="100"/>
                         <DataGridTextColumn Header="Line" Binding="{Binding Line_Number}" Width="50"/>
                         <DataGridTextColumn Header="Part Number" Binding="{Binding Part_Number}" Width="120"/>
                         <DataGridTextColumn Header="Vendor Part" Binding="{Binding Vendor_Part_Number}" Width="120"/>
@@ -222,6 +234,7 @@ $databaseTextBox = $window.FindName("DatabaseTextBox")
 $usernameTextBox = $window.FindName("UsernameTextBox")
 $passwordBox = $window.FindName("PasswordBox")
 $poNumberTextBox = $window.FindName("PONumberTextBox")
+$vendorTextBox = $window.FindName("VendorTextBox")
 $searchTextBox = $window.FindName("SearchTextBox")
 $statusFirmedCheckBox = $window.FindName("StatusFirmedCheckBox")
 $statusReleasedCheckBox = $window.FindName("StatusReleasedCheckBox")
@@ -281,6 +294,7 @@ $searchButton.Add_Click({
             $username = $usernameTextBox.Text.Trim()
             $password = $passwordBox.Password
             $poNumber = $poNumberTextBox.Text.Trim()
+            $vendor = $vendorTextBox.Text.Trim()
             $searchText = $searchTextBox.Text.Trim()
         
             if ([string]::IsNullOrWhiteSpace($server)) {
@@ -364,6 +378,11 @@ WHERE
                 $sqlQuery += "`n    AND po.ID = @PONumber"
             }
 
+            # Add Vendor fuzzy search if provided
+            if (-not [string]::IsNullOrWhiteSpace($vendor)) {
+                $sqlQuery += "`n    AND po.VENDOR_ID LIKE @VendorPattern"
+            }
+
             $sqlQuery += "`nORDER BY po.ID, pol.LINE_NO"
         
             # Execute query
@@ -381,6 +400,11 @@ WHERE
             if (-not [string]::IsNullOrWhiteSpace($poNumber)) {
                 $command.Parameters.AddWithValue("@PONumber", $poNumber) | Out-Null
             }
+
+            # Add Vendor parameter only if provided (fuzzy search with wildcards)
+            if (-not [string]::IsNullOrWhiteSpace($vendor)) {
+                $command.Parameters.AddWithValue("@VendorPattern", "%$vendor%") | Out-Null
+            }
         
             $adapter = New-Object System.Data.SqlClient.SqlDataAdapter($command)
             $dataSet = New-Object System.Data.DataSet
@@ -393,31 +417,42 @@ WHERE
             if ($rowCount -gt 0) {
                 $resultsGrid.ItemsSource = $dataSet.Tables[0].DefaultView
                 
-                # Build status description
-                $poScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "all POs" } else { "PO $poNumber" }
+                # Build scope description
+                $scopeParts = @()
                 
+                # PO scope
+                if (-not [string]::IsNullOrWhiteSpace($poNumber)) {
+                    $scopeParts += "PO $poNumber"
+                } else {
+                    $scopeParts += "all POs"
+                }
+                
+                # Vendor scope
+                if (-not [string]::IsNullOrWhiteSpace($vendor)) {
+                    $scopeParts += "vendor '$vendor'"
+                }
+                
+                # Status scope
                 $statusNames = @()
                 if ($statusFirmedCheckBox.IsChecked) { $statusNames += "Firmed" }
                 if ($statusReleasedCheckBox.IsChecked) { $statusNames += "Released" }
                 if ($statusClosedCheckBox.IsChecked) { $statusNames += "Closed" }
                 if ($statusCancelledCheckBox.IsChecked) { $statusNames += "Cancelled" }
                 
-                if ($statusNames.Count -eq 0 -or $statusNames.Count -eq 4) {
-                    $statusScope = "all statuses"
-                }
-                elseif ($statusNames.Count -eq 1) {
-                    $statusScope = "$($statusNames[0]) status"
-                }
-                else {
-                    $statusScope = "$($statusNames -join ', ') statuses"
+                if ($statusNames.Count -gt 0 -and $statusNames.Count -lt 4) {
+                    if ($statusNames.Count -eq 1) {
+                        $scopeParts += "$($statusNames[0]) status"
+                    } else {
+                        $scopeParts += "$($statusNames -join ', ') statuses"
+                    }
                 }
                 
-                $statusText.Text = "Found $rowCount matching line(s) in $poScope with $statusScope"
+                $fullScope = $scopeParts -join " with "
+                $statusText.Text = "Found $rowCount matching line(s) in $fullScope"
             }
             else {
                 $resultsGrid.ItemsSource = $null
-                $poScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "any PO" } else { "PO $poNumber" }
-                $statusText.Text = "No results found in $poScope - try different search criteria"
+                $statusText.Text = "No results found - try different search criteria"
             }
         
             $progressBar.Visibility = "Collapsed"
