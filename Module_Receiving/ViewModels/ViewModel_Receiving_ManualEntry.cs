@@ -385,7 +385,25 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 // In manual mode, we skip step-by-step validation and go straight to saving
                 // The workflow service will handle the actual save logic
-                await _workflowService.AdvanceToNextStepAsync();
+                var result = await _workflowService.AdvanceToNextStepAsync();
+                
+                if (!result.Success)
+                {
+                    _logger.LogWarning($"Workflow advance failed: {string.Join(", ", result.ValidationErrors)}");
+                    
+                    if (result.ValidationErrors.Count > 0)
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            string.Join("\n", result.ValidationErrors),
+                            Enum_ErrorSeverity.Warning);
+                    }
+                    else
+                    {
+                        await _errorHandler.HandleErrorAsync(
+                            "Unable to proceed with save",
+                            Enum_ErrorSeverity.Warning);
+                    }
+                }
             }
             catch (Exception ex)
             {

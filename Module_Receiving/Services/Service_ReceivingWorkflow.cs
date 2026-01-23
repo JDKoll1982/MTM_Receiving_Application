@@ -144,7 +144,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     // Manual entry goes directly to saving/review
                     // Validation happens on save
                     // Check for quality holds and block if not acknowledged
-                    var loadsWithHolds = CurrentSession.Loads.Where(l => l.IsQualityHoldRequired).ToList();
+                    var loadsWithHolds = CurrentSession.Loads.Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged).ToList();
                     if (loadsWithHolds.Count > 0)
                     {
                         validationErrors.Add($"Quality hold acknowledgment required for {loadsWithHolds.Count} load(s) before proceeding.");
