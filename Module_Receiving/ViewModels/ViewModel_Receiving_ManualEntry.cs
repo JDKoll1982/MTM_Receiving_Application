@@ -331,8 +331,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
+            if (IsBusy)
+            {
+                return; // Prevent re-entry
+            }
+
             try
             {
+                IsBusy = true;
                 _logger.LogInfo($"Saving {Loads.Count} loads from manual entry");
 
                 // Set default Heat/Lot if empty
@@ -355,16 +361,25 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
                 }
 
-                // Check if any loads have quality holds
-                var loadsWithHolds = Loads.Where(l => l.IsQualityHoldRequired).ToList();
-                if (loadsWithHolds.Count > 0)
+                // Check if any loads have quality holds that haven't been acknowledged yet
+                var loadsWithUnacknowledgedHolds = Loads
+                    .Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged)
+                    .ToList();
+                
+                if (loadsWithUnacknowledgedHolds.Count > 0)
                 {
                     // Show confirmation dialog for quality hold acknowledgment
-                    var acknowledged = await ShowQualityHoldConfirmationAsync(loadsWithHolds);
+                    var acknowledged = await ShowQualityHoldConfirmationAsync(loadsWithUnacknowledgedHolds);
                     if (!acknowledged)
                     {
                         _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
                         return; // Block save if user doesn't acknowledge
+                    }
+                    
+                    // Mark all as acknowledged
+                    foreach (var load in loadsWithUnacknowledgedHolds)
+                    {
+                        load.IsQualityHoldAcknowledged = true;
                     }
                 }
 
@@ -376,6 +391,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 _logger.LogError($"Failed to save manual entry data: {ex.Message}");
                 await _errorHandler.HandleErrorAsync("Failed to save receiving data", Enum_ErrorSeverity.Critical, ex);
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

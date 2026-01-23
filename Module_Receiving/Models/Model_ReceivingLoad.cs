@@ -65,6 +65,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         private bool _isQualityHoldRequired;
 
         [ObservableProperty]
+        private bool _isQualityHoldAcknowledged;
+
+        [ObservableProperty]
         private string _qualityHoldRestrictionType = string.Empty;
 
         partial void OnPartIDChanged(string value)

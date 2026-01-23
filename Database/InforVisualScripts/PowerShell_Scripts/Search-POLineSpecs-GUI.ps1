@@ -1,5 +1,17 @@
 # PO Line Specs Search - GUI Version
 # This script searches Infor Visual ERP for PO lines containing specific text in specification fields
+#
+# Features:
+# - Search across ALL POs (leave PO Number blank) or filter to specific PO
+# - Case-insensitive wildcard search in specification text
+# - Read-only connection to Infor Visual database
+# - Auto-formats PO numbers with "PO-" prefix
+#
+# Usage:
+# 1. Enter database credentials (Server, Database, Username, Password)
+# 2. Enter search text (required) - e.g., "MMFSR", "quality hold", "sheet"
+# 3. Optionally enter specific PO Number to narrow search
+# 4. Click Search to find matching PO lines
 
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
@@ -71,7 +83,11 @@ $xaml = @"
 
                 <!-- Row 2: PO Number and Search String -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="PO Number:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Name="PONumberTextBox" Margin="10,5" Padding="5"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="PONumberTextBox" Margin="10,5" Padding="5">
+                    <TextBox.ToolTip>
+                        <ToolTip Content="Optional - Leave blank to search all POs"/>
+                    </TextBox.ToolTip>
+                </TextBox>
 
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="Search Text:" FontWeight="Bold" VerticalAlignment="Center" Margin="20,5,0,5"/>
                 <TextBox Grid.Row="2" Grid.Column="3" Name="SearchTextBox" Margin="10,5" Padding="5"/>
@@ -252,11 +268,6 @@ $searchButton.Add_Click({
                 return
             }
         
-            if ([string]::IsNullOrWhiteSpace($poNumber)) {
-                Show-Error "PO Number is required"
-                return
-            }
-        
             if ([string]::IsNullOrWhiteSpace($searchText)) {
                 Show-Error "Search text is required"
                 return
@@ -271,7 +282,7 @@ $searchButton.Add_Click({
             # Build connection string
             $connectionString = "Server=$server;Database=$database;User Id=$username;Password=$password;ApplicationIntent=ReadOnly;TrustServerCertificate=True;Connection Timeout=30;"
         
-            # SQL Query
+            # SQL Query - PO Number is optional filter
             $sqlQuery = @"
 SELECT 
     po.ID AS PO_Number,
@@ -296,11 +307,15 @@ FROM
         AND pol.LINE_NO = plb.PURC_ORDER_LINE_NO
         AND plb.TYPE = 'D'
 WHERE 
-    po.ID = @PONumber
-    AND CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) LIKE @SearchPattern
-ORDER BY 
-    pol.LINE_NO
+    CONVERT(NVARCHAR(MAX), CONVERT(VARBINARY(MAX), plb.BITS)) LIKE @SearchPattern
 "@
+
+            # Add PO Number filter if provided
+            if (-not [string]::IsNullOrWhiteSpace($poNumber)) {
+                $sqlQuery += "`n    AND po.ID = @PONumber"
+            }
+
+            $sqlQuery += "`nORDER BY po.ID, pol.LINE_NO"
         
             # Execute query
             $connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
@@ -310,8 +325,13 @@ ORDER BY
             $command.CommandText = $sqlQuery
             $command.CommandTimeout = 60
         
-            $command.Parameters.AddWithValue("@PONumber", $poNumber) | Out-Null
+            # Add search pattern parameter
             $command.Parameters.AddWithValue("@SearchPattern", "%$searchText%") | Out-Null
+            
+            # Add PO Number parameter only if provided
+            if (-not [string]::IsNullOrWhiteSpace($poNumber)) {
+                $command.Parameters.AddWithValue("@PONumber", $poNumber) | Out-Null
+            }
         
             $adapter = New-Object System.Data.SqlClient.SqlDataAdapter($command)
             $dataSet = New-Object System.Data.DataSet
@@ -323,11 +343,13 @@ ORDER BY
             # Display results
             if ($rowCount -gt 0) {
                 $resultsGrid.ItemsSource = $dataSet.Tables[0].DefaultView
-                $statusText.Text = "Found $rowCount matching line(s)"
+                $searchScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "all POs" } else { "PO $poNumber" }
+                $statusText.Text = "Found $rowCount matching line(s) in $searchScope"
             }
             else {
                 $resultsGrid.ItemsSource = $null
-                $statusText.Text = "No results found - try different search criteria"
+                $searchScope = if ([string]::IsNullOrWhiteSpace($poNumber)) { "any PO" } else { "PO $poNumber" }
+                $statusText.Text = "No results found in $searchScope - try different search criteria"
             }
         
             $progressBar.Visibility = "Collapsed"

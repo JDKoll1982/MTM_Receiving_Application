@@ -31,6 +31,12 @@ public sealed partial class View_Settings_CoreWindow : Window
         ConfigureTitleBar();
         Activated += OnWindowActivated;
 
+        // Subscribe to theme changes to update title bar colors
+        if (Content is FrameworkElement contentElement)
+        {
+            contentElement.ActualThemeChanged += (s, e) => UpdateTitleBarColors();
+        }
+
         SettingsNavView.SelectedItem = SettingsNavView.MenuItems[0];
         NavigateToCoreHub();
         SetHeader("Configuration", "Manage core system defaults, users, and infrastructure settings.");
@@ -155,10 +161,8 @@ public sealed partial class View_Settings_CoreWindow : Window
                 AppWindow.TitleBar.ButtonBackgroundColor = transparentColor;
                 AppWindow.TitleBar.ButtonInactiveBackgroundColor = transparentColor;
 
-                var foregroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-                AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
-                AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
-                AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
+                // Set button foreground colors based on current theme
+                UpdateTitleBarColors();
             }
 
             if (AppTitleBar != null)
@@ -169,6 +173,40 @@ public sealed partial class View_Settings_CoreWindow : Window
         catch
         {
             // Ignore title bar customization errors
+        }
+    }
+
+    /// <summary>
+    /// Updates title bar button colors based on the current theme.
+    /// Called during initialization and when theme changes.
+    /// </summary>
+    private void UpdateTitleBarColors()
+    {
+        if (AppWindow.TitleBar is null)
+        {
+            return;
+        }
+
+        // Determine if we're in light or dark mode
+        var isDarkMode = (Content as FrameworkElement)?.ActualTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
+
+        if (isDarkMode)
+        {
+            // Dark mode - use light/white buttons
+            var foregroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+            AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
+            AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
+            AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
+            AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
+        }
+        else
+        {
+            // Light mode - use dark/black buttons
+            var foregroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
+            AppWindow.TitleBar.ButtonForegroundColor = foregroundColor;
+            AppWindow.TitleBar.ButtonHoverForegroundColor = foregroundColor;
+            AppWindow.TitleBar.ButtonPressedForegroundColor = foregroundColor;
+            AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 96, 96, 96);
         }
     }
 

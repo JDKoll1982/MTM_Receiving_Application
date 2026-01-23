@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_ManualEntry"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -76,7 +76,28 @@
                           LoadingRow="ManualEntryDataGrid_LoadingRow">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnLoadNumberText, Mode=OneWay}" Binding="{Binding LoadNumber}" IsReadOnly="True"/>
-                <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPartIdText, Mode=OneWay}" Binding="{Binding PartID}" Width="*" Foreground="{Binding PartID, Converter={StaticResource PartIDToQualityHoldTextColorConverter}}"/>
+                
+                <!-- Part ID column with conditional text color for quality hold -->
+                <controls:DataGridTemplateColumn Header="{x:Bind ViewModel.ManualEntryColumnPartIdText, Mode=OneWay}" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock 
+                                Text="{Binding PartID}" 
+                                Foreground="{Binding PartID, Converter={StaticResource PartIDToQualityHoldTextColorConverter}}"
+                                VerticalAlignment="Center"
+                                Padding="12,0,12,0"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox 
+                                Text="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                BorderThickness="0"
+                                VerticalAlignment="Stretch"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
+                
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnWeightQtyText, Mode=OneWay}" Binding="{Binding WeightQuantity, Converter={StaticResource DecimalToStringConverter}}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnHeatLotText, Mode=OneWay}" Binding="{Binding HeatLotNumber}"/>
                 <controls:DataGridTextColumn Header="{x:Bind ViewModel.ManualEntryColumnPkgTypeText, Mode=OneWay}" Binding="{Binding PackageType}" IsReadOnly="True"/>
@@ -87,7 +108,10 @@
 
         <!-- Navigation -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="12">
-            <Button Content="{x:Bind ViewModel.ManualEntrySaveAndFinishText, Mode=OneWay}" Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
+            <Button Content="Saving..." 
+                    Command="{x:Bind ViewModel.SaveCommand}" 
+                    Style="{StaticResource AccentButtonStyle}" 
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -48,7 +48,7 @@ public class Model_QualityHold
     /// <summary>
     /// Last update timestamp.
     /// </summary>
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
     /// Gets whether this quality hold has been acknowledged by quality.

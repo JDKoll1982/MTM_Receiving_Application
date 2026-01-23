@@ -77,6 +77,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_ReceivingLoad(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_ReceivingLine(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_PackageTypePreference(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_QualityHold(mySqlConnectionString));
 
         // Services (Singleton - Stateless business logic)
         services.AddSingleton<IService_MySQL_Receiving>(sp =>
@@ -87,6 +88,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
         services.AddSingleton<IService_MySQL_PackagePreferences>(_ =>
             new Service_MySQL_PackagePreferences(mySqlConnectionString));
+        services.AddSingleton<IService_MySQL_QualityHold, Service_MySQL_QualityHold>();
+        services.AddSingleton<IService_QualityHoldWarning, Service_QualityHoldWarning>();
         services.AddSingleton<IService_SessionManager>(sp =>
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();

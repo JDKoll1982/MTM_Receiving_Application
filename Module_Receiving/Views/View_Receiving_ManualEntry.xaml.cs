@@ -14,6 +14,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
@@ -21,11 +22,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     {
         public ViewModel_Receiving_ManualEntry ViewModel { get; }
         private readonly IService_Focus _focusService;
+        private readonly IService_QualityHoldWarning _qualityHoldWarning;
+        private string? _lastCheckedPartID;
 
         public View_Receiving_ManualEntry()
         {
             ViewModel = App.GetService<ViewModel_Receiving_ManualEntry>();
             _focusService = App.GetService<IService_Focus>();
+            _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
             this.DataContext = ViewModel;
             this.InitializeComponent();
 
@@ -70,6 +74,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private void ManualEntryDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
+            
+            // Check for quality hold warning when leaving PartID cell
+            _ = CheckQualityHoldOnCellChangeAsync(grid);
+            
             // Wait for the move to complete then activate edit mode
             grid?.DispatcherQueue.TryEnqueue(() =>
             {
@@ -79,6 +87,55 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     grid.BeginEdit();
                 }
             });
+        }
+
+        /// <summary>
+        /// Checks for quality hold requirements when user moves away from a cell.
+        /// Displays warning if restricted part (MMFSR/MMCSR) is detected.
+        /// </summary>
+        private async Task CheckQualityHoldOnCellChangeAsync(DataGrid? grid)
+        {
+            if (grid?.SelectedItem is not Model_ReceivingLoad currentLoad)
+            {
+                return;
+            }
+
+            var partID = currentLoad.PartID;
+            
+            // Skip if empty or if we already checked this exact value
+            if (string.IsNullOrWhiteSpace(partID) || partID == _lastCheckedPartID)
+            {
+                return;
+            }
+
+            // Check if this is a restricted part
+            if (_qualityHoldWarning.IsRestrictedPart(partID))
+            {
+                _lastCheckedPartID = partID; // Remember we checked this
+                
+                // Show warning and get user acknowledgment
+                bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
+                
+                if (!acknowledged)
+                {
+                    // User cancelled - clear the part ID
+                    currentLoad.PartID = string.Empty;
+                    _lastCheckedPartID = null;
+                    
+                    // Re-focus the PartID cell for correction
+                    grid.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        var partIDColumn = grid.Columns.FirstOrDefault(c => 
+                            c.Header?.ToString()?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true);
+                        
+                        if (partIDColumn != null)
+                        {
+                            grid.CurrentColumn = partIDColumn;
+                            grid.BeginEdit();
+                        }
+                    });
+                }
+            }
         }
 
         private void ManualEntryDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -171,13 +228,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// LoadingRow event handler for applying row-level highlighting based on quality holds.
         /// Fallback method when binding converters are insufficient.
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ManualEntryDataGrid_LoadingRow(object? sender, DataGridRowEventArgs e)
         {
             if (e.Row.DataContext is Model_ReceivingLoad load && load.IsQualityHoldRequired)
             {
                 // Apply light red background to highlight quality hold rows
                 e.Row.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                    Microsoft.UI.Color.FromArgb(255, 255, 230, 230)  // #FFE6E6
+                    Windows.UI.Color.FromArgb(255, 255, 230, 230)  // #FFE6E6
                 );
             }
         }

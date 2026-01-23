@@ -9,16 +9,22 @@ using System.Linq;
 using System.Collections;
 using System;
 using System.Diagnostics;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_EditMode : UserControl
     {
         public ViewModel_Receiving_EditMode ViewModel { get; }
+        private readonly IService_QualityHoldWarning _qualityHoldWarning;
+        private string? _lastCheckedPartID;
 
         public View_Receiving_EditMode()
         {
             ViewModel = App.GetService<ViewModel_Receiving_EditMode>();
+            _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
             this.DataContext = ViewModel;
             this.InitializeComponent();
         }
@@ -26,6 +32,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private void EditModeDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
+            
+            // Check for quality hold warning when leaving PartID cell
+            _ = CheckQualityHoldOnCellChangeAsync(grid);
+            
             // Wait for the move to complete then activate edit mode
             grid?.DispatcherQueue.TryEnqueue(() =>
             {
@@ -35,6 +45,55 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     grid.BeginEdit();
                 }
             });
+        }
+
+        /// <summary>
+        /// Checks for quality hold requirements when user moves away from a cell.
+        /// Displays warning if restricted part (MMFSR/MMCSR) is detected.
+        /// </summary>
+        private async Task CheckQualityHoldOnCellChangeAsync(DataGrid? grid)
+        {
+            if (grid?.SelectedItem is not Model_ReceivingLoad currentLoad)
+            {
+                return;
+            }
+
+            var partID = currentLoad.PartID;
+            
+            // Skip if empty or if we already checked this exact value
+            if (string.IsNullOrWhiteSpace(partID) || partID == _lastCheckedPartID)
+            {
+                return;
+            }
+
+            // Check if this is a restricted part
+            if (_qualityHoldWarning.IsRestrictedPart(partID))
+            {
+                _lastCheckedPartID = partID; // Remember we checked this
+                
+                // Show warning and get user acknowledgment
+                bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
+                
+                if (!acknowledged)
+                {
+                    // User cancelled - clear the part ID
+                    currentLoad.PartID = string.Empty;
+                    _lastCheckedPartID = null;
+                    
+                    // Re-focus the PartID cell for correction
+                    grid.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        var partIDColumn = grid.Columns.FirstOrDefault(c => 
+                            c.Header?.ToString()?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true);
+                        
+                        if (partIDColumn != null)
+                        {
+                            grid.CurrentColumn = partIDColumn;
+                            grid.BeginEdit();
+                        }
+                    });
+                }
+            }
         }
 
         private void EditModeDataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
