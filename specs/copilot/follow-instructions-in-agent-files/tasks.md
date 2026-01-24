@@ -437,12 +437,12 @@ public class StartWorkflowCommandHandler : IRequestHandler<StartWorkflowCommand,
 - `Module_Receiving/Handlers/ChangeCopySourceCommandHandler.cs`
 
 **Acceptance Criteria**:
-- [ ] CopyToLoadsCommandHandler copies to empty cells only
-- [ ] CopyToLoadsCommandHandler sets auto-fill flags
-- [ ] CopyToLoadsCommandHandler returns CopyOperationResult with stats
-- [ ] GetCopyPreviewQueryHandler shows what will be copied
-- [ ] ChangeCopySourceCommandHandler updates session copy source
-- [ ] Unit tests created with various scenarios
+- [X] CopyToLoadsCommandHandler copies to empty cells only
+- [X] CopyToLoadsCommandHandler sets auto-fill flags
+- [X] CopyToLoadsCommandHandler returns CopyOperationResult with stats
+- [X] GetCopyPreviewQueryHandler shows what will be copied
+- [X] ChangeCopySourceCommandHandler updates session copy source
+- [ ] Unit tests created with various scenarios (deferred - not MVP critical)
 
 ---
 
@@ -459,11 +459,11 @@ public class StartWorkflowCommandHandler : IRequestHandler<StartWorkflowCommand,
 - `Module_Receiving/Handlers/ForceOverwriteCommandHandler.cs`
 
 **Acceptance Criteria**:
-- [ ] ClearAutoFilledDataCommandHandler clears only auto-filled cells
-- [ ] ClearAutoFilledDataCommandHandler clears auto-fill flags
-- [ ] ForceOverwriteCommandHandler requires confirmation
-- [ ] ForceOverwriteCommandHandler logs overwrite operations
-- [ ] Unit tests created
+- [X] ClearAutoFilledDataCommandHandler clears only auto-filled cells
+- [X] ClearAutoFilledDataCommandHandler clears auto-fill flags
+- [X] ForceOverwriteCommandHandler requires confirmation
+- [X] ForceOverwriteCommandHandler logs overwrite operations with audit trail
+- [ ] Unit tests created (deferred - not MVP critical)
 
 ---
 
@@ -479,12 +479,12 @@ public class StartWorkflowCommandHandler : IRequestHandler<StartWorkflowCommand,
 - `Module_Receiving/Handlers/SaveWorkflowCommandHandler.cs`
 
 **Acceptance Criteria**:
-- [ ] SaveWorkflowCommandHandler validates all loads before save
-- [ ] SaveWorkflowCommandHandler generates CSV file using CsvHelper
-- [ ] SaveWorkflowCommandHandler saves to database via stored procedure
-- [ ] SaveWorkflowCommandHandler updates session as saved
-- [ ] SaveWorkflowCommandHandler returns SaveResult with paths
-- [ ] Unit tests created
+- [X] SaveWorkflowCommandHandler validates all loads before save
+- [X] SaveWorkflowCommandHandler generates CSV file using CsvHelper
+- [X] SaveWorkflowCommandHandler saves to database via stored procedure
+- [X] SaveWorkflowCommandHandler updates session as saved
+- [X] SaveWorkflowCommandHandler returns SaveResult with paths
+- [ ] Unit tests created (deferred - not MVP critical)
 
 **CSV Format**:
 ```csv
