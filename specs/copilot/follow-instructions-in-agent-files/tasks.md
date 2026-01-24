@@ -268,14 +268,14 @@ public class UpdateStep1CommandValidator : AbstractValidator<UpdateStep1Command>
 - `Module_Receiving/Data/Dao_ReceivingWorkflowSession.cs`
 
 **Acceptance Criteria**:
-- [ ] Instance-based class (NOT static)
-- [ ] Constructor accepts connection string
-- [ ] All methods async with `Async` suffix
-- [ ] Returns `Model_Dao_Result` or `Model_Dao_Result<T>`
-- [ ] Uses stored procedures via `Helper_Database_StoredProcedure`
-- [ ] NEVER throws exceptions (returns failure results)
-- [ ] Registered as Singleton in App.xaml.cs
-- [ ] Integration tests created
+- [X] Instance-based class (NOT static)
+- [X] Constructor accepts connection string
+- [X] All methods async with `Async` suffix
+- [X] Returns `Model_Dao_Result` or `Model_Dao_Result<T>`
+- [X] Uses stored procedures via `Helper_Database_StoredProcedure`
+- [X] NEVER throws exceptions (returns failure results)
+- [ ] Registered as Singleton in App.xaml.cs (deferred to App.xaml.cs update task)
+- [ ] Integration tests created (deferred - not critical for MVP)
 
 **Methods to Implement**:
 ```csharp
@@ -306,12 +306,12 @@ public class Dao_ReceivingWorkflowSession
 - `Module_Receiving/Data/Dao_ReceivingLoadDetail.cs`
 
 **Acceptance Criteria**:
-- [ ] Instance-based class
-- [ ] Uses stored procedures
-- [ ] Returns `Model_Dao_Result` types
-- [ ] Supports bulk operations (copy, clear auto-fill)
-- [ ] Registered as Singleton
-- [ ] Integration tests created
+- [X] Instance-based class
+- [X] Uses stored procedures
+- [X] Returns `Model_Dao_Result` types
+- [X] Supports bulk operations (copy, clear auto-fill)
+- [ ] Registered as Singleton (deferred to App.xaml.cs update task)
+- [ ] Integration tests created (deferred - not critical for MVP)
 
 **Methods to Implement**:
 ```csharp
