@@ -51,5 +51,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Module_Core\Models\InforVisual\" />
+      <Folder Include="memory-bank\" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to organize Agent Skills with scripts, references, assets, and templates">
+    <title>Folder Structure - Agent Skills Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🤖 Agent Skills Guide</h1>
+                    <p class="tagline">Making AI work for you</p>
+                </div>
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <nav class="main-nav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="what-are-skills.html">What Are Skills?</a></li>
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="folder-structure.html" class="active" aria-current="page">Folder Structure</a></li>
+                    <li><a href="examples.html">Examples</a></li>
+                    <li><a href="best-practices.html">Best Practices</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="container">
+        <article class="content-page">
+            <header class="page-header">
+                <h2>Folder Structure</h2>
+                <p class="lead">How to organize skills with scripts, references, assets, and templates</p>
+            </header>
+
+            <section>
+                <h3>The Standard Locations</h3>
+                <p>Agent Skills can live in two main places:</p>
+
+                <div class="location-grid">
+                    <div class="location">
+                        <h4>📁 Project Skills (Recommended)</h4>
+                        <code>.github/skills/&lt;skill-name&gt;/</code>
+                        <p>Shared with your team through Git. Best for project-specific workflows and tooling.</p>
+                        <span class="badge badge-recommended">Recommended</span>
+                    </div>
+
+                    <div class="location">
+                        <h4>👤 Personal Skills</h4>
+                        <code>~/.github/skills/&lt;skill-name&gt;/</code>
+                        <p>Only on your machine. Best for personal shortcuts or private helpers.</p>
+                        <span class="badge badge-optional">Optional</span>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Minimum Required Structure</h3>
+                <p>Every skill must have its own folder and a <code>SKILL.md</code> file.</p>
+
+                <pre><code>.github/skills/my-skill/
+└── SKILL.md</code></pre>
+
+                <div class="callout callout-info">
+                    <strong>Rule:</strong> The folder name should match the <code>name</code> field inside the SKILL.md frontmatter.
+                </div>
+            </section>
+
+            <section>
+                <h3>Full (Recommended) Skill Structure</h3>
+                <p>Most useful skills include resources. This is the recommended complete structure:</p>
+
+                <pre><code>.github/skills/my-skill/
+├── SKILL.md
+├── LICENSE.txt                 # optional
+├── scripts/                    # optional
+├── references/                 # optional
+├── assets/                     # optional
+└── templates/                  # optional</code></pre>
+
+                <div class="callout callout-success">
+                    <strong>Progressive loading:</strong> Copilot loads SKILL.md only when relevant; it loads the other folders only when explicitly referenced.
+                </div>
+            </section>
+
+            <section>
+                <h3>What Each Folder Is For</h3>
+
+                <div class="feature-grid">
+                    <div class="feature">
+                        <div class="feature-icon">📄</div>
+                        <h4>SKILL.md (Required)</h4>
+                        <p>Main instructions and workflows. Keep it under ~500 lines. Link out to references for long content.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">🔧</div>
+                        <h4>scripts/</h4>
+                        <p>Executable automation. Use for deterministic operations like audits, validations, file generation, or report creation.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">📚</div>
+                        <h4>references/</h4>
+                        <p>Detailed docs Copilot reads on-demand. Use for long workflows, deep explanations, and decision records.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">🎨</div>
+                        <h4>assets/</h4>
+                        <p>Static files used as-is (images, icons, brand templates). Copilot should not edit these.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">📋</div>
+                        <h4>templates/</h4>
+                        <p>Starter files Copilot will modify (scaffolds for code, config, docs). Put placeholders in templates for easy replacement.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Assets vs Templates (Common Confusion)</h3>
+                <p><strong>Assets</strong> are used unchanged. <strong>Templates</strong> are a starting point that Copilot edits.</p>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Folder</th>
+                            <th>Copilot edits it?</th>
+                            <th>Best for</th>
+                            <th>Examples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>assets/</code></td>
+                            <td>No</td>
+                            <td>Static resources</td>
+                            <td>Logo PNG, report HTML shell, custom font</td>
+                        </tr>
+                        <tr>
+                            <td><code>templates/</code></td>
+                            <td>Yes</td>
+                            <td>Starter scaffolds</td>
+                            <td>ViewModel template, service template, config template</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h3>How to Reference Files (So They Load)</h3>
+                <p>To ensure Copilot can find and load your resources, reference them with relative paths from inside <code>SKILL.md</code>:</p>
+
+                <pre><code>See detailed rules in [architecture-rules.md](./references/architecture-rules.md)
+Run the validator: [validate-mvvm.ps1](./scripts/validate-mvvm.ps1)
+Start from template: [viewmodel-template.cs](./templates/viewmodel-template.cs)</code></pre>
+
+                <div class="callout callout-info">
+                    <strong>Tip:</strong> Avoid absolute paths. Keep everything relative to the skill folder.
+                </div>
+            </section>
+
+            <section>
+                <h3>When to Add a Script</h3>
+                <p>Add a script when you need deterministic behavior that should not rely on natural language generation.</p>
+
+                <ul>
+                    <li>Finding MVVM violations at scale</li>
+                    <li>Generating a standardized report</li>
+                    <li>Bulk updating files safely</li>
+                    <li>Validating naming conventions</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>When to Add References</h3>
+                <p>Add reference docs when your SKILL.md is getting too long or you want deeper explanations:</p>
+
+                <ul>
+                    <li>Long workflows (&gt; 5 steps)</li>
+                    <li>Architecture rules and guardrails</li>
+                    <li>Common violations with examples</li>
+                    <li>Troubleshooting guides</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>When to Add Templates</h3>
+                <p>Add templates when you want repeatable scaffolding that Copilot can customize per feature:</p>
+
+                <ul>
+                    <li>New ViewModel scaffolds</li>
+                    <li>Service interface + implementation pairs</li>
+                    <li>DAO boilerplate with stored procedure calls</li>
+                    <li>Test scaffolds (xUnit)</li>
+                </ul>
+            </section>
+
+            <nav class="page-nav" aria-label="Page navigation">
+                <a href="getting-started.html" class="page-nav-prev">← Getting Started</a>
+                <a href="examples.html" class="page-nav-next">Examples →</a>
+            </nav>
+        </article>
+
+        <aside class="doc-metadata">
+            <p><strong>Last Updated:</strong> 2026-01-24</p>
+            <p><strong>Version:</strong> 1.0</p>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="https://agentskills.io" target="_blank" rel="noopener noreferrer">Agent Skills Standard</a></li>
+                        <li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills" target="_blank" rel="noopener noreferrer">VS Code Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="what-are-skills.html">What Are Skills?</a></li>
+                        <li><a href="getting-started.html">Getting Started</a></li>
+                        <li><a href="examples.html">Examples</a></li>
+                        <li><a href="best-practices.html">Best Practices</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <p>Created for the MTM Receiving Application project to help team members learn Agent Skills.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 MTM Receiving Application. Documentation licensed under MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

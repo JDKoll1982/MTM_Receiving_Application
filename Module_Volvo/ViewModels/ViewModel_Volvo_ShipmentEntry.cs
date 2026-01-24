@@ -28,6 +28,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
 
+    private readonly Data.Dao_VolvoSettings _settingsDao;
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
@@ -37,6 +38,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     public ViewModel_Volvo_ShipmentEntry(
         IMediator mediator,
+        Data.Dao_VolvoSettings settingsDao,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -44,6 +46,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _settingsDao = settingsDao ?? throw new ArgumentNullException(nameof(settingsDao));
         _windowService = windowService;
         _sessionManager = sessionManager;
     }
@@ -677,9 +680,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
 
         // Load email recipients from settings
-        var settingsDao = new Data.Dao_VolvoSettings(Module_Core.Helpers.Database.Helper_Database_Variables.GetConnectionString());
-        var toResult = await settingsDao.GetSettingAsync("email_to_recipients");
-        var ccResult = await settingsDao.GetSettingAsync("email_cc_recipients");
+        var toResult = await _settingsDao.GetSettingAsync("email_to_recipients");
+        var ccResult = await _settingsDao.GetSettingAsync("email_cc_recipients");
 
         string toRecipients = FormatRecipientsFromJson(
             toResult.IsSuccess && toResult.Data != null ? toResult.Data.SettingValue : null,

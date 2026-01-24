@@ -14,7 +14,7 @@
             <Viewbox FlowDirection="{TemplateBinding FlowDirection}">
               <Canvas Width="24"
                       Height="24">
-                <Path Data="{Binding Data, RelativeSource={RelativeSource TemplatedParent}}"
+                <Path Data="{TemplateBinding Data}"
                       Fill="{TemplateBinding Foreground}" />
               </Canvas>
             </Viewbox>

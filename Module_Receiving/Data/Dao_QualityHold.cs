@@ -112,8 +112,8 @@ public class Dao_QualityHold
                 {
                     QualityHoldID = reader.GetInt32(reader.GetOrdinal("quality_hold_id")),
                     LoadID = reader.GetInt32(reader.GetOrdinal("load_id")),
-                    PartID = reader.IsDBNull(reader.GetOrdinal("part_id")) ? null : reader.GetString(reader.GetOrdinal("part_id")),
-                    RestrictionType = reader.IsDBNull(reader.GetOrdinal("restriction_type")) ? null : reader.GetString(reader.GetOrdinal("restriction_type")),
+                    PartID = reader.IsDBNull(reader.GetOrdinal("part_id")) ? string.Empty : reader.GetString(reader.GetOrdinal("part_id")),
+                    RestrictionType = reader.IsDBNull(reader.GetOrdinal("restriction_type")) ? string.Empty : reader.GetString(reader.GetOrdinal("restriction_type")),
                     QualityAcknowledgedBy = reader.IsDBNull(reader.GetOrdinal("quality_acknowledged_by")) ? null : reader.GetString(reader.GetOrdinal("quality_acknowledged_by")),
                     QualityAcknowledgedAt = reader.IsDBNull(reader.GetOrdinal("quality_acknowledged_at")) ? null : reader.GetDateTime(reader.GetOrdinal("quality_acknowledged_at")),
                     CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),

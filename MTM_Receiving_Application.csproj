@@ -50,6 +50,7 @@
     </ItemGroup>
     <!-- Configuration Files -->
     <ItemGroup>
+        <None Include=".github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1" />
         <None Include="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

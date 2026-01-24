@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Practical Agent Skills examples for MVVM, DAOs, XAML x:Bind, and testing">
+    <title>Examples - Agent Skills Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🤖 Agent Skills Guide</h1>
+                    <p class="tagline">Making AI work for you</p>
+                </div>
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <nav class="main-nav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="what-are-skills.html">What Are Skills?</a></li>
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="folder-structure.html">Folder Structure</a></li>
+                    <li><a href="examples.html" class="active" aria-current="page">Examples</a></li>
+                    <li><a href="best-practices.html">Best Practices</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="container">
+        <article class="content-page">
+            <header class="page-header">
+                <h2>Examples</h2>
+                <p class="lead">Practical skills you can add to this repo</p>
+            </header>
+
+            <section>
+                <h3>How to Use This Page</h3>
+                <p>Each example below includes:</p>
+                <ul>
+                    <li>A ready-to-copy <code>SKILL.md</code> frontmatter description (the most important part for discovery)</li>
+                    <li>Suggested <code>scripts/</code>, <code>references/</code>, <code>templates/</code>, and optional <code>assets/</code></li>
+                    <li>Example prompts that should activate the skill</li>
+                </ul>
+
+                <div class="callout callout-info">
+                    <strong>Note:</strong> These are examples for learning and planning. Create the actual skill folders in <code>.github/skills/</code> when you're ready.
+                </div>
+            </section>
+
+            <section>
+                <h3>Example 1: mvvm-architecture-enforcer (Recommended)</h3>
+                <p><strong>Goal:</strong> Prevents the most common architecture violations (ViewModel → DAO calls, runtime Binding, non-partial ViewModels).</p>
+
+                <details class="code-example">
+                    <summary>SKILL.md frontmatter (copy/paste)</summary>
+                    <pre><code>---
+name: mvvm-architecture-enforcer
+description: Enforces MVVM architecture rules for WinUI 3 applications. Use when creating or modifying ViewModels, Services, DAOs, or XAML bindings. Prevents ViewModels from calling DAOs directly, requires partial ViewModels inheriting from ViewModel_Shared_Base, enforces Service layer usage, and converts {Binding} to {x:Bind}.
+license: MIT
+---</code></pre>
+                </details>
+
+                <h4>Suggested resources</h4>
+                <ul>
+                    <li><code>scripts/validate-mvvm.ps1</code> - scan ViewModels for DAO usage, scan XAML for {Binding}</li>
+                    <li><code>references/architecture-rules.md</code> - concise rules + examples</li>
+                    <li><code>templates/viewmodel-template.cs</code> - ViewModel scaffolding</li>
+                    <li><code>templates/service-template.cs</code> - IService_*/Service_* scaffolding</li>
+                </ul>
+
+                <h4>Example prompts</h4>
+                <ul>
+                    <li>"Create a new ViewModel for a settings page"</li>
+                    <li>"Audit this ViewModel for architecture violations"</li>
+                    <li>"Convert these XAML bindings to x:Bind"</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Example 2: mysql-stored-proc-dao-generator</h3>
+                <p><strong>Goal:</strong> Generates DAO methods that call MySQL stored procedures and return <code>Model_Dao_Result</code> without throwing exceptions.</p>
+
+                <details class="code-example">
+                    <summary>SKILL.md frontmatter (copy/paste)</summary>
+                    <pre><code>---
+name: mysql-stored-proc-dao-generator
+description: Generates instance-based MySQL DAO classes and methods using stored procedures only. Use when creating or modifying DAOs for MySQL. Produces Model_Dao_Result returns, never throws from DAOs, maps MySqlParameter arrays, and uses Helper_Database_StoredProcedure.
+license: MIT
+---</code></pre>
+                </details>
+
+                <h4>Suggested resources</h4>
+                <ul>
+                    <li><code>references/dao-rules.md</code> - "never throw", "stored proc only", "Model_Dao_Result"</li>
+                    <li><code>templates/dao-template.cs</code> - constructor + error handling scaffold</li>
+                    <li><code>templates/sp-call-template.cs</code> - standard MySqlParameter mapping pattern</li>
+                    <li><code>scripts/find-raw-sql.ps1</code> - searches for SQL strings in C# files</li>
+                </ul>
+
+                <h4>Example prompts</h4>
+                <ul>
+                    <li>"Create a DAO method for sp_Receiving_Line_Insert"</li>
+                    <li>"Convert this raw SQL to stored procedure usage"</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Example 3: xaml-xbind-auditor</h3>
+                <p><strong>Goal:</strong> Detects runtime bindings and guides conversion to compile-time <code>x:Bind</code> with explicit Mode.</p>
+
+                <details class="code-example">
+                    <summary>SKILL.md frontmatter (copy/paste)</summary>
+                    <pre><code>---
+name: xaml-xbind-auditor
+description: Audits WinUI 3 XAML for binding issues. Use when reviewing or editing XAML. Detects runtime {Binding}, missing x:Bind Mode, missing x:DataType in DataTemplates, and suggests fixes to enforce compile-time binding.
+license: MIT
+---</code></pre>
+                </details>
+
+                <h4>Suggested resources</h4>
+                <ul>
+                    <li><code>scripts/find-runtime-binding.ps1</code> - find {Binding} usage</li>
+                    <li><code>references/xbind-patterns.md</code> - examples for TextBox Mode=TwoWay and UpdateSourceTrigger</li>
+                </ul>
+
+                <h4>Example prompts</h4>
+                <ul>
+                    <li>"Audit this XAML file for binding issues"</li>
+                    <li>"Convert these {Binding} to {x:Bind} and set Mode"</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Example 4: di-registration-helper</h3>
+                <p><strong>Goal:</strong> Keeps DI consistent: DAOs and Services as Singletons, ViewModels and Views as Transients.</p>
+
+                <details class="code-example">
+                    <summary>SKILL.md frontmatter (copy/paste)</summary>
+                    <pre><code>---
+name: di-registration-helper
+description: Generates dependency injection registrations for DAOs, Services, ViewModels, and Views in WinUI 3 apps. Use when adding new features that require DI. Ensures DAO and Service singletons, ViewModel transients, and correct wiring of connection strings.
+license: MIT
+---</code></pre>
+                </details>
+
+                <h4>Suggested resources</h4>
+                <ul>
+                    <li><code>templates/di-module-template.cs</code> - common registration patterns</li>
+                    <li><code>references/di-lifetimes.md</code> - why lifetimes matter</li>
+                </ul>
+
+                <h4>Example prompts</h4>
+                <ul>
+                    <li>"Register my new ViewModel and Service in DI"</li>
+                    <li>"Audit App.xaml.cs DI registrations for lifetime issues"</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Example 5: xunit-test-scaffolder</h3>
+                <p><strong>Goal:</strong> Generates tests that match repo conventions (xUnit + FluentAssertions, no AAA comments).</p>
+
+                <details class="code-example">
+                    <summary>SKILL.md frontmatter (copy/paste)</summary>
+                    <pre><code>---
+name: xunit-test-scaffolder
+description: Creates xUnit tests using FluentAssertions that follow repository conventions. Use when adding tests for ViewModels, Services, Validators, or CQRS handlers. Uses behavior-based test naming and avoids Arrange/Act/Assert comments.
+license: MIT
+---</code></pre>
+                </details>
+
+                <h4>Suggested resources</h4>
+                <ul>
+                    <li><code>templates/unit-test-template.cs</code> - test scaffold with FluentAssertions</li>
+                    <li><code>references/testing-guidelines.md</code> - what to unit test vs integration test</li>
+                </ul>
+
+                <h4>Example prompts</h4>
+                <ul>
+                    <li>"Create unit tests for ViewModel_Receiving_Workflow"</li>
+                    <li>"Add tests for ImportPartsCsvCommandValidator"</li>
+                </ul>
+            </section>
+
+            <nav class="page-nav" aria-label="Page navigation">
+                <a href="folder-structure.html" class="page-nav-prev">← Folder Structure</a>
+                <a href="best-practices.html" class="page-nav-next">Best Practices →</a>
+            </nav>
+        </article>
+
+        <aside class="doc-metadata">
+            <p><strong>Last Updated:</strong> 2026-01-24</p>
+            <p><strong>Version:</strong> 1.0</p>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="https://agentskills.io" target="_blank" rel="noopener noreferrer">Agent Skills Standard</a></li>
+                        <li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills" target="_blank" rel="noopener noreferrer">VS Code Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="what-are-skills.html">What Are Skills?</a></li>
+                        <li><a href="getting-started.html">Getting Started</a></li>
+                        <li><a href="folder-structure.html">Folder Structure</a></li>
+                        <li><a href="best-practices.html">Best Practices</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <p>Created for the MTM Receiving Application project to help team members learn Agent Skills.</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 MTM Receiving Application. Documentation licensed under MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 ---
-description: 'Guidelines for creating high-quality custom instruction files for GitHub Copilot'
+description: 'Guidelines for creating high-quality custom instruction files for GitHub Copilot - Updated for 2026 standards'
 applyTo: '**/*.instructions.md'
 ---
 
@@ -11,9 +11,10 @@ Instructions for creating effective and maintainable custom instruction files th
 
 - Target audience: Developers and GitHub Copilot working with domain-specific code
 - File format: Markdown with YAML frontmatter
-- File naming convention: lowercase with hyphens (e.g., `react-best-practices.instructions.md`)
+- File naming convention: lowercase with hyphens ending in `.instructions.md` (e.g., `react-best-practices.instructions.md`)
 - Location: `.github/instructions/` directory
 - Purpose: Provide context-aware guidance for code generation, review, and documentation
+- Maximum length: Recommended under 30,000 characters for optimal performance
 
 ## Required Frontmatter
 
@@ -21,19 +22,49 @@ Every instruction file must include YAML frontmatter with the following fields:
 
 ```yaml
 ---
-description: 'Brief description of the instruction purpose and scope'
+description: 'Brief description of the instruction purpose and scope (50-500 chars)'
 applyTo: 'glob pattern for target files (e.g., **/*.ts, **/*.py)'
+excludeAgent: 'coding-agent or code-review (optional)'
 ---
 ```
 
 ### Frontmatter Guidelines
 
-- **description**: Single-quoted string, 1-500 characters, clearly stating the purpose
-- **applyTo**: Glob pattern(s) specifying which files these instructions apply to
-  - Single pattern: `'**/*.ts'`
+#### **description** (REQUIRED)
+- Single-quoted string, 50-500 characters
+- Clearly state the purpose and what the instructions cover
+- Example: `'React component development best practices and patterns'`
+
+#### **applyTo** (REQUIRED)
+- Glob pattern(s) specifying which files these instructions apply to
+- Syntax patterns:
+  - `*` - All files in current directory
+  - `**` or `**/*` - All files in all directories
+  - `**/*.ext` - All files with specific extension recursively
+  - `path/**/*.ext` - All files with extension in specific path
   - Multiple patterns: `'**/*.ts, **/*.tsx, **/*.js'`
-  - Specific files: `'src/**/*.py'`
+- Examples:
+  - Single pattern: `'**/*.ts'`
+  - Multiple patterns: `'**/*.ts,**/*.tsx,**/*.js'`
+  - Specific directory: `'src/**/*.py'`
   - All files: `'**'`
+
+#### **excludeAgent** (OPTIONAL)
+- Use to prevent specific agents from using these instructions
+- Valid values: `'code-review'` or `'coding-agent'`
+- Example: `excludeAgent: 'code-review'` (only coding agent will use it)
+- If omitted, both Copilot coding agent and code review will use the instructions
+
+### Glob Pattern Examples
+
+| Pattern | Matches |
+|---------|---------|
+| `*.py` | All `.py` files in current directory only |
+| `**/*.py` | All `.py` files recursively in all directories |
+| `src/*.py` | All `.py` files in `src` directory only (not subdirectories) |
+| `src/**/*.py` | All `.py` files in `src` and all its subdirectories |
+| `**/subdir/**/*.py` | All `.py` files in any `subdir` at any depth |
+| `**/*.{ts,tsx}` | All TypeScript files (both `.ts` and `.tsx`) |
 
 ## File Structure
 

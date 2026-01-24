@@ -1,31 +1,110 @@
 ---
 description: 'MTM Receiving Application development guidelines - MVVM architecture, database patterns, naming conventions, and WinUI 3 best practices'
-applyTo: '**/*.{cs,xaml,csproj}'
+applyTo: '**/*.{cs,xaml,csproj,vb,fs,sql,md,txt,ps1,sh,bash,cmd,bat,py,js,ts,jsx,tsx,html,htm,css,scss,json,yaml,yml,xml,config,toml,ini,env,props,targets}'
 ---
 
 # MTM Receiving Application Development Guide
 
 Manufacturing receiving operations desktop application for streamlined label generation, workflow management, and ERP integration.
 
-**Technology Stack:**
-- Framework: WinUI 3 (Windows App SDK 1.6+)
-- Language: C# 12
-- Platform: .NET 8
-- Architecture: MVVM with CommunityToolkit.Mvvm
-- Database: MySQL 8.0 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
-- Testing: xUnit with FluentAssertions
+## 🚨 CRITICAL ARCHITECTURE RULES - READ FIRST
 
-## General Instructions
+### FORBIDDEN - These Will Break the System
 
-- Follow strict MVVM layer separation: View (XAML) → ViewModel → Service → DAO → Database
-- Use dependency injection for all components
-- Make ViewModels partial classes inheriting from `ViewModel_Shared_Base`
-- Use `x:Bind` for all XAML bindings (never runtime `Binding`)
-- DAOs are instance-based and never throw exceptions
-- MySQL database access uses stored procedures only
-- SQL Server (Infor Visual) is READ ONLY - no writes allowed
-- All async methods end with `Async` suffix
-- Handle errors through service layer, never throw from DAOs
+**❌ NEVER DO THESE:**
+1. **ViewModels calling DAOs directly** - MUST go through Service layer
+2. **ViewModels accessing `Helper_Database_*` classes** - Use services only
+3. **Static DAO classes** - All DAOs MUST be instance-based
+4. **DAOs throwing exceptions** - Return `Model_Dao_Result` with error details
+5. **Raw SQL in C# for MySQL** - Use stored procedures ONLY
+6. **Write operations to SQL Server/Infor Visual** - READ ONLY (no INSERT/UPDATE/DELETE)
+7. **Runtime `{Binding}` in XAML** - Use compile-time `{x:Bind}` only
+8. **Business logic in `.xaml.cs` code-behind** - Belongs in ViewModel or Service
+
+### REQUIRED - Every Component Must Follow
+
+**✅ ALWAYS DO THESE:**
+1. **MVVM Layer Flow:** View (XAML) → ViewModel → Service → DAO → Database
+2. **ViewModels:** Partial classes inheriting from `ViewModel_Shared_Base`
+3. **Services:** Interface-based with dependency injection
+4. **DAOs:** Instance-based, injected via constructor, return `Model_Dao_Result`
+5. **XAML Bindings:** Use `x:Bind` with explicit `Mode` (OneWay/TwoWay/OneTime)
+6. **Async Methods:** All must end with `Async` suffix
+7. **Error Handling:** DAOs return errors, Services handle them, ViewModels display them
+8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY
+
+### Important - Follow These Guidelines
+
+1. **Reference Relevant Instruction Files:** Follow guidelines in `.github/instructions/` as applicable, making sure that you reference these as if the user had included them in their prompt.
+    - See the "Additional Resources" section below for a list of relevant instruction files.
+    - Reference the specific instruction files for detailed guidance on each topic.
+    - Follow the naming conventions and folder structures outlined in the project governance documents.
+    - If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
+
+## Technology Stack
+
+- **Framework:** WinUI 3 (Windows App SDK 1.6+)
+- **Language:** C# 12
+- **Platform:** .NET 8
+- **Architecture:** MVVM with CommunityToolkit.Mvvm
+- **Database:** MySQL 8.0 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
+- **Testing:** xUnit with FluentAssertions
+- **DI Container:** Microsoft.Extensions.DependencyInjection
+
+## Additional Resources
+
+### Project Governance
+- Project Constitution: See `.github/CONSTITUTION.md` for immutable architecture rules
+- Agent Definitions: See `.github/AGENTS.md` for specialized AI agents
+- Memory Bank: See `memory-bank/` folder for project context and task tracking
+
+### Instruction Files
+The `.github/instructions/` folder contains specialized guidance for specific scenarios. Reference these when applicable:
+
+**Core Development:**
+- `.github/instructions/csharp.instructions.md` - C# language-specific best practices
+- `.github/instructions/dotnet-architecture-good-practices.instructions.md` - .NET architecture patterns
+- `.github/instructions/testing-strategy.instructions.md` - Comprehensive testing guide
+- `.github/instructions/code-review-generic.instructions.md` - Code review guidelines
+
+**Code Quality:**
+- `.github/instructions/object-calisthenics.instructions.md` - Code quality rules and patterns
+- `.github/instructions/self-explanatory-code-commenting.instructions.md` - Commenting standards
+- `.github/instructions/security-and-owask.instructions.md` - Security best practices
+
+**Database & SQL:**
+- `.github/instructions/sql-sp-generation.instructions.md` - Stored procedure generation guidelines
+
+**Performance & Optimization:**
+- `.github/instructions/performance-optimization.instructions.md` - Performance tuning guidance
+
+**Scripting:**
+- `.github/instructions/powershell.instructions.md` - PowerShell scripting standards
+- `.github/instructions/powershell-scripting-ai.instructions.md` - AI-assisted PowerShell development
+- `.github/instructions/powershell-pester-5.instructions.md` - PowerShell testing with Pester 5
+- `.github/instructions/shell.instructions.md` - Shell scripting guidelines
+- `.github/instructions/python.instructions.md` - Python development standards
+
+**Workflow & Process:**
+- `.github/instructions/memory-bank.instructions.md` - Memory bank usage and maintenance
+- `.github/instructions/spec-driven-workflow-v1.instructions.md` - Specification-driven development
+- `.github/instructions/update-docs-on-code-change.instructions.md` - Documentation update process
+- `.github/instructions/module-doc-maintenance.instructions.md` - Module documentation standards
+
+**AI Agent & Automation:**
+- `.github/instructions/comprehensive-research.instructions.md` - Research workflow for documentation/code generation
+- `.github/instructions/agents.instructions.md` - AI agent configuration and usage
+- `.github/instructions/agent-skills.instructions.md` - AI agent capabilities reference
+- `.github/instructions/copilot-thought-logging.instructions.md` - Copilot logging patterns
+- `.github/instructions/joyride-workspace-automation.instructions.md` - Workspace automation
+- `.github/instructions/serena-tools.instructions.md` - Serena tooling reference
+- `.github/instructions/taming-copilot.instructions.md` - Copilot interaction patterns
+- `.github/instructions/prompt.instructions.md` - Prompt engineering guidelines
+- `.github/instructions/instructions.instructions.md` - Meta-instructions for instruction files
+
+**Specialized:**
+- `.github/instructions/dotnet-upgrade.instructions.md` - .NET upgrade procedures
+- `.github/instructions/arrogant-code-review.instructions.md` - Assertive code review mode
 
 ## Naming Conventions
 
@@ -713,9 +792,7 @@ dotnet test MTM_Receiving_Application.sln
 - Search for raw SQL in C# files (forbidden for MySQL)
 - Search for `INSERT/UPDATE/DELETE` against SQL Server (forbidden)
 
-## Additional Resources
+## User Environment Consideration
 
-- Project Constitution: See `.github/CONSTITUTION.md` for immutable architecture rules
-- Agent Definitions: See `.github/AGENTS.md` for specialized AI agents
-- Memory Bank: See `memory-bank/` folder for project context and task tracking
-- Testing Guide: See `.github/instructions/testing-strategy.instructions.md`
+- Avoid using terminal commands for validation as running scripts via the terminal locks up the terminal; prefer non-terminal tooling (file reads/search) for validation.
+
