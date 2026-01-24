@@ -5,7 +5,6 @@ Use any of the following instruction files relevant to the current task, user's 
 #file:arrogant-code-review.instructions.md'
 #file:code-review-generic.instructions.md'
 #file:code-review-generic.instructions.md'
-#file:copilot-thought-logging.instructions.md'
 #file:csharp.instructions.md'
 #file:dotnet-architecture-good-practices.instructions.md'
 #file:dotnet-upgrade.instructions.md'

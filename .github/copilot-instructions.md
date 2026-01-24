@@ -95,7 +95,6 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 - `.github/instructions/comprehensive-research.instructions.md` - Research workflow for documentation/code generation
 - `.github/instructions/agents.instructions.md` - AI agent configuration and usage
 - `.github/instructions/agent-skills.instructions.md` - AI agent capabilities reference
-- `.github/instructions/copilot-thought-logging.instructions.md` - Copilot logging patterns
 - `.github/instructions/joyride-workspace-automation.instructions.md` - Workspace automation
 - `.github/instructions/serena-tools.instructions.md` - Serena tooling reference
 - `.github/instructions/taming-copilot.instructions.md` - Copilot interaction patterns

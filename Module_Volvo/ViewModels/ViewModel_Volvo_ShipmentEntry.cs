@@ -28,7 +28,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
 
-    private readonly Data.Dao_VolvoSettings _settingsDao;
     private readonly IService_Window _windowService;
     private readonly IService_UserSessionManager _sessionManager;
 
@@ -38,7 +37,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
 
     public ViewModel_Volvo_ShipmentEntry(
         IMediator mediator,
-        Data.Dao_VolvoSettings settingsDao,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
@@ -46,7 +44,6 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _settingsDao = settingsDao ?? throw new ArgumentNullException(nameof(settingsDao));
         _windowService = windowService;
         _sessionManager = sessionManager;
     }
@@ -679,17 +676,17 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             return;
         }
 
-        // Load email recipients from settings
-        var toResult = await _settingsDao.GetSettingAsync("email_to_recipients");
-        var ccResult = await _settingsDao.GetSettingAsync("email_cc_recipients");
+        // Load email recipients from settings via Mediator
+        var toResult = await _mediator.Send(new GetVolvoSettingQuery("email_to_recipients"));
+        var ccResult = await _mediator.Send(new GetVolvoSettingQuery("email_cc_recipients"));
 
         string toRecipients = FormatRecipientsFromJson(
-            toResult.IsSuccess && toResult.Data != null ? toResult.Data.SettingValue : null,
+            toResult.IsSuccess && toResult.Data != null ? toResult.Data : null,
             "\"Jose Rosas\" <jrosas@mantoolmfg.com>; \"Sandy Miller\" <smiller@mantoolmfg.com>; \"Steph Wittmus\" <swittmus@mantoolmfg.com>"
         );
 
         string ccRecipients = FormatRecipientsFromJson(
-            ccResult.IsSuccess && ccResult.Data != null ? ccResult.Data.SettingValue : null,
+            ccResult.IsSuccess && ccResult.Data != null ? ccResult.Data : null,
             "\"Debra Alexander\" <dalexander@mantoolmfg.com>; \"Michelle Laurin\" <mlaurin@mantoolmfg.com>"
         );
 

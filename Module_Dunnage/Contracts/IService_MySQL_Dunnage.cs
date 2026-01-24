@@ -58,6 +58,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item);
         public Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId);
         public Task<Model_Dao_Result> UpdateInventoriedPartAsync(Model_InventoriedDunnage item);
+        
+        // Overloads for ViewModel compatibility
+        public Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync();
+        public Task<Model_Dao_Result> UpdateInventoriedPartAsync(int id, string inventoryMethod, string notes, string username);
+        public Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id);
 
         // ==================== Impact Analysis (4 methods) ====================
 

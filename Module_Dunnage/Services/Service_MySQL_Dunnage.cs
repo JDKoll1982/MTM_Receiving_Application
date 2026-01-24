@@ -579,6 +579,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
+    /// <summary>
+    /// Alias for GetAllInventoriedPartsAsync for ViewModel compatibility
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync()
+    {
+        return await GetAllInventoriedPartsAsync();
+    }
+
         public async Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item)
         {
             try
@@ -619,6 +627,30 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 return Model_Dao_Result_Factory.Failure($"Error updating inventory item: {ex.Message}");
             }
         }
+
+    /// <summary>
+    /// Update an inventoried part with specific values
+    /// </summary>
+    public async Task<Model_Dao_Result> UpdateInventoriedPartAsync(int id, string inventoryMethod, string notes, string username)
+    {
+        var part = new Model_InventoriedDunnage
+        {
+            Id = id,
+            InventoryMethod = inventoryMethod,
+            Notes = notes,
+            ModifiedBy = username,
+            ModifiedDate = DateTime.Now
+        };
+        return await UpdateInventoriedPartAsync(part);
+    }
+
+    /// <summary>
+    /// Delete an inventoried part by ID
+    /// </summary>
+    public async Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id)
+    {
+        return await _daoInventoriedDunnage.DeleteAsync(id);
+    }
 
         // ==================== Impact Analysis ====================
 
