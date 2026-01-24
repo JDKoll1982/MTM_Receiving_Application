@@ -70,25 +70,26 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
 
         // Build warning message
         var message = $"⚠️ QUALITY HOLD REQUIRED ⚠️\n\n" +
+                     $"ACKNOWLEDGMENT 1 of 2\n\n" +
                      $"Part ID: {partID}\n" +
                      $"Type: {restrictionType}\n\n" +
-                     $"IMPORTANT:\n" +
-                     $"• You MUST contact Quality immediately\n" +
+                     $"IMMEDIATE ACTION REQUIRED:\n" +
+                     $"• Contact Quality NOW\n" +
                      $"• Quality MUST inspect and accept this load\n" +
                      $"• DO NOT sign any paperwork until Quality accepts\n\n" +
-                     $"This is a critical quality control checkpoint.\n" +
-                     $"Acknowledge to continue.";
+                     $"You will be asked to confirm again before saving.\n" +
+                     $"This is a critical quality control checkpoint.";
 
         var dialog = new ContentDialog
         {
-            Title = "⚠️ Quality Hold - Action Required",
+            Title = "⚠️ QUALITY HOLD - Acknowledgment 1 of 2",
             Content = new TextBlock
             {
                 Text = message,
                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
                 FontSize = 14
             },
-            PrimaryButtonText = "I Understand - Contact Quality",
+            PrimaryButtonText = "I Understand - Will Contact Quality",
             CloseButtonText = "Cancel Entry",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot
@@ -98,11 +99,9 @@ public class Service_QualityHoldWarning : IService_QualityHoldWarning
         
         bool acknowledged = result == ContentDialogResult.Primary;
         
-        // Update acknowledged flag on the load if user accepted
-        if (acknowledged && load != null)
-        {
-            load.IsQualityHoldAcknowledged = true;
-        }
+        // DO NOT set IsQualityHoldAcknowledged here - this is just the first warning
+        // The user must acknowledge again at save time for dual confirmation
+        // Only mark as "warned" but not "acknowledged" until final save confirmation
         
         _logger.LogInfo($"Quality hold warning for part {partID}: {(acknowledged ? "Acknowledged" : "Cancelled")}");
         

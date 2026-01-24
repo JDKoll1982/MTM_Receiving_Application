@@ -27,6 +27,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Pagination _paginationService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_ReceivingValidation _validationService;
 
         private readonly List<Model_ReceivingLoad> _allLoads = new();
         private List<Model_ReceivingLoad> _filteredLoads = new();
@@ -160,7 +161,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Window windowService,
             IService_Help helpService,
             IService_ReceivingSettings receivingSettings,
-            IService_Notification notificationService)
+            IService_Notification notificationService,
+            IService_ReceivingValidation validationService)
             : base(errorHandler, logger, notificationService)
         {
             _windowService = windowService;
@@ -170,6 +172,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _paginationService = paginationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
+            _validationService = validationService;
 
             _loads = new ObservableCollection<Model_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
@@ -843,6 +846,39 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     {
                         load.HeatLotNumber = "Nothing Entered";
                     }
+
+                    // Check for quality hold requirement on each load
+                    if (!string.IsNullOrWhiteSpace(load.PartID))
+                    {
+                        var (isRestricted, restrictionType) = await _validationService.IsRestrictedPartAsync(load.PartID);
+                        if (isRestricted)
+                        {
+                            load.IsQualityHoldRequired = true;
+                            load.QualityHoldRestrictionType = restrictionType;
+                        }
+                    }
+                }
+
+                // Check if any loads have quality holds that haven't been acknowledged yet
+                var loadsWithUnacknowledgedHolds = _allLoads
+                    .Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged)
+                    .ToList();
+                
+                if (loadsWithUnacknowledgedHolds.Count > 0)
+                {
+                    // Show confirmation dialog for quality hold acknowledgment
+                    var acknowledged = await ShowQualityHoldConfirmationAsync(loadsWithUnacknowledgedHolds);
+                    if (!acknowledged)
+                    {
+                        _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
+                        return; // Block save if user doesn't acknowledge
+                    }
+                    
+                    // Mark all as acknowledged
+                    foreach (var load in loadsWithUnacknowledgedHolds)
+                    {
+                        load.IsQualityHoldAcknowledged = true;
+                    }
                 }
 
                 var validationErrors = ValidateLoads(_filteredLoads);
@@ -1013,6 +1049,65 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public string GetTooltip(string key) => _helpService.GetTooltip(key);
         public string GetPlaceholder(string key) => _helpService.GetPlaceholder(key);
         public string GetTip(string key) => _helpService.GetTip(key);
+
+        #endregion
+
+        #region Quality Hold Confirmation
+
+        /// <summary>
+        /// Shows a confirmation dialog for quality hold acknowledgment before allowing save.
+        /// This is the SECOND and FINAL acknowledgment required.
+        /// </summary>
+        /// <param name="loadsWithHolds">List of loads requiring quality acknowledgment</param>
+        /// <returns>True if user acknowledges; false if cancelled</returns>
+        private async Task<bool> ShowQualityHoldConfirmationAsync(List<Model_ReceivingLoad> loadsWithHolds)
+        {
+            ArgumentNullException.ThrowIfNull(loadsWithHolds);
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot == null)
+            {
+                _logger.LogError("Cannot show quality hold dialog: XamlRoot is null");
+                await _errorHandler.HandleErrorAsync("Unable to display dialog", Enum_ErrorSeverity.Error);
+                return false;
+            }
+
+            // Build list of restricted parts
+            var restrictedPartsList = string.Join(
+                "\n",
+                loadsWithHolds.Select(l => $"  • {l.PartID} ({l.QualityHoldRestrictionType})")
+            );
+
+            var content = $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n" +
+                         $"This is your SECOND and FINAL acknowledgment.\n\n" +
+                         $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n" +
+                         $"BEFORE YOU PROCEED:\n" +
+                         $"✓ Have you contacted Quality?\n" +
+                         $"✓ Has Quality physically inspected these loads?\n" +
+                         $"✓ Has Quality accepted these loads?\n" +
+                         $"✓ Are you ready to save WITHOUT signing paperwork?\n\n" +
+                         $"This is a critical quality control checkpoint.\n" +
+                         $"DO NOT proceed unless Quality has accepted.";
+
+            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+            {
+                Title = "⚠️ FINAL QUALITY HOLD CONFIRMATION - Action Required",
+                Content = new Microsoft.UI.Xaml.Controls.TextBlock
+                {
+                    Text = content,
+                    TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                    FontSize = 14,
+                    Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Microsoft.UI.Colors.DarkRed)
+                },
+                PrimaryButtonText = "✓ YES - Quality Has Accepted - Save Now",
+                CloseButtonText = "✗ NO - Cancel Save",
+                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
+                XamlRoot = xamlRoot
+            };
+
+            var result = await dialog.ShowAsync().AsTask();
+            return result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary;
+        }
 
         #endregion
     }

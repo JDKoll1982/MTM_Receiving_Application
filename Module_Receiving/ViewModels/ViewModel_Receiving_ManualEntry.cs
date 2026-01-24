@@ -304,7 +304,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 LoadID = System.Guid.NewGuid(),
                 ReceivedDate = System.DateTime.Now,
-                LoadNumber = Loads.Count + 1
+                LoadNumber = Loads.Count + 1,
+                PackageType = Enum_PackageType.Skid,  // Default package type
+                PackageTypeName = nameof(Enum_PackageType.Skid),  // Default package type name
+                PackagesPerLoad = 1  // Default to 1 package per load
             };
             Loads.Add(newLoad);
             _workflowService.CurrentSession.Loads.Add(newLoad);
@@ -438,16 +441,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 loadsWithHolds.Select(l => $"  • {l.PartID} ({l.QualityHoldRestrictionType})")
             );
 
-            var content = $"The following parts require quality hold acknowledgment:\n\n{restrictedPartsList}\n\n" +
-                         "You must contact quality immediately and quality MUST accept the load before any paperwork is signed.\n\n" +
-                         "Has quality accepted these loads?";
+            var content = $"⚠️ FINAL QUALITY HOLD CONFIRMATION ⚠️\n\n" +
+                         $"This is your SECOND and FINAL acknowledgment.\n\n" +
+                         $"The following parts require quality hold:\n\n{restrictedPartsList}\n\n" +
+                         $"BEFORE YOU PROCEED:\n" +
+                         $"✓ Have you contacted Quality?\n" +
+                         $"✓ Has Quality physically inspected these loads?\n" +
+                         $"✓ Has Quality accepted these loads?\n" +
+                         $"This is a critical quality control checkpoint.\n" +
+                         $"DO NOT proceed unless Quality has accepted.";
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = "Quality Hold Acknowledgment Required",
-                Content = content,
-                PrimaryButtonText = "Yes - Quality Accepted",
-                CloseButtonText = "Cancel - Do Not Save",
+                Title = "⚠️ FINAL QUALITY HOLD CONFIRMATION - Action Required",
+                Content = new Microsoft.UI.Xaml.Controls.TextBlock
+                {
+                    Text = content,
+                    TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                    FontSize = 14,
+                    Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Microsoft.UI.Colors.DarkRed)
+                },
+                PrimaryButtonText = "✓ YES - Save Now",
+                CloseButtonText = "✗ NO - Cancel Save",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
                 XamlRoot = xamlRoot
             };

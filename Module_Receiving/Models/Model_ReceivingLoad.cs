@@ -87,10 +87,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
                 if (upperValue.Contains("MMC"))
                 {
                     PackageType = Enum_PackageType.Coil;
+                    PartType = "Coil";  // Set part type for validation
                 }
                 else if (upperValue.Contains("MMF"))
                 {
                     PackageType = Enum_PackageType.Sheet;
+                    PartType = "Sheet";  // Set part type for validation
+                }
+                else
+                {
+                    // Default for non-MMC/MMF parts (tubes, etc.)
+                    PartType = "Standard";
                 }
             }
             catch (Exception ex)
