@@ -7,6 +7,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 /// Query to retrieve a Volvo application setting value.
 /// Used for retrieving configuration values like email recipients from the database.
 /// </summary>
+/// <param name="SettingKey"></param>
 public record GetVolvoSettingQuery(string SettingKey) : IRequest<Model_Dao_Result<string>>
 {
     /// <summary>

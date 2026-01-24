@@ -15,15 +15,19 @@ public interface IService_SettingsPagination
     /// <summary>
     /// Returns true when pagination should be shown for the given total item count.
     /// </summary>
+    /// <param name="totalCount"></param>
     bool ShouldShowPagination(int totalCount);
 
     /// <summary>
     /// Calculates total pages given total count.
     /// </summary>
+    /// <param name="totalCount"></param>
     int GetTotalPages(int totalCount);
 
     /// <summary>
     /// Returns 0-based indices for items on the requested 1-based page.
     /// </summary>
+    /// <param name="totalCount"></param>
+    /// <param name="pageNumber"></param>
     IReadOnlyList<int> GetPageIndices(int totalCount, int pageNumber);
 }

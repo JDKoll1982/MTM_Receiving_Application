@@ -47,6 +47,11 @@ public class Converter_PartIDToQualityHoldTextColor : IValueConverter
     /// <summary>
     /// Not implemented - this is a one-way converter.
     /// </summary>
+    /// <param name="value"></param>
+    /// <param name="targetType"></param>
+    /// <param name="parameter"></param>
+    /// <param name="language"></param>
+    /// <exception cref="NotImplementedException"></exception>
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
         throw new NotImplementedException("Converter_PartIDToQualityHoldTextColor is one-way only");

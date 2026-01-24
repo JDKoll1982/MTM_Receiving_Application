@@ -74,10 +74,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private void ManualEntryDataGrid_CurrentCellChanged(object? sender, EventArgs e)
         {
             var grid = sender as DataGrid;
-            
+
             // Check for quality hold warning when leaving PartID cell
             _ = CheckQualityHoldOnCellChangeAsync(grid);
-            
+
             // Wait for the move to complete then activate edit mode
             grid?.DispatcherQueue.TryEnqueue(() =>
             {
@@ -93,6 +93,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// Checks for quality hold requirements when user moves away from a cell.
         /// Displays warning if restricted part (MMFSR/MMCSR) is detected.
         /// </summary>
+        /// <param name="grid"></param>
         private async Task CheckQualityHoldOnCellChangeAsync(DataGrid? grid)
         {
             if (grid?.SelectedItem is not Model_ReceivingLoad currentLoad)
@@ -101,7 +102,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             var partID = currentLoad.PartID;
-            
+
             // Skip if empty or if we already checked this exact value
             if (string.IsNullOrWhiteSpace(partID) || partID == _lastCheckedPartID)
             {
@@ -112,22 +113,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             if (_qualityHoldWarning.IsRestrictedPart(partID))
             {
                 _lastCheckedPartID = partID; // Remember we checked this
-                
+
                 // Show warning and get user acknowledgment
                 bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(partID, currentLoad);
-                
+
                 if (!acknowledged)
                 {
                     // User cancelled - clear the part ID
                     currentLoad.PartID = string.Empty;
                     _lastCheckedPartID = null;
-                    
+
                     // Re-focus the PartID cell for correction
                     grid.DispatcherQueue.TryEnqueue(() =>
                     {
-                        var partIDColumn = grid.Columns.FirstOrDefault(c => 
+                        var partIDColumn = grid.Columns.FirstOrDefault(c =>
                             c.Header?.ToString()?.Contains("Part", StringComparison.OrdinalIgnoreCase) == true);
-                        
+
                         if (partIDColumn != null)
                         {
                             grid.CurrentColumn = partIDColumn;

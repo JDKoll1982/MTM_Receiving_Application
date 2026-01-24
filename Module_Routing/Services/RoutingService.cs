@@ -495,6 +495,7 @@ public class RoutingService : IRoutingService
     /// <returns>Validated full path</returns>
     /// <exception cref="ArgumentException">If path is invalid</exception>
     /// <exception cref="SecurityException">If path contains traversal attempts</exception>
+    /// <exception cref="System.Security.SecurityException"></exception>
     private string ValidateCsvPath(string path)
     {
         // Issue #5: Path traversal validation

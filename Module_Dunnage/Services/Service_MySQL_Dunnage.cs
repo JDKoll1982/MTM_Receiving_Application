@@ -579,13 +579,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
-    /// <summary>
-    /// Alias for GetAllInventoriedPartsAsync for ViewModel compatibility
-    /// </summary>
-    public async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync()
-    {
-        return await GetAllInventoriedPartsAsync();
-    }
+        /// <summary>
+        /// Alias for GetAllInventoriedPartsAsync for ViewModel compatibility
+        /// </summary>
+        public async Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetInventoriedPartsAsync()
+        {
+            return await GetAllInventoriedPartsAsync();
+        }
 
         public async Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item)
         {
@@ -628,29 +628,34 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
-    /// <summary>
-    /// Update an inventoried part with specific values
-    /// </summary>
-    public async Task<Model_Dao_Result> UpdateInventoriedPartAsync(int id, string inventoryMethod, string notes, string username)
-    {
-        var part = new Model_InventoriedDunnage
+        /// <summary>
+        /// Update an inventoried part with specific values
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="inventoryMethod"></param>
+        /// <param name="notes"></param>
+        /// <param name="username"></param>
+        public async Task<Model_Dao_Result> UpdateInventoriedPartAsync(int id, string inventoryMethod, string notes, string username)
         {
-            Id = id,
-            InventoryMethod = inventoryMethod,
-            Notes = notes,
-            ModifiedBy = username,
-            ModifiedDate = DateTime.Now
-        };
-        return await UpdateInventoriedPartAsync(part);
-    }
+            var part = new Model_InventoriedDunnage
+            {
+                Id = id,
+                InventoryMethod = inventoryMethod,
+                Notes = notes,
+                ModifiedBy = username,
+                ModifiedDate = DateTime.Now
+            };
+            return await UpdateInventoriedPartAsync(part);
+        }
 
-    /// <summary>
-    /// Delete an inventoried part by ID
-    /// </summary>
-    public async Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id)
-    {
-        return await _daoInventoriedDunnage.DeleteAsync(id);
-    }
+        /// <summary>
+        /// Delete an inventoried part by ID
+        /// </summary>
+        /// <param name="id"></param>
+        public async Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id)
+        {
+            return await _daoInventoriedDunnage.DeleteAsync(id);
+        }
 
         // ==================== Impact Analysis ====================
 

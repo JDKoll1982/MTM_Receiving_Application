@@ -266,7 +266,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         Parts.Add(part);
                     }
 
-                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts, PoNumber, Parts.Count);
+                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts, PoNumber, (object)Parts.Count);
                     _workflowService.RaiseStatusMessage(msg);
                 }
                 else

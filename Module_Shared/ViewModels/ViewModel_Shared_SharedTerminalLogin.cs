@@ -56,6 +56,7 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels
         /// <param name="authService"></param>
         /// <param name="errorHandler"></param>
         /// <param name="logger"></param>
+        /// <param name="notificationService"></param>
         public ViewModel_Shared_SharedTerminalLogin(
             IService_Authentication authService,
             IService_ErrorHandler errorHandler,

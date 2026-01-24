@@ -151,6 +151,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="helpService"></param>
         /// <param name="receivingSettings"></param>
         /// <param name="notificationService"></param>
+        /// <param name="validationService"></param>
         public ViewModel_Receiving_EditMode(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
@@ -863,7 +864,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var loadsWithUnacknowledgedHolds = _allLoads
                     .Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged)
                     .ToList();
-                
+
                 if (loadsWithUnacknowledgedHolds.Count > 0)
                 {
                     // Show confirmation dialog for quality hold acknowledgment
@@ -873,7 +874,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         _logger.LogInfo("User cancelled save due to unacknowledged quality holds");
                         return; // Block save if user doesn't acknowledge
                     }
-                    
+
                     // Mark all as acknowledged
                     foreach (var load in loadsWithUnacknowledgedHolds)
                     {

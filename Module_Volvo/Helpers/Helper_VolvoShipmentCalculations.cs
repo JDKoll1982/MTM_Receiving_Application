@@ -22,6 +22,10 @@ public static class Helper_VolvoShipmentCalculations
     /// <summary>
     /// Calculates component explosion and aggregates piece counts for shipment lines.
     /// </summary>
+    /// <param name="partDao"></param>
+    /// <param name="componentDao"></param>
+    /// <param name="lines"></param>
+    /// <param name="logger"></param>
     public static async Task<Model_Dao_Result<Dictionary<string, int>>> CalculateComponentExplosionAsync(
         Dao_VolvoPart partDao,
         Dao_VolvoPartComponent componentDao,
@@ -106,6 +110,13 @@ public static class Helper_VolvoShipmentCalculations
     /// <summary>
     /// Generates CSV label file for a shipment and returns the file path.
     /// </summary>
+    /// <param name="shipmentDao"></param>
+    /// <param name="lineDao"></param>
+    /// <param name="partDao"></param>
+    /// <param name="componentDao"></param>
+    /// <param name="authService"></param>
+    /// <param name="logger"></param>
+    /// <param name="shipmentId"></param>
     public static async Task<Model_Dao_Result<string>> GenerateLabelCsvAsync(
         Dao_VolvoShipment shipmentDao,
         Dao_VolvoShipmentLine lineDao,

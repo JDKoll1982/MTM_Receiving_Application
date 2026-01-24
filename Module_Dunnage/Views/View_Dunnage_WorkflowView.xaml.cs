@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 public sealed partial class View_Dunnage_WorkflowView : Page
 {
     public ViewModel_Dunnage_WorkFlowViewModel ViewModel { get; }
-    
+
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Help _helpService;
     private readonly IService_Focus _focusService;
@@ -49,6 +49,19 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         // Subscribe to workflow step changes
         _workflowService.StepChanged += OnWorkflowStepChanged;
         _focusService.AttachFocusOnVisibility(this);
+    }
+
+    /// <summary>
+    /// Parameterless constructor for XAML navigation.
+    /// Uses Service Locator temporarily until navigation supports constructor injection.
+    /// </summary>
+    public View_Dunnage_WorkflowView()
+        : this(
+            App.GetService<ViewModel_Dunnage_WorkFlowViewModel>(),
+            App.GetService<IService_DunnageWorkflow>(),
+            App.GetService<IService_Help>(),
+            App.GetService<IService_Focus>())
+    {
     }
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
@@ -127,22 +140,20 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private void OnBackClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var workflowService = App.GetService<IService_DunnageWorkflow>();
-
         // Navigate back based on current step
-        switch (workflowService.CurrentStep)
+        switch (_workflowService.CurrentStep)
         {
             case Enum_DunnageWorkflowStep.PartSelection:
-                workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
                 break;
             case Enum_DunnageWorkflowStep.QuantityEntry:
-                workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);
                 break;
             case Enum_DunnageWorkflowStep.DetailsEntry:
-                workflowService.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
                 break;
             case Enum_DunnageWorkflowStep.Review:
-                workflowService.GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
                 break;
         }
     }

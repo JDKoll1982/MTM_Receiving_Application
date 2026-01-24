@@ -124,6 +124,8 @@ namespace MTM_Receiving_Application
         /// <summary>
         /// Handle pane toggle button click
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PaneToggleButton_Click(object sender, RoutedEventArgs e)
         {
             NavView.IsPaneOpen = !NavView.IsPaneOpen;
@@ -537,6 +539,8 @@ namespace MTM_Receiving_Application
         /// <summary>
         /// Helper method to convert bounds to RectInt32 with scale adjustment
         /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="scale"></param>
         private RectInt32 GetRect(Windows.Foundation.Rect bounds, double scale)
         {
             return new RectInt32(

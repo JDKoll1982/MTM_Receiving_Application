@@ -11,7 +11,6 @@ namespace MTM_Receiving_Application.Module_Core.Converters;
 /// </summary>
 public class Converter_PartIDToQualityHoldBrush : IValueConverter
 {
-    private static readonly SolidColorBrush RedBrush = new(Microsoft.UI.Colors.Red);
     private static readonly SolidColorBrush LightRedBrush = new(Windows.UI.Color.FromArgb(255, 255, 230, 230)); // #FFE6E6
     private static readonly SolidColorBrush TransparentBrush = new(Microsoft.UI.Colors.Transparent);
 
@@ -48,6 +47,11 @@ public class Converter_PartIDToQualityHoldBrush : IValueConverter
     /// <summary>
     /// Not implemented - this is a one-way converter.
     /// </summary>
+    /// <param name="value"></param>
+    /// <param name="targetType"></param>
+    /// <param name="parameter"></param>
+    /// <param name="language"></param>
+    /// <exception cref="NotImplementedException"></exception>
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
         throw new NotImplementedException("Converter_PartIDToQualityHoldBrush is one-way only");

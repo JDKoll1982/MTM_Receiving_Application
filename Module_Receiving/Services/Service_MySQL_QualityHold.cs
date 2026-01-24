@@ -29,6 +29,7 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     /// <summary>
     /// Creates a new quality hold record in the database
     /// </summary>
+    /// <param name="qualityHold"></param>
     public async Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_QualityHold qualityHold)
     {
         _logger.LogInfo($"Inserting quality hold for Load ID: {qualityHold.LoadID}, Part: {qualityHold.PartID}, Type: {qualityHold.RestrictionType}");
@@ -50,6 +51,7 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     /// <summary>
     /// Retrieves all quality holds for a specific load
     /// </summary>
+    /// <param name="loadId"></param>
     public async Task<Model_Dao_Result<List<Model_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId)
     {
         _logger.LogInfo($"Retrieving quality holds for Load ID: {loadId}");
@@ -71,6 +73,9 @@ public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
     /// <summary>
     /// Updates quality hold with acknowledgment information
     /// </summary>
+    /// <param name="qualityHoldId"></param>
+    /// <param name="acknowledgedBy"></param>
+    /// <param name="acknowledgedAt"></param>
     public async Task<Model_Dao_Result> UpdateQualityHoldAcknowledgmentAsync(int qualityHoldId, string acknowledgedBy, DateTime acknowledgedAt)
     {
         _logger.LogInfo($"Updating quality hold acknowledgment for ID: {qualityHoldId}, By: {acknowledgedBy}");

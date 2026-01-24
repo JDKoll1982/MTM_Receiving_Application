@@ -14,6 +14,8 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
         /// </summary>
         /// <param name="resourcePath">Path to the SQL file relative to Database/InforVisual (e.g., "01_GetPOWithParts.sql")</param>
         /// <returns>The SQL query text</returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public static string LoadInforVisualQuery(string resourcePath)
         {
             try
