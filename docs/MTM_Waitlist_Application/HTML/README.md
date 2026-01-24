@@ -60,19 +60,22 @@ HTML/
 - Department questions load correctly after Shift question ✅
 - Each department sees ONLY their own questions ✅
 
-## 📋 Status
+## 📋 TODO (Waiting for Management Guidelines)
 
-**COMPLETE** - All departments now have unique questions!
+Create department-specific JSON files for:
+- Quality Control
+- Die Shop
+- Fabrication & Welding
+- Assembly
+- Maintenance
+- Setup Technicians
+- Inventory Specialist
+- Outside Service Coordinator
 
-Questions use generic patterns that can be refined based on real user feedback:
-- Login method preferences
-- Multi-tasking capabilities  
-- Required task information
-- Edit permissions
-- Favorites management
-- Timeout settings
-- Key metrics display
-- Notification methods
+**Current temporary mapping:**
+- Most departments → `production.json`
+- Maintenance → `material-handling.json`
+- Office roles → `management.json`
 
 ## Usage
 

@@ -46,9 +46,54 @@ Use this skill when you are asked to:
 - [ ] DAO is instance-based, returns `Model_Dao_Result`, and does not throw
 - [ ] XAML uses `{x:Bind}` (not `{Binding}`)
 
+## How to Run the Validator
+
+### Basic Usage (from repo root)
+```powershell
+.\.github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1
+```
+
+### Advanced Options
+```powershell
+# Scan a specific directory
+.\.github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1 -Path "Module_Dunnage"
+
+# Get structured output (for automation)
+.\.github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1 -PassThru
+
+# Enable verbose logging
+.\.github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1 -Verbose
+```
+
+### Understanding the Output
+
+**No violations:**
+```
+No MVVM violations found.
+```
+
+**With violations:**
+```
+WARNING: Found 2 MVVM violation(s).
+Module_Dunnage\ViewModels\ViewModel_Example.cs: ViewModel references Dao_* directly (forbidden)
+Module_Dunnage\Views\View_Example.xaml: XAML uses {Binding} outside allowed collection control context (forbidden; use {x:Bind})
+```
+
+**Violation types:**
+- `ViewModel references Dao_* directly (forbidden)` - ViewModel is calling a DAO instead of a Service
+- `ViewModel references Helper_Database_* (forbidden)` - ViewModel is using database helpers directly
+- `ViewModel is missing 'partial class'` - ViewModel class is not declared as partial
+- `XAML uses {Binding} outside allowed collection control context` - XAML is using runtime binding where compiled binding should be used
+
+**Allowed exceptions for `{Binding}`:**
+- Inside DataGrid columns and templates
+- Inside ItemsControl, ItemsRepeater, ListView, GridView templates  
+- ElementName bindings (e.g., `{Binding ElementName=Root, Path=...}`)
+- RelativeSource bindings (e.g., `{Binding RelativeSource={RelativeSource Self}}`)
+
 ## Resource Links
 
-- Run the validator: [validate-mvvm.ps1](./scripts/validate-mvvm.ps1)
+- Validator script: [validate-mvvm.ps1](./scripts/validate-mvvm.ps1)
 - Detailed rules: [architecture-rules.md](./references/architecture-rules.md)
 - Fix examples: [common-violations.md](./references/common-violations.md)
 - ViewModel scaffold: [viewmodel-template.cs](./templates/viewmodel-template.cs)
