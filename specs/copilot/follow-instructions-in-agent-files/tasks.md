@@ -222,11 +222,11 @@ public record UpdateStep1Command(
 - `Module_Receiving/Validators/SaveWorkflowCommandValidator.cs`
 
 **Acceptance Criteria**:
-- [ ] All validators inherit from `AbstractValidator<TCommand>`
-- [ ] Validation rules match contracts/mediatr-contracts.md
-- [ ] Error messages are clear and user-friendly
-- [ ] Validators are discovered by assembly scanning
-- [ ] Unit tests created for all validators
+- [X] All validators inherit from `AbstractValidator<TCommand>`
+- [X] Validation rules match contracts/mediatr-contracts.md
+- [X] Error messages are clear and user-friendly
+- [X] Validators are discovered by assembly scanning (auto-discovered by MediatR)
+- [ ] Unit tests created for all validators (deferred - not critical for MVP)
 
 **Example**:
 ```csharp
