@@ -37,10 +37,10 @@ Tasks are organized by implementation phase. Each task includes:
 - `Database/StoredProcedures/sp_Clear_AutoFilled_Data.sql`
 
 **Acceptance Criteria**:
-- [ ] Tables created: `receiving_workflow_sessions`, `receiving_load_details`, `receiving_completed_transactions`
-- [ ] All 6 stored procedures created and tested
-- [ ] Foreign key constraints in place
-- [ ] Indexes created on key columns
+- [X] Tables created: `receiving_workflow_sessions`, `receiving_load_details`, `receiving_completed_transactions`
+- [X] All 6 stored procedures created and tested
+- [X] Foreign key constraints in place
+- [X] Indexes created on key columns
 - [ ] Test data can be inserted and retrieved
 - [ ] Migration script executes without errors
 
