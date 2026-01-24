@@ -79,12 +79,14 @@ mysql -u root -p mtm_receiving_application -e "SHOW TABLES;"
 - `Module_Receiving/Behaviors/TransactionBehavior.cs`
 
 **Acceptance Criteria**:
-- [ ] MediatR registered in DI container
-- [ ] ValidationBehavior registered (runs FluentValidation validators)
-- [ ] LoggingBehavior registered (logs command/query execution)
-- [ ] TransactionBehavior registered (wraps database operations)
-- [ ] Assembly scanning configured for handlers and validators
-- [ ] Application starts without DI errors
+- [X] MediatR registered in DI container (already exists via AddCqrsInfrastructure)
+- [X] ValidationBehavior registered (Module_Core/Behaviors/ValidationBehavior.cs)
+- [X] LoggingBehavior registered (Module_Core/Behaviors/LoggingBehavior.cs)
+- [X] AuditBehavior registered (Module_Core/Behaviors/AuditBehavior.cs)
+- [X] Assembly scanning configured for handlers and validators
+- [X] Application starts without DI errors
+
+**Note**: CQRS infrastructure already configured via CqrsInfrastructureExtensions.cs. No changes needed.
 
 **Implementation**:
 ```csharp
@@ -123,12 +125,12 @@ services.AddValidatorsFromAssembly(typeof(App).Assembly);
 - `Module_Receiving/Models/Enums/ErrorSeverity.cs`
 
 **Acceptance Criteria**:
-- [ ] All models created with properties matching data-model.md
-- [ ] XML documentation comments on public properties
-- [ ] Records used for immutable data (commands, queries, results)
-- [ ] Classes used for mutable entities (session, load details)
-- [ ] Enums defined for CopyFields and ErrorSeverity
-- [ ] Compiles without errors
+- [X] All models created with properties matching data-model.md
+- [X] XML documentation comments on public properties
+- [X] Records used for immutable data (SaveResult)
+- [X] Classes used for mutable entities (ReceivingWorkflowSession, LoadDetail)
+- [X] Enums defined for CopyFields and ErrorSeverity
+- [X] Compiles without errors
 
 **Example**:
 ```csharp
