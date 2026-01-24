@@ -1,0 +1,15 @@
+using System;
+using MediatR;
+using MTM_Receiving_Application.Module_Core.Models;
+using MTM_Receiving_Application.Module_Receiving.Models;
+
+namespace MTM_Receiving_Application.Module_Receiving.Queries
+{
+    /// <summary>
+    /// Retrieve current workflow session state.
+    /// </summary>
+    /// <param name="SessionId">The session identifier</param>
+    public record GetSessionQuery(
+        Guid SessionId
+    ) : IRequest<Result<ReceivingWorkflowSession>>;
+}

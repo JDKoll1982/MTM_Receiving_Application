@@ -182,11 +182,12 @@ public class LoadDetail
 - `Module_Receiving/Queries/GetPartLookupQuery.cs`
 
 **Acceptance Criteria**:
-- [ ] All commands implement `IRequest<Result>` or `IRequest<Result<T>>`
-- [ ] All queries implement `IRequest<Result<T>>`
-- [ ] Records used for immutability
-- [ ] XML documentation on each command/query
-- [ ] Compiles without errors
+- [X] All commands implement `IRequest<Result>` or `IRequest<Result<T>>`
+- [X] All queries implement `IRequest<Result<T>>`
+- [X] Records used for immutability
+- [X] XML documentation on each command/query
+- [X] Compiles without errors (Result type created in Module_Core)
+- [X] Created Result<T> and Result types in Module_Core/Models/Result.cs
 
 **Example**:
 ```csharp
