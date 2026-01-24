@@ -43,6 +43,9 @@ Load only the minimal necessary context from each artifact:
 - Functional Requirements
 - Non-Functional Requirements
 - User Stories
+- WORKFLOW_DATA blocks (parse key-value pairs from <!-- WORKFLOW_START --> ... <!-- WORKFLOW_END --> sections)
+  - Extract: WORKFLOW IDs, DEPENDS_ON, CONFLICTS_WITH, INTERACTION fields
+  - Build workflow dependency graph for validation
 - Edge Cases (if present)
 
 **From plan.md:**
@@ -97,6 +100,13 @@ Focus on high-signal findings. Limit to 50 findings total; aggregate remainder i
 
 - Any requirement or plan element conflicting with a MUST principle
 - Missing mandated sections or quality gates from constitution
+
+#### E. Workflow Relationship Validation
+
+- DEPENDS_ON references to non-existent workflows
+- Circular dependencies in workflow chains
+- Unidirectional CONFLICTS_WITH (workflow A conflicts with B, but B doesn't declare conflict with A)
+- Workflows with identical steps that should reference each other via DEPENDS_ON/INTERACTION
 
 #### E. Coverage Gaps
 

@@ -48,6 +48,10 @@ You **MUST** consider the user input before proceeding (if not empty).
 3. Load and analyze the implementation context:
    - **REQUIRED**: Read tasks.md for the complete task list and execution plan
    - **REQUIRED**: Read plan.md for tech stack, architecture, and file structure
+   - **NOTE**: Spec.md contains WORKFLOW_DATA blocks (not raw Mermaid). If needed for context:
+     - Parse <!-- WORKFLOW_START --> ... <!-- WORKFLOW_END --> sections
+     - Extract workflow dependencies (DEPENDS_ON) for implementation order
+     - Identify UI components from NODE labels
    - **IF EXISTS**: Read data-model.md for entities and relationships
    - **IF EXISTS**: Read contracts/ for API specifications and test requirements
    - **IF EXISTS**: Read research.md for technical decisions and constraints
@@ -111,6 +115,16 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **Validation checkpoints**: Verify each phase completion before proceeding
 
 7. Implementation execution rules:
+   - **CRITICAL**: Before implementing any user workflow logic, component, or feature:
+     1. Read the corresponding Mermaid workflow diagram(s) from FEATURE_SPEC
+     2. Map diagram nodes to implementation components:
+        - Start/End nodes → ViewModel initialization/cleanup
+        - Process nodes → Methods, commands, or service calls
+        - Decision nodes → Conditional logic and validation checks
+        - User notifications → Error handler or notification service calls
+     3. Implement logic flow exactly as diagrammed (preserve all branches and paths)
+     4. Add code comments referencing the diagram: `// Implements Workflow X.Y: [Description]`
+     5. Verify all diagram paths are covered in implementation
    - **Setup first**: Initialize project structure, dependencies, configuration
    - **Tests before code**: If you need to write tests for contracts, entities, and integration scenarios
    - **Core development**: Implement models, services, CLI commands, endpoints

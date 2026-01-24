@@ -52,6 +52,7 @@ Examples:
      ```
 
 2. **Validate Module State**:
+   - **Note on Spec Format**: When generating specifications, use WORKFLOW_DATA blocks (structured key-value format) instead of raw Mermaid diagrams. Follow the format defined in speckit.specify.agent.md step 5a.
    - If `module-rebuilder`: Check module exists in workspace
      - If NOT exists → ERROR: "Module {name} not found. Did you mean 'module-creator {name}'?"
      - If exists → Proceed to analysis

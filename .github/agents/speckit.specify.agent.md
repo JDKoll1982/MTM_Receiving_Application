@@ -98,6 +98,160 @@ Given that feature description, do this:
 
 5. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
 
+5a. **Generate Workflow Data Blocks**: For EACH user story that involves user workflows or interactions:
+   
+   **CRITICAL**: Do NOT generate raw Mermaid diagrams. Instead, generate structured WORKFLOW_DATA blocks that will be parsed by MermaidGenerator.ps1.
+   
+   **Format**: Immediately after the user story's acceptance scenarios, add:
+   
+   ```markdown
+   ## User Story [N] Workflow Data
+   
+   <!-- WORKFLOW_START: {UserStory}.{Workflow} --><!--
+   WORKFLOW: {UserStory}.{Workflow}
+   TITLE: {Clear workflow description}
+   DIRECTION: {TD|LR|RL|BT}
+   DEPENDS_ON: {Comma-separated workflow IDs or NONE}
+   CONFLICTS_WITH: {Comma-separated workflow IDs or NONE}
+   INTERACTION: {How this relates to other workflows}
+   
+   NODE: {NodeName}
+   TYPE: {start|process|decision|end}
+   SHAPE: {stadium|rect|diamond|circle}
+   LABEL: {Display text - use <br/> for line breaks}
+   
+   NODE: {NodeName}
+   TYPE: {type}
+   SHAPE: {shape}
+   LABEL: {label}
+   
+   CONNECTION: {FromNode} -> {ToNode}
+   CONNECTION: {FromNode} -> {ToNode} [{Label}]
+   --><!-- WORKFLOW_END: {UserStory}.{Workflow} -->
+   ```
+   
+   **IMPORTANT**: The workflow data is wrapped in `<!--` and `-->` to hide it from markdown preview while keeping it parseable by MermaidGenerator.ps1.
+   ```
+   
+   **Field Requirements:**
+   - **WORKFLOW**: Format as `{UserStoryNumber}.{WorkflowNumber}` (e.g., 1.1, 1.2, 2.1)
+   - **TITLE**: Descriptive name for the workflow
+   - **DIRECTION**: 
+     - `TD` (top-down) - Default for most workflows
+     - `LR` (left-right) - For horizontal flows
+     - `RL` (right-left) - Rarely used
+     - `BT` (bottom-top) - Rarely used
+   - **DEPENDS_ON**: List workflow IDs that must complete first, or `NONE` if independent
+     - Examples: `NONE`, `1.1`, `1.1, 1.2, 2.1`
+   - **CONFLICTS_WITH**: List workflow IDs that cannot coexist with this one, or `NONE`
+     - Examples: `NONE`, `1.3`, `2.1, 2.2`
+   - **INTERACTION**: Free-text description of how this workflow relates to others
+     - Examples:
+       - `Primary happy path - foundation for all features`
+       - `Alternative to 1.1 - expert users skip wizard`
+       - `Extends 1.1 by adding bulk operations`
+       - `Conflicts with 3.6 because both modify same data simultaneously`
+   
+   **Node Requirements:**
+   - **NODE**: Simple identifier without spaces (e.g., `Start`, `ValidateStep1`, `ShowError`)
+   - **TYPE**: Semantic type for validation
+     - `start` - Workflow entry point (use stadium shape)
+     - `process` - Action or state (use rect shape)
+     - `decision` - Branching logic (use diamond shape)
+     - `end` - Workflow completion (use stadium shape)
+   - **SHAPE**: Mermaid shape name
+     - `stadium` - Rounded pill: `([text])`
+     - `rect` - Rectangle: `[text]`
+     - `diamond` - Diamond: `{text}`
+     - `circle` - Circle: `((text))`
+     - `hexagon` - Hexagon: `{{text}}`
+   - **LABEL**: Display text (use `<br/>` for multi-line labels)
+   
+   **Connection Requirements:**
+   - Format: `CONNECTION: FromNode -> ToNode` or `CONNECTION: FromNode -> ToNode [Label]`
+   - FromNode and ToNode must match NODE names exactly
+   - Optional label for decision branches (e.g., `[Yes]`, `[No]`, `[Success]`, `[Error]`)
+   
+   **Workflow Coverage:**
+   - Create separate workflows for:
+     - Primary happy path
+     - Error handling and edge cases
+     - Alternative paths (different modes, bulk operations)
+     - Complex multi-step interactions
+   - Number workflows sequentially: 1.1, 1.2, 1.3, etc.
+   
+   **After WORKFLOW_DATA blocks, add placeholder for diagrams:**
+   
+   ```markdown
+   ## User Story [N] Workflow Diagrams
+   
+   ### Workflow {N}.{X}: {Title}
+   
+   > **Note**: Run `MermaidProcessor.ps1 -Action Generate` to generate diagrams from WORKFLOW_DATA blocks.
+   
+   <!-- Mermaid diagram will be inserted here by MermaidGenerator.ps1 -->
+   ```
+   
+   **Example Complete WORKFLOW_DATA Block:**
+   
+   ```markdown
+   ## User Story 1 Workflow Data
+   
+   <!-- WORKFLOW_START: 1.1 -->
+   WORKFLOW: 1.1
+   TITLE: Complete 3-Step Guided Workflow
+   DIRECTION: TD
+   DEPENDS_ON: NONE
+   CONFLICTS_WITH: 1.3
+   INTERACTION: Primary happy path - conflicts with Expert Mode (1.3) as user can only choose one
+   
+   NODE: Start
+   TYPE: start
+   SHAPE: stadium
+   LABEL: User selects<br/>Guided Mode
+   
+   NODE: Step1
+   TYPE: process
+   SHAPE: rect
+   LABEL: Step 1: Order & Part Selection
+   
+   NODE: ValidateStep1
+   TYPE: decision
+   SHAPE: diamond
+   LABEL: Step 1<br/>valid?
+   
+   NODE: ShowErrors
+   TYPE: process
+   SHAPE: rect
+   LABEL: Show validation errors
+   
+   NODE: Step2
+   TYPE: process
+   SHAPE: rect
+   LABEL: Step 2: Load Details
+   
+   NODE: End
+   TYPE: end
+   SHAPE: stadium
+   LABEL: Workflow complete
+   
+   CONNECTION: Start -> Step1
+   CONNECTION: Step1 -> ValidateStep1
+   CONNECTION: ValidateStep1 -> ShowErrors [No]
+   CONNECTION: ValidateStep1 -> Step2 [Yes]
+   CONNECTION: ShowErrors -> Step1
+   CONNECTION: Step2 -> End
+   <!-- WORKFLOW_END: 1.1 -->
+   
+   ## User Story 1 Workflow Diagrams
+   
+   ### Workflow 1.1: Complete 3-Step Guided Workflow
+   
+   > **Note**: Run `MermaidProcessor.ps1 -Action Generate` to generate diagrams from WORKFLOW_DATA blocks.
+   
+   <!-- Mermaid diagram will be inserted here by MermaidGenerator.ps1 -->
+   ```
+
 6. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
 
    a. **Create Spec Quality Checklist**: Generate a checklist file at `FEATURE_DIR/checklists/requirements.md` using the checklist template structure with these validation items:

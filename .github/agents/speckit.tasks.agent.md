@@ -25,6 +25,11 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 2. **Load design documents**: Read from FEATURE_DIR:
    - **Required**: plan.md (tech stack, libraries, structure), spec.md (user stories with priorities)
+   - **From spec.md**: Extract WORKFLOW_DATA blocks to understand:
+     - Workflow dependencies (DEPENDS_ON field) for task sequencing
+     - Workflow conflicts (CONFLICTS_WITH field) to avoid parallel implementation
+     - UI components needed (parse NODE labels for forms, buttons, screens)
+     - State management needs (analyze connections and decision nodes)
    - **Optional**: data-model.md (entities), contracts/ (API endpoints), research.md (decisions), quickstart.md (test scenarios)
    - Note: Not all projects have all documents. Generate tasks based on what's available.
 
