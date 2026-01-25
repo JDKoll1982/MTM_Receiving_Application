@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Preview of a copy operation showing what will be copied vs preserved.
 /// Used to display a confirmation dialog before executing the copy.
 /// </summary>
-public class CopyPreview
+public class Model_Receiving_DTO_CopyPreview
 {
     /// <summary>
     /// Number of cells that will be copied from source to target.

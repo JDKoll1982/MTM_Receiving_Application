@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     /// Represents a purchase order retrieved from Infor Visual (SQL Server).
     /// Read-only data from external system.
     /// </summary>
-    public class Model_InforVisualPO
+    public class Model_Receiving_DTO_InforVisualPO
     {
         public string PONumber { get; set; } = string.Empty;
 

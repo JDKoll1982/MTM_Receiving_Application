@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Represents a receiving label entry from Google Sheets "Receiving Data"
 /// Maps to receiving_label_data database table
 /// </summary>
-public class Model_ReceivingLine
+public class Model_Receiving_Entity_ReceivingLine
 {
     /// <summary>
     /// Auto-increment primary key

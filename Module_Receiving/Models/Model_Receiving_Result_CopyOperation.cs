@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Result of a bulk copy operation showing which cells were copied vs preserved.
 /// Helps users understand the impact of copy operations on existing data.
 /// </summary>
-public class CopyOperationResult
+public class Model_Receiving_Result_CopyOperation
 {
     /// <summary>
     /// Load number used as the source for the copy operation.

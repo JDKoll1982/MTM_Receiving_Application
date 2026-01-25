@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Settings;
 /// Default values for Module_Receiving settings.
 /// These are used when values are not present in MySQL and no other source is available.
 /// </summary>
-public static class ReceivingSettingsDefaults
+public static class Helper_Receiving_Infrastructure_SettingsDefaults
 {
     public static IReadOnlyDictionary<string, string> StringDefaults { get; } = new Dictionary<string, string>
     {

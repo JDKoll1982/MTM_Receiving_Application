@@ -15,13 +15,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// Service for writing receiving data to CSV files.
     /// Handles both local (%APPDATA%) and network paths with graceful fallback.
     /// </summary>
-    public class Service_CSVWriter : IService_CSVWriter
+    public class Service_Receiving_Infrastructure_CSVWriter : IService_CSVWriter
     {
         private readonly string _localCSVPath;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
 
-        public Service_CSVWriter(IService_UserSessionManager sessionManager, IService_LoggingUtility logger)
+        public Service_Receiving_Infrastructure_CSVWriter(IService_UserSessionManager sessionManager, IService_LoggingUtility logger)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

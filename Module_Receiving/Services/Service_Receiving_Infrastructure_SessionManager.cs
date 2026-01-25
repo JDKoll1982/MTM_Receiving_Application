@@ -12,12 +12,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// Service for persisting and restoring session state to/from JSON file.
     /// Session file location: %APPDATA%\MTM_Receiving_Application\session.json
     /// </summary>
-    public class Service_SessionManager : IService_SessionManager
+    public class Service_Receiving_Infrastructure_SessionManager : IService_SessionManager
     {
         private readonly string _sessionPath;
         private readonly IService_LoggingUtility _logger;
 
-        public Service_SessionManager(IService_LoggingUtility logger)
+        public Service_Receiving_Infrastructure_SessionManager(IService_LoggingUtility logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

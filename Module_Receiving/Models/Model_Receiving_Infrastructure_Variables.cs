@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// <summary>
 /// Application-wide configuration and constants
 /// </summary>
-public class Model_Application_Variables
+public class Model_Receiving_Infrastructure_Variables
 {
     /// <summary>
     /// Display name of the application

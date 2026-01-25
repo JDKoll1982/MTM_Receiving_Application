@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     /// Represents a part/line item on a purchase order from Infor Visual.
     /// Read-only data from external system.
     /// </summary>
-    public class Model_InforVisualPart
+    public class Model_Receiving_DTO_InforVisualPart
     {
         public string PartID { get; set; } = string.Empty;
 

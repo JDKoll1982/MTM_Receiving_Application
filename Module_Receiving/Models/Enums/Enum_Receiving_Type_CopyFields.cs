@@ -4,7 +4,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models.Enums;
 /// Specifies which fields to copy in bulk copy operations.
 /// Used by CopyToLoadsCommand and ClearAutoFilledDataCommand.
 /// </summary>
-public enum CopyFields
+public enum Enum_Receiving_Type_CopyFields
 {
     /// <summary>
     /// Copy all load detail fields (Weight, Heat Lot, Package Type, Packages Per Load).

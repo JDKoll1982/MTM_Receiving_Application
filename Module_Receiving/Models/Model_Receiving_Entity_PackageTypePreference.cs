@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     /// Stores user's preferred package type for specific part IDs.
     /// Persisted to MySQL database for use across sessions.
     /// </summary>
-    public class Model_PackageTypePreference
+    public class Model_Receiving_Entity_PackageTypePreference
     {
         public int PreferenceID { get; set; }
 

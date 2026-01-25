@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     /// Represents the current data entry session with accumulated loads from potentially multiple parts.
     /// Persisted to JSON for session restoration across application restarts.
     /// </summary>
-    public class Model_ReceivingSession
+    public class Model_Receiving_Entity_ReceivingSession
     {
         public Guid SessionID { get; set; } = Guid.NewGuid();
 

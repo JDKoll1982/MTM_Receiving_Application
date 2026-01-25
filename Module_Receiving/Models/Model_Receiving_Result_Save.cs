@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// <summary>
 /// Result of a workflow save operation including CSV export and database persistence.
 /// </summary>
-public record SaveResult(
+public record Model_Receiving_Result_Save(
     /// <summary>
     /// File path to the exported CSV file.
     /// </summary>

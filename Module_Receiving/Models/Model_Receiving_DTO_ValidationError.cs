@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Represents a validation error in the receiving workflow.
 /// Can be session-level (LoadNumber = null) or load-specific (LoadNumber set).
 /// </summary>
-public class ValidationError
+public class Model_Receiving_DTO_ValidationError
 {
     /// <summary>
     /// Name of the field that failed validation (e.g., "PONumber", "WeightOrQuantity").

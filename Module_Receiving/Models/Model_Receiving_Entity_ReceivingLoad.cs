@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
     /// Represents one load/skid of received material with all associated details.
     /// Implements ObservableObject for data binding in WinUI 3.
     /// </summary>
-    public partial class Model_ReceivingLoad : ObservableObject
+    public partial class Model_Receiving_Entity_ReceivingLoad : ObservableObject
     {
         [ObservableProperty]
         private Guid _loadID = Guid.NewGuid();

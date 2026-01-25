@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// Manages step transitions, validation gates, and session state.
     /// </summary>
     [Obsolete("Use CQRS commands/queries (StartWorkflowCommand, NavigateToStepCommand, etc.) via MediatR. This 12-step wizard service is replaced by the consolidated 3-step workflow.", DiagnosticId = "RECV001", UrlFormat = "https://github.com/JDKoll1982/MTM_Receiving_Application/wiki/CQRS-Migration")]
-    public class Service_ReceivingWorkflow : IService_Receiving_Infrastructure_Workflow
+    public class Service_Receiving_Infrastructure_Workflow : IService_Receiving_Infrastructure_Workflow
     {
         private readonly IService_SessionManager _sessionManager;
         private readonly IService_CSVWriter _csvWriter;
@@ -74,7 +74,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public int NumberOfLoads { get; set; } = 1;
 
-        public Service_ReceivingWorkflow(
+        public Service_Receiving_Infrastructure_Workflow(
             IService_SessionManager sessionManager,
             IService_CSVWriter csvWriter,
             IService_Receiving_Business_MySQL_Receiving mysqlReceiving,

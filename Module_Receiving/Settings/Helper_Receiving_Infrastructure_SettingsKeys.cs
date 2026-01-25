@@ -3,7 +3,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Settings;
 /// <summary>
 /// Central key definitions for all Module_Receiving settings and UI text.
 /// </summary>
-public static class ReceivingSettingsKeys
+public static class Helper_Receiving_Infrastructure_SettingsKeys
 {
     public static class UiText
     {

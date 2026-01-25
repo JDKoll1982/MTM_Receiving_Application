@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_Receiving_Application.Module_Receiving.Models;
 
-public partial class Model_UserPreference : ObservableObject
+public partial class Model_Receiving_Entity_UserPreference : ObservableObject
 {
     /// <summary>Unique identifier (auto-increment)</summary>
     [ObservableProperty]

@@ -13,13 +13,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// <summary>
     /// Service for validating receiving data and enforcing business rules.
     /// </summary>
-    public class Service_ReceivingValidation : IService_Receiving_Infrastructure_Validation
+    public class Service_Receiving_Infrastructure_Validation : IService_Receiving_Infrastructure_Validation
     {
         private readonly IService_InforVisual _inforVisualService;
         private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}$", RegexOptions.IgnoreCase);
         private static readonly Regex _qualityHoldRegex = new Regex(@"(MMFSR|MMCSR)", RegexOptions.IgnoreCase);
 
-        public Service_ReceivingValidation(IService_InforVisual inforVisualService)
+        public Service_Receiving_Infrastructure_Validation(IService_InforVisual inforVisualService)
         {
             _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         }

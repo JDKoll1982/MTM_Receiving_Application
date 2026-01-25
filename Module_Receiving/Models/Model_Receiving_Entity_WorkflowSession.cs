@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Represents a single receiving transaction workflow session (3-step guided workflow).
 /// Tracks state across Order & Part Selection → Load Details Entry → Review & Save.
 /// </summary>
-public class ReceivingWorkflowSession
+public class Model_Receiving_Entity_WorkflowSession
 {
     // ===== Identity =====
     

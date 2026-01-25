@@ -6,7 +6,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Represents a quality hold record for restricted part numbers (MMFSR, MMCSR).
 /// Maps to receiving_quality_holds database table.
 /// </summary>
-public class Model_QualityHold
+public class Model_Receiving_Entity_QualityHold
 {
     /// <summary>
     /// Unique quality hold identifier.

@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// Represents data for a single load in a receiving transaction.
 /// Supports bulk copy operations with auto-fill tracking to preserve user-entered data.
 /// </summary>
-public class LoadDetail
+public class Model_Receiving_Entity_LoadDetail
 {
     // ===== Identity =====
     

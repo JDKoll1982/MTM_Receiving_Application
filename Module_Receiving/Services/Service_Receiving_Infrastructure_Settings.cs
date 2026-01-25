@@ -10,13 +10,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services;
 /// <summary>
 /// Retrieves Module_Receiving settings through Settings.Core and falls back to module defaults.
 /// </summary>
-public class Service_ReceivingSettings : IService_Receiving_Infrastructure_Settings
+public class Service_Receiving_Infrastructure_Settings : IService_Receiving_Infrastructure_Settings
 {
     private const string Category = "Receiving";
 
     private readonly IService_SettingsCoreFacade _settings;
 
-    public Service_ReceivingSettings(IService_SettingsCoreFacade settings)
+    public Service_Receiving_Infrastructure_Settings(IService_SettingsCoreFacade settings)
     {
         _settings = settings;
     }
