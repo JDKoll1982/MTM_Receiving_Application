@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
     /// Validator for UpdateLoadDetailCommand.
     /// Validates load number and data field constraints.
     /// </summary>
-    public class UpdateLoadDetailCommandValidator : AbstractValidator<UpdateLoadDetailCommand>
+    public class UpdateLoadDetailCommandValidator : AbstractValidator<Command_ReceivingWizard_Data_UpdateLoadEntry>
     {
         public UpdateLoadDetailCommandValidator()
         {

@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// </summary>
     /// <param name="SessionId">The session identifier</param>
     /// <param name="NewSourceLoadNumber">The new source load number (1 to LoadCount)</param>
-    public record ChangeCopySourceCommand(
+    public record Command_ReceivingWizard_Copy_SetSourceLoad(
         Guid SessionId,
         int NewSourceLoadNumber
     ) : IRequest<Result>;

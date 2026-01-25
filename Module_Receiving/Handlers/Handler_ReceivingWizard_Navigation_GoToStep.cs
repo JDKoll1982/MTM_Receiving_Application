@@ -15,15 +15,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for navigating between workflow steps.
 /// Validates current step before allowing advancement.
 /// </summary>
-public class NavigateToStepCommandHandler : IRequestHandler<NavigateToStepCommand, Result>
+public class Handler_ReceivingWizard_Navigation_GoToStep : IRequestHandler<Command_ReceivingWizard_Navigation_GoToStep, Result>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
-    private readonly IRequestHandler<GetValidationStatusQuery, Result<ValidationStatus>> _validationHandler;
+    private readonly IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>> _validationHandler;
     private readonly ILogger _logger;
 
-    public NavigateToStepCommandHandler(
+    public Handler_ReceivingWizard_Navigation_GoToStep(
         Dao_ReceivingWorkflowSession sessionDao,
-        IRequestHandler<GetValidationStatusQuery, Result<ValidationStatus>> validationHandler,
+        IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>> validationHandler,
         ILogger logger)
     {
         _sessionDao = sessionDao;
@@ -31,7 +31,7 @@ public class NavigateToStepCommandHandler : IRequestHandler<NavigateToStepComman
         _logger = logger;
     }
 
-    public async Task<Result> Handle(NavigateToStepCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_ReceivingWizard_Navigation_GoToStep request, CancellationToken cancellationToken)
     {
         _logger.Information("Navigating session {SessionId} to step {TargetStep} (EditMode: {EditMode})",
             request.SessionId, request.TargetStep, request.IsEditMode);
@@ -81,7 +81,7 @@ public class NavigateToStepCommandHandler : IRequestHandler<NavigateToStepComman
 
     private async Task<Result> ValidateCurrentStepAsync(ReceivingWorkflowSession session)
     {
-        var validationQuery = new GetValidationStatusQuery(session.SessionId, session.CurrentStep);
+        var validationQuery = new Query_ReceivingWizard_Validate_CurrentStep(session.SessionId, session.CurrentStep);
         var validationResult = await _validationHandler.Handle(validationQuery, CancellationToken.None);
 
         if (!validationResult.IsSuccess)

@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="SessionId">The session identifier</param>
     /// <param name="TargetStep">The target step number (1, 2, or 3)</param>
     /// <param name="IsEditMode">Whether navigating in edit mode from review screen</param>
-    public record NavigateToStepCommand(
+    public record Command_ReceivingWizard_Navigation_GoToStep(
         Guid SessionId,
         int TargetStep,
         bool IsEditMode = false

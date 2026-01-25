@@ -15,12 +15,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for updating Step 2 (Load Details Entry).
 /// Updates individual load data and clears auto-fill flags for manually edited fields.
 /// </summary>
-public class UpdateLoadDetailCommandHandler : IRequestHandler<UpdateLoadDetailCommand, Result>
+public class Handler_ReceivingWizard_Data_UpdateLoadEntry : IRequestHandler<Command_ReceivingWizard_Data_UpdateLoadEntry, Result>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public UpdateLoadDetailCommandHandler(
+    public Handler_ReceivingWizard_Data_UpdateLoadEntry(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {
@@ -28,7 +28,7 @@ public class UpdateLoadDetailCommandHandler : IRequestHandler<UpdateLoadDetailCo
         _logger = logger;
     }
 
-    public async Task<Result> Handle(UpdateLoadDetailCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_ReceivingWizard_Data_UpdateLoadEntry request, CancellationToken cancellationToken)
     {
         _logger.Information("Updating load detail: Session={SessionId}, Load={LoadNumber}", 
             request.SessionId, request.LoadNumber);

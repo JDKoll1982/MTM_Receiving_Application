@@ -17,12 +17,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for previewing copy operations.
 /// Shows what cells will be copied vs preserved before execution.
 /// </summary>
-public class GetCopyPreviewQueryHandler : IRequestHandler<GetCopyPreviewQuery, Result<CopyPreview>>
+public class Handler_ReceivingWizard_Preview_CopyOperation : IRequestHandler<Query_ReceivingWizard_Preview_CopyOperation, Result<CopyPreview>>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public GetCopyPreviewQueryHandler(
+    public Handler_ReceivingWizard_Preview_CopyOperation(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {
@@ -30,7 +30,7 @@ public class GetCopyPreviewQueryHandler : IRequestHandler<GetCopyPreviewQuery, R
         _logger = logger;
     }
 
-    public async Task<Result<CopyPreview>> Handle(GetCopyPreviewQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CopyPreview>> Handle(Query_ReceivingWizard_Preview_CopyOperation request, CancellationToken cancellationToken)
     {
         _logger.Information("Previewing copy operation: Session={SessionId}, Source={SourceLoad}, Targets={TargetCount}, Fields={Fields}",
             request.SessionId, request.SourceLoadNumber, request.TargetLoadNumbers.Count, request.FieldsToCopy);

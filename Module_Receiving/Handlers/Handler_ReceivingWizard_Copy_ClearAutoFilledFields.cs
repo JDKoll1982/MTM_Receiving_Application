@@ -13,12 +13,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for clearing auto-filled data from loads.
 /// Only clears fields marked as auto-filled. Never affects manually entered data.
 /// </summary>
-public class ClearAutoFilledDataCommandHandler : IRequestHandler<ClearAutoFilledDataCommand, Result>
+public class Handler_ReceivingWizard_Copy_ClearAutoFilledFields : IRequestHandler<Command_ReceivingWizard_Copy_ClearAutoFilledFields, Result>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public ClearAutoFilledDataCommandHandler(
+    public Handler_ReceivingWizard_Copy_ClearAutoFilledFields(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {
@@ -26,7 +26,7 @@ public class ClearAutoFilledDataCommandHandler : IRequestHandler<ClearAutoFilled
         _logger = logger;
     }
 
-    public async Task<Result> Handle(ClearAutoFilledDataCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_ReceivingWizard_Copy_ClearAutoFilledFields request, CancellationToken cancellationToken)
     {
         _logger.Information("Clearing auto-filled data: Session={SessionId}, LoadCount={LoadCount}, Fields={Fields}",
             request.SessionId, request.TargetLoadNumbers.Count, request.FieldsToClear);

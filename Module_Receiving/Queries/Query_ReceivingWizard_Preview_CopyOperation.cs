@@ -5,20 +5,20 @@ using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Models.Enums;
 
-namespace MTM_Receiving_Application.Module_Receiving.Commands
+namespace MTM_Receiving_Application.Module_Receiving.Queries
 {
     /// <summary>
-    /// Copy data from source load to target loads (empty cells only).
-    /// Never overwrites existing data. Sets auto-fill flags for copied cells.
+    /// Preview what a copy operation will do.
+    /// Shows cells to be copied, preserved, and conflicts.
     /// </summary>
     /// <param name="SessionId">The session identifier</param>
     /// <param name="SourceLoadNumber">The load number to copy from</param>
-    /// <param name="TargetLoadNumbers">The loads to copy to (empty list = all loads except source)</param>
+    /// <param name="TargetLoadNumbers">The loads to copy to</param>
     /// <param name="FieldsToCopy">Which fields to copy</param>
-    public record CopyToLoadsCommand(
+    public record Query_ReceivingWizard_Preview_CopyOperation(
         Guid SessionId,
         int SourceLoadNumber,
         List<int> TargetLoadNumbers,
         CopyFields FieldsToCopy
-    ) : IRequest<Result<CopyOperationResult>>;
+    ) : IRequest<Result<CopyPreview>>;
 }

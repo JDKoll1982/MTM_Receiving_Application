@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
     /// Validator for ClearAutoFilledDataCommand.
     /// Validates target loads and fields to clear.
     /// </summary>
-    public class ClearAutoFilledDataCommandValidator : AbstractValidator<ClearAutoFilledDataCommand>
+    public class ClearAutoFilledDataCommandValidator : AbstractValidator<Command_ReceivingWizard_Copy_ClearAutoFilledFields>
     {
         public ClearAutoFilledDataCommandValidator()
         {

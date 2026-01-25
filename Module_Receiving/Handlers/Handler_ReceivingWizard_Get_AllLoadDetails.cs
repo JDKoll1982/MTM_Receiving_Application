@@ -15,12 +15,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for retrieving all load details for a session.
 /// Returns loads ordered by LoadNumber.
 /// </summary>
-public class GetLoadDetailsQueryHandler : IRequestHandler<GetLoadDetailsQuery, Result<List<LoadDetail>>>
+public class Handler_ReceivingWizard_Get_AllLoadDetails : IRequestHandler<Query_ReceivingWizard_Get_AllLoadDetails, Result<List<LoadDetail>>>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public GetLoadDetailsQueryHandler(
+    public Handler_ReceivingWizard_Get_AllLoadDetails(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {
@@ -28,7 +28,7 @@ public class GetLoadDetailsQueryHandler : IRequestHandler<GetLoadDetailsQuery, R
         _logger = logger;
     }
 
-    public async Task<Result<List<LoadDetail>>> Handle(GetLoadDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<LoadDetail>>> Handle(Query_ReceivingWizard_Get_AllLoadDetails request, CancellationToken cancellationToken)
     {
         _logger.Information("Retrieving all loads for session {SessionId}", request.SessionId);
 

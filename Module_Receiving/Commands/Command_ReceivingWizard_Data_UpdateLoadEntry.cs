@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="HeatLot">Heat lot number (max 50 chars)</param>
     /// <param name="PackageType">Package type from predefined list</param>
     /// <param name="PackagesPerLoad">Number of packages per load (must be > 0 if provided)</param>
-    public record UpdateLoadDetailCommand(
+    public record Command_ReceivingWizard_Data_UpdateLoadEntry(
         Guid SessionId,
         int LoadNumber,
         decimal? WeightOrQuantity,

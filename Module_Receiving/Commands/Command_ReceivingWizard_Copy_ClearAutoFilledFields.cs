@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="SessionId">The session identifier</param>
     /// <param name="TargetLoadNumbers">The loads to clear (empty list = all loads)</param>
     /// <param name="FieldsToClear">Which fields to clear</param>
-    public record ClearAutoFilledDataCommand(
+    public record Command_ReceivingWizard_Copy_ClearAutoFilledFields(
         Guid SessionId,
         List<int> TargetLoadNumbers,
         CopyFields FieldsToClear

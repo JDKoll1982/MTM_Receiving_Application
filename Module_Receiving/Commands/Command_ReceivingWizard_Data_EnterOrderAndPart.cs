@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="PONumber">Purchase Order number (max 50 chars, alphanumeric with hyphens)</param>
     /// <param name="PartId">The part identifier from Infor Visual</param>
     /// <param name="LoadCount">Number of loads (1-100)</param>
-    public record UpdateStep1Command(
+    public record Command_ReceivingWizard_Data_EnterOrderAndPart(
         Guid SessionId,
         string PONumber,
         int PartId,

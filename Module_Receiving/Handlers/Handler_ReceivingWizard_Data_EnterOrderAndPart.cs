@@ -15,13 +15,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for updating Step 1 (Order & Part Selection).
 /// Initializes LoadDetail records for all loads.
 /// </summary>
-public class UpdateStep1CommandHandler : IRequestHandler<UpdateStep1Command, Result>
+public class Handler_ReceivingWizard_Data_EnterOrderAndPart : IRequestHandler<Command_ReceivingWizard_Data_EnterOrderAndPart, Result>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public UpdateStep1CommandHandler(
+    public Handler_ReceivingWizard_Data_EnterOrderAndPart(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
@@ -31,7 +31,7 @@ public class UpdateStep1CommandHandler : IRequestHandler<UpdateStep1Command, Res
         _logger = logger;
     }
 
-    public async Task<Result> Handle(UpdateStep1Command request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_ReceivingWizard_Data_EnterOrderAndPart request, CancellationToken cancellationToken)
     {
         _logger.Information("Updating Step 1 for session {SessionId}: PO={PO}, PartId={PartId}, LoadCount={LoadCount}",
             request.SessionId, request.PONumber, request.PartId, request.LoadCount);

@@ -19,13 +19,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for saving completed workflow.
 /// Validates all loads, generates CSV file, and archives transaction record.
 /// </summary>
-public class SaveWorkflowCommandHandler : IRequestHandler<SaveWorkflowCommand, Result<SaveResult>>
+public class Handler_ReceivingWizard_Data_SaveAndExportCSV : IRequestHandler<Command_ReceivingWizard_Data_SaveAndExportCSV, Result<SaveResult>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public SaveWorkflowCommandHandler(
+    public Handler_ReceivingWizard_Data_SaveAndExportCSV(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
@@ -35,7 +35,7 @@ public class SaveWorkflowCommandHandler : IRequestHandler<SaveWorkflowCommand, R
         _logger = logger;
     }
 
-    public async Task<Result<SaveResult>> Handle(SaveWorkflowCommand request, CancellationToken cancellationToken)
+    public async Task<Result<SaveResult>> Handle(Command_ReceivingWizard_Data_SaveAndExportCSV request, CancellationToken cancellationToken)
     {
         _logger.Information("Saving workflow: SessionId={SessionId}, CSVOutputPath={CSVPath}, SaveToDb={SaveToDb}",
             request.SessionId, request.CsvOutputPath, request.SaveToDatabase);

@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// Returns loads ordered by LoadNumber.
     /// </summary>
     /// <param name="SessionId">The session identifier</param>
-    public record GetLoadDetailsQuery(
+    public record Query_ReceivingWizard_Get_AllLoadDetails(
         Guid SessionId
     ) : IRequest<Result<List<LoadDetail>>>;
 }

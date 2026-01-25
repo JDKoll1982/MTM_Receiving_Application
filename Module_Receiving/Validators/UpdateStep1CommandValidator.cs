@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
     /// Validator for UpdateStep1Command.
     /// Validates PO Number, Part ID, and Load Count.
     /// </summary>
-    public class UpdateStep1CommandValidator : AbstractValidator<UpdateStep1Command>
+    public class UpdateStep1CommandValidator : AbstractValidator<Command_ReceivingWizard_Data_EnterOrderAndPart>
     {
         public UpdateStep1CommandValidator()
         {

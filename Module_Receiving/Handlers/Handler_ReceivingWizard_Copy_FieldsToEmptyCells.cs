@@ -16,13 +16,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for bulk copy operations from source load to multiple target loads.
 /// Never overwrites existing data. Sets auto-fill flags for copied cells.
 /// </summary>
-public class CopyToLoadsCommandHandler : IRequestHandler<CopyToLoadsCommand, Result<CopyOperationResult>>
+public class Handler_ReceivingWizard_Copy_FieldsToEmptyCells : IRequestHandler<Command_ReceivingWizard_Copy_FieldsToEmptyCells, Result<CopyOperationResult>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public CopyToLoadsCommandHandler(
+    public Handler_ReceivingWizard_Copy_FieldsToEmptyCells(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
@@ -32,7 +32,7 @@ public class CopyToLoadsCommandHandler : IRequestHandler<CopyToLoadsCommand, Res
         _logger = logger;
     }
 
-    public async Task<Result<CopyOperationResult>> Handle(CopyToLoadsCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CopyOperationResult>> Handle(Command_ReceivingWizard_Copy_FieldsToEmptyCells request, CancellationToken cancellationToken)
     {
         _logger.Information("Copying from load {SourceLoad} to {TargetLoadCount} loads with fields {Fields}", 
             request.SourceLoadNumber, request.TargetLoadNumbers.Count, request.FieldsToCopy);

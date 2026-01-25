@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// Initialize a new receiving workflow session.
     /// </summary>
     /// <param name="Mode">The workflow mode: "Guided" or "Manual"</param>
-    public record StartWorkflowCommand(
+    public record Command_ReceivingWizard_Navigation_StartNewWorkflow(
         string Mode
     ) : IRequest<Result<Guid>>;
 }

@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// </summary>
     /// <param name="SearchTerm">The search term</param>
     /// <param name="SearchType">The search type: "PO" or "PartNumber"</param>
-    public record GetPartLookupQuery(
+    public record Query_ReceivingWizard_Get_PartsByNumberOrPO(
         string SearchTerm,
         string SearchType
     ) : IRequest<Result<List<PartInfo>>>;

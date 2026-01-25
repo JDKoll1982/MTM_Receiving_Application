@@ -17,13 +17,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for validating current step and aggregating validation errors.
 /// Returns validation status with list of errors and severity levels.
 /// </summary>
-public class GetValidationStatusQueryHandler : IRequestHandler<GetValidationStatusQuery, Result<ValidationStatus>>
+public class Handler_ReceivingWizard_Validate_CurrentStep : IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public GetValidationStatusQueryHandler(
+    public Handler_ReceivingWizard_Validate_CurrentStep(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
@@ -33,7 +33,7 @@ public class GetValidationStatusQueryHandler : IRequestHandler<GetValidationStat
         _logger = logger;
     }
 
-    public async Task<Result<ValidationStatus>> Handle(GetValidationStatusQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ValidationStatus>> Handle(Query_ReceivingWizard_Validate_CurrentStep request, CancellationToken cancellationToken)
     {
         _logger.Information("Validating session {SessionId} step {Step}", request.SessionId, request.Step);
 
