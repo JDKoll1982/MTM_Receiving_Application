@@ -37,9 +37,10 @@ namespace MTM_Receiving_Application.Module_Core.Models
         /// <summary>
         /// Creates a failed result with an error message.
         /// </summary>
-        public static Result Failure(string errorMessage) => new Result 
-        { 
-            IsSuccess = false, 
+        /// <param name="errorMessage"></param>
+        public static Result Failure(string errorMessage) => new Result
+        {
+            IsSuccess = false,
             ErrorMessage = errorMessage,
             Errors = new List<string> { errorMessage }
         };
@@ -47,6 +48,7 @@ namespace MTM_Receiving_Application.Module_Core.Models
         /// <summary>
         /// Creates a failed result with multiple error messages.
         /// </summary>
+        /// <param name="errors"></param>
         public static Result Failure(IEnumerable<string> errors)
         {
             var errorList = errors.ToList();
@@ -93,15 +95,17 @@ namespace MTM_Receiving_Application.Module_Core.Models
         /// <summary>
         /// Creates a successful result with a value.
         /// </summary>
-        public static Result<T> Success(T value) => new Result<T> 
-        { 
-            IsSuccess = true, 
-            Value = value 
+        /// <param name="value"></param>
+        public static Result<T> Success(T value) => new Result<T>
+        {
+            IsSuccess = true,
+            Value = value
         };
 
         /// <summary>
         /// Creates a failed result with an error message.
         /// </summary>
+        /// <param name="errorMessage"></param>
         public static Result<T> Failure(string errorMessage) => new Result<T>
         {
             IsSuccess = false,
@@ -112,6 +116,7 @@ namespace MTM_Receiving_Application.Module_Core.Models
         /// <summary>
         /// Creates a failed result with multiple error messages.
         /// </summary>
+        /// <param name="errors"></param>
         public static Result<T> Failure(IEnumerable<string> errors)
         {
             var errorList = errors.ToList();
