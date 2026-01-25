@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
     /// Validator for StartWorkflowCommand.
     /// Ensures workflow mode is either "Guided" or "Manual".
     /// </summary>
-    public class Validator_Receiving_Wizard_Navigation_StartNewWorkflow : AbstractValidator<Command_ReceivingWizard_Navigation_StartNewWorkflow>
+    public class Validator_Receiving_Wizard_Navigation_StartNewWorkflow : AbstractValidator<Command_Receiving_Wizard_Navigation_StartNewWorkflow>
     {
         public Validator_Receiving_Wizard_Navigation_StartNewWorkflow()
         {

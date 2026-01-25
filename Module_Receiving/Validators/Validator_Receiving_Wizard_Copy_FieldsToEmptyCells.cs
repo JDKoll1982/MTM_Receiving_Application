@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
     /// Validator for CopyToLoadsCommand.
     /// Validates source load, target loads, and copy fields selection.
     /// </summary>
-    public class Validator_Receiving_Wizard_Copy_FieldsToEmptyCells : AbstractValidator<Command_ReceivingWizard_Copy_FieldsToEmptyCells>
+    public class Validator_Receiving_Wizard_Copy_FieldsToEmptyCells : AbstractValidator<Command_Receiving_Wizard_Copy_FieldsToEmptyCells>
     {
         public Validator_Receiving_Wizard_Copy_FieldsToEmptyCells()
         {

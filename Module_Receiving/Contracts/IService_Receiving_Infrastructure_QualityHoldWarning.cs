@@ -15,7 +15,7 @@ public interface IService_Receiving_Infrastructure_QualityHoldWarning
     /// <param name="partID">The part ID to check</param>
     /// <param name="load">Optional receiving load context</param>
     /// <returns>True if warning was shown and acknowledged; false if cancelled or no warning needed</returns>
-    Task<bool> CheckAndWarnAsync(string? partID, Model_ReceivingLoad? load = null);
+    Task<bool> CheckAndWarnAsync(string? partID, Model_Receiving_Entity_ReceivingLoad? load = null);
 
     /// <summary>
     /// Determines if a part ID requires quality hold based on naming pattern.

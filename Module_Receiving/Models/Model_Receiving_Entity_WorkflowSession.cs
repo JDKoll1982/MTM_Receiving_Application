@@ -76,7 +76,7 @@ public class Model_Receiving_Entity_WorkflowSession
     /// <summary>
     /// Collection of individual load details (initialized based on LoadCount).
     /// </summary>
-    public List<LoadDetail> Loads { get; init; } = new();
+    public List<Model_Receiving_Entity_LoadDetail> Loads { get; init; } = new();
     
     // ===== Copy Operation State =====
     
@@ -95,7 +95,7 @@ public class Model_Receiving_Entity_WorkflowSession
     /// <summary>
     /// Collection of validation errors for this session.
     /// </summary>
-    public List<ValidationError> ValidationErrors { get; init; } = new();
+    public List<Model_Receiving_DTO_ValidationError> ValidationErrors { get; init; } = new();
     
     // ===== Save State =====
     

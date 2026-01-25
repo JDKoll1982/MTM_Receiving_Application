@@ -27,7 +27,7 @@ public class Dao_Receiving_Repository_Line
     /// </summary>
     /// <param name="line">ReceivingLine model to insert</param>
     /// <returns>Model_Dao_Result with success status and affected rows</returns>
-    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line)
+    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_Receiving_Entity_ReceivingLine line)
     {
         try
         {

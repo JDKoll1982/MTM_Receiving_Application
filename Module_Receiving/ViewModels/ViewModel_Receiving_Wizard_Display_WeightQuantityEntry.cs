@@ -16,14 +16,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Wizard_Display_WeightQuantityEntry : ViewModel_Shared_Base
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
+        private readonly IService_Receiving_Infrastructure_Validation _validationService;
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_Help _helpService;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
-        private ObservableCollection<Model_ReceivingLoad> _loads = new();
+        private ObservableCollection<Model_Receiving_Entity_ReceivingLoad> _loads = new();
 
         [ObservableProperty]
         private string _warningMessage = string.Empty;
@@ -46,11 +46,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _weightQuantityAccessibilityName = "Weight Quantity";
 
         public ViewModel_Receiving_Wizard_Display_WeightQuantityEntry(
-            IService_ReceivingWorkflow workflowService,
-            IService_ReceivingValidation validationService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
+            IService_Receiving_Infrastructure_Validation validationService,
             IService_InforVisual inforVisualService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Notification notificationService)
@@ -71,9 +71,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                WeightQuantityHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WeightQuantityHeader);
-                WeightQuantityPlaceholderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.WeightQuantityPlaceholder);
-                WeightQuantityAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.WeightQuantityInput);
+                WeightQuantityHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.WeightQuantityHeader);
+                WeightQuantityPlaceholderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.WeightQuantityPlaceholder);
+                WeightQuantityAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.WeightQuantityInput);
 
                 _logger.LogInfo("Weight/Quantity UI text loaded from settings successfully");
             }
@@ -111,7 +111,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (_workflowService.CurrentSession.IsNonPO)
             {
-                PoQuantityInfo = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.InfoNonPoItem);
+                PoQuantityInfo = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.InfoNonPoItem);
             }
             else if (_workflowService.CurrentPart != null)
             {
@@ -147,7 +147,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (result.IsSuccess && result.Data > 0)
                 {
                     HasWarning = true;
-                    WarningMessage = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.WarningSameDayReceiving, result.Data);
+                    WarningMessage = await _receivingSettings.FormatAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.WarningSameDayReceiving, result.Data);
                 }
             }
             catch (Exception ex)
@@ -175,7 +175,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var totalWeight = Loads.Sum(l => l.WeightQuantity);
                 if (totalWeight > _workflowService.CurrentPart.QtyOrdered)
                 {
-                    WarningMessage = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.WarningExceedsOrdered, totalWeight, _workflowService.CurrentPart.QtyOrdered);
+                    WarningMessage = await _receivingSettings.FormatAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.WarningExceedsOrdered, totalWeight, _workflowService.CurrentPart.QtyOrdered);
                     HasWarning = true;
                 }
             }

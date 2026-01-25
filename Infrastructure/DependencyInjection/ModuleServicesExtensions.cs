@@ -83,31 +83,31 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_Receiving_Business_MySQL_Receiving>(sp =>
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_MySQL_Receiving(mySqlConnectionString, logger);
+            return new Service_Receiving_Business_MySQL_Receiving(mySqlConnectionString, logger);
         });
-        services.AddTransient<IService_Receiving_Business_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
+        services.AddTransient<IService_Receiving_Business_MySQL_ReceivingLine, Service_Receiving_Business_MySQL_ReceivingLine>();
         services.AddSingleton<IService_Receiving_Business_MySQL_PackagePreferences>(_ =>
-            new Service_MySQL_PackagePreferences(mySqlConnectionString));
-        services.AddSingleton<IService_Receiving_Business_MySQL_QualityHold, Service_MySQL_QualityHold>();
-        services.AddSingleton<IService_Receiving_Infrastructure_QualityHoldWarning, Service_QualityHoldWarning>();
+            new Service_Receiving_Business_MySQL_PackagePreferences(mySqlConnectionString));
+        services.AddSingleton<IService_Receiving_Business_MySQL_QualityHold, Service_Receiving_Business_MySQL_QualityHold>();
+        services.AddSingleton<IService_Receiving_Infrastructure_QualityHoldWarning, Service_Receiving_Infrastructure_QualityHoldWarning>();
         services.AddSingleton<IService_SessionManager>(sp =>
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_SessionManager(logger);
+            return new Service_Receiving_Infrastructure_SessionManager(logger);
         });
         services.AddSingleton<IService_CSVWriter>(sp =>
         {
             var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_CSVWriter(sessionManager, logger);
+            return new Service_Receiving_Infrastructure_CSVWriter(sessionManager, logger);
         });
-        services.AddSingleton<IService_Receiving_Infrastructure_Validation, Service_ReceivingValidation>();
-        services.AddSingleton<IService_Receiving_Infrastructure_Workflow, Service_ReceivingWorkflow>();
+        services.AddSingleton<IService_Receiving_Infrastructure_Validation, Service_Receiving_Infrastructure_Validation>();
+        services.AddSingleton<IService_Receiving_Infrastructure_Workflow, Service_Receiving_Infrastructure_Workflow>();
         services.AddTransient<IService_Pagination, Service_Pagination>();
 
         // Settings
         services.AddSingleton<Module_Receiving.Contracts.IService_Receiving_Infrastructure_Settings,
-            Module_Receiving.Services.Service_ReceivingSettings>();
+            Module_Receiving.Services.Service_Receiving_Infrastructure_Settings>();
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();

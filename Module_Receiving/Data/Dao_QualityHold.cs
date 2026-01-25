@@ -27,7 +27,7 @@ public class Dao_Receiving_Repository_QualityHold
     /// </summary>
     /// <param name="qualityHold">QualityHold model to insert</param>
     /// <returns>Model_Dao_Result with success status and quality_hold_id</returns>
-    public async Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_QualityHold qualityHold)
+    public async Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_Receiving_Entity_QualityHold qualityHold)
     {
         try
         {
@@ -86,13 +86,13 @@ public class Dao_Receiving_Repository_QualityHold
     /// </summary>
     /// <param name="loadId">Load ID to query</param>
     /// <returns>Model_Dao_Result with list of quality holds</returns>
-    public async Task<Model_Dao_Result<List<Model_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId)
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId)
     {
         try
         {
             if (loadId <= 0)
             {
-                return new Model_Dao_Result<List<Model_QualityHold>>
+                return new Model_Dao_Result<List<Model_Receiving_Entity_QualityHold>>
                 {
                     Success = false,
                     ErrorMessage = "LoadID must be positive",
@@ -108,7 +108,7 @@ public class Dao_Receiving_Repository_QualityHold
             var result = await Helper_Database_StoredProcedure.ExecuteListAsync(
                 _connectionString,
                 "sp_Receiving_QualityHolds_GetByLoadID",
-                reader => new Model_QualityHold
+                reader => new Model_Receiving_Entity_QualityHold
                 {
                     QualityHoldID = reader.GetInt32(reader.GetOrdinal("quality_hold_id")),
                     LoadID = reader.GetInt32(reader.GetOrdinal("load_id")),
@@ -126,7 +126,7 @@ public class Dao_Receiving_Repository_QualityHold
         }
         catch (Exception ex)
         {
-            return new Model_Dao_Result<List<Model_QualityHold>>
+            return new Model_Dao_Result<List<Model_Receiving_Entity_QualityHold>>
             {
                 Success = false,
                 ErrorMessage = $"Unexpected error retrieving quality holds: {ex.Message}",

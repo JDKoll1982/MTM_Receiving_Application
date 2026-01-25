@@ -16,5 +16,5 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
         Guid SessionId,
         string CsvOutputPath,
         bool SaveToDatabase = true
-    ) : IRequest<Result<SaveResult>>;
+    ) : IRequest<Result<Model_Receiving_Result_Save>>;
 }

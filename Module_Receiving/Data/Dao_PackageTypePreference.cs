@@ -21,7 +21,7 @@ public class Dao_Receiving_Repository_PackageTypePreference
     // User Preferences (New Feature)
     // ====================================================================
 
-    public async Task<Model_Dao_Result<Model_UserPreference>> GetByUserAsync(string username)
+    public async Task<Model_Dao_Result<Model_Receiving_Entity_UserPreference>> GetByUserAsync(string username)
     {
         try
         {
@@ -30,10 +30,10 @@ public class Dao_Receiving_Repository_PackageTypePreference
                 { "username", username }
             };
 
-            return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_UserPreference>(
+            return await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_Receiving_Entity_UserPreference>(
                 _connectionString,
                 "sp_package_preferences_get_by_user",
-                reader => new Model_UserPreference
+                reader => new Model_Receiving_Entity_UserPreference
                 {
                     Username = reader["username"].ToString() ?? string.Empty,
                     PreferredPackageType = reader["preferred_package_type"].ToString() ?? string.Empty,
@@ -44,13 +44,13 @@ public class Dao_Receiving_Repository_PackageTypePreference
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(
                 $"Error retrieving user package preference: {ex.Message}",
                 ex);
         }
     }
 
-    public async Task<Model_Dao_Result> UpsertAsync(Model_UserPreference preference)
+    public async Task<Model_Dao_Result> UpsertAsync(Model_Receiving_Entity_UserPreference preference)
     {
         try
         {
@@ -78,7 +78,7 @@ public class Dao_Receiving_Repository_PackageTypePreference
     // Part Preferences (Existing Feature)
     // ====================================================================
 
-    public async Task<Model_Dao_Result<Model_PackageTypePreference?>> GetPreferenceAsync(string partID)
+    public async Task<Model_Dao_Result<Model_Receiving_Entity_PackageTypePreference?>> GetPreferenceAsync(string partID)
     {
         try
         {
@@ -88,10 +88,10 @@ public class Dao_Receiving_Repository_PackageTypePreference
             };
 
             // Using custom mapper as in original service
-            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_PackageTypePreference?>(
+            var result = await Helper_Database_StoredProcedure.ExecuteSingleAsync<Model_Receiving_Entity_PackageTypePreference?>(
                 _connectionString,
                 "sp_Receiving_PackageTypePreference_Get",
-                reader => new Model_PackageTypePreference
+                reader => new Model_Receiving_Entity_PackageTypePreference
                 {
                     PreferenceID = Convert.ToInt32(reader["PreferenceID"]),
                     PartID = reader["PartID"].ToString() ?? string.Empty,
@@ -106,17 +106,17 @@ public class Dao_Receiving_Repository_PackageTypePreference
             {
                 return Model_Dao_Result_Factory.Success(result.Data);
             }
-            return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_PackageTypePreference?>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<Model_PackageTypePreference?>(
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_PackageTypePreference?>(
                 $"Error retrieving part package preference: {ex.Message}",
                 ex);
         }
     }
 
-    public async Task<Model_Dao_Result> SavePreferenceAsync(Model_PackageTypePreference preference)
+    public async Task<Model_Dao_Result> SavePreferenceAsync(Model_Receiving_Entity_PackageTypePreference preference)
     {
         try
         {

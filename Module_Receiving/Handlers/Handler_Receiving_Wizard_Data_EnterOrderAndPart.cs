@@ -13,17 +13,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
 /// Handler for updating Step 1 (Order & Part Selection).
-/// Initializes LoadDetail records for all loads.
+/// Initializes Model_Receiving_Entity_LoadDetail records for all loads.
 /// </summary>
-public class Handler_Receiving_Wizard_Data_EnterOrderAndPart : IRequestHandler<Command_ReceivingWizard_Data_EnterOrderAndPart, Result>
+public class Handler_Receiving_Wizard_Data_EnterOrderAndPart : IRequestHandler<Command_Receiving_Wizard_Data_EnterOrderAndPart, Result>
 {
-    private readonly Dao_ReceivingWorkflowSession _sessionDao;
-    private readonly Dao_ReceivingLoadDetail _loadDao;
+    private readonly Dao_Receiving_Repository_WorkflowSession _sessionDao;
+    private readonly Dao_Receiving_Repository_LoadDetail _loadDao;
     private readonly ILogger _logger;
 
     public Handler_Receiving_Wizard_Data_EnterOrderAndPart(
-        Dao_ReceivingWorkflowSession sessionDao,
-        Dao_ReceivingLoadDetail loadDao,
+        Dao_Receiving_Repository_WorkflowSession sessionDao,
+        Dao_Receiving_Repository_LoadDetail loadDao,
         ILogger logger)
     {
         _sessionDao = sessionDao;
@@ -31,7 +31,7 @@ public class Handler_Receiving_Wizard_Data_EnterOrderAndPart : IRequestHandler<C
         _logger = logger;
     }
 
-    public async Task<Result> Handle(Command_ReceivingWizard_Data_EnterOrderAndPart request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_Receiving_Wizard_Data_EnterOrderAndPart request, CancellationToken cancellationToken)
     {
         _logger.Information("Updating Step 1 for session {SessionId}: PO={PO}, PartId={PartId}, LoadCount={LoadCount}",
             request.SessionId, request.PONumber, request.PartId, request.LoadCount);
@@ -60,16 +60,16 @@ public class Handler_Receiving_Wizard_Data_EnterOrderAndPart : IRequestHandler<C
             return Result.Failure($"Failed to update: {updateResult.ErrorMessage}");
         }
 
-        // Create LoadDetail records for each load
+        // Create Model_Receiving_Entity_LoadDetail records for each load
         var existingLoadsResult = await _loadDao.GetLoadsBySessionAsync(request.SessionId);
-        var existingLoads = existingLoadsResult.IsSuccess ? existingLoadsResult.Data : new List<LoadDetail>();
+        var existingLoads = existingLoadsResult.IsSuccess ? existingLoadsResult.Data : new List<Model_Receiving_Entity_LoadDetail>();
 
         // Initialize missing loads
         for (int i = 1; i <= request.LoadCount; i++)
         {
             if (existingLoads.Find(l => l.LoadNumber == i) == null)
             {
-                var newLoad = new LoadDetail
+                var newLoad = new Model_Receiving_Entity_LoadDetail
                 {
                     LoadNumber = i,
                     WeightOrQuantity = null,
@@ -85,7 +85,7 @@ public class Handler_Receiving_Wizard_Data_EnterOrderAndPart : IRequestHandler<C
                 var createResult = await _loadDao.UpsertLoadDetailAsync(request.SessionId, newLoad);
                 if (!createResult.IsSuccess)
                 {
-                    _logger.Error("Failed to create LoadDetail {LoadNumber}: {Error}", i, createResult.ErrorMessage);
+                    _logger.Error("Failed to create Model_Receiving_Entity_LoadDetail {LoadNumber}: {Error}", i, createResult.ErrorMessage);
                     return Result.Failure($"Failed to create load {i}: {createResult.ErrorMessage}");
                 }
             }

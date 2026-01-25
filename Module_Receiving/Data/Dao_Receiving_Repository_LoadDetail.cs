@@ -34,7 +34,7 @@ public class Dao_Receiving_Repository_LoadDetail
     /// <param name="sessionId">Session identifier</param>
     /// <param name="load">Load detail entity</param>
     /// <returns>Model_Dao_Result with success status</returns>
-    public async Task<Model_Dao_Result> UpsertLoadDetailAsync(Guid sessionId, LoadDetail load)
+    public async Task<Model_Dao_Result> UpsertLoadDetailAsync(Guid sessionId, Model_Receiving_Entity_LoadDetail load)
     {
         try
         {
@@ -88,7 +88,7 @@ public class Dao_Receiving_Repository_LoadDetail
     /// </summary>
     /// <param name="sessionId">Session identifier</param>
     /// <returns>Model_Dao_Result with list of load details or error</returns>
-    public async Task<Model_Dao_Result<List<LoadDetail>>> GetLoadsBySessionAsync(Guid sessionId)
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_LoadDetail>>> GetLoadsBySessionAsync(Guid sessionId)
     {
         try
         {
@@ -97,7 +97,7 @@ public class Dao_Receiving_Repository_LoadDetail
                 new MySqlParameter("@p_SessionId", sessionId.ToString())
             };
 
-            var loads = new List<LoadDetail>();
+            var loads = new List<Model_Receiving_Entity_LoadDetail>();
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -112,7 +112,7 @@ public class Dao_Receiving_Repository_LoadDetail
                     {
                         while (await reader.ReadAsync())
                         {
-                            loads.Add(new LoadDetail
+                            loads.Add(new Model_Receiving_Entity_LoadDetail
                             {
                                 LoadNumber = Convert.ToInt32(reader["LoadNumber"]),
                                 WeightOrQuantity = reader["WeightOrQuantity"] is DBNull ? null : Convert.ToDecimal(reader["WeightOrQuantity"]),
@@ -129,7 +129,7 @@ public class Dao_Receiving_Repository_LoadDetail
                 }
             }
 
-            return new Model_Dao_Result<List<LoadDetail>>
+            return new Model_Dao_Result<List<Model_Receiving_Entity_LoadDetail>>
             {
                 Success = true,
                 Data = loads
@@ -137,7 +137,7 @@ public class Dao_Receiving_Repository_LoadDetail
         }
         catch (Exception ex)
         {
-            return new Model_Dao_Result<List<LoadDetail>>
+            return new Model_Dao_Result<List<Model_Receiving_Entity_LoadDetail>>
             {
                 Success = false,
                 ErrorMessage = $"Unexpected error retrieving load details: {ex.Message}",
@@ -154,7 +154,7 @@ public class Dao_Receiving_Repository_LoadDetail
     /// <param name="targetLoads">List of target load numbers</param>
     /// <param name="fields">Fields to copy</param>
     /// <returns>Model_Dao_Result with success status</returns>
-    public async Task<Model_Dao_Result> CopyToLoadsAsync(Guid sessionId, int sourceLoad, List<int> targetLoads, CopyFields fields)
+    public async Task<Model_Dao_Result> CopyToLoadsAsync(Guid sessionId, int sourceLoad, List<int> targetLoads, Enum_Receiving_Type_CopyFields fields)
     {
         try
         {
@@ -207,7 +207,7 @@ public class Dao_Receiving_Repository_LoadDetail
     /// <param name="loads">List of load numbers to clear</param>
     /// <param name="fields">Fields to clear</param>
     /// <returns>Model_Dao_Result with success status</returns>
-    public async Task<Model_Dao_Result> ClearAutoFilledAsync(Guid sessionId, List<int> loads, CopyFields fields)
+    public async Task<Model_Dao_Result> ClearAutoFilledAsync(Guid sessionId, List<int> loads, Enum_Receiving_Type_CopyFields fields)
     {
         try
         {

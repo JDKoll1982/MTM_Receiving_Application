@@ -81,20 +81,20 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber, RequirePoNumber.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequirePartId, RequirePartId.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity, RequireQuantity.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot, RequireHeatLot.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, AllowNegativeQuantity.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.ValidatePoExists, ValidatePoExists.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.ValidatePartExists, ValidatePartExists.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo, WarnOnQuantityExceedsPo.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving, WarnOnSameDayReceiving.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePoNumber, RequirePoNumber.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePartId, RequirePartId.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireQuantity, RequireQuantity.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireHeatLot, RequireHeatLot.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.AllowNegativeQuantity, AllowNegativeQuantity.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePoExists, ValidatePoExists.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePartExists, ValidatePartExists.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnQuantityExceedsPo, WarnOnQuantityExceedsPo.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnSameDayReceiving, WarnOnSameDayReceiving.ToString());
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.MinLoadCount, MinLoadCount);
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.MaxLoadCount, MaxLoadCount);
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.MinQuantity, MinQuantity);
-            await SaveSettingAsync(ReceivingSettingsKeys.Validation.MaxQuantity, MaxQuantity);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MinLoadCount, MinLoadCount);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MaxLoadCount, MaxLoadCount);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MinQuantity, MinQuantity);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MaxQuantity, MaxQuantity);
 
             ShowStatus("Receiving validation settings saved.");
         }
@@ -114,19 +114,19 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
         {
             IsBusy = true;
 
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequirePartId);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.ValidatePoExists);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.ValidatePartExists);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.MinLoadCount);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.MaxLoadCount);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.MinQuantity);
-            await ResetSettingAsync(ReceivingSettingsKeys.Validation.MaxQuantity);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePoNumber);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePartId);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireQuantity);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireHeatLot);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.AllowNegativeQuantity);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePoExists);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePartExists);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnQuantityExceedsPo);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnSameDayReceiving);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MinLoadCount);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MaxLoadCount);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MinQuantity);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MaxQuantity);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving validation settings reset.");
@@ -156,20 +156,20 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
     {
         try
         {
-            RequirePoNumber = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequirePoNumber, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequirePoNumber]);
-            RequirePartId = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequirePartId, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequirePartId]);
-            RequireQuantity = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequireQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireQuantity]);
-            RequireHeatLot = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.RequireHeatLot, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.RequireHeatLot]);
-            AllowNegativeQuantity = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.AllowNegativeQuantity, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.AllowNegativeQuantity]);
-            ValidatePoExists = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.ValidatePoExists, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.ValidatePoExists]);
-            ValidatePartExists = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.ValidatePartExists, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.ValidatePartExists]);
-            WarnOnQuantityExceedsPo = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo]);
-            WarnOnSameDayReceiving = await GetBoolSettingAsync(ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving]);
+            RequirePoNumber = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePoNumber, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePoNumber]);
+            RequirePartId = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePartId, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequirePartId]);
+            RequireQuantity = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireQuantity, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireQuantity]);
+            RequireHeatLot = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireHeatLot, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.RequireHeatLot]);
+            AllowNegativeQuantity = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.AllowNegativeQuantity, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.AllowNegativeQuantity]);
+            ValidatePoExists = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePoExists, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePoExists]);
+            ValidatePartExists = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePartExists, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.ValidatePartExists]);
+            WarnOnQuantityExceedsPo = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnQuantityExceedsPo, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnQuantityExceedsPo]);
+            WarnOnSameDayReceiving = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnSameDayReceiving, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Validation.WarnOnSameDayReceiving]);
 
-            MinLoadCount = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MinLoadCount);
-            MaxLoadCount = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MaxLoadCount);
-            MinQuantity = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MinQuantity);
-            MaxQuantity = await GetStringSettingAsync(ReceivingSettingsKeys.Validation.MaxQuantity);
+            MinLoadCount = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MinLoadCount);
+            MaxLoadCount = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MaxLoadCount);
+            MinQuantity = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MinQuantity);
+            MaxQuantity = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Validation.MaxQuantity);
         }
         catch (Exception ex)
         {
@@ -196,12 +196,12 @@ public sealed partial class ViewModel_Settings_Receiving_Validation : ViewModel_
             return result.Data.Value;
         }
 
-        if (ReceivingSettingsDefaults.StringDefaults.TryGetValue(key, out var fallback))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.StringDefaults.TryGetValue(key, out var fallback))
         {
             return fallback;
         }
 
-        if (ReceivingSettingsDefaults.IntDefaults.TryGetValue(key, out var intFallback))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.IntDefaults.TryGetValue(key, out var intFallback))
         {
             return intFallback.ToString();
         }

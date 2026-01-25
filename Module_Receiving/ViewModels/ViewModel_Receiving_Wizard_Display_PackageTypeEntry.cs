@@ -16,14 +16,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Wizard_Display_PackageTypeEntry : ViewModel_Shared_Base
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_MySQL_PackagePreferences _preferencesService;
-        private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
+        private readonly IService_Receiving_Business_MySQL_PackagePreferences _preferencesService;
+        private readonly IService_Receiving_Infrastructure_Validation _validationService;
         private readonly IService_Help _helpService;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
-        private ObservableCollection<Model_ReceivingLoad> _loads = new();
+        private ObservableCollection<Model_Receiving_Entity_ReceivingLoad> _loads = new();
 
         [ObservableProperty]
         private ObservableCollection<string> _packageTypes = new() { "Coils", "Sheets", "Skids", "Custom" };
@@ -74,11 +74,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _packageTypePackagesPerLoadAccessibilityName = "Packages per Load";
 
         public ViewModel_Receiving_Wizard_Display_PackageTypeEntry(
-            IService_ReceivingWorkflow workflowService,
-            IService_MySQL_PackagePreferences preferencesService,
-            IService_ReceivingValidation validationService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
+            IService_Receiving_Business_MySQL_PackagePreferences preferencesService,
+            IService_Receiving_Infrastructure_Validation validationService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Notification notificationService)
@@ -99,17 +99,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                PackageTypeHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeHeader);
-                PackageTypeComboHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeComboHeader);
-                PackageTypeCustomHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeCustomHeader);
-                PackageTypeSaveAsDefaultText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault);
-                PackageTypeLoadNumberPrefixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeLoadNumberPrefix);
-                PackageTypePackagesPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypePackagesPerLoad);
-                PackageTypeWeightPerPackageText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PackageTypeWeightPerPackage);
+                PackageTypeHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypeHeader);
+                PackageTypeComboHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypeComboHeader);
+                PackageTypeCustomHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypeCustomHeader);
+                PackageTypeSaveAsDefaultText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypeSaveAsDefault);
+                PackageTypeLoadNumberPrefixText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypeLoadNumberPrefix);
+                PackageTypePackagesPerLoadText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypePackagesPerLoad);
+                PackageTypeWeightPerPackageText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PackageTypeWeightPerPackage);
 
-                PackageTypeComboAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypeCombo);
-                PackageTypeCustomAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypeCustomName);
-                PackageTypePackagesPerLoadAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PackageTypePackagesPerLoad);
+                PackageTypeComboAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PackageTypeCombo);
+                PackageTypeCustomAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PackageTypeCustomName);
+                PackageTypePackagesPerLoadAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PackageTypePackagesPerLoad);
 
                 _logger.LogInfo("Package Type UI text loaded from settings successfully");
             }
@@ -271,7 +271,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
-            var preference = new Model_PackageTypePreference
+            var preference = new Model_Receiving_Entity_PackageTypePreference
             {
                 PartID = partId,
                 PackageTypeName = typeName,

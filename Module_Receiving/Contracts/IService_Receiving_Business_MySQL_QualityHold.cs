@@ -17,14 +17,14 @@ public interface IService_Receiving_Business_MySQL_QualityHold
     /// </summary>
     /// <param name="qualityHold">Quality hold data to insert</param>
     /// <returns>Result with quality hold ID</returns>
-    Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_QualityHold qualityHold);
+    Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_Receiving_Entity_QualityHold qualityHold);
 
     /// <summary>
     /// Retrieves all quality holds for a specific load
     /// </summary>
     /// <param name="loadId">Load ID to query</param>
     /// <returns>Result with list of quality holds</returns>
-    Task<Model_Dao_Result<List<Model_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId);
+    Task<Model_Dao_Result<List<Model_Receiving_Entity_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId);
 
     /// <summary>
     /// Updates quality hold with acknowledgment information

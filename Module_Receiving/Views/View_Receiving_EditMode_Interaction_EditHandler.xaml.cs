@@ -18,13 +18,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     public sealed partial class View_Receiving_EditMode : UserControl
     {
         public ViewModel_Receiving_EditMode_Interaction_EditHandler ViewModel { get; }
-        private readonly IService_QualityHoldWarning _qualityHoldWarning;
+        private readonly IService_Receiving_Infrastructure_QualityHoldWarning _qualityHoldWarning;
         private string? _lastCheckedPartID;
 
         public View_Receiving_EditMode()
         {
             ViewModel = App.GetService<ViewModel_Receiving_EditMode_Interaction_EditHandler>();
-            _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
+            _qualityHoldWarning = App.GetService<IService_Receiving_Infrastructure_QualityHoldWarning>();
             this.DataContext = ViewModel;
             this.InitializeComponent();
         }
@@ -54,7 +54,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <param name="grid"></param>
         private async Task CheckQualityHoldOnCellChangeAsync(DataGrid? grid)
         {
-            if (grid?.SelectedItem is not Model_ReceivingLoad currentLoad)
+            if (grid?.SelectedItem is not Model_Receiving_Entity_ReceivingLoad currentLoad)
             {
                 return;
             }

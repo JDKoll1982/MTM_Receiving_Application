@@ -19,6 +19,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
         Guid SessionId,
         int SourceLoadNumber,
         List<int> TargetLoadNumbers,
-        CopyFields FieldsToCopy
-    ) : IRequest<Result<CopyOperationResult>>;
+        Enum_Receiving_Type_CopyFields FieldsToCopy
+    ) : IRequest<Result<Model_Receiving_Result_CopyOperation>>;
 }

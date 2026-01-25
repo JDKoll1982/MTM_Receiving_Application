@@ -15,20 +15,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for updating Step 2 (Load Details Entry).
 /// Updates individual load data and clears auto-fill flags for manually edited fields.
 /// </summary>
-public class Handler_Receiving_Wizard_Data_UpdateLoadEntry : IRequestHandler<Command_ReceivingWizard_Data_UpdateLoadEntry, Result>
+public class Handler_Receiving_Wizard_Data_UpdateLoadEntry : IRequestHandler<Command_Receiving_Wizard_Data_UpdateLoadEntry, Result>
 {
-    private readonly Dao_ReceivingLoadDetail _loadDao;
+    private readonly Dao_Receiving_Repository_LoadDetail _loadDao;
     private readonly ILogger _logger;
 
     public Handler_Receiving_Wizard_Data_UpdateLoadEntry(
-        Dao_ReceivingLoadDetail loadDao,
+        Dao_Receiving_Repository_LoadDetail loadDao,
         ILogger logger)
     {
         _loadDao = loadDao;
         _logger = logger;
     }
 
-    public async Task<Result> Handle(Command_ReceivingWizard_Data_UpdateLoadEntry request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_Receiving_Wizard_Data_UpdateLoadEntry request, CancellationToken cancellationToken)
     {
         _logger.Information("Updating load detail: Session={SessionId}, Load={LoadNumber}", 
             request.SessionId, request.LoadNumber);
@@ -49,7 +49,7 @@ public class Handler_Receiving_Wizard_Data_UpdateLoadEntry : IRequestHandler<Com
         }
 
         // Create updated load (only update provided fields)
-        var updatedLoad = new LoadDetail
+        var updatedLoad = new Model_Receiving_Entity_LoadDetail
         {
             LoadNumber = request.LoadNumber,
             WeightOrQuantity = request.WeightOrQuantity ?? existingLoad.WeightOrQuantity,

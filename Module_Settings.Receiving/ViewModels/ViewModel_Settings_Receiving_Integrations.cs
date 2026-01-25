@@ -63,13 +63,13 @@ public sealed partial class ViewModel_Settings_Receiving_Integrations : ViewMode
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.ErpSyncEnabled, ErpSyncEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.AutoPullPoDataEnabled, AutoPullPoDataEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.AutoPullPartDataEnabled, AutoPullPartDataEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.SyncToInforVisual, SyncToInforVisual.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.ErpConnectionTimeout, ErpConnectionTimeout);
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.RetryFailedSyncs, RetryFailedSyncs.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.Integrations.MaxSyncRetries, MaxSyncRetries);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpSyncEnabled, ErpSyncEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPoDataEnabled, AutoPullPoDataEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPartDataEnabled, AutoPullPartDataEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.SyncToInforVisual, SyncToInforVisual.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpConnectionTimeout, ErpConnectionTimeout);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.RetryFailedSyncs, RetryFailedSyncs.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.MaxSyncRetries, MaxSyncRetries);
 
             ShowStatus("Receiving integrations saved.");
         }
@@ -89,13 +89,13 @@ public sealed partial class ViewModel_Settings_Receiving_Integrations : ViewMode
         {
             IsBusy = true;
 
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.ErpSyncEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.AutoPullPoDataEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.AutoPullPartDataEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.SyncToInforVisual);
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.ErpConnectionTimeout);
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.RetryFailedSyncs);
-            await ResetSettingAsync(ReceivingSettingsKeys.Integrations.MaxSyncRetries);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpSyncEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPoDataEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPartDataEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.SyncToInforVisual);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpConnectionTimeout);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.RetryFailedSyncs);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.MaxSyncRetries);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving integrations reset.");
@@ -125,13 +125,13 @@ public sealed partial class ViewModel_Settings_Receiving_Integrations : ViewMode
     {
         try
         {
-            ErpSyncEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.Integrations.ErpSyncEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Integrations.ErpSyncEnabled]);
-            AutoPullPoDataEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.Integrations.AutoPullPoDataEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Integrations.AutoPullPoDataEnabled]);
-            AutoPullPartDataEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.Integrations.AutoPullPartDataEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Integrations.AutoPullPartDataEnabled]);
-            SyncToInforVisual = await GetBoolSettingAsync(ReceivingSettingsKeys.Integrations.SyncToInforVisual, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Integrations.SyncToInforVisual]);
-            ErpConnectionTimeout = await GetStringSettingAsync(ReceivingSettingsKeys.Integrations.ErpConnectionTimeout);
-            RetryFailedSyncs = await GetBoolSettingAsync(ReceivingSettingsKeys.Integrations.RetryFailedSyncs, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Integrations.RetryFailedSyncs]);
-            MaxSyncRetries = await GetStringSettingAsync(ReceivingSettingsKeys.Integrations.MaxSyncRetries);
+            ErpSyncEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpSyncEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpSyncEnabled]);
+            AutoPullPoDataEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPoDataEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPoDataEnabled]);
+            AutoPullPartDataEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPartDataEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Integrations.AutoPullPartDataEnabled]);
+            SyncToInforVisual = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.SyncToInforVisual, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Integrations.SyncToInforVisual]);
+            ErpConnectionTimeout = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpConnectionTimeout);
+            RetryFailedSyncs = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.RetryFailedSyncs, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Integrations.RetryFailedSyncs]);
+            MaxSyncRetries = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.MaxSyncRetries);
         }
         catch (Exception ex)
         {
@@ -158,12 +158,12 @@ public sealed partial class ViewModel_Settings_Receiving_Integrations : ViewMode
             return result.Data.Value;
         }
 
-        if (ReceivingSettingsDefaults.StringDefaults.TryGetValue(key, out var fallback))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.StringDefaults.TryGetValue(key, out var fallback))
         {
             return fallback;
         }
 
-        if (ReceivingSettingsDefaults.IntDefaults.TryGetValue(key, out var intFallback))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.IntDefaults.TryGetValue(key, out var intFallback))
         {
             return intFallback.ToString();
         }

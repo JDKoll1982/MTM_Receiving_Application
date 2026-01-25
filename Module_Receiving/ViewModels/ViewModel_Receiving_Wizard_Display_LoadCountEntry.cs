@@ -13,11 +13,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Wizard_Display_LoadCountEntry : ViewModel_Shared_Base, IResettableViewModel
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
+        private readonly IService_Receiving_Infrastructure_Validation _validationService;
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
         private int _numberOfLoads = 1;
@@ -37,10 +37,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _numberOfLoadsAccessibilityName = "Number of Loads";
 
         public ViewModel_Receiving_Wizard_Display_LoadCountEntry(
-            IService_ReceivingWorkflow workflowService,
-            IService_ReceivingValidation validationService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
+            IService_Receiving_Infrastructure_Validation validationService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
@@ -63,9 +63,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                LoadEntryHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryHeader);
-                LoadEntryInstructionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryInstruction);
-                NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads);
+                LoadEntryHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.LoadEntryHeader);
+                LoadEntryInstructionText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.LoadEntryInstruction);
+                NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.LoadEntryNumberOfLoads);
 
                 _logger.LogInfo("Load Entry UI text loaded from settings successfully");
             }

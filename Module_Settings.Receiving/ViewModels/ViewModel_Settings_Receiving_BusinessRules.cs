@@ -78,18 +78,18 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, AutoSaveEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds, AutoSaveIntervalSeconds);
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled, SaveToCsvEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled, SaveToNetworkCsvEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled, SaveToDatabaseEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup, DefaultModeOnStartup);
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode, RememberLastMode.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange, ConfirmModeChange.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled, AutoFillHeatLotEnabled.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault, SavePackageTypeAsDefault.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault, ShowReviewTableByDefault.ToString());
-            await SaveSettingAsync(ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave, AllowEditAfterSave.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveEnabled, AutoSaveEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveIntervalSeconds, AutoSaveIntervalSeconds);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToCsvEnabled, SaveToCsvEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToNetworkCsvEnabled, SaveToNetworkCsvEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToDatabaseEnabled, SaveToDatabaseEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.DefaultModeOnStartup, DefaultModeOnStartup);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.RememberLastMode, RememberLastMode.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ConfirmModeChange, ConfirmModeChange.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoFillHeatLotEnabled, AutoFillHeatLotEnabled.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SavePackageTypeAsDefault, SavePackageTypeAsDefault.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ShowReviewTableByDefault, ShowReviewTableByDefault.ToString());
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AllowEditAfterSave, AllowEditAfterSave.ToString());
 
             ShowStatus("Receiving business rules saved.");
         }
@@ -109,18 +109,18 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
         {
             IsBusy = true;
 
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault);
-            await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToCsvEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToNetworkCsvEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToDatabaseEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.DefaultModeOnStartup);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.RememberLastMode);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ConfirmModeChange);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoFillHeatLotEnabled);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SavePackageTypeAsDefault);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ShowReviewTableByDefault);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AllowEditAfterSave);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving business rules reset.");
@@ -150,18 +150,18 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
     {
         try
         {
-            AutoSaveEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled]);
-            AutoSaveIntervalSeconds = await GetStringSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
-            SaveToCsvEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToCsvEnabled]);
-            SaveToNetworkCsvEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToNetworkCsvEnabled]);
-            SaveToDatabaseEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SaveToDatabaseEnabled]);
-            DefaultModeOnStartup = await GetStringSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
-            RememberLastMode = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.RememberLastMode, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.RememberLastMode]);
-            ConfirmModeChange = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.ConfirmModeChange]);
-            AutoFillHeatLotEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.AutoFillHeatLotEnabled]);
-            SavePackageTypeAsDefault = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.SavePackageTypeAsDefault]);
-            ShowReviewTableByDefault = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault]);
-            AllowEditAfterSave = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.AllowEditAfterSave]);
+            AutoSaveEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveEnabled]);
+            AutoSaveIntervalSeconds = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveIntervalSeconds);
+            SaveToCsvEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToCsvEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToCsvEnabled]);
+            SaveToNetworkCsvEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToNetworkCsvEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToNetworkCsvEnabled]);
+            SaveToDatabaseEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToDatabaseEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SaveToDatabaseEnabled]);
+            DefaultModeOnStartup = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.DefaultModeOnStartup);
+            RememberLastMode = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.RememberLastMode, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.RememberLastMode]);
+            ConfirmModeChange = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ConfirmModeChange, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ConfirmModeChange]);
+            AutoFillHeatLotEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoFillHeatLotEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoFillHeatLotEnabled]);
+            SavePackageTypeAsDefault = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SavePackageTypeAsDefault, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.SavePackageTypeAsDefault]);
+            ShowReviewTableByDefault = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ShowReviewTableByDefault, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.ShowReviewTableByDefault]);
+            AllowEditAfterSave = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AllowEditAfterSave, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AllowEditAfterSave]);
         }
         catch (Exception ex)
         {
@@ -188,12 +188,12 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules : ViewMod
             return result.Data.Value;
         }
 
-        if (ReceivingSettingsDefaults.StringDefaults.TryGetValue(key, out var fallback))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.StringDefaults.TryGetValue(key, out var fallback))
         {
             return fallback;
         }
 
-        if (ReceivingSettingsDefaults.IntDefaults.TryGetValue(key, out var intFallback))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.IntDefaults.TryGetValue(key, out var intFallback))
         {
             return intFallback.ToString();
         }

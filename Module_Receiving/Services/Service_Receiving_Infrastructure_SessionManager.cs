@@ -32,7 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _sessionPath = Path.Combine(appFolder, "session.json");
         }
 
-        public async Task SaveSessionAsync(Model_ReceivingSession session)
+        public async Task SaveSessionAsync(Model_Receiving_Entity_ReceivingSession session)
         {
             _logger.LogInfo("SaveSessionAsync started.");
             if (session == null)
@@ -61,7 +61,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public async Task<Model_ReceivingSession?> LoadSessionAsync()
+        public async Task<Model_Receiving_Entity_ReceivingSession?> LoadSessionAsync()
         {
             if (!File.Exists(_sessionPath))
             {
@@ -77,7 +77,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
-                return JsonSerializer.Deserialize<Model_ReceivingSession>(json, options);
+                return JsonSerializer.Deserialize<Model_Receiving_Entity_ReceivingSession>(json, options);
             }
             catch (JsonException)
             {

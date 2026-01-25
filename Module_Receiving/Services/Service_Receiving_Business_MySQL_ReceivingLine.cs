@@ -26,7 +26,7 @@ public class Service_Receiving_Business_MySQL_ReceivingLine : IService_Receiving
         _errorHandler = errorHandler;
     }
 
-    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line)
+    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_Receiving_Entity_ReceivingLine line)
     {
         try
         {

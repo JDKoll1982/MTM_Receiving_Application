@@ -16,14 +16,14 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="poNumber">6-digit PO number</param>
         /// <returns>Result containing InforVisualPO with Parts collection, or null if not found</returns>
-        public Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber);
+        public Task<Model_Dao_Result<Model_Receiving_DTO_InforVisualPO?>> GetPOWithPartsAsync(string poNumber);
 
         /// <summary>
         /// Retrieves part information by Part ID for non-PO items.
         /// </summary>
         /// <param name="partID">Part identifier</param>
         /// <returns>Result containing InforVisualPart with details, or null if not found</returns>
-        public Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID);
+        public Task<Model_Dao_Result<Model_Receiving_DTO_InforVisualPart?>> GetPartByIDAsync(string partID);
 
         /// <summary>
         /// Queries same-day receiving transactions for a specific PO and Part.

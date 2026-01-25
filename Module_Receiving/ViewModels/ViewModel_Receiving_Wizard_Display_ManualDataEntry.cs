@@ -16,18 +16,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Wizard_Display_ManualDataEntry : ViewModel_Shared_Base
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_MySQL_Receiving _mysqlService;
-        private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
+        private readonly IService_Receiving_Business_MySQL_Receiving _mysqlService;
+        private readonly IService_Receiving_Infrastructure_Validation _validationService;
         private readonly IService_Window _windowService;
         private readonly IService_Help _helpService;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
-        private ObservableCollection<Model_ReceivingLoad> _loads;
+        private ObservableCollection<Model_Receiving_Entity_ReceivingLoad> _loads;
 
         [ObservableProperty]
-        private Model_ReceivingLoad? _selectedLoad;
+        private Model_Receiving_Entity_ReceivingLoad? _selectedLoad;
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
@@ -69,14 +69,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
 
         public ViewModel_Receiving_Wizard_Display_ManualDataEntry(
-            IService_ReceivingWorkflow workflowService,
-            IService_MySQL_Receiving mysqlService,
-            IService_ReceivingValidation validationService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
+            IService_Receiving_Business_MySQL_Receiving mysqlService,
+            IService_Receiving_Infrastructure_Validation validationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_Notification notificationService)
             : base(errorHandler, logger, notificationService)
         {
@@ -86,7 +86,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _validationService = validationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
-            _loads = new ObservableCollection<Model_ReceivingLoad>(_workflowService.CurrentSession.Loads);
+            _loads = new ObservableCollection<Model_Receiving_Entity_ReceivingLoad>(_workflowService.CurrentSession.Loads);
 
             _ = LoadUITextAsync();
         }
@@ -95,19 +95,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                ManualEntryAddRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAddRow);
-                ManualEntryAddMultipleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAddMultiple);
-                ManualEntryRemoveRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryRemoveRow);
-                ManualEntryAutoFillText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryAutoFill);
-                ManualEntrySaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntrySaveAndFinish);
+                ManualEntryAddRowText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryAddRow);
+                ManualEntryAddMultipleText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryAddMultiple);
+                ManualEntryRemoveRowText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryRemoveRow);
+                ManualEntryAutoFillText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryAutoFill);
+                ManualEntrySaveAndFinishText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntrySaveAndFinish);
 
-                ManualEntryColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnLoadNumber);
-                ManualEntryColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPartId);
-                ManualEntryColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWeightQty);
-                ManualEntryColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnHeatLot);
-                ManualEntryColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPkgType);
-                ManualEntryColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnPkgsPerLoad);
-                ManualEntryColumnWtPerPkgText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ManualEntryColumnWtPerPkg);
+                ManualEntryColumnLoadNumberText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnLoadNumber);
+                ManualEntryColumnPartIdText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnPartId);
+                ManualEntryColumnWeightQtyText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnWeightQty);
+                ManualEntryColumnHeatLotText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnHeatLot);
+                ManualEntryColumnPkgTypeText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnPkgType);
+                ManualEntryColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnPkgsPerLoad);
+                ManualEntryColumnWtPerPkgText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ManualEntryColumnWtPerPkg);
 
                 _logger.LogInfo("Manual Entry UI text loaded from settings successfully");
             }
@@ -152,7 +152,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     if (!string.IsNullOrWhiteSpace(currentLoad.PartID))
                     {
                         // Find source load (nearest previous row with same PartID)
-                        Model_ReceivingLoad? sourceLoad = null;
+                        Model_Receiving_Entity_ReceivingLoad? sourceLoad = null;
                         for (int j = i - 1; j >= 0; j--)
                         {
                             if (Loads[j].PartID == currentLoad.PartID)
@@ -199,7 +199,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     }
 
                     // Date: If blank (default/min value), use current date
-                    // Note: Model_ReceivingLoad initializes ReceivedDate to DateTime.Now usually, but let's ensure it.
+                    // Note: Model_Receiving_Entity_ReceivingLoad initializes ReceivedDate to DateTime.Now usually, but let's ensure it.
                     if (currentLoad.ReceivedDate == default || currentLoad.ReceivedDate == DateTime.MinValue)
                     {
                         currentLoad.ReceivedDate = DateTime.Now;
@@ -207,7 +207,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     // Employee: If blank, use employee from first row
                     // Assuming "Employee" maps to UserId or similar. 
-                    // Model_ReceivingLoad has UserId.
+                    // Model_Receiving_Entity_ReceivingLoad has UserId.
                     if (string.IsNullOrWhiteSpace(currentLoad.UserId))
                     {
                         // Try previous row first (propagation)
@@ -231,7 +231,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo($"Auto-Fill Blank Spaces completed. Updated {filledCount} fields across {Loads.Count} rows.");
 
                 // Force UI update if needed (ObservableCollection updates properties automatically if INPC is fired)
-                // Model_ReceivingLoad implements ObservableObject so it should be fine.
+                // Model_Receiving_Entity_ReceivingLoad implements ObservableObject so it should be fine.
             }
             catch (Exception ex)
             {
@@ -271,10 +271,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleTitle),
+                Title = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ManualEntryAddMultipleTitle),
                 Content = inputTextBox,
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleAdd),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleCancel),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ManualEntryAddMultipleAdd),
+                CloseButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ManualEntryAddMultipleCancel),
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Primary,
                 XamlRoot = xamlRoot
             };
@@ -300,7 +300,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public void AddNewLoad()
         {
-            var newLoad = new Model_ReceivingLoad
+            var newLoad = new Model_Receiving_Entity_ReceivingLoad
             {
                 LoadID = System.Guid.NewGuid(),
                 ReceivedDate = System.DateTime.Now,
@@ -390,7 +390,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 // The workflow service will handle the actual save logic
                 var result = await _workflowService.AdvanceToNextStepAsync();
                 
-                if (!result.Success)
+                if (!result.IsSuccess)
                 {
                     _logger.LogWarning($"Workflow advance failed: {string.Join(", ", result.ValidationErrors)}");
                     
@@ -424,7 +424,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="loadsWithHolds">List of loads requiring quality acknowledgment</param>
         /// <returns>True if user acknowledges; false if cancelled</returns>
-        private async Task<bool> ShowQualityHoldConfirmationAsync(System.Collections.Generic.List<Model_ReceivingLoad> loadsWithHolds)
+        private async Task<bool> ShowQualityHoldConfirmationAsync(System.Collections.Generic.List<Model_Receiving_Entity_ReceivingLoad> loadsWithHolds)
         {
             ArgumentNullException.ThrowIfNull(loadsWithHolds);
             var xamlRoot = _windowService.GetXamlRoot();
@@ -485,10 +485,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle),
-                Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm),
-                CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel),
+                Title = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmChangeModeTitle),
+                Content = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmChangeModeContent),
+                PrimaryButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmChangeModeConfirm),
+                CloseButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmChangeModeCancel),
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
                 XamlRoot = xamlRoot
             };

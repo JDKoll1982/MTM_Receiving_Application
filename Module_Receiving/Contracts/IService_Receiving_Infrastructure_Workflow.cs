@@ -49,7 +49,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// OBSOLETE: Use GetSessionQuery.
         /// </summary>
         [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
-        public Model_ReceivingSession CurrentSession { get; }
+        public Model_Receiving_Entity_ReceivingSession CurrentSession { get; }
 
         /// <summary>
         /// Gets or sets the current PO number being processed.
@@ -63,7 +63,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// OBSOLETE: Use GetPartLookupQuery and UpdateStep1Command.
         /// </summary>
         [Obsolete("Use GetPartLookupQuery and UpdateStep1Command via MediatR.", DiagnosticId = "RECV001")]
-        public Model_InforVisualPart? CurrentPart { get; set; }
+        public Model_Receiving_DTO_InforVisualPart? CurrentPart { get; set; }
 
         /// <summary>
         /// Gets or sets whether the current item is a non-PO item.
@@ -91,14 +91,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// OBSOLETE: Use NavigateToStepCommand.
         /// </summary>
         [Obsolete("Use NavigateToStepCommand via MediatR.", DiagnosticId = "RECV001")]
-        public Task<Model_ReceivingWorkflowStepResult> AdvanceToNextStepAsync();
+        public Task<Model_Receiving_Result_WorkflowStepResult> AdvanceToNextStepAsync();
 
         /// <summary>
         /// Goes back to the previous step.
         /// OBSOLETE: Use NavigateToStepCommand with IsEditMode=true.
         /// </summary>
         [Obsolete("Use NavigateToStepCommand with IsEditMode=true via MediatR.", DiagnosticId = "RECV001")]
-        public Model_ReceivingWorkflowStepResult GoToPreviousStep();
+        public Model_Receiving_Result_WorkflowStepResult GoToPreviousStep();
 
         /// <summary>
         /// Goes to a specific step (used for "Add Another Part/PO").
@@ -107,7 +107,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="step">Target step</param>
         /// <returns>Result indicating success</returns>
         [Obsolete("Use NavigateToStepCommand via MediatR.", DiagnosticId = "RECV001")]
-        public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step);
+        public Model_Receiving_Result_WorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step);
 
         /// <summary>
         /// Adds current loads to session and resets for next part entry.
@@ -158,7 +158,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// OBSOLETE: Use ResetCSVFilesCommand.
         /// </summary>
         [Obsolete("Use ResetCSVFilesCommand via MediatR.", DiagnosticId = "RECV001")]
-        public Task<Model_CSVDeleteResult> ResetCSVFilesAsync();
+        public Task<Model_Receiving_Result_CSVDelete> ResetCSVFilesAsync();
 
         /// <summary>
         /// Persists current session state to JSON.

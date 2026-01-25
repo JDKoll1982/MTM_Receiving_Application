@@ -67,9 +67,9 @@ public sealed partial class ViewModel_Settings_Receiving_SettingsOverview : View
     {
         try
         {
-            DefaultReceivingMode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
-            AutoSaveEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.BusinessRules.AutoSaveEnabled]);
-            ErpSyncEnabled = await GetBoolSettingAsync(ReceivingSettingsKeys.Integrations.ErpSyncEnabled, ReceivingSettingsDefaults.BoolDefaults[ReceivingSettingsKeys.Integrations.ErpSyncEnabled]);
+            DefaultReceivingMode = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultReceivingMode);
+            AutoSaveEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.BusinessRules.AutoSaveEnabled]);
+            ErpSyncEnabled = await GetBoolSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpSyncEnabled, Helper_Receiving_Infrastructure_SettingsDefaults.BoolDefaults[Helper_Receiving_Infrastructure_SettingsKeys.Integrations.ErpSyncEnabled]);
 
             AutoSaveEnabledSummary = AutoSaveEnabled ? "Enabled" : "Disabled";
             ErpSyncEnabledSummary = ErpSyncEnabled ? "Enabled" : "Disabled";
@@ -88,7 +88,7 @@ public sealed partial class ViewModel_Settings_Receiving_SettingsOverview : View
             return result.Data.Value;
         }
 
-        return ReceivingSettingsDefaults.StringDefaults.TryGetValue(key, out var fallback)
+        return Helper_Receiving_Infrastructure_SettingsDefaults.StringDefaults.TryGetValue(key, out var fallback)
             ? fallback
             : string.Empty;
     }

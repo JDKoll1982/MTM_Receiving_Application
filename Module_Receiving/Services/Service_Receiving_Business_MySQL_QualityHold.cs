@@ -30,7 +30,7 @@ public class Service_Receiving_Business_MySQL_QualityHold : IService_Receiving_B
     /// Creates a new quality hold record in the database
     /// </summary>
     /// <param name="qualityHold"></param>
-    public async Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_QualityHold qualityHold)
+    public async Task<Model_Dao_Result<int>> InsertQualityHoldAsync(Model_Receiving_Entity_QualityHold qualityHold)
     {
         _logger.LogInfo($"Inserting quality hold for Load ID: {qualityHold.LoadID}, Part: {qualityHold.PartID}, Type: {qualityHold.RestrictionType}");
 
@@ -52,7 +52,7 @@ public class Service_Receiving_Business_MySQL_QualityHold : IService_Receiving_B
     /// Retrieves all quality holds for a specific load
     /// </summary>
     /// <param name="loadId"></param>
-    public async Task<Model_Dao_Result<List<Model_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId)
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_QualityHold>>> GetQualityHoldsByLoadIDAsync(int loadId)
     {
         _logger.LogInfo($"Retrieving quality holds for Load ID: {loadId}");
 

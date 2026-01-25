@@ -13,12 +13,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Wizard_Display_ModeSelection : ViewModel_Shared_Base
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserPreferences _userPreferencesService;
         private readonly IService_Help _helpService;
         private readonly IService_Window _windowService;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
         private bool _isGuidedModeDefault;
@@ -62,12 +62,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _editAccessibilityName = "Edit Mode";
 
         public ViewModel_Receiving_Wizard_Display_ModeSelection(
-            IService_ReceivingWorkflow workflowService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
             IService_UserSessionManager sessionManager,
             IService_UserPreferences userPreferencesService,
             IService_Help helpService,
             IService_Window windowService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Notification notificationService) : base(errorHandler, logger, notificationService)
@@ -91,18 +91,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             try
             {
                 // Load UI text
-                GuidedTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionGuidedTitle);
-                GuidedDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionGuidedDescription);
-                ManualTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionManualTitle);
-                ManualDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionManualDescription);
-                EditTitleText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionEditTitle);
-                EditDescriptionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionEditDescription);
-                SetAsDefaultText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.ModeSelectionSetDefault);
+                GuidedTitleText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionGuidedTitle);
+                GuidedDescriptionText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionGuidedDescription);
+                ManualTitleText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionManualTitle);
+                ManualDescriptionText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionManualDescription);
+                EditTitleText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionEditTitle);
+                EditDescriptionText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionEditDescription);
+                SetAsDefaultText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.ModeSelectionSetDefault);
 
                 // Load accessibility text
-                GuidedAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionGuidedButton);
-                ManualAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionManualButton);
-                EditAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.ModeSelectionEditButton);
+                GuidedAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.ModeSelectionGuidedButton);
+                ManualAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.ModeSelectionManualButton);
+                EditAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.ModeSelectionEditButton);
 
                 _logger.LogInfo("Mode Selection UI text loaded from settings successfully");
             }
@@ -210,10 +210,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 var dialog = new ContentDialog
                 {
-                    Title = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle),
-                    Content = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContent),
-                    PrimaryButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue),
-                    CloseButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel),
+                    Title = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmModeSelectionTitle),
+                    Content = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmModeSelectionContent),
+                    PrimaryButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmModeSelectionContinue),
+                    CloseButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Dialogs.ConfirmModeSelectionCancel),
                     DefaultButton = ContentDialogButton.Close,
                     XamlRoot = xamlRoot
                 };

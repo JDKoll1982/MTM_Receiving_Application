@@ -32,7 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<int> SaveReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
+        public async Task<int> SaveReceivingLoadsAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
         {
             if (loads == null)
             {
@@ -55,7 +55,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public async Task<int> UpdateReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
+        public async Task<int> UpdateReceivingLoadsAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
         {
             if (loads == null)
             {
@@ -78,7 +78,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public async Task<int> DeleteReceivingLoadsAsync(List<Model_ReceivingLoad> loads)
+        public async Task<int> DeleteReceivingLoadsAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
         {
             if (loads == null)
             {
@@ -101,13 +101,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public async Task<List<Model_ReceivingLoad>> GetReceivingHistoryAsync(string partID, DateTime startDate, DateTime endDate)
+        public async Task<List<Model_Receiving_Entity_ReceivingLoad>> GetReceivingHistoryAsync(string partID, DateTime startDate, DateTime endDate)
         {
             var result = await _receivingLoadDao.GetHistoryAsync(partID, startDate, endDate);
 
             if (result.IsSuccess)
             {
-                return result.Data ?? new List<Model_ReceivingLoad>();
+                return result.Data ?? new List<Model_Receiving_Entity_ReceivingLoad>();
             }
             else
             {
@@ -115,11 +115,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 // Return empty list or throw? Original implementation returned empty list on error (implicitly via empty result)
                 // But here we know it failed.
                 // I'll return empty list to match previous behavior of returning list (even if empty).
-                return new List<Model_ReceivingLoad>();
+                return new List<Model_Receiving_Entity_ReceivingLoad>();
             }
         }
 
-        public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate)
+        public async Task<Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLoad>>> GetAllReceivingLoadsAsync(DateTime startDate, DateTime endDate)
         {
             _logger.LogInfo($"Retrieving all receiving loads from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
 

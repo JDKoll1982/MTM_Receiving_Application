@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 /// </summary>
 public interface IService_UserPreferences
 {
-    Task<Model_Dao_Result<Model_UserPreference>> GetLatestUserPreferenceAsync(string username);
+    Task<Model_Dao_Result<Model_Receiving_Entity_UserPreference>> GetLatestUserPreferenceAsync(string username);
     Task<Model_Dao_Result> UpdateDefaultModeAsync(string username, string defaultMode);
     Task<Model_Dao_Result> UpdateDefaultReceivingModeAsync(string username, string defaultMode);
     Task<Model_Dao_Result> UpdateDefaultDunnageModeAsync(string username, string defaultMode);

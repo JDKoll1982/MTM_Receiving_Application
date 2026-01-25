@@ -26,5 +26,5 @@ public class Model_Receiving_DTO_ValidationError
     /// <summary>
     /// Severity of the validation error (Info, Warning, Error).
     /// </summary>
-    public ErrorSeverity Severity { get; init; }
+    public Enum_Shared_Severity_ErrorSeverity Severity { get; init; }
 }

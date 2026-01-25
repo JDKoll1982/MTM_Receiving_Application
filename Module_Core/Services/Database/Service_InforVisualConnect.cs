@@ -1,6 +1,7 @@
-﻿using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using System;
 using System.Collections.Generic;
@@ -65,11 +66,11 @@ public class Service_InforVisualConnect : IService_InforVisual
 
     #region Purchase Order Operations
 
-    public async Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
+    public async Task<Model_Dao_Result<Model_Receiving_DTO_InforVisualPO?>> GetPOWithPartsAsync(string poNumber)
     {
         if (string.IsNullOrWhiteSpace(poNumber))
         {
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>(
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_DTO_InforVisualPO?>(
                 "PO number cannot be null or empty");
         }
 
@@ -91,25 +92,25 @@ public class Service_InforVisualConnect : IService_InforVisual
             if (!result.IsSuccess)
             {
                 _logger?.LogError($"Failed to retrieve PO {cleanPoNumber}: {result.ErrorMessage}");
-                return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>(result.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<Model_Receiving_DTO_InforVisualPO?>(result.ErrorMessage);
             }
 
             if (result.Data == null || result.Data.Count == 0)
             {
                 _logger?.LogWarning($"PO {cleanPoNumber} not found");
-                return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(null);
+                return Model_Dao_Result_Factory.Success<Model_Receiving_DTO_InforVisualPO?>(null);
             }
 
             // Convert flat DAO model to hierarchical service model
             var po = ConvertToServiceModel(result.Data);
             _logger?.LogInfo($"Successfully retrieved PO {cleanPoNumber} with {po.Parts.Count} line items");
 
-            return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(po);
+            return Model_Dao_Result_Factory.Success<Model_Receiving_DTO_InforVisualPO?>(po);
         }
         catch (Exception ex)
         {
             _logger?.LogError($"Unexpected error querying PO {cleanPoNumber}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>(
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_DTO_InforVisualPO?>(
                 $"Unexpected error: {ex.Message}", ex);
         }
     }
@@ -118,11 +119,11 @@ public class Service_InforVisualConnect : IService_InforVisual
 
     #region Part Operations
 
-    public async Task<Model_Dao_Result<Model_InforVisualPart?>> GetPartByIDAsync(string partID)
+    public async Task<Model_Dao_Result<Model_Receiving_DTO_InforVisualPart?>> GetPartByIDAsync(string partID)
     {
         if (string.IsNullOrWhiteSpace(partID))
         {
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>(
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_DTO_InforVisualPart?>(
                 "Part ID cannot be null or empty");
         }
 
@@ -141,25 +142,25 @@ public class Service_InforVisualConnect : IService_InforVisual
             if (!result.IsSuccess)
             {
                 _logger?.LogError($"Failed to retrieve Part {partID}: {result.ErrorMessage}");
-                return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>(result.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<Model_Receiving_DTO_InforVisualPart?>(result.ErrorMessage);
             }
 
             if (result.Data == null)
             {
                 _logger?.LogWarning($"Part {partID} not found");
-                return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(null);
+                return Model_Dao_Result_Factory.Success<Model_Receiving_DTO_InforVisualPart?>(null);
             }
 
             // Convert DAO model to service model
             var part = ConvertPartToServiceModel(result.Data);
             _logger?.LogInfo($"Successfully retrieved Part {partID}");
 
-            return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(part);
+            return Model_Dao_Result_Factory.Success<Model_Receiving_DTO_InforVisualPart?>(part);
         }
         catch (Exception ex)
         {
             _logger?.LogError($"Unexpected error querying Part {partID}: {ex.Message}", ex);
-            return Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>(
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_DTO_InforVisualPart?>(
                 $"Unexpected error: {ex.Message}", ex);
         }
     }
@@ -244,16 +245,16 @@ public class Service_InforVisualConnect : IService_InforVisual
     /// Converts flat DAO PO lines to hierarchical service model
     /// </summary>
     /// <param name="poLines"></param>
-    private Model_InforVisualPO ConvertToServiceModel(List<Models.InforVisual.Model_InforVisualPO> poLines)
+    private Model_Receiving_DTO_InforVisualPO ConvertToServiceModel(List<Model_InforVisualPO> poLines)
     {
         var firstLine = poLines[0];
 
-        return new Model_InforVisualPO
+        return new Model_Receiving_DTO_InforVisualPO
         {
             PONumber = firstLine.PoNumber,
             Vendor = firstLine.VendorName,
             Status = firstLine.PoStatus,
-            Parts = poLines.ConvertAll(line => new Model_InforVisualPart
+            Parts = poLines.ConvertAll(line => new Model_Receiving_DTO_InforVisualPart
             {
                 PartID = line.PartNumber,
                 Description = line.PartDescription,
@@ -270,9 +271,9 @@ public class Service_InforVisualConnect : IService_InforVisual
     /// Converts DAO part model to service model
     /// </summary>
     /// <param name="daoPart"></param>
-    private Model_InforVisualPart ConvertPartToServiceModel(Models.InforVisual.Model_InforVisualPart daoPart)
+    private Model_Receiving_DTO_InforVisualPart ConvertPartToServiceModel(Model_InforVisualPart daoPart)
     {
-        return new Model_InforVisualPart
+        return new Model_Receiving_DTO_InforVisualPart
         {
             PartID = daoPart.PartNumber,
             Description = daoPart.Description,
@@ -288,16 +289,16 @@ public class Service_InforVisualConnect : IService_InforVisual
 
     #region Mock Data Generation
 
-    private Model_Dao_Result<Model_InforVisualPO?> CreateMockPO(string poNumber)
+    private Model_Dao_Result<Model_Receiving_DTO_InforVisualPO?> CreateMockPO(string poNumber)
     {
-        var mockPO = new Model_InforVisualPO
+        var mockPO = new Model_Receiving_DTO_InforVisualPO
         {
             PONumber = poNumber,
             Vendor = "MOCK_VENDOR",
             Status = "O",
-            Parts = new List<Model_InforVisualPart>
+            Parts = new List<Model_Receiving_DTO_InforVisualPart>
             {
-                new Model_InforVisualPart
+                new Model_Receiving_DTO_InforVisualPart
                 {
                     PartID = "MOCK-PART-001",
                     POLineNumber = "1",
@@ -307,7 +308,7 @@ public class Service_InforVisualConnect : IService_InforVisual
                     RemainingQuantity = 50,
                     UnitOfMeasure = "EA"
                 },
-                new Model_InforVisualPart
+                new Model_Receiving_DTO_InforVisualPart
                 {
                     PartID = "MOCK-PART-002",
                     POLineNumber = "2",
@@ -320,12 +321,12 @@ public class Service_InforVisualConnect : IService_InforVisual
             }
         };
 
-        return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(mockPO);
+        return Model_Dao_Result_Factory.Success<Model_Receiving_DTO_InforVisualPO?>(mockPO);
     }
 
-    private Model_Dao_Result<Model_InforVisualPart?> CreateMockPart(string partID)
+    private Model_Dao_Result<Model_Receiving_DTO_InforVisualPart?> CreateMockPart(string partID)
     {
-        var mockPart = new Model_InforVisualPart
+        var mockPart = new Model_Receiving_DTO_InforVisualPart
         {
             PartID = partID,
             PartType = "MOCK_TYPE",
@@ -336,7 +337,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             UnitOfMeasure = "EA"
         };
 
-        return Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(mockPart);
+        return Model_Dao_Result_Factory.Success<Model_Receiving_DTO_InforVisualPart?>(mockPart);
     }
 
     #endregion

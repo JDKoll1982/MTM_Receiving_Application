@@ -77,7 +77,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public async Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_ReceivingLoad> loads)
+        public async Task<Model_Receiving_Result_CSVWrite> WriteToCSVAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
         {
             _logger.LogInfo($"Starting WriteToCSVAsync for {loads?.Count ?? 0} loads.");
             if (loads == null || loads.Count == 0)
@@ -85,7 +85,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 throw new ArgumentException("Loads list cannot be null or empty", nameof(loads));
             }
 
-            var result = new Model_CSVWriteResult { RecordsWritten = loads.Count };
+            var result = new Model_Receiving_Result_CSVWrite { RecordsWritten = loads.Count };
 
             // Write to local CSV (required - failure is critical)
             try
@@ -124,7 +124,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return result;
         }
 
-        public async Task WriteToFileAsync(string filePath, List<Model_ReceivingLoad> loads, bool append = true)
+        public async Task WriteToFileAsync(string filePath, List<Model_Receiving_Entity_ReceivingLoad> loads, bool append = true)
         {
             _logger.LogInfo($"WriteToFileAsync called for: {filePath}, Append: {append}");
             await Task.Run(async () =>
@@ -146,7 +146,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                     if (isNewFile)
                     {
-                        csv.WriteHeader<Model_ReceivingLoad>();
+                        csv.WriteHeader<Model_Receiving_Entity_ReceivingLoad>();
                         csv.NextRecord();
                     }
 
@@ -167,7 +167,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             });
         }
 
-        public async Task<List<Model_ReceivingLoad>> ReadFromCSVAsync(string filePath)
+        public async Task<List<Model_Receiving_Entity_ReceivingLoad>> ReadFromCSVAsync(string filePath)
         {
             _logger.LogInfo($"ReadFromCSVAsync called for: {filePath}");
             return await Task.Run(() =>
@@ -188,8 +188,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     using var reader = new StreamReader(filePath);
                     using var csv = new CsvReader(reader, config);
 
-                    var records = csv.GetRecords<Model_ReceivingLoad>();
-                    var loads = new List<Model_ReceivingLoad>(records);
+                    var records = csv.GetRecords<Model_Receiving_Entity_ReceivingLoad>();
+                    var loads = new List<Model_Receiving_Entity_ReceivingLoad>(records);
 
                     _logger.LogInfo($"Successfully read {loads.Count} records from {filePath}");
                     return loads;
@@ -202,9 +202,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             });
         }
 
-        public async Task<Model_CSVDeleteResult> ClearCSVFilesAsync()
+        public async Task<Model_Receiving_Result_CSVDelete> ClearCSVFilesAsync()
         {
-            var result = new Model_CSVDeleteResult();
+            var result = new Model_Receiving_Result_CSVDelete();
 
             // Clear local CSV
             if (File.Exists(_localCSVPath))
@@ -215,7 +215,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     {
                         using var writer = new StreamWriter(_localCSVPath);
                         using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-                        csv.WriteHeader<Model_ReceivingLoad>();
+                        csv.WriteHeader<Model_Receiving_Entity_ReceivingLoad>();
                         csv.NextRecord();
                     });
                     result.LocalDeleted = true;
@@ -237,7 +237,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     {
                         using var writer = new StreamWriter(networkPath);
                         using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-                        csv.WriteHeader<Model_ReceivingLoad>();
+                        csv.WriteHeader<Model_Receiving_Entity_ReceivingLoad>();
                         csv.NextRecord();
                         result.NetworkDeleted = true;
                     }
@@ -252,9 +252,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return result;
         }
 
-        public async Task<Model_CSVExistenceResult> CheckCSVFilesExistAsync()
+        public async Task<Model_Receiving_Result_CSVExistence> CheckCSVFilesExistAsync()
         {
-            var result = new Model_CSVExistenceResult();
+            var result = new Model_Receiving_Result_CSVExistence();
 
             await Task.Run(() =>
             {

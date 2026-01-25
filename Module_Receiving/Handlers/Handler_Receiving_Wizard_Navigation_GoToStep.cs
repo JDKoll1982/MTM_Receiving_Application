@@ -15,15 +15,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for navigating between workflow steps.
 /// Validates current step before allowing advancement.
 /// </summary>
-public class Handler_Receiving_Wizard_Navigation_GoToStep : IRequestHandler<Command_ReceivingWizard_Navigation_GoToStep, Result>
+public class Handler_Receiving_Wizard_Navigation_GoToStep : IRequestHandler<Command_Receiving_Wizard_Navigation_GoToStep, Result>
 {
-    private readonly Dao_ReceivingWorkflowSession _sessionDao;
-    private readonly IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>> _validationHandler;
+    private readonly Dao_Receiving_Repository_WorkflowSession _sessionDao;
+    private readonly IRequestHandler<Query_Receiving_Wizard_Validate_CurrentStep, Result<ValidationStatus>> _validationHandler;
     private readonly ILogger _logger;
 
     public Handler_Receiving_Wizard_Navigation_GoToStep(
-        Dao_ReceivingWorkflowSession sessionDao,
-        IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>> validationHandler,
+        Dao_Receiving_Repository_WorkflowSession sessionDao,
+        IRequestHandler<Query_Receiving_Wizard_Validate_CurrentStep, Result<ValidationStatus>> validationHandler,
         ILogger logger)
     {
         _sessionDao = sessionDao;
@@ -31,7 +31,7 @@ public class Handler_Receiving_Wizard_Navigation_GoToStep : IRequestHandler<Comm
         _logger = logger;
     }
 
-    public async Task<Result> Handle(Command_ReceivingWizard_Navigation_GoToStep request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command_Receiving_Wizard_Navigation_GoToStep request, CancellationToken cancellationToken)
     {
         _logger.Information("Navigating session {SessionId} to step {TargetStep} (EditMode: {EditMode})",
             request.SessionId, request.TargetStep, request.IsEditMode);
@@ -79,9 +79,9 @@ public class Handler_Receiving_Wizard_Navigation_GoToStep : IRequestHandler<Comm
         return Result.Success();
     }
 
-    private async Task<Result> ValidateCurrentStepAsync(ReceivingWorkflowSession session)
+    private async Task<Result> ValidateCurrentStepAsync(Model_Receiving_Entity_WorkflowSession session)
     {
-        var validationQuery = new Query_ReceivingWizard_Validate_CurrentStep(session.SessionId, session.CurrentStep);
+        var validationQuery = new Query_Receiving_Wizard_Validate_CurrentStep(session.SessionId, session.CurrentStep);
         var validationResult = await _validationHandler.Handle(validationQuery, CancellationToken.None);
 
         if (!validationResult.IsSuccess)

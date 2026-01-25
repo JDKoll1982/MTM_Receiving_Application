@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         public string ErrorMessage { get; set; } = string.Empty;
         public int RecordsSaved { get => LoadsSaved; set => LoadsSaved = value; }
         public bool IsSuccess { get => Success; set => Success = value; }
-        public Model_CSVWriteResult? CSVExportResult { get; set; }
+        public Model_Receiving_Result_CSVWrite? CSVExportResult { get; set; }
 
         public bool IsFullSuccess => LocalCSVSuccess && NetworkCSVSuccess && DatabaseSuccess;
         public bool IsPartialSuccess => (LocalCSVSuccess || DatabaseSuccess) && !IsFullSuccess;

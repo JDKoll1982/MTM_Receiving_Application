@@ -28,7 +28,7 @@ public class Dao_Receiving_Repository_Load
         return poNumber.Replace("PO-", "", StringComparison.OrdinalIgnoreCase).Trim();
     }
 
-    public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_ReceivingLoad> loads)
+    public async Task<Model_Dao_Result<int>> SaveLoadsAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
         {
@@ -87,7 +87,7 @@ public class Dao_Receiving_Repository_Load
         }
     }
 
-    public async Task<Model_Dao_Result<int>> UpdateLoadsAsync(List<Model_ReceivingLoad> loads)
+    public async Task<Model_Dao_Result<int>> UpdateLoadsAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
         {
@@ -146,7 +146,7 @@ public class Dao_Receiving_Repository_Load
         }
     }
 
-    public async Task<Model_Dao_Result<int>> DeleteLoadsAsync(List<Model_ReceivingLoad> loads)
+    public async Task<Model_Dao_Result<int>> DeleteLoadsAsync(List<Model_Receiving_Entity_ReceivingLoad> loads)
     {
         if (loads == null || loads.Count == 0)
         {
@@ -193,11 +193,11 @@ public class Dao_Receiving_Repository_Load
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetHistoryAsync(string partID, DateTime startDate, DateTime endDate)
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLoad>>> GetHistoryAsync(string partID, DateTime startDate, DateTime endDate)
     {
         try
         {
-            var loads = new List<Model_ReceivingLoad>();
+            var loads = new List<Model_Receiving_Entity_ReceivingLoad>();
             var parameters = new Dictionary<string, object>
             {
                 { "PartID", partID },
@@ -219,19 +219,19 @@ public class Dao_Receiving_Repository_Load
                 }
                 return Model_Dao_Result_Factory.Success(loads);
             }
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<List<Model_Receiving_Entity_ReceivingLoad>>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving history: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_Receiving_Entity_ReceivingLoad>>($"Error retrieving history: {ex.Message}", ex);
         }
     }
 
-    public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync(DateTime startDate, DateTime endDate)
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLoad>>> GetAllAsync(DateTime startDate, DateTime endDate)
     {
         try
         {
-            var loads = new List<Model_ReceivingLoad>();
+            var loads = new List<Model_Receiving_Entity_ReceivingLoad>();
             var parameters = new Dictionary<string, object>
             {
                 { "StartDate", startDate },
@@ -252,17 +252,17 @@ public class Dao_Receiving_Repository_Load
                 }
                 return Model_Dao_Result_Factory.Success(loads);
             }
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>(result.ErrorMessage);
+            return Model_Dao_Result_Factory.Failure<List<Model_Receiving_Entity_ReceivingLoad>>(result.ErrorMessage);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result_Factory.Failure<List<Model_ReceivingLoad>>($"Error retrieving all loads: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_Receiving_Entity_ReceivingLoad>>($"Error retrieving all loads: {ex.Message}", ex);
         }
     }
 
-    private Model_ReceivingLoad MapRowToLoad(DataRow row)
+    private Model_Receiving_Entity_ReceivingLoad MapRowToLoad(DataRow row)
     {
-        return new Model_ReceivingLoad
+        return new Model_Receiving_Entity_ReceivingLoad
         {
             LoadID = Guid.Parse(row["LoadID"]?.ToString() ?? Guid.Empty.ToString()),
             PartID = row["PartID"]?.ToString() ?? string.Empty,

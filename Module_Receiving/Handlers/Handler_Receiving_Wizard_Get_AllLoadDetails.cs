@@ -15,20 +15,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for retrieving all load details for a session.
 /// Returns loads ordered by LoadNumber.
 /// </summary>
-public class Handler_Receiving_Wizard_Get_AllLoadDetails : IRequestHandler<Query_ReceivingWizard_Get_AllLoadDetails, Result<List<LoadDetail>>>
+public class Handler_Receiving_Wizard_Get_AllLoadDetails : IRequestHandler<Query_Receiving_Wizard_Get_AllLoadDetails, Result<List<Model_Receiving_Entity_LoadDetail>>>
 {
-    private readonly Dao_ReceivingLoadDetail _loadDao;
+    private readonly Dao_Receiving_Repository_LoadDetail _loadDao;
     private readonly ILogger _logger;
 
     public Handler_Receiving_Wizard_Get_AllLoadDetails(
-        Dao_ReceivingLoadDetail loadDao,
+        Dao_Receiving_Repository_LoadDetail loadDao,
         ILogger logger)
     {
         _loadDao = loadDao;
         _logger = logger;
     }
 
-    public async Task<Result<List<LoadDetail>>> Handle(Query_ReceivingWizard_Get_AllLoadDetails request, CancellationToken cancellationToken)
+    public async Task<Result<List<Model_Receiving_Entity_LoadDetail>>> Handle(Query_Receiving_Wizard_Get_AllLoadDetails request, CancellationToken cancellationToken)
     {
         _logger.Information("Retrieving all loads for session {SessionId}", request.SessionId);
 
@@ -37,12 +37,12 @@ public class Handler_Receiving_Wizard_Get_AllLoadDetails : IRequestHandler<Query
         if (!result.IsSuccess)
         {
             _logger.Error("Failed to retrieve loads for session {SessionId}: {Error}", request.SessionId, result.ErrorMessage);
-            return Result<List<LoadDetail>>.Failure(result.ErrorMessage);
+            return Result<List<Model_Receiving_Entity_LoadDetail>>.Failure(result.ErrorMessage);
         }
 
-        var loads = result.Data ?? new List<LoadDetail>();
+        var loads = result.Data ?? new List<Model_Receiving_Entity_LoadDetail>();
         _logger.Information("Retrieved {Count} loads for session {SessionId}", loads.Count, request.SessionId);
 
-        return Result<List<LoadDetail>>.Success(loads);
+        return Result<List<Model_Receiving_Entity_LoadDetail>>.Success(loads);
     }
 }

@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     public sealed partial class View_Receiving_Workflow : Page
     {
         public ViewModel_Receiving_Wizard_Orchestration_MainWorkflow ViewModel { get; }
-        private readonly IService_ReceivingWorkflow? _workflowService;
+        private readonly IService_Receiving_Infrastructure_Workflow? _workflowService;
         private readonly IService_Help? _helpService;
 
         public View_Receiving_Workflow()
@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ViewModel = App.GetService<ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();
             this.InitializeComponent();
 
-            _workflowService = App.GetService<IService_ReceivingWorkflow>();
+            _workflowService = App.GetService<IService_Receiving_Infrastructure_Workflow>();
             _helpService = App.GetService<IService_Help>();
         }
 
@@ -39,7 +39,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             // Check for default mode and skip mode selection if set
             // Only do this if we're starting fresh (on ModeSelection step)
             var sessionManager = App.GetService<IService_UserSessionManager>();
-            var workflowService = App.GetService<IService_ReceivingWorkflow>();
+            var workflowService = App.GetService<IService_Receiving_Infrastructure_Workflow>();
 
             // Only apply default mode if we're on the mode selection screen
             // and there's a valid user session

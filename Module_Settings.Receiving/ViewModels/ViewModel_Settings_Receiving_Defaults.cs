@@ -63,13 +63,13 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         {
             IsBusy = true;
 
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackageType, DefaultPackageType);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad, DefaultPackagesPerLoad);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage, DefaultWeightPerPackage);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure, DefaultUnitOfMeasure);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation, DefaultLocation);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix, DefaultLoadNumberPrefix);
-            await SaveSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode, DefaultReceivingMode);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultPackageType, DefaultPackageType);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultPackagesPerLoad, DefaultPackagesPerLoad);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultWeightPerPackage, DefaultWeightPerPackage);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultUnitOfMeasure, DefaultUnitOfMeasure);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultLocation, DefaultLocation);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultLoadNumberPrefix, DefaultLoadNumberPrefix);
+            await SaveSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultReceivingMode, DefaultReceivingMode);
 
             ShowStatus("Receiving defaults saved.");
         }
@@ -89,13 +89,13 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
         {
             IsBusy = true;
 
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackageType);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix);
-            await ResetSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultPackageType);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultPackagesPerLoad);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultWeightPerPackage);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultUnitOfMeasure);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultLocation);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultLoadNumberPrefix);
+            await ResetSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultReceivingMode);
 
             await LoadSettingsAsync();
             ShowStatus("Receiving defaults reset.");
@@ -125,13 +125,13 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
     {
         try
         {
-            DefaultPackageType = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackageType);
-            DefaultPackagesPerLoad = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultPackagesPerLoad);
-            DefaultWeightPerPackage = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultWeightPerPackage);
-            DefaultUnitOfMeasure = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultUnitOfMeasure);
-            DefaultLocation = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLocation);
-            DefaultLoadNumberPrefix = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultLoadNumberPrefix);
-            DefaultReceivingMode = await GetStringSettingAsync(ReceivingSettingsKeys.Defaults.DefaultReceivingMode);
+            DefaultPackageType = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultPackageType);
+            DefaultPackagesPerLoad = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultPackagesPerLoad);
+            DefaultWeightPerPackage = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultWeightPerPackage);
+            DefaultUnitOfMeasure = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultUnitOfMeasure);
+            DefaultLocation = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultLocation);
+            DefaultLoadNumberPrefix = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultLoadNumberPrefix);
+            DefaultReceivingMode = await GetStringSettingAsync(Helper_Receiving_Infrastructure_SettingsKeys.Defaults.DefaultReceivingMode);
         }
         catch (Exception ex)
         {
@@ -147,7 +147,7 @@ public sealed partial class ViewModel_Settings_Receiving_Defaults : ViewModel_Sh
             return result.Data.Value;
         }
 
-        return ReceivingSettingsDefaults.StringDefaults.TryGetValue(key, out var fallback)
+        return Helper_Receiving_Infrastructure_SettingsDefaults.StringDefaults.TryGetValue(key, out var fallback)
             ? fallback
             : string.Empty;
     }

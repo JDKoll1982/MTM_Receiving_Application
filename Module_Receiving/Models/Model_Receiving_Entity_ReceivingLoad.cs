@@ -102,7 +102,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[Model_ReceivingLoad] OnPartIDChanged error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[Model_Receiving_Entity_ReceivingLoad] OnPartIDChanged error: {ex.Message}");
             }
         }
 

@@ -25,7 +25,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _dao = new Dao_Receiving_Repository_PackageTypePreference(connectionString);
         }
 
-        public async Task<Model_PackageTypePreference?> GetPreferenceAsync(string partID)
+        public async Task<Model_Receiving_Entity_PackageTypePreference?> GetPreferenceAsync(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
             {
@@ -42,7 +42,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return null;
         }
 
-        public async Task SavePreferenceAsync(Model_PackageTypePreference preference)
+        public async Task SavePreferenceAsync(Model_Receiving_Entity_PackageTypePreference preference)
         {
             if (preference == null)
             {

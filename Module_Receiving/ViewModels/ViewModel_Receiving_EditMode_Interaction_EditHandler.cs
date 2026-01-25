@@ -21,22 +21,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     /// </summary>
     public partial class ViewModel_Receiving_EditMode_Interaction_EditHandler : ViewModel_Shared_Base
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_MySQL_Receiving _mysqlService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
+        private readonly IService_Receiving_Business_MySQL_Receiving _mysqlService;
         private readonly IService_CSVWriter _csvWriter;
         private readonly IService_Pagination _paginationService;
         private readonly IService_Help _helpService;
-        private readonly IService_ReceivingSettings _receivingSettings;
-        private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Validation _validationService;
 
-        private readonly List<Model_ReceivingLoad> _allLoads = new();
-        private List<Model_ReceivingLoad> _filteredLoads = new();
-
-        [ObservableProperty]
-        private ObservableCollection<Model_ReceivingLoad> _loads;
+        private readonly List<Model_Receiving_Entity_ReceivingLoad> _allLoads = new();
+        private List<Model_Receiving_Entity_ReceivingLoad> _filteredLoads = new();
 
         [ObservableProperty]
-        private Model_ReceivingLoad? _selectedLoad;
+        private ObservableCollection<Model_Receiving_Entity_ReceivingLoad> _loads;
+
+        [ObservableProperty]
+        private Model_Receiving_Entity_ReceivingLoad? _selectedLoad;
 
         [ObservableProperty]
         private Enum_DataSourceType _currentDataSource = Enum_DataSourceType.Memory;
@@ -133,7 +133,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private int _gotoPageNumber = 1;
 
         private string? _currentCsvPath;
-        private readonly List<Model_ReceivingLoad> _deletedLoads = new();
+        private readonly List<Model_Receiving_Entity_ReceivingLoad> _deletedLoads = new();
         private readonly IService_Window _windowService;
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
@@ -153,17 +153,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="notificationService"></param>
         /// <param name="validationService"></param>
         public ViewModel_Receiving_EditMode_Interaction_EditHandler(
-            IService_ReceivingWorkflow workflowService,
-            IService_MySQL_Receiving mysqlService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
+            IService_Receiving_Business_MySQL_Receiving mysqlService,
             IService_CSVWriter csvWriter,
             IService_Pagination paginationService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Window windowService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_Notification notificationService,
-            IService_ReceivingValidation validationService)
+            IService_Receiving_Infrastructure_Validation validationService)
             : base(errorHandler, logger, notificationService)
         {
             _windowService = windowService;
@@ -175,7 +175,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _receivingSettings = receivingSettings;
             _validationService = validationService;
 
-            _loads = new ObservableCollection<Model_ReceivingLoad>();
+            _loads = new ObservableCollection<Model_Receiving_Entity_ReceivingLoad>();
             _loads.CollectionChanged += Loads_CollectionChanged;
 
             _paginationService.PageChanged += OnPageChanged;
@@ -190,29 +190,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                EditModeLoadDataFromText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeLoadDataFrom);
-                EditModeCurrentMemoryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeCurrentMemory);
-                EditModeCurrentLabelsText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeCurrentLabels);
-                EditModeHistoryText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeHistory);
-                EditModeFilterDateText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeFilterDate);
-                EditModeToText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeTo);
-                EditModeLastWeekText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeLastWeek);
-                EditModeTodayText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeToday);
-                EditModeThisWeekText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeThisWeek);
-                EditModeShowAllText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeShowAll);
-                EditModePageText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModePage);
-                EditModeOfText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeOf);
-                EditModeGoText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeGo);
-                EditModeSaveAndFinishText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeSaveAndFinish);
-                EditModeRemoveRowText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeRemoveRow);
+                EditModeLoadDataFromText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeLoadDataFrom);
+                EditModeCurrentMemoryText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeCurrentMemory);
+                EditModeCurrentLabelsText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeCurrentLabels);
+                EditModeHistoryText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeHistory);
+                EditModeFilterDateText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeFilterDate);
+                EditModeToText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeTo);
+                EditModeLastWeekText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeLastWeek);
+                EditModeTodayText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeToday);
+                EditModeThisWeekText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeThisWeek);
+                EditModeShowAllText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeShowAll);
+                EditModePageText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModePage);
+                EditModeOfText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeOf);
+                EditModeGoText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeGo);
+                EditModeSaveAndFinishText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeSaveAndFinish);
+                EditModeRemoveRowText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeRemoveRow);
 
-                EditModeColumnLoadNumberText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnLoadNumber);
-                EditModeColumnPartIdText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPartId);
-                EditModeColumnWeightQtyText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnWeightQty);
-                EditModeColumnHeatLotText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnHeatLot);
-                EditModeColumnPkgTypeText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPkgType);
-                EditModeColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnPkgsPerLoad);
-                EditModeColumnWtPerPkgText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.EditModeColumnWtPerPkg);
+                EditModeColumnLoadNumberText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnLoadNumber);
+                EditModeColumnPartIdText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnPartId);
+                EditModeColumnWeightQtyText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnWeightQty);
+                EditModeColumnHeatLotText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnHeatLot);
+                EditModeColumnPkgTypeText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnPkgType);
+                EditModeColumnPkgsPerLoadText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnPkgsPerLoad);
+                EditModeColumnWtPerPkgText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.EditModeColumnWtPerPkg);
 
                 _logger.LogInfo("Edit Mode UI text loaded from settings successfully");
             }
@@ -254,7 +254,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         private void UpdatePagedDisplay()
         {
-            var pageItems = _paginationService.GetCurrentPageItems<Model_ReceivingLoad>();
+            var pageItems = _paginationService.GetCurrentPageItems<Model_Receiving_Entity_ReceivingLoad>();
 
             Loads.Clear();
             foreach (var item in pageItems)
@@ -291,14 +291,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (e.NewItems != null)
             {
-                foreach (Model_ReceivingLoad item in e.NewItems)
+                foreach (Model_Receiving_Entity_ReceivingLoad item in e.NewItems)
                 {
                     item.PropertyChanged += Load_PropertyChanged;
                 }
             }
             if (e.OldItems != null)
             {
-                foreach (Model_ReceivingLoad item in e.OldItems)
+                foreach (Model_Receiving_Entity_ReceivingLoad item in e.OldItems)
                 {
                     item.PropertyChanged -= Load_PropertyChanged;
                 }
@@ -314,7 +314,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="e"></param>
         private void Load_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Model_ReceivingLoad.IsSelected))
+            if (e.PropertyName == nameof(Model_Receiving_Entity_ReceivingLoad.IsSelected))
             {
                 RemoveRowCommand.NotifyCanExecuteChanged();
             }
@@ -1005,7 +1005,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// Validates the list of loads before saving.
         /// </summary>
         /// <param name="loadsToValidate"></param>
-        private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_ReceivingLoad> loadsToValidate)
+        private System.Collections.Generic.List<string> ValidateLoads(IEnumerable<Model_Receiving_Entity_ReceivingLoad> loadsToValidate)
         {
             var errors = new System.Collections.Generic.List<string>();
 
@@ -1061,7 +1061,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         /// <param name="loadsWithHolds">List of loads requiring quality acknowledgment</param>
         /// <returns>True if user acknowledges; false if cancelled</returns>
-        private async Task<bool> ShowQualityHoldConfirmationAsync(List<Model_ReceivingLoad> loadsWithHolds)
+        private async Task<bool> ShowQualityHoldConfirmationAsync(List<Model_Receiving_Entity_ReceivingLoad> loadsWithHolds)
         {
             ArgumentNullException.ThrowIfNull(loadsWithHolds);
             var xamlRoot = _windowService.GetXamlRoot();

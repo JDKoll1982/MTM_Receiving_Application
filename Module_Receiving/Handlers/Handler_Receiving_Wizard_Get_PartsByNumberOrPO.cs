@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for searching parts from Infor Visual SQL Server (READ ONLY).
 /// Supports search by PO number or part number.
 /// </summary>
-public class Handler_Receiving_Wizard_Get_PartsByNumberOrPO : IRequestHandler<Query_ReceivingWizard_Get_PartsByNumberOrPO, Result<List<PartInfo>>>
+public class Handler_Receiving_Wizard_Get_PartsByNumberOrPO : IRequestHandler<Query_Receiving_Wizard_Get_PartsByNumberOrPO, Result<List<PartInfo>>>
 {
     private readonly ILogger _logger;
 
@@ -22,7 +22,7 @@ public class Handler_Receiving_Wizard_Get_PartsByNumberOrPO : IRequestHandler<Qu
         _logger = logger;
     }
 
-    public async Task<Result<List<PartInfo>>> Handle(Query_ReceivingWizard_Get_PartsByNumberOrPO request, CancellationToken cancellationToken)
+    public async Task<Result<List<PartInfo>>> Handle(Query_Receiving_Wizard_Get_PartsByNumberOrPO request, CancellationToken cancellationToken)
     {
         _logger.Information("Searching parts: SearchType={SearchType}, SearchTerm={SearchTerm}", 
             request.SearchType, request.SearchTerm);

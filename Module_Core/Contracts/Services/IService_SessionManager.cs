@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="session">Session to persist</param>
         /// <exception cref="ArgumentNullException">If session is null</exception>
         /// <exception cref="InvalidOperationException">If file write fails</exception>
-        public Task SaveSessionAsync(Model_ReceivingSession session);
+        public Task SaveSessionAsync(Model_Receiving_Entity_ReceivingSession session);
 
         /// <summary>
         /// Loads the persisted session from JSON file.
@@ -26,7 +26,7 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// Corrupted files are automatically deleted.
         /// </summary>
         /// <returns>Restored session or null</returns>
-        public Task<Model_ReceivingSession?> LoadSessionAsync();
+        public Task<Model_Receiving_Entity_ReceivingSession?> LoadSessionAsync();
 
         /// <summary>
         /// Deletes the persisted session file.

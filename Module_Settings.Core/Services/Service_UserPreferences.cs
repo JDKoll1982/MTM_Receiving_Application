@@ -27,14 +27,14 @@ public class Service_UserPreferences : IService_UserPreferences
         _errorHandler = errorHandler;
     }
 
-    public async Task<Model_Dao_Result<Model_UserPreference>> GetLatestUserPreferenceAsync(string username)
+    public async Task<Model_Dao_Result<Model_Receiving_Entity_UserPreference>> GetLatestUserPreferenceAsync(string username)
     {
         try
         {
             var normalizedUsername = username?.Trim();
             if (string.IsNullOrWhiteSpace(normalizedUsername))
             {
-                return Model_Dao_Result_Factory.Failure<Model_UserPreference>(
+                return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(
                     "Username cannot be empty");
             }
 
@@ -44,15 +44,15 @@ public class Service_UserPreferences : IService_UserPreferences
             {
                 _logger.LogError(
                    $"Failed to retrieve user {normalizedUsername}: {userResult.ErrorMessage}", null, "UserPreferences");
-                return Model_Dao_Result_Factory.Failure<Model_UserPreference>(userResult.ErrorMessage);
+                return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(userResult.ErrorMessage);
             }
 
             if (userResult.Data == null)
             {
-                return Model_Dao_Result_Factory.Failure<Model_UserPreference>("User not found");
+                return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>("User not found");
             }
 
-            var preference = new Model_UserPreference
+            var preference = new Model_Receiving_Entity_UserPreference
             {
                 Username = userResult.Data.WindowsUsername,
                 DefaultMode = null,
@@ -69,7 +69,7 @@ public class Service_UserPreferences : IService_UserPreferences
         catch (Exception ex)
         {
             _logger.LogError($"Error getting user preference for {username}", ex, "UserPreferences");
-            return Model_Dao_Result_Factory.Failure<Model_UserPreference>(ex.Message);
+            return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(ex.Message);
         }
     }
 

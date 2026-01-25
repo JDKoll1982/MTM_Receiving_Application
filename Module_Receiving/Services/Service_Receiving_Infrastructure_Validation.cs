@@ -24,99 +24,99 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _inforVisualService = inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         }
 
-        public Model_ReceivingValidationResult ValidatePONumber(string poNumber)
+        public Model_Receiving_Result_ValidationResult ValidatePONumber(string poNumber)
         {
             if (string.IsNullOrWhiteSpace(poNumber))
             {
-                return Model_ReceivingValidationResult.Error("PO number is required");
+                return Model_Receiving_Result_ValidationResult.Error("PO number is required");
             }
 
             // Allow optional "PO-" prefix followed by 1-6 digits
             if (!_regex.IsMatch(poNumber))
             {
-                return Model_ReceivingValidationResult.Error("PO number must be numeric (up to 6 digits) or in PO-###### format");
+                return Model_Receiving_Result_ValidationResult.Error("PO number must be numeric (up to 6 digits) or in PO-###### format");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidatePartID(string partID)
+        public Model_Receiving_Result_ValidationResult ValidatePartID(string partID)
         {
             if (string.IsNullOrWhiteSpace(partID))
             {
-                return Model_ReceivingValidationResult.Error("Part ID is required");
+                return Model_Receiving_Result_ValidationResult.Error("Part ID is required");
             }
 
             if (partID.Length > 50)
             {
-                return Model_ReceivingValidationResult.Error("Part ID cannot exceed 50 characters");
+                return Model_Receiving_Result_ValidationResult.Error("Part ID cannot exceed 50 characters");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateNumberOfLoads(int numLoads)
+        public Model_Receiving_Result_ValidationResult ValidateNumberOfLoads(int numLoads)
         {
             if (numLoads < 1)
             {
-                return Model_ReceivingValidationResult.Error("Number of loads must be at least 1");
+                return Model_Receiving_Result_ValidationResult.Error("Number of loads must be at least 1");
             }
 
             if (numLoads > 99)
             {
-                return Model_ReceivingValidationResult.Error("Number of loads cannot exceed 99");
+                return Model_Receiving_Result_ValidationResult.Error("Number of loads cannot exceed 99");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateWeightQuantity(decimal weightQuantity)
+        public Model_Receiving_Result_ValidationResult ValidateWeightQuantity(decimal weightQuantity)
         {
             if (weightQuantity <= 0)
             {
-                return Model_ReceivingValidationResult.Error("Weight/Quantity must be greater than 0");
+                return Model_Receiving_Result_ValidationResult.Error("Weight/Quantity must be greater than 0");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidatePackageCount(int packagesPerLoad)
+        public Model_Receiving_Result_ValidationResult ValidatePackageCount(int packagesPerLoad)
         {
             if (packagesPerLoad <= 0)
             {
-                return Model_ReceivingValidationResult.Error("Package count must be greater than 0");
+                return Model_Receiving_Result_ValidationResult.Error("Package count must be greater than 0");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateHeatLotNumber(string heatLotNumber)
+        public Model_Receiving_Result_ValidationResult ValidateHeatLotNumber(string heatLotNumber)
         {
             if (string.IsNullOrWhiteSpace(heatLotNumber))
             {
-                return Model_ReceivingValidationResult.Error("Heat/Lot number is required");
+                return Model_Receiving_Result_ValidationResult.Error("Heat/Lot number is required");
             }
 
             if (heatLotNumber.Length > 50)
             {
-                return Model_ReceivingValidationResult.Error("Heat/Lot number cannot exceed 50 characters");
+                return Model_Receiving_Result_ValidationResult.Error("Heat/Lot number cannot exceed 50 characters");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Task<Model_ReceivingValidationResult> ValidateAgainstPOQuantityAsync(decimal totalQuantity, decimal orderedQuantity, string partID)
+        public Task<Model_Receiving_Result_ValidationResult> ValidateAgainstPOQuantityAsync(decimal totalQuantity, decimal orderedQuantity, string partID)
         {
             if (totalQuantity > orderedQuantity)
             {
-                return Task.FromResult(Model_ReceivingValidationResult.Warning(
+                return Task.FromResult(Model_Receiving_Result_ValidationResult.Warning(
                     $"Total quantity ({totalQuantity:F2}) exceeds PO ordered quantity ({orderedQuantity:F2}) for part {partID}. Do you want to continue?"));
             }
 
-            return Task.FromResult(Model_ReceivingValidationResult.Success());
+            return Task.FromResult(Model_Receiving_Result_ValidationResult.Success());
         }
 
-        public async Task<Model_ReceivingValidationResult> CheckSameDayReceivingAsync(string poNumber, string partID, decimal userEnteredQuantity)
+        public async Task<Model_Receiving_Result_ValidationResult> CheckSameDayReceivingAsync(string poNumber, string partID, decimal userEnteredQuantity)
         {
             var result = await _inforVisualService.GetSameDayReceivingQuantityAsync(poNumber, partID, DateTime.Today);
 
@@ -125,16 +125,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 var sameDayQty = result.Data;
                 if (sameDayQty > 0)
                 {
-                    return Model_ReceivingValidationResult.Warning(
+                    return Model_Receiving_Result_ValidationResult.Warning(
                         $"Part {partID} was already received today. Visual shows {sameDayQty:F2} received. Your entry totals {userEnteredQuantity:F2}. Please verify.");
                 }
             }
 
             // If check fails or returns 0, don't block - just skip the warning
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateReceivingLoad(Model_ReceivingLoad load)
+        public Model_Receiving_Result_ValidationResult ValidateReceivingLoad(Model_Receiving_Entity_ReceivingLoad load)
         {
             var errors = new List<string>();
 
@@ -175,19 +175,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             if (errors.Count > 0)
             {
-                var result = Model_ReceivingValidationResult.Error(string.Join("; ", errors));
+                var result = Model_Receiving_Result_ValidationResult.Error(string.Join("; ", errors));
                 result.Errors = errors;
                 return result;
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateSession(List<Model_ReceivingLoad> loads)
+        public Model_Receiving_Result_ValidationResult ValidateSession(List<Model_Receiving_Entity_ReceivingLoad> loads)
         {
             if (loads == null || loads.Count == 0)
             {
-                return Model_ReceivingValidationResult.Error("Session must contain at least one load");
+                return Model_Receiving_Result_ValidationResult.Error("Session must contain at least one load");
             }
 
             var allErrors = new List<string>();
@@ -203,29 +203,29 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             if (allErrors.Count > 0)
             {
-                var result = Model_ReceivingValidationResult.Error($"{allErrors.Count} validation error(s) found");
+                var result = Model_Receiving_Result_ValidationResult.Error($"{allErrors.Count} validation error(s) found");
                 result.Errors = allErrors;
                 return result;
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
-        public async Task<Model_ReceivingValidationResult> ValidatePartExistsInVisualAsync(string partID)
+        public async Task<Model_Receiving_Result_ValidationResult> ValidatePartExistsInVisualAsync(string partID)
         {
             var result = await _inforVisualService.GetPartByIDAsync(partID);
 
             if (!result.Success)
             {
-                return Model_ReceivingValidationResult.Error($"Error validating part: {result.ErrorMessage}");
+                return Model_Receiving_Result_ValidationResult.Error($"Error validating part: {result.ErrorMessage}");
             }
 
             if (result.Data == null)
             {
-                return Model_ReceivingValidationResult.Error($"Part ID {partID} not found in Infor Visual database");
+                return Model_Receiving_Result_ValidationResult.Error($"Part ID {partID} not found in Infor Visual database");
             }
 
-            return Model_ReceivingValidationResult.Success();
+            return Model_Receiving_Result_ValidationResult.Success();
         }
 
         /// <summary>

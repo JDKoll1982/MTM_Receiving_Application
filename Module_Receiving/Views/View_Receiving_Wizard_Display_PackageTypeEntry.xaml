@@ -61,7 +61,7 @@
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="models:Model_ReceivingLoad">
+                    <DataTemplate x:DataType="models:Model_Receiving_Entity_ReceivingLoad">
                         <Grid Margin="0,0,0,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="16,12" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>

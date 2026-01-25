@@ -17,13 +17,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Wizard_Display_HeatLotEntry : ViewModel_Shared_Base
     {
-        private readonly IService_ReceivingWorkflow _workflowService;
-        private readonly IService_ReceivingValidation _validationService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
+        private readonly IService_Receiving_Infrastructure_Validation _validationService;
         private readonly IService_Help _helpService;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
-        private ObservableCollection<Model_ReceivingLoad> _loads = new();
+        private ObservableCollection<Model_Receiving_Entity_ReceivingLoad> _loads = new();
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
@@ -49,10 +49,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _heatLotAccessibilityName = "Heat Lot Number";
 
         public ViewModel_Receiving_Wizard_Display_HeatLotEntry(
-            IService_ReceivingWorkflow workflowService,
-            IService_ReceivingValidation validationService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
+            IService_Receiving_Infrastructure_Validation validationService,
             IService_Help helpService,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Notification notificationService) : base(errorHandler, logger, notificationService)
@@ -71,13 +71,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                HeatLotHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotHeader);
-                HeatLotAutoFillText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotAutoFill);
-                HeatLotAutoFillTooltipText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotAutoFillTooltip);
-                HeatLotLoadPrefixText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotLoadPrefix);
-                HeatLotFieldHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotFieldHeader);
-                HeatLotFieldPlaceholderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.HeatLotFieldPlaceholder);
-                HeatLotAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.HeatLotNumber);
+                HeatLotHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.HeatLotHeader);
+                HeatLotAutoFillText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.HeatLotAutoFill);
+                HeatLotAutoFillTooltipText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.HeatLotAutoFillTooltip);
+                HeatLotLoadPrefixText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.HeatLotLoadPrefix);
+                HeatLotFieldHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.HeatLotFieldHeader);
+                HeatLotFieldPlaceholderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.HeatLotFieldPlaceholder);
+                HeatLotAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.HeatLotNumber);
 
                 _logger.LogInfo("Heat/Lot UI text loaded from settings successfully");
             }

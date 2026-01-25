@@ -19,11 +19,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewModel_Shared_Base, IResettableViewModel
     {
         private readonly IService_InforVisual _inforVisualService;
-        private readonly IService_ReceivingWorkflow _workflowService;
+        private readonly IService_Receiving_Infrastructure_Workflow _workflowService;
         private readonly IService_Help _helpService;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
-        private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
         [ObservableProperty]
         private string _poNumber = string.Empty;
@@ -44,10 +44,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _poValidationMessage = string.Empty;
 
         [ObservableProperty]
-        private ObservableCollection<Model_InforVisualPart> _parts = new();
+        private ObservableCollection<Model_Receiving_DTO_InforVisualPart> _parts = new();
 
         [ObservableProperty]
-        private Model_InforVisualPart? _selectedPart;
+        private Model_Receiving_DTO_InforVisualPart? _selectedPart;
 
         [ObservableProperty]
         private string _packageType = "Skids";  // Default package type
@@ -125,13 +125,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public ViewModel_Receiving_Wizard_Display_PONumberEntry(
             IService_InforVisual inforVisualService,
-            IService_ReceivingWorkflow workflowService,
+            IService_Receiving_Infrastructure_Workflow workflowService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Help helpService,
             IService_ViewModelRegistry viewModelRegistry,
             Microsoft.Extensions.Configuration.IConfiguration configuration,
-            IService_ReceivingSettings receivingSettings,
+            IService_Receiving_Infrastructure_Settings receivingSettings,
             IService_Notification notificationService)
             : base(errorHandler, logger, notificationService)
         {
@@ -158,27 +158,27 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                PoNumberHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPurchaseOrderNumber);
-                PoStatusLabelText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryStatusLabel);
-                LoadPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryLoadPo);
-                SwitchToNonPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntrySwitchToNonPo);
-                PartIdentifierHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPartIdentifier);
-                PackageTypeAutoHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryPackageTypeAuto);
-                LookupPartButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryLookupPart);
-                SwitchToPoButtonText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntrySwitchToPo);
-                AvailablePartsHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryAvailableParts);
+                PoNumberHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryPurchaseOrderNumber);
+                PoStatusLabelText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryStatusLabel);
+                LoadPoButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryLoadPo);
+                SwitchToNonPoButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntrySwitchToNonPo);
+                PartIdentifierHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryPartIdentifier);
+                PackageTypeAutoHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryPackageTypeAuto);
+                LookupPartButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryLookupPart);
+                SwitchToPoButtonText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntrySwitchToPo);
+                AvailablePartsHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryAvailableParts);
 
-                ColumnPartIdHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnPartId);
-                ColumnDescriptionHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnDescription);
-                ColumnRemainingQtyHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty);
-                ColumnQtyOrderedHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered);
-                ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber);
+                ColumnPartIdHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryColumnPartId);
+                ColumnDescriptionHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryColumnDescription);
+                ColumnRemainingQtyHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryColumnRemainingQty);
+                ColumnQtyOrderedHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryColumnQtyOrdered);
+                ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.UiText.PoEntryColumnLineNumber);
 
-                PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPONumber);
-                LoadPoAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryLoadPo);
-                PartIdAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPartId);
-                LookupPartAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryLookupPart);
-                PartsListAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.PoEntryPartsList);
+                PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PoEntryPONumber);
+                LoadPoAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PoEntryLoadPo);
+                PartIdAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PoEntryPartId);
+                LookupPartAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PoEntryLookupPart);
+                PartsListAccessibilityName = await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Accessibility.PoEntryPartsList);
 
                 _logger.LogInfo("PO Entry UI text loaded from settings successfully");
             }
@@ -236,7 +236,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (string.IsNullOrWhiteSpace(PoNumber))
             {
-                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoRequired), Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.ErrorPoRequired), Enum_ErrorSeverity.Warning);
                 return;
             }
 
@@ -266,14 +266,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         Parts.Add(part);
                     }
 
-                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts, PoNumber, (object)Parts.Count);
+                    var msg = await _receivingSettings.FormatAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.InfoPoLoadedWithParts, PoNumber, (object)Parts.Count);
                     _workflowService.RaiseStatusMessage(msg);
                 }
                 else
                 {
                     var errorMessage = !string.IsNullOrWhiteSpace(result.ErrorMessage)
                         ? result.ErrorMessage
-                        : await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPoNotFound);
+                        : await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.ErrorPoNotFound);
                     await _errorHandler.HandleErrorAsync(errorMessage, Enum_ErrorSeverity.Error);
                     Parts.Clear();
                 }
@@ -300,7 +300,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (string.IsNullOrWhiteSpace(PartID))
             {
-                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartIdRequired), Enum_ErrorSeverity.Warning);
+                await _errorHandler.HandleErrorAsync(await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.ErrorPartIdRequired), Enum_ErrorSeverity.Warning);
                 return;
             }
 
@@ -315,12 +315,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     // Setting SelectedPart directly is enough for the workflow, but the UI might want to show it.
                     Parts.Clear();
                     Parts.Add(result.Data);
-                    var msg = await _receivingSettings.FormatAsync(ReceivingSettingsKeys.Messages.InfoPartFound, PartID);
+                    var msg = await _receivingSettings.FormatAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.InfoPartFound, PartID);
                     _workflowService.RaiseStatusMessage(msg);
                 }
                 else
                 {
-                    await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Messages.ErrorPartNotFound), Enum_ErrorSeverity.Error);
+                    await _errorHandler.HandleErrorAsync(result.ErrorMessage ?? await _receivingSettings.GetStringAsync(Helper_Receiving_Infrastructure_SettingsKeys.Messages.ErrorPartNotFound), Enum_ErrorSeverity.Error);
                     SelectedPart = null;
                     Parts.Clear();
                 }
@@ -421,7 +421,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 PackageType = "Skids";
         }
 
-        partial void OnSelectedPartChanged(Model_InforVisualPart? value)
+        partial void OnSelectedPartChanged(Model_Receiving_DTO_InforVisualPart? value)
         {
             _workflowService.CurrentPart = value;
 

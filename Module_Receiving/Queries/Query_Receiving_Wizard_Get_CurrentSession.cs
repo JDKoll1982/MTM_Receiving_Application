@@ -11,5 +11,5 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// <param name="SessionId">The session identifier</param>
     public record Query_Receiving_Wizard_Get_CurrentSession(
         Guid SessionId
-    ) : IRequest<Result<ReceivingWorkflowSession>>;
+    ) : IRequest<Result<Model_Receiving_Entity_WorkflowSession>>;
 }

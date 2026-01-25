@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <param name="partID">Part identifier</param>
         /// <returns>PackageTypePreference if found, null otherwise</returns>
         /// <exception cref="ArgumentException">If partID is null or empty</exception>
-        public Task<Model_PackageTypePreference?> GetPreferenceAsync(string partID);
+        public Task<Model_Receiving_Entity_PackageTypePreference?> GetPreferenceAsync(string partID);
 
         /// <summary>
         /// Saves or updates the package type preference for a part ID.
@@ -26,7 +26,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// <exception cref="ArgumentNullException">If preference is null</exception>
         /// <exception cref="ArgumentException">If preference.PartID is null or empty</exception>
         /// <exception cref="InvalidOperationException">If database operation fails</exception>
-        public Task SavePreferenceAsync(Model_PackageTypePreference preference);
+        public Task SavePreferenceAsync(Model_Receiving_Entity_PackageTypePreference preference);
 
         /// <summary>
         /// Deletes a package type preference for a part ID.

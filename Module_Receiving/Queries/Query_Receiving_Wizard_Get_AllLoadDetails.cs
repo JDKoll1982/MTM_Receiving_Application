@@ -13,5 +13,5 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// <param name="SessionId">The session identifier</param>
     public record Query_Receiving_Wizard_Get_AllLoadDetails(
         Guid SessionId
-    ) : IRequest<Result<List<LoadDetail>>>;
+    ) : IRequest<Result<List<Model_Receiving_Entity_LoadDetail>>>;
 }

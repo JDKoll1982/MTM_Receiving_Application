@@ -22,14 +22,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     {
         public ViewModel_Receiving_Wizard_Display_ManualDataEntry ViewModel { get; }
         private readonly IService_Focus _focusService;
-        private readonly IService_QualityHoldWarning _qualityHoldWarning;
+        private readonly IService_Receiving_Infrastructure_QualityHoldWarning _qualityHoldWarning;
         private string? _lastCheckedPartID;
 
         public View_Receiving_ManualEntry()
         {
             ViewModel = App.GetService<ViewModel_Receiving_Wizard_Display_ManualDataEntry>();
             _focusService = App.GetService<IService_Focus>();
-            _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
+            _qualityHoldWarning = App.GetService<IService_Receiving_Infrastructure_QualityHoldWarning>();
             this.DataContext = ViewModel;
             this.InitializeComponent();
 
@@ -50,7 +50,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     if (ViewModel.Loads.Count > 0)
                     {
                         // Select the last added item (assuming add to bottom)
-                        if (e.NewItems?[0] is Model_ReceivingLoad newItem)
+                        if (e.NewItems?[0] is Model_Receiving_Entity_ReceivingLoad newItem)
                         {
                             Debug.WriteLine($"[ManualEntryView] Loads_CollectionChanged: Selecting new item LoadNumber={newItem.LoadNumber}");
                             ManualEntryDataGrid.SelectedItem = newItem;
@@ -96,7 +96,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <param name="grid"></param>
         private async Task CheckQualityHoldOnCellChangeAsync(DataGrid? grid)
         {
-            if (grid?.SelectedItem is not Model_ReceivingLoad currentLoad)
+            if (grid?.SelectedItem is not Model_Receiving_Entity_ReceivingLoad currentLoad)
             {
                 return;
             }
@@ -233,7 +233,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <param name="e"></param>
         private void ManualEntryDataGrid_LoadingRow(object? sender, DataGridRowEventArgs e)
         {
-            if (e.Row.DataContext is Model_ReceivingLoad load && load.IsQualityHoldRequired)
+            if (e.Row.DataContext is Model_Receiving_Entity_ReceivingLoad load && load.IsQualityHoldRequired)
             {
                 // Apply light red background to highlight quality hold rows
                 e.Row.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(

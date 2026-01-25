@@ -17,20 +17,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for previewing copy operations.
 /// Shows what cells will be copied vs preserved before execution.
 /// </summary>
-public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Query_ReceivingWizard_Preview_CopyOperation, Result<CopyPreview>>
+public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Query_Receiving_Wizard_Preview_CopyOperation, Result<Model_Receiving_DTO_CopyPreview>>
 {
-    private readonly Dao_ReceivingLoadDetail _loadDao;
+    private readonly Dao_Receiving_Repository_LoadDetail _loadDao;
     private readonly ILogger _logger;
 
     public Handler_Receiving_Wizard_Preview_CopyOperation(
-        Dao_ReceivingLoadDetail loadDao,
+        Dao_Receiving_Repository_LoadDetail loadDao,
         ILogger logger)
     {
         _loadDao = loadDao;
         _logger = logger;
     }
 
-    public async Task<Result<CopyPreview>> Handle(Query_ReceivingWizard_Preview_CopyOperation request, CancellationToken cancellationToken)
+    public async Task<Result<Model_Receiving_DTO_CopyPreview>> Handle(Query_Receiving_Wizard_Preview_CopyOperation request, CancellationToken cancellationToken)
     {
         _logger.Information("Previewing copy operation: Session={SessionId}, Source={SourceLoad}, Targets={TargetCount}, Fields={Fields}",
             request.SessionId, request.SourceLoadNumber, request.TargetLoadNumbers.Count, request.FieldsToCopy);
@@ -40,16 +40,16 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
         if (!loadsResult.IsSuccess)
         {
             _logger.Error("Failed to retrieve loads: {Error}", loadsResult.ErrorMessage);
-            return Result<CopyPreview>.Failure(loadsResult.ErrorMessage);
+            return Result<Model_Receiving_DTO_CopyPreview>.Failure(loadsResult.ErrorMessage);
         }
 
-        var loads = loadsResult.Data ?? new List<LoadDetail>();
+        var loads = loadsResult.Data ?? new List<Model_Receiving_Entity_LoadDetail>();
         var sourceLoad = loads.FirstOrDefault(l => l.LoadNumber == request.SourceLoadNumber);
 
         if (sourceLoad == null)
         {
             _logger.Error("Source load {SourceLoad} not found", request.SourceLoadNumber);
-            return Result<CopyPreview>.Failure($"Source load {request.SourceLoadNumber} not found");
+            return Result<Model_Receiving_DTO_CopyPreview>.Failure($"Source load {request.SourceLoadNumber} not found");
         }
 
         // Calculate preview
@@ -66,7 +66,7 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
             var conflictingFields = new List<string>();
 
             // Check which fields will be copied vs preserved
-            if (request.FieldsToCopy == CopyFields.AllFields || request.FieldsToCopy == CopyFields.WeightOnly)
+            if (request.FieldsToCopy == Enum_Receiving_Type_CopyFields.AllFields || request.FieldsToCopy == Enum_Receiving_Type_CopyFields.WeightOnly)
             {
                 if (targetLoad.WeightOrQuantity != null && targetLoad.WeightOrQuantity > 0)
                     conflictingFields.Add("WeightOrQuantity");
@@ -74,7 +74,7 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
                     cellsToBeCopied++;
             }
 
-            if (request.FieldsToCopy == CopyFields.AllFields || request.FieldsToCopy == CopyFields.HeatLotOnly)
+            if (request.FieldsToCopy == Enum_Receiving_Type_CopyFields.AllFields || request.FieldsToCopy == Enum_Receiving_Type_CopyFields.HeatLotOnly)
             {
                 if (!string.IsNullOrWhiteSpace(targetLoad.HeatLot))
                     conflictingFields.Add("HeatLot");
@@ -82,7 +82,7 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
                     cellsToBeCopied++;
             }
 
-            if (request.FieldsToCopy == CopyFields.AllFields || request.FieldsToCopy == CopyFields.PackageTypeOnly)
+            if (request.FieldsToCopy == Enum_Receiving_Type_CopyFields.AllFields || request.FieldsToCopy == Enum_Receiving_Type_CopyFields.PackageTypeOnly)
             {
                 if (!string.IsNullOrWhiteSpace(targetLoad.PackageType))
                     conflictingFields.Add("PackageType");
@@ -90,7 +90,7 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
                     cellsToBeCopied++;
             }
 
-            if (request.FieldsToCopy == CopyFields.AllFields || request.FieldsToCopy == CopyFields.PackagesPerLoadOnly)
+            if (request.FieldsToCopy == Enum_Receiving_Type_CopyFields.AllFields || request.FieldsToCopy == Enum_Receiving_Type_CopyFields.PackagesPerLoadOnly)
             {
                 if (targetLoad.PackagesPerLoad != null && targetLoad.PackagesPerLoad > 0)
                     conflictingFields.Add("PackagesPerLoad");
@@ -104,7 +104,7 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
                 conflictLoads[targetLoad.LoadNumber] = conflictingFields;
         }
 
-        var preview = new CopyPreview
+        var preview = new Model_Receiving_DTO_CopyPreview
         {
             CellsToBeCopied = cellsToBeCopied,
             CellsToBePreserved = cellsToBePreserved,
@@ -114,6 +114,6 @@ public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Qu
         _logger.Information("Copy preview: {CellsToBeCopied} to copy, {CellsPreserved} to preserve, {ConflictLoads} loads with conflicts",
             cellsToBeCopied, cellsToBePreserved, conflictLoads.Count);
 
-        return Result<CopyPreview>.Success(preview);
+        return Result<Model_Receiving_DTO_CopyPreview>.Success(preview);
     }
 }

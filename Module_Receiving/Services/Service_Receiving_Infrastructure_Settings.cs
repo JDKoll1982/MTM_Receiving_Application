@@ -34,7 +34,7 @@ public class Service_Receiving_Infrastructure_Settings : IService_Receiving_Infr
             return result.Data.Value;
         }
 
-        if (ReceivingSettingsDefaults.StringDefaults.TryGetValue(key, out var defaultValue))
+        if (Helper_Receiving_Infrastructure_SettingsDefaults.StringDefaults.TryGetValue(key, out var defaultValue))
         {
             return defaultValue;
         }

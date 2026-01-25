@@ -35,7 +35,7 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="500">
                     <ItemsControl ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:Model_ReceivingLoad">
+                            <DataTemplate x:DataType="models:Model_Receiving_Entity_ReceivingLoad">
                                 <Border Margin="0,0,0,12" 
                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
                                        Padding="16" 

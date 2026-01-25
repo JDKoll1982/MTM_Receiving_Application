@@ -30,7 +30,7 @@ public class Dao_Receiving_Repository_WorkflowSession
     /// </summary>
     /// <param name="session">Session entity to create</param>
     /// <returns>Model_Dao_Result with success status</returns>
-    public async Task<Model_Dao_Result<Guid>> CreateSessionAsync(ReceivingWorkflowSession session)
+    public async Task<Model_Dao_Result<Guid>> CreateSessionAsync(Model_Receiving_Entity_WorkflowSession session)
     {
         try
         {
@@ -94,7 +94,7 @@ public class Dao_Receiving_Repository_WorkflowSession
     /// </summary>
     /// <param name="sessionId">Session identifier</param>
     /// <returns>Model_Dao_Result with session data or error</returns>
-    public async Task<Model_Dao_Result<ReceivingWorkflowSession>> GetSessionAsync(Guid sessionId)
+    public async Task<Model_Dao_Result<Model_Receiving_Entity_WorkflowSession>> GetSessionAsync(Guid sessionId)
     {
         try
         {
@@ -111,7 +111,7 @@ public class Dao_Receiving_Repository_WorkflowSession
 
             if (!result.IsSuccess)
             {
-                return new Model_Dao_Result<ReceivingWorkflowSession>
+                return new Model_Dao_Result<Model_Receiving_Entity_WorkflowSession>
                 {
                     Success = false,
                     ErrorMessage = result.ErrorMessage,
@@ -121,7 +121,7 @@ public class Dao_Receiving_Repository_WorkflowSession
 
             // For now, construct a minimal session object
             // In production, this would deserialize from stored procedure output
-            var session = new ReceivingWorkflowSession
+            var session = new Model_Receiving_Entity_WorkflowSession
             {
                 SessionId = sessionId,
                 CurrentStep = 1,
@@ -134,7 +134,7 @@ public class Dao_Receiving_Repository_WorkflowSession
                 HasUnsavedChanges = false
             };
 
-            return new Model_Dao_Result<ReceivingWorkflowSession>
+            return new Model_Dao_Result<Model_Receiving_Entity_WorkflowSession>
             {
                 Success = true,
                 Data = session
@@ -142,7 +142,7 @@ public class Dao_Receiving_Repository_WorkflowSession
         }
         catch (Exception ex)
         {
-            return new Model_Dao_Result<ReceivingWorkflowSession>
+            return new Model_Dao_Result<Model_Receiving_Entity_WorkflowSession>
             {
                 Success = false,
                 ErrorMessage = $"Unexpected error retrieving session: {ex.Message}",
@@ -156,7 +156,7 @@ public class Dao_Receiving_Repository_WorkflowSession
     /// </summary>
     /// <param name="session">Session entity to update</param>
     /// <returns>Model_Dao_Result with success status</returns>
-    public async Task<Model_Dao_Result> UpdateSessionAsync(ReceivingWorkflowSession session)
+    public async Task<Model_Dao_Result> UpdateSessionAsync(Model_Receiving_Entity_WorkflowSession session)
     {
         try
         {

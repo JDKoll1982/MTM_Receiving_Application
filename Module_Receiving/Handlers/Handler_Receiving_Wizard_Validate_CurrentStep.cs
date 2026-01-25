@@ -17,15 +17,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for validating current step and aggregating validation errors.
 /// Returns validation status with list of errors and severity levels.
 /// </summary>
-public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>>
+public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Query_Receiving_Wizard_Validate_CurrentStep, Result<ValidationStatus>>
 {
-    private readonly Dao_ReceivingWorkflowSession _sessionDao;
-    private readonly Dao_ReceivingLoadDetail _loadDao;
+    private readonly Dao_Receiving_Repository_WorkflowSession _sessionDao;
+    private readonly Dao_Receiving_Repository_LoadDetail _loadDao;
     private readonly ILogger _logger;
 
     public Handler_Receiving_Wizard_Validate_CurrentStep(
-        Dao_ReceivingWorkflowSession sessionDao,
-        Dao_ReceivingLoadDetail loadDao,
+        Dao_Receiving_Repository_WorkflowSession sessionDao,
+        Dao_Receiving_Repository_LoadDetail loadDao,
         ILogger logger)
     {
         _sessionDao = sessionDao;
@@ -33,11 +33,11 @@ public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Que
         _logger = logger;
     }
 
-    public async Task<Result<ValidationStatus>> Handle(Query_ReceivingWizard_Validate_CurrentStep request, CancellationToken cancellationToken)
+    public async Task<Result<ValidationStatus>> Handle(Query_Receiving_Wizard_Validate_CurrentStep request, CancellationToken cancellationToken)
     {
         _logger.Information("Validating session {SessionId} step {Step}", request.SessionId, request.Step);
 
-        var errors = new List<ValidationError>();
+        var errors = new List<Model_Receiving_DTO_ValidationError>();
 
         // Get session
         var sessionResult = await _sessionDao.GetSessionAsync(request.SessionId);
@@ -54,31 +54,31 @@ public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Que
         {
             if (string.IsNullOrWhiteSpace(session.PONumber))
             {
-                errors.Add(new ValidationError
+                errors.Add(new Model_Receiving_DTO_ValidationError
                 {
                     FieldName = "PONumber",
                     ErrorMessage = "PO Number is required",
-                    Severity = ErrorSeverity.Error
+                    Severity = Enum_Shared_Severity_ErrorSeverity.Error
                 });
             }
 
             if (session.PartId <= 0)
             {
-                errors.Add(new ValidationError
+                errors.Add(new Model_Receiving_DTO_ValidationError
                 {
                     FieldName = "PartId",
                     ErrorMessage = "Part must be selected",
-                    Severity = ErrorSeverity.Error
+                    Severity = Enum_Shared_Severity_ErrorSeverity.Error
                 });
             }
 
             if (session.LoadCount <= 0 || session.LoadCount > 100)
             {
-                errors.Add(new ValidationError
+                errors.Add(new Model_Receiving_DTO_ValidationError
                 {
                     FieldName = "LoadCount",
                     ErrorMessage = "Load count must be between 1 and 100",
-                    Severity = ErrorSeverity.Error
+                    Severity = Enum_Shared_Severity_ErrorSeverity.Error
                 });
             }
         }
@@ -93,11 +93,11 @@ public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Que
 
                 if (loads.Count != session.LoadCount)
                 {
-                    errors.Add(new ValidationError
+                    errors.Add(new Model_Receiving_DTO_ValidationError
                     {
                         FieldName = "LoadDetails",
                         ErrorMessage = $"Expected {session.LoadCount} loads, but found {loads.Count}",
-                        Severity = ErrorSeverity.Warning
+                        Severity = Enum_Shared_Severity_ErrorSeverity.Warning
                     });
                 }
 
@@ -105,50 +105,50 @@ public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Que
                 {
                     if (load.WeightOrQuantity <= 0)
                     {
-                        errors.Add(new ValidationError
+                        errors.Add(new Model_Receiving_DTO_ValidationError
                         {
                             FieldName = $"Load{load.LoadNumber}.WeightOrQuantity",
                             ErrorMessage = $"Load {load.LoadNumber}: Weight is required and must be greater than 0",
-                            Severity = ErrorSeverity.Error
+                            Severity = Enum_Shared_Severity_ErrorSeverity.Error
                         });
                     }
 
                     if (string.IsNullOrWhiteSpace(load.HeatLot))
                     {
-                        errors.Add(new ValidationError
+                        errors.Add(new Model_Receiving_DTO_ValidationError
                         {
                             FieldName = $"Load{load.LoadNumber}.HeatLot",
                             ErrorMessage = $"Load {load.LoadNumber}: Heat Lot is required",
-                            Severity = ErrorSeverity.Error
+                            Severity = Enum_Shared_Severity_ErrorSeverity.Error
                         });
                     }
 
                     if (string.IsNullOrWhiteSpace(load.PackageType))
                     {
-                        errors.Add(new ValidationError
+                        errors.Add(new Model_Receiving_DTO_ValidationError
                         {
                             FieldName = $"Load{load.LoadNumber}.PackageType",
                             ErrorMessage = $"Load {load.LoadNumber}: Package Type is required",
-                            Severity = ErrorSeverity.Error
+                            Severity = Enum_Shared_Severity_ErrorSeverity.Error
                         });
                     }
 
                     if (load.PackagesPerLoad <= 0)
                     {
-                        errors.Add(new ValidationError
+                        errors.Add(new Model_Receiving_DTO_ValidationError
                         {
                             FieldName = $"Load{load.LoadNumber}.PackagesPerLoad",
                             ErrorMessage = $"Load {load.LoadNumber}: Packages Per Load must be greater than 0",
-                            Severity = ErrorSeverity.Error
+                            Severity = Enum_Shared_Severity_ErrorSeverity.Error
                         });
                     }
                 }
             }
         }
 
-        var isValid = !errors.Any(e => e.Severity == ErrorSeverity.Error);
-        var errorCount = errors.Count(e => e.Severity == ErrorSeverity.Error);
-        var warningCount = errors.Count(e => e.Severity == ErrorSeverity.Warning);
+        var isValid = !errors.Any(e => e.Severity == Enum_Shared_Severity_ErrorSeverity.Error);
+        var errorCount = errors.Count(e => e.Severity == Enum_Shared_Severity_ErrorSeverity.Error);
+        var warningCount = errors.Count(e => e.Severity == Enum_Shared_Severity_ErrorSeverity.Warning);
         
         var status = new ValidationStatus(isValid, errors, errorCount, warningCount);
         _logger.Information("Validation complete for session {SessionId} step {Step}: {ErrorCount} errors, {WarningCount} warnings", 

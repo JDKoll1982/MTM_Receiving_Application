@@ -16,6 +16,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     public record Command_Receiving_Wizard_Copy_ClearAutoFilledFields(
         Guid SessionId,
         List<int> TargetLoadNumbers,
-        CopyFields FieldsToClear
+        Enum_Receiving_Type_CopyFields FieldsToClear
     ) : IRequest<Result>;
 }

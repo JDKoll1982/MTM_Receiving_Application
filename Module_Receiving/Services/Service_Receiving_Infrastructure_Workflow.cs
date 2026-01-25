@@ -27,7 +27,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
-        private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
+        private readonly List<Model_Receiving_Entity_ReceivingLoad> _currentBatchLoads = new();
 
         [Obsolete("Use NavigateToStepCommand via MediatR.", DiagnosticId = "RECV001")]
         public event EventHandler? StepChanged;
@@ -60,13 +60,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         }
         
         [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
-        public Model_ReceivingSession CurrentSession { get; private set; } = new();
+        public Model_Receiving_Entity_ReceivingSession CurrentSession { get; private set; } = new();
         
         [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public string? CurrentPONumber { get; set; }
         
         [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
-        public Model_InforVisualPart? CurrentPart { get; set; }
+        public Model_Receiving_DTO_InforVisualPart? CurrentPart { get; set; }
         
         [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public bool IsNonPOItem { get; set; }
@@ -108,7 +108,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
 
             // Start fresh
-            CurrentSession = new Model_ReceivingSession();
+            CurrentSession = new Model_Receiving_Entity_ReceivingSession();
             NumberOfLoads = 1;
 
             // Check if user has a default receiving mode set
@@ -148,7 +148,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return false; // New session
         }
 
-        public async Task<Model_ReceivingWorkflowStepResult> AdvanceToNextStepAsync()
+        public async Task<Model_Receiving_Result_WorkflowStepResult> AdvanceToNextStepAsync()
         {
             // Validate current step before advancing
             var validationErrors = new List<string>();
@@ -157,7 +157,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             {
                 case Enum_ReceivingWorkflowStep.ModeSelection:
                     // Transition handled by GoToStep
-                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
+                    return Model_Receiving_Result_WorkflowStepResult.SuccessResult(CurrentStep);
 
                 case Enum_ReceivingWorkflowStep.ManualEntry:
                     // Manual entry goes directly to saving/review
@@ -167,26 +167,26 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     if (loadsWithHolds.Count > 0)
                     {
                         validationErrors.Add($"Quality hold acknowledgment required for {loadsWithHolds.Count} load(s) before proceeding.");
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     CurrentStep = Enum_ReceivingWorkflowStep.Saving;
-                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
+                    return Model_Receiving_Result_WorkflowStepResult.SuccessResult(CurrentStep);
 
                 case Enum_ReceivingWorkflowStep.EditMode:
                     // Edit mode goes to saving/review
                     CurrentStep = Enum_ReceivingWorkflowStep.Saving;
-                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
+                    return Model_Receiving_Result_WorkflowStepResult.SuccessResult(CurrentStep);
 
                 case Enum_ReceivingWorkflowStep.POEntry:
                     if (string.IsNullOrEmpty(CurrentPONumber) && !IsNonPOItem)
                     {
                         validationErrors.Add("PO Number is required.");
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     if (CurrentPart == null)
                     {
                         validationErrors.Add("Part selection is required.");
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
 
                     // Update session with PO/Part info
@@ -200,7 +200,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     if (NumberOfLoads < 1)
                     {
                         validationErrors.Add("Number of loads must be at least 1.");
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     GenerateLoads();
                     CurrentStep = Enum_ReceivingWorkflowStep.WeightQuantityEntry;
@@ -217,7 +217,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     }
                     if (validationErrors.Count > 0)
                     {
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     CurrentStep = Enum_ReceivingWorkflowStep.HeatLotEntry;
                     break;
@@ -233,7 +233,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     }
                     if (validationErrors.Count > 0)
                     {
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     CurrentStep = Enum_ReceivingWorkflowStep.PackageTypeEntry;
                     break;
@@ -253,7 +253,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     }
                     if (validationErrors.Count > 0)
                     {
-                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                        return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
                     }
                     CurrentStep = Enum_ReceivingWorkflowStep.Review;
                     break;
@@ -269,7 +269,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
                 default:
                     validationErrors.Add($"Cannot advance from step {CurrentStep}");
-                    return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                    return Model_Receiving_Result_WorkflowStepResult.ErrorResult(validationErrors);
             }
 
             // Persist session after step change
@@ -277,7 +277,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             await PersistSessionAsync();
             _logger.LogInfo("Session persisted.");
 
-            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
+            return Model_Receiving_Result_WorkflowStepResult.SuccessResult(CurrentStep, $"Advanced to {CurrentStep}");
         }
 
         private void GenerateLoads()
@@ -294,7 +294,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             for (int i = 1; i <= NumberOfLoads; i++)
             {
-                var load = new Model_ReceivingLoad
+                var load = new Model_Receiving_Entity_ReceivingLoad
                 {
                     PartID = CurrentPart?.PartID ?? string.Empty,
                     PartType = CurrentPart?.PartType ?? string.Empty,
@@ -308,7 +308,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public Model_ReceivingWorkflowStepResult GoToPreviousStep()
+        public Model_Receiving_Result_WorkflowStepResult GoToPreviousStep()
         {
             switch (CurrentStep)
             {
@@ -333,15 +333,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     break;
 
                 default:
-                    return Model_ReceivingWorkflowStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
+                    return Model_Receiving_Result_WorkflowStepResult.ErrorResult(new List<string> { $"Cannot go back from step {CurrentStep}" });
             }
 
-            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
+            return Model_Receiving_Result_WorkflowStepResult.SuccessResult(CurrentStep, $"Returned to {CurrentStep}");
         }
-        public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step)
+        public Model_Receiving_Result_WorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step)
         {
             CurrentStep = step;
-            return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
+            return Model_Receiving_Result_WorkflowStepResult.SuccessResult(CurrentStep, $"Navigated to {CurrentStep}");
         }
 
         public async Task AddCurrentPartToSessionAsync()
@@ -525,7 +525,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task ResetWorkflowAsync()
         {
-            CurrentSession = new Model_ReceivingSession();
+            CurrentSession = new Model_Receiving_Entity_ReceivingSession();
             NumberOfLoads = 1;
             CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
             CurrentPONumber = null;
@@ -539,7 +539,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<Model_CSVDeleteResult> ResetCSVFilesAsync()
+        public async Task<Model_Receiving_Result_CSVDelete> ResetCSVFilesAsync()
         {
             _logger.LogInfo("Resetting CSV files requested.");
             return await _csvWriter.ClearCSVFilesAsync();

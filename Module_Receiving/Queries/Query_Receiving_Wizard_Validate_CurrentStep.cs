@@ -25,7 +25,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// <param name="WarningCount">Number of warnings</param>
     public record ValidationStatus(
         bool IsValid,
-        List<ValidationError> Errors,
+        List<Model_Receiving_DTO_ValidationError> Errors,
         int ErrorCount,
         int WarningCount
     );

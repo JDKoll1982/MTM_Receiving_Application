@@ -42,7 +42,7 @@ public class Service_Receiving_Infrastructure_QualityHoldWarning : IService_Rece
     }
 
     /// <inheritdoc/>
-    public async Task<bool> CheckAndWarnAsync(string? partID, Model_ReceivingLoad? load = null)
+    public async Task<bool> CheckAndWarnAsync(string? partID, Model_Receiving_Entity_ReceivingLoad? load = null)
     {
         if (!IsRestrictedPart(partID))
         {

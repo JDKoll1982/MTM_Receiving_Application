@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
     /// Validator for SaveWorkflowCommand.
     /// Validates CSV output path and save options.
     /// </summary>
-    public class Validator_Receiving_Wizard_Data_SaveAndExportCSV : AbstractValidator<Command_ReceivingWizard_Data_SaveAndExportCSV>
+    public class Validator_Receiving_Wizard_Data_SaveAndExportCSV : AbstractValidator<Command_Receiving_Wizard_Data_SaveAndExportCSV>
     {
         public Validator_Receiving_Wizard_Data_SaveAndExportCSV()
         {

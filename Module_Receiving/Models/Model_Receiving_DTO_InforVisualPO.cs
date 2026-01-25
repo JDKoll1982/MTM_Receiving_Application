@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
 
         public string Status { get; set; } = string.Empty;
 
-        public List<Model_InforVisualPart> Parts { get; set; } = new();
+        public List<Model_Receiving_DTO_InforVisualPart> Parts { get; set; } = new();
 
         /// <summary>
         /// Indicates whether this PO has any parts associated with it.

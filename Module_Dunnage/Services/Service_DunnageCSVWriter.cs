@@ -69,7 +69,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             };
         }
 
-        public async Task<Model_CSVWriteResult> WriteToCSVAsync(List<Model_DunnageLoad> loads)
+        public async Task<Model_Core_Result_CSVWrite> WriteToCSVAsync(List<Model_DunnageLoad> loads)
         {
             // Default to DunnageData.csv for backward compatibility
             return await WriteToCsvAsync(loads, "DunnageData");
@@ -81,12 +81,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// </summary>
         /// <param name="loads"></param>
         /// <param name="typeName"></param>
-        public async Task<Model_CSVWriteResult> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName)
+        public async Task<Model_Core_Result_CSVWrite> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName)
         {
             if (loads == null || loads.Count == 0)
             {
                 await _logger.LogWarningAsync("WriteToCsvAsync called with no loads to export");
-                return new Model_CSVWriteResult { ErrorMessage = "No loads to export." };
+                return new Model_Core_Result_CSVWrite { ErrorMessage = "No loads to export." };
             }
 
             try
@@ -155,7 +155,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     // FR-044: Network failure graceful handling
                 }
 
-                return new Model_CSVWriteResult
+                return new Model_Core_Result_CSVWrite
                 {
                     LocalSuccess = true,
                     LocalFilePath = localPath,
@@ -169,7 +169,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             {
                 await _logger.LogErrorAsync($"CSV export failed for type '{typeName}': {ex.Message}");
                 await _errorHandler.HandleErrorAsync($"Export failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_CSVWriteResult { ErrorMessage = $"Export failed: {ex.Message}" };
+                return new Model_Core_Result_CSVWrite { ErrorMessage = $"Export failed: {ex.Message}" };
             }
         }
 
@@ -180,7 +180,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// <param name="loads"></param>
         /// <param name="allSpecKeys"></param>
         /// <param name="filename"></param>
-        public async Task<Model_CSVWriteResult> WriteDynamicCsvAsync(
+        public async Task<Model_Core_Result_CSVWrite> WriteDynamicCsvAsync(
             List<Model_DunnageLoad> loads,
             List<string> allSpecKeys,
             string? filename = null)
@@ -188,7 +188,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             if (loads == null || loads.Count == 0)
             {
                 await _logger.LogWarningAsync("WriteDynamicCsvAsync called with no loads to export");
-                return new Model_CSVWriteResult { ErrorMessage = "No loads to export." };
+                return new Model_Core_Result_CSVWrite { ErrorMessage = "No loads to export." };
             }
 
             try
@@ -270,7 +270,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     await _logger.LogWarningAsync("Network path not available for CSV export");
                 }
 
-                return new Model_CSVWriteResult
+                return new Model_Core_Result_CSVWrite
                 {
                     LocalSuccess = true,
                     LocalFilePath = localPath,
@@ -283,7 +283,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             catch (Exception ex)
             {
                 await _errorHandler.HandleErrorAsync($"Dynamic CSV export failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_CSVWriteResult
+                return new Model_Core_Result_CSVWrite
                 {
                     LocalSuccess = false,
                     ErrorMessage = $"Export failed: {ex.Message}"
@@ -297,13 +297,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// </summary>
         /// <param name="selectedLoads"></param>
         /// <param name="includeAllSpecColumns"></param>
-        public async Task<Model_CSVWriteResult> ExportSelectedLoadsAsync(
+        public async Task<Model_Core_Result_CSVWrite> ExportSelectedLoadsAsync(
             List<Model_DunnageLoad> selectedLoads,
             bool includeAllSpecColumns = false)
         {
             if (selectedLoads == null || selectedLoads.Count == 0)
             {
-                return new Model_CSVWriteResult { ErrorMessage = "No loads selected for export." };
+                return new Model_Core_Result_CSVWrite { ErrorMessage = "No loads selected for export." };
             }
 
             try
@@ -343,7 +343,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             catch (Exception ex)
             {
                 await _errorHandler.HandleErrorAsync($"Selected loads export failed: {ex.Message}", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_CSVWriteResult { ErrorMessage = $"Export failed: {ex.Message}" };
+                return new Model_Core_Result_CSVWrite { ErrorMessage = $"Export failed: {ex.Message}" };
             }
         }
 
@@ -421,9 +421,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// </summary>
         /// <param name="filenamePattern">Optional pattern to match (e.g., "DunnageData*.csv")</param>
         /// <returns>Result indicating success/failure for local and network operations</returns>
-        public async Task<Model_CSVDeleteResult> ClearCSVFilesAsync(string? filenamePattern = null)
+        public async Task<Model_Core_Result_CSVDelete> ClearCSVFilesAsync(string? filenamePattern = null)
         {
-            var result = new Model_CSVDeleteResult();
+            var result = new Model_Core_Result_CSVDelete();
             var errors = new List<string>();
 
             try
@@ -518,6 +518,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         }
     }
 }
+
 
 
 

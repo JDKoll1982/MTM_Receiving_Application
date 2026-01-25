@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public List<Model_ReceivingLoad> Loads { get; set; } = new();
+        public List<Model_Receiving_Entity_ReceivingLoad> Loads { get; set; } = new();
 
         public bool IsNonPO { get; set; }
 
