@@ -107,37 +107,89 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 
 ## Naming Conventions
 
-**Classes:**
-- ViewModels: `ViewModel_<Module>_<Feature>` (e.g., `ViewModel_Receiving_Workflow`)
-- Views: `View_<Module>_<Feature>` (e.g., `View_Receiving_Workflow`)
-- Services: `Service_<Purpose>` with interface `IService_<Purpose>` (e.g., `IService_ReceivingWorkflow`)
-- DAOs: `Dao_<EntityName>` (e.g., `Dao_ReceivingLine`)
-- Models: `Model_<EntityName>` (e.g., `Model_ReceivingLine`)
-- Enums: `Enum_<Category>` (e.g., `Enum_ErrorSeverity`)
-- Helpers: `Helper_<Category>_<Function>` (e.g., `Helper_Database_Variables`)
+All classes follow the **4-Part Naming Standard:** `{Type}_{SubModule}_{CategoryType}_{DescriptiveName}`
 
-**CQRS Commands, Queries, Handlers, and Validators:**
-- Pattern: `{Type}_{SubModule}_{CategoryType}_{Name}`
-- **Commands:** `Command_<SubModule>_<CategoryType>_<VerbPhrase>`
+### **Type Guidelines:**
+- **Type** = What kind of class (ViewModel, View, Service, Model, DAO, Helper, Enum)
+- **SubModule** = Which module/domain (ReceivingWizard, Receiving, Shared, Database, etc.)
+- **CategoryType** = Why it exists / what category (Orchestration, Display, Entity, Repository, etc.)
+- **DescriptiveName** = EXACTLY what it represents (MUST be clear and specific, NOT vague)
+
+### **1. ViewModels:** `ViewModel_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Orchestration_`, `Display_`, `Dialog_`, `Panel_`
+- **Examples (CLEAR - NOT vague):**
+  - `ViewModel_ReceivingWizard_Orchestration_WorkflowController`
+  - `ViewModel_ReceivingWizard_Display_LoadEntryGrid`
+  - `ViewModel_ReceivingWizard_Panel_CopyPreviewConfirmation`
+
+### **2. Views:** `View_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Orchestration_`, `Display_`, `Dialog_`, `Panel_`
+- **Examples (CLEAR - NOT vague):**
+  - `View_ReceivingWizard_Orchestration_WorkflowConsolidated`
+  - `View_ReceivingWizard_Display_LoadEntryGrid`
+  - `View_ReceivingWizard_Dialog_CopyPreviewConfirmation`
+
+### **3. Services:** `Service_{SubModule}_{CategoryType}_{DescriptiveName}` + `IService_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Orchestration_`, `Business_`, `Infrastructure_`, `Utility_`
+- **Examples (CLEAR - NOT vague):**
+  - `Service_ReceivingWizard_Orchestration_WorkflowStateMachine` / `IService_ReceivingWizard_Orchestration_WorkflowStateMachine`
+  - `Service_ReceivingWizard_Business_LoadValidation` / `IService_ReceivingWizard_Business_LoadValidation`
+  - `Service_ReceivingWizard_Infrastructure_CSVExporter` / `IService_ReceivingWizard_Infrastructure_CSVExporter`
+
+### **4. Models:** `Model_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Entity_`, `DTO_`, `Result_`, `Request_`, `Response_`
+- **Examples (CLEAR - NOT vague):**
+  - `Model_ReceivingWizard_Entity_WorkflowSession`
+  - `Model_ReceivingWizard_Entity_LoadDetail`
+  - `Model_ReceivingWizard_Result_CopyOperationResult`
+  - `Model_ReceivingWizard_DTO_ValidationError`
+  - `Model_ReceivingWizard_Request_SaveWorkflowRequest`
+
+### **5. DAOs:** `Dao_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Repository_`, `DataAccess_`, `Query_`
+- **Examples (CLEAR - NOT vague):**
+  - `Dao_ReceivingWizard_Repository_WorkflowSession`
+  - `Dao_ReceivingWizard_Repository_LoadDetail`
+  - `Dao_ReceivingWizard_DataAccess_CompletedTransaction`
+
+### **6. Helpers:** `Helper_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Database_`, `FileIO_`, `Validation_`, `Transformation_`, `Infrastructure_`
+- **Examples (CLEAR - NOT vague):**
+  - `Helper_Database_Infrastructure_StoredProcedureExecution`
+  - `Helper_FileIO_Infrastructure_CSVWriterUtility`
+  - `Helper_Validation_Business_DataFormatValidator`
+  - `Helper_Transformation_Infrastructure_EntityMapper`
+
+### **7. Enums:** `Enum_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **CategoryType:** `Status_`, `Type_`, `State_`, `Mode_`, `Severity_`
+- **Examples (CLEAR - NOT vague):**
+  - `Enum_ReceivingWizard_State_WorkflowStep`
+  - `Enum_ReceivingWizard_Type_CopyFieldSelection`
+  - `Enum_ReceivingWizard_Mode_WorkflowMode`
+  - `Enum_Shared_Severity_ErrorSeverity`
+
+### **CQRS Commands, Queries, Handlers, and Validators:**
+- Pattern: `{Type}_{SubModule}_{CategoryType}_{DescriptiveName}`
+- **Commands:** `Command_<SubModule>_<CategoryType>_<DescriptiveName>`
   - Examples:
     - `Command_ReceivingWizard_Navigation_StartNewWorkflow`
     - `Command_ReceivingWizard_Data_EnterOrderAndPart`
     - `Command_ReceivingWizard_Copy_FieldsToEmptyCells`
-- **Queries:** `Query_<SubModule>_<CategoryType>_<VerbPhrase>`
+- **Queries:** `Query_<SubModule>_<CategoryType>_<DescriptiveName>`
   - Examples:
     - `Query_ReceivingWizard_Get_CurrentSession`
     - `Query_ReceivingWizard_Validate_CurrentStep`
     - `Query_ReceivingWizard_Preview_CopyOperation`
-- **Handlers:** `Handler_<SubModule>_<CategoryType>_<VerbPhrase>`
+- **Handlers:** `Handler_<SubModule>_<CategoryType>_<DescriptiveName>`
   - Examples:
     - `Handler_ReceivingWizard_Navigation_StartNewWorkflow`
     - `Handler_ReceivingWizard_Data_EnterOrderAndPart`
-- **Validators:** `Validator_<SubModule>_<CategoryType>_<VerbPhrase>`
+- **Validators:** `Validator_<SubModule>_<CategoryType>_<DescriptiveName>`
   - Examples:
     - `Validator_ReceivingWizard_Data_EnterOrderAndPart`
     - `Validator_ReceivingWizard_Copy_FieldsToEmptyCells`
 
-CategoryType Guidelines:
+### **CategoryType Guidelines for CQRS:**
 - `Navigation_*` = Step/workflow movement commands
 - `Data_*` = Data entry or updates
 - `Copy_*` = Copy or bulk operations
