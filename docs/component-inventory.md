@@ -35,8 +35,8 @@ WinUI 3 desktop application with modular MVVM architecture. All views use `x:Bin
 ### Workflow Views (Linear Wizard)
 
 - **View_Receiving_Workflow**: Main workflow container with navigation
-- **View_Receiving_ModeSelection**: Choose between Standard/Manual/Edit modes
-- **View_Receiving_POEntry**: Purchase Order validation and entry
+- **View_Receiving_ModeSelection_Display_ModeSelection**: Choose between Standard/Manual/Edit modes
+- **Old_View_Receiving_Wizard_Display_PoEntry**: Purchase Order validation and entry
 - **View_Receiving_LoadEntry**: Carrier and packing slip details
 - **View_Receiving_WeightQuantity**: Weight and quantity capture
 - **View_Receiving_HeatLot**: Heat number and lot number entry
@@ -45,7 +45,7 @@ WinUI 3 desktop application with modular MVVM architecture. All views use `x:Bin
 
 ### Alternate Modes
 
-- **View_Receiving_ManualEntry**: Manual data entry without PO validation
+- **View_Receiving_Manual_Display_DataEntry**: Manual data entry without PO validation
 - **View_Receiving_EditMode**: Edit existing receiving records
 
 ## Module_Dunnage Components

@@ -5,7 +5,7 @@ using System.Linq;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Receiving.Models;
+
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -249,7 +249,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StatusMessageRaised?.Invoke(this, "Session cleared");
         }
 
-        public async Task<Model_Core_Result_CSVDelete> ResetCSVFilesAsync()
+        public async Task<Model_Dunnage_Result_CSVDelete> ResetCSVFilesAsync()
         {
             return await _csvWriter.ClearCSVFilesAsync();
         }
@@ -326,7 +326,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             };
         }
 
-        public async Task<Model_Core_Result_CSVDelete> DeleteCSVAndResetAsync()
+        public async Task<Model_Dunnage_Result_CSVDelete> DeleteCSVAndResetAsync()
         {
             var deleteResult = await _csvWriter.ClearCSVFilesAsync();
             ClearSession();

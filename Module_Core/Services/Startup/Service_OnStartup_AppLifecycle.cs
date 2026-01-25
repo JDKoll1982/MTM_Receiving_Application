@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,21 +17,18 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IService_Authentication _authService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_ErrorHandler _errorHandler;
-        private readonly IService_CSVWriter _csvWriter;
         private View_Shared_SplashScreenWindow? _splashScreen;
 
         public Service_OnStartup_AppLifecycle(
             IServiceProvider serviceProvider,
             IService_Authentication authService,
             IService_UserSessionManager sessionManager,
-            IService_ErrorHandler errorHandler,
-            IService_CSVWriter csvWriter)
+            IService_ErrorHandler errorHandler)
         {
             _serviceProvider = serviceProvider;
             _authService = authService;
             _sessionManager = sessionManager;
             _errorHandler = errorHandler;
-            _csvWriter = csvWriter;
         }
 
         public async Task StartAsync()

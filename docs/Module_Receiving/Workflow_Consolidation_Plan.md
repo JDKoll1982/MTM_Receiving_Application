@@ -95,7 +95,7 @@ ModeSelection → POEntry → PartSelection → LoadEntry → WeightQuantityEntr
 
 ## Technical Implementation Strategy
 
-### Phase 1: Create New Consolidated Views
+### Phase 1: Create New Wizard Views
 - `View_Receiving_OrderPartSelection.xaml` - Step 1
 - `View_Receiving_LoadDetails.xaml` - Step 2
 - `View_Receiving_ReviewSave.xaml` - Step 3
@@ -131,7 +131,7 @@ ModeSelection → POEntry → PartSelection → LoadEntry → WeightQuantityEntr
 
 1. **Data Loss:** Maintain session persistence throughout
 2. **User Confusion:** Provide clear UI indicators and help text
-3. **Validation Errors:** Show inline validation in consolidated steps
+3. **Validation Errors:** Show inline validation in Wizard steps
 4. **Performance:** Optimize data grid rendering for multiple loads
 
 ## Success Metrics

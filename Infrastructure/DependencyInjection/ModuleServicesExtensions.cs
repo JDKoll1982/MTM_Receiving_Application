@@ -1,10 +1,6 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Receiving.Services;
-using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
@@ -73,53 +69,8 @@ public static class ModuleServicesExtensions
         var mySqlConnectionString = configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
-        // DAOs (Singleton - Stateless data access objects)
-        services.AddSingleton(_ => new Dao_Receiving_Repository_Load(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_Receiving_Repository_Line(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_Receiving_Repository_PackageTypePreference(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_Receiving_Repository_QualityHold(mySqlConnectionString));
 
-        // Services (Singleton - Stateless business logic)
-        services.AddSingleton<IService_Receiving_Business_MySQL_Receiving>(sp =>
-        {
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_Receiving_Business_MySQL_Receiving(mySqlConnectionString, logger);
-        });
-        services.AddTransient<IService_Receiving_Business_MySQL_ReceivingLine, Service_Receiving_Business_MySQL_ReceivingLine>();
-        services.AddSingleton<IService_Receiving_Business_MySQL_PackagePreferences>(_ =>
-            new Service_Receiving_Business_MySQL_PackagePreferences(mySqlConnectionString));
-        services.AddSingleton<IService_Receiving_Business_MySQL_QualityHold, Service_Receiving_Business_MySQL_QualityHold>();
-        services.AddSingleton<IService_Receiving_Infrastructure_QualityHoldWarning, Service_Receiving_Infrastructure_QualityHoldWarning>();
-        services.AddSingleton<IService_SessionManager>(sp =>
-        {
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_Receiving_Infrastructure_SessionManager(logger);
-        });
-        services.AddSingleton<IService_CSVWriter>(sp =>
-        {
-            var sessionManager = sp.GetRequiredService<IService_UserSessionManager>();
-            var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_Receiving_Infrastructure_CSVWriter(sessionManager, logger);
-        });
-        services.AddSingleton<IService_Receiving_Infrastructure_Validation, Service_Receiving_Infrastructure_Validation>();
-        services.AddSingleton<IService_Receiving_Infrastructure_Workflow, Service_Receiving_Infrastructure_Workflow>();
         services.AddTransient<IService_Pagination, Service_Pagination>();
-
-        // Settings
-        services.AddSingleton<Module_Receiving.Contracts.IService_Receiving_Infrastructure_Settings,
-            Module_Receiving.Services.Service_Receiving_Infrastructure_Settings>();
-
-        // ViewModels (Transient - Per-view instances with state)
-        services.AddTransient<ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_ModeSelection>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_ManualDataEntry>();
-        services.AddTransient<ViewModel_Receiving_EditMode_Interaction_EditHandler>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_PONumberEntry>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_LoadCountEntry>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_WeightQuantityEntry>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_HeatLotEntry>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_PackageTypeEntry>();
-        services.AddTransient<ViewModel_Receiving_Wizard_Display_ReviewAndConfirmation>();
 
         return services;
     }
@@ -370,20 +321,11 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Settings_SharedPaths>();
 
         // Navigation Hubs
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_NavigationHub>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_NavigationHub>();
         services.AddTransient<Module_Settings.Routing.ViewModels.ViewModel_Settings_Routing_NavigationHub>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_NavigationHub>();
         services.AddTransient<ViewModel_Settings_DeveloperTools_NavigationHub>();
-
-        // Receiving Settings Pages
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_SettingsOverview>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Defaults>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Validation>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_UserPreferences>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_BusinessRules>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_Integrations>();
 
         // Dunnage Settings Pages
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_SettingsOverview>();
@@ -454,11 +396,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Audit>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences>();
-
-        // Receiving Settings Views
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_SettingsOverview>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Validation>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog>();

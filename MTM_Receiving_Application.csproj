@@ -71,13 +71,9 @@
     </ItemGroup>
     <!-- Exclude test project files from compilation -->
     <ItemGroup>
-        <Compile Remove="MTM_Receiving_Application.Tests\**" />
         <Compile Remove="Properties\**" />
-        <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
         <EmbeddedResource Remove="Properties\**" />
-        <None Remove="MTM_Receiving_Application.Tests\**" />
         <None Remove="Properties\**" />
-        <Page Remove="MTM_Receiving_Application.Tests\**" />
         <Page Remove="Properties\**" />
     </ItemGroup>
     <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon

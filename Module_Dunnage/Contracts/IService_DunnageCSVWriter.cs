@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
+
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Contracts;
@@ -23,13 +23,13 @@ public interface IService_DunnageCSVWriter
     /// <param name="loads">List of loads to export</param>
     /// <param name="typeName">Dunnage type name for filename</param>
     /// <returns>File paths (local and network) and success status</returns>
-    public Task<Model_Core_Result_CSVWrite> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName);
+    public Task<Model_Dunnage_Result_CSVWrite> WriteToCsvAsync(List<Model_DunnageLoad> loads, string typeName);
 
     /// <summary>
     /// Write dunnage loads to CSV file (backward compatibility)
     /// </summary>
     /// <param name="loads"></param>
-    public Task<Model_Core_Result_CSVWrite> WriteToCSVAsync(List<Model_DunnageLoad> loads);
+    public Task<Model_Dunnage_Result_CSVWrite> WriteToCSVAsync(List<Model_DunnageLoad> loads);
 
     // ============================================
     // NEW METHODS (spec 010-dunnage-complete)
@@ -49,7 +49,7 @@ public interface IService_DunnageCSVWriter
     /// RFC 4180 compliant (CsvHelper escaping)
     /// Dual-path write: local (%APPDATA%) always succeeds, network (\\MTMDC\) best-effort
     /// </remarks>
-    public Task<Model_Core_Result_CSVWrite> WriteDynamicCsvAsync(
+    public Task<Model_Dunnage_Result_CSVWrite> WriteDynamicCsvAsync(
         List<Model_DunnageLoad> loads,
         List<string> allSpecKeys,
         string? filename = null);
@@ -61,7 +61,7 @@ public interface IService_DunnageCSVWriter
     /// <param name="selectedLoads">Loads selected in DataGrid</param>
     /// <param name="includeAllSpecColumns">If true, includes all spec keys across all types. If false, only keys used by selected loads' types.</param>
     /// <returns>CSV write result</returns>
-    public Task<Model_Core_Result_CSVWrite> ExportSelectedLoadsAsync(
+    public Task<Model_Dunnage_Result_CSVWrite> ExportSelectedLoadsAsync(
         List<Model_DunnageLoad> selectedLoads,
         bool includeAllSpecColumns = false);
 
@@ -91,5 +91,5 @@ public interface IService_DunnageCSVWriter
     /// </summary>
     /// <param name="filenamePattern">Optional filename pattern to match (e.g., "DunnageData_*.csv"). If null, clears all CSV files.</param>
     /// <returns>CSV clear result with counts of cleared files and any errors</returns>
-    public Task<Model_Core_Result_CSVDelete> ClearCSVFilesAsync(string? filenamePattern = null);
+    public Task<Model_Dunnage_Result_CSVDelete> ClearCSVFilesAsync(string? filenamePattern = null);
 }

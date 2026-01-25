@@ -250,7 +250,7 @@ $errorText = $window.FindName("ErrorText")
 # Set default password
 $passwordBox.Password = "SHOP"
 
-# PO Number auto-formatting (like View_Receiving_POEntry.xaml)
+# PO Number auto-formatting (like Old_View_Receiving_Wizard_Display_PoEntry.xaml)
 $poNumberTextBox.Add_LostFocus({
         $text = $poNumberTextBox.Text.Trim().ToUpper()
     

@@ -350,6 +350,18 @@ If VS Code shows different fields, follow the UI.
 - **Example prompts:**
   - “#mcp_oraios_serena_onboarding”
   - “Onboard Serena, then locate entry points and DI configuration.”
+	- “Generate onboarding steps for this new codebase.”
+	- “Create a checklist for onboarding new developers.”
+	- “Develop a training plan for new team members.”
+	- “Implement a mentorship program for new hires.”
+	- “Create a knowledge base for common onboarding questions.”
+	- “Develop a buddy system to pair new hires with experienced team members.”
+	- “Implement regular check-ins for new hires to address questions and concerns.”
+	- “Create a feedback loop for new hires to share their onboarding experience.”
+	- “Establish a buddy system for new hires to connect with experienced team members.”
+	- “Implement a shadowing program for new hires to observe experienced team members.”
+	- “Create a resource library with documentation and tutorials for new hires.”
+
 
 ### `mcp_oraios_serena_think_about_collected_information`
 
@@ -360,3 +372,29 @@ If VS Code shows different fields, follow the UI.
 - **Example prompts:**
   - “After exploring 5 files, run #mcp_oraios_serena_think_about_collected_information.”
   - “Decide whether more context is needed before implementing changes.”
+
+  ---
+
+  ## Context7 MCP tools (`mcp_context7_*`)
+  ### `mcp_context7_analyze_code_quality`
+  - **Does:** Analyzes code quality and suggests improvements.
+	- **Use cases:** Identify code smells, suggest refactoring opportunities.
+	- **How to invoke:** Call with no parameters.
+	- **Safety:** Read-only.
+	- **Example prompts:**
+	- “Analyze the code quality of this repo.”
+	- “Identify potential refactoring opportunities in the codebase.”
+	- “Suggest improvements for code readability and maintainability.”
+	- “Evaluate the effectiveness of existing tests and suggest enhancements.”
+	- “Provide a summary of code quality metrics and trends.”
+	- “Identify areas of high technical debt and propose remediation strategies.”
+	- “Assess the impact of recent changes on code quality.”
+	- “Propose new metrics for measuring code quality.”
+	- “Identify best practices for maintaining code quality over time.”
+	- “Recommend tools and techniques for continuous code quality improvement.”
+	- “Suggest strategies for fostering a culture of code quality within the team.”
+	- “Identify potential training opportunities for the team to improve code quality skills.”
+	- “Propose a plan for regular code quality assessments and feedback loops.”
+	- “Develop a roadmap for implementing code quality initiatives.”
+	- “Create a communication plan to share code quality insights with stakeholders.”
+	- “Establish a code quality champions program to promote best practices.”

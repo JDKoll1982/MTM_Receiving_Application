@@ -241,7 +241,7 @@ log.configure({
   fileLogging: {
     enabled: true,
     outputDir: 'playwright-logs/organized-logs',
-    forceConsolidated: false, // One file per test
+    forceWizard: false, // One file per test
   },
 });
 
@@ -310,7 +310,7 @@ log.configure({
   fileLogging: {
     enabled: true,
     outputDir: 'playwright-logs',
-    forceConsolidated: false, // One file per test
+    forceWizard: false, // One file per test
   },
 });
 

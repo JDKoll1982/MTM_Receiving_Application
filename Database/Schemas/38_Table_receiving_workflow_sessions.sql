@@ -2,7 +2,7 @@
 -- Receiving Workflow Consolidation - Session Management
 -- Feature: copilot/follow-instructions-in-agent-files
 -- Table: receiving_workflow_sessions
--- Purpose: Tracks workflow sessions for 3-step consolidated receiving process
+-- Purpose: Tracks workflow sessions for 3-step Wizard receiving process
 -- =============================================
 
 CREATE TABLE IF NOT EXISTS receiving_workflow_sessions (
@@ -40,4 +40,4 @@ CREATE TABLE IF NOT EXISTS receiving_workflow_sessions (
     -- Constraints
     CONSTRAINT chk_current_step CHECK (current_step BETWEEN 1 AND 3),
     CONSTRAINT chk_load_count CHECK (load_count BETWEEN 1 AND 100)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Workflow sessions for consolidated receiving process';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Workflow sessions for Wizard receiving process';

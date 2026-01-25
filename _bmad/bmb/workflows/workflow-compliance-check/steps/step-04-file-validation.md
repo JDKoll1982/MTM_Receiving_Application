@@ -96,7 +96,7 @@ For each step file:
 - **≤ 5K:** ✅ Optimal - Excellent performance and maintainability
 - **5K-7K:** ✅ Good - Good balance of content and performance
 - **7K-10K:** ⚠️ Acceptable - Consider content optimization
-- **10K-12K:** ⚠️ Concern - Content should be consolidated or split
+- **10K-12K:** ⚠️ Concern - Content should be Wizard or split
 - **> 15K:** ❌ Action Required - File must be optimized (split content, remove redundancy)
 
 **Document optimization opportunities:**

@@ -7,7 +7,7 @@ This task list outlines all work required to consolidate the Module_Receiving wo
 
 ### Phase 1: Planning & Design ✅
 - [x] Analyze current workflow structure
-- [x] Design consolidated 3-step workflow
+- [x] Design Wizard 3-step workflow
 - [x] Create UI mockups
 - [x] Document consolidation plan
 - [x] Create task list
@@ -15,7 +15,7 @@ This task list outlines all work required to consolidate the Module_Receiving wo
 ### Phase 2: Enum & Model Updates
 
 #### 2.1 Update Enum_ReceivingWorkflowStep
-- [ ] Add new consolidated step enums:
+- [ ] Add new Wizard step enums:
   - `OrderPartSelection = 20` (replaces POEntry, PartSelection, LoadEntry)
   - `LoadDetailsEntry = 21` (replaces WeightQuantityEntry, HeatLotEntry, PackageTypeEntry)
   - `ReviewSave = 22` (replaces Review, Saving, Complete)
@@ -164,7 +164,7 @@ This task list outlines all work required to consolidate the Module_Receiving wo
   - `LoadDetailsEntry` → `ReviewSave`
   - `ReviewSave` → (internal save) → Complete
 - [ ] Update `GoToPreviousStep()` for new step flow
-- [ ] Update validation logic for consolidated steps
+- [ ] Update validation logic for Wizard steps
 - [ ] Update `StartWorkflowAsync()` to use new steps
 - [ ] Update `ResetWorkflowAsync()` to use new steps
 - [ ] Maintain backward compatibility for old sessions
@@ -176,7 +176,7 @@ This task list outlines all work required to consolidate the Module_Receiving wo
 - [ ] File: `Module_Receiving/Contracts/IService_ReceivingWorkflow.cs`
 
 #### 5.3 Update Service_ReceivingValidation
-- [ ] Review validation methods for consolidated step compatibility
+- [ ] Review validation methods for Wizard step compatibility
 - [ ] Add batch validation methods if needed
 - [ ] Update validation error messages
 - [ ] File: `Module_Receiving/Services/Service_ReceivingValidation.cs`

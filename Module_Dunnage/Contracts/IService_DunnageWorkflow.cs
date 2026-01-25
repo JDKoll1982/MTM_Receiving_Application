@@ -18,14 +18,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         public Task<bool> StartWorkflowAsync();
         public Task<Model_Dunnage_Result_WorkflowStep> AdvanceToNextStepAsync();
-        public Task<Model_Core_Result_CSVDelete> DeleteCSVAndResetAsync();
+        public Task<Model_Dunnage_Result_CSVDelete> DeleteCSVAndResetAsync();
         public void GoToStep(Enum_DunnageWorkflowStep step);
         public Task<Model_Dunnage_Result_Save> SaveSessionAsync();
         public Task<Model_Dunnage_Result_Save> SaveToCSVOnlyAsync();
         public Task<Model_Dunnage_Result_Save> SaveToDatabaseOnlyAsync();
         public void ClearSession();
 
-        public Task<Model_Core_Result_CSVDelete> ResetCSVFilesAsync();
+        public Task<Model_Dunnage_Result_CSVDelete> ResetCSVFilesAsync();
         public void AddCurrentLoadToSession();
     }
 }

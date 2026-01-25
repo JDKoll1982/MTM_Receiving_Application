@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
+
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.Services;
@@ -25,52 +25,6 @@ public class Service_UserPreferences : IService_UserPreferences
         _userDao = userDao;
         _logger = logger;
         _errorHandler = errorHandler;
-    }
-
-    public async Task<Model_Dao_Result<Model_Receiving_Entity_UserPreference>> GetLatestUserPreferenceAsync(string username)
-    {
-        try
-        {
-            var normalizedUsername = username?.Trim();
-            if (string.IsNullOrWhiteSpace(normalizedUsername))
-            {
-                return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(
-                    "Username cannot be empty");
-            }
-
-            var userResult = await _userDao.GetUserByWindowsUsernameAsync(normalizedUsername);
-
-            if (!userResult.IsSuccess)
-            {
-                _logger.LogError(
-                   $"Failed to retrieve user {normalizedUsername}: {userResult.ErrorMessage}", null, "UserPreferences");
-                return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(userResult.ErrorMessage);
-            }
-
-            if (userResult.Data == null)
-            {
-                return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>("User not found");
-            }
-
-            var preference = new Model_Receiving_Entity_UserPreference
-            {
-                Username = userResult.Data.WindowsUsername,
-                DefaultMode = null,
-                DefaultReceivingMode = string.IsNullOrWhiteSpace(userResult.Data.DefaultReceivingMode)
-                    ? "guided"
-                    : userResult.Data.DefaultReceivingMode,
-                DefaultDunnageMode = string.IsNullOrWhiteSpace(userResult.Data.DefaultDunnageMode)
-                    ? "guided"
-                    : userResult.Data.DefaultDunnageMode
-            };
-
-            return Model_Dao_Result_Factory.Success(preference);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error getting user preference for {username}", ex, "UserPreferences");
-            return Model_Dao_Result_Factory.Failure<Model_Receiving_Entity_UserPreference>(ex.Message);
-        }
     }
 
     public async Task<Model_Dao_Result> UpdateDefaultModeAsync(string username, string defaultMode)

@@ -53,25 +53,25 @@ MTM_Receiving_Application/
 │   │   └── Service_CSVWriter.cs         # Label generation
 │   ├── ViewModels/                      # Receiving ViewModels (15 workflow steps)
 │   │   ├── ViewModel_Receiving_Workflow.cs
-│   │   ├── ViewModel_Receiving_ModeSelection.cs
-│   │   ├── ViewModel_Receiving_POEntry.cs
+│   │   ├── ViewModel_Receiving_ModeSelection_Display_ModeSelection.cs
+│   │   ├── Old_ViewModel_Receiving_Wizard_Display_PoEntry.cs
 │   │   ├── ViewModel_Receiving_LoadEntry.cs
 │   │   ├── ViewModel_Receiving_WeightQuantity.cs
 │   │   ├── ViewModel_Receiving_HeatLot.cs
 │   │   ├── ViewModel_Receiving_PackageType.cs
 │   │   ├── ViewModel_Receiving_Review.cs
-│   │   ├── ViewModel_Receiving_ManualEntry.cs
-│   │   └── ViewModel_Receiving_EditMode.cs
+│   │   ├── ViewModel_Receiving_Manual_Display_DataEntry.cs
+│   │   └── ViewModel_Receiving_EditMode_Interaction_EditHandler.cs
 │   └── Views/                           # Receiving XAML Views
 │       ├── View_Receiving_Workflow.xaml
-│       ├── View_Receiving_ModeSelection.xaml
-│       ├── View_Receiving_POEntry.xaml
+│       ├── View_Receiving_ModeSelection_Display_ModeSelection.xaml
+│       ├── Old_View_Receiving_Wizard_Display_PoEntry.xaml
 │       ├── View_Receiving_LoadEntry.xaml
 │       ├── View_Receiving_WeightQuantity.xaml
 │       ├── View_Receiving_HeatLot.xaml
 │       ├── View_Receiving_PackageType.xaml
 │       ├── View_Receiving_Review.xaml
-│       ├── View_Receiving_ManualEntry.xaml
+│       ├── View_Receiving_Manual_Display_DataEntry.xaml
 │       └── View_Receiving_EditMode.xaml
 │
 ├── Module_Dunnage/                      # Dunnage (returnable packaging) module

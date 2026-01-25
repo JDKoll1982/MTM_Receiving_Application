@@ -40,4 +40,4 @@ CREATE TABLE IF NOT EXISTS receiving_load_details (
     CONSTRAINT chk_weight_positive CHECK (weight_or_quantity IS NULL OR weight_or_quantity > 0),
     CONSTRAINT chk_packages_positive CHECK (packages_per_load IS NULL OR packages_per_load > 0),
     CONSTRAINT chk_load_number_positive CHECK (load_number > 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Load details for consolidated receiving workflow';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Load details for Wizard receiving workflow';

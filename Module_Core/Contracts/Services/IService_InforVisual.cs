@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 {
@@ -11,20 +10,6 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
     /// </summary>
     public interface IService_InforVisual
     {
-        /// <summary>
-        /// Retrieves a purchase order with all associated parts from Infor Visual.
-        /// </summary>
-        /// <param name="poNumber">6-digit PO number</param>
-        /// <returns>Result containing InforVisualPO with Parts collection, or null if not found</returns>
-        public Task<Model_Dao_Result<Model_Receiving_DTO_InforVisualPO?>> GetPOWithPartsAsync(string poNumber);
-
-        /// <summary>
-        /// Retrieves part information by Part ID for non-PO items.
-        /// </summary>
-        /// <param name="partID">Part identifier</param>
-        /// <returns>Result containing InforVisualPart with details, or null if not found</returns>
-        public Task<Model_Dao_Result<Model_Receiving_DTO_InforVisualPart?>> GetPartByIDAsync(string partID);
-
         /// <summary>
         /// Queries same-day receiving transactions for a specific PO and Part.
         /// Used to warn users if part was already received today.

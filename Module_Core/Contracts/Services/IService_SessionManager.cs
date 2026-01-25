@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Core.Contracts.Services
 {
@@ -11,23 +10,6 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
     /// </summary>
     public interface IService_SessionManager
     {
-        /// <summary>
-        /// Saves the current session to JSON file.
-        /// Automatically creates directory if it doesn't exist.
-        /// </summary>
-        /// <param name="session">Session to persist</param>
-        /// <exception cref="ArgumentNullException">If session is null</exception>
-        /// <exception cref="InvalidOperationException">If file write fails</exception>
-        public Task SaveSessionAsync(Model_Receiving_Entity_ReceivingSession session);
-
-        /// <summary>
-        /// Loads the persisted session from JSON file.
-        /// Returns null if no session file exists or if file is corrupted.
-        /// Corrupted files are automatically deleted.
-        /// </summary>
-        /// <returns>Restored session or null</returns>
-        public Task<Model_Receiving_Entity_ReceivingSession?> LoadSessionAsync();
-
         /// <summary>
         /// Deletes the persisted session file.
         /// Called after successful save to prevent stale data.

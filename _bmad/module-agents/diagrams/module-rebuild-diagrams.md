@@ -1124,7 +1124,7 @@ public partial class ViewModel_Dashboard_Summary : ViewModel_Shared_Base
 **Pattern 2: Standard ViewModel (Most Common)**
 
 ```csharp
-public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
+public partial class Old_ViewModel_Receiving_Wizard_Display_PoEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
 
@@ -1134,10 +1134,10 @@ public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private ObservableCollection<Model_ReceivingLine> _lines;
 
-    public ViewModel_Receiving_POEntry(
+    public Old_ViewModel_Receiving_Wizard_Display_PoEntry(
         IMediator mediator,
         IService_ErrorHandler errorHandler,
-        ILogger<ViewModel_Receiving_POEntry> logger) : base(errorHandler, logger)
+        ILogger<Old_ViewModel_Receiving_Wizard_Display_PoEntry> logger) : base(errorHandler, logger)
     {
         _mediator = mediator;
         Lines = new ObservableCollection<Model_ReceivingLine>();
@@ -1187,7 +1187,7 @@ public partial class ViewModel_Receiving_Review : ViewModel_Shared_Base
         
         if (result.IsSuccess)
         {
-            await _navigator.NavigateViewModelAsync<ViewModel_Receiving_ModeSelection>(this);
+            await _navigator.NavigateViewModelAsync<ViewModel_Receiving_ModeSelection_Display_ModeSelection>(this);
         }
     }
 
@@ -1250,7 +1250,7 @@ public partial class ViewModel_Routing_Dashboard : ViewModel_Shared_Base
 ```csharp
 // In App.xaml.cs ConfigureServices
 services.AddTransient<ViewModel_Dashboard_Summary>();
-services.AddTransient<ViewModel_Receiving_POEntry>();
+services.AddTransient<Old_ViewModel_Receiving_Wizard_Display_PoEntry>();
 services.AddTransient<ViewModel_Receiving_Review>();
 services.AddTransient<ViewModel_Routing_Dashboard>();
 ```

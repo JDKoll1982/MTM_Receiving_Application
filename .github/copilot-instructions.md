@@ -36,10 +36,13 @@ Manufacturing receiving operations desktop application for streamlined label gen
 ### Important - Follow These Guidelines
 
 1. **Reference Relevant Instruction Files:** Follow guidelines in `.github/instructions/` as applicable, making sure that you reference these as if the user had included them in their prompt.
-    - See the "Additional Resources" section below for a list of relevant instruction files.
-    - Reference the specific instruction files for detailed guidance on each topic.
-    - Follow the naming conventions and folder structures outlined in the project governance documents.
-    - If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
+- See the "Additional Resources" section below for a list of relevant instruction files.
+- Reference the specific instruction files for detailed guidance on each topic.
+- Follow the naming conventions and folder structures outlined in the project governance documents.
+- **C# & XAML Naming:** `specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md`
+- **SQL Server Naming:** `specs/Module_Receiving/03-Implementation-Blueprint/sql-naming-conventions-extended.md`
+- **Database Project Setup:** `.github/instructions/database-project-integration.instructions.md`
+- If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
 
 ## Technology Stack
 
@@ -47,7 +50,10 @@ Manufacturing receiving operations desktop application for streamlined label gen
 - **Language:** C# 12
 - **Platform:** .NET 8
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
-- **Database:** MySQL 8.0 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
+- **Database:** 
+- **SQL Server (LocalDB/Express)** - Primary database for all new modules (READ/WRITE)
+- **MySQL 8.0 (MAMP)** - Legacy database (transitioning to SQL Server)
+- **SQL Server/Infor Visual** - ERP integration (READ ONLY)
 - **Testing:** xUnit with FluentAssertions
 - **DI Container:** Microsoft.Extensions.DependencyInjection
 
@@ -207,8 +213,11 @@ All classes follow the **5-Part Naming Standard:** `{Type}_{Module}_{Mode}_{Cate
 
 **Methods:**
 - PascalCase for all methods
-- Async methods MUST end with `Async`: `LoadDataAsync()`, `SaveAsync()`
-- DAO methods: `<Action><Entity>Async` (e.g., `InsertReceivingLineAsync`)
+- **NEW:** Methods SHOULD follow 5-part naming: `{Action}_{Module}_{Mode}_{CategoryType}_{DescriptiveName}Async`
+- Async methods MUST end with `Async`: `Load_Receiving_Wizard_Data_PONumberAsync()`, `Save_Receiving_Database_Transaction_ReceivingLineAsync()`
+- **Legacy/Simple methods** MAY use short PascalCase if appropriate: `LoadDataAsync()`, `SaveAsync()` (but 5-part is preferred)
+- DAO methods: Follow 5-part pattern with database action: `Insert_Receiving_Database_Record_ReceivingLineAsync()`
+- See `specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md` for complete method naming guide
 
 **Properties and Fields:**
 - PascalCase for public properties
@@ -235,23 +244,22 @@ All classes follow the **5-Part Naming Standard:** `{Type}_{Module}_{Mode}_{Cate
 
 ```csharp
 // ✅ CORRECT - Complete ViewModel pattern
-public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
+public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewModel_Shared_Base
 {
-    private readonly IService_ReceivingWorkflow _workflowService;
+    private readonly IService_Receiving_Business_MySQL_ReceivingLine _receivingLineService;
 
     [ObservableProperty]
-    private string _currentStepTitle = "Receiving - Mode Selection";
+    private string _poNumber = string.Empty;
 
     [ObservableProperty]
-    private ObservableCollection<Model_Item> _items;
+    private ObservableCollection<Model_Receiving_Entity_ReceivingLine> _receivingLines = new();
 
-    public ViewModel_Receiving_Workflow(
-        IService_ReceivingWorkflow workflowService,
+    public ViewModel_Receiving_Wizard_Display_PONumberEntry(
+        IService_Receiving_Business_MySQL_ReceivingLine receivingLineService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
-        _workflowService = workflowService;
-        Items = new ObservableCollection<Model_Item>();
+        _receivingLineService = receivingLineService;
     }
 
     [RelayCommand]
@@ -263,15 +271,15 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
             IsBusy = true;
             StatusMessage = "Loading...";
 
-            var result = await _workflowService.GetDataAsync();
+            var result = await _receivingLineService.GetReceivingLineAsync(_poNumber);
             if (result.IsSuccess)
             {
-                Items.Clear();
-                foreach (var item in result.Data)
+                ReceivingLines.Clear();
+                foreach (var line in result.Data)
                 {
-                    Items.Add(item);
+                    ReceivingLines.Add(line);
                 }
-                StatusMessage = $"Loaded {Items.Count} items";
+                StatusMessage = $"Loaded {ReceivingLines.Count} lines";
             }
             else
             {
@@ -287,7 +295,7 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(LoadDataAsync),
-                nameof(ViewModel_Receiving_Workflow));
+                nameof(ViewModel_Receiving_Wizard_Display_PONumberEntry));
         }
         finally
         {
@@ -299,12 +307,12 @@ public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
 
 ```csharp
 // ❌ FORBIDDEN - ViewModel calling DAO directly
-public partial class ViewModel_Bad : ViewModel_Shared_Base
+public partial class ViewModel_Receiving_Wizard_Display_BadExample : ViewModel_Shared_Base
 {
     private async Task LoadAsync()
     {
-        // NEVER DO THIS
-        var result = await Dao_ReceivingLine.GetLinesAsync(loadId);
+        // NEVER DO THIS - Direct DAO call is forbidden
+        var result = await _receivingLineDao.GetLinesAsync(_poNumber);
     }
 }
 ```
@@ -313,26 +321,26 @@ public partial class ViewModel_Bad : ViewModel_Shared_Base
 
 ```csharp
 // ✅ CORRECT - Service provides business logic abstraction
-public interface IService_MySQL_ReceivingLine
+public interface IService_Receiving_Business_MySQL_ReceivingLine
 {
-    Task<Model_Dao_Result> InsertLineAsync(Model_ReceivingLine line);
-    Task<Model_Dao_Result<List<Model_ReceivingLine>>> GetLinesByLoadAsync(int loadId);
+    Task<Model_Dao_Result> InsertLineAsync(Model_Receiving_Entity_ReceivingLine line);
+    Task<Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLine>>> GetLinesByPOAsync(string poNumber);
 }
 
-public class Service_MySQL_ReceivingLine : IService_MySQL_ReceivingLine
+public class Service_Receiving_Business_MySQL_ReceivingLine : IService_Receiving_Business_MySQL_ReceivingLine
 {
-    private readonly Dao_ReceivingLine _dao;
+    private readonly Dao_Receiving_Repository_ReceivingLine _dao;
     private readonly IService_LoggingUtility _logger;
 
-    public Service_MySQL_ReceivingLine(
-        Dao_ReceivingLine dao,
+    public Service_Receiving_Business_MySQL_ReceivingLine(
+        Dao_Receiving_Repository_ReceivingLine dao,
         IService_LoggingUtility logger)
     {
         _dao = dao;
         _logger = logger;
     }
 
-    public async Task<Model_Dao_Result> InsertLineAsync(Model_ReceivingLine line)
+    public async Task<Model_Dao_Result> InsertLineAsync(Model_Receiving_Entity_ReceivingLine line)
     {
         _logger.LogInfo($"Inserting receiving line for PO: {line.PONumber}");
         return await _dao.InsertReceivingLineAsync(line);
@@ -346,17 +354,17 @@ public class Service_MySQL_ReceivingLine : IService_MySQL_ReceivingLine
 
 ```csharp
 // ✅ CORRECT - Instance-based DAO with proper error handling
-public class Dao_ReceivingLine
+public class Dao_Receiving_Repository_ReceivingLine
 {
     private readonly string _connectionString;
 
-    public Dao_ReceivingLine(string connectionString)
+    public Dao_Receiving_Repository_ReceivingLine(string connectionString)
     {
         ArgumentNullException.ThrowIfNull(connectionString);
         _connectionString = connectionString;
     }
 
-    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_ReceivingLine line)
+    public async Task<Model_Dao_Result> InsertReceivingLineAsync(Model_Receiving_Entity_ReceivingLine line)
     {
         try
         {
@@ -388,7 +396,7 @@ public class Dao_ReceivingLine
 
 ```csharp
 // ❌ FORBIDDEN - Static DAO
-public static class Dao_ReceivingLine
+public static class Dao_Receiving_Repository_ReceivingLine
 {
     private static string ConnectionString =>
         Helper_Database_Variables.GetConnectionString();
@@ -406,7 +414,7 @@ public static class Dao_ReceivingLine
 ```xaml
 <!-- ✅ CORRECT - Using x:Bind with proper mode -->
 <Page
-    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_Workflow"
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_Wizard_Display_PONumberEntry"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels">
@@ -424,8 +432,8 @@ public static class Dao_ReceivingLine
 
             <ListView ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}">
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Model_Item">
-                        <TextBlock Text="{x:Bind Name}" />
+                    <DataTemplate x:DataType="models:Model_Receiving_Entity_ReceivingLine">
+                        <TextBlock Text="{x:Bind PONumber}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
@@ -453,17 +461,20 @@ services.AddSingleton<IService_LoggingUtility, Service_LoggingUtility>();
 
 // DAOs as Singletons (stateless, reusable)
 var connectionString = Helper_Database_Variables.GetConnectionString();
-services.AddSingleton(sp => new Dao_ReceivingLine(connectionString));
-services.AddSingleton(sp => new Dao_User(connectionString));
+services.AddSingleton(sp => new Dao_Receiving_Repository_ReceivingLine(connectionString));
+services.AddSingleton(sp => new Dao_Receiving_Repository_ReceivingLoad(connectionString));
 
 // Services as Singletons (business logic)
-services.AddSingleton<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
+services.AddSingleton<IService_Receiving_Business_MySQL_ReceivingLine, Service_Receiving_Business_MySQL_ReceivingLine>();
+services.AddSingleton<IService_Receiving_Business_MySQL_ReceivingLoad, Service_Receiving_Business_MySQL_ReceivingLoad>();
 
 // ViewModels as Transient (new instance per navigation)
-services.AddTransient<ViewModel_Receiving_Workflow>();
+services.AddTransient<ViewModel_Receiving_Wizard_Display_PONumberEntry>();
+services.AddTransient<ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();
 
 // Views as Transient
-services.AddTransient<View_Receiving_Workflow>();
+services.AddTransient<View_Receiving_Wizard_Display_PONumberEntry>();
+services.AddTransient<View_Receiving_Wizard_Orchestration_MainWorkflow>();
 ```
 
 ## Code Quality Standards
@@ -555,30 +566,36 @@ using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Module_Receiving.ViewModels;
 
-public class ViewModel_Receiving_WorkflowTests
+public class ViewModel_Receiving_Wizard_Display_PONumberEntryTests
 {
-    private readonly Mock<IMediator> _mockMediator;
+    private readonly Mock<IService_Receiving_Business_MySQL_ReceivingLine> _mockReceivingLineService;
     private readonly Mock<IService_ErrorHandler> _mockErrorHandler;
-    private readonly ViewModel_Receiving_Workflow _viewModel;
+    private readonly Mock<IService_LoggingUtility> _mockLogger;
+    private readonly ViewModel_Receiving_Wizard_Display_PONumberEntry _viewModel;
 
-    public ViewModel_Receiving_WorkflowTests()
+    public ViewModel_Receiving_Wizard_Display_PONumberEntryTests()
     {
-        _mockMediator = new Mock<IMediator>();
+        _mockReceivingLineService = new Mock<IService_Receiving_Business_MySQL_ReceivingLine>();
         _mockErrorHandler = new Mock<IService_ErrorHandler>();
+        _mockLogger = new Mock<IService_LoggingUtility>();
         
-        _viewModel = new ViewModel_Receiving_Workflow(
-            _mockMediator.Object,
-            _mockErrorHandler.Object);
+        _viewModel = new ViewModel_Receiving_Wizard_Display_PONumberEntry(
+            _mockReceivingLineService.Object,
+            _mockErrorHandler.Object,
+            _mockLogger.Object);
     }
 
     [Fact]
-    public async Task LoadDataAsync_ShouldPopulateItems_WhenServiceReturnsSuccess()
+    public async Task LoadDataAsync_ShouldPopulateLines_WhenServiceReturnsSuccess()
     {
         // Arrange
-        var expectedData = new List<Model_Item> { new Model_Item { Name = "Test" } };
-        _mockMediator
-            .Setup(m => m.Send(It.IsAny<GetItemsQuery>(), default))
-            .ReturnsAsync(new Model_Dao_Result<List<Model_Item>> 
+        var expectedData = new List<Model_Receiving_Entity_ReceivingLine> 
+        { 
+            new Model_Receiving_Entity_ReceivingLine { PONumber = "PO-001" } 
+        };
+        _mockReceivingLineService
+            .Setup(m => m.GetReceivingLineAsync(It.IsAny<string>()))
+            .ReturnsAsync(new Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLine>> 
             { 
                 IsSuccess = true, 
                 Data = expectedData 
@@ -588,8 +605,8 @@ public class ViewModel_Receiving_WorkflowTests
         await _viewModel.LoadDataAsync();
 
         // Assert
-        _viewModel.Items.Should().HaveCount(1);
-        _viewModel.Items[0].Name.Should().Be("Test");
+        _viewModel.ReceivingLines.Should().HaveCount(1);
+        _viewModel.ReceivingLines[0].PONumber.Should().Be("PO-001");
     }
 }
 ```
@@ -603,20 +620,20 @@ using Xunit;
 namespace MTM_Receiving_Application.Tests.Module_Receiving.Integration;
 
 [Collection("Database")]
-public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
+public class Dao_Receiving_Repository_ReceivingLineIntegrationTests : IAsyncLifetime
 {
-    private readonly Dao_ReceivingLine _dao;
-    private int _testLineId;
+    private readonly Dao_Receiving_Repository_ReceivingLine _dao;
+    private Guid _testLineId;
 
-    public Dao_ReceivingLineIntegrationTests()
+    public Dao_Receiving_Repository_ReceivingLineIntegrationTests()
     {
         var connectionString = Helper_Database_Variables.GetConnectionString();
-        _dao = new Dao_ReceivingLine(connectionString);
+        _dao = new Dao_Receiving_Repository_ReceivingLine(connectionString);
     }
 
     public async Task InitializeAsync()
     {
-        var testLine = new Model_ReceivingLine
+        var testLine = new Model_Receiving_Entity_ReceivingLine
         {
             PONumber = "TEST-PO-001",
             PartID = "TEST-PART",
@@ -666,6 +683,47 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 6. Set `IsBusy = true` during async operations
 7. Register in `App.xaml.cs` as Transient
 
+**Example:**
+```csharp
+// File: ViewModel_Receiving_Wizard_Display_MyFeature.cs
+public partial class ViewModel_Receiving_Wizard_Display_MyFeature : ViewModel_Shared_Base
+{
+    private readonly IService_Receiving_Business_MySQL_ReceivingLine _service;
+
+    [ObservableProperty]
+    private string _myProperty = string.Empty;
+
+    public ViewModel_Receiving_Wizard_Display_MyFeature(
+        IService_Receiving_Business_MySQL_ReceivingLine service,
+        IService_ErrorHandler errorHandler,
+        IService_LoggingUtility logger) : base(errorHandler, logger)
+    {
+        _service = service;
+    }
+
+    [RelayCommand]
+    private async Task MyCommandAsync()
+    {
+        if (IsBusy) return;
+        try
+        {
+            IsBusy = true;
+            var result = await _service.DoSomethingAsync();
+            if (!result.IsSuccess)
+                _errorHandler.ShowUserError(result.ErrorMessage, "Error", nameof(MyCommandAsync));
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(MyCommandAsync), nameof(ViewModel_Receiving_Wizard_Display_MyFeature));
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+}
+```
+
 ### Creating New View
 
 **Steps:**
@@ -675,15 +733,66 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 4. No business logic in code-behind
 5. Set window size with `WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, width, height)`
 
+**Example:**
+```xaml
+<!-- File: View_Receiving_Wizard_Display_MyFeature.xaml -->
+<Page
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_Wizard_Display_MyFeature"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="20">
+        <StackPanel Spacing="10">
+            <TextBox
+                Text="{x:Bind ViewModel.MyProperty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                PlaceholderText="Enter value..." />
+            <Button
+                Content="Execute"
+                Command="{x:Bind ViewModel.MyCommandCommand}" />
+        </StackPanel>
+    </Grid>
+</Page>
+```
+
 ### Creating New Service
 
 **Steps:**
-1. Create interface in `Contracts/Services/IService_<Name>.cs`
-2. Implement in module's `Services/` folder
+1. Create interface as `IService_Receiving_Business_*` or `IService_Receiving_Infrastructure_*`
+2. Implement in `Services/` folder matching the interface name
 3. Inject DAOs and dependencies via constructor
 4. Add logging for key operations
 5. Return `Model_Dao_Result` or appropriate types
 6. Register in `App.xaml.cs`
+
+**Example:**
+```csharp
+// File: IService_Receiving_Business_MySQL_MyFeature.cs
+public interface IService_Receiving_Business_MySQL_MyFeature
+{
+    Task<Model_Dao_Result<List<Model_Receiving_Entity_MyData>>> GetDataAsync();
+}
+
+// File: Service_Receiving_Business_MySQL_MyFeature.cs
+public class Service_Receiving_Business_MySQL_MyFeature : IService_Receiving_Business_MySQL_MyFeature
+{
+    private readonly Dao_Receiving_Repository_MyData _dao;
+    private readonly IService_LoggingUtility _logger;
+
+    public Service_Receiving_Business_MySQL_MyFeature(
+        Dao_Receiving_Repository_MyData dao,
+        IService_LoggingUtility logger)
+    {
+        _dao = dao;
+        _logger = logger;
+    }
+
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_MyData>>> GetDataAsync()
+    {
+        _logger.LogInfo("Fetching data");
+        return await _dao.GetDataAsync();
+    }
+}
+```
 
 ### Creating New DAO
 
@@ -696,191 +805,36 @@ public class Dao_ReceivingLineIntegrationTests : IAsyncLifetime
 6. Use `MySqlParameter[]` for parameter mapping
 7. Register as Singleton in `App.xaml.cs`
 
-## Database Access
-
-### MySQL (READ/WRITE)
-
-**Use stored procedures exclusively:**
-
+**Example:**
 ```csharp
-// ✅ CORRECT - Using stored procedure
-var parameters = new MySqlParameter[]
+// File: Dao_Receiving_Repository_MyData.cs
+public class Dao_Receiving_Repository_MyData
 {
-    new MySqlParameter("@p_PONumber", poNumber),
-    new MySqlParameter("@p_Quantity", quantity)
-};
+    private readonly string _connectionString;
 
-var result = await Helper_Database_StoredProcedure.ExecuteAsync(
-    "sp_Receiving_Line_Insert",
-    parameters,
-    _connectionString
-);
-```
-
-```csharp
-// ❌ FORBIDDEN - Raw SQL
-string query = "INSERT INTO receiving_line (PONumber, Quantity) VALUES (@po, @qty)";
-await connection.ExecuteAsync(query, parameters);
-```
-
-### SQL Server / Infor Visual (READ ONLY)
-
-**Only SELECT statements allowed:**
-
-```csharp
-// ✅ CORRECT - Read-only query with ApplicationIntent
-var connectionString = "Server=...;ApplicationIntent=ReadOnly;";
-var result = await ExecuteAsync("SELECT * FROM VISUAL.dbo.Part WHERE PartID = @id");
-```
-
-```csharp
-// ❌ FORBIDDEN - Write operations
-await ExecuteAsync("UPDATE VISUAL.dbo.Part SET ...");
-await ExecuteAsync("INSERT INTO VISUAL.dbo.Part ...");
-await ExecuteAsync("DELETE FROM VISUAL.dbo.Part ...");
-```
-
-## Error Handling
-
-### DAO Error Handling
-
-```csharp
-// ✅ CORRECT - Return failure result, never throw
-public async Task<Model_Dao_Result> SaveAsync(Model_Entity entity)
-{
-    if (entity is null)
+    public Dao_Receiving_Repository_MyData(string connectionString)
     {
-        return new Model_Dao_Result
+        ArgumentNullException.ThrowIfNull(connectionString);
+        _connectionString = connectionString;
+    }
+
+    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_MyData>>> GetDataAsync()
+    {
+        try
         {
-            Success = false,
-            ErrorMessage = "Entity cannot be null",
-            Severity = Enum_ErrorSeverity.Warning
-        };
-    }
-
-    try
-    {
-        // Execute operation
-        return new Model_Dao_Result { Success = true };
-    }
-    catch (Exception ex)
-    {
-        return new Model_Dao_Result
+            var result = await Helper_Database_StoredProcedure.ExecuteAsync(
+                "sp_GetMyData",
+                new MySqlParameter[] { },
+                _connectionString);
+            
+            return result.IsSuccess 
+                ? new Model_Dao_Result<List<Model_Receiving_Entity_MyData>> { IsSuccess = true, Data = result.Data }
+                : Model_Dao_Result<List<Model_Receiving_Entity_MyData>>.Failure(result.ErrorMessage);
+        }
+        catch (Exception ex)
         {
-            Success = false,
-            ErrorMessage = $"Unexpected error: {ex.Message}",
-            Severity = Enum_ErrorSeverity.Error
-        };
+            return Model_Dao_Result<List<Model_Receiving_Entity_MyData>>.Failure($"Error: {ex.Message}");
+        }
     }
 }
-```
-
-```csharp
-// ❌ FORBIDDEN - Throwing exceptions from DAO
-public async Task<Model_Dao_Result> SaveAsync(Model_Entity entity)
-{
-    if (entity == null)
-        throw new ArgumentNullException(nameof(entity));
-}
-```
-
-### ViewModel Error Handling
-
-```csharp
-// ✅ CORRECT - Catch and handle with service
-try
-{
-    var result = await _service.SaveAsync(item);
-    if (!result.IsSuccess)
-    {
-        _errorHandler.ShowUserError(
-            result.ErrorMessage,
-            "Save Error",
-            nameof(SaveAsync));
-    }
-}
-catch (Exception ex)
-{
-    _errorHandler.HandleException(
-        ex,
-        Enum_ErrorSeverity.Medium,
-        nameof(SaveAsync),
-        nameof(ViewModel_MyFeature));
-}
-```
-
-## Module Structure
-
-**Modules:**
-- `Module_Core` - Shared infrastructure, helpers, base classes
-- `Module_Shared` - Shared ViewModels, Views, models
-- `Module_Receiving` - Receiving workflow and label generation
-- `Module_Dunnage` - Dunnage management
-- `Module_Routing` - Routing rules
-- `Module_Reporting` - Report generation
-- `Module_Settings` - Configuration UI
-- `Module_Volvo` - Volvo-specific integration
-
-**Common Folders per Module:**
-- `Views/` - XAML pages and windows
-- `ViewModels/` - View-bound logic
-- `Services/` - Business logic layer
-- `Data/` - DAO implementations
-- `Models/` - Data models and DTOs
-- `Contracts/Services/` - Service interfaces
-
-## Key Interfaces and Base Classes
-
-**Base Classes:**
-- `ViewModel_Shared_Base` - Base for all ViewModels with `IsBusy`, `StatusMessage`, error handling
-- `ObservableObject` - CommunityToolkit.Mvvm base (when not using `ViewModel_Shared_Base`)
-
-**Common Services:**
-- `IService_ErrorHandler` - Error handling and user notifications
-- `IService_LoggingUtility` - Application logging
-- `IService_Dispatcher` - UI thread marshalling
-- `IService_Window` - Window management
-
-**Key Helpers:**
-- `Helper_Database_Variables` - Connection string management
-- `Helper_Database_StoredProcedure` - Stored procedure execution
-- `WindowHelper_WindowSizeAndStartupLocation` - Window sizing
-
-## Debugging Checklist
-
-When debugging issues, verify:
-
-- [ ] DI registration in `App.xaml.cs`
-- [ ] ViewModel is `partial` class
-- [ ] ViewModel inherits from `ViewModel_Shared_Base`
-- [ ] XAML uses `x:Bind` (not `Binding`)
-- [ ] No ViewModel→DAO calls (must go through Service)
-- [ ] DAOs return `Model_Dao_Result` (never throw)
-- [ ] MySQL uses stored procedures only
-- [ ] No writes to SQL Server
-- [ ] Async methods end with `Async`
-- [ ] Proper error handling in ViewModels
-- [ ] Check XAML binding errors in Output window
-
-## Validation
-
-**Build Command:**
-```powershell
-dotnet build MTM_Receiving_Application.sln
-```
-
-**Test Command:**
-```powershell
-dotnet test MTM_Receiving_Application.sln
-```
-
-**Check for Architecture Violations:**
-- Search for `ViewModel` calling `Dao_` directly (forbidden)
-- Search for static DAO classes (forbidden)
-- Search for raw SQL in C# files (forbidden for MySQL)
-- Search for `INSERT/UPDATE/DELETE` against SQL Server (forbidden)
-
-## User Environment Consideration
-
-- Avoid using terminal commands for validation as running scripts via the terminal locks up the terminal; prefer non-terminal tooling (file reads/search) for validation.
 
