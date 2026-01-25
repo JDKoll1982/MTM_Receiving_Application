@@ -1,121 +1,100 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
 using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.Queries;
 using Serilog;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
-/// Handler for navigating between workflow steps with validation.
-/// Ensures current step is valid before allowing navigation.
+/// Handler for navigating between workflow steps.
+/// Validates current step before allowing advancement.
 /// </summary>
 public class NavigateToStepCommandHandler : IRequestHandler<NavigateToStepCommand, Result>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
-    private readonly Dao_ReceivingLoadDetail _loadDao;
+    private readonly IRequestHandler<GetValidationStatusQuery, Result<ValidationStatus>> _validationHandler;
     private readonly ILogger _logger;
 
     public NavigateToStepCommandHandler(
         Dao_ReceivingWorkflowSession sessionDao,
-        Dao_ReceivingLoadDetail loadDao,
+        IRequestHandler<GetValidationStatusQuery, Result<ValidationStatus>> validationHandler,
         ILogger logger)
     {
         _sessionDao = sessionDao;
-        _loadDao = loadDao;
+        _validationHandler = validationHandler;
         _logger = logger;
     }
 
     public async Task<Result> Handle(NavigateToStepCommand request, CancellationToken cancellationToken)
     {
-        _logger.Information("Navigating session {SessionId} to step {TargetStep}", request.SessionId, request.TargetStep);
+        _logger.Information("Navigating session {SessionId} to step {TargetStep} (EditMode: {EditMode})",
+            request.SessionId, request.TargetStep, request.IsEditMode);
 
-        // Get current session
+        // Validate session exists
         var sessionResult = await _sessionDao.GetSessionAsync(request.SessionId);
         if (!sessionResult.IsSuccess)
         {
-            _logger.Error("Failed to retrieve session {SessionId}: {Error}", request.SessionId, sessionResult.ErrorMessage);
-            return Result.Failure(sessionResult.ErrorMessage);
+            _logger.Error("Session {SessionId} not found", request.SessionId);
+            return Result.Failure($"Session not found: {request.SessionId}");
         }
 
         var session = sessionResult.Data;
 
-        // Validate target step
+        // Validate target step is valid (1, 2, or 3)
         if (request.TargetStep < 1 || request.TargetStep > 3)
         {
-            _logger.Warning("Invalid target step {TargetStep} for session {SessionId}", request.TargetStep, request.SessionId);
-            return Result.Failure($"Invalid step number: {request.TargetStep}. Must be between 1 and 3.");
+            return Result.Failure("Invalid target step. Must be 1, 2, or 3");
         }
 
-        // Prevent navigation forward if current step not complete
-        if (request.TargetStep > session.CurrentStep && !request.AllowIncomplete)
+        // If advancing (not edit mode), validate current step
+        if (!request.IsEditMode && request.TargetStep > session.CurrentStep)
         {
-            // Validate current step completion
-            var validationResult = await ValidateCurrentStep(session);
+            var validationResult = await ValidateCurrentStepAsync(session);
             if (!validationResult.IsSuccess)
             {
-                _logger.Warning("Cannot navigate forward: current step incomplete for session {SessionId}", request.SessionId);
+                _logger.Warning("Cannot advance from step {CurrentStep}: {Error}",
+                    session.CurrentStep, validationResult.ErrorMessage);
                 return validationResult;
             }
         }
 
-        // Update session current step
+        // Update session step and edit mode
         session.CurrentStep = request.TargetStep;
-        var updateResult = await _sessionDao.UpdateSessionAsync(session);
+        session.IsEditMode = request.IsEditMode;
 
+        var updateResult = await _sessionDao.UpdateSessionAsync(session);
         if (!updateResult.IsSuccess)
         {
-            _logger.Error("Failed to update session {SessionId} step: {Error}", request.SessionId, updateResult.ErrorMessage);
-            return Result.Failure(updateResult.ErrorMessage);
+            _logger.Error("Failed to update session step: {Error}", updateResult.ErrorMessage);
+            return Result.Failure($"Failed to navigate: {updateResult.ErrorMessage}");
         }
 
-        _logger.Information("Successfully navigated session {SessionId} to step {TargetStep}", request.SessionId, request.TargetStep);
+        _logger.Information("Successfully navigated to step {TargetStep}", request.TargetStep);
         return Result.Success();
     }
 
-    private async Task<Result> ValidateCurrentStep(ReceivingWorkflowSession session)
+    private async Task<Result> ValidateCurrentStepAsync(ReceivingWorkflowSession session)
     {
-        switch (session.CurrentStep)
+        var validationQuery = new GetValidationStatusQuery(session.SessionId, session.CurrentStep);
+        var validationResult = await _validationHandler.Handle(validationQuery, CancellationToken.None);
+
+        if (!validationResult.IsSuccess)
+            return Result.Failure(validationResult.ErrorMessage);
+
+        if (validationResult.Value == null || !validationResult.Value.IsValid)
         {
-            case 1:
-                // Step 1: PO Number, Part, and Load Count must be set
-                if (string.IsNullOrWhiteSpace(session.PONumber))
-                    return Result.Failure("PO Number is required");
-                if (session.PartId <= 0)
-                    return Result.Failure("Part must be selected");
-                if (session.LoadCount <= 0)
-                    return Result.Failure("Load count must be greater than 0");
-                return Result.Success();
-
-            case 2:
-                // Step 2: All loads must have required data
-                var loadsResult = await _loadDao.GetLoadsBySessionAsync(session.SessionId);
-                if (!loadsResult.IsSuccess)
-                    return Result.Failure("Failed to validate loads: " + loadsResult.ErrorMessage);
-
-                var loads = loadsResult.Data;
-                if (loads == null || loads.Count == 0)
-                    return Result.Failure("No loads found for session");
-
-                var invalidLoads = loads.Where(l =>
-                    l.Weight <= 0 ||
-                    string.IsNullOrWhiteSpace(l.HeatLot) ||
-                    string.IsNullOrWhiteSpace(l.PackageType) ||
-                    l.PackagesPerLoad <= 0).ToList();
-
-                if (invalidLoads.Any())
-                {
-                    var loadNumbers = string.Join(", ", invalidLoads.Select(l => l.LoadNumber));
-                    return Result.Failure($"Incomplete data for load(s): {loadNumbers}");
-                }
-                return Result.Success();
-
-            case 3:
-                // Step 3: Ready for save (validation happens in save command)
-                return Result.Success();
-
-            default:
-                return Result.Failure($"Unknown step: {session.CurrentStep}");
+            var errorCount = validationResult.Value?.ErrorCount ?? 0;
+            var warningCount = validationResult.Value?.WarningCount ?? 0;
+            var errorMessage = $"Step {session.CurrentStep} has validation errors: {errorCount} error(s), {warningCount} warning(s)";
+            return Result.Failure(errorMessage);
         }
+
+        return Result.Success();
     }
 }

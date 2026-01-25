@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace MTM_Receiving_Application.Module_Receiving.Models;
 
 /// <summary>

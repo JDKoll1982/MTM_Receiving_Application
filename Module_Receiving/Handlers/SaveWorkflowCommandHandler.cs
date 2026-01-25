@@ -1,18 +1,23 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CsvHelper;
-using CsvHelper.Configuration;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using Serilog;
-using System.Globalization;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
 /// Handler for saving completed workflow.
-/// Validates all loads, generates CSV file, saves to database, and updates session.
+/// Validates all loads, generates CSV file, and archives transaction record.
 /// </summary>
 public class SaveWorkflowCommandHandler : IRequestHandler<SaveWorkflowCommand, Result<SaveResult>>
 {
@@ -32,14 +37,15 @@ public class SaveWorkflowCommandHandler : IRequestHandler<SaveWorkflowCommand, R
 
     public async Task<Result<SaveResult>> Handle(SaveWorkflowCommand request, CancellationToken cancellationToken)
     {
-        _logger.Information("Saving workflow for session {SessionId} to {CSVPath}", request.SessionId, request.CSVPath);
+        _logger.Information("Saving workflow: SessionId={SessionId}, CSVOutputPath={CSVPath}, SaveToDb={SaveToDb}",
+            request.SessionId, request.CsvOutputPath, request.SaveToDatabase);
 
         // Get session
         var sessionResult = await _sessionDao.GetSessionAsync(request.SessionId);
         if (!sessionResult.IsSuccess)
         {
-            _logger.Error("Failed to retrieve session {SessionId}: {Error}", request.SessionId, sessionResult.ErrorMessage);
-            return Result<SaveResult>.Failure(sessionResult.ErrorMessage);
+            _logger.Error("Session {SessionId} not found", request.SessionId);
+            return Result<SaveResult>.Failure($"Session not found: {request.SessionId}");
         }
 
         var session = sessionResult.Data;
@@ -48,88 +54,71 @@ public class SaveWorkflowCommandHandler : IRequestHandler<SaveWorkflowCommand, R
         var loadsResult = await _loadDao.GetLoadsBySessionAsync(request.SessionId);
         if (!loadsResult.IsSuccess)
         {
-            _logger.Error("Failed to retrieve loads for session {SessionId}: {Error}", request.SessionId, loadsResult.ErrorMessage);
+            _logger.Error("Failed to retrieve loads: {Error}", loadsResult.ErrorMessage);
             return Result<SaveResult>.Failure(loadsResult.ErrorMessage);
         }
 
         var loads = loadsResult.Data ?? new List<LoadDetail>();
 
-        // Validate all loads before saving
+        // Validate all loads
         var validationResult = ValidateLoadsForSave(session, loads);
         if (!validationResult.IsSuccess)
         {
-            _logger.Warning("Validation failed for session {SessionId}: {Error}", request.SessionId, validationResult.ErrorMessage);
+            _logger.Error("Validation failed: {Error}", validationResult.ErrorMessage);
             return Result<SaveResult>.Failure(validationResult.ErrorMessage);
         }
 
-        // Generate CSV file
-        string csvPath;
-        try
+        // Generate CSV
+        var csvPath = await GenerateCSVFileAsync(request.CsvOutputPath, session, loads);
+        if (string.IsNullOrEmpty(csvPath))
         {
-            csvPath = await GenerateCSVFile(request.CSVPath, session, loads);
-            _logger.Information("CSV file generated: {CSVPath}", csvPath);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Failed to generate CSV file for session {SessionId}", request.SessionId);
-            return Result<SaveResult>.Failure($"Failed to generate CSV file: {ex.Message}");
+            _logger.Error("Failed to generate CSV");
+            return Result<SaveResult>.Failure("Failed to generate CSV file");
         }
 
-        // Save completed transaction to database
-        var saveResult = await _loadDao.SaveCompletedTransactionAsync(
-            request.SessionId,
-            csvPath,
-            request.User ?? Environment.UserName
-        );
-
-        if (!saveResult.IsSuccess)
+        // Save to database if requested
+        if (request.SaveToDatabase)
         {
-            _logger.Error("Failed to save completed transaction for session {SessionId}: {Error}",
-                request.SessionId, saveResult.ErrorMessage);
-            return Result<SaveResult>.Failure(saveResult.ErrorMessage);
+            var saveResult = await _loadDao.SaveCompletedTransactionAsync(
+                request.SessionId,
+                csvPath,
+                Environment.UserName);
+
+            if (!saveResult.IsSuccess)
+            {
+                _logger.Error("Failed to save transaction: {Error}", saveResult.ErrorMessage);
+                return Result<SaveResult>.Failure($"Failed to save: {saveResult.ErrorMessage}");
+            }
         }
 
         // Mark session as saved
         session.IsSaved = true;
-        var updateSessionResult = await _sessionDao.UpdateSessionAsync(session);
-        if (!updateSessionResult.IsSuccess)
+        session.SavedAt = DateTime.UtcNow;
+        session.SavedCsvPath = csvPath;
+
+        var updateResult = await _sessionDao.UpdateSessionAsync(session);
+        if (!updateResult.IsSuccess)
         {
-            _logger.Warning("Failed to update session status to saved: {Error}", updateSessionResult.ErrorMessage);
-            // Non-fatal - transaction is already saved
+            _logger.Error("Failed to update session: {Error}", updateResult.ErrorMessage);
+            return Result<SaveResult>.Failure($"Failed to mark as saved: {updateResult.ErrorMessage}");
         }
 
-        var result = new SaveResult
-        {
-            SessionId = request.SessionId,
-            CSVPath = csvPath,
-            LoadCount = loads.Count,
-            SavedAt = DateTime.UtcNow
-        };
+        var result = new SaveResult(csvPath, 0, DateTime.UtcNow);
+        _logger.Information("Workflow saved successfully: {CSVPath}", csvPath);
 
-        _logger.Information("Successfully saved workflow for session {SessionId}: {LoadCount} loads", request.SessionId, loads.Count);
         return Result<SaveResult>.Success(result);
     }
 
     private Result ValidateLoadsForSave(ReceivingWorkflowSession session, List<LoadDetail> loads)
     {
-        // Validate session data
-        if (string.IsNullOrWhiteSpace(session.PONumber))
-            return Result.Failure("PO Number is required");
-
-        if (session.PartId <= 0)
-            return Result.Failure("Part must be selected");
-
-        if (session.LoadCount <= 0)
-            return Result.Failure("Load count must be greater than 0");
-
-        // Validate load count matches
         if (loads.Count != session.LoadCount)
-            return Result.Failure($"Expected {session.LoadCount} loads, but found {loads.Count}");
+        {
+            return Result.Failure($"Load count mismatch: expected {session.LoadCount}, found {loads.Count}");
+        }
 
-        // Validate each load
         foreach (var load in loads)
         {
-            if (load.Weight <= 0)
+            if (load.WeightOrQuantity <= 0)
                 return Result.Failure($"Load {load.LoadNumber}: Weight is required");
 
             if (string.IsNullOrWhiteSpace(load.HeatLot))
@@ -145,42 +134,38 @@ public class SaveWorkflowCommandHandler : IRequestHandler<SaveWorkflowCommand, R
         return Result.Success();
     }
 
-    private async Task<string> GenerateCSVFile(string basePath, ReceivingWorkflowSession session, List<LoadDetail> loads)
+    private async Task<string> GenerateCSVFileAsync(string basePath, ReceivingWorkflowSession session, List<LoadDetail> loads)
     {
-        // Ensure directory exists
-        var directory = Path.GetDirectoryName(basePath);
-        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        try
         {
-            Directory.CreateDirectory(directory);
+            var directory = Path.GetDirectoryName(basePath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            var filename = $"ReceivingWorkflow_{session.SessionId:N}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+            var csvPath = Path.Combine(basePath ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop), filename);
+
+            await using var writer = new StreamWriter(csvPath);
+            await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+
+            // Write headers
+            csv.WriteHeader<LoadDetail>();
+            await csv.NextRecordAsync();
+
+            // Write records
+            foreach (var load in loads.OrderBy(l => l.LoadNumber))
+            {
+                csv.WriteRecord(load);
+                await csv.NextRecordAsync();
+            }
+
+            _logger.Information("CSV file generated: {CSVPath}", csvPath);
+            return csvPath;
         }
-
-        // Generate filename with timestamp if base path is directory
-        var csvPath = basePath;
-        if (Directory.Exists(basePath))
+        catch (Exception ex)
         {
-            var filename = $"Receiving_{session.PONumber}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
-            csvPath = Path.Combine(basePath, filename);
+            _logger.Error(ex, "Error generating CSV: {Error}", ex.Message);
+            return null;
         }
-
-        // Write CSV using CsvHelper
-        await using var writer = new StreamWriter(csvPath);
-        await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            HasHeaderRecord = true
-        });
-
-        // Write header
-        await csv.WriteRecordsAsync(loads.Select(load => new
-        {
-            PONumber = session.PONumber,
-            PartNumber = $"PART-{session.PartId}", // TODO: Get actual part number from Part lookup
-            LoadNumber = load.LoadNumber,
-            Weight = load.Weight,
-            HeatLot = load.HeatLot,
-            PackageType = load.PackageType,
-            PackagesPerLoad = load.PackagesPerLoad
-        }));
-
-        return csvPath;
     }
 }

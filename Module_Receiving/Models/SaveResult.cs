@@ -1,3 +1,5 @@
+using System;
+
 namespace MTM_Receiving_Application.Module_Receiving.Models;
 
 /// <summary>

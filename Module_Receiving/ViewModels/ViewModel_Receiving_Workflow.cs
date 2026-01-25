@@ -24,39 +24,63 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _currentStepTitle = "Receiving - Mode Selection";
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isModeSelectionVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isManualEntryVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isEditModeVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isPOEntryVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isPartSelectionVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isLoadEntryVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isWeightQuantityEntryVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isHeatLotEntryVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isPackageTypeEntryVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isReviewVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isSavingVisible;
 
+        /// <summary>OBSOLETE: Use new consolidated 3-step workflow ViewModel instead.</summary>
+        [Obsolete("Use new ViewModel_ReceivingWorkflow_Consolidation for the 3-step workflow.", DiagnosticId = "RECV001")]
         [ObservableProperty]
         private bool _isCompleteVisible;
 

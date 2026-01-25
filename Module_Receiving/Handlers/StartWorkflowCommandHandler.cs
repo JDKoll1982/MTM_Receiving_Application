@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
@@ -36,7 +39,7 @@ public class StartWorkflowCommandHandler : IRequestHandler<StartWorkflowCommand,
             CurrentStep = 1,
             IsEditMode = false,
             IsSaved = false,
-            WorkflowMode = request.Mode
+            HasUnsavedChanges = false
         };
 
         var result = await _sessionDao.CreateSessionAsync(session);

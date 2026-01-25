@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
@@ -9,42 +13,50 @@ using Serilog;
 namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
-/// Handler for bulk copy operations.
-/// Copies specified fields from source load to target loads (empty cells only).
-/// Sets auto-fill flags for copied data.
+/// Handler for bulk copy operations from source load to multiple target loads.
+/// Never overwrites existing data. Sets auto-fill flags for copied cells.
 /// </summary>
 public class CopyToLoadsCommandHandler : IRequestHandler<CopyToLoadsCommand, Result<CopyOperationResult>>
 {
+    private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
     public CopyToLoadsCommandHandler(
+        Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {
+        _sessionDao = sessionDao;
         _loadDao = loadDao;
         _logger = logger;
     }
 
     public async Task<Result<CopyOperationResult>> Handle(CopyToLoadsCommand request, CancellationToken cancellationToken)
     {
-        _logger.Information("Copying fields {Fields} from load {SourceLoad} to {TargetCount} target loads in session {SessionId}",
-            request.Fields, request.SourceLoadNumber, request.TargetLoadNumbers.Count, request.SessionId);
+        _logger.Information("Copying from load {SourceLoad} to {TargetLoadCount} loads with fields {Fields}", 
+            request.SourceLoadNumber, request.TargetLoadNumbers.Count, request.FieldsToCopy);
 
-        // Get all loads
-        var loadsResult = await _loadDao.GetLoadsBySessionAsync(request.SessionId);
-        if (!loadsResult.IsSuccess)
+        // Validate session exists
+        var sessionResult = await _sessionDao.GetSessionAsync(request.SessionId);
+        if (!sessionResult.IsSuccess)
         {
-            _logger.Error("Failed to retrieve loads for session {SessionId}: {Error}", request.SessionId, loadsResult.ErrorMessage);
-            return Result<CopyOperationResult>.Failure(loadsResult.ErrorMessage);
+            _logger.Error("Session {SessionId} not found", request.SessionId);
+            return Result<CopyOperationResult>.Failure($"Session not found: {request.SessionId}");
         }
 
-        var loads = loadsResult.Data ?? new List<LoadDetail>();
-        var sourceLoad = loads.FirstOrDefault(l => l.LoadNumber == request.SourceLoadNumber);
+        var loads = (await _loadDao.GetLoadsBySessionAsync(request.SessionId)).Data ?? new List<LoadDetail>();
 
+        // If no target loads specified, copy to all except source
+        var targetLoads = request.TargetLoadNumbers.Count > 0 
+            ? request.TargetLoadNumbers 
+            : loads.FindAll(l => l.LoadNumber != request.SourceLoadNumber).ConvertAll(l => l.LoadNumber);
+
+        // Find source load
+        var sourceLoad = loads.Find(l => l.LoadNumber == request.SourceLoadNumber);
         if (sourceLoad == null)
         {
-            _logger.Warning("Source load {SourceLoad} not found in session {SessionId}", request.SourceLoadNumber, request.SessionId);
+            _logger.Error("Source load {LoadNumber} not found", request.SourceLoadNumber);
             return Result<CopyOperationResult>.Failure($"Source load {request.SourceLoadNumber} not found");
         }
 
@@ -52,41 +64,76 @@ public class CopyToLoadsCommandHandler : IRequestHandler<CopyToLoadsCommand, Res
         var copyResult = await _loadDao.CopyToLoadsAsync(
             request.SessionId,
             request.SourceLoadNumber,
-            request.TargetLoadNumbers,
-            request.Fields
-        );
+            targetLoads,
+            request.FieldsToCopy);
 
         if (!copyResult.IsSuccess)
         {
-            _logger.Error("Failed to copy to loads in session {SessionId}: {Error}", request.SessionId, copyResult.ErrorMessage);
+            _logger.Error("Copy operation failed: {Error}", copyResult.ErrorMessage);
             return Result<CopyOperationResult>.Failure(copyResult.ErrorMessage);
         }
 
-        // Build result with statistics
+        // Calculate statistics
+        var targetLoadObjects = loads.FindAll(l => targetLoads.Contains(l.LoadNumber));
+        var cellsCopied = CalculateCellsCopied(request.FieldsToCopy, targetLoadObjects.Count);
+        var loadsWithPreservedData = FindLoadsWithPreservedData(sourceLoad, targetLoadObjects, request.FieldsToCopy);
+
         var result = new CopyOperationResult
         {
             SourceLoadNumber = request.SourceLoadNumber,
-            TargetLoadNumbers = request.TargetLoadNumbers,
-            CopiedFields = request.Fields,
-            CellsCopied = CalculateCellsCopied(request.Fields, request.TargetLoadNumbers.Count),
-            CellsSkipped = 0 // DAO only copies to empty cells, so skipped count handled there
+            TotalTargetLoads = targetLoadObjects.Count,
+            CellsCopied = cellsCopied,
+            CellsPreserved = (targetLoadObjects.Count * CountFields(request.FieldsToCopy)) - cellsCopied,
+            LoadsWithPreservedData = loadsWithPreservedData,
+            Success = true
         };
 
-        _logger.Information("Copy operation completed: {CellsCopied} cells copied to {TargetCount} loads",
-            result.CellsCopied, request.TargetLoadNumbers.Count);
-
+        _logger.Information("Copy completed: {CellsCopied} cells copied, {CellsPreserved} preserved", 
+            result.CellsCopied, result.CellsPreserved);
+        
         return Result<CopyOperationResult>.Success(result);
     }
 
-    private int CalculateCellsCopied(CopyFields fields, int targetCount)
+    private int CalculateCellsCopied(CopyFields fields, int targetLoadCount)
     {
-        int fieldCount = 0;
+        var fieldCount = CountFields(fields);
+        return fieldCount * targetLoadCount;
+    }
 
-        if ((fields & CopyFields.Weight) != 0) fieldCount++;
-        if ((fields & CopyFields.HeatLot) != 0) fieldCount++;
-        if ((fields & CopyFields.PackageType) != 0) fieldCount++;
-        if ((fields & CopyFields.PackagesPerLoad) != 0) fieldCount++;
+    private int CountFields(CopyFields fields)
+    {
+        return fields switch
+        {
+            CopyFields.AllFields => 4,
+            CopyFields.WeightOnly => 1,
+            CopyFields.HeatLotOnly => 1,
+            CopyFields.PackageTypeOnly => 1,
+            CopyFields.PackagesPerLoadOnly => 1,
+            _ => 0
+        };
+    }
 
-        return fieldCount * targetCount;
+    private List<int> FindLoadsWithPreservedData(LoadDetail sourceLoad, List<LoadDetail> targetLoads, CopyFields fields)
+    {
+        var loadsWithPreserved = new List<int>();
+
+        foreach (var targetLoad in targetLoads)
+        {
+            bool hasPreservedData = false;
+
+            if ((fields == CopyFields.AllFields || fields == CopyFields.WeightOnly) && targetLoad.IsWeightAutoFilled)
+                hasPreservedData = true;
+            if ((fields == CopyFields.AllFields || fields == CopyFields.HeatLotOnly) && targetLoad.IsHeatLotAutoFilled)
+                hasPreservedData = true;
+            if ((fields == CopyFields.AllFields || fields == CopyFields.PackageTypeOnly) && targetLoad.IsPackageTypeAutoFilled)
+                hasPreservedData = true;
+            if ((fields == CopyFields.AllFields || fields == CopyFields.PackagesPerLoadOnly) && targetLoad.IsPackagesPerLoadAutoFilled)
+                hasPreservedData = true;
+
+            if (hasPreservedData)
+                loadsWithPreserved.Add(targetLoad.LoadNumber);
+        }
+
+        return loadsWithPreserved;
     }
 }

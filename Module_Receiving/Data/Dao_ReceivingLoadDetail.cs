@@ -42,12 +42,14 @@ public class Dao_ReceivingLoadDetail
             {
                 new MySqlParameter("@p_SessionId", sessionId.ToString()),
                 new MySqlParameter("@p_LoadNumber", load.LoadNumber),
-                new MySqlParameter("@p_Weight", load.Weight ?? 0),
-                new MySqlParameter("@p_Quantity", load.Quantity ?? 0),
+                new MySqlParameter("@p_WeightOrQuantity", load.WeightOrQuantity ?? 0),
                 new MySqlParameter("@p_HeatLot", load.HeatLot ?? string.Empty),
                 new MySqlParameter("@p_PackageType", load.PackageType ?? string.Empty),
                 new MySqlParameter("@p_PackagesPerLoad", load.PackagesPerLoad ?? 0),
-                new MySqlParameter("@p_AutoFilledFields", load.AutoFilledFields ?? string.Empty),
+                new MySqlParameter("@p_IsWeightAutoFilled", load.IsWeightAutoFilled),
+                new MySqlParameter("@p_IsHeatLotAutoFilled", load.IsHeatLotAutoFilled),
+                new MySqlParameter("@p_IsPackageTypeAutoFilled", load.IsPackageTypeAutoFilled),
+                new MySqlParameter("@p_IsPackagesPerLoadAutoFilled", load.IsPackagesPerLoadAutoFilled),
                 new MySqlParameter("@p_Status", MySqlDbType.Int32) { Direction = System.Data.ParameterDirection.Output },
                 new MySqlParameter("@p_ErrorMsg", MySqlDbType.VarChar, 500) { Direction = System.Data.ParameterDirection.Output }
             };
@@ -95,39 +97,42 @@ public class Dao_ReceivingLoadDetail
                 new MySqlParameter("@p_SessionId", sessionId.ToString())
             };
 
-            var result = await Helper_Database_StoredProcedure.ExecuteQueryAsync<LoadDetail>(
-                "sp_Get_Session_With_Loads",
-                parameters,
-                _connectionString,
-                reader =>
-                {
-                    return new LoadDetail
-                    {
-                        LoadNumber = Convert.ToInt32(reader["LoadNumber"]),
-                        Weight = reader["Weight"] is DBNull ? null : Convert.ToDecimal(reader["Weight"]),
-                        Quantity = reader["Quantity"] is DBNull ? null : Convert.ToInt32(reader["Quantity"]),
-                        HeatLot = reader["HeatLot"] as string,
-                        PackageType = reader["PackageType"] as string,
-                        PackagesPerLoad = reader["PackagesPerLoad"] is DBNull ? null : Convert.ToInt32(reader["PackagesPerLoad"]),
-                        AutoFilledFields = reader["AutoFilledFields"] as string ?? string.Empty
-                    };
-                }
-            );
+            var loads = new List<LoadDetail>();
 
-            if (!result.Success)
+            using (var connection = new MySqlConnection(_connectionString))
             {
-                return new Model_Dao_Result<List<LoadDetail>>
+                await connection.OpenAsync();
+
+                using (var command = new MySqlCommand("sp_Get_Session_With_Loads", connection))
                 {
-                    Success = false,
-                    ErrorMessage = result.ErrorMessage,
-                    Severity = result.Severity
-                };
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.AddRange(parameters);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            loads.Add(new LoadDetail
+                            {
+                                LoadNumber = Convert.ToInt32(reader["LoadNumber"]),
+                                WeightOrQuantity = reader["WeightOrQuantity"] is DBNull ? null : Convert.ToDecimal(reader["WeightOrQuantity"]),
+                                HeatLot = reader["HeatLot"] as string,
+                                PackageType = reader["PackageType"] as string,
+                                PackagesPerLoad = reader["PackagesPerLoad"] is DBNull ? null : Convert.ToInt32(reader["PackagesPerLoad"]),
+                                IsWeightAutoFilled = reader["IsWeightAutoFilled"] is DBNull ? false : Convert.ToBoolean(reader["IsWeightAutoFilled"]),
+                                IsHeatLotAutoFilled = reader["IsHeatLotAutoFilled"] is DBNull ? false : Convert.ToBoolean(reader["IsHeatLotAutoFilled"]),
+                                IsPackageTypeAutoFilled = reader["IsPackageTypeAutoFilled"] is DBNull ? false : Convert.ToBoolean(reader["IsPackageTypeAutoFilled"]),
+                                IsPackagesPerLoadAutoFilled = reader["IsPackagesPerLoadAutoFilled"] is DBNull ? false : Convert.ToBoolean(reader["IsPackagesPerLoadAutoFilled"])
+                            });
+                        }
+                    }
+                }
             }
 
             return new Model_Dao_Result<List<LoadDetail>>
             {
                 Success = true,
-                Data = result.Data?.ToList() ?? new List<LoadDetail>()
+                Data = loads
             };
         }
         catch (Exception ex)

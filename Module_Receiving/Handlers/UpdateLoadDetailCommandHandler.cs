@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
@@ -8,8 +12,8 @@ using Serilog;
 namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
-/// Handler for updating individual load detail data.
-/// Clears auto-fill flags when user manually edits a field.
+/// Handler for updating Step 2 (Load Details Entry).
+/// Updates individual load data and clears auto-fill flags for manually edited fields.
 /// </summary>
 public class UpdateLoadDetailCommandHandler : IRequestHandler<UpdateLoadDetailCommand, Result>
 {
@@ -26,43 +30,47 @@ public class UpdateLoadDetailCommandHandler : IRequestHandler<UpdateLoadDetailCo
 
     public async Task<Result> Handle(UpdateLoadDetailCommand request, CancellationToken cancellationToken)
     {
-        _logger.Information("Updating load {LoadNumber} for session {SessionId}", request.LoadNumber, request.SessionId);
+        _logger.Information("Updating load detail: Session={SessionId}, Load={LoadNumber}", 
+            request.SessionId, request.LoadNumber);
 
-        // Get existing load to preserve auto-fill flags
-        var existingLoadsResult = await _loadDao.GetLoadsBySessionAsync(request.SessionId);
-        if (!existingLoadsResult.IsSuccess)
+        // Get existing load
+        var loadsResult = await _loadDao.GetLoadsBySessionAsync(request.SessionId);
+        if (!loadsResult.IsSuccess)
         {
-            _logger.Error("Failed to retrieve loads for session {SessionId}: {Error}", request.SessionId, existingLoadsResult.ErrorMessage);
-            return Result.Failure(existingLoadsResult.ErrorMessage);
+            _logger.Error("Failed to retrieve loads: {Error}", loadsResult.ErrorMessage);
+            return Result.Failure(loadsResult.ErrorMessage);
         }
 
-        var existingLoad = existingLoadsResult.Data?.FirstOrDefault(l => l.LoadNumber == request.LoadNumber);
-
-        var load = new LoadDetail
+        var existingLoad = loadsResult.Data?.FirstOrDefault(l => l.LoadNumber == request.LoadNumber);
+        if (existingLoad == null)
         {
-            SessionId = request.SessionId,
+            _logger.Error("Load {LoadNumber} not found", request.LoadNumber);
+            return Result.Failure($"Load {request.LoadNumber} not found");
+        }
+
+        // Create updated load (only update provided fields)
+        var updatedLoad = new LoadDetail
+        {
             LoadNumber = request.LoadNumber,
-            Weight = request.Weight ?? 0,
-            HeatLot = request.HeatLot ?? string.Empty,
-            PackageType = request.PackageType ?? string.Empty,
-            PackagesPerLoad = request.PackagesPerLoad ?? 0,
-            // Clear auto-fill flags for manually edited fields
-            IsWeightAutoFilled = existingLoad?.IsWeightAutoFilled == true && request.Weight == null ? true : false,
-            IsHeatLotAutoFilled = existingLoad?.IsHeatLotAutoFilled == true && request.HeatLot == null ? true : false,
-            IsPackageTypeAutoFilled = existingLoad?.IsPackageTypeAutoFilled == true && request.PackageType == null ? true : false,
-            IsPackagesPerLoadAutoFilled = existingLoad?.IsPackagesPerLoadAutoFilled == true && request.PackagesPerLoad == null ? true : false
+            WeightOrQuantity = request.WeightOrQuantity ?? existingLoad.WeightOrQuantity,
+            HeatLot = request.HeatLot ?? existingLoad.HeatLot,
+            PackageType = request.PackageType ?? existingLoad.PackageType,
+            PackagesPerLoad = request.PackagesPerLoad ?? existingLoad.PackagesPerLoad,
+            // Clear auto-fill flags for fields that were manually edited
+            IsWeightAutoFilled = request.WeightOrQuantity == null ? existingLoad.IsWeightAutoFilled : false,
+            IsHeatLotAutoFilled = request.HeatLot == null ? existingLoad.IsHeatLotAutoFilled : false,
+            IsPackageTypeAutoFilled = request.PackageType == null ? existingLoad.IsPackageTypeAutoFilled : false,
+            IsPackagesPerLoadAutoFilled = request.PackagesPerLoad == null ? existingLoad.IsPackagesPerLoadAutoFilled : false
         };
 
-        var result = await _loadDao.UpsertLoadDetailAsync(request.SessionId, load);
-
-        if (!result.IsSuccess)
+        var updateResult = await _loadDao.UpsertLoadDetailAsync(request.SessionId, updatedLoad);
+        if (!updateResult.IsSuccess)
         {
-            _logger.Error("Failed to update load {LoadNumber} for session {SessionId}: {Error}",
-                request.LoadNumber, request.SessionId, result.ErrorMessage);
-            return Result.Failure(result.ErrorMessage);
+            _logger.Error("Failed to update load: {Error}", updateResult.ErrorMessage);
+            return Result.Failure(updateResult.ErrorMessage);
         }
 
-        _logger.Information("Successfully updated load {LoadNumber} for session {SessionId}", request.LoadNumber, request.SessionId);
+        _logger.Information("Successfully updated load {LoadNumber}", request.LoadNumber);
         return Result.Success();
     }
 }

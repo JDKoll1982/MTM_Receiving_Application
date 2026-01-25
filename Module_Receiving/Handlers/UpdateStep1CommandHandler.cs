@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
@@ -8,8 +12,8 @@ using Serilog;
 namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
-/// Handler for updating Step 1 data (PO Number, Part, Load Count).
-/// Initializes empty LoadDetail records for all loads.
+/// Handler for updating Step 1 (Order & Part Selection).
+/// Initializes LoadDetail records for all loads.
 /// </summary>
 public class UpdateStep1CommandHandler : IRequestHandler<UpdateStep1Command, Result>
 {
@@ -29,73 +33,65 @@ public class UpdateStep1CommandHandler : IRequestHandler<UpdateStep1Command, Res
 
     public async Task<Result> Handle(UpdateStep1Command request, CancellationToken cancellationToken)
     {
-        _logger.Information("Updating Step 1 for session {SessionId}: PO={PONumber}, PartId={PartId}, LoadCount={LoadCount}",
+        _logger.Information("Updating Step 1 for session {SessionId}: PO={PO}, PartId={PartId}, LoadCount={LoadCount}",
             request.SessionId, request.PONumber, request.PartId, request.LoadCount);
 
-        // Get current session
+        // Get session
         var sessionResult = await _sessionDao.GetSessionAsync(request.SessionId);
         if (!sessionResult.IsSuccess)
         {
-            _logger.Error("Failed to retrieve session {SessionId}: {Error}", request.SessionId, sessionResult.ErrorMessage);
-            return Result.Failure(sessionResult.ErrorMessage);
+            _logger.Error("Session {SessionId} not found", request.SessionId);
+            return Result.Failure($"Session not found: {request.SessionId}");
         }
 
         var session = sessionResult.Data;
 
-        // Update session with Step 1 data
+        // Update Step 1 data
         session.PONumber = request.PONumber;
         session.PartId = request.PartId;
         session.LoadCount = request.LoadCount;
+        session.CurrentStep = 1;
 
-        var updateSessionResult = await _sessionDao.UpdateSessionAsync(session);
-        if (!updateSessionResult.IsSuccess)
+        // Save session
+        var updateResult = await _sessionDao.UpdateSessionAsync(session);
+        if (!updateResult.IsSuccess)
         {
-            _logger.Error("Failed to update session {SessionId}: {Error}", request.SessionId, updateSessionResult.ErrorMessage);
-            return Result.Failure(updateSessionResult.ErrorMessage);
+            _logger.Error("Failed to update session: {Error}", updateResult.ErrorMessage);
+            return Result.Failure($"Failed to update: {updateResult.ErrorMessage}");
         }
 
-        // Initialize load detail records if load count changed
+        // Create LoadDetail records for each load
         var existingLoadsResult = await _loadDao.GetLoadsBySessionAsync(request.SessionId);
         var existingLoads = existingLoadsResult.IsSuccess ? existingLoadsResult.Data : new List<LoadDetail>();
 
-        // Create missing load records
+        // Initialize missing loads
         for (int i = 1; i <= request.LoadCount; i++)
         {
-            if (!existingLoads.Any(l => l.LoadNumber == i))
+            if (existingLoads.Find(l => l.LoadNumber == i) == null)
             {
                 var newLoad = new LoadDetail
                 {
-                    SessionId = request.SessionId,
                     LoadNumber = i,
-                    Weight = 0,
-                    HeatLot = string.Empty,
-                    PackageType = string.Empty,
-                    PackagesPerLoad = 0,
+                    WeightOrQuantity = null,
+                    HeatLot = null,
+                    PackageType = null,
+                    PackagesPerLoad = null,
                     IsWeightAutoFilled = false,
                     IsHeatLotAutoFilled = false,
                     IsPackageTypeAutoFilled = false,
                     IsPackagesPerLoadAutoFilled = false
                 };
 
-                var insertResult = await _loadDao.UpsertLoadDetailAsync(request.SessionId, newLoad);
-                if (!insertResult.IsSuccess)
+                var createResult = await _loadDao.UpsertLoadDetailAsync(request.SessionId, newLoad);
+                if (!createResult.IsSuccess)
                 {
-                    _logger.Warning("Failed to initialize load {LoadNumber} for session {SessionId}: {Error}",
-                        i, request.SessionId, insertResult.ErrorMessage);
+                    _logger.Error("Failed to create LoadDetail {LoadNumber}: {Error}", i, createResult.ErrorMessage);
+                    return Result.Failure($"Failed to create load {i}: {createResult.ErrorMessage}");
                 }
             }
         }
 
-        // Remove excess loads if count decreased
-        var loadsToRemove = existingLoads.Where(l => l.LoadNumber > request.LoadCount).ToList();
-        foreach (var load in loadsToRemove)
-        {
-            _logger.Information("Removing excess load {LoadNumber} from session {SessionId}", load.LoadNumber, request.SessionId);
-            // Note: Removal would be handled by DeleteLoadAsync if we added that method
-            // For now, loads beyond count are simply not displayed
-        }
-
-        _logger.Information("Successfully updated Step 1 for session {SessionId}", request.SessionId);
+        _logger.Information("Successfully updated Step 1: Created {LoadCount} loads", request.LoadCount);
         return Result.Success();
     }
 }

@@ -94,14 +94,14 @@
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
     </ItemGroup>
-    <!-- Exclude scripts and specs folder from compilation -->
+    <!-- Exclude scripts folder from compilation -->
     <ItemGroup>
         <Compile Remove="scripts\**" />
         <EmbeddedResource Remove="scripts\**" />
         <None Remove="scripts\**" />
+        <!-- Exclude specs from compilation but keep in project for visibility -->
         <Compile Remove="specs\**" />
         <EmbeddedResource Remove="specs\**" />
-        <None Remove="specs\**" />
         <Page Remove="specs\**" />
         <ApplicationDefinition Remove="specs\**" />
         <!-- Exclude additional non-source directories -->
@@ -126,6 +126,10 @@
         <None Include=".specify\templates\plan-template.md" />
         <None Include=".specify\templates\spec-template.md" />
         <None Include=".specify\templates\tasks-template.md" />
+    </ItemGroup>
+    <!-- Specs Documentation -->
+    <ItemGroup>
+        <None Include="specs\**\*.md" />
     </ItemGroup>
     <!-- VS Code Settings -->
     <ItemGroup>

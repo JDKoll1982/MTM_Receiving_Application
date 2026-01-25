@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Data;
@@ -9,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
 /// Handler for retrieving all load details for a session.
-/// Returns complete list of loads with all data and flags.
+/// Returns loads ordered by LoadNumber.
 /// </summary>
 public class GetLoadDetailsQueryHandler : IRequestHandler<GetLoadDetailsQuery, Result<List<LoadDetail>>>
 {

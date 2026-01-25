@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Commands;
@@ -7,8 +10,8 @@ using Serilog;
 namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 
 /// <summary>
-/// Handler for clearing auto-filled data.
-/// Removes data that was auto-filled via copy operation (preserves manually entered data).
+/// Handler for clearing auto-filled data from loads.
+/// Only clears fields marked as auto-filled. Never affects manually entered data.
 /// </summary>
 public class ClearAutoFilledDataCommandHandler : IRequestHandler<ClearAutoFilledDataCommand, Result>
 {
@@ -25,25 +28,25 @@ public class ClearAutoFilledDataCommandHandler : IRequestHandler<ClearAutoFilled
 
     public async Task<Result> Handle(ClearAutoFilledDataCommand request, CancellationToken cancellationToken)
     {
-        _logger.Information("Clearing auto-filled data for {LoadCount} loads in session {SessionId}, fields: {Fields}",
-            request.LoadNumbers.Count, request.SessionId, request.Fields);
+        _logger.Information("Clearing auto-filled data: Session={SessionId}, LoadCount={LoadCount}, Fields={Fields}",
+            request.SessionId, request.TargetLoadNumbers.Count, request.FieldsToClear);
 
-        // Perform clear operation via DAO
-        var result = await _loadDao.ClearAutoFilledAsync(
+        // If no target loads specified, clear all
+        var targetLoads = request.TargetLoadNumbers.Count > 0 ? request.TargetLoadNumbers : null;
+
+        var clearResult = await _loadDao.ClearAutoFilledAsync(
             request.SessionId,
-            request.LoadNumbers,
-            request.Fields
-        );
+            targetLoads ?? new System.Collections.Generic.List<int>(),
+            request.FieldsToClear);
 
-        if (!result.IsSuccess)
+        if (!clearResult.IsSuccess)
         {
-            _logger.Error("Failed to clear auto-filled data for session {SessionId}: {Error}",
-                request.SessionId, result.ErrorMessage);
-            return Result.Failure(result.ErrorMessage);
+            _logger.Error("Failed to clear auto-filled data: {Error}", clearResult.ErrorMessage);
+            return Result.Failure(clearResult.ErrorMessage);
         }
 
-        _logger.Information("Successfully cleared auto-filled data for {LoadCount} loads in session {SessionId}",
-            request.LoadNumbers.Count, request.SessionId);
+        _logger.Information("Successfully cleared auto-filled data for session {SessionId}",
+            request.SessionId);
 
         return Result.Success();
     }

@@ -13,8 +13,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 {
     /// <summary>
     /// Service for orchestrating the receiving workflow state machine.
+    /// OBSOLETE: Use CQRS commands/queries via MediatR instead.
+    /// This class implements the old 12-step wizard and is deprecated in favor of the consolidated 3-step workflow.
     /// Manages step transitions, validation gates, and session state.
     /// </summary>
+    [Obsolete("Use CQRS commands/queries (StartWorkflowCommand, NavigateToStepCommand, etc.) via MediatR. This 12-step wizard service is replaced by the consolidated 3-step workflow.", DiagnosticId = "RECV001", UrlFormat = "https://github.com/JDKoll1982/MTM_Receiving_Application/wiki/CQRS-Migration")]
     public class Service_ReceivingWorkflow : IService_ReceivingWorkflow
     {
         private readonly IService_SessionManager _sessionManager;
@@ -26,15 +29,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_UserSessionManager _userSessionManager;
         private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
 
+        [Obsolete("Use NavigateToStepCommand via MediatR.", DiagnosticId = "RECV001")]
         public event EventHandler? StepChanged;
+        
+        [Obsolete("Use MediatR handlers for status updates.", DiagnosticId = "RECV001")]
         public event EventHandler<string>? StatusMessageRaised;
 
+        [Obsolete("Use MediatR handlers for status updates.", DiagnosticId = "RECV001")]
         public void RaiseStatusMessage(string message)
         {
             StatusMessageRaised?.Invoke(this, message);
         }
 
         private Enum_ReceivingWorkflowStep _currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+        
+        [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public Enum_ReceivingWorkflowStep CurrentStep
         {
             get => _currentStep;
@@ -49,10 +58,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 }
             }
         }
+        
+        [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public Model_ReceivingSession CurrentSession { get; private set; } = new();
+        
+        [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public string? CurrentPONumber { get; set; }
+        
+        [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public Model_InforVisualPart? CurrentPart { get; set; }
+        
+        [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public bool IsNonPOItem { get; set; }
+        
+        [Obsolete("Use GetSessionQuery via MediatR.", DiagnosticId = "RECV001")]
         public int NumberOfLoads { get; set; } = 1;
 
         public Service_ReceivingWorkflow(
