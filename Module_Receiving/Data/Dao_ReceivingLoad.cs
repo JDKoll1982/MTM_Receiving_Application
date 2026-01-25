@@ -9,11 +9,11 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
-public class Dao_ReceivingLoad
+public class Dao_Receiving_Repository_Load
 {
     private readonly string _connectionString;
 
-    public Dao_ReceivingLoad(string connectionString)
+    public Dao_Receiving_Repository_Load(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }

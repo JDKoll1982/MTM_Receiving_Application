@@ -13,11 +13,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Data;
 /// Data Access Object for receiving_label_data table
 /// Provides CRUD operations using stored procedures
 /// </summary>
-public class Dao_ReceivingLine
+public class Dao_Receiving_Repository_Line
 {
     private readonly string _connectionString;
 
-    public Dao_ReceivingLine(string connectionString)
+    public Dao_Receiving_Repository_Line(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }

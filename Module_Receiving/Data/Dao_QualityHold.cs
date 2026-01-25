@@ -13,11 +13,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Data;
 /// Data Access Object for receiving_quality_holds table
 /// Provides CRUD operations for quality hold tracking using stored procedures
 /// </summary>
-public class Dao_QualityHold
+public class Dao_Receiving_Repository_QualityHold
 {
     private readonly string _connectionString;
 
-    public Dao_QualityHold(string connectionString)
+    public Dao_Receiving_Repository_QualityHold(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }

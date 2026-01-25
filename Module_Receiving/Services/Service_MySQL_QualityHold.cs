@@ -15,11 +15,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services;
 /// </summary>
 public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
 {
-    private readonly Dao_QualityHold _dao;
+    private readonly Dao_Receiving_Repository_QualityHold _dao;
     private readonly IService_LoggingUtility _logger;
 
     public Service_MySQL_QualityHold(
-        Dao_QualityHold dao,
+        Dao_Receiving_Repository_QualityHold dao,
         IService_LoggingUtility logger)
     {
         _dao = dao ?? throw new ArgumentNullException(nameof(dao));

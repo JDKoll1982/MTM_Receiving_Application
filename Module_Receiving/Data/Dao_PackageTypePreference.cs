@@ -8,11 +8,11 @@ using MySql.Data.MySqlClient;
 
 namespace MTM_Receiving_Application.Module_Receiving.Data;
 
-public class Dao_PackageTypePreference
+public class Dao_Receiving_Repository_PackageTypePreference
 {
     private readonly string _connectionString;
 
-    public Dao_PackageTypePreference(string connectionString)
+    public Dao_Receiving_Repository_PackageTypePreference(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }

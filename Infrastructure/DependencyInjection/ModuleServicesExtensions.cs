@@ -74,10 +74,10 @@ public static class ModuleServicesExtensions
             ?? throw new InvalidOperationException("MySql connection string not found");
 
         // DAOs (Singleton - Stateless data access objects)
-        services.AddSingleton(_ => new Dao_ReceivingLoad(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_ReceivingLine(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_PackageTypePreference(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_QualityHold(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_Receiving_Repository_Load(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_Receiving_Repository_Line(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_Receiving_Repository_PackageTypePreference(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_Receiving_Repository_QualityHold(mySqlConnectionString));
 
         // Services (Singleton - Stateless business logic)
         services.AddSingleton<IService_MySQL_Receiving>(sp =>

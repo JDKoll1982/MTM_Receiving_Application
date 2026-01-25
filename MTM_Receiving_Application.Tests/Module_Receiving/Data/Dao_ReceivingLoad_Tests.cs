@@ -23,7 +23,7 @@ public class Dao_ReceivingLoad_Tests
     public void Constructor_ValidConnectionString_CreatesInstance()
     {
         // Act
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
 
         // Assert
         dao.Should().NotBeNull();
@@ -33,7 +33,7 @@ public class Dao_ReceivingLoad_Tests
     public void Constructor_NullConnectionString_ThrowsArgumentNullException()
     {
         // Act
-        Action act = () => new Dao_ReceivingLoad(null!);
+        Action act = () => new Dao_Receiving_Repository_Load(null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -48,7 +48,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_NullList_ReturnsFailure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
 
         // Act
         var result = await dao.SaveLoadsAsync(null!);
@@ -63,7 +63,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_EmptyList_ReturnsFailure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>();
 
         // Act
@@ -79,7 +79,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad> { CreateValidLoad() };
 
         // Act
@@ -93,7 +93,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_MultipleValidLoads_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>
         {
             CreateValidLoad(),
@@ -112,7 +112,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_NullPONumber_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.PoNumber = null;
         var loads = new List<Model_ReceivingLoad> { load };
@@ -131,7 +131,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_CleansPONumberPrefix_HandlesAll_Async(string poNumber)
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.PoNumber = poNumber;
         var loads = new List<Model_ReceivingLoad> { load };
@@ -147,7 +147,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_NonPOItem_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.IsNonPOItem = true;
         load.PoNumber = null;
@@ -168,7 +168,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task UpdateLoadsAsync_NullList_ReturnsFailure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
 
         // Act
         var result = await dao.UpdateLoadsAsync(null!);
@@ -183,7 +183,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task UpdateLoadsAsync_EmptyList_ReturnsFailure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>();
 
         // Act
@@ -198,7 +198,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task UpdateLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad> { CreateValidLoad() };
 
         // Act
@@ -212,7 +212,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task UpdateLoadsAsync_MultipleLoads_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>
         {
             CreateValidLoad(),
@@ -234,7 +234,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task DeleteLoadsAsync_NullList_ReturnsSuccess_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
 
         // Act
         var result = await dao.DeleteLoadsAsync(null!);
@@ -249,7 +249,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task DeleteLoadsAsync_EmptyList_ReturnsSuccess_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>();
 
         // Act
@@ -265,7 +265,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task DeleteLoadsAsync_ValidSingleLoad_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad> { CreateValidLoad() };
 
         // Act
@@ -279,7 +279,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task DeleteLoadsAsync_MultipleLoads_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>
         {
             CreateValidLoad(),
@@ -302,7 +302,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetHistoryAsync_ValidParameters_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var partID = "PART-001";
         var startDate = DateTime.Now.AddDays(-30);
         var endDate = DateTime.Now;
@@ -321,7 +321,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetHistoryAsync_DifferentPartIDs_HandlesAll_Async(string partID)
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var startDate = DateTime.Now.AddDays(-30);
         var endDate = DateTime.Now;
 
@@ -336,7 +336,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetHistoryAsync_StartDateAfterEndDate_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var partID = "PART-001";
         var startDate = DateTime.Now;
         var endDate = DateTime.Now.AddDays(-30);
@@ -352,7 +352,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetHistoryAsync_SameDateRange_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var partID = "PART-001";
         var date = DateTime.Now;
 
@@ -371,7 +371,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetAllAsync_ValidDateRange_CallsStoredProcedure_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var startDate = DateTime.Now.AddDays(-30);
         var endDate = DateTime.Now;
 
@@ -386,7 +386,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetAllAsync_WideRange_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var startDate = DateTime.Now.AddYears(-10);
         var endDate = DateTime.Now.AddYears(1);
 
@@ -409,7 +409,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_DifferentWeights_HandlesAll_Async(decimal weight)
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.WeightQuantity = weight;
         load.WeightPerPackage = weight / load.PackagesPerLoad;
@@ -430,7 +430,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_DifferentPackageCounts_HandlesAll_Async(int packageCount)
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.PackagesPerLoad = packageCount;
         var loads = new List<Model_ReceivingLoad> { load };
@@ -446,7 +446,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_VeryLongPartID_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.PartID = new string('A', 500);
         var loads = new List<Model_ReceivingLoad> { load };
@@ -462,7 +462,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_VeryLongHeatNumber_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.HeatLotNumber = new string('H', 1000);
         var loads = new List<Model_ReceivingLoad> { load };
@@ -478,7 +478,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_SpecialCharactersInFields_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var load = CreateValidLoad();
         load.PartID = "PART-@#$%";
         load.HeatLotNumber = "HEAT-<>{}";
@@ -500,7 +500,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task SaveLoadsAsync_VariousBatchSizes_HandlesAll_Async(int batchSize)
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var loads = new List<Model_ReceivingLoad>();
         for (int i = 0; i < batchSize; i++)
         {
@@ -518,7 +518,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetHistoryAsync_VeryOldDates_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var startDate = new DateTime(1900, 1, 1);
         var endDate = new DateTime(1900, 12, 31);
 
@@ -533,7 +533,7 @@ public class Dao_ReceivingLoad_Tests
     public async Task GetAllAsync_FutureDates_HandlesGracefully_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLoad(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Load(TestConnectionString);
         var startDate = DateTime.Now.AddYears(1);
         var endDate = DateTime.Now.AddYears(2);
 

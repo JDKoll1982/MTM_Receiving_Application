@@ -24,7 +24,7 @@ public class Dao_ReceivingLine_Tests
     public void Constructor_ValidConnectionString_CreatesInstance()
     {
         // Act
-        var dao = new Dao_ReceivingLine(TestConnectionString);
+        var dao = new Dao_Receiving_Repository_Line(TestConnectionString);
 
         // Assert
         dao.Should().NotBeNull();
@@ -34,7 +34,7 @@ public class Dao_ReceivingLine_Tests
     public void Constructor_NullConnectionString_ThrowsArgumentNullException()
     {
         // Act
-        Action act = () => new Dao_ReceivingLine(null!);
+        Action act = () => new Dao_Receiving_Repository_Line(null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -46,7 +46,7 @@ public class Dao_ReceivingLine_Tests
     {
         // NOTE: Constructor accepts empty string, but database operations will fail gracefully
         // Act
-        Action act = () => new Dao_ReceivingLine(string.Empty);
+        Action act = () => new Dao_Receiving_Repository_Line(string.Empty);
 
         // Assert
         act.Should().NotThrow();
@@ -60,7 +60,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_InvalidConnectionString_ReturnsFailureResult_Async()
     {
         // Arrange - Use invalid connection string to simulate connection failure
-        var dao = new Dao_ReceivingLine("Server=invalid;Database=nonexistent;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;Database=nonexistent;");
         var line = CreateValidReceivingLine();
 
         // Act
@@ -81,7 +81,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_NullPartID_ReturnsResult_Async()
     {
         // Arrange - Invalid connection ensures we're testing parameter construction, not DB
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.PartID = null!;
 
@@ -97,7 +97,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_NullHeat_ReturnsResult_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.Heat = null!;
 
@@ -112,7 +112,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_NullInitialLocation_ReturnsResult_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.InitialLocation = null!;
 
@@ -127,7 +127,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_NullCoilsOnSkid_ReturnsResult_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.CoilsOnSkid = null;
 
@@ -142,7 +142,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_NullVendorName_ReturnsResult_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.VendorName = null!;
 
@@ -157,7 +157,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_NullPartDescription_ReturnsResult_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.PartDescription = null!;
 
@@ -181,7 +181,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_DifferentQuantities_HandlesAllValues_Async(int quantity)
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.Quantity = quantity;
 
@@ -201,7 +201,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_DifferentPONumbers_HandlesAllValues_Async(int poNumber)
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.PONumber = poNumber;
 
@@ -216,7 +216,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_AllFieldsPopulated_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = new Model_ReceivingLine
         {
             Quantity = 500,
@@ -242,7 +242,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_MinimalFields_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = new Model_ReceivingLine
         {
             Quantity = 1,
@@ -266,7 +266,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_VeryLongPartID_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.PartID = new string('A', 500);
 
@@ -281,7 +281,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_VeryLongHeat_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.Heat = new string('H', 1000);
 
@@ -296,7 +296,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_VeryLongPartDescription_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.PartDescription = new string('D', 2000);
 
@@ -311,7 +311,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_FutureDate_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.Date = DateTime.Now.AddYears(1);
 
@@ -326,7 +326,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_PastDate_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.Date = DateTime.Now.AddYears(-10);
 
@@ -346,7 +346,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_BoundaryCoilsOnSkid_DoesNotThrow_Async(int? coilsOnSkid)
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.CoilsOnSkid = coilsOnSkid;
 
@@ -367,7 +367,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_BoundaryEmployeeNumbers_DoesNotThrow_Async(int employeeNumber)
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.EmployeeNumber = employeeNumber;
 
@@ -382,7 +382,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_SpecialCharactersInFields_DoesNotThrow_Async()
     {
         // Arrange
-        var dao = new Dao_ReceivingLine("Server=invalid;");
+        var dao = new Dao_Receiving_Repository_Line("Server=invalid;");
         var line = CreateValidReceivingLine();
         line.PartID = "PART-@#$%^&*()";
         line.Heat = "HEAT-<>{}[]";
@@ -403,7 +403,7 @@ public class Dao_ReceivingLine_Tests
     public async Task InsertReceivingLineAsync_DatabaseException_ReturnsFailureNotThrow_Async()
     {
         // Arrange - Empty connection string will cause connection failure
-        var dao = new Dao_ReceivingLine(string.Empty);
+        var dao = new Dao_Receiving_Repository_Line(string.Empty);
         var line = CreateValidReceivingLine();
 
         // Act

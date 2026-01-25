@@ -12,9 +12,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// </summary>
     public class Service_MySQL_PackagePreferences : IService_MySQL_PackagePreferences
     {
-        private readonly Dao_PackageTypePreference _dao;
+        private readonly Dao_Receiving_Repository_PackageTypePreference _dao;
 
-        public Service_MySQL_PackagePreferences(Dao_PackageTypePreference dao)
+        public Service_MySQL_PackagePreferences(Dao_Receiving_Repository_PackageTypePreference dao)
         {
             _dao = dao ?? throw new ArgumentNullException(nameof(dao));
         }
@@ -22,7 +22,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         // Constructor for backward compatibility if needed
         public Service_MySQL_PackagePreferences(string connectionString)
         {
-            _dao = new Dao_PackageTypePreference(connectionString);
+            _dao = new Dao_Receiving_Repository_PackageTypePreference(connectionString);
         }
 
         public async Task<Model_PackageTypePreference?> GetPreferenceAsync(string partID)

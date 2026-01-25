@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Data;
 /// Data Access Object for receiving_load_details table
 /// Provides CRUD operations for individual load management including bulk operations
 /// </summary>
-public class Dao_ReceivingLoadDetail
+public class Dao_Receiving_Repository_LoadDetail
 {
     private readonly string _connectionString;
 
@@ -23,7 +23,7 @@ public class Dao_ReceivingLoadDetail
     /// Initializes a new instance of Dao_ReceivingLoadDetail
     /// </summary>
     /// <param name="connectionString">MySQL connection string</param>
-    public Dao_ReceivingLoadDetail(string connectionString)
+    public Dao_Receiving_Repository_LoadDetail(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }

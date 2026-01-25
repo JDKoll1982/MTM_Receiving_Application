@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Data;
 /// Data Access Object for receiving_workflow_sessions table
 /// Provides CRUD operations for workflow session management using stored procedures
 /// </summary>
-public class Dao_ReceivingWorkflowSession
+public class Dao_Receiving_Repository_WorkflowSession
 {
     private readonly string _connectionString;
 
@@ -20,7 +20,7 @@ public class Dao_ReceivingWorkflowSession
     /// Initializes a new instance of Dao_ReceivingWorkflowSession
     /// </summary>
     /// <param name="connectionString">MySQL connection string</param>
-    public Dao_ReceivingWorkflowSession(string connectionString)
+    public Dao_Receiving_Repository_WorkflowSession(string connectionString)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
     }

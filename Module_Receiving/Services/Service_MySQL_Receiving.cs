@@ -14,11 +14,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// </summary>
     public class Service_MySQL_Receiving : IService_MySQL_Receiving
     {
-        private readonly Dao_ReceivingLoad _receivingLoadDao;
+        private readonly Dao_Receiving_Repository_Load _receivingLoadDao;
         private readonly IService_LoggingUtility _logger;
 
         public Service_MySQL_Receiving(
-            Dao_ReceivingLoad receivingLoadDao,
+            Dao_Receiving_Repository_Load receivingLoadDao,
             IService_LoggingUtility logger)
         {
             _receivingLoadDao = receivingLoadDao;
@@ -28,7 +28,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         // Constructor for backward compatibility if needed, but DI should handle it
         public Service_MySQL_Receiving(string connectionString, IService_LoggingUtility logger)
         {
-            _receivingLoadDao = new Dao_ReceivingLoad(connectionString);
+            _receivingLoadDao = new Dao_Receiving_Repository_Load(connectionString);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
