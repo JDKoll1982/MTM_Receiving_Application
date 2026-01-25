@@ -271,4 +271,7 @@
     <ItemGroup>
       <PRIResource Remove="Properties\**" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Module_Databases\Module_Receiving_Database\Import Script Logs\" />
+    </ItemGroup>
 </Project>

@@ -22,7 +22,7 @@
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
-    <IncludeSchemaNameInFileName>False</IncludeSchemaNameInFileName>
+    <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -59,21 +59,71 @@
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-  </ItemGroup>
-  <ItemGroup>
-    <Build Include="part_types.sql" />
-    <Build Include="system_settings.sql" />
-    <Build Include="user_preferences.sql" />
-    <Build Include="part_settings.sql" />
-    <Build Include="receiving_transactions.sql" />
-    <Build Include="receiving_loads.sql" />
-    <Build Include="receiving_audit_trail.sql" />
+    <Folder Include="dbo" />
+    <Folder Include="dbo\Tables" />
+    <Folder Include="dbo\StoredProcedures" />
+    <Folder Include="dbo\StoredProcedures\CompletedTransaction" />
+    <Folder Include="dbo\StoredProcedures\Line" />
+    <Folder Include="dbo\StoredProcedures\Audit" />
+    <Folder Include="dbo\StoredProcedures\PartPreference" />
+    <Folder Include="dbo\StoredProcedures\Reference" />
+    <Folder Include="dbo\StoredProcedures\Settings" />
+    <Folder Include="dbo\StoredProcedures\Transaction" />
+    <Folder Include="dbo\StoredProcedures\WorkflowSession" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
       <Version>1.0.0</Version>
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="DEPLOYMENT_GUIDE.md" />
+    <None Include="DATABASE_PROJECT_SETUP.md" />
+    <None Include="STORED_PROCEDURES_REFERENCE.md" />
+    <None Include="Module_Receiving_Database.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\tbl_Receiving_AuditLog.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_CompletedTransaction.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_Line.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_Location.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_PackageType.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_PartPreference.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_PartType.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_Settings.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_Transaction.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_WorkflowSession.sql" />
+    <Build Include="dbo\StoredProcedures\Audit\sp_Receiving_AuditLog_Insert.sql" />
+    <Build Include="dbo\StoredProcedures\Audit\sp_Receiving_AuditLog_SelectByTransaction.sql" />
+    <Build Include="dbo\StoredProcedures\CompletedTransaction\sp_Receiving_CompletedTransaction_SelectByDateRange.sql" />
+    <Build Include="dbo\StoredProcedures\CompletedTransaction\sp_Receiving_CompletedTransaction_SelectByPO.sql" />
+    <Build Include="dbo\StoredProcedures\Line\sp_Receiving_Line_Delete.sql" />
+    <Build Include="dbo\StoredProcedures\Line\sp_Receiving_Line_Insert.sql" />
+    <Build Include="dbo\StoredProcedures\Line\sp_Receiving_Line_SelectById.sql" />
+    <Build Include="dbo\StoredProcedures\Line\sp_Receiving_Line_SelectByPO.sql" />
+    <Build Include="dbo\StoredProcedures\Line\sp_Receiving_Line_SelectByTransaction.sql" />
+    <Build Include="dbo\StoredProcedures\Line\sp_Receiving_Line_Update.sql" />
+    <Build Include="dbo\StoredProcedures\PartPreference\sp_Receiving_PartPreference_SelectByPart.sql" />
+    <Build Include="dbo\StoredProcedures\PartPreference\sp_Receiving_PartPreference_Upsert.sql" />
+    <Build Include="dbo\StoredProcedures\Reference\sp_Receiving_Location_SelectAll.sql" />
+    <Build Include="dbo\StoredProcedures\Reference\sp_Receiving_Location_SelectByCode.sql" />
+    <Build Include="dbo\StoredProcedures\Reference\sp_Receiving_PackageType_SelectAll.sql" />
+    <Build Include="dbo\StoredProcedures\Reference\sp_Receiving_PartType_SelectAll.sql" />
+    <Build Include="dbo\StoredProcedures\Settings\sp_Receiving_Settings_SelectByKey.sql" />
+    <Build Include="dbo\StoredProcedures\Settings\sp_Receiving_Settings_Upsert.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_Complete.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_Delete.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_Insert.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_SelectByDateRange.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_SelectById.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_SelectByPO.sql" />
+    <Build Include="dbo\StoredProcedures\Transaction\sp_Receiving_Transaction_Update.sql" />
+    <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_Insert.sql" />
+    <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_SelectById.sql" />
+    <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_SelectByUser.sql" />
+    <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_Update.sql" />
   </ItemGroup>
   <Import Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" Condition="'$(NetCoreBuild)' == 'true'" />
   <Target Name="BeforeBuild">

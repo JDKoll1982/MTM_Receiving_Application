@@ -34,7 +34,7 @@ public class SaveReceivingTransactionCommandHandler : IRequestHandler<SaveReceiv
             UserName = request.UserName,
             WorkflowMode = Enum_Receiving_Mode_WorkflowMode.Wizard,
             TransactionDate = System.DateTime.Now,
-            Loads = request.Loads.Select(load => new Model_Receiving_Entity_ReceivingLoad
+            Loads = request.Loads.ConvertAll(load => new Model_Receiving_Entity_ReceivingLoad
             {
                 LoadNumber = load.LoadNumber,
                 PartId = load.PartId,
@@ -46,7 +46,7 @@ public class SaveReceivingTransactionCommandHandler : IRequestHandler<SaveReceiv
                 WeightPerPackage = load.WeightPerPackage,
                 ReceivingLocation = load.ReceivingLocation,
                 QualityHoldAcknowledged = load.QualityHoldAcknowledged
-            }).ToList()
+            })
         };
 
         var result = await _transactionDao.InsertTransactionAsync(transaction);
