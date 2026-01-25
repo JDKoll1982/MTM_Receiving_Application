@@ -15,12 +15,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for retrieving all load details for a session.
 /// Returns loads ordered by LoadNumber.
 /// </summary>
-public class Handler_ReceivingWizard_Get_AllLoadDetails : IRequestHandler<Query_ReceivingWizard_Get_AllLoadDetails, Result<List<LoadDetail>>>
+public class Handler_Receiving_Wizard_Get_AllLoadDetails : IRequestHandler<Query_ReceivingWizard_Get_AllLoadDetails, Result<List<LoadDetail>>>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Get_AllLoadDetails(
+    public Handler_Receiving_Wizard_Get_AllLoadDetails(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {

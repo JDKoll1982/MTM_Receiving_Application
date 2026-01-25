@@ -11,7 +11,7 @@ using System;
 using System.Threading.Tasks;
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_ModeSelection : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Wizard_Display_ModeSelection : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_UserSessionManager _sessionManager;
@@ -61,7 +61,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _editAccessibilityName = "Edit Mode";
 
-        public ViewModel_Receiving_ModeSelection(
+        public ViewModel_Receiving_Wizard_Display_ModeSelection(
             IService_ReceivingWorkflow workflowService,
             IService_UserSessionManager sessionManager,
             IService_UserPreferences userPreferencesService,

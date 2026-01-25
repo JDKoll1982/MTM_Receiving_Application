@@ -107,52 +107,60 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 
 ## Naming Conventions
 
-All classes follow the **4-Part Naming Standard:** `{Type}_{SubModule}_{CategoryType}_{DescriptiveName}`
+All classes follow the **5-Part Naming Standard:** `{Type}_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 
 ### **Type Guidelines:**
 - **Type** = What kind of class (ViewModel, View, Service, Model, DAO, Helper, Enum)
-- **SubModule** = Which module/domain (ReceivingWizard, Receiving, Shared, Database, etc.)
+- **Module** = Which module/domain (Receiving, Shared, Database, etc.)
+- **Mode** = Context or variant (Wizard, Consolidated, EditMode, etc.)
 - **CategoryType** = Why it exists / what category (Orchestration, Display, Entity, Repository, etc.)
 - **DescriptiveName** = EXACTLY what it represents (MUST be clear and specific, NOT vague)
 
-### **1. ViewModels:** `ViewModel_{SubModule}_{CategoryType}_{DescriptiveName}`
+### **1. ViewModels:** `ViewModel_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode Examples:** `Wizard` (12-step), `Consolidated` (3-step), `EditMode`
+- **CategoryType:** `Orchestration_`, `Display_`, `Dialog_`, `Panel_`, `Interaction_`
+- **Examples (CLEAR - NOT vague):**
+  - `ViewModel_Receiving_Wizard_Orchestration_MainWorkflow`
+  - `ViewModel_Receiving_Wizard_Display_LoadEntryGrid`
+  - `ViewModel_Receiving_Consolidated_Display_CopyPreviewPanel`
+  - `ViewModel_Receiving_EditMode_Interaction_EditModeHandler`
+
+### **2. Views:** `View_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode Examples:** `Wizard` (12-step), `Consolidated` (3-step), `EditMode`
 - **CategoryType:** `Orchestration_`, `Display_`, `Dialog_`, `Panel_`
 - **Examples (CLEAR - NOT vague):**
-  - `ViewModel_ReceivingWizard_Orchestration_WorkflowController`
-  - `ViewModel_ReceivingWizard_Display_LoadEntryGrid`
-  - `ViewModel_ReceivingWizard_Panel_CopyPreviewConfirmation`
+  - `View_Receiving_Wizard_Orchestration_WorkflowConsolidated`
+  - `View_Receiving_Wizard_Display_LoadEntryGrid`
+  - `View_Receiving_Consolidated_Dialog_CopyPreviewConfirmation`
 
-### **2. Views:** `View_{SubModule}_{CategoryType}_{DescriptiveName}`
-- **CategoryType:** `Orchestration_`, `Display_`, `Dialog_`, `Panel_`
-- **Examples (CLEAR - NOT vague):**
-  - `View_ReceivingWizard_Orchestration_WorkflowConsolidated`
-  - `View_ReceivingWizard_Display_LoadEntryGrid`
-  - `View_ReceivingWizard_Dialog_CopyPreviewConfirmation`
-
-### **3. Services:** `Service_{SubModule}_{CategoryType}_{DescriptiveName}` + `IService_{SubModule}_{CategoryType}_{DescriptiveName}`
+### **3. Services:** `Service_{Module}_{Mode}_{CategoryType}_{DescriptiveName}` + `IService_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode Examples:** Can be shared across modes or mode-specific
 - **CategoryType:** `Orchestration_`, `Business_`, `Infrastructure_`, `Utility_`
 - **Examples (CLEAR - NOT vague):**
-  - `Service_ReceivingWizard_Orchestration_WorkflowStateMachine` / `IService_ReceivingWizard_Orchestration_WorkflowStateMachine`
-  - `Service_ReceivingWizard_Business_LoadValidation` / `IService_ReceivingWizard_Business_LoadValidation`
-  - `Service_ReceivingWizard_Infrastructure_CSVExporter` / `IService_ReceivingWizard_Infrastructure_CSVExporter`
+  - `Service_Receiving_Wizard_Orchestration_WorkflowStateMachine` / `IService_Receiving_Wizard_Orchestration_WorkflowStateMachine`
+  - `Service_Receiving_Business_LoadValidation` / `IService_Receiving_Business_LoadValidation`
+  - `Service_Receiving_Infrastructure_CSVExporter` / `IService_Receiving_Infrastructure_CSVExporter`
 
-### **4. Models:** `Model_{SubModule}_{CategoryType}_{DescriptiveName}`
+### **4. Models:** `Model_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode:** Often omitted for shared models, or included if mode-specific
 - **CategoryType:** `Entity_`, `DTO_`, `Result_`, `Request_`, `Response_`
 - **Examples (CLEAR - NOT vague):**
-  - `Model_ReceivingWizard_Entity_WorkflowSession`
-  - `Model_ReceivingWizard_Entity_LoadDetail`
-  - `Model_ReceivingWizard_Result_CopyOperationResult`
-  - `Model_ReceivingWizard_DTO_ValidationError`
-  - `Model_ReceivingWizard_Request_SaveWorkflowRequest`
+  - `Model_Receiving_Entity_WorkflowSession`
+  - `Model_Receiving_Wizard_Entity_LoadDetail`
+  - `Model_Receiving_Result_CopyOperationResult`
+  - `Model_Receiving_DTO_ValidationError`
+  - `Model_Receiving_Request_SaveWorkflowRequest`
 
-### **5. DAOs:** `Dao_{SubModule}_{CategoryType}_{DescriptiveName}`
+### **5. DAOs:** `Dao_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode:** Often omitted for shared DAOs
 - **CategoryType:** `Repository_`, `DataAccess_`, `Query_`
 - **Examples (CLEAR - NOT vague):**
-  - `Dao_ReceivingWizard_Repository_WorkflowSession`
-  - `Dao_ReceivingWizard_Repository_LoadDetail`
-  - `Dao_ReceivingWizard_DataAccess_CompletedTransaction`
+  - `Dao_Receiving_Repository_WorkflowSession`
+  - `Dao_Receiving_Repository_LoadDetail`
+  - `Dao_Receiving_DataAccess_CompletedTransaction`
 
-### **6. Helpers:** `Helper_{SubModule}_{CategoryType}_{DescriptiveName}`
+### **6. Helpers:** `Helper_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode:** Often omitted for shared helpers
 - **CategoryType:** `Database_`, `FileIO_`, `Validation_`, `Transformation_`, `Infrastructure_`
 - **Examples (CLEAR - NOT vague):**
   - `Helper_Database_Infrastructure_StoredProcedureExecution`
@@ -160,34 +168,34 @@ All classes follow the **4-Part Naming Standard:** `{Type}_{SubModule}_{Category
   - `Helper_Validation_Business_DataFormatValidator`
   - `Helper_Transformation_Infrastructure_EntityMapper`
 
-### **7. Enums:** `Enum_{SubModule}_{CategoryType}_{DescriptiveName}`
+### **7. Enums:** `Enum_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Mode:** Often omitted for shared enums
 - **CategoryType:** `Status_`, `Type_`, `State_`, `Mode_`, `Severity_`
 - **Examples (CLEAR - NOT vague):**
-  - `Enum_ReceivingWizard_State_WorkflowStep`
-  - `Enum_ReceivingWizard_Type_CopyFieldSelection`
-  - `Enum_ReceivingWizard_Mode_WorkflowMode`
+  - `Enum_Receiving_State_WorkflowStep`
+  - `Enum_Receiving_Type_CopyFieldSelection`
   - `Enum_Shared_Severity_ErrorSeverity`
 
 ### **CQRS Commands, Queries, Handlers, and Validators:**
-- Pattern: `{Type}_{SubModule}_{CategoryType}_{DescriptiveName}`
-- **Commands:** `Command_<SubModule>_<CategoryType>_<DescriptiveName>`
+- Pattern: `{Type}_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
+- **Commands:** `Command_<Module>_<Mode>_<CategoryType>_<DescriptiveName>`
   - Examples:
-    - `Command_ReceivingWizard_Navigation_StartNewWorkflow`
-    - `Command_ReceivingWizard_Data_EnterOrderAndPart`
-    - `Command_ReceivingWizard_Copy_FieldsToEmptyCells`
-- **Queries:** `Query_<SubModule>_<CategoryType>_<DescriptiveName>`
+    - `Command_Receiving_Wizard_Navigation_StartNewWorkflow`
+    - `Command_Receiving_Wizard_Data_EnterOrderAndPart`
+    - `Command_Receiving_Consolidated_Copy_FieldsToEmptyCells`
+- **Queries:** `Query_<Module>_<Mode>_<CategoryType>_<DescriptiveName>`
   - Examples:
-    - `Query_ReceivingWizard_Get_CurrentSession`
-    - `Query_ReceivingWizard_Validate_CurrentStep`
-    - `Query_ReceivingWizard_Preview_CopyOperation`
-- **Handlers:** `Handler_<SubModule>_<CategoryType>_<DescriptiveName>`
+    - `Query_Receiving_Wizard_Get_CurrentSession`
+    - `Query_Receiving_Wizard_Validate_CurrentStep`
+    - `Query_Receiving_Consolidated_Preview_CopyOperation`
+- **Handlers:** `Handler_<Module>_<Mode>_<CategoryType>_<DescriptiveName>`
   - Examples:
-    - `Handler_ReceivingWizard_Navigation_StartNewWorkflow`
-    - `Handler_ReceivingWizard_Data_EnterOrderAndPart`
-- **Validators:** `Validator_<SubModule>_<CategoryType>_<DescriptiveName>`
+    - `Handler_Receiving_Wizard_Navigation_StartNewWorkflow`
+    - `Handler_Receiving_Consolidated_Data_EnterOrderAndPart`
+- **Validators:** `Validator_<Module>_<Mode>_<CategoryType>_<DescriptiveName>`
   - Examples:
-    - `Validator_ReceivingWizard_Data_EnterOrderAndPart`
-    - `Validator_ReceivingWizard_Copy_FieldsToEmptyCells`
+    - `Validator_Receiving_Wizard_Data_EnterOrderAndPart`
+    - `Validator_Receiving_Consolidated_Copy_FieldsToEmptyCells`
 
 ### **CategoryType Guidelines for CQRS:**
 - `Navigation_*` = Step/workflow movement commands

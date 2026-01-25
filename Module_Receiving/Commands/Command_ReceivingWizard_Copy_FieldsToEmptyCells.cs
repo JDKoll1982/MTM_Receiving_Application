@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="SourceLoadNumber">The load number to copy from</param>
     /// <param name="TargetLoadNumbers">The loads to copy to (empty list = all loads except source)</param>
     /// <param name="FieldsToCopy">Which fields to copy</param>
-    public record Command_ReceivingWizard_Copy_FieldsToEmptyCells(
+    public record Command_Receiving_Wizard_Copy_FieldsToEmptyCells(
         Guid SessionId,
         int SourceLoadNumber,
         List<int> TargetLoadNumbers,

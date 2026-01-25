@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_LoadEntry : ViewModel_Shared_Base, IResettableViewModel
+    public partial class ViewModel_Receiving_Wizard_Display_LoadCountEntry : ViewModel_Shared_Base, IResettableViewModel
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -36,7 +36,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _numberOfLoadsAccessibilityName = "Number of Loads";
 
-        public ViewModel_Receiving_LoadEntry(
+        public ViewModel_Receiving_Wizard_Display_LoadCountEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,

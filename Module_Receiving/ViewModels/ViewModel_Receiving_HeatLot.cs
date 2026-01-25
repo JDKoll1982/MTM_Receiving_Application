@@ -15,7 +15,7 @@ using System;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_HeatLot : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Wizard_Display_HeatLotEntry : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -48,7 +48,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _heatLotAccessibilityName = "Heat Lot Number";
 
-        public ViewModel_Receiving_HeatLot(
+        public ViewModel_Receiving_Wizard_Display_HeatLotEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,

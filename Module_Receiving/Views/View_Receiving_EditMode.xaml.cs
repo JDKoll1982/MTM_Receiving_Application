@@ -17,13 +17,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_EditMode : UserControl
     {
-        public ViewModel_Receiving_EditMode ViewModel { get; }
+        public ViewModel_Receiving_EditMode_Interaction_EditHandler ViewModel { get; }
         private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private string? _lastCheckedPartID;
 
         public View_Receiving_EditMode()
         {
-            ViewModel = App.GetService<ViewModel_Receiving_EditMode>();
+            ViewModel = App.GetService<ViewModel_Receiving_EditMode_Interaction_EditHandler>();
             _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
             this.DataContext = ViewModel;
             this.InitializeComponent();

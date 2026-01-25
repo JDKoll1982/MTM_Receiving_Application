@@ -8,23 +8,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_PackageType : UserControl
     {
-        public ViewModel_Receiving_PackageType ViewModel
+        public ViewModel_Receiving_Wizard_Display_PackageTypeEntry ViewModel
         {
-            get => (ViewModel_Receiving_PackageType)GetValue(ViewModelProperty);
+            get => (ViewModel_Receiving_Wizard_Display_PackageTypeEntry)GetValue(ViewModelProperty);
             private set => SetValue(ViewModelProperty, value);
         }
 
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register(
                 nameof(ViewModel),
-                typeof(ViewModel_Receiving_PackageType),
+                typeof(ViewModel_Receiving_Wizard_Display_PackageTypeEntry),
                 typeof(View_Receiving_PackageType),
                 new PropertyMetadata(null));
         
         private readonly IService_Focus _focusService;
 
     public View_Receiving_PackageType(
-        ViewModel_Receiving_PackageType viewModel,
+        ViewModel_Receiving_Wizard_Display_PackageTypeEntry viewModel,
         IService_Focus focusService)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -45,7 +45,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     /// </summary>
     public View_Receiving_PackageType()
     {
-        ViewModel = App.GetService<ViewModel_Receiving_PackageType>();
+        ViewModel = App.GetService<ViewModel_Receiving_Wizard_Display_PackageTypeEntry>();
         _focusService = App.GetService<IService_Focus>();
         this.InitializeComponent();
         this.Loaded += PackageTypeView_Loaded;

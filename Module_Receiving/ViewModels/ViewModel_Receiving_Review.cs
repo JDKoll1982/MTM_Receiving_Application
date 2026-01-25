@@ -14,7 +14,7 @@ using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_Review : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Wizard_Display_ReviewAndConfirmation : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -149,7 +149,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         public bool IsTableView => !IsSingleView;
 
-        public ViewModel_Receiving_Review(
+        public ViewModel_Receiving_Wizard_Display_ReviewAndConfirmation(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_Help helpService,

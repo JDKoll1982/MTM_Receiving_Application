@@ -110,16 +110,16 @@ public static class ModuleServicesExtensions
             Module_Receiving.Services.Service_ReceivingSettings>();
 
         // ViewModels (Transient - Per-view instances with state)
-        services.AddTransient<ViewModel_Receiving_Workflow>();
-        services.AddTransient<ViewModel_Receiving_ModeSelection>();
-        services.AddTransient<ViewModel_Receiving_ManualEntry>();
-        services.AddTransient<ViewModel_Receiving_EditMode>();
-        services.AddTransient<ViewModel_Receiving_POEntry>();
-        services.AddTransient<ViewModel_Receiving_LoadEntry>();
-        services.AddTransient<ViewModel_Receiving_WeightQuantity>();
-        services.AddTransient<ViewModel_Receiving_HeatLot>();
-        services.AddTransient<ViewModel_Receiving_PackageType>();
-        services.AddTransient<ViewModel_Receiving_Review>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_ModeSelection>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_ManualDataEntry>();
+        services.AddTransient<ViewModel_Receiving_EditMode_Interaction_EditHandler>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_PONumberEntry>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_LoadCountEntry>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_WeightQuantityEntry>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_HeatLotEntry>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_PackageTypeEntry>();
+        services.AddTransient<ViewModel_Receiving_Wizard_Display_ReviewAndConfirmation>();
 
         return services;
     }

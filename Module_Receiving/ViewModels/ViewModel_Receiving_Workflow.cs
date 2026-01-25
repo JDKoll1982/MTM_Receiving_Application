@@ -15,7 +15,7 @@ using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoB
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Wizard_Orchestration_MainWorkflow : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
@@ -147,7 +147,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Window _windowService;
         private readonly System.Collections.Generic.Dictionary<Enum_ReceivingWorkflowStep, string> _stepTitles = new();
 
-        public ViewModel_Receiving_Workflow(
+        public ViewModel_Receiving_Wizard_Orchestration_MainWorkflow(
             IService_ReceivingWorkflow workflowService,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,

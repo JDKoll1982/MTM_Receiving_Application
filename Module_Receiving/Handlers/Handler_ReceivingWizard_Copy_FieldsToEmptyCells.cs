@@ -16,13 +16,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for bulk copy operations from source load to multiple target loads.
 /// Never overwrites existing data. Sets auto-fill flags for copied cells.
 /// </summary>
-public class Handler_ReceivingWizard_Copy_FieldsToEmptyCells : IRequestHandler<Command_ReceivingWizard_Copy_FieldsToEmptyCells, Result<CopyOperationResult>>
+public class Handler_Receiving_Wizard_Copy_FieldsToEmptyCells : IRequestHandler<Command_ReceivingWizard_Copy_FieldsToEmptyCells, Result<CopyOperationResult>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Copy_FieldsToEmptyCells(
+    public Handler_Receiving_Wizard_Copy_FieldsToEmptyCells(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)

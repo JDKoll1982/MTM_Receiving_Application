@@ -16,7 +16,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="TargetLoadNumbers">The loads to overwrite (must be specified)</param>
     /// <param name="FieldsToOverwrite">Which fields to overwrite</param>
     /// <param name="Confirmed">User confirmation flag (must be true to execute)</param>
-    public record Command_ReceivingWizard_Copy_OverwriteWithConfirmation(
+    public record Command_Receiving_Wizard_Copy_OverwriteWithConfirmation(
         Guid SessionId,
         int SourceLoadNumber,
         List<int> TargetLoadNumbers,

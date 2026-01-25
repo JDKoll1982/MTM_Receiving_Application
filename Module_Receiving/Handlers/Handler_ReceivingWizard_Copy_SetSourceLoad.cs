@@ -13,12 +13,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for changing the copy source load number.
 /// Updates session to track which load is used as the copy source.
 /// </summary>
-public class Handler_ReceivingWizard_Copy_SetSourceLoad : IRequestHandler<Command_ReceivingWizard_Copy_SetSourceLoad, Result>
+public class Handler_Receiving_Wizard_Copy_SetSourceLoad : IRequestHandler<Command_ReceivingWizard_Copy_SetSourceLoad, Result>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Copy_SetSourceLoad(
+    public Handler_Receiving_Wizard_Copy_SetSourceLoad(
         Dao_ReceivingWorkflowSession sessionDao,
         ILogger logger)
     {

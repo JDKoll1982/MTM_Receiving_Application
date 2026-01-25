@@ -14,12 +14,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for starting a new receiving workflow session.
 /// Creates a new session in the database with initial state.
 /// </summary>
-public class Handler_ReceivingWizard_Navigation_StartNewWorkflow : IRequestHandler<Command_ReceivingWizard_Navigation_StartNewWorkflow, Result<Guid>>
+public class Handler_Receiving_Wizard_Navigation_StartNewWorkflow : IRequestHandler<Command_ReceivingWizard_Navigation_StartNewWorkflow, Result<Guid>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Navigation_StartNewWorkflow(
+    public Handler_Receiving_Wizard_Navigation_StartNewWorkflow(
         Dao_ReceivingWorkflowSession sessionDao,
         ILogger logger)
     {

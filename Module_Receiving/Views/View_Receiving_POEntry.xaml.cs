@@ -7,12 +7,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_POEntry : UserControl
     {
-        public ViewModel_Receiving_POEntry ViewModel { get; }
+        public ViewModel_Receiving_Wizard_Display_PONumberEntry ViewModel { get; }
         private readonly IService_Focus _focusService;
 
         public View_Receiving_POEntry()
         {
-            ViewModel = App.GetService<ViewModel_Receiving_POEntry>();
+            ViewModel = App.GetService<ViewModel_Receiving_Wizard_Display_PONumberEntry>();
             _focusService = App.GetService<IService_Focus>();
             this.InitializeComponent();
 

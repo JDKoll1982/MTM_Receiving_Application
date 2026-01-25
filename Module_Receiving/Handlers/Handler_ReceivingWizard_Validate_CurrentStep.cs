@@ -17,13 +17,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for validating current step and aggregating validation errors.
 /// Returns validation status with list of errors and severity levels.
 /// </summary>
-public class Handler_ReceivingWizard_Validate_CurrentStep : IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>>
+public class Handler_Receiving_Wizard_Validate_CurrentStep : IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Validate_CurrentStep(
+    public Handler_Receiving_Wizard_Validate_CurrentStep(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)

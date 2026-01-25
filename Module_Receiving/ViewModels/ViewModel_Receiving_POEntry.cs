@@ -16,7 +16,7 @@ using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base, IResettableViewModel
+    public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewModel_Shared_Base, IResettableViewModel
     {
         private readonly IService_InforVisual _inforVisualService;
         private readonly IService_ReceivingWorkflow _workflowService;
@@ -123,7 +123,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _partsListAccessibilityName = "Parts List";
 
-        public ViewModel_Receiving_POEntry(
+        public ViewModel_Receiving_Wizard_Display_PONumberEntry(
             IService_InforVisual inforVisualService,
             IService_ReceivingWorkflow workflowService,
             IService_ErrorHandler errorHandler,

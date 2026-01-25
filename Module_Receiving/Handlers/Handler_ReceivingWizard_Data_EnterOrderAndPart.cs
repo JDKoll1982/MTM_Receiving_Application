@@ -15,13 +15,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for updating Step 1 (Order & Part Selection).
 /// Initializes LoadDetail records for all loads.
 /// </summary>
-public class Handler_ReceivingWizard_Data_EnterOrderAndPart : IRequestHandler<Command_ReceivingWizard_Data_EnterOrderAndPart, Result>
+public class Handler_Receiving_Wizard_Data_EnterOrderAndPart : IRequestHandler<Command_ReceivingWizard_Data_EnterOrderAndPart, Result>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Data_EnterOrderAndPart(
+    public Handler_Receiving_Wizard_Data_EnterOrderAndPart(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)

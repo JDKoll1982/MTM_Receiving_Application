@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// Retrieve current workflow session state.
     /// </summary>
     /// <param name="SessionId">The session identifier</param>
-    public record Query_ReceivingWizard_Get_CurrentSession(
+    public record Query_Receiving_Wizard_Get_CurrentSession(
         Guid SessionId
     ) : IRequest<Result<ReceivingWorkflowSession>>;
 }

@@ -15,13 +15,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for navigating between workflow steps.
 /// Validates current step before allowing advancement.
 /// </summary>
-public class Handler_ReceivingWizard_Navigation_GoToStep : IRequestHandler<Command_ReceivingWizard_Navigation_GoToStep, Result>
+public class Handler_Receiving_Wizard_Navigation_GoToStep : IRequestHandler<Command_ReceivingWizard_Navigation_GoToStep, Result>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>> _validationHandler;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Navigation_GoToStep(
+    public Handler_Receiving_Wizard_Navigation_GoToStep(
         Dao_ReceivingWorkflowSession sessionDao,
         IRequestHandler<Query_ReceivingWizard_Validate_CurrentStep, Result<ValidationStatus>> validationHandler,
         ILogger logger)

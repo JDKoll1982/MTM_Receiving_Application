@@ -14,7 +14,7 @@ using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_ManualEntry : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Wizard_Display_ManualDataEntry : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
@@ -68,7 +68,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } = new(Enum.GetValues<Enum_PackageType>());
 
-        public ViewModel_Receiving_ManualEntry(
+        public ViewModel_Receiving_Wizard_Display_ManualDataEntry(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
             IService_ReceivingValidation validationService,

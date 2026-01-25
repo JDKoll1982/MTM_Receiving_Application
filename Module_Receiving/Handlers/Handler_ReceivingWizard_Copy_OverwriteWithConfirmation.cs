@@ -17,12 +17,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for forcing an overwrite of occupied cells (power user feature).
 /// Requires explicit user confirmation and logs all overwrites for audit trail.
 /// </summary>
-public class Handler_ReceivingWizard_Copy_OverwriteWithConfirmation : IRequestHandler<Command_ReceivingWizard_Copy_OverwriteWithConfirmation, Result<CopyOperationResult>>
+public class Handler_Receiving_Wizard_Copy_OverwriteWithConfirmation : IRequestHandler<Command_ReceivingWizard_Copy_OverwriteWithConfirmation, Result<CopyOperationResult>>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Copy_OverwriteWithConfirmation(
+    public Handler_Receiving_Wizard_Copy_OverwriteWithConfirmation(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {

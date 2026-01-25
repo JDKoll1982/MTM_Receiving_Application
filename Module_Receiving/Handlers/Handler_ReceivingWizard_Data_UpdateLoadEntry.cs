@@ -15,12 +15,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for updating Step 2 (Load Details Entry).
 /// Updates individual load data and clears auto-fill flags for manually edited fields.
 /// </summary>
-public class Handler_ReceivingWizard_Data_UpdateLoadEntry : IRequestHandler<Command_ReceivingWizard_Data_UpdateLoadEntry, Result>
+public class Handler_Receiving_Wizard_Data_UpdateLoadEntry : IRequestHandler<Command_ReceivingWizard_Data_UpdateLoadEntry, Result>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Data_UpdateLoadEntry(
+    public Handler_Receiving_Wizard_Data_UpdateLoadEntry(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {

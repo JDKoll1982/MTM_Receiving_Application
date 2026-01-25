@@ -6,11 +6,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_Review : UserControl
     {
-        public ViewModel_Receiving_Review ViewModel { get; }
+        public ViewModel_Receiving_Wizard_Display_ReviewAndConfirmation ViewModel { get; }
 
         public View_Receiving_Review()
         {
-            ViewModel = App.GetService<ViewModel_Receiving_Review>();
+            ViewModel = App.GetService<ViewModel_Receiving_Wizard_Display_ReviewAndConfirmation>();
             this.InitializeComponent();
         }
 

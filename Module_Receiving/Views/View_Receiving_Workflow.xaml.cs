@@ -9,13 +9,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_Workflow : Page
     {
-        public ViewModel_Receiving_Workflow ViewModel { get; }
+        public ViewModel_Receiving_Wizard_Orchestration_MainWorkflow ViewModel { get; }
         private readonly IService_ReceivingWorkflow? _workflowService;
         private readonly IService_Help? _helpService;
 
         public View_Receiving_Workflow()
         {
-            ViewModel = App.GetService<ViewModel_Receiving_Workflow>();
+            ViewModel = App.GetService<ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();
             this.InitializeComponent();
 
             _workflowService = App.GetService<IService_ReceivingWorkflow>();

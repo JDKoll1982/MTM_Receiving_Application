@@ -20,14 +20,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_ManualEntry : UserControl
     {
-        public ViewModel_Receiving_ManualEntry ViewModel { get; }
+        public ViewModel_Receiving_Wizard_Display_ManualDataEntry ViewModel { get; }
         private readonly IService_Focus _focusService;
         private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private string? _lastCheckedPartID;
 
         public View_Receiving_ManualEntry()
         {
-            ViewModel = App.GetService<ViewModel_Receiving_ManualEntry>();
+            ViewModel = App.GetService<ViewModel_Receiving_Wizard_Display_ManualDataEntry>();
             _focusService = App.GetService<IService_Focus>();
             _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
             this.DataContext = ViewModel;

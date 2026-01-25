@@ -14,12 +14,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for retrieving workflow session state.
 /// Returns current session with all metadata.
 /// </summary>
-public class Handler_ReceivingWizard_Get_CurrentSession : IRequestHandler<Query_ReceivingWizard_Get_CurrentSession, Result<ReceivingWorkflowSession>>
+public class Handler_Receiving_Wizard_Get_CurrentSession : IRequestHandler<Query_ReceivingWizard_Get_CurrentSession, Result<ReceivingWorkflowSession>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Get_CurrentSession(
+    public Handler_Receiving_Wizard_Get_CurrentSession(
         Dao_ReceivingWorkflowSession sessionDao,
         ILogger logger)
     {

@@ -14,7 +14,7 @@ using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_WeightQuantity : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_Wizard_Display_WeightQuantityEntry : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -45,7 +45,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _weightQuantityAccessibilityName = "Weight Quantity";
 
-        public ViewModel_Receiving_WeightQuantity(
+        public ViewModel_Receiving_Wizard_Display_WeightQuantityEntry(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
             IService_InforVisual inforVisualService,

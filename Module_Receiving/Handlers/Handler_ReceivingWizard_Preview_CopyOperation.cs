@@ -17,12 +17,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for previewing copy operations.
 /// Shows what cells will be copied vs preserved before execution.
 /// </summary>
-public class Handler_ReceivingWizard_Preview_CopyOperation : IRequestHandler<Query_ReceivingWizard_Preview_CopyOperation, Result<CopyPreview>>
+public class Handler_Receiving_Wizard_Preview_CopyOperation : IRequestHandler<Query_ReceivingWizard_Preview_CopyOperation, Result<CopyPreview>>
 {
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Preview_CopyOperation(
+    public Handler_Receiving_Wizard_Preview_CopyOperation(
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
     {

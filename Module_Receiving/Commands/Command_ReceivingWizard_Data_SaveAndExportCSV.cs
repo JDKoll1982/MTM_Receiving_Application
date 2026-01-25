@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Commands
     /// <param name="SessionId">The session identifier</param>
     /// <param name="CsvOutputPath">Path where CSV file will be saved</param>
     /// <param name="SaveToDatabase">Whether to save to MySQL database (default: true)</param>
-    public record Command_ReceivingWizard_Data_SaveAndExportCSV(
+    public record Command_Receiving_Wizard_Data_SaveAndExportCSV(
         Guid SessionId,
         string CsvOutputPath,
         bool SaveToDatabase = true

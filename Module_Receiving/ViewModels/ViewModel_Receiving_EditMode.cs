@@ -19,7 +19,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     /// <summary>
     /// ViewModel for Edit Mode - allows editing existing loads but not adding new ones.
     /// </summary>
-    public partial class ViewModel_Receiving_EditMode : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_EditMode_Interaction_EditHandler : ViewModel_Shared_Base
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_MySQL_Receiving _mysqlService;
@@ -152,7 +152,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="receivingSettings"></param>
         /// <param name="notificationService"></param>
         /// <param name="validationService"></param>
-        public ViewModel_Receiving_EditMode(
+        public ViewModel_Receiving_EditMode_Interaction_EditHandler(
             IService_ReceivingWorkflow workflowService,
             IService_MySQL_Receiving mysqlService,
             IService_CSVWriter csvWriter,

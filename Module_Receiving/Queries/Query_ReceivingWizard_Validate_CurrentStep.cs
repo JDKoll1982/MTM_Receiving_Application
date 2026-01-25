@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// </summary>
     /// <param name="SessionId">The session identifier</param>
     /// <param name="Step">The step number to validate (1, 2, or 3)</param>
-    public record Query_ReceivingWizard_Validate_CurrentStep(
+    public record Query_Receiving_Wizard_Validate_CurrentStep(
         Guid SessionId,
         int Step
     ) : IRequest<Result<ValidationStatus>>;

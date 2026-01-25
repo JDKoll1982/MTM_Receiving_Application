@@ -15,7 +15,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Queries
     /// <param name="SourceLoadNumber">The load number to copy from</param>
     /// <param name="TargetLoadNumbers">The loads to copy to</param>
     /// <param name="FieldsToCopy">Which fields to copy</param>
-    public record Query_ReceivingWizard_Preview_CopyOperation(
+    public record Query_Receiving_Wizard_Preview_CopyOperation(
         Guid SessionId,
         int SourceLoadNumber,
         List<int> TargetLoadNumbers,

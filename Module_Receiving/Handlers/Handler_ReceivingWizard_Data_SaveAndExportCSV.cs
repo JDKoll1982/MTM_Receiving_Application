@@ -19,13 +19,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Handlers;
 /// Handler for saving completed workflow.
 /// Validates all loads, generates CSV file, and archives transaction record.
 /// </summary>
-public class Handler_ReceivingWizard_Data_SaveAndExportCSV : IRequestHandler<Command_ReceivingWizard_Data_SaveAndExportCSV, Result<SaveResult>>
+public class Handler_Receiving_Wizard_Data_SaveAndExportCSV : IRequestHandler<Command_ReceivingWizard_Data_SaveAndExportCSV, Result<SaveResult>>
 {
     private readonly Dao_ReceivingWorkflowSession _sessionDao;
     private readonly Dao_ReceivingLoadDetail _loadDao;
     private readonly ILogger _logger;
 
-    public Handler_ReceivingWizard_Data_SaveAndExportCSV(
+    public Handler_Receiving_Wizard_Data_SaveAndExportCSV(
         Dao_ReceivingWorkflowSession sessionDao,
         Dao_ReceivingLoadDetail loadDao,
         ILogger logger)
