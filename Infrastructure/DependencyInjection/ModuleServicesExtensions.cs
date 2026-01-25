@@ -80,16 +80,16 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_Receiving_Repository_QualityHold(mySqlConnectionString));
 
         // Services (Singleton - Stateless business logic)
-        services.AddSingleton<IService_MySQL_Receiving>(sp =>
+        services.AddSingleton<IService_Receiving_Business_MySQL_Receiving>(sp =>
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_MySQL_Receiving(mySqlConnectionString, logger);
         });
-        services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
-        services.AddSingleton<IService_MySQL_PackagePreferences>(_ =>
+        services.AddTransient<IService_Receiving_Business_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
+        services.AddSingleton<IService_Receiving_Business_MySQL_PackagePreferences>(_ =>
             new Service_MySQL_PackagePreferences(mySqlConnectionString));
-        services.AddSingleton<IService_MySQL_QualityHold, Service_MySQL_QualityHold>();
-        services.AddSingleton<IService_QualityHoldWarning, Service_QualityHoldWarning>();
+        services.AddSingleton<IService_Receiving_Business_MySQL_QualityHold, Service_MySQL_QualityHold>();
+        services.AddSingleton<IService_Receiving_Infrastructure_QualityHoldWarning, Service_QualityHoldWarning>();
         services.AddSingleton<IService_SessionManager>(sp =>
         {
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
@@ -101,12 +101,12 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_CSVWriter(sessionManager, logger);
         });
-        services.AddSingleton<IService_ReceivingValidation, Service_ReceivingValidation>();
-        services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
+        services.AddSingleton<IService_Receiving_Infrastructure_Validation, Service_ReceivingValidation>();
+        services.AddSingleton<IService_Receiving_Infrastructure_Workflow, Service_ReceivingWorkflow>();
         services.AddTransient<IService_Pagination, Service_Pagination>();
 
         // Settings
-        services.AddSingleton<Module_Receiving.Contracts.IService_ReceivingSettings,
+        services.AddSingleton<Module_Receiving.Contracts.IService_Receiving_Infrastructure_Settings,
             Module_Receiving.Services.Service_ReceivingSettings>();
 
         // ViewModels (Transient - Per-view instances with state)

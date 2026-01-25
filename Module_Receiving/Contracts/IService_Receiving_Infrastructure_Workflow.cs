@@ -14,7 +14,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
     /// Manages step transitions, validation gates, and session state.
     /// </summary>
     [Obsolete("Use CQRS commands/queries (StartWorkflowCommand, NavigateToStepCommand, etc.) via MediatR. This 12-step wizard interface is replaced by the consolidated 3-step workflow.", DiagnosticId = "RECV001", UrlFormat = "https://github.com/JDKoll1982/MTM_Receiving_Application/wiki/CQRS-Migration")]
-    public interface IService_ReceivingWorkflow
+    public interface IService_Receiving_Infrastructure_Workflow
     {
         /// <summary>
         /// Event raised when a status message should be shown.

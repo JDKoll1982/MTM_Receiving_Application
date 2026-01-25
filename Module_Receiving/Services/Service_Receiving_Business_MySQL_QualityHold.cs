@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services;
 /// Service implementation for quality hold database operations
 /// Provides business logic abstraction over Dao_QualityHold
 /// </summary>
-public class Service_MySQL_QualityHold : IService_MySQL_QualityHold
+public class Service_MySQL_QualityHold : IService_Receiving_Business_MySQL_QualityHold
 {
     private readonly Dao_Receiving_Repository_QualityHold _dao;
     private readonly IService_LoggingUtility _logger;

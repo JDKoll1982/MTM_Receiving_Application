@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// <summary>
     /// Service for managing package type preferences in MySQL database.
     /// </summary>
-    public class Service_MySQL_PackagePreferences : IService_MySQL_PackagePreferences
+    public class Service_MySQL_PackagePreferences : IService_Receiving_Business_MySQL_PackagePreferences
     {
         private readonly Dao_Receiving_Repository_PackageTypePreference _dao;
 

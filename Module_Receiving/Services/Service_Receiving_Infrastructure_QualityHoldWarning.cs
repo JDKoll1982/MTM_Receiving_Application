@@ -12,16 +12,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services;
 /// Service for displaying quality hold warnings when restricted parts are entered.
 /// Provides immediate user feedback for MMFSR and MMCSR parts that require quality inspection.
 /// </summary>
-public class Service_QualityHoldWarning : IService_QualityHoldWarning
+public class Service_QualityHoldWarning : IService_Receiving_Infrastructure_QualityHoldWarning
 {
     private readonly IService_Window _windowService;
     private readonly IService_LoggingUtility _logger;
-    private readonly IService_ReceivingSettings _receivingSettings;
+    private readonly IService_Receiving_Infrastructure_Settings _receivingSettings;
 
     public Service_QualityHoldWarning(
         IService_Window windowService,
         IService_LoggingUtility logger,
-        IService_ReceivingSettings receivingSettings)
+        IService_Receiving_Infrastructure_Settings receivingSettings)
     {
         _windowService = windowService;
         _logger = logger;

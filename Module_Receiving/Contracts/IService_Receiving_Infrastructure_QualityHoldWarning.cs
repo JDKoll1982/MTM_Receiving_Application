@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts;
 /// Service for displaying quality hold warnings when restricted parts are entered.
 /// Provides immediate feedback to users when MMFSR or MMCSR parts are detected.
 /// </summary>
-public interface IService_QualityHoldWarning
+public interface IService_Receiving_Infrastructure_QualityHoldWarning
 {
     /// <summary>
     /// Checks if a part ID requires a quality hold warning and displays it if needed.

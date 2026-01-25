@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts;
 /// <summary>
 /// Provides access to Module_Receiving settings values (system or user scope) with defaults.
 /// </summary>
-public interface IService_ReceivingSettings
+public interface IService_Receiving_Infrastructure_Settings
 {
     Task<string> GetStringAsync(string key, int? userId = null);
 

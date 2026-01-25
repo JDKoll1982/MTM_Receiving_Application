@@ -18,12 +18,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// Manages step transitions, validation gates, and session state.
     /// </summary>
     [Obsolete("Use CQRS commands/queries (StartWorkflowCommand, NavigateToStepCommand, etc.) via MediatR. This 12-step wizard service is replaced by the consolidated 3-step workflow.", DiagnosticId = "RECV001", UrlFormat = "https://github.com/JDKoll1982/MTM_Receiving_Application/wiki/CQRS-Migration")]
-    public class Service_ReceivingWorkflow : IService_ReceivingWorkflow
+    public class Service_ReceivingWorkflow : IService_Receiving_Infrastructure_Workflow
     {
         private readonly IService_SessionManager _sessionManager;
         private readonly IService_CSVWriter _csvWriter;
-        private readonly IService_MySQL_Receiving _mysqlReceiving;
-        private readonly IService_ReceivingValidation _validation;
+        private readonly IService_Receiving_Business_MySQL_Receiving _mysqlReceiving;
+        private readonly IService_Receiving_Infrastructure_Validation _validation;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
@@ -77,8 +77,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
             IService_CSVWriter csvWriter,
-            IService_MySQL_Receiving mysqlReceiving,
-            IService_ReceivingValidation validation,
+            IService_Receiving_Business_MySQL_Receiving mysqlReceiving,
+            IService_Receiving_Infrastructure_Validation validation,
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
             IService_UserSessionManager userSessionManager)

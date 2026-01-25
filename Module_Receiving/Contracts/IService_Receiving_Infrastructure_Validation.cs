@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
     /// <summary>
     /// Service for validating receiving data and enforcing business rules.
     /// </summary>
-    public interface IService_ReceivingValidation
+    public interface IService_Receiving_Infrastructure_Validation
     {
         /// <summary>
         /// Validates a PO number format (6 digits, numeric).

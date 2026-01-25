@@ -12,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// <summary>
     /// Service for saving receiving load data to MySQL database.
     /// </summary>
-    public class Service_MySQL_Receiving : IService_MySQL_Receiving
+    public class Service_MySQL_Receiving : IService_Receiving_Business_MySQL_Receiving
     {
         private readonly Dao_Receiving_Repository_Load _receivingLoadDao;
         private readonly IService_LoggingUtility _logger;

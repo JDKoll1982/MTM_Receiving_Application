@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services;
 
-public class Service_MySQL_ReceivingLine : IService_MySQL_ReceivingLine
+public class Service_MySQL_ReceivingLine : IService_Receiving_Business_MySQL_ReceivingLine
 {
     private readonly Dao_Receiving_Repository_Line _receivingLineDao;
     private readonly IService_LoggingUtility _logger;

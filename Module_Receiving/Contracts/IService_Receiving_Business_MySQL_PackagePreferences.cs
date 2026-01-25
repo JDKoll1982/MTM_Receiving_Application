@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
     /// <summary>
     /// Service for managing package type preferences in MySQL database.
     /// </summary>
-    public interface IService_MySQL_PackagePreferences
+    public interface IService_Receiving_Business_MySQL_PackagePreferences
     {
         /// <summary>
         /// Retrieves the saved package type preference for a part ID.

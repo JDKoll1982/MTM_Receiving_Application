@@ -5,7 +5,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 
 namespace MTM_Receiving_Application.Module_Receiving.Contracts;
 
-public interface IService_MySQL_ReceivingLine
+public interface IService_Receiving_Business_MySQL_ReceivingLine
 {
     /// <summary>Insert a new receiving line</summary>
     /// <param name="line"></param>

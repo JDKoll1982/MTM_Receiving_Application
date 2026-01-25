@@ -10,7 +10,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts;
 /// Service contract for quality hold operations
 /// Provides business logic layer for restricted part tracking (MMFSR/MMCSR)
 /// </summary>
-public interface IService_MySQL_QualityHold
+public interface IService_Receiving_Business_MySQL_QualityHold
 {
     /// <summary>
     /// Creates a new quality hold record in the database

@@ -13,7 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
     /// <summary>
     /// Service for validating receiving data and enforcing business rules.
     /// </summary>
-    public class Service_ReceivingValidation : IService_ReceivingValidation
+    public class Service_ReceivingValidation : IService_Receiving_Infrastructure_Validation
     {
         private readonly IService_InforVisual _inforVisualService;
         private static readonly Regex _regex = new Regex(@"^(PO-)?\d{1,6}$", RegexOptions.IgnoreCase);

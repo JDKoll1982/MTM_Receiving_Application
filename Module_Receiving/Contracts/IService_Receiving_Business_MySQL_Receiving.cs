@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
     /// <summary>
     /// Service for saving receiving load data to MySQL database.
     /// </summary>
-    public interface IService_MySQL_Receiving
+    public interface IService_Receiving_Business_MySQL_Receiving
     {
         /// <summary>
         /// Saves a batch of receiving loads to the database within a transaction.
