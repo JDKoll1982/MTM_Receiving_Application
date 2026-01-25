@@ -116,6 +116,35 @@ The `.github/instructions/` folder contains specialized guidance for specific sc
 - Enums: `Enum_<Category>` (e.g., `Enum_ErrorSeverity`)
 - Helpers: `Helper_<Category>_<Function>` (e.g., `Helper_Database_Variables`)
 
+**CQRS Commands, Queries, Handlers, and Validators:**
+- Pattern: `{Type}_{SubModule}_{CategoryType}_{Name}`
+- **Commands:** `Command_<SubModule>_<CategoryType>_<VerbPhrase>`
+  - Examples:
+    - `Command_ReceivingWizard_Navigation_StartNewWorkflow`
+    - `Command_ReceivingWizard_Data_EnterOrderAndPart`
+    - `Command_ReceivingWizard_Copy_FieldsToEmptyCells`
+- **Queries:** `Query_<SubModule>_<CategoryType>_<VerbPhrase>`
+  - Examples:
+    - `Query_ReceivingWizard_Get_CurrentSession`
+    - `Query_ReceivingWizard_Validate_CurrentStep`
+    - `Query_ReceivingWizard_Preview_CopyOperation`
+- **Handlers:** `Handler_<SubModule>_<CategoryType>_<VerbPhrase>`
+  - Examples:
+    - `Handler_ReceivingWizard_Navigation_StartNewWorkflow`
+    - `Handler_ReceivingWizard_Data_EnterOrderAndPart`
+- **Validators:** `Validator_<SubModule>_<CategoryType>_<VerbPhrase>`
+  - Examples:
+    - `Validator_ReceivingWizard_Data_EnterOrderAndPart`
+    - `Validator_ReceivingWizard_Copy_FieldsToEmptyCells`
+
+CategoryType Guidelines:
+- `Navigation_*` = Step/workflow movement commands
+- `Data_*` = Data entry or updates
+- `Copy_*` = Copy or bulk operations
+- `Get_*` = Data retrieval queries
+- `Validate_*` = Validation queries
+- `Preview_*` = Preview or simulation queries
+
 **Methods:**
 - PascalCase for all methods
 - Async methods MUST end with `Async`: `LoadDataAsync()`, `SaveAsync()`

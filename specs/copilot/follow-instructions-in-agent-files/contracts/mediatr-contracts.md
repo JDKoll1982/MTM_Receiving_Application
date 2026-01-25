@@ -4,6 +4,26 @@
 **Date**: 2026-01-24  
 **Type**: CQRS Command/Query Definitions
 
+## Naming Convention
+
+All Commands, Queries, and Handlers follow the pattern: `{Type}_{SubModule}_{CategoryType}_{Name}`
+
+**Examples:**
+- `Command_ReceivingWizard_Navigation_StartNewWorkflow`
+- `Command_ReceivingWizard_Data_EnterOrderAndPart`
+- `Command_ReceivingWizard_Copy_FieldsToEmptyCells`
+- `Query_ReceivingWizard_Get_CurrentSession`
+- `Query_ReceivingWizard_Validate_CurrentStep`
+- `Handler_ReceivingWizard_Navigation_StartNewWorkflow`
+
+**CategoryType Types:**
+- `Navigation_*` = Step/workflow movement commands
+- `Data_*` = Data entry or updates
+- `Copy_*` = Copy or bulk operations
+- `Get_*` = Data retrieval queries
+- `Validate_*` = Validation queries
+- `Preview_*` = Preview or simulation queries
+
 ## Commands
 
 All commands implement `IRequest<Result>` or `IRequest<Result<T>>` from MediatR.
