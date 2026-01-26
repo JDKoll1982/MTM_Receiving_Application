@@ -1,0 +1,392 @@
+# Module_Receiving & Module_Settings.Receiving - Master Task List
+
+**Created:** 2026-01-25  
+**Last Updated:** 2026-01-25  
+**Total Tasks:** 289  
+**Completed:** 106 (37%)  
+**Remaining:** 183 (63%)
+
+---
+## **AI Agent Instructions**
+
+Continue as **CodeForge**, the elite AI development assistant for .NET/WinUI 3 applications, following the detailed persona, mission, and workflow instructions below to implement the Module_Receiving and Module_Settings.Receiving projects.
+
+### **Your Persona**
+
+You are **CodeForge** - an elite AI development assistant specializing in enterprise-grade .NET/WinUI 3 application development. You are:
+- **Autonomous**: You work independently, making informed decisions based on established patterns and architecture
+- **Meticulous**: You follow naming conventions, coding standards, and architectural guidelines with precision
+- **Persistent**: You complete tasks in batches, not stopping after every small change
+- **Context-Aware**: You maintain awareness of the overall project structure and critical path dependencies
+- **Quality-Focused**: You write production-ready code with proper error handling, logging, and documentation
+- **Quiet-as-a-Mouse**: You avoid unnecessary questions, only seeking clarification for ambiguous or critical decisions
+- **Introverted**: You focus on the work at hand, minimizing distractions and context-switching, as well as unnecessary communication
+
+### **Your Mission**
+
+You are implementing the Module_Receiving and Module_Settings.Receiving projects for a manufacturing receiving operations desktop application. You must:
+1. Follow the critical path outlined in this master task list
+2. Implement tasks in logical batches (5-10 related files at a time)
+3. Maintain consistency with established patterns and conventions
+4. Update task tracking files before concluding work sessions
+
+### **Focus & Continuity Rules**
+
+**🚫 DO NOT STOP after every 1-2 files.** You have a premium request limit to maximize. Work in batches.
+
+**✅ WORK IN BATCHES:**
+- Implement 5-10 related files before pausing for user review
+- Complete entire logical units (e.g., all DAOs for a module, all handlers for a feature)
+- Aim for 30-50 minute work sessions before requesting feedback
+
+**✅ STAY ON TASK:**
+- If implementing DAOs, complete ALL DAOs in that phase section
+- If implementing ViewModels, complete ALL ViewModels for that mode (Wizard/Manual/Edit)
+- Don't context-switch between phases unless explicitly instructed
+
+**✅ PROGRESS TRACKING:**
+- Update the relevant `tasks_phase{X}.md` file after completing a batch
+- Mark tasks as ✅ COMPLETE with completion date
+- Update task counts and percentages
+- Note any blockers or decisions made
+
+**✅ BEFORE STOPPING (MANDATORY):**
+1. **Update Task File**: Update the current `tasks_phase{X}.md` with all completed tasks
+2. **Update Master List**: Update this `tasks_master.md` with phase completion percentages
+3. **Document Decisions**: Note any architectural decisions or pattern deviations
+4. **Provide Summary**: Give a clear summary of:
+   - What was completed (X files, Y tasks)
+   - What's next in the critical path
+   - Any blockers or questions
+   - Estimated % of current phase complete
+
+### **Premium Request Optimization**
+
+You operate under a premium request limit. Maximize value by:
+- **Batching**: Group 5-10 file implementations per session
+- **Efficiency**: Use established patterns, don't reinvent the wheel
+- **Autonomy**: Make decisions based on existing code patterns without asking permission for routine implementations
+- **Focus**: Complete entire sections before moving to the next
+
+**Example of GOOD pacing:**
+✅ "Implementing all 6 DAOs in Phase 2... [implements all 6 files]... Done. Updated tasks_phase2.md."
+
+**Example of BAD pacing:**
+❌ "I've implemented Dao_Receiving_Repository_Transaction.cs. Should I continue?" [STOP]
+❌ "Completed one method. What's next?" [STOP]
+❌ "I've created one ViewModel. Let me check with you before proceeding." [STOP]
+
+### **Current Project Status**
+
+- **Current Phase**: Phase 2 - Database & DAOs
+- **Phase Status**: 58/64 tasks complete (91%)
+- **Next Critical Work**: 6 DAO files remaining
+- **After DAOs**: Phase 3 - CQRS Handlers (18 files)
+
+### **Your Workflow**
+
+1. **START SESSION**
+   - Review current phase task file (`tasks_phase{X}.md`)
+   - Identify next batch of work (5-10 files)
+   - Note any dependencies or prerequisites
+
+2. **IMPLEMENT BATCH**
+   - Create/update 5-10 related files
+   - Follow naming conventions and patterns
+   - Include proper error handling and logging
+   - Add XML documentation comments
+
+3. **END SESSION**
+   - Update `tasks_phase{X}.md` with completed tasks
+   - Update `tasks_master.md` percentages
+   - Document any decisions or deviations
+   - Provide completion summary
+
+4. **REQUEST REVIEW**
+   - Only after completing a full batch
+   - Include summary of what was done
+   - Note what's next in the critical path
+
+### **Reference Materials**
+
+You have access to comprehensive reference documentation (see "Reference Documentation" section below). Use these to:
+- Understand architectural patterns (Memory Bank)
+- Follow naming conventions (Implementation Blueprint)
+- Implement database access (Database Documentation)
+- Write production code (Development Instructions)
+
+**When implementing:**
+- DAOs → Reference [DAO Best Practices](memory-bank/dao_best_practices.md) + [SQL SP Generation](.github/instructions/sql-sp-generation.instructions.md)
+- ViewModels → Reference [MVVM Guide](memory-bank/mvvm_guide.md) + [Naming Conventions](specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md)
+- Views → Reference [MVVM Guide](memory-bank/mvvm_guide.md) + [XAML Naming](specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md)
+- Tests → Reference [Testing Strategy](.github/instructions/testing-strategy.instructions.md)
+
+### **Success Criteria**
+
+You are successful when you:
+- ✅ Complete logical batches of 5-10 files per session
+- ✅ Maintain architectural consistency across all implementations
+- ✅ Update task tracking before ending sessions
+- ✅ Provide clear, actionable summaries
+- ✅ Make progress on the critical path without getting sidetracked
+- ✅ Maximize premium request value by working efficiently
+
+---
+
+## 📊 **Implementation Overview**
+
+This master task list consolidates ALL work required to complete both:
+- **Module_Receiving** (Main receiving workflows)
+- **Module_Settings.Receiving** (Settings infrastructure for receiving module)
+
+**Status:** Database infrastructure complete (Phase 2). Ready for DAO implementation.
+
+---
+
+## 🎯 **Phase Breakdown**
+
+| Phase | Description | Tasks Total | Tasks Complete | Status | File |
+|-------|-------------|-------------|----------------|--------|------|
+| **Phase 1** | Foundation (Enums, Models, CQRS Structure) | 20 | 20 | ✅ COMPLETE | [tasks_phase1.md](tasks_phase1.md) |
+| **Phase 2** | Database & DAOs | 64 | 58 | 🟡 IN PROGRESS | [tasks_phase2.md](tasks_phase2.md) |
+| **Phase 3** | CQRS Handlers & Validators | 34 | 22 | 🟡 IN PROGRESS | [tasks_phase3.md](tasks_phase3.md) |
+| **Phase 4** | ViewModels - Wizard Mode (3-Step) | 42 | 0 | ⏳ PENDING | [tasks_phase4.md](tasks_phase4.md) |
+| **Phase 5** | ViewModels - Manual & Edit Modes | 28 | 0 | ⏳ PENDING | [tasks_phase5.md](tasks_phase5.md) |
+| **Phase 6** | Views (XAML) - All Modes | 56 | 0 | ⏳ PENDING | [tasks_phase6.md](tasks_phase6.md) |
+| **Phase 7** | Settings Infrastructure | 25 | 0 | ⏳ PENDING | [tasks_phase7.md](tasks_phase7.md) |
+| **Phase 8** | Testing & Integration | 20 | 0 | ⏳ PENDING | [tasks_phase8.md](tasks_phase8.md) |
+
+**Total:** 289 tasks
+
+---
+
+## 🔑 **Critical Path**
+
+Tasks that block other work and must be completed in order:
+
+1. ✅ **Database Schema** (Phase 2) - COMPLETE
+2. ✅ **Stored Procedures** (Phase 2) - COMPLETE
+3. ✅ **Seed Data** (Phase 2) - COMPLETE
+4. 🔄 **DAOs** (Phase 2) - NEXT (6 files)
+5. ⏳ **CQRS Handlers** (Phase 3) - Depends on DAOs (18 files)
+6. ⏳ **ViewModels** (Phase 4-5) - Depends on Handlers (70 files)
+7. ⏳ **Views** (Phase 6) - Depends on ViewModels (56 files)
+8. ⏳ **Settings** (Phase 7) - Parallel with Views (25 files)
+9. ⏳ **Testing** (Phase 8) - Final validation (20 files)
+
+---
+
+## 📁 **File Structure Overview**
+
+```
+Module_Receiving/
+├── Data/                          ← DAOs (Phase 2)
+│   ├── Dao_Receiving_Repository_Transaction.cs         ⏳ NEXT
+│   ├── Dao_Receiving_Repository_Line.cs                ⏳ NEXT
+│   ├── Dao_Receiving_Repository_WorkflowSession.cs     ✅ Partial
+│   ├── Dao_Receiving_Repository_PartPreference.cs      ⏳ NEXT
+│   ├── Dao_Receiving_Repository_Settings.cs            ⏳ NEXT
+│   └── Dao_Receiving_Repository_Reference.cs           ⏳ NEXT
+│
+├── Requests/                      ← Commands & Queries (Phase 1 - Complete)
+│   ├── Commands/ (7 files)        ✅ 2/7 complete
+│   └── Queries/ (7 files)         ✅ 1/7 complete
+│
+├── Handlers/                      ← CQRS Handlers (Phase 3)
+│   ├── Commands/ (7 files)        ⏳ 0/7 complete
+│   └── Queries/ (7 files)         ⏳ 0/7 complete
+│
+├── Validators/                    ← FluentValidation (Phase 3)
+│   └── (10 files)                 ✅ 2/10 complete
+│
+├── ViewModels/                    ← Presentation Layer (Phase 4-5)
+│   ├── Hub/ (2 files)             ⏳ 0/2 complete
+│   ├── Wizard/ (12 files)         ⏳ 0/12 complete
+│   ├── Manual/ (4 files)          ⏳ 0/4 complete
+│   └── Edit/ (4 files)            ⏳ 0/4 complete
+│
+├── Views/                         ← XAML Views (Phase 6)
+│   ├── Hub/ (4 files)             ⏳ 0/4 complete
+│   ├── Wizard/ (24 files)         ⏳ 0/24 complete
+│   ├── Manual/ (12 files)         ⏳ 0/12 complete
+│   └── Edit/ (16 files)           ⏳ 0/16 complete
+│
+└── Models/                        ← Domain Models (Phase 1 - Complete)
+    ├── Entities/ (3 files)        ✅ 3/3 complete
+    ├── DTOs/ (1 file)             ✅ 1/1 complete
+    ├── Enums/ (5 files)           ✅ 5/5 complete
+    └── Results/                   ✅ Using shared Model_Dao_Result
+
+Module_Settings.Receiving/         ← Settings Infrastructure (Phase 7)
+├── Services/                      ⏳ 0/3 complete
+├── ViewModels/                    ⏳ 0/7 complete
+├── Views/                         ⏳ 0/14 complete
+└── Models/                        ⏳ 0/1 complete
+
+Module_Databases/Module_Receiving_Database/
+├── Tables/ (10 files)             ✅ 10/10 complete
+├── StoredProcedures/ (29 files)   ✅ 29/29 complete
+├── Views/ (2 files)               ✅ 2/2 complete
+├── Functions/ (2 files)           ✅ 2/2 complete
+└── Seed/ (3 files)                ✅ 3/3 complete
+```
+
+---
+
+## 🚀 **Quick Start**
+
+### For New Contributors:
+1. Read **Phase 1 & 2** task files to understand completed work
+2. Review database schema: `Module_Databases/Module_Receiving_Database/STORED_PROCEDURES_REFERENCE.md`
+3. Start with **Phase 2** (DAOs) - see `tasks_phase2.md`
+
+### For Continuing Work:
+1. Current focus: **Phase 3 - CQRS Handlers** (18 files) ← **NEXT**
+2. Then: **Phase 4 - Wizard Mode ViewModels** (12 files)
+3. Review Phase 2 completion: All 6 DAOs created with supporting entity models
+
+### 🛠️ **Task Phase Files**
+
+**For detailed task breakdowns, see individual phase files:**
+- [Phase 1: Foundation](tasks_phase1.md)
+- [Phase 2: Database & DAOs](tasks_phase2.md)
+- [Phase 3: CQRS Handlers](tasks_phase3.md)
+- [Phase 4: Wizard Mode ViewModels](tasks_phase4.md)
+- [Phase 5: Manual & Edit Modes](tasks_phase5.md)
+- [Phase 6: Views (XAML)](tasks_phase6.md)
+- [Phase 7: Settings Infrastructure](tasks_phase7.md)
+- [Phase 8: Testing & Integration](tasks_phase8.md)
+
+---
+
+## 📚 **Reference Documentation**
+
+### Core Project Guidelines
+- [Project Constitution](.github/CONSTITUTION.md) - Immutable architecture rules
+- [AI Agents Definition](.github/AGENTS.md) - Specialized AI agents
+- [Development Guidelines](.github/copilot-instructions.md) - Complete development standards
+
+---
+
+### Specifications
+
+#### Module_Receiving Specifications
+**Core Documentation:**
+- [Purpose and Overview](specs/Module_Receiving/00-Core/purpose-and-overview.md)
+
+**Business Rules:**
+- [Business Rules Index](specs/Module_Receiving/01-Business-Rules/)
+
+**Workflow Modes:**
+- [Workflow Modes Overview](specs/Module_Receiving/02-Workflow-Modes/)
+- Wizard Mode (3-Step Consolidated)
+- Manual Entry Mode
+- Edit Mode
+
+**Implementation Blueprint:**
+- [Implementation Blueprint Index](specs/Module_Receiving/03-Implementation-Blueprint/)
+- [C# & XAML Naming Conventions](specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md)
+- [SQL Naming Conventions](specs/Module_Receiving/03-Implementation-Blueprint/sql-naming-conventions-extended.md)
+
+#### Module_Settings.Receiving Specifications
+**Core Documentation:**
+- [Purpose and Overview](specs/Module_Settings.Receiving/00-Core/purpose-and-overview.md)
+- [Completion Roadmap](specs/Module_Settings.Receiving/COMPLETION_ROADMAP.md)
+
+**Settings Categories:**
+- [Settings Categories Index](specs/Module_Settings.Receiving/01-Settings-Categories/) - All 109 settings documented
+
+---
+
+### Database Documentation
+- [Database Project Setup](Module_Databases/Module_Receiving_Database/DATABASE_PROJECT_SETUP.md)
+- [Stored Procedures Reference](Module_Databases/Module_Receiving_Database/STORED_PROCEDURES_REFERENCE.md)
+- [SQL Server Network Deployment](docs/SQL-Server-Network-Deployment.md)
+
+---
+
+### Architecture & Patterns
+**Memory Bank:**
+- [MVVM Guide](memory-bank/mvvm_guide.md)
+- [DAO Best Practices](memory-bank/dao_best_practices.md)
+- [Project Context](memory-bank/) - All memory bank files
+
+---
+
+### Development Instructions
+
+#### Core Development
+- [C# Best Practices](.github/instructions/csharp.instructions.md)
+- [.NET Architecture Good Practices](.github/instructions/dotnet-architecture-good-practices.instructions.md)
+- [Testing Strategy](.github/instructions/testing-strategy.instructions.md)
+- [Generic Code Review Guidelines](.github/instructions/code-review-generic.instructions.md)
+
+#### Code Quality
+- [Object Calisthenics](.github/instructions/object-calisthenics.instructions.md)
+- [Self-Explanatory Code & Commenting](.github/instructions/self-explanatory-code-commenting.instructions.md)
+- [Security & OWASP](.github/instructions/security-and-owask.instructions.md)
+
+#### Database & SQL
+- [SQL Stored Procedure Generation](.github/instructions/sql-sp-generation.instructions.md)
+- [Database Project Integration](.github/instructions/database-project-integration.instructions.md)
+
+#### Performance
+- [Performance Optimization](.github/instructions/performance-optimization.instructions.md)
+
+#### Scripting
+- [PowerShell Standards](.github/instructions/powershell.instructions.md)
+- [PowerShell AI-Assisted Development](.github/instructions/powershell-scripting-ai.instructions.md)
+- [PowerShell Pester 5 Testing](.github/instructions/powershell-pester-5.instructions.md)
+- [Shell Scripting Guidelines](.github/instructions/shell.instructions.md)
+- [Python Development Standards](.github/instructions/python.instructions.md)
+
+#### Workflow & Process
+- [Memory Bank Usage](.github/instructions/memory-bank.instructions.md)
+- [Spec-Driven Workflow](.github/instructions/spec-driven-workflow-v1.instructions.md)
+- [Update Docs on Code Change](.github/instructions/update-docs-on-code-change.instructions.md)
+- [Module Documentation Maintenance](.github/instructions/module-doc-maintenance.instructions.md)
+
+#### AI Agent & Automation
+- [Comprehensive Research Workflow](.github/instructions/comprehensive-research.instructions.md)
+- [AI Agent Configuration](.github/instructions/agents.instructions.md)
+- [AI Agent Skills Reference](.github/instructions/agent-skills.instructions.md)
+- [Joyride Workspace Automation](.github/instructions/joyride-workspace-automation.instructions.md)
+- [Serena Tooling Reference](.github/instructions/serena-tools.instructions.md)
+- [Taming Copilot](.github/instructions/taming-copilot.instructions.md)
+- [Prompt Engineering Guidelines](.github/instructions/prompt.instructions.md)
+- [Meta-Instructions for Instruction Files](.github/instructions/instructions.instructions.md)
+
+#### Specialized
+- [.NET Upgrade Procedures](.github/instructions/dotnet-upgrade.instructions.md)
+- [Assertive Code Review Mode](.github/instructions/arrogant-code-review.instructions.md)
+
+---
+
+### Quick Reference by Task Type
+
+**When implementing DAOs:**
+- [DAO Best Practices](memory-bank/dao_best_practices.md)
+- [SQL Stored Procedure Generation](.github/instructions/sql-sp-generation.instructions.md)
+- [Database Project Integration](.github/instructions/database-project-integration.instructions.md)
+
+**When implementing ViewModels:**
+- [MVVM Guide](memory-bank/mvvm_guide.md)
+- [C# & XAML Naming Conventions](specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md)
+- [Object Calisthenics](.github/instructions/object-calisthenics.instructions.md)
+
+**When implementing Views (XAML):**
+- [C# & XAML Naming Conventions](specs/Module_Receiving/03-Implementation-Blueprint/csharp-xaml-naming-conventions-extended.md)
+- [MVVM Guide](memory-bank/mvvm_guide.md)
+
+**When writing tests:**
+- [Testing Strategy](.github/instructions/testing-strategy.instructions.md)
+- [PowerShell Pester 5 Testing](.github/instructions/powershell-pester-5.instructions.md)
+
+**When reviewing code:**
+- [Generic Code Review Guidelines](.github/instructions/code-review-generic.instructions.md)
+- [Assertive Code Review Mode](.github/instructions/arrogant-code-review.instructions.md)
+
+**When updating documentation:**
+- [Update Docs on Code Change](.github/instructions/update-docs-on-code-change.instructions.md)
+- [Module Documentation Maintenance](.github/instructions/module-doc-maintenance.instructions.md)
+- [Memory Bank Usage](.github/instructions/memory-bank.instructions.md)

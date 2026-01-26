@@ -96,11 +96,9 @@
 - `Orchestration` - Workflow coordination
 
 **For Models:**
-- `Entity` - Domain entities
-- `DTO` - Data transfer objects
+- `TableEntitys` - Database entity models
+- `DataTransferObjects` - Data transfer objects (DTOs)
 - `Result` - Operation results
-- `Request` - Request models
-- `Response` - Response models
 
 **For DAOs:**
 - `Repository` - Data repository pattern
@@ -468,10 +466,16 @@ View_Receiving_Wizard_Display_PONumberEntry.xaml
 View_Receiving_Wizard_Display_PONumberEntry.xaml.cs
 Service_Receiving_Business_MySQL_ReceivingLine.cs
 IService_Receiving_Business_MySQL_ReceivingLine.cs
-Model_Receiving_Entity_ReceivingLine.cs
+Model_Receiving_TableEntitys_ReceivingLine.cs
+Model_Receiving_DataTransferObjects_PartDetails.cs
 Dao_Receiving_Repository_ReceivingLine.cs
 Helper_Validation_PONumber.cs
-Enum_Receiving_State_WorkflowStep.cs
+Enum_Receiving_Mode_WorkflowMode.cs
+CommandRequest_Receiving_Shared_Save_Transaction.cs
+CommandHandler_Receiving_Shared_Save_Transaction.cs
+QueryRequest_Receiving_Shared_Get_ReceivingLinesByPO.cs
+QueryHandler_Receiving_Shared_Get_ReceivingLinesByPO.cs
+Validator_Receiving_Shared_ValidateOn_SaveTransaction.cs
 ```
 
 ## Namespace Naming
@@ -496,151 +500,156 @@ namespace MTM_Receiving_Application.Module_Shared.Enums
 
 **Location:** `Module_Receiving/Requests/Commands/`
 
-**Format:** `{Operation}{Entity}Command`
+**Format:** `CommandRequest_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 
 **Examples:**
 ```csharp
-// Module_Receiving/Requests/Commands/SaveReceivingTransactionCommand.cs
+// Module_Receiving/Requests/Commands/CommandRequest_Receiving_Shared_Save_Transaction.cs
 namespace MTM_Receiving_Application.Module_Receiving.Requests.Commands;
 
-public record SaveReceivingTransactionCommand : IRequest<Model_Dao_Result>
+public record CommandRequest_Receiving_Shared_Save_Transaction : IRequest<Model_Dao_Result>
 {
-    public Guid TransactionId { get; init; }
+    public string TransactionId { get; init; } = string.Empty;
     public string PONumber { get; init; } = string.Empty;
-    public List<ReceivingLineDto> Lines { get; init; } = new();
+    public List<LoadDetail> Loads { get; init; } = new();
 }
 ```
 
-**Naming Pattern:**
-- `SaveReceivingTransactionCommand`
-- `UpdateReceivingLineCommand`
-- `DeleteReceivingLineCommand`
-- `BulkCopyFieldsCommand`
-- `ClearAutoFilledFieldsCommand`
-- `CompleteWorkflowCommand`
+**Naming Pattern (ACTUAL):**
+- `CommandRequest_Receiving_Shared_Save_Transaction`
+- `CommandRequest_Receiving_Shared_Update_ReceivingLine`
+- `CommandRequest_Receiving_Shared_Delete_ReceivingLine`
+- `CommandRequest_Receiving_Wizard_Copy_FieldsToEmptyLoads`
+- `CommandRequest_Receiving_Wizard_Clear_AutoFilledFields`
+- `CommandRequest_Receiving_Shared_Complete_Workflow`
 
 #### Queries (Read Operations)
 
 **Location:** `Module_Receiving/Requests/Queries/`
 
-**Format:** `Get{Entity}Query` or `Search{Entity}Query` or `Validate{Aspect}Query`
+**Format:** `QueryRequest_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 
 **Examples:**
 ```csharp
-// Module_Receiving/Requests/Queries/GetReceivingLinesByPOQuery.cs
+// Module_Receiving/Requests/Queries/QueryRequest_Receiving_Shared_Get_ReceivingLinesByPO.cs
 namespace MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 
-public record GetReceivingLinesByPOQuery : IRequest<Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLine>>>
+public record QueryRequest_Receiving_Shared_Get_ReceivingLinesByPO : IRequest<Model_Dao_Result<List<Model_Receiving_TableEntitys_ReceivingLoad>>>
 {
     public string PONumber { get; init; } = string.Empty;
 }
 ```
 
-**Naming Pattern:**
-- `GetReceivingLinesByPOQuery`
-- `GetReceivingTransactionByIdQuery`
-- `GetPartDetailsQuery`
-- `GetWorkflowSessionQuery`
-- `SearchTransactionsQuery`
-- `ValidatePONumberQuery`
+**Naming Pattern (ACTUAL):**
+- `QueryRequest_Receiving_Shared_Get_ReceivingLinesByPO`
+- `QueryRequest_Receiving_Shared_Get_ReceivingTransactionById`
+- `QueryRequest_Receiving_Shared_Get_PartDetails`
+- `QueryRequest_Receiving_Shared_Get_WorkflowSession`
+- `QueryRequest_Receiving_Shared_Get_ReferenceData`
+- `QueryRequest_Receiving_Shared_Search_Transactions`
+- `QueryRequest_Receiving_Shared_Validate_PONumber`
 
 #### Command Handlers
 
 **Location:** `Module_Receiving/Handlers/Commands/`
 
-**Format:** `{Operation}{Entity}CommandHandler`
+**Format:** `CommandHandler_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 
 **Examples:**
 ```csharp
-// Module_Receiving/Handlers/Commands/SaveReceivingTransactionCommandHandler.cs
+// Module_Receiving/Handlers/Commands/CommandHandler_Receiving_Shared_Save_Transaction.cs
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Commands;
 
-public class SaveReceivingTransactionCommandHandler : 
-    IRequestHandler<SaveReceivingTransactionCommand, Model_Dao_Result>
+public class CommandHandler_Receiving_Shared_Save_Transaction : 
+    IRequestHandler<CommandRequest_Receiving_Shared_Save_Transaction, Model_Dao_Result>
 {
-    private readonly Dao_Receiving_Repository_ReceivingTransaction _dao;
-    private readonly ILogger<SaveReceivingTransactionCommandHandler> _logger;
+    private readonly Dao_Receiving_Repository_Transaction _dao;
+    private readonly IService_LoggingUtility _logger;
     
-    public SaveReceivingTransactionCommandHandler(
-        Dao_Receiving_Repository_ReceivingTransaction dao,
-        ILogger<SaveReceivingTransactionCommandHandler> logger)
+    public CommandHandler_Receiving_Shared_Save_Transaction(
+        Dao_Receiving_Repository_Transaction dao,
+        IService_LoggingUtility logger)
     {
         _dao = dao;
         _logger = logger;
     }
     
     public async Task<Model_Dao_Result> Handle(
-        SaveReceivingTransactionCommand request, 
+        CommandRequest_Receiving_Shared_Save_Transaction request, 
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Saving receiving transaction {TransactionId}", request.TransactionId);
-        
-        // Handler logic here
-        return await _dao.InsertTransactionAsync(request);
+        _logger.LogInfo("Saving receiving transaction");
+        return await _dao.InsertAsync(request);
     }
 }
 ```
 
-**Naming Pattern:**
-- `SaveReceivingTransactionCommandHandler`
-- `UpdateReceivingLineCommandHandler`
-- `BulkCopyFieldsCommandHandler`
+**Naming Pattern (ACTUAL):**
+- `CommandHandler_Receiving_Shared_Save_Transaction`
+- `CommandHandler_Receiving_Shared_Update_ReceivingLine`
+- `CommandHandler_Receiving_Shared_Delete_ReceivingLine`
+- `CommandHandler_Receiving_Wizard_Copy_FieldsToEmptyLoads`
+- `CommandHandler_Receiving_Wizard_Clear_AutoFilledFields`
+- `CommandHandler_Receiving_Shared_Complete_Workflow`
 
 #### Query Handlers
 
 **Location:** `Module_Receiving/Handlers/Queries/`
 
-**Format:** `{Operation}{Entity}QueryHandler`
+**Format:** `QueryHandler_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 
 **Examples:**
 ```csharp
-// Module_Receiving/Handlers/Queries/GetReceivingLinesByPOQueryHandler.cs
+// Module_Receiving/Handlers/Queries/QueryHandler_Receiving_Shared_Get_ReceivingLinesByPO.cs
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries;
 
-public class GetReceivingLinesByPOQueryHandler :
-    IRequestHandler<GetReceivingLinesByPOQuery, Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLine>>>
+public class QueryHandler_Receiving_Shared_Get_ReceivingLinesByPO :
+    IRequestHandler<QueryRequest_Receiving_Shared_Get_ReceivingLinesByPO, Model_Dao_Result<List<Model_Receiving_TableEntitys_ReceivingLoad>>>
 {
-    private readonly Dao_Receiving_Repository_ReceivingLine _dao;
-    private readonly ILogger<GetReceivingLinesByPOQueryHandler> _logger;
+    private readonly Dao_Receiving_Repository_Line _dao;
+    private readonly IService_LoggingUtility _logger;
     
-    public GetReceivingLinesByPOQueryHandler(
-        Dao_Receiving_Repository_ReceivingLine dao,
-        ILogger<GetReceivingLinesByPOQueryHandler> logger)
+    public QueryHandler_Receiving_Shared_Get_ReceivingLinesByPO(
+        Dao_Receiving_Repository_Line dao,
+        IService_LoggingUtility logger)
     {
         _dao = dao;
         _logger = logger;
     }
     
-    public async Task<Model_Dao_Result<List<Model_Receiving_Entity_ReceivingLine>>> Handle(
-        GetReceivingLinesByPOQuery request,
+    public async Task<Model_Dao_Result<List<Model_Receiving_TableEntitys_ReceivingLoad>>> Handle(
+        QueryRequest_Receiving_Shared_Get_ReceivingLinesByPO request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Getting receiving lines for PO: {PONumber}", request.PONumber);
-        
+        _logger.LogInfo($"Getting receiving lines for PO: {request.PONumber}");
         return await _dao.SelectByPOAsync(request.PONumber);
     }
 }
 ```
 
-**Naming Pattern:**
-- `GetReceivingLinesByPOQueryHandler`
-- `GetPartDetailsQueryHandler`
-- `SearchTransactionsQueryHandler`
+**Naming Pattern (ACTUAL):**
+- `QueryHandler_Receiving_Shared_Get_ReceivingLinesByPO`
+- `QueryHandler_Receiving_Shared_Get_ReceivingTransactionById`
+- `QueryHandler_Receiving_Shared_Get_PartDetails`
+- `QueryHandler_Receiving_Shared_Get_WorkflowSession`
+- `QueryHandler_Receiving_Shared_Get_ReferenceData`
+- `QueryHandler_Receiving_Shared_Search_Transactions`
+- `QueryHandler_Receiving_Shared_Validate_PONumber`
 
 #### Validators (FluentValidation)
 
 **Location:** `Module_Receiving/Validators/`
 
-**Format:** `{CommandOrQueryName}Validator`
+**Format:** `Validator_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 
 **Examples:**
 ```csharp
-// Module_Receiving/Validators/SaveReceivingTransactionCommandValidator.cs
+// Module_Receiving/Validators/Validator_Receiving_Shared_ValidateOn_SaveTransaction.cs
 namespace MTM_Receiving_Application.Module_Receiving.Validators;
 
-public class SaveReceivingTransactionCommandValidator : AbstractValidator<SaveReceivingTransactionCommand>
+public class Validator_Receiving_Shared_ValidateOn_SaveTransaction : AbstractValidator<CommandRequest_Receiving_Shared_Save_Transaction>
 {
-    public SaveReceivingTransactionCommandValidator()
+    public Validator_Receiving_Shared_ValidateOn_SaveTransaction()
     {
         RuleFor(x => x.TransactionId)
             .NotEmpty()
@@ -648,21 +657,21 @@ public class SaveReceivingTransactionCommandValidator : AbstractValidator<SaveRe
         
         RuleFor(x => x.PONumber)
             .NotEmpty()
-            .When(x => !x.IsNonPO)
-            .WithMessage("PO Number is required for PO-based transactions");
+            .WithMessage("PO Number is required");
         
-        RuleFor(x => x.Lines)
+        RuleFor(x => x.Loads)
             .NotEmpty()
-            .WithMessage("At least one receiving line is required");
+            .WithMessage("At least one load is required");
     }
 }
 ```
 
-**Naming Pattern:**
-- `SaveReceivingTransactionCommandValidator`
-- `UpdateReceivingLineCommandValidator`
-- `GetReceivingLinesByPOQueryValidator`
-- `SearchTransactionsQueryValidator`
+**Naming Pattern (ACTUAL):**
+- `Validator_Receiving_Shared_ValidateOn_SaveTransaction`
+- `Validator_Receiving_Shared_ValidateOn_UpdateReceivingLine`
+- `Validator_Receiving_Shared_ValidateIf_ValidPOFormat`
+- `Validator_Receiving_Shared_ValidateIf_POExists`
+- `Validator_Receiving_Wizard_ValidateOn_CopyFieldsToEmptyLoads`
 
 #### ViewModel Integration with MediatR
 
