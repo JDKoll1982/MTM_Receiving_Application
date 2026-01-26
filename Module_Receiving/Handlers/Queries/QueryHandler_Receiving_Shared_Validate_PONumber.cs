@@ -6,7 +6,8 @@ using MediatR;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Receiving.Models.DTOs;
+using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
+using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 using MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries;
@@ -63,7 +64,7 @@ public class QueryHandler_Receiving_Shared_Validate_PONumber
 
             // Step 2: Duplicate check
             var existingTransactions = await _transactionDao.SelectByPOAsync(trimmedPO);
-            if (existingTransactions.Success && existingTransactions.Data != null && existingTransactions.Data.Count > 0)
+            if (existingTransactions.Success && existingTransactions.Data?.Count > 0)
             {
                 result.AlreadyReceived = true;
                 result.Warnings.Add($"PO {trimmedPO} has been received {existingTransactions.Data.Count} time(s) previously");

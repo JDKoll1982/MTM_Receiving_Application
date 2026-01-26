@@ -325,8 +325,8 @@ function Execute-SqlCommand {
         $process.StartInfo = $psi
         $process.Start() | Out-Null
         
-        $stdout = $process.StandardOutput.ReadToEnd()
-        $stderr = $process.StandardError.ReadToEnd()
+        $stdout = $process.StandardOutput.ReaDataTransferObjectsEnd()
+        $stderr = $process.StandardError.ReaDataTransferObjectsEnd()
         $process.WaitForExit()
         
         if ($process.ExitCode -ne 0) {
@@ -401,8 +401,8 @@ function Execute-SqlFile {
         $process.StartInfo = $psi
         $process.Start() | Out-Null
         
-        $stdout = $process.StandardOutput.ReadToEnd()
-        $stderr = $process.StandardError.ReadToEnd()
+        $stdout = $process.StandardOutput.ReaDataTransferObjectsEnd()
+        $stderr = $process.StandardError.ReaDataTransferObjectsEnd()
         $process.WaitForExit()
         
         if ($process.ExitCode -ne 0) {

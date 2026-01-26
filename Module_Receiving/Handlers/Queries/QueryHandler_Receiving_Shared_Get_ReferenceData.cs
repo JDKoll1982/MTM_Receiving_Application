@@ -5,7 +5,7 @@ using MediatR;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Receiving.Models.DTOs;
+using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 using MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries;
@@ -36,7 +36,7 @@ public class QueryHandler_Receiving_Shared_Get_ReferenceData
         {
             _logger.LogInfo("Loading reference data");
 
-            var dto = new Model_Receiving_DataTransferObjects_ReferenceData();
+            var DataTransferObjects = new Model_Receiving_DataTransferObjects_ReferenceData();
 
             // Load all reference datasets (or only requested ones if specified)
             var loadAll = request.DatasetNames.Count == 0;
@@ -46,7 +46,7 @@ public class QueryHandler_Receiving_Shared_Get_ReferenceData
                 var partTypesResult = await _dao.GetPartTypesAsync();
                 if (partTypesResult.Success && partTypesResult.Data != null)
                 {
-                    dto.PartTypes = partTypesResult.Data;
+                    DataTransferObjects.PartTypes = partTypesResult.Data;
                 }
             }
 
@@ -55,7 +55,7 @@ public class QueryHandler_Receiving_Shared_Get_ReferenceData
                 var packageTypesResult = await _dao.GetPackageTypesAsync();
                 if (packageTypesResult.Success && packageTypesResult.Data != null)
                 {
-                    dto.PackageTypes = packageTypesResult.Data;
+                    DataTransferObjects.PackageTypes = packageTypesResult.Data;
                 }
             }
 
@@ -64,13 +64,13 @@ public class QueryHandler_Receiving_Shared_Get_ReferenceData
                 var locationsResult = await _dao.GetLocationsAsync();
                 if (locationsResult.Success && locationsResult.Data != null)
                 {
-                    dto.Locations = locationsResult.Data;
+                    DataTransferObjects.Locations = locationsResult.Data;
                 }
             }
 
-            _logger.LogInfo($"Reference data loaded: {dto.PartTypes.Count} PartTypes, {dto.PackageTypes.Count} PackageTypes, {dto.Locations.Count} Locations");
+            _logger.LogInfo($"Reference data loaded: {DataTransferObjects.PartTypes.Count} PartTypes, {DataTransferObjects.PackageTypes.Count} PackageTypes, {DataTransferObjects.Locations.Count} Locations");
 
-            return Model_Dao_Result_Factory.Success(dto);
+            return Model_Dao_Result_Factory.Success(DataTransferObjects);
         }
         catch (Exception ex)
         {

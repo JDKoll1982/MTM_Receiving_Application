@@ -42,9 +42,9 @@ flowchart TD
     RenderSpecs --> FillSpecs[User Fills Spec Values]
     FillSpecs --> ValidateSpecs{Required Fields Filled?}
     ValidateSpecs -->|No| Step4
-    ValidateSpecs -->|Yes| AddToSession[Add Load to Session]
+    ValidateSpecs -->|Yes| AdDataTransferObjectsession[Add Load to Session]
     
-    AddToSession --> Step5[Step 5: Review]
+    AdDataTransferObjectsession --> Step5[Step 5: Review]
     Step5 --> ReviewChoice{User Action?}
     ReviewChoice -->|Add More| Step1
     ReviewChoice -->|Edit Load| EditLoad[Edit Existing Load]
@@ -240,11 +240,11 @@ flowchart TD
     RefreshParts --> PartMgmt
     
     InvMgmt --> InvAction{Inventory Action?}
-    InvAction -->|Add to Inventory| AddToInv[Add to Inventoried List]
+    InvAction -->|Add to Inventory| AdDataTransferObjectsInv[Add to Inventoried List]
     InvAction -->|Remove| RemoveFromInv[Remove from List]
     InvAction -->|Reorder| ReorderInv[Change Priority Order]
     
-    AddToInv --> SaveInv[(Save Inventory Config)]
+    AdDataTransferObjectsInv --> SaveInv[(Save Inventory Config)]
     RemoveFromInv --> SaveInv
     ReorderInv --> SaveInv
     SaveInv --> RefreshInv[Refresh Inventory List]

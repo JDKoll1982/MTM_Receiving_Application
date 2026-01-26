@@ -405,7 +405,7 @@ public interface IService_LeanKit_Mapper
         Model_WaitlistEntry entry, 
         Model_LeanKit_Card existingCard);
     
-    Model_WaitlistEntry MapCardToWaitlistEntry(
+    Model_WaitlistEntry MapCarDataTransferObjectsWaitlistEntry(
         Model_LeanKit_Card card, 
         Model_WaitlistEntry? existingEntry = null);
     
@@ -413,7 +413,7 @@ public interface IService_LeanKit_Mapper
         string waitlistStatus, 
         Model_LeanKit_BoardStructure boardStructure);
     
-    string MapLaneIdToWaitlistStatus(
+    string MapLaneIDataTransferObjectsWaitlistStatus(
         string laneId, 
         Model_LeanKit_BoardStructure boardStructure);
 }
@@ -428,7 +428,7 @@ public interface IService_LeanKit_Mapper
 | `Description` | `Description` | Direct mapping with HTML sanitization |
 | `Status` | `LaneId` | Lookup: "Pending" → Backlog Lane, "In Progress" → In Progress Lane, etc. |
 | `Priority` | `Priority` | Direct mapping (1-3) |
-| `AssignedTo` | `AssignedUserIds[]` | User email → LeanKit User ID lookup |
+| `AssigneDataTransferObjects` | `AssignedUserIds[]` | User email → LeanKit User ID lookup |
 | `Tags` | `Tags[]` | Direct mapping (string array) |
 | `CreatedDate` | `CreatedOn` | Read-only (LeanKit manages) |
 | `ModifiedDate` | `UpdatedOn` | Read-only (LeanKit manages) |
@@ -476,7 +476,7 @@ public interface IService_LeanKit_SyncEngine
 {
     Task<Model_Dao_Result<Model_SyncReport>> SyncAllAsync();
     Task<Model_Dao_Result> SyncWaitlistEntryToLeankitAsync(int entryId);
-    Task<Model_Dao_Result> SyncLeankitCardToWaitlistAsync(string cardId);
+    Task<Model_Dao_Result> SyncLeankitCarDataTransferObjectsWaitlistAsync(string cardId);
     Task<Model_Dao_Result> StartAutoSyncAsync();
     Task<Model_Dao_Result> StopAutoSyncAsync();
     bool IsAutoSyncRunning { get; }
@@ -750,12 +750,12 @@ External Action: User moves card to different lane in LeanKit
     ↓
 10. IF card.UpdatedOn > entry.ModifiedDate:
     ↓
-11. Service_LeanKit_Mapper.MapCardToWaitlistEntry(card, existingEntry)
+11. Service_LeanKit_Mapper.MapCarDataTransferObjectsWaitlistEntry(card, existingEntry)
     ↓
 12. Determine new status from card.LaneId
     ↓
 13. Update waitlist entry in database
-    - Status = MapLaneIdToWaitlistStatus(card.LaneId)
+    - Status = MapLaneIDataTransferObjectsWaitlistStatus(card.LaneId)
     - leankit_last_sync_at = NOW()
     ↓
 14. Log sync history

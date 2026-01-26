@@ -26,6 +26,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public void ClearSession();
 
         public Task<Model_Dunnage_Result_CSVDelete> ResetCSVFilesAsync();
-        public void AddCurrentLoadToSession();
+        public void AddCurrentLoaDataTransferObjectsession();
     }
 }

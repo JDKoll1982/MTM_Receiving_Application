@@ -456,7 +456,7 @@
                 const waitClass = `wait-${waitStatus}`;
                 const diff = item.waitTime - item.timeStandard;
                 const timeText = diff > 0 ? `${diff} min over` : `${item.waitTime} min wait`;
-                const assignedText = item.assignedTo ? `${item.assignedTo} (assigned)` : 'Unassigned';
+                const assignedText = item.assigneDataTransferObjects ? `${item.assigneDataTransferObjects} (assigned)` : 'Unassigned';
 
                 // Map taskTypeColor classes to badges or define new ones
                 // Using task-badge class from context if available, or custom span

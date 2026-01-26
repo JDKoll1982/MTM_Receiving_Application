@@ -280,8 +280,8 @@ flowchart TD
     AssociateParts --> SaveAssoc[(Save Associations)]
     SaveAssoc --> InvMgmt[Inventory Management]
     
-    InvMgmt --> AddToInv[Add Common Type-Part Combos]
-    AddToInv --> SaveInv[(Save Inventory List)]
+    InvMgmt --> AdDataTransferObjectsInv[Add Common Type-Part Combos]
+    AdDataTransferObjectsInv --> SaveInv[(Save Inventory List)]
     SaveInv --> Complete[Configuration Complete]
     Complete --> Test[Test in Guided Mode]
 ```

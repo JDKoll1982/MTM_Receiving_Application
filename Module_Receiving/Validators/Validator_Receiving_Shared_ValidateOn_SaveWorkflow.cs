@@ -12,8 +12,7 @@ public class Validator_Receiving_Shared_ValidateOn_SaveWorkflow : AbstractValida
     public Validator_Receiving_Shared_ValidateOn_SaveWorkflow()
     {
         RuleFor(x => x.UserId)
-            .GreaterThan(0)
-            .WithMessage("Valid User ID is required");
+            .NotEmpty().WithMessage("Valid User ID is required");
 
         RuleFor(x => x.CurrentStep)
             .InclusiveBetween(1, 3)

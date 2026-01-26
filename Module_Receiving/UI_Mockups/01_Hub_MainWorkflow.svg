@@ -1,0 +1,117 @@
+<svg width="1400" height="900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#F3F3F3"/>
+  
+  <!-- MainWindow Title Bar -->
+  <rect x="0" y="0" width="1400" height="48" fill="#202020"/>
+  
+  <!-- Pane Toggle Button -->
+  <rect x="8" y="8" width="32" height="32" fill="#2D2D2D" rx="4"/>
+  <text x="24" y="28" font-family="Segoe MDL2 Assets" font-size="16" fill="#FFFFFF" text-anchor="middle">&#xE700;</text>
+  
+  <!-- App Icon -->
+  <circle cx="60" cy="24" r="8" fill="#0078D4"/>
+  
+  <!-- Title -->
+  <text x="80" y="30" font-family="Segoe UI" font-size="16" fill="#FFFFFF" font-weight="600">MTM Receiving Application</text>
+  
+  <!-- Search Box -->
+  <rect x="800" y="12" width="400" height="32" fill="#2D2D2D" rx="4"/>
+  <text x="820" y="32" font-family="Segoe UI" font-size="14" fill="#8A8A8A">Search</text>
+  <text x="1170" y="32" font-family="Segoe MDL2 Assets" font-size="14" fill="#8A8A8A">&#xE721;</text>
+  
+  <!-- User Profile -->z
+  <circle cx="1320" cy="24" r="16" fill="#0078D4"/>
+  <text x="1350" y="30" font-family="Segoe UI" font-size="14" fill="#FFFFFF">John Doe</text>
+  
+  <!-- Navigation Pane (Left) -->
+  <rect x="0" y="48" width="280" height="852" fill="#F9F9F9"/>
+  
+  <!-- Nav Items -->
+  <g id="NavItems">
+    <!-- Receiving Labels (Selected) -->
+    <rect x="8" y="88" width="264" height="40" fill="#0078D4" rx="4"/>
+    <text x="56" y="113" font-family="Segoe MDL2 Assets" font-size="16" fill="#FFFFFF">&#xE74C;</text>
+    <text x="80" y="113" font-family="Segoe UI" font-size="14" fill="#FFFFFF">Receiving Labels</text>
+    
+    <!-- Dunnage Labels -->
+    <rect x="8" y="136" width="264" height="40" fill="transparent"/>
+    <text x="56" y="161" font-family="Segoe MDL2 Assets" font-size="16" fill="#202020">&#xE7B8;</text>
+    <text x="80" y="161" font-family="Segoe UI" font-size="14" fill="#202020">Dunnage Labels</text>
+    
+    <!-- UPS/FedEx Labels -->
+    <rect x="8" y="184" width="264" height="40" fill="transparent"/>
+    <text x="56" y="209" font-family="Segoe MDL2 Assets" font-size="16" fill="#202020">&#xE724;</text>
+    <text x="80" y="209" font-family="Segoe UI" font-size="14" fill="#202020">UPS / FedEx Labels</text>
+    
+    <!-- Volvo -->
+    <rect x="8" y="232" width="264" height="40" fill="transparent"/>
+    <text x="56" y="257" font-family="Segoe MDL2 Assets" font-size="16" fill="#202020">&#xE7C1;</text>
+    <text x="80" y="257" font-family="Segoe UI" font-size="14" fill="#202020">Volvo Dunnage Requisition</text>
+    
+    <!-- Reports -->
+    <rect x="8" y="280" width="264" height="40" fill="transparent"/>
+    <text x="56" y="305" font-family="Segoe MDL2 Assets" font-size="16" fill="#202020">&#xE9F9;</text>
+    <text x="80" y="305" font-family="Segoe UI" font-size="14" fill="#202020">End of Day Reports</text>
+  </g>
+  
+  <!-- Settings (Bottom) -->
+  <rect x="8" y="840" width="264" height="40" fill="transparent"/>
+  <text x="56" y="865" font-family="Segoe MDL2 Assets" font-size="16" fill="#202020">&#xE713;</text>
+  <text x="80" y="865" font-family="Segoe UI" font-size="14" fill="#202020">Settings</text>
+  
+  <!-- Main Content Area -->
+  <rect x="280" y="48" width="1120" height="852" fill="#FFFFFF"/>
+  
+  <!-- Content Header -->
+  <rect x="280" y="68" width="1120" height="60" fill="#FAFAFA"/>
+  <text x="840" y="108" font-family="Segoe UI" font-size="28" fill="#202020" font-weight="600" text-anchor="middle">Receiving Hub</text>
+  
+  <!-- Hub Content - Mode Selection -->
+  <g id="ModeSelection" transform="translate(390, 170)">
+    <!-- Centered container card -->
+    <rect x="0" y="0" width="900" height="610" fill="#FAFAFA" stroke="#E5E5E5" stroke-width="1" rx="16" filter="url(#shadow)"/>
+    
+    <!-- Title -->
+    <text x="450" y="86" font-family="Segoe UI" font-size="28" fill="#202020" font-weight="600" text-anchor="middle">Select Workflow Mode</text>
+    <text x="450" y="118" font-family="Segoe UI" font-size="15" fill="#666666" text-anchor="middle">Choose how you want to enter receiving data</text>
+    
+    <!-- Buttons: consistent sizing and spacing -->
+    <!-- Guided Mode Button -->
+    <rect x="120" y="160" width="660" height="110" fill="#0078D4" rx="12"/>
+    <text x="450" y="206" font-family="Segoe UI" font-size="22" fill="#FFFFFF" font-weight="600" text-anchor="middle">Guided Mode (Wizard)</text>
+    <text x="450" y="236" font-family="Segoe UI" font-size="14" fill="#EDEDED" text-anchor="middle">Step-by-step workflow for receiving transactions</text>
+    
+    <!-- Manual Entry Button -->
+    <rect x="120" y="286" width="660" height="110" fill="#FFFFFF" rx="12" stroke="#D1D1D1" stroke-width="2"/>
+    <text x="450" y="332" font-family="Segoe UI" font-size="22" fill="#202020" font-weight="600" text-anchor="middle">Manual Entry</text>
+    <text x="450" y="362" font-family="Segoe UI" font-size="14" fill="#666666" text-anchor="middle">Direct single-screen entry for experienced users</text>
+    
+    <!-- Edit Mode Button -->
+    <rect x="120" y="412" width="660" height="110" fill="#FFFFFF" rx="12" stroke="#D1D1D1" stroke-width="2"/>
+    <text x="450" y="458" font-family="Segoe UI" font-size="22" fill="#202020" font-weight="600" text-anchor="middle">Edit Mode</text>
+    <text x="450" y="488" font-family="Segoe UI" font-size="14" fill="#666666" text-anchor="middle">View and edit historical transactions</text>
+    
+    <!-- Non-PO Toggle as a small card -->
+    <g transform="translate(270, 546)">
+      <rect x="0" y="0" width="360" height="50" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="1" rx="12"/>
+      <text x="40" y="31" font-family="Segoe UI" font-size="14" fill="#202020" font-weight="600">Non-PO Receiving</text>
+      <rect x="250" y="13" width="90" height="24" fill="#F3F3F3" rx="12"/>
+      <circle cx="262" cy="25" r="10" fill="#666666"/>
+      <text x="295" y="31" font-family="Segoe UI" font-size="12" fill="#666666" text-anchor="middle">Off</text>
+    </g>
+  </g>
+  
+  <!-- Help Button (Bottom Right) -->
+  <circle cx="1340" cy="840" r="28" fill="#0078D4"/>
+  <text x="1340" y="848" font-family="Segoe MDL2 Assets" font-size="20" fill="#FFFFFF" text-anchor="middle">&#xE897;</text>
+  
+  <style>
+    /* Intentionally minimal: styling is represented via fills, borders, and shadows */
+  </style>
+</svg>

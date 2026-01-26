@@ -323,7 +323,7 @@ public class Model_Kanban_Card
     public string Description { get; set; } = string.Empty;
     public string Priority { get; set; } = "Medium";
     public string Status { get; set; } = "Pending";
-    public string? AssignedTo { get; set; }
+    public string? AssigneDataTransferObjects { get; set; }
     public DateTime? DueDate { get; set; }
     public List<string> Labels { get; set; } = new();
     public string ColorHex { get; set; } = "#FFFFFF";

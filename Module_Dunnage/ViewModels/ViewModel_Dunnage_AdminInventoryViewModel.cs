@@ -34,7 +34,7 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     [ObservableProperty]
     private Model_InventoriedDunnage? _selectedInventoriedPart;
 
-    private readonly Func<View_Dunnage_Dialog_AddToInventoriedListDialog> _addToListDialogFactory;
+    private readonly Func<View_Dunnage_Dialog_AdDataTransferObjectsInventoriedListDialog> _adDataTransferObjectsListDialogFactory;
 
     /// <summary>
     /// Gets whether a part is currently selected
@@ -49,14 +49,14 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService,
-        Func<View_Dunnage_Dialog_AddToInventoriedListDialog> addToListDialogFactory)
+        Func<View_Dunnage_Dialog_AdDataTransferObjectsInventoriedListDialog> adDataTransferObjectsListDialogFactory)
         : base(errorHandler, logger, notificationService)
     {
         _daoInventory = daoInventory ?? throw new ArgumentNullException(nameof(daoInventory));
         _daoPart = daoPart ?? throw new ArgumentNullException(nameof(daoPart));
         _adminWorkflow = adminWorkflow ?? throw new ArgumentNullException(nameof(adminWorkflow));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
-        _addToListDialogFactory = addToListDialogFactory ?? throw new ArgumentNullException(nameof(addToListDialogFactory));
+        _adDataTransferObjectsListDialogFactory = adDataTransferObjectsListDialogFactory ?? throw new ArgumentNullException(nameof(adDataTransferObjectsListDialogFactory));
 
         _inventoriedParts = new ObservableCollection<Model_InventoriedDunnage>();
     }
@@ -124,11 +124,11 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
     /// Show dialog to add a new part to the inventoried list
     /// </summary>
     [RelayCommand]
-    private async Task ShowAddToListAsync()
+    private async Task ShowAdDataTransferObjectsListAsync()
     {
         try
         {
-            var dialog = _addToListDialogFactory();
+            var dialog = _adDataTransferObjectsListDialogFactory();
 
             var result = await dialog.ShowAsync();
 
@@ -143,7 +143,7 @@ public partial class ViewModel_Dunnage_AdminInventory : ViewModel_Shared_Base
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Medium,
-                nameof(ShowAddToListAsync),
+                nameof(ShowAdDataTransferObjectsListAsync),
                 nameof(ViewModel_Dunnage_AdminInventory));
         }
     }

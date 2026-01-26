@@ -30,8 +30,8 @@ CREATE TABLE [dbo].[tbl_Receiving_Transaction]
     [QualityHoldAcknowledged] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_QualityHoldAcknowledged] DEFAULT 0,
     
     -- Save Status
-    [SavedToCSV] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_SavedToCSV] DEFAULT 0,
-    [SavedToDatabase] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_SavedToDatabase] DEFAULT 1,
+    [SaveDataTransferObjectsCSV] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_SaveDataTransferObjectsCSV] DEFAULT 0,
+    [SaveDataTransferObjectsDatabase] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_SaveDataTransferObjectsDatabase] DEFAULT 1,
     [CSVFilePath] NVARCHAR(500) NULL,
     [CSVExportDate] DATETIME2 NULL,
     

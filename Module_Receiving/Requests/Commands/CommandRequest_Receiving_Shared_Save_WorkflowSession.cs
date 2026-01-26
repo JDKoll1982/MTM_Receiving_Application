@@ -14,12 +14,12 @@ public record CommandRequest_Receiving_Shared_Save_WorkflowSession : IRequest<Mo
     /// <summary>
     /// Session ID (Guid.Empty for new session)
     /// </summary>
-    public Guid SessionId { get; init; }
+    public Guid SessionId { get; init; } = Guid.Empty;
 
     /// <summary>
     /// User ID who owns the session
     /// </summary>
-    public int UserId { get; init; }
+    public string UserId { get; init; } = string.Empty;
 
     /// <summary>
     /// Current workflow step (1, 2, or 3)
@@ -54,5 +54,10 @@ public record CommandRequest_Receiving_Shared_Save_WorkflowSession : IRequest<Mo
     /// <summary>
     /// Serialized load details (JSON)
     /// </summary>
-    public string? LoadDetailsJson { get; init; }
+    public String? LoadDetailsJson { get; init; }
+
+    /// <summary>
+    /// Modified By what User
+    /// </summary>
+    public string ModifiedBy { get; init; } = string.Empty;
 }

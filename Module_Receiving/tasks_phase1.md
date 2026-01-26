@@ -15,7 +15,7 @@
 - ✅ Folder Structure: Complete
 - ✅ Enums: 5/5 complete
 - ✅ Entity Models: 3/3 complete
-- ✅ DTO Models: 1/1 complete
+- ✅ DataTransferObjects Models: 1/1 complete
 - ✅ CQRS Commands: 2/7 defined
 - ✅ CQRS Queries: 1/7 defined
 - ✅ Validators: 2/10 complete
@@ -36,7 +36,7 @@
 - [x] **Task 1.7:** Create `Module_Receiving/Handlers/Commands/`
 - [x] **Task 1.8:** Create `Module_Receiving/Handlers/Queries/`
 - [x] **Task 1.9:** Create `Module_Receiving/Validators/`
-- [x] **Task 1.10:** Create `Module_Receiving/Models/` (with Entities, DTOs, Enums subfolders)
+- [x] **Task 1.10:** Create `Module_Receiving/Models/` (with Entities, DataTransferObjects, Enums subfolders)
 - [x] **Task 1.11:** Create `Module_Receiving/Data/`
 
 ### Core Enums (5 tasks)
@@ -51,8 +51,8 @@
 - [x] **Task 1.18:** `Model_Receiving_Entity_ReceivingLoad` - Individual load/line record
 - [x] **Task 1.19:** `Model_Receiving_Entity_WorkflowSession` - Wizard session state persistence
 
-### DTO Models (1 task)
-- [x] **Task 1.20:** `Model_Receiving_DTO_LoadGridRow` - DataGrid row binding model for Step 2
+### DataTransferObjects Models (1 task)
+- [x] **Task 1.20:** `Model_Receiving_DataTransferObjects_LoadGridRow` - DataGrid row binding model for Step 2
 
 ---
 
@@ -76,10 +76,10 @@ Module_Receiving/Models/Entities/
 └── Model_Receiving_Entity_WorkflowSession.cs
 ```
 
-**DTO Models (1 file):**
+**DataTransferObjects Models (1 file):**
 ```
-Module_Receiving/Models/DTOs/
-└── Model_Receiving_DTO_LoadGridRow.cs
+Module_Receiving/Models/DataTransferObjects/
+└── Model_Receiving_DataTransferObjects_LoadGridRow.cs
 ```
 
 **CQRS Structure (4 files - partial):**
@@ -133,7 +133,7 @@ All classes follow: `{Type}_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 **Rationale:** Maintains user context across navigation, supports complex editing scenarios
 
 ### 5. Grid-Based Data Entry (Step 2)
-- `Model_Receiving_DTO_LoadGridRow` specifically designed for DataGrid binding
+- `Model_Receiving_DataTransferObjects_LoadGridRow` specifically designed for DataGrid binding
 - Supports inline editing, validation, bulk operations
 - Auto-fill tracking via `IsAutoFilled` flag
 
@@ -159,7 +159,7 @@ All classes follow: `{Type}_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 ### Build Status
 - ✅ All enums compile without errors
 - ✅ All entity models compile without errors
-- ✅ All DTO models compile without errors
+- ✅ All DataTransferObjects models compile without errors
 - ✅ CQRS structure validated
 
 ### Naming Compliance
@@ -185,11 +185,11 @@ All classes follow: `{Type}_{Module}_{Mode}_{CategoryType}_{DescriptiveName}`
 - Validator pattern defined ✅
 
 **Phase 4-5 (ViewModels):**
-- DTO models ready for UI binding ✅
+- DataTransferObjects models ready for UI binding ✅
 - Workflow enums for navigation ✅
 
 **Phase 6 (Views):**
-- `Model_Receiving_DTO_LoadGridRow` designed for DataGrid ✅
+- `Model_Receiving_DataTransferObjects_LoadGridRow` designed for DataGrid ✅
 
 ---
 

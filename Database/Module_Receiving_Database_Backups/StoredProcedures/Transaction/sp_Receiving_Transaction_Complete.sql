@@ -34,7 +34,7 @@ BEGIN
         SET
             [Status] = 'Completed',
             [CompletedDate] = GETUTCDATE(),
-            [SavedToCSV] = CASE WHEN @p_CSVFilePath IS NOT NULL THEN 1 ELSE 0 END,
+            [SaveDataTransferObjectsCSV] = CASE WHEN @p_CSVFilePath IS NOT NULL THEN 1 ELSE 0 END,
             [CSVFilePath] = @p_CSVFilePath,
             [CSVExportDate] = CASE WHEN @p_CSVFilePath IS NOT NULL THEN GETUTCDATE() ELSE NULL END,
             [ModifiedBy] = @p_CompletedBy,

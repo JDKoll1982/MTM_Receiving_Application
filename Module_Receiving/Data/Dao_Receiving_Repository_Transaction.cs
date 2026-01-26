@@ -103,7 +103,7 @@ public class Dao_Receiving_Repository_Transaction
                 { "p_TotalLoads", transaction.Loads?.Count ?? 0 },
                 { "p_TotalWeight", DBNull.Value },
                 { "p_TotalQuantity", DBNull.Value },
-                { "p_ExportedToCSV", transaction.ExportedToCSV },
+                { "p_ExporteDataTransferObjectsCSV", transaction.ExporteDataTransferObjectsCSV },
                 { "p_CSVExportPathLocal", (object?)transaction.CSVExportPathLocal ?? DBNull.Value },
                 { "p_CSVExportPathNetwork", (object?)transaction.CSVExportPathNetwork ?? DBNull.Value },
                 { "p_ModifiedBy", transaction.UpdatedBy ?? transaction.UserName }
@@ -354,7 +354,7 @@ public class Dao_Receiving_Repository_Transaction
             UserName = reader.GetString(reader.GetOrdinal("UserName")),
             WorkflowMode = Enum.Parse<Enum_Receiving_Mode_WorkflowMode>(reader.GetString(reader.GetOrdinal("WorkflowMode"))),
             TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
-            ExportedToCSV = reader.GetBoolean(reader.GetOrdinal("ExportedToCSV")),
+            ExporteDataTransferObjectsCSV = reader.GetBoolean(reader.GetOrdinal("ExporteDataTransferObjectsCSV")),
             CSVExportPathLocal = reader.IsDBNull(reader.GetOrdinal("CSVExportPathLocal")) ? null : reader.GetString(reader.GetOrdinal("CSVExportPathLocal")),
             CSVExportPathNetwork = reader.IsDBNull(reader.GetOrdinal("CSVExportPathNetwork")) ? null : reader.GetString(reader.GetOrdinal("CSVExportPathNetwork")),
             CSVExportedAt = reader.IsDBNull(reader.GetOrdinal("CSVExportedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("CSVExportedAt")),

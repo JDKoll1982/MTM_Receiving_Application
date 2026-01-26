@@ -19,7 +19,7 @@ SELECT
     t.[IsNonPO],
     t.[RequiresQualityHold],
     t.[CompletedDate],
-    t.[SavedToCSV],
+    t.[SaveDataTransferObjectsCSV],
     t.[CSVFilePath],
     t.[CSVExportDate],
     t.[CreatedBy],
@@ -47,7 +47,7 @@ WHERE t.[IsActive] = 1
 GROUP BY 
     t.[TransactionId], t.[PONumber], t.[PartNumber], t.[TotalLoads],
     t.[TotalWeight], t.[TotalQuantity], t.[WorkflowMode], t.[Status],
-    t.[IsNonPO], t.[RequiresQualityHold], t.[CompletedDate], t.[SavedToCSV],
+    t.[IsNonPO], t.[RequiresQualityHold], t.[CompletedDate], t.[SaveDataTransferObjectsCSV],
     t.[CSVFilePath], t.[CSVExportDate], t.[CreatedBy], t.[CreatedDate],
     t.[ModifiedBy], t.[ModifiedDate];
 GO

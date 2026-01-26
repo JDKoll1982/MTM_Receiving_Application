@@ -17,7 +17,7 @@ public class Model_Receiving_TableEntitys_WorkflowSession
     /// <summary>
     /// User ID who owns this session
     /// </summary>
-    public int UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
 
     /// <summary>
     /// Current workflow step (1, 2, or 3)

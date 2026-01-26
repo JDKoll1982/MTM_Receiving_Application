@@ -1,69 +1,78 @@
-namespace MTM_Receiving_Application.Module_Receiving.Models.DTOs;
+namespace MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 
 /// <summary>
-/// Data Transfer Object for representing a single row in the Load Details Grid (Step 2)
-/// Used for DataGrid binding and bulk operations
+/// Data Transfer Object for representing a single row in the Load Details Grid (Step 2).
+/// Used for DataGrid binding and bulk operations.
 /// </summary>
 public class Model_Receiving_DataTransferObjects_LoadGridRow
 {
     /// <summary>
-    /// Load number (1-based index)
+    /// Load number (1-based index).
     /// </summary>
     public int LoadNumber { get; set; }
 
     /// <summary>
-    /// Part number/ID
+    /// PO Number for this load.
     /// </summary>
-    public string PartId { get; set; } = string.Empty;
+    public string PONumber { get; set; } = string.Empty;
 
     /// <summary>
-    /// Weight or quantity for this load
+    /// Part number/ID.
     /// </summary>
-    public decimal? WeightOrQuantity { get; set; }
+    public string PartNumber { get; set; } = string.Empty;
 
     /// <summary>
-    /// Unit of measure (LBS, KG, EA)
+    /// Part type name (RAW, CAST, FORGE, etc.).
     /// </summary>
-    public string UnitOfMeasure { get; set; } = "LBS";
+    public string PartType { get; set; } = string.Empty;
 
     /// <summary>
-    /// Heat lot number
+    /// Weight for this load (in lbs).
+    /// </summary>
+    public decimal? Weight { get; set; }
+
+    /// <summary>
+    /// Quantity for this load (in units/pieces).
+    /// </summary>
+    public int? Quantity { get; set; }
+
+    /// <summary>
+    /// Heat lot number.
     /// </summary>
     public string? HeatLot { get; set; }
 
     /// <summary>
-    /// Package type (Skid, Pallet, Box, etc.)
+    /// Package type (Skid, Pallet, Box, etc.).
     /// </summary>
     public string? PackageType { get; set; }
 
     /// <summary>
-    /// Number of packages in this load
+    /// Number of packages in this load.
     /// </summary>
     public int? PackagesPerLoad { get; set; }
 
     /// <summary>
-    /// Weight per individual package
+    /// Weight per individual package (auto-calculated).
     /// </summary>
     public decimal? WeightPerPackage { get; set; }
 
     /// <summary>
-    /// Receiving location
+    /// Receiving location.
     /// </summary>
     public string? ReceivingLocation { get; set; }
 
     /// <summary>
-    /// Whether this field was auto-filled via bulk copy
-    /// Used for clear auto-filled operations
+    /// Whether this field was auto-filled via bulk copy.
     /// </summary>
     public bool IsAutoFilled { get; set; }
 
     /// <summary>
-    /// Whether this row has validation errors
+    /// Whether this row has validation errors.
     /// </summary>
     public bool HasErrors { get; set; }
 
     /// <summary>
-    /// Validation error message (if any)
+    /// Validation error message (if any).
     /// </summary>
     public string? ErrorMessage { get; set; }
 }

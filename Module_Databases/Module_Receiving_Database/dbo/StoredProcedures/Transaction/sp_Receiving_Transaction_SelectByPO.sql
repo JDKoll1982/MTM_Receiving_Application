@@ -31,7 +31,7 @@ BEGIN
             [IsNonPO],
             [RequiresQualityHold],
             [QualityHoldAcknowledged],
-            [SavedToCSV],
+            [SaveDataTransferObjectsCSV],
             [CSVFilePath],
             [CSVExportDate],
             [CreatedBy],

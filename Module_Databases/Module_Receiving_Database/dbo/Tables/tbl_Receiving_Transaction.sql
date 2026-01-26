@@ -30,8 +30,8 @@ CREATE TABLE [dbo].[tbl_Receiving_Transaction]
     [QualityHoldAcknowledged] BIT NOT NULL DEFAULT 0,-- User acknowledged QH procedures
     
     -- Save Status
-    [SavedToCSV] BIT NOT NULL DEFAULT 0,             -- Successfully saved to network CSV
-    [SavedToDatabase] BIT NOT NULL DEFAULT 1,        -- Successfully saved locally
+    [SaveDataTransferObjectsCSV] BIT NOT NULL DEFAULT 0,             -- Successfully saved to network CSV
+    [SaveDataTransferObjectsDatabase] BIT NOT NULL DEFAULT 1,        -- Successfully saved locally
     [CSVFilePath] NVARCHAR(500) NULL,                -- Path to generated CSV file
     [CSVExportDate] DATETIME2 NULL,                  -- When CSV was exported
     

@@ -76,7 +76,7 @@ Module_{Feature}/
 ├── 📂 Data/                    # Instance-based DAOs
 │   ├── Dao_Entity1.cs
 │   └── Dao_Entity2.cs
-├── 📂 Models/                  # Domain entities and DTOs
+├── 📂 Models/                  # Domain entities and DataTransferObjects
 │   ├── Model_Entity1.cs
 │   └── Model_DaoResult.cs
 ├── 📂 Handlers/               # CQRS command/query handlers

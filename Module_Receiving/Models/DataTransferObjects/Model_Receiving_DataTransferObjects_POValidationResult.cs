@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 
-namespace MTM_Receiving_Application.Module_Receiving.Models.DTOs;
+namespace MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 
 /// <summary>
-/// DTO containing PO number validation result
+/// DataTransferObjects containing PO number validation result
 /// Used in Wizard Mode Step 1 for PO validation
 /// </summary>
 public class Model_Receiving_DataTransferObjects_POValidationResult

@@ -1063,8 +1063,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 return;
             }
 
-            // Build command with ShipmentLineDto list
-            var partsDto = Parts.Select(p => new ShipmentLineDto
+            // Build command with ShipmentLineDataTransferObjects list
+            var partsDataTransferObjects = Parts.Select(p => new ShipmentLineDataTransferObjects
             {
                 PartNumber = p.PartNumber,
                 ReceivedSkidCount = p.ReceivedSkidCount,
@@ -1078,7 +1078,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
                 ShipmentNumber = ShipmentNumber,
                 Notes = Notes ?? string.Empty,
-                Parts = partsDto
+                Parts = partsDataTransferObjects
             };
 
             var result = await _mediator.Send(saveCommand);
@@ -1128,7 +1128,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         }
 
         // Use MediatR command for save
-        var partsDto = Parts.Select(p => new ShipmentLineDto
+        var partsDataTransferObjects = Parts.Select(p => new ShipmentLineDataTransferObjects
         {
             PartNumber = p.PartNumber,
             ReceivedSkidCount = p.ReceivedSkidCount,
@@ -1142,7 +1142,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             ShipmentDate = ShipmentDate ?? DateTimeOffset.Now,
             ShipmentNumber = ShipmentNumber,
             Notes = Notes ?? string.Empty,
-            Parts = partsDto
+            Parts = partsDataTransferObjects
         };
 
         var result = await _mediator.Send(saveCommand);
@@ -1258,7 +1258,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
             }
 
             // Use MediatR CompleteShipmentCommand
-            var partsDto = Parts.Select(p => new ShipmentLineDto
+            var partsDataTransferObjects = Parts.Select(p => new ShipmentLineDataTransferObjects
             {
                 PartNumber = p.PartNumber,
                 ReceivedSkidCount = p.ReceivedSkidCount,
@@ -1274,7 +1274,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
                 PONumber = poTextBox.Text.Trim(),
                 ReceiverNumber = receiverTextBox.Text.Trim(),
                 Notes = Notes ?? string.Empty,
-                Parts = partsDto
+                Parts = partsDataTransferObjects
             };
 
             var completeResult = await _mediator.Send(completeCommand);

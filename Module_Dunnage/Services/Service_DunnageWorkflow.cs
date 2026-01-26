@@ -120,7 +120,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
                         // Add current load to session before advancing to Review
-                        AddCurrentLoadToSession();
+                        AddCurrentLoaDataTransferObjectsession();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
 
@@ -254,7 +254,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             return await _csvWriter.ClearCSVFilesAsync();
         }
 
-        public void AddCurrentLoadToSession()
+        public void AddCurrentLoaDataTransferObjectsession()
         {
             try
             {

@@ -157,13 +157,13 @@ MTM_Receiving_Application/
 │   │   │   ├── Model_Receiving_Entity_LoadDetail.cs
 │   │   │   └── Model_Receiving_Entity_AuditLogEntry.cs
 │   │   │
-│   │   ├── DTOs/
-│   │   │   ├── Model_Receiving_DTO_PONumberValidationResult.cs
-│   │   │   ├── Model_Receiving_DTO_PartSearchResult.cs
-│   │   │   ├── Model_Receiving_DTO_BulkCopyOperation.cs
-│   │   │   ├── Model_Receiving_DTO_SaveOperationSummary.cs
-│   │   │   ├── Model_Receiving_DTO_TransactionSearchCriteria.cs
-│   │   │   └── Model_Receiving_DTO_LoadGridRow.cs
+│   │   ├── DataTransferObjects/
+│   │   │   ├── Model_Receiving_DataTransferObjects_PONumberValidationResult.cs
+│   │   │   ├── Model_Receiving_DataTransferObjects_PartSearchResult.cs
+│   │   │   ├── Model_Receiving_DataTransferObjects_BulkCopyOperation.cs
+│   │   │   ├── Model_Receiving_DataTransferObjects_SaveOperationSummary.cs
+│   │   │   ├── Model_Receiving_DataTransferObjects_TransactionSearchCriteria.cs
+│   │   │   └── Model_Receiving_DataTransferObjects_LoadGridRow.cs
 │   │   │
 │   │   └── Results/
 │   │       ├── Model_Receiving_Result_SaveOperation.cs
@@ -202,7 +202,7 @@ MTM_Receiving_Application/
 │   │   │
 │   │   ├── Transformation/
 │   │   │   ├── Helper_Transformation_Infrastructure_EntityMapper.cs
-│   │   │   └── Helper_Transformation_Infrastructure_DTOConverter.cs
+│   │   │   └── Helper_Transformation_Infrastructure_DataTransferObjectsConverter.cs
 │   │   │
 │   │   └── UI/
 │   │       ├── Helper_UI_Infrastructure_WindowSizeAndStartupLocation.cs

@@ -264,7 +264,7 @@ module_structure:
       purpose: "Instance-based DAOs for database operations"
 
     - name: "Models/"
-      purpose: "Domain entities and DTOs"
+      purpose: "Domain entities and DataTransferObjects"
 
     - name: "Handlers/"
       purpose: "CQRS command/query handlers"

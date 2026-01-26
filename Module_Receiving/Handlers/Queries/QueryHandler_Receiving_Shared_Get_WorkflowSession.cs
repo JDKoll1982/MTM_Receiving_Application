@@ -37,7 +37,7 @@ public class QueryHandler_Receiving_Shared_Get_WorkflowSession
         if (request.UserId.HasValue && request.UserId.Value > 0)
         {
             var userSessions = await _sessionDao.SelectByUserAsync($"User_{request.UserId.Value}");
-            if (userSessions.Success && userSessions.Data != null && userSessions.Data.Count > 0)
+            if (userSessions.Success && userSessions.Data?.Count > 0)
             {
                 // Return the most recently updated session
                 var mostRecent = userSessions.Data.OrderByDescending(s => s.UpdatedAt).First();

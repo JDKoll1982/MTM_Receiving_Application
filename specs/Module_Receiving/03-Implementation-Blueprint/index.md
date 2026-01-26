@@ -36,7 +36,7 @@ This blueprint provides **preset names** for every artifact needed to implement 
 | [ViewModels](./viewmodels.md) | All ViewModel classes, methods, properties, commands |
 | [Views](./views.md) | All XAML View files and code-behind |
 | [Services](./services.md) | All Service classes, interfaces, methods |
-| [Models](./models.md) | All Model classes (Entities, DTOs, Results) |
+| [Models](./models.md) | All Model classes (Entities, DataTransferObjects, Results) |
 
 ### Data Layer
 | Document | Purpose |
@@ -116,7 +116,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Requests.Commands
     {
         public Guid TransactionId { get; init; }
         public string PONumber { get; init; } = string.Empty;
-        public List<ReceivingLineDto> Lines { get; init; } = new();
+        public List<ReceivingLineDataTransferObjects> Lines { get; init; } = new();
     }
 }
 ```

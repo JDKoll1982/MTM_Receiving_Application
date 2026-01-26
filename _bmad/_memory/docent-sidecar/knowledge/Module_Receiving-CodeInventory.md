@@ -55,4 +55,4 @@ This file is a companion to the main module doc:
 
 - Workflow step viewmodels refresh their `Loads` collections when their step becomes active (via `IService_ReceivingWorkflow.StepChanged`).
 - DataGrid columns use runtime `Binding` (expected with CommunityToolkit DataGrid columns), while outer ViewModel bindings use `x:Bind`.
-- `View_Receiving_Workflow.xaml.cs` performs default-mode auto-skip in `OnNavigatedTo` (small amount of view code-behind logic).
+- `View_Receiving_Workflow.xaml.cs` performs default-mode auto-skip in `OnNavigateDataTransferObjects` (small amount of view code-behind logic).

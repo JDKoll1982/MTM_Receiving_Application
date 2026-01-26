@@ -158,7 +158,7 @@ public async Task Validate_Receiving_Wizard_Input_PONumberFormatAsync() { }
 | **Requests (Commands + Queries)** | 14 |
 | **Handlers (Commands + Queries)** | 14 |
 | **Validators (FluentValidation)** | 6 |
-| **Models (Entities + DTOs)** | 15 |
+| **Models (Entities + DataTransferObjects)** | 15 |
 | **DAOs** | 6 |
 | **Helpers** | 15 |
 | **Enums** | 8 |
@@ -191,7 +191,7 @@ MTM_Receiving_Application.Module_Core.Behaviors
 ### Phase 1: Foundation (Week 1)
 1. Create folder structure (15 min)
 2. Implement Enums (2 hours)
-3. Implement Models (Entities, DTOs) (8 hours)
+3. Implement Models (Entities, DataTransferObjects) (8 hours)
 4. Implement Helpers (16 hours)
 5. Create database schema and stored procedures (16 hours)
 

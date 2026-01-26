@@ -97,7 +97,7 @@
 
 **For Models:**
 - `TableEntitys` - Database entity models
-- `DataTransferObjects` - Data transfer objects (DTOs)
+- `DataTransferObjects` - Data transfer objects (DataTransferObjects)
 - `Result` - Operation results
 
 **For DAOs:**

@@ -6,7 +6,7 @@ using MediatR;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Receiving.Models.DTOs;
+using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 using MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries;
@@ -40,7 +40,7 @@ public class QueryHandler_Receiving_Shared_Get_PartDetails
         {
             _logger.LogInfo($"Retrieving part details for: {request.PartNumber}");
 
-            var dto = new Model_Receiving_DataTransferObjects_PartDetails
+            var DataTransferObjects = new Model_Receiving_DataTransferObjects_PartDetails
             {
                 PartNumber = request.PartNumber
             };
@@ -64,39 +64,39 @@ public class QueryHandler_Receiving_Shared_Get_PartDetails
             if (preferenceResult.Success && preferenceResult.Data != null)
             {
                 var pref = preferenceResult.Data;
-                dto.PartTypeId = pref.PartTypeId;
-                dto.PartTypeName = pref.PartTypeName;
-                dto.PartTypeCode = pref.PartTypeCode;
-                dto.DefaultReceivingLocation = pref.DefaultReceivingLocation;
-                dto.DefaultPackageType = pref.DefaultPackageType;
-                dto.DefaultPackagesPerLoad = pref.DefaultPackagesPerLoad;
-                dto.RequiresQualityHold = pref.RequiresQualityHold;
-                dto.QualityHoldProcedure = pref.QualityHoldProcedure;
+                DataTransferObjects.PartTypeId = pref.PartTypeId;
+                DataTransferObjects.PartTypeName = pref.PartTypeName;
+                DataTransferObjects.PartTypeCode = pref.PartTypeCode;
+                DataTransferObjects.DefaultReceivingLocation = pref.DefaultReceivingLocation;
+                DataTransferObjects.DefaultPackageType = pref.DefaultPackageType;
+                DataTransferObjects.DefaultPackagesPerLoad = pref.DefaultPackagesPerLoad;
+                DataTransferObjects.RequiresQualityHold = pref.RequiresQualityHold;
+                DataTransferObjects.QualityHoldProcedure = pref.QualityHoldProcedure;
             }
 
             // Step 3: Get part type details if PartTypeId is available
-            if (dto.PartTypeId.HasValue)
+            if (DataTransferObjects.PartTypeId.HasValue)
             {
                 var partTypesResult = await _referenceDao.GetPartTypesAsync();
                 if (partTypesResult.Success && partTypesResult.Data != null)
                 {
-                    var partType = partTypesResult.Data.FirstOrDefault(pt => pt.PartTypeId == dto.PartTypeId.Value);
+                    var partType = partTypesResult.Data.FirstOrDefault(pt => pt.PartTypeId == DataTransferObjects.PartTypeId.Value);
                     if (partType != null)
                     {
-                        dto.PartTypeName = partType.PartTypeName;
-                        dto.PartTypeCode = partType.PartTypeCode;
-                        dto.RequiresDiameter = partType.RequiresDiameter;
-                        dto.RequiresWidth = partType.RequiresWidth;
-                        dto.RequiresLength = partType.RequiresLength;
-                        dto.RequiresThickness = partType.RequiresThickness;
-                        dto.RequiresWeight = partType.RequiresWeight;
+                        DataTransferObjects.PartTypeName = partType.PartTypeName;
+                        DataTransferObjects.PartTypeCode = partType.PartTypeCode;
+                        DataTransferObjects.RequiresDiameter = partType.RequiresDiameter;
+                        DataTransferObjects.RequiresWidth = partType.RequiresWidth;
+                        DataTransferObjects.RequiresLength = partType.RequiresLength;
+                        DataTransferObjects.RequiresThickness = partType.RequiresThickness;
+                        DataTransferObjects.RequiresWeight = partType.RequiresWeight;
                     }
                 }
             }
 
             _logger.LogInfo($"Part details retrieved for {request.PartNumber}");
 
-            return Model_Dao_Result_Factory.Success(dto);
+            return Model_Dao_Result_Factory.Success(DataTransferObjects);
         }
         catch (Exception ex)
         {

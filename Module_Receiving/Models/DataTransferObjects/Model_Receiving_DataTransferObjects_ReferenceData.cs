@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using MTM_Receiving_Application.Module_Receiving.Models.Entities;
 
-namespace MTM_Receiving_Application.Module_Receiving.Models.DTOs;
+namespace MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 
 /// <summary>
-/// DTO containing all reference data for the Receiving module
+/// DataTransferObjects containing all reference data for the Receiving module
 /// Used for populating dropdowns, comboboxes, and lookups
 /// </summary>
 public class Model_Receiving_DataTransferObjects_ReferenceData

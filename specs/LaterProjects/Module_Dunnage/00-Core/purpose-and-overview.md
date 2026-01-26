@@ -167,7 +167,7 @@ The following items are explicitly NOT part of Module_Dunnage:
 ### MVVM Pattern
 - ViewModels: Workflow orchestration and UI logic
 - Views: XAML-based user interfaces
-- Models: Entity and DTO models
+- Models: Entity and DataTransferObjects models
 - Services: Business logic and workflow management
 - DAOs: Data access layer
 

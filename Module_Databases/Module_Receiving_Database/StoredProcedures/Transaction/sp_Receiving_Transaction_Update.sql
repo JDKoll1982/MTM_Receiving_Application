@@ -14,7 +14,7 @@ CREATE PROCEDURE [dbo].[sp_Receiving_Transaction_Update]
     @p_TotalQuantity INT = NULL,
     @p_Status NVARCHAR(20) = NULL,
     @p_CompletedDate DATETIME2 = NULL,
-    @p_SavedToCSV BIT = NULL,
+    @p_SaveDataTransferObjectsCSV BIT = NULL,
     @p_CSVFilePath NVARCHAR(500) = NULL,
     @p_CSVExportDate DATETIME2 = NULL,
     @p_ModifiedBy NVARCHAR(100)
@@ -50,7 +50,7 @@ BEGIN
             [TotalQuantity] = ISNULL(@p_TotalQuantity, [TotalQuantity]),
             [Status] = ISNULL(@p_Status, [Status]),
             [CompletedDate] = ISNULL(@p_CompletedDate, [CompletedDate]),
-            [SavedToCSV] = ISNULL(@p_SavedToCSV, [SavedToCSV]),
+            [SaveDataTransferObjectsCSV] = ISNULL(@p_SaveDataTransferObjectsCSV, [SaveDataTransferObjectsCSV]),
             [CSVFilePath] = ISNULL(@p_CSVFilePath, [CSVFilePath]),
             [CSVExportDate] = ISNULL(@p_CSVExportDate, [CSVExportDate]),
             [ModifiedBy] = @p_ModifiedBy,

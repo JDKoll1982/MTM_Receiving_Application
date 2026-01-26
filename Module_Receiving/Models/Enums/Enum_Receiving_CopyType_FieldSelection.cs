@@ -1,32 +1,29 @@
 namespace MTM_Receiving_Application.Module_Receiving.Models.Enums;
 
 /// <summary>
-/// Defines which fields to copy in bulk copy operations (Step 2: Load Details)
+/// Defines which individual fields can be copied in bulk copy operations (Step 2: Load Details).
+/// Multiple fields can be selected for a single copy operation.
 /// </summary>
 public enum Enum_Receiving_CopyType_FieldSelection
 {
     /// <summary>
-    /// Copy all fields to empty cells only
+    /// Heat/Lot number field.
     /// </summary>
-    AllFields = 1,
+    HeatLot = 1,
 
     /// <summary>
-    /// Copy only Weight/Quantity field to empty cells
+    /// Package Type field (Skid, Pallet, Box, etc.).
     /// </summary>
-    WeightQuantityOnly = 2,
+    PackageType = 2,
 
     /// <summary>
-    /// Copy only Heat Lot field to empty cells
+    /// Packages Per Load field (count of packages).
     /// </summary>
-    HeatLotOnly = 3,
+    PackagesPerLoad = 3,
 
     /// <summary>
-    /// Copy only Package Type field to empty cells
+    /// Receiving Location field (Dock A, RECV, etc.).
     /// </summary>
-    PackageTypeOnly = 4,
-
-    /// <summary>
-    /// Copy only Packages Per Load field to empty cells
-    /// </summary>
-    PackagesPerLoadOnly = 5
+    ReceivingLocation = 4
 }
+

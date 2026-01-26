@@ -45,7 +45,7 @@ public class Model_Receiving_TableEntitys_ReceivingTransaction
     /// <summary>
     /// Whether transaction has been exported to CSV
     /// </summary>
-    public bool ExportedToCSV { get; set; }
+    public bool ExporteDataTransferObjectsCSV { get; set; }
 
     /// <summary>
     /// Local CSV export file path

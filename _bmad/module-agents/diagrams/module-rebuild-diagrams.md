@@ -266,7 +266,7 @@ graph TD
 │   ├── Dao_Entity1.cs          # Database operations for Entity1
 │   └── Dao_Entity2.cs          # Database operations for Entity2
 │
-├── 📂 Models/                  # Domain entities and DTOs
+├── 📂 Models/                  # Domain entities and DataTransferObjects
 │   ├── Model_Entity1.cs        # Business entity
 │   ├── Model_Entity2.cs        # Business entity
 │   └── Model_DaoResult.cs      # Result wrapper (may be in Module_Core)

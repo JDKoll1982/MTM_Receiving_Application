@@ -8,7 +8,7 @@ namespace MTM_Receiving_Application.Module_Volvo.Requests;
 /// <remarks>
 /// Used by: SavePendingShipmentCommand, CompleteShipmentCommand, UpdateShipmentCommand
 /// </remarks>
-public record ShipmentLineDto
+public record ShipmentLineDataTransferObjects
 {
     /// <summary>
     /// Part number from Volvo master data.

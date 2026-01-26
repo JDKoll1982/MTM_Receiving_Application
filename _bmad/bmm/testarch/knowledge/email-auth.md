@@ -361,14 +361,14 @@ const MAILOSAUR_SERVER_ID = process.env.MAILOSAUR_SERVER_ID!;
 test.describe('Email Auth Negative Flows', () => {
   test('should reject expired magic link', async ({ page }) => {
     // Generate expired link (simulate 24 hours ago)
-    const expiredToken = Buffer.from(
+    const expireDataTransferObjectsken = Buffer.from(
       JSON.stringify({
         email: 'test@example.com',
         exp: Date.now() - 24 * 60 * 60 * 1000, // 24 hours ago
       }),
     ).toString('base64');
 
-    const expiredLink = `http://localhost:3000/auth/verify?token=${expiredToken}`;
+    const expiredLink = `http://localhost:3000/auth/verify?token=${expireDataTransferObjectsken}`;
 
     // Visit expired link
     await page.goto(expiredLink);

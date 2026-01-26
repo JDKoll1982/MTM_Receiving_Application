@@ -77,7 +77,7 @@ public class CommandHandler_Receiving_Wizard_Copy_FieldsToEmptyLoads : IRequestH
                 {
                     switch (field)
                     {
-                        case Enum_Receiving_CopyType_FieldSelection.HeatLotOnly:
+                        case Enum_Receiving_CopyType_FieldSelection.HeatLot:
                             if (string.IsNullOrWhiteSpace(targetLoad.HeatLotNumber) && !string.IsNullOrWhiteSpace(sourceLoad.HeatLotNumber))
                             {
                                 targetLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
@@ -85,7 +85,7 @@ public class CommandHandler_Receiving_Wizard_Copy_FieldsToEmptyLoads : IRequestH
                             }
                             break;
 
-                        case Enum_Receiving_CopyType_FieldSelection.PackageTypeOnly:
+                        case Enum_Receiving_CopyType_FieldSelection.PackageType:
                             if (string.IsNullOrWhiteSpace(targetLoad.PackageType) && !string.IsNullOrWhiteSpace(sourceLoad.PackageType))
                             {
                                 targetLoad.PackageType = sourceLoad.PackageType;
@@ -93,7 +93,7 @@ public class CommandHandler_Receiving_Wizard_Copy_FieldsToEmptyLoads : IRequestH
                             }
                             break;
 
-                        case Enum_Receiving_CopyType_FieldSelection.PackagesPerLoadOnly:
+                        case Enum_Receiving_CopyType_FieldSelection.PackagesPerLoad:
                             if (targetLoad.PackagesPerLoad <= 0 && sourceLoad.PackagesPerLoad > 0)
                             {
                                 targetLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
@@ -101,21 +101,12 @@ public class CommandHandler_Receiving_Wizard_Copy_FieldsToEmptyLoads : IRequestH
                             }
                             break;
 
-                        case Enum_Receiving_CopyType_FieldSelection.WeightQuantityOnly:
-                            if (targetLoad.Quantity <= 0 && sourceLoad.Quantity > 0)
+                        case Enum_Receiving_CopyType_FieldSelection.ReceivingLocation:
+                            if (string.IsNullOrWhiteSpace(targetLoad.ReceivingLocation) && !string.IsNullOrWhiteSpace(sourceLoad.ReceivingLocation))
                             {
-                                targetLoad.Quantity = sourceLoad.Quantity;
+                                targetLoad.ReceivingLocation = sourceLoad.ReceivingLocation;
                                 wasModified = true;
                             }
-                            break;
-
-                        case Enum_Receiving_CopyType_FieldSelection.AllFields:
-                            // Copy all supported fields
-                            if (string.IsNullOrWhiteSpace(targetLoad.HeatLotNumber)) targetLoad.HeatLotNumber = sourceLoad.HeatLotNumber;
-                            if (string.IsNullOrWhiteSpace(targetLoad.PackageType)) targetLoad.PackageType = sourceLoad.PackageType;
-                            if (targetLoad.PackagesPerLoad <= 0) targetLoad.PackagesPerLoad = sourceLoad.PackagesPerLoad;
-                            if (targetLoad.Quantity <= 0) targetLoad.Quantity = sourceLoad.Quantity;
-                            wasModified = true;
                             break;
                     }
                 }

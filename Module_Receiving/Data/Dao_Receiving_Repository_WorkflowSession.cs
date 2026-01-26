@@ -224,7 +224,7 @@ public class Dao_Receiving_Repository_WorkflowSession
         var session = new Model_Receiving_TableEntitys_WorkflowSession
         {
             SessionId = Guid.Parse(reader.GetString(reader.GetOrdinal("SessionId"))),
-            UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+            UserId = reader.GetString(reader.GetOrdinal("UserId")),
             CurrentStep = (Enum_Receiving_State_WorkflowStep)reader.GetInt32(reader.GetOrdinal("CurrentStep")),
             WorkflowMode = Enum.Parse<Enum_Receiving_Mode_WorkflowMode>(reader.GetString(reader.GetOrdinal("WorkflowMode"))),
             IsNonPO = reader.GetBoolean(reader.GetOrdinal("IsNonPO")),

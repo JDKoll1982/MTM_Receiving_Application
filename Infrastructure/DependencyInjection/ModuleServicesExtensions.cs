@@ -69,7 +69,61 @@ public static class ModuleServicesExtensions
         var mySqlConnectionString = configuration.GetConnectionString("MySql")
             ?? throw new InvalidOperationException("MySql connection string not found");
 
+        // DAOs (Singleton - Stateless data access)
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_Transaction(mySqlConnectionString, logger);
+        });
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_Line(mySqlConnectionString, logger);
+        });
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_WorkflowSession(mySqlConnectionString, logger);
+        });
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_PartPreference(mySqlConnectionString, logger);
+        });
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_Reference(mySqlConnectionString, logger);
+        });
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_Settings(mySqlConnectionString, logger);
+        });
 
+        // Hub ViewModels (Transient - new instance per navigation)
+        services.AddTransient<Module_Receiving.ViewModels.Hub.ViewModel_Receiving_Hub_Orchestration_MainWorkflow>();
+        services.AddTransient<Module_Receiving.ViewModels.Hub.ViewModel_Receiving_Hub_Display_ModeSelection>();
+
+        // Wizard ViewModels (Transient)
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Orchestration.ViewModel_Receiving_Wizard_Orchestration_MainWorkflow>();
+        
+        // Step 1 ViewModels
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_PONumberEntry>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_PartSelection>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_LoadCountEntry>();
+        
+        // Step 2 ViewModels
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step2.ViewModel_Receiving_Wizard_Display_LoadDetailsGrid>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step2.ViewModel_Receiving_Wizard_Interaction_BulkCopyOperations>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step2.ViewModel_Receiving_Wizard_Dialog_CopyPreviewDialog>();
+        
+        // Step 3 ViewModels
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step3.ViewModel_Receiving_Wizard_Display_ReviewSummary>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step3.ViewModel_Receiving_Wizard_Orchestration_SaveOperation>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step3.ViewModel_Receiving_Wizard_Display_CompletionScreen>();
+
+        // Services
         services.AddTransient<IService_Pagination, Service_Pagination>();
 
         return services;
