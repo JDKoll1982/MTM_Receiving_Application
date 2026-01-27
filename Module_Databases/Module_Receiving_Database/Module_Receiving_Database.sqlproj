@@ -79,9 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
-    <None Include="DEPLOYMENT_GUIDE.md" />
-    <None Include="DATABASE_PROJECT_SETUP.md" />
-    <None Include="STORED_PROCEDURES_REFERENCE.md" />
     <None Include="Module_Receiving_Database.publish.xml" />
   </ItemGroup>
   <ItemGroup>
