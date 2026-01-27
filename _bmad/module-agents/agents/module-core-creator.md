@@ -947,7 +947,7 @@ namespace MTM_Receiving_Application
             // Example:
             // var connectionString = Helper_Database_Variables.GetConnectionString();
             // services.AddSingleton(sp => new Dao_ReceivingLine(connectionString));
-            // services.AddTransient<ViewModel_Receiving_POEntry>();
+            // services.AddTransient<Old_ViewModel_Receiving_Wizard_Display_PoEntry>();
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)

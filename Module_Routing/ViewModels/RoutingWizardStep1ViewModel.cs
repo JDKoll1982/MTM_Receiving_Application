@@ -311,12 +311,12 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// <summary>
     /// Proceed to Step 2 (Recipient Selection)
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanProceedToStep2))]
-    private void ProceedToStep2()
+    [RelayCommand(CanExecute = nameof(CanProceeDataTransferObjectstep2))]
+    private void ProceeDataTransferObjectstep2()
     {
         try
         {
-            _logger.LogInfo($"ProceedToStep2 called - IsOtherMode: {IsOtherMode}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
+            _logger.LogInfo($"ProceeDataTransferObjectstep2 called - IsOtherMode: {IsOtherMode}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
 
             // Update container with selected data
             if (IsOtherMode && SelectedOtherReason != null)
@@ -334,7 +334,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
             }
             else
             {
-                _logger.LogWarning("ProceedToStep2: Neither PO line nor OTHER reason selected");
+                _logger.LogWarning("ProceeDataTransferObjectstep2: Neither PO line nor OTHER reason selected");
                 StatusMessage = "Please select a PO line or OTHER reason";
                 return;
             }
@@ -354,11 +354,11 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in ProceedToStep2: {ex.Message}", ex);
+            _logger.LogError($"Error in ProceeDataTransferObjectstep2: {ex.Message}", ex);
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Error,
-                nameof(ProceedToStep2),
+                nameof(ProceeDataTransferObjectstep2),
                 nameof(RoutingWizardStep1ViewModel));
         }
     }
@@ -366,11 +366,11 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     /// <summary>
     /// Can proceed to Step 2 if either PO line or OTHER reason is selected
     /// </summary>
-    private bool CanProceedToStep2()
+    private bool CanProceeDataTransferObjectstep2()
     {
         var canProceed = (IsOtherMode && SelectedOtherReason != null) ||
                (!IsOtherMode && SelectedPOLine != null);
-        _logger.LogInfo($"CanProceedToStep2: {canProceed} - IsOtherMode: {IsOtherMode}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
+        _logger.LogInfo($"CanProceeDataTransferObjectstep2: {canProceed} - IsOtherMode: {IsOtherMode}, SelectedPOLine: {SelectedPOLine?.PartID ?? "null"}, SelectedOtherReason: {SelectedOtherReason?.Description ?? "null"}");
         return canProceed;
     }
     #endregion
@@ -424,7 +424,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     partial void OnSelectedPOLineChanged(Model_InforVisualPOLine? value)
     {
         _logger.LogInfo($"SelectedPOLine changed to: {value?.PartID ?? "null"} (PO: {value?.PONumber ?? "null"})");
-        ProceedToStep2Command.NotifyCanExecuteChanged();
+        ProceeDataTransferObjectstep2Command.NotifyCanExecuteChanged();
 
         if (value != null)
         {
@@ -435,7 +435,7 @@ public partial class RoutingWizardStep1ViewModel : ObservableObject
     partial void OnSelectedOtherReasonChanged(Model_RoutingOtherReason? value)
     {
         _logger.LogInfo($"SelectedOtherReason changed to: {value?.Description ?? "null"}");
-        ProceedToStep2Command.NotifyCanExecuteChanged();
+        ProceeDataTransferObjectstep2Command.NotifyCanExecuteChanged();
 
         if (value != null)
         {

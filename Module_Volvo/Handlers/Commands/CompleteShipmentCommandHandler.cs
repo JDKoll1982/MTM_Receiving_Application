@@ -88,35 +88,35 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
                     }
                 }
 
-                foreach (var partDto in request.Parts)
+                foreach (var partDataTransferObjects in request.Parts)
                 {
-                    var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+                    var partResult = await _partDao.GetByIdAsync(partDataTransferObjects.PartNumber);
                     if (!partResult.IsSuccess || partResult.Data == null)
                     {
                         return Model_Dao_Result_Factory.Failure<int>(
-                            partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                            partResult.ErrorMessage ?? $"Part '{partDataTransferObjects.PartNumber}' not found in master data");
                     }
 
                     var quantityPerSkid = partResult.Data.QuantityPerSkid;
-                    var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+                    var calculatedPieceCount = quantityPerSkid * partDataTransferObjects.ReceivedSkidCount;
 
                     var line = new Model_VolvoShipmentLine
                     {
                         ShipmentId = pendingShipment.Id,
-                        PartNumber = partDto.PartNumber,
+                        PartNumber = partDataTransferObjects.PartNumber,
                         QuantityPerSkid = quantityPerSkid,
-                        ReceivedSkidCount = partDto.ReceivedSkidCount,
+                        ReceivedSkidCount = partDataTransferObjects.ReceivedSkidCount,
                         CalculatedPieceCount = calculatedPieceCount,
-                        ExpectedSkidCount = partDto.ExpectedSkidCount,
-                        HasDiscrepancy = partDto.HasDiscrepancy,
-                        DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+                        ExpectedSkidCount = partDataTransferObjects.ExpectedSkidCount,
+                        HasDiscrepancy = partDataTransferObjects.HasDiscrepancy,
+                        DiscrepancyNote = partDataTransferObjects.DiscrepancyNote ?? string.Empty
                     };
 
                     var lineResult = await _lineDao.InsertAsync(line);
                     if (!lineResult.IsSuccess)
                     {
                         return Model_Dao_Result_Factory.Failure<int>(
-                            $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+                            $"Failed to insert line for part {partDataTransferObjects.PartNumber}: {lineResult.ErrorMessage}");
                     }
                 }
 
@@ -154,35 +154,35 @@ public class CompleteShipmentCommandHandler : IRequestHandler<CompleteShipmentCo
 
             var shipmentId = insertResult.Data.ShipmentId;
 
-            foreach (var partDto in request.Parts)
+            foreach (var partDataTransferObjects in request.Parts)
             {
-                var partResult = await _partDao.GetByIdAsync(partDto.PartNumber);
+                var partResult = await _partDao.GetByIdAsync(partDataTransferObjects.PartNumber);
                 if (!partResult.IsSuccess || partResult.Data == null)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        partResult.ErrorMessage ?? $"Part '{partDto.PartNumber}' not found in master data");
+                        partResult.ErrorMessage ?? $"Part '{partDataTransferObjects.PartNumber}' not found in master data");
                 }
 
                 var quantityPerSkid = partResult.Data.QuantityPerSkid;
-                var calculatedPieceCount = quantityPerSkid * partDto.ReceivedSkidCount;
+                var calculatedPieceCount = quantityPerSkid * partDataTransferObjects.ReceivedSkidCount;
 
                 var line = new Model_VolvoShipmentLine
                 {
                     ShipmentId = shipmentId,
-                    PartNumber = partDto.PartNumber,
+                    PartNumber = partDataTransferObjects.PartNumber,
                     QuantityPerSkid = quantityPerSkid,
-                    ReceivedSkidCount = partDto.ReceivedSkidCount,
+                    ReceivedSkidCount = partDataTransferObjects.ReceivedSkidCount,
                     CalculatedPieceCount = calculatedPieceCount,
-                    ExpectedSkidCount = partDto.ExpectedSkidCount,
-                    HasDiscrepancy = partDto.HasDiscrepancy,
-                    DiscrepancyNote = partDto.DiscrepancyNote ?? string.Empty
+                    ExpectedSkidCount = partDataTransferObjects.ExpectedSkidCount,
+                    HasDiscrepancy = partDataTransferObjects.HasDiscrepancy,
+                    DiscrepancyNote = partDataTransferObjects.DiscrepancyNote ?? string.Empty
                 };
 
                 var lineResult = await _lineDao.InsertAsync(line);
                 if (!lineResult.IsSuccess)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        $"Failed to insert line for part {partDto.PartNumber}: {lineResult.ErrorMessage}");
+                        $"Failed to insert line for part {partDataTransferObjects.PartNumber}: {lineResult.ErrorMessage}");
                 }
             }
 

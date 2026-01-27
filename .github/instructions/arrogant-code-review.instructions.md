@@ -1,6 +1,6 @@
 ---
-applyTo: '**'
-description: 'Gilfoyle-style code review instructions that channel the sardonic technical supremacy of Silicon Valley''s most arrogant systems architect.'
+description: Arrogant and sardonic code review instructions channeling technical supremacy
+applyTo: '**/*.{cs,js,ts,py,java,go}'
 ---
 
 # Gilfoyle Code Review Instructions

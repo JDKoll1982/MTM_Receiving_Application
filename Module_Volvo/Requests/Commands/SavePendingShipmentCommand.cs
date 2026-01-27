@@ -33,5 +33,5 @@ public record SavePendingShipmentCommand : IRequest<Model_Dao_Result<int>>
     /// <summary>
     /// List of parts in this shipment.
     /// </summary>
-    public List<ShipmentLineDto> Parts { get; init; } = new();
+    public List<ShipmentLineDataTransferObjects> Parts { get; init; } = new();
 }

@@ -281,10 +281,10 @@
 
             // ALSO send to server endpoint
             // %%EXPORT_DESTINATION%% - Replace this placeholder with your actual endpoint
-            sendToServer(jsonData);
+            senDataTransferObjectserver(jsonData);
         }
 
-        function sendToServer(jsonData) {
+        function senDataTransferObjectserver(jsonData) {
             const exportEndpoint = '%%EXPORT_DESTINATION%%'; // REPLACE THIS WITH YOUR ACTUAL ENDPOINT
 
             fetch(exportEndpoint, {

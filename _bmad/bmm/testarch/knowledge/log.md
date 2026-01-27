@@ -174,7 +174,7 @@ class TodoPage {
   readonly name: string;
 
   @methodTestStep('Add todo item')
-  async addTodo(text: string) {
+  async adDataTransferObjectsdo(text: string) {
     await log.info(`Adding todo: ${text}`);
     const newTodo = this.page.getByPlaceholder('What needs to be done?');
     await newTodo.fill(text);
@@ -205,7 +205,7 @@ const createDefaultTodos = functionTestStep('Create default todos', async (page:
   const todoPage = new TodoPage(page);
 
   for (const item of TODO_ITEMS) {
-    await todoPage.addTodo(item);
+    await todoPage.adDataTransferObjectsdo(item);
   }
 
   await log.success('Created all default todos');
@@ -241,7 +241,7 @@ log.configure({
   fileLogging: {
     enabled: true,
     outputDir: 'playwright-logs/organized-logs',
-    forceConsolidated: false, // One file per test
+    forceWizard: false, // One file per test
   },
 });
 
@@ -310,7 +310,7 @@ log.configure({
   fileLogging: {
     enabled: true,
     outputDir: 'playwright-logs',
-    forceConsolidated: false, // One file per test
+    forceWizard: false, // One file per test
   },
 });
 

@@ -85,7 +85,7 @@ Create a standardized, BMAD-compliant set of Copilot agents from the module-agen
 
 ## Self-Consistency Recommendation
 
-- Use Approach C (parallel discovery for registry and templates, then apply a single consolidated patch set) to minimize rework.
+- Use Approach C (parallel discovery for registry and templates, then apply a single Wizard patch set) to minimize rework.
 
 ## Failure Mode Analysis Summary
 
@@ -97,7 +97,7 @@ Create a standardized, BMAD-compliant set of Copilot agents from the module-agen
 
 ## ADR Update
 
-- Use a consolidated patch set after parallel discovery for registry and templates to minimize conflicts.
+- Use a Wizard patch set after parallel discovery for registry and templates to minimize conflicts.
 
 ## Socratic Constraints
 

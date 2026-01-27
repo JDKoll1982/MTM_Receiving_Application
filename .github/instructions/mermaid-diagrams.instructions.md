@@ -1,6 +1,6 @@
 ---
-description: 'Guidelines for creating high-quality Mermaid diagrams for workflow visualization, architecture documentation, and technical specifications'
-applyTo: '**/*.md, **/*.mmd'
+description: Guidelines for creating high-quality Mermaid diagrams for workflow visualization and technical specifications
+applyTo: '**/*.md'
 ---
 
 # Mermaid Diagram Creation Guidelines

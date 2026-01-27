@@ -178,37 +178,37 @@ Before completing any task:
 **ViewModels must:**
 
 ```csharp
-public partial class ViewModel_Module_Feature : ViewModel_Shared_Base
+public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewModel_Shared_Base
 {
-    private readonly IService_Feature _service;
+    private readonly IService_Receiving_Business_MySQL_ReceivingLine _receivingLineService;
 
     [ObservableProperty]
-    private string _propertyName = string.Empty;
+    private string _poNumber = string.Empty;
 
-    public ViewModel_Module_Feature(
-        IService_Feature service,
+    public ViewModel_Receiving_Wizard_Display_PONumberEntry(
+        IService_Receiving_Business_MySQL_ReceivingLine receivingLineService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger) : base(errorHandler, logger)
     {
-        _service = service;
+        _receivingLineService = receivingLineService;
     }
 
     [RelayCommand]
-    private async Task MethodNameAsync()
+    private async Task LoadPOAsync()
     {
         if (IsBusy) return;
         try
         {
             IsBusy = true;
-            var result = await _service.MethodAsync();
+            var result = await _receivingLineService.GetReceivingLineAsync(_poNumber);
             if (!result.IsSuccess)
             {
-                _errorHandler.ShowUserError(result.ErrorMessage, "Error", nameof(MethodNameAsync));
+                _errorHandler.ShowUserError(result.ErrorMessage, "Error", nameof(LoadPOAsync));
             }
         }
         catch (Exception ex)
         {
-            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(MethodNameAsync), nameof(ViewModel_Module_Feature));
+            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(LoadPOAsync), nameof(ViewModel_Receiving_Wizard_Display_PONumberEntry));
         }
         finally
         {
@@ -221,33 +221,33 @@ public partial class ViewModel_Module_Feature : ViewModel_Shared_Base
 **DAOs must:**
 
 ```csharp
-public class Dao_EntityName
+public class Dao_Receiving_Repository_ReceivingLoad
 {
     private readonly string _connectionString;
 
-    public Dao_EntityName(string connectionString)
+    public Dao_Receiving_Repository_ReceivingLoad(string connectionString)
     {
         ArgumentNullException.ThrowIfNull(connectionString);
         _connectionString = connectionString;
     }
 
-    public async Task<Model_Dao_Result<EntityType>> GetEntityAsync(int id)
+    public async Task<Model_Dao_Result<Model_Receiving_Entity_ReceivingLoad>> GetReceivingLoadAsync(Guid loadId)
     {
         try
         {
             var parameters = new Dictionary<string, object>
             {
-                { "p_id", id }
+                { "p_LoadID", loadId }
             };
 
-            return await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync<EntityType>(
+            return await Helper_Database_StoredProcedure.ExecuteStoredProcedureAsync<Model_Receiving_Entity_ReceivingLoad>(
                 _connectionString,
-                "sp_get_entity",
+                "sp_GetReceivingLoad",
                 parameters);
         }
         catch (Exception ex)
         {
-            return Model_Dao_Result<EntityType>.Failure($"Error retrieving entity: {ex.Message}");
+            return Model_Dao_Result<Model_Receiving_Entity_ReceivingLoad>.Failure($"Error retrieving load: {ex.Message}");
         }
     }
 }
@@ -257,20 +257,20 @@ public class Dao_EntityName
 
 ```xml
 <Page
-    x:Class="MTM_Receiving_Application.Module_Name.Views.View_Module_Feature"
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_Wizard_Display_PONumberEntry"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Name.ViewModels">
+    xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels">
 
     <Grid Padding="20">
         <StackPanel Spacing="10">
             <TextBox
-                Text="{x:Bind ViewModel.PropertyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                PlaceholderText="Enter value..." />
+                Text="{x:Bind ViewModel.PONumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                PlaceholderText="Enter PO Number..." />
 
             <Button
-                Content="Execute Action"
-                Command="{x:Bind ViewModel.CommandName}"
+                Content="Load PO Data"
+                Command="{x:Bind ViewModel.LoadPOCommand}"
                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
         </StackPanel>
     </Grid>

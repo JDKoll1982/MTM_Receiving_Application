@@ -126,7 +126,7 @@
                             IsChecked="{x:Bind ViewModel.IsFieldRequired, Mode=TwoWay}" />
 
                         <Button
-                            Content="{x:Bind ViewModel.EditingField, Mode=OneWay, Converter={StaticResource EditingFieldToTextConverter}}"
+                            Content="{x:Bind ViewModel.EditingField, Mode=OneWay, Converter={StaticResource EditingFielDataTransferObjectsTextConverter}}"
                             Command="{x:Bind ViewModel.AddFieldCommand}"
                             IsEnabled="{x:Bind ViewModel.CanAddField, Mode=OneWay}"
                             Style="{StaticResource AccentButtonStyle}"

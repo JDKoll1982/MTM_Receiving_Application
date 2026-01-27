@@ -1,0 +1,123 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_PONumberEntry"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <StackPanel Spacing="16">
+        <!-- PO Number Input Section -->
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Label -->
+            <TextBlock Grid.Column="0" 
+                       Text="PO Number:" 
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Width="100" />
+
+            <!-- Input Field with Validation Icons -->
+            <Border Grid.Column="1" 
+                    Background="{ThemeResource ControlFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12,8">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        Grid.Column="0"
+                        x:Name="PONumberTextBox"
+                        Text="{x:Bind ViewModel.PoNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="PO-123456"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        IsEnabled="{x:Bind ViewModel.IsNonPo, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+
+                    <!-- Status Icons -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <!-- Validation Success -->
+                        <FontIcon
+                            Glyph="&#xE73E;"
+                            Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                            FontSize="18"
+                            Visibility="{x:Bind ViewModel.IsPoValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                        <!-- Validation Error -->
+                        <FontIcon
+                            Glyph="&#xE711;"
+                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                            FontSize="18"
+                            Visibility="{x:Bind ViewModel.IsPoValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}" />
+
+                        <!-- Loading Indicator -->
+                        <ProgressRing
+                            Width="18"
+                            Height="18"
+                            IsActive="{x:Bind ViewModel.IsValidating, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Non-PO Toggle -->
+            <CheckBox Grid.Column="2"
+                      Content="Non-PO"
+                      IsChecked="{x:Bind ViewModel.IsNonPo, Mode=TwoWay}"
+                      VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Validation Error Message -->
+        <Border Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                BorderBrush="{ThemeResource SystemFillColorCriticalBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="12,8"
+                Visibility="{x:Bind ViewModel.IsPoValid, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <FontIcon Glyph="&#xE7BA;" 
+                          Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                          FontSize="16"
+                          VerticalAlignment="Center" />
+                <TextBlock Text="{x:Bind ViewModel.PoValidationMessage, Mode=OneWay}"
+                           TextWrapping="Wrap"
+                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Help Text -->
+        <Border Background="{ThemeResource SystemFillColorSolidNeutralBackgroundBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="12,8">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <FontIcon Glyph="&#xE946;" 
+                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                          FontSize="14"
+                          VerticalAlignment="Center" />
+                <TextBlock Text="Format: PO-XXXXXX (6 digits). Non-PO mode allows manual part entry without PO validation."
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

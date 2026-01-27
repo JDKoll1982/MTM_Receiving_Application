@@ -1,6 +1,6 @@
 ---
-applyTo: '**/*.ps1,**/*.psm1'
-description: 'PowerShell cmdlet and scripting best practices based on Microsoft guidelines'
+description: PowerShell cmdlet and scripting best practices based on Microsoft guidelines
+applyTo: '**/*.ps1'
 ---
 
 # PowerShell Cmdlet Development Guidelines
@@ -353,4 +353,3 @@ function New-Resource {
         Write-Verbose 'Completed resource creation process'
     }
 }
-```

@@ -38,7 +38,7 @@ Companion to:
 
 - View_Dunnage_Control_IconPickerControl
 - View_Dunnage_Dialog_AddMultipleRowsDialog
-- View_Dunnage_Dialog_AddToInventoriedListDialog
+- View_Dunnage_Dialog_AdDataTransferObjectsInventoriedListDialog
 - View_Dunnage_Dialog_Dunnage_AddTypeDialog
 - View_Dunnage_QuickAddPartDialog
 - View_Dunnage_QuickAddTypeDialog

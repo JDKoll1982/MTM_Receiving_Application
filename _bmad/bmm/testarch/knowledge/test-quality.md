@@ -579,12 +579,12 @@ describe('Order Flow', () => {
     cy.setCookie('auth_token', user.token);
 
     // Step 3: Network-first interception
-    cy.intercept('POST', '**/api/cart').as('addToCart');
+    cy.intercept('POST', '**/api/cart').as('adDataTransferObjectsCart');
     cy.intercept('POST', '**/api/orders').as('createOrder');
 
     cy.visit(`/products/${product.id}`);
     cy.get('[data-cy="add-to-cart"]').click();
-    cy.wait('@addToCart'); // Deterministic wait
+    cy.wait('@adDataTransferObjectsCart'); // Deterministic wait
 
     // Step 4: Checkout
     cy.visit('/checkout');

@@ -110,15 +110,15 @@ naming:
 
   viewmodels:
     pattern: "ViewModel_{Module}_{Feature}"
-    example: "ViewModel_Receiving_POEntry"
+    example: "Old_ViewModel_Receiving_Wizard_Display_PoEntry"
     modifiers: "partial class"
     inheritance: "ViewModel_Shared_Base"
 
   views:
     pattern: "View_{Module}_{Feature}"
-    example: "View_Receiving_POEntry"
-    file_xaml: "View_Receiving_POEntry.xaml"
-    file_code: "View_Receiving_POEntry.xaml.cs"
+    example: "Old_View_Receiving_Wizard_Display_PoEntry"
+    file_xaml: "Old_View_Receiving_Wizard_Display_PoEntry.xaml"
+    file_code: "Old_View_Receiving_Wizard_Display_PoEntry.xaml.cs"
 
   handlers:
     queries:
@@ -264,7 +264,7 @@ module_structure:
       purpose: "Instance-based DAOs for database operations"
 
     - name: "Models/"
-      purpose: "Domain entities and DTOs"
+      purpose: "Domain entities and DataTransferObjects"
 
     - name: "Handlers/"
       purpose: "CQRS command/query handlers"

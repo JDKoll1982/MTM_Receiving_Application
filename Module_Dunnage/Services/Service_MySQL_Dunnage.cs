@@ -587,7 +587,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             return await GetAllInventoriedPartsAsync();
         }
 
-        public async Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item)
+        public async Task<Model_Dao_Result> AdDataTransferObjectsInventoriedListAsync(Model_InventoriedDunnage item)
         {
             try
             {
@@ -604,8 +604,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
             catch (Exception ex)
             {
-                await _logger.LogErrorAsync($"Exception in AddToInventoriedListAsync for part '{item.PartId}': {ex.Message}");
-                HandleException(ex, Enum_ErrorSeverity.Error, nameof(AddToInventoriedListAsync), nameof(Service_MySQL_Dunnage));
+                await _logger.LogErrorAsync($"Exception in AdDataTransferObjectsInventoriedListAsync for part '{item.PartId}': {ex.Message}");
+                HandleException(ex, Enum_ErrorSeverity.Error, nameof(AdDataTransferObjectsInventoriedListAsync), nameof(Service_MySQL_Dunnage));
                 return Model_Dao_Result_Factory.Failure($"Error adding to inventory list: {ex.Message}");
             }
         }

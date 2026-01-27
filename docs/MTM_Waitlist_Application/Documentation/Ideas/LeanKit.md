@@ -63,7 +63,7 @@ Create `IService_LeanKit` interface with methods:
 | Status | Lane Name |
 | Notes | Description |
 | CreatedDate | CreatedOn |
-| AssignedTo | AssignedUsers |
+| AssigneDataTransferObjects | AssignedUsers |
 
 ### Error Handling
 

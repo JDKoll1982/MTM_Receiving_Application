@@ -39,5 +39,5 @@ public record UpdateShipmentCommand : IRequest<Model_Dao_Result>
     /// <summary>
     /// Updated shipment line items.
     /// </summary>
-    public List<ShipmentLineDto> Parts { get; init; } = new();
+    public List<ShipmentLineDataTransferObjects> Parts { get; init; } = new();
 }

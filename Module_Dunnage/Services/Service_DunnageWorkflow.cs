@@ -5,7 +5,7 @@ using System.Linq;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
-using MTM_Receiving_Application.Module_Receiving.Models;
+
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -84,7 +84,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             return Task.FromResult(true);
         }
 
-        public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync()
+        public Task<Model_Dunnage_Result_WorkflowStep> AdvanceToNextStepAsync()
         {
             try
             {
@@ -97,7 +97,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.TypeSelection:
                         if (CurrentSession.SelectedTypeId <= 0)
                         {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Please select a dunnage type." });
+                            return Task.FromResult(new Model_Dunnage_Result_WorkflowStep { IsSuccess = false, ErrorMessage = "Please select a dunnage type." });
                         }
                         GoToStep(Enum_DunnageWorkflowStep.PartSelection);
                         break;
@@ -105,7 +105,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.PartSelection:
                         if (CurrentSession.SelectedPart == null)
                         {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Please select a part." });
+                            return Task.FromResult(new Model_Dunnage_Result_WorkflowStep { IsSuccess = false, ErrorMessage = "Please select a part." });
                         }
                         GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
                         break;
@@ -113,27 +113,27 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     case Enum_DunnageWorkflowStep.QuantityEntry:
                         if (CurrentSession.Quantity <= 0)
                         {
-                            return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Quantity must be greater than zero." });
+                            return Task.FromResult(new Model_Dunnage_Result_WorkflowStep { IsSuccess = false, ErrorMessage = "Quantity must be greater than zero." });
                         }
                         GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
                         break;
 
                     case Enum_DunnageWorkflowStep.DetailsEntry:
                         // Add current load to session before advancing to Review
-                        AddCurrentLoadToSession();
+                        AddCurrentLoaDataTransferObjectsession();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
 
                     case Enum_DunnageWorkflowStep.Review:
-                        return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = "Already at Review step. Use Save to finish." });
+                        return Task.FromResult(new Model_Dunnage_Result_WorkflowStep { IsSuccess = false, ErrorMessage = "Already at Review step. Use Save to finish." });
                 }
 
-                return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = true, TargetStep = CurrentStep });
+                return Task.FromResult(new Model_Dunnage_Result_WorkflowStep { IsSuccess = true, TargetStep = CurrentStep });
             }
             catch (Exception ex)
             {
                 _errorHandler.HandleErrorAsync("Error advancing step", Enum_ErrorSeverity.Error, ex, true);
-                return Task.FromResult(new Model_WorkflowStepResult { IsSuccess = false, ErrorMessage = ex.Message });
+                return Task.FromResult(new Model_Dunnage_Result_WorkflowStep { IsSuccess = false, ErrorMessage = ex.Message });
             }
         }
 
@@ -143,7 +143,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StepChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<Model_SaveResult> SaveToCSVOnlyAsync()
+        public async Task<Model_Dunnage_Result_Save> SaveToCSVOnlyAsync()
         {
             try
             {
@@ -159,26 +159,26 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     }
                     else
                     {
-                        return new Model_SaveResult { IsSuccess = false, ErrorMessage = "No data to save." };
+                        return new Model_Dunnage_Result_Save { IsSuccess = false, ErrorMessage = "No data to save." };
                     }
                 }
 
                 var csvResult = await _csvWriter.WriteToCSVAsync(loads);
 
-                return new Model_SaveResult
+                return new Model_Dunnage_Result_Save
                 {
                     IsSuccess = csvResult.LocalSuccess,
-                    CSVExportResult = csvResult
+                    CSVSaved = csvResult.LocalSuccess
                 };
             }
             catch (Exception ex)
             {
                 await _errorHandler.HandleErrorAsync("Error saving CSV", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_SaveResult { IsSuccess = false, ErrorMessage = ex.Message };
+                return new Model_Dunnage_Result_Save { IsSuccess = false, ErrorMessage = ex.Message };
             }
         }
 
-        public async Task<Model_SaveResult> SaveToDatabaseOnlyAsync()
+        public async Task<Model_Dunnage_Result_Save> SaveToDatabaseOnlyAsync()
         {
             try
             {
@@ -193,27 +193,27 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     }
                     else
                     {
-                        return new Model_SaveResult { IsSuccess = false, ErrorMessage = "No data to save." };
+                        return new Model_Dunnage_Result_Save { IsSuccess = false, ErrorMessage = "No data to save." };
                     }
                 }
 
                 var dbResult = await _dunnageService.SaveLoadsAsync(loads);
 
-                return new Model_SaveResult
+                return new Model_Dunnage_Result_Save
                 {
                     IsSuccess = dbResult.IsSuccess,
-                    ErrorMessage = dbResult.ErrorMessage,
-                    RecordsSaved = dbResult.IsSuccess ? loads.Count : 0
+                    DatabaseSaved = dbResult.IsSuccess,
+                    ErrorMessage = dbResult.ErrorMessage
                 };
             }
             catch (Exception ex)
             {
                 await _errorHandler.HandleErrorAsync("Error saving to database", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_SaveResult { IsSuccess = false, ErrorMessage = ex.Message };
+                return new Model_Dunnage_Result_Save { IsSuccess = false, ErrorMessage = ex.Message };
             }
         }
 
-        public async Task<Model_SaveResult> SaveSessionAsync()
+        public async Task<Model_Dunnage_Result_Save> SaveSessionAsync()
         {
             try
             {
@@ -227,17 +227,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 // Export to CSV
                 var csvResult = await SaveToCSVOnlyAsync();
 
-                return new Model_SaveResult
+                return new Model_Dunnage_Result_Save
                 {
-                    IsSuccess = true,
-                    RecordsSaved = dbResult.RecordsSaved,
-                    CSVExportResult = csvResult.CSVExportResult
+                    IsSuccess = dbResult.IsSuccess && csvResult.IsSuccess,
+                    DatabaseSaved = dbResult.DatabaseSaved,
+                    CSVSaved = csvResult.CSVSaved,
+                    ErrorMessage = csvResult.ErrorMessage
                 };
             }
             catch (Exception ex)
             {
                 await _errorHandler.HandleErrorAsync("Error saving session", Enum_ErrorSeverity.Error, ex, true);
-                return new Model_SaveResult { IsSuccess = false, ErrorMessage = ex.Message };
+                return new Model_Dunnage_Result_Save { IsSuccess = false, ErrorMessage = ex.Message };
             }
         }
 
@@ -248,12 +249,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             StatusMessageRaised?.Invoke(this, "Session cleared");
         }
 
-        public async Task<Model_CSVDeleteResult> ResetCSVFilesAsync()
+        public async Task<Model_Dunnage_Result_CSVDelete> ResetCSVFilesAsync()
         {
             return await _csvWriter.ClearCSVFilesAsync();
         }
 
-        public void AddCurrentLoadToSession()
+        public void AddCurrentLoaDataTransferObjectsession()
         {
             try
             {
@@ -324,8 +325,29 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown"
             };
         }
+
+        public async Task<Model_Dunnage_Result_CSVDelete> DeleteCSVAndResetAsync()
+        {
+            var deleteResult = await _csvWriter.ClearCSVFilesAsync();
+            ClearSession();
+            return deleteResult;
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

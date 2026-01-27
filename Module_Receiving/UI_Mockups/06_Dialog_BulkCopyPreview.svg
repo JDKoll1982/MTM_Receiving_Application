@@ -1,0 +1,89 @@
+<svg width="1400" height="900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with semi-transparent overlay -->
+  <rect width="1400" height="900" fill="#F3F3F3"/>
+  
+  <!-- MainWindow Title Bar (dimmed) -->
+  <rect x="0" y="0" width="1400" height="48" fill="#202020" opacity="0.6"/>
+  
+  <!-- Navigation Pane (dimmed) -->
+  <rect x="0" y="48" width="280" height="852" fill="#F9F9F9" opacity="0.6"/>
+  
+  <!-- Main Content Area (dimmed) -->
+  <rect x="280" y="48" width="1120" height="852" fill="#FFFFFF" opacity="0.6"/>
+  
+  <!-- Step 2 Grid Background (dimmed) -->
+  <g opacity="0.4">
+    <rect x="340" y="200" width="1000" height="40" fill="#F3F3F3" stroke="#D1D1D1" stroke-width="1"/>
+    <text x="370" y="226" font-family="Segoe UI" font-size="12" fill="#666666" font-weight="600">Load #</text>
+    <text x="480" y="226" font-family="Segoe UI" font-size="12" fill="#666666" font-weight="600">Quantity</text>
+    <rect x="340" y="240" width="1000" height="40" fill="#FFFFFF" stroke="#D1D1D1" stroke-width="1"/>
+    <text x="370" y="266" font-family="Segoe UI" font-size="14" fill="#666666">1</text>
+    <text x="480" y="266" font-family="Segoe UI" font-size="14" fill="#666666">1000</text>
+  </g>
+  
+  <!-- Modal Overlay -->
+  <rect x="0" y="0" width="1400" height="900" fill="#000000" opacity="0.4"/>
+  
+  <!-- ContentDialog -->
+  <g id="BulkCopyPreviewDialog" transform="translate(450, 250)">
+    <!-- Dialog Background -->
+    <rect x="0" y="0" width="500" height="400" fill="#FFFFFF" rx="8" filter="url(#shadow)"/>
+    
+    <!-- Dialog Header -->
+    <rect x="0" y="0" width="500" height="60" fill="#F9F9F9" rx="8"/>
+    <rect x="0" y="53" width="500" height="1" fill="#D1D1D1"/>
+    <text x="30" y="38" font-family="Segoe UI" font-size="20" fill="#202020" font-weight="600">Bulk Copy Preview</text>
+    
+    <!-- Close Button -->
+    <rect x="455" y="15" width="30" height="30" fill="transparent" rx="4"/>
+    <text x="470" y="35" font-family="Segoe MDL2 Assets" font-size="16" fill="#666666" text-anchor="middle">&#xE711;</text>
+    
+    <!-- Dialog Content -->
+    <g transform="translate(30, 80)">
+      <!-- Icon -->
+      <circle cx="0" cy="10" r="20" fill="#FFF4CE" stroke="#FFB900" stroke-width="2"/>
+      <text x="0" y="18" font-family="Segoe MDL2 Assets" font-size="20" fill="#FFB900" text-anchor="middle">&#xE7BA;</text>
+      
+      <!-- Message -->
+      <text x="40" y="12" font-family="Segoe UI" font-size="16" fill="#202020" font-weight="600">Copy fields from Load 1 to empty cells?</text>
+      <text x="40" y="36" font-family="Segoe UI" font-size="14" fill="#666666">This will copy the following fields:</text>
+    </g>
+    
+    <!-- Source Load Details -->
+    <g transform="translate(30, 150)">
+      <rect x="0" y="0" width="440" height="100" fill="#F9F9F9" stroke="#D1D1D1" stroke-width="1" rx="4"/>
+      
+      <text x="15" y="25" font-family="Segoe UI" font-size="14" fill="#202020" font-weight="600">Source Load 1:</text>
+      <text x="15" y="50" font-family="Segoe UI" font-size="13" fill="#666666">• Heat/Lot: <tspan fill="#202020">HL-ABC123</tspan></text>
+      <text x="15" y="70" font-family="Segoe UI" font-size="13" fill="#666666">• Package Type: <tspan fill="#202020">Pallet</tspan></text>
+      <text x="230" y="50" font-family="Segoe UI" font-size="13" fill="#666666">• Packages/Load: <tspan fill="#202020">10</tspan></text>
+      <text x="230" y="70" font-family="Segoe UI" font-size="13" fill="#666666">• Location: <tspan fill="#202020">Dock A</tspan></text>
+    </g>
+    
+    <!-- Affected Loads Info -->
+    <g transform="translate(30, 270)">
+      <rect x="0" y="0" width="440" height="40" fill="#E6F7FF" stroke="#0078D4" stroke-width="1" rx="4"/>
+      <text x="15" y="26" font-family="Segoe UI" font-size="14" fill="#202020">
+        <tspan font-weight="600">4 loads</tspan> will be updated (Loads 2, 3, 4, 5)
+      </text>
+    </g>
+    
+    <!-- Dialog Buttons -->
+    <g transform="translate(30, 340)">
+      <!-- Cancel Button -->
+      <rect x="220" y="0" width="100" height="40" fill="#FFFFFF" rx="4" stroke="#D1D1D1" stroke-width="1"/>
+      <text x="270" y="26" font-family="Segoe UI" font-size="14" fill="#202020" text-anchor="middle">Cancel</text>
+      
+      <!-- Execute Button (Primary) -->
+      <rect x="330" y="0" width="110" height="40" fill="#0078D4" rx="4"/>
+      <text x="385" y="26" font-family="Segoe UI" font-size="14" fill="#FFFFFF" font-weight="600" text-anchor="middle">Execute Copy</text>
+    </g>
+  </g>
+  
+  <!-- Shadow Filter Definition -->
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+</svg>

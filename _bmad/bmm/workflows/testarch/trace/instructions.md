@@ -303,7 +303,7 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
    - Verify trace workflow complete (Phase 1)
    - Verify nfr-assess workflow complete (if release-level gate)
 
-**Output:** Consolidated evidence bundle with all quality signals
+**Output:** Wizard evidence bundle with all quality signals
 
 ---
 

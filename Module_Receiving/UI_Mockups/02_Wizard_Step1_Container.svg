@@ -1,0 +1,189 @@
+<svg width="1400" height="900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define shadow filters -->
+  <defs>
+    <filter id="cardShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.1"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="subtleShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="1" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.08"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#F5F5F5"/>
+  
+  <!-- MainWindow Title Bar -->
+  <rect x="0" y="0" width="1400" height="48" fill="#1F1F1F"/>
+  <rect x="12" y="10" width="28" height="28" fill="#2D2D2D" rx="4"/>
+  <text x="26" y="29" font-family="Segoe MDL2 Assets" font-size="14" fill="#FFFFFF" text-anchor="middle">&#xE700;</text>
+  <circle cx="60" cy="24" r="8" fill="#0078D4"/>
+  <text x="80" y="30" font-family="Segoe UI" font-size="15" fill="#FFFFFF" font-weight="600">MTM Receiving Application</text>
+  <rect x="800" y="12" width="400" height="28" fill="#2D2D2D" rx="4"/>
+  <text x="820" y="30" font-family="Segoe UI" font-size="13" fill="#8A8A8A">Search</text>
+  <circle cx="1320" cy="24" r="14" fill="#0078D4"/>
+  <text x="1348" y="30" font-family="Segoe UI" font-size="13" fill="#FFFFFF">John Doe</text>
+  
+  <!-- Navigation Pane -->
+  <rect x="0" y="48" width="280" height="852" fill="#FAFAFA"/>
+  <rect x="12" y="72" width="256" height="40" fill="#0078D4" rx="4"/>
+  <text x="52" y="97" font-family="Segoe MDL2 Assets" font-size="16" fill="#FFFFFF">&#xE74C;</text>
+  <text x="76" y="97" font-family="Segoe UI" font-size="14" fill="#FFFFFF" font-weight="500">Receiving Labels</text>
+  
+  <!-- Main Content Area -->
+  <rect x="280" y="48" width="1120" height="852" fill="#FFFFFF"/>
+  
+  <!-- Content Header Area -->
+  <rect x="280" y="48" width="1120" height="120" fill="#FAFAFA"/>
+  
+  <!-- Step Indicator (Centered) -->
+  <g id="StepIndicator" transform="translate(700, 90)">
+    <!-- Step 1 - Active -->
+    <g transform="translate(0, 0)">
+      <circle cx="0" cy="0" r="28" fill="#0078D4" stroke="#0078D4" stroke-width="3" filter="url(#subtleShadow)"/>
+      <text x="0" y="8" font-family="Segoe UI" font-size="18" fill="#FFFFFF" font-weight="600" text-anchor="middle">1</text>
+      <text x="0" y="50" font-family="Segoe UI" font-size="13" fill="#202020" font-weight="600" text-anchor="middle">Order &amp; Part</text>
+    </g>
+    
+    <!-- Connector Line -->
+    <line x1="28" y1="0" x2="172" y2="0" stroke="#D1D1D1" stroke-width="2"/>
+    
+    <!-- Step 2 - Inactive -->
+    <g transform="translate(200, 0)">
+      <circle cx="0" cy="0" r="28" fill="#FFFFFF" stroke="#D1D1D1" stroke-width="3"/>
+      <text x="0" y="8" font-family="Segoe UI" font-size="18" fill="#8A8A8A" font-weight="600" text-anchor="middle">2</text>
+      <text x="0" y="50" font-family="Segoe UI" font-size="13" fill="#8A8A8A" text-anchor="middle">Load Details</text>
+    </g>
+    
+    <!-- Connector Line -->
+    <line x1="228" y1="0" x2="372" y2="0" stroke="#D1D1D1" stroke-width="2"/>
+    
+    <!-- Step 3 - Inactive -->
+    <g transform="translate(400, 0)">
+      <circle cx="0" cy="0" r="28" fill="#FFFFFF" stroke="#D1D1D1" stroke-width="3"/>
+      <text x="0" y="8" font-family="Segoe UI" font-size="18" fill="#8A8A8A" font-weight="600" text-anchor="middle">3</text>
+      <text x="0" y="50" font-family="Segoe UI" font-size="13" fill="#8A8A8A" text-anchor="middle">Review &amp; Save</text>
+    </g>
+  </g>
+  
+  <!-- Step Content Container -->
+	<g id="Step1Content" transform="translate(340, 200)">
+		<!-- Card Background (WinUI 3 Card) -->
+		<rect x="0" y="0" width="1000" height="560" fill="#FFFFFF" rx="8" stroke="#E0E0E0" stroke-width="1" filter="url(#cardShadow)"/>
+
+		<!-- Content Padding -->
+		<g transform="translate(60, 50)">
+
+			<!-- Card 1: Purchase Order Number -->
+			<g id="POCard">
+				<rect x="0" y="0" width="980" height="180" fill="#FFFFFF" rx="8" stroke="#E0E0E0" stroke-width="1" filter="url(#cardShadow)"/>
+				<text x="24" y="36" font-family="Segoe UI" font-size="18" fill="#202020" font-weight="600">Purchase Order Number</text>
+
+				<!-- PO Input Field -->
+				<g transform="translate(24, 56)">
+					<rect x="0" y="0" width="450" height="52" fill="#FAFAFA" rx="6" stroke="#D1D1D1" stroke-width="1"/>
+					<text x="20" y="33" font-family="Segoe UI" font-size="16" fill="#202020">PO-123456</text>
+
+					<!-- Validation Check Mark -->
+					<circle cx="410" cy="26" r="14" fill="#107C10"/>
+					<text x="410" y="31" font-family="Segoe MDL2 Assets" font-size="12" fill="#FFFFFF" text-anchor="middle">&#xE73E;</text>
+				</g>
+
+				<!-- Non-PO Checkbox -->
+				<g transform="translate(24, 122)">
+					<rect x="0" y="0" width="22" height="22" fill="#FFFFFF" stroke="#0078D4" stroke-width="2" rx="3"/>
+					<text x="32" y="17" font-family="Segoe UI" font-size="14" fill="#202020">Non-PO Receiving</text>
+				</g>
+
+				<!-- Help Text -->
+				<text x="24" y="165" font-family="Segoe UI" font-size="12" fill="#8A8A8A">Format: PO-XXXXXX (6 digits)</text>
+			</g>
+
+			<!-- Card 2: Part Selection -->
+			<g id="PartCard" transform="translate(0, 204)">
+				<rect x="0" y="0" width="980" height="200" fill="#FFFFFF" rx="8" stroke="#E0E0E0" stroke-width="1" filter="url(#cardShadow)"/>
+				<text x="24" y="36" font-family="Segoe UI" font-size="18" fill="#202020" font-weight="600">Part Selection</text>
+
+				<!-- Part Dropdown -->
+				<g transform="translate(24, 56)">
+					<rect x="0" y="0" width="650" height="52" fill="#FAFAFA" rx="6" stroke="#D1D1D1" stroke-width="1"/>
+					<text x="20" y="33" font-family="Segoe UI" font-size="16" fill="#202020">MMC0001000 - Aluminum Casting Part</text>
+					<text x="615" y="33" font-family="Segoe MDL2 Assets" font-size="14" fill="#666666" text-anchor="middle">&#xE70D;</text>
+				</g>
+
+				<!-- Part Details Box -->
+				<g transform="translate(24, 124)">
+					<rect x="0" y="0" width="650" height="56" fill="#F5F9FC" rx="4" stroke="#D1E7F7" stroke-width="1"/>
+					<text x="16" y="24" font-family="Segoe UI" font-size="13" fill="#202020">
+						<tspan font-weight="600">Description:</tspan> Aluminum Casting Part - Left Front
+					</text>
+					<text x="16" y="44" font-family="Segoe UI" font-size="13" fill="#202020">
+						<tspan font-weight="600">Type:</tspan> Raw Material
+					</text>
+				</g>
+			</g>
+
+			<!-- Card 3: Number of Loads -->
+			<g id="LoadCard" transform="translate(0, 428)">
+				<rect x="0" y="0" width="980" height="180" fill="#FFFFFF" rx="8" stroke="#E0E0E0" stroke-width="1" filter="url(#cardShadow)"/>
+				<text x="24" y="36" font-family="Segoe UI" font-size="18" fill="#202020" font-weight="600">Number of Loads</text>
+
+				<!-- Number Input with Spinners -->
+				<g transform="translate(24, 56)">
+					<rect x="0" y="0" width="220" height="52" fill="#FAFAFA" rx="6" stroke="#D1D1D1" stroke-width="1"/>
+					<text x="20" y="33" font-family="Segoe UI" font-size="20" fill="#202020" font-weight="500">5</text>
+
+					<!-- Spin Buttons Container -->
+					<g transform="translate(165, 6)">
+						<rect x="0" y="0" width="44" height="20" fill="#F3F3F3" rx="4" stroke="#D1D1D1" stroke-width="1"/>
+						<text x="22" y="15" font-family="Segoe MDL2 Assets" font-size="10" fill="#202020" text-anchor="middle">&#xE70E;</text>
+
+						<rect x="0" y="26" width="44" height="20" fill="#F3F3F3" rx="4" stroke="#D1D1D1" stroke-width="1"/>
+						<text x="22" y="41" font-family="Segoe MDL2 Assets" font-size="10" fill="#202020" text-anchor="middle">&#xE70D;</text>
+					</g>
+				</g>
+
+				<!-- Help Text -->
+				<text x="24" y="130" font-family="Segoe UI" font-size="12" fill="#8A8A8A">Enter the number of loads to receive (1-999)</text>
+
+				<!-- Info Badge -->
+				<g transform="translate(24, 142)">
+					<rect x="0" y="0" width="200" height="24" fill="#FFF4CE" rx="4"/>
+					<text x="8" y="16" font-family="Segoe MDL2 Assets" font-size="12" fill="#8A5700">&#xE946;</text>
+					<text x="28" y="16" font-family="Segoe UI" font-size="11" fill="#8A5700">Each load requires details</text>
+				</g>
+			</g>
+		</g>
+	</g>
+  
+  <!-- Navigation Buttons Footer -->
+  <g id="NavigationButtons" transform="translate(340, 832)">
+    <!-- Cancel Button -->
+    <rect x="0" y="0" width="110" height="44" fill="#FFFFFF" rx="6" stroke="#D1D1D1" stroke-width="1" filter="url(#subtleShadow)"/>
+    <text x="55" y="28" font-family="Segoe UI" font-size="14" fill="#202020" text-anchor="middle" font-weight="500">Cancel</text>
+    
+    <!-- Previous Button (Disabled) -->
+    <rect x="780" y="0" width="110" height="44" fill="#F3F3F3" rx="6" stroke="#D1D1D1" stroke-width="1"/>
+    <text x="835" y="28" font-family="Segoe UI" font-size="14" fill="#999999" text-anchor="middle" font-weight="500">Previous</text>
+    
+    <!-- Next Button (Enabled) -->
+    <rect x="900" y="0" width="110" height="44" fill="#0078D4" rx="6" filter="url(#subtleShadow)"/>
+    <text x="955" y="28" font-family="Segoe UI" font-size="14" fill="#FFFFFF" text-anchor="middle" font-weight="600">Next</text>
+    <text x="990" y="28" font-family="Segoe MDL2 Assets" font-size="12" fill="#FFFFFF" text-anchor="middle">&#xE76C;</text>
+  </g>
+</svg>

@@ -1,0 +1,67 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step2.View_Receiving_Wizard_Display_Step2Container"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step2"
+    mc:Ignorable="d">
+
+    <Grid Padding="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Bulk Operations Toolbar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Padding="0,0,0,16">
+            <Button Click="OnShowBulkCopyDialog">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE8C8;" FontSize="16" />
+                    <TextBlock Text="Bulk Copy Fields" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Click="OnClearAutoFilled">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE894;" FontSize="16" />
+                    <TextBlock Text="Clear Auto-Filled" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Click="OnShowHelp">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE897;" FontSize="16" />
+                    <TextBlock Text="Help" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!-- Load Details DataGrid -->
+        <local:View_Receiving_Wizard_Display_LoadDetailsGrid
+            Grid.Row="1"
+            x:Name="LoadDetailsGrid" />
+
+        <!-- Progress Indicator -->
+        <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16" CornerRadius="8" Margin="0,16,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="20">
+                    <TextBlock VerticalAlignment="Center">
+                        <Run Text="Completed: " FontWeight="SemiBold" />
+                        <Run x:Name="CompletedCountText" Text="0" />
+                        <Run Text=" / " />
+                        <Run x:Name="TotalCountText" Text="0" />
+                        <Run Text=" loads" />
+                    </TextBlock>
+                    <ProgressBar x:Name="CompletionProgressBar" Width="200" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1" x:Name="ProgressStatusText" VerticalAlignment="Center" FontWeight="SemiBold" />
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

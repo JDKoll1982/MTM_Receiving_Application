@@ -41,7 +41,7 @@
             <AppBarButton 
                 Icon="Add" 
                 Label="Add Part to List"
-                Command="{x:Bind ViewModel.ShowAddToListCommand}"
+                Command="{x:Bind ViewModel.ShowAdDataTransferObjectsListCommand}"
                 ToolTipService.ToolTip="Add a part to the inventory tracking list"/>
             <AppBarSeparator/>
             <AppBarButton 

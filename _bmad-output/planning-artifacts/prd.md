@@ -58,7 +58,7 @@ The label creation process shall follow a linear wizard format:
 
 1. **Step 1: PO & Line Selection**
     * **Workflow:** User enters a PO Number.
-    * **Display:** System retrieves and displays a **DataGrid** of available lines for that PO (mimicking `View_Receiving_POEntry`).
+    * **Display:** System retrieves and displays a **DataGrid** of available lines for that PO (mimicking `Old_View_Receiving_Wizard_Display_PoEntry`).
     * **Selection:** User selects a line to populate the "Package Description" and other details automatically.
     * **Manual Override:** If PO is not found (and Validation is disabled), allow manual entry.
     * Feature: "Other" PO Reason selection (Inline).

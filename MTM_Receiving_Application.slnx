@@ -1,17 +1,22 @@
 <Solution>
   <Configurations>
     <Platform Name="x64" />
+    <Platform Name="Any CPU" />
     <Platform Name="ARM64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="MTM_Receiving_Application.csproj">
-    <Platform Solution="*|x64" Project="x64" />
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x86" Project="x86" />
+  <Project Path="Module_Databases/Module_Receiving_Database/Module_Receiving_Database.sqlproj" Id="938bcfa7-cac5-466d-9f80-9c2275764054">
+    <Platform Project="AnyCPU" />
+    <Build />
     <Deploy />
   </Project>
-  <Project Path="MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj">
-    <Platform Solution="*|x64" Project="x64" />
+  <Project Path="MTM_Receiving_Application.csproj">
+    <Platform Solution="*|Any CPU" Project="x64" />
     <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy Solution="*|ARM64" />
+    <Deploy Solution="*|x64" />
+    <Deploy Solution="*|x86" />
   </Project>
 </Solution>

@@ -1,10 +1,42 @@
 <Project>
-	<PropertyGroup>
-		<UnoPlatformIDE>vscode</UnoPlatformIDE>
-		<UnoPlatformIDEVersion>1.107.1</UnoPlatformIDEVersion>
-		<UnoPlatformExtension>unoplatform.vscode 0.23.15</UnoPlatformExtension>
-		<UnoRemoteControlPort>0</UnoRemoteControlPort>
-		<UnoVSCodeCSharpExtension>ms-dotnettools.csharp 2.110.4</UnoVSCodeCSharpExtension>
-		<UnoVSCodeCSharpDevKitExtension>ms-dotnettools.csdevkit 1.90.2</UnoVSCodeCSharpDevKitExtension>
-	</PropertyGroup>
+  <PropertyGroup>
+    <UnoPlatformIDE>vscode</UnoPlatformIDE>
+    <UnoPlatformIDEVersion>1.107.1</UnoPlatformIDEVersion>
+    <UnoPlatformExtension>unoplatform.vscode 0.23.15</UnoPlatformExtension>
+    <UnoRemoteControlPort>0</UnoRemoteControlPort>
+    <UnoVSCodeCSharpExtension>ms-dotnettools.csharp 2.110.4</UnoVSCodeCSharpExtension>
+    <UnoVSCodeCSharpDevKitExtension>ms-dotnettools.csdevkit 1.90.2</UnoVSCodeCSharpDevKitExtension>
+  </PropertyGroup>
+  <ItemGroup>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_EditMode.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_HeatLot.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_LoadEntry.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_ManualEntry.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_ModeSelection.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_PackageType.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_POEntry.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_Review.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_WeightQuantity.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Old_Module_Receiving\Views\View_Receiving_Workflow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
 </Project>

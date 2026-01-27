@@ -352,7 +352,7 @@ public partial class ViewModel_Volvo_History : ViewModel_Shared_Base
                     Notes = updatedShipment.Notes ?? string.Empty,
                     PONumber = updatedShipment.PONumber ?? string.Empty,
                     ReceiverNumber = updatedShipment.ReceiverNumber ?? string.Empty,
-                    Parts = updatedLines.Select(line => new ShipmentLineDto
+                    Parts = updatedLines.Select(line => new ShipmentLineDataTransferObjects
                     {
                         PartNumber = line.PartNumber,
                         ReceivedSkidCount = line.ReceivedSkidCount,

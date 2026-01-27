@@ -61,7 +61,7 @@ Module_Core/
 
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models;
-using MTM_Receiving_Application.Module_Receiving.Models;
+
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries
 {
@@ -84,7 +84,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using MTM_Receiving_Application.Module_Core.Models;
 using MTM_Receiving_Application.Module_Receiving.Data;
-using MTM_Receiving_Application.Module_Receiving.Models;
+
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries
 {
@@ -171,7 +171,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators
 ### Step 5: Use in ViewModel
 
 ```csharp
-// Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs
+// Module_Receiving/ViewModels/Old_ViewModel_Receiving_Wizard_Display_PoEntry.cs
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -183,7 +183,7 @@ using MTM_Receiving_Application.Module_Receiving.Handlers.Commands;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
+    public partial class Old_ViewModel_Receiving_Wizard_Display_PoEntry : ViewModel_Shared_Base
     {
         private readonly IMediator _mediator;
 
@@ -193,10 +193,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private int _quantity;
 
-        public ViewModel_Receiving_POEntry(
+        public Old_ViewModel_Receiving_Wizard_Display_PoEntry(
             IMediator mediator,
             IService_ErrorHandler errorHandler,
-            ILogger<ViewModel_Receiving_POEntry> logger) : base(errorHandler, logger)
+            ILogger<Old_ViewModel_Receiving_Wizard_Display_PoEntry> logger) : base(errorHandler, logger)
         {
             _mediator = mediator;
         }
@@ -247,7 +247,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ex,
                     Enum_ErrorSeverity.Error,
                     nameof(SaveLineAsync),
-                    nameof(ViewModel_Receiving_POEntry));
+                    nameof(Old_ViewModel_Receiving_Wizard_Display_PoEntry));
             }
             finally
             {

@@ -279,7 +279,7 @@
         <!-- Action Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
             <Button Content="{x:Bind ViewModel.NavigationButtonText, Mode=OneWay}"
-                    Command="{x:Bind ViewModel.ProceedToStep2Command}"
+                    Command="{x:Bind ViewModel.ProceeDataTransferObjectstep2Command}"
                     Style="{StaticResource AccentButtonStyle}"/>
         </StackPanel>
     </Grid>

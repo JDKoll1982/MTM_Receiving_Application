@@ -8,13 +8,13 @@ using MTM_Receiving_Application.Module_Dunnage.Data;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
-public sealed partial class View_Dunnage_Dialog_AddToInventoriedListDialog : ContentDialog
+public sealed partial class View_Dunnage_Dialog_AdDataTransferObjectsInventoriedListDialog : ContentDialog
 {
     private readonly Dao_DunnagePart _daoPart;
     private readonly Dao_InventoriedDunnage _daoInventory;
     private readonly IService_Focus _focusService;
 
-    public View_Dunnage_Dialog_AddToInventoriedListDialog()
+    public View_Dunnage_Dialog_AdDataTransferObjectsInventoriedListDialog()
     {
         _daoPart = App.GetService<Dao_DunnagePart>();
         _daoInventory = App.GetService<Dao_InventoriedDunnage>();

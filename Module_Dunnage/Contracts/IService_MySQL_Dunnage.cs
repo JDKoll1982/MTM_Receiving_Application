@@ -55,7 +55,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<bool> IsPartInventoriedAsync(string partId);
         public Task<Model_Dao_Result<Model_InventoriedDunnage>> GetInventoryDetailsAsync(string partId);
         public Task<Model_Dao_Result<List<Model_InventoriedDunnage>>> GetAllInventoriedPartsAsync();
-        public Task<Model_Dao_Result> AddToInventoriedListAsync(Model_InventoriedDunnage item);
+        public Task<Model_Dao_Result> AdDataTransferObjectsInventoriedListAsync(Model_InventoriedDunnage item);
         public Task<Model_Dao_Result> RemoveFromInventoriedListAsync(string partId);
         public Task<Model_Dao_Result> UpdateInventoriedPartAsync(Model_InventoriedDunnage item);
         

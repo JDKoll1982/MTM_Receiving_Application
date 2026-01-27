@@ -416,7 +416,7 @@ const MockData = {
       timeStandard: 15,
       priority: "high",
       status: "Assigned",
-      assignedTo: "Mike S.",
+      assigneDataTransferObjects: "Mike S.",
       createdBy: "John Operator",
       press: "Press 6",
       createdAt: "2026-01-11 09:15:00"
@@ -433,7 +433,7 @@ const MockData = {
       timeStandard: 10,
       priority: "medium",
       status: "Pending",
-      assignedTo: null,
+      assigneDataTransferObjects: null,
       createdBy: "Sarah Press",
       press: "Press 2",
       createdAt: "2026-01-11 09:30:00"
@@ -450,7 +450,7 @@ const MockData = {
       timeStandard: 10,
       priority: "high",
       status: "Pending",
-      assignedTo: null,
+      assigneDataTransferObjects: null,
       createdBy: "Bob Operator",
       press: "Press 1",
       createdAt: "2026-01-11 09:47:00"
@@ -467,7 +467,7 @@ const MockData = {
       timeStandard: 25,
       priority: "medium",
       status: "Pending",
-      assignedTo: null,
+      assigneDataTransferObjects: null,
       createdBy: "Mike Press",
       press: "Press 4",
       createdAt: "2026-01-11 09:40:00"
@@ -493,7 +493,7 @@ const MockData = {
       details: "blue sticker x2 - op 19",
       createdAt: "2026-01-11 09:15:00",
       status: "Assigned",
-      assignedTo: "Mike S."
+      assigneDataTransferObjects: "Mike S."
     },
     {
       id: 2,
@@ -512,7 +512,7 @@ const MockData = {
       details: "Skids needed - 4pc",
       createdAt: "2026-01-11 09:30:00",
       status: "Pending",
-      assignedTo: null
+      assigneDataTransferObjects: null
     },
     {
        // Reconciled Item: Was ID 3 in operatorWaitlist (Die Protection) -> Now visible in Unified List
@@ -532,7 +532,7 @@ const MockData = {
        details: "Die Pro alarm - press stopped",
        createdAt: "2026-01-11 09:47:00",
        status: "Pending",
-       assignedTo: null
+       assigneDataTransferObjects: null
     },
     {
        // Reconciled Item: Was ID 4 in operatorWaitlist (Coil) -> Now visible in Unified List
@@ -552,7 +552,7 @@ const MockData = {
        details: "New coil - running low",
        createdAt: "2026-01-11 09:40:00",
        status: "Pending",
-       assignedTo: null
+       assigneDataTransferObjects: null
     },
     {
       id: 5,
@@ -571,7 +571,7 @@ const MockData = {
       details: "NCM - bad weld on parts",
       createdAt: "2026-01-11 09:50:00",
       status: "Pending",
-      assignedTo: null,
+      assigneDataTransferObjects: null,
       isNCM: true
     },
     {
@@ -592,7 +592,7 @@ const MockData = {
       details: "Scrap bin full - 5052 Aluminum",
       createdAt: "2026-01-11 09:43:00",
       status: "Pending",
-      assignedTo: null
+      assigneDataTransferObjects: null
     },
     {
       id: 7,
@@ -613,7 +613,7 @@ const MockData = {
       details: "Need die FGT-2045 from R-B2-03",
       createdAt: "2026-01-11 09:37:00",
       status: "Pending",
-      assignedTo: null
+      assigneDataTransferObjects: null
     },
     // NEW: Quality Control Task (should only be visible to QC, MH Lead, PL, PM)
     {
@@ -633,7 +633,7 @@ const MockData = {
       details: "First piece inspection required",
       createdAt: "2026-01-11 10:05:00",
       status: "Pending",
-      assignedTo: null
+      assigneDataTransferObjects: null
     },
     // NEW: Setup Tech Task (should only be visible to ST, PM)
     {
@@ -653,7 +653,7 @@ const MockData = {
       details: "Part stuck in die",
       createdAt: "2026-01-11 10:10:00",
       status: "Pending",
-      assignedTo: null
+      assigneDataTransferObjects: null
     },
     // NEW: Production Lead Task (should only be visible to PL, Operator Lead, PM)
     {
@@ -673,7 +673,7 @@ const MockData = {
       details: "Question about run rate",
       createdAt: "2026-01-11 09:20:00",
       status: "Pending",
-      assignedTo: null
+      assigneDataTransferObjects: null
     }
   ],
 

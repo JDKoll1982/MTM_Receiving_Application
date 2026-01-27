@@ -1,6 +1,6 @@
 # Database Table Name Mapping Reference
 
-This file documents the mapping between old table names (from consolidated schema files) and new standardized table names (from individual schema files).
+This file documents the mapping between old table names (from Wizard schema files) and new standardized table names (from individual schema files).
 
 Generated: 2026-01-11
 
@@ -15,7 +15,7 @@ Generated: 2026-01-11
 | Auth | `user_activity_log` | `settings_personal_activity_log` | Moved to settings module |
 | **Receiving** | | | |
 | Receiving | `label_table_receiving` | `receiving_label_data` | Standardized naming |
-| Receiving | `label_table_parcel` | `receiving_label_data` | Consolidated into receiving_label_data |
+| Receiving | `label_table_parcel` | `receiving_label_data` | Wizard into receiving_label_data |
 | Receiving | `receiving_loads` | `receiving_history` | Renamed for clarity |
 | Receiving | `package_type_preferences` | `receiving_package_type_mapping` | Renamed for clarity |
 | Receiving | N/A | `receiving_package_types` | New table (from settings) |

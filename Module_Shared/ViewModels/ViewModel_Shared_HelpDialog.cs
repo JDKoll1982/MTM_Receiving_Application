@@ -22,7 +22,7 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
     private bool _isRelatedHelpAvailable;
 
     [ObservableProperty]
-    private ObservableCollection<Model_HelpContent> _relatedTopics = new();
+    private ObservableCollection<Model_HelpContent> _relateDataTransferObjectspics = new();
 
     [ObservableProperty]
     private bool _canDismiss;
@@ -57,7 +57,7 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
             }
 
             // Load related topics
-            RelatedTopics.Clear();
+            RelateDataTransferObjectspics.Clear();
             if (content.RelatedKeys?.Count > 0)
             {
                 foreach (var relatedKey in content.RelatedKeys)
@@ -65,10 +65,10 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
                     var relatedContent = _helpService.GetHelpContent(relatedKey);
                     if (relatedContent != null)
                     {
-                        RelatedTopics.Add(relatedContent);
+                        RelateDataTransferObjectspics.Add(relatedContent);
                     }
                 }
-                IsRelatedHelpAvailable = RelatedTopics.Count > 0;
+                IsRelatedHelpAvailable = RelateDataTransferObjectspics.Count > 0;
             }
             else
             {
@@ -89,13 +89,13 @@ public partial class ViewModel_Shared_HelpDialog : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private async Task ViewRelatedTopicAsync()
+    private async Task ViewRelateDataTransferObjectspicAsync()
     {
         // This will be called from the ListView click event
         await Task.CompletedTask;
     }
 
-    public async Task LoadRelatedTopicAsync(Model_HelpContent? relatedContent)
+    public async Task LoadRelateDataTransferObjectspicAsync(Model_HelpContent? relatedContent)
     {
         if (relatedContent != null)
         {

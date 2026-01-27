@@ -116,7 +116,7 @@ namespace MTM_Receiving_Application
                 {
                     _hasNavigatedOnStartup = true;
                     // Title will be set by ContentFrame_Navigated
-                    ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
+                    ContentFrame.Navigate(typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView));
                 }
             }
         }
@@ -144,8 +144,8 @@ namespace MTM_Receiving_Application
                 switch (tag)
                 {
                     case "ReceivingWorkflowView":
-                        // Title will be set by ContentFrame_Navigated
-                        ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
+                        PageTitleTextBlock.Text = "Receiving Labels";
+                        ContentFrame.Navigate(typeof(Module_Receiving.Views.Hub.View_Receiving_Hub_Display_ModeSelection));
                         break;
                     case "DunnageLabelPage":
                         // Title will be set by ContentFrame_Navigated
@@ -256,34 +256,37 @@ namespace MTM_Receiving_Application
 
         private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
         {
+            // TODO: Update this logic when adding Module_Receiving navigation hub
             // If navigated to ReceivingWorkflowView, subscribe to ViewModel changes to update header
-            if (ContentFrame.Content is Module_Receiving.Views.View_Receiving_Workflow receivingView)
-            {
-                var viewModel = receivingView.ViewModel;
-                if (viewModel != null)
-                {
-                    // Update header with current step title (ensure UI thread)
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                    });
-
-                    // Subscribe to property changes to keep header updated
-                    viewModel.PropertyChanged += (s, args) =>
-                    {
-                        if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
-                        {
-                            // Ensure UI update happens on UI thread
-                            DispatcherQueue.TryEnqueue(() =>
-                            {
-                                PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
-                            });
-                        }
-                    };
-                }
-            }
+            //
+            //if (ContentFrame.Content is {INSERT MODULE_RECEIVING NAVIGATION HUB HERE} receivingView)
+            //{
+            //    var viewModel = receivingView.ViewModel;
+            //    if (viewModel != null)
+            //    {
+            //        // Update header with current step title (ensure UI thread)
+            //        DispatcherQueue.TryEnqueue(() =>
+            //        {
+            //            PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+            //        });
+            //        
+            //        // Subscribe to property changes to keep header updated
+            //        viewModel.PropertyChanged += (s, args) =>
+            //        {
+            //            if (args.PropertyName == nameof(viewModel.CurrentStepTitle))
+            //            {
+            //                // Ensure UI update happens on UI thread
+            //                DispatcherQueue.TryEnqueue(() =>
+            //                {
+            //                    PageTitleTextBlock.Text = viewModel.CurrentStepTitle;
+            //                });
+            //            }
+            //        };
+            //   }
+            //}
+            // else
             // If navigated to DunnageWorkflowView, subscribe to ViewModel changes to update header
-            else if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView)
+            if (ContentFrame.Content is Module_Dunnage.Views.View_Dunnage_WorkflowView dunnageView)
             {
                 var viewModel = dunnageView.ViewModel;
                 if (viewModel != null)

@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters;
 /// Returns red for restricted parts (MMFSR, MMCSR), black otherwise.
 /// Used in WinUI 3 DataGrid for conditional text color in restricted rows.
 /// </summary>
-public class Converter_PartIDToQualityHoldTextColor : IValueConverter
+public class Converter_PartIDataTransferObjectsQualityHoldTextColor : IValueConverter
 {
     private static readonly SolidColorBrush RedTextBrush = new(Microsoft.UI.Colors.Red);
     private static readonly SolidColorBrush BlackTextBrush = new(Microsoft.UI.Colors.Black);
@@ -54,6 +54,6 @@ public class Converter_PartIDToQualityHoldTextColor : IValueConverter
     /// <exception cref="NotImplementedException"></exception>
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-        throw new NotImplementedException("Converter_PartIDToQualityHoldTextColor is one-way only");
+        throw new NotImplementedException("Converter_PartIDataTransferObjectsQualityHoldTextColor is one-way only");
     }
 }

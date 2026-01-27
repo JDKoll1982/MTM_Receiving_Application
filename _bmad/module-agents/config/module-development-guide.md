@@ -76,7 +76,7 @@ Module_{Feature}/
 ├── 📂 Data/                    # Instance-based DAOs
 │   ├── Dao_Entity1.cs
 │   └── Dao_Entity2.cs
-├── 📂 Models/                  # Domain entities and DTOs
+├── 📂 Models/                  # Domain entities and DataTransferObjects
 │   ├── Model_Entity1.cs
 │   └── Model_DaoResult.cs
 ├── 📂 Handlers/               # CQRS command/query handlers
@@ -448,7 +448,7 @@ private void ConfigureServices(IServiceCollection services)
     services.AddSingleton<IService_ReceivingWorkflow, Service_ReceivingWorkflow>();
     
     // ViewModels (Transient - new instance per navigation)
-    services.AddTransient<ViewModel_Receiving_POEntry>();
+    services.AddTransient<Old_ViewModel_Receiving_Wizard_Display_PoEntry>();
     services.AddTransient<ViewModel_Receiving_Review>();
 }
 ```
@@ -456,7 +456,7 @@ private void ConfigureServices(IServiceCollection services)
 ### ViewModel Pattern with Mediator
 
 ```csharp
-public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
+public partial class Old_ViewModel_Receiving_Wizard_Display_PoEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
 
@@ -466,10 +466,10 @@ public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
     [ObservableProperty]
     private ObservableCollection<Model_ReceivingLine> _lines;
 
-    public ViewModel_Receiving_POEntry(
+    public Old_ViewModel_Receiving_Wizard_Display_PoEntry(
         IMediator mediator,
         IService_ErrorHandler errorHandler,
-        ILogger<ViewModel_Receiving_POEntry> logger) : base(errorHandler, logger)
+        ILogger<Old_ViewModel_Receiving_Wizard_Display_PoEntry> logger) : base(errorHandler, logger)
     {
         _mediator = mediator;
         Lines = new ObservableCollection<Model_ReceivingLine>();
@@ -510,7 +510,7 @@ public partial class ViewModel_Receiving_POEntry : ViewModel_Shared_Base
                 ex,
                 Enum_ErrorSeverity.Medium,
                 nameof(LoadLinesAsync),
-                nameof(ViewModel_Receiving_POEntry));
+                nameof(Old_ViewModel_Receiving_Wizard_Display_PoEntry));
         }
         finally
         {
