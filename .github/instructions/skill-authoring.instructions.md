@@ -1,6 +1,6 @@
 ---
-description: 'How to create Agent Skills in this repo: discovery descriptions, resource bundling, and repo-specific MVVM guardrails'
-applyTo: '**/.github/skills/**/SKILL.md, **/.github/skills/**/scripts/*, **/.github/skills/**/references/*, **/.github/skills/**/templates/*'
+description: How to create Agent Skills in this repository
+applyTo: '**/*.md'
 ---
 
 # Skill Authoring Instructions (Repo Standard)

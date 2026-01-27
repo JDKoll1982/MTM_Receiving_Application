@@ -203,12 +203,11 @@ public partial class ViewModel_Receiving_Wizard_Orchestration_SaveOperation : Vi
     {
         try
         {
-            var command = new CompleteWorkflowCommand
+            var command = new CommandRequest_Receiving_Shared_Complete_Workflow
             {
                 TransactionId = SavedTransactionId,
                 SessionId = SessionId,
                 CSVFilePath = CsvFilePath,
-                NetworkCSVPath = NetworkCsvPath,
                 CompletedBy = Environment.UserName
             };
 

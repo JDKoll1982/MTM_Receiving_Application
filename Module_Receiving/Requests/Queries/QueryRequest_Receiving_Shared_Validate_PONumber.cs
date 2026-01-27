@@ -1,7 +1,6 @@
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
-using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 
 namespace MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 

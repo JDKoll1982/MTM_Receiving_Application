@@ -1,3 +1,8 @@
+---
+description: Guidelines for creating complete specification documentation for modules
+applyTo: '**/*.md'
+---
+
 # Module Specification Generation Prompt
 
 **Version:** 1.0  

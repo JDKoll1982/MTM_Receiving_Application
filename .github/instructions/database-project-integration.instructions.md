@@ -1,6 +1,6 @@
 ---
-description: 'Complete guide for integrating SQL Server Database Projects with feature modules for version-controlled schema management, automated deployment, and team collaboration'
-applyTo: '**/*.{sql,sqlproj,dacpac}'
+description: Complete guide for integrating SQL Server Database Projects with feature modules
+applyTo: '**/*.{sql,sqlproj,cs,md}'
 ---
 
 # Database Project Integration Guide

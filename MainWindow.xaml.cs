@@ -144,9 +144,8 @@ namespace MTM_Receiving_Application
                 switch (tag)
                 {
                     case "ReceivingWorkflowView":
-                        // Title will be set by ContentFrame_Navigated
-                        // TODO: Update this logic when adding Module_Receiving navigation hub
-                        //ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
+                        PageTitleTextBlock.Text = "Receiving Labels";
+                        ContentFrame.Navigate(typeof(Module_Receiving.Views.Hub.View_Receiving_Hub_Display_ModeSelection));
                         break;
                     case "DunnageLabelPage":
                         // Title will be set by ContentFrame_Navigated

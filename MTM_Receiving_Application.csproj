@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
@@ -37,6 +37,7 @@
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     </PropertyGroup>
     <ItemGroup>
+        <Content Include=".github\copilot-agents.json" />
         <Content Include="Assets\SplashScreen.scale-200.png" />
         <Content Include="Assets\LockScreenLogo.scale-200.png" />
         <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -50,7 +51,138 @@
     </ItemGroup>
     <!-- Configuration Files -->
     <ItemGroup>
+        <None Include=".github\agents\bmd-custom-bmb-agent-builder.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmb-module-builder.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmb-workflow-builder.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-analyst.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-architect.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-dev.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-pm.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-quick-flow-solo-dev.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-sm.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-tea.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-tech-writer.agent.md" />
+        <None Include=".github\agents\bmd-custom-bmm-ux-designer.agent.md" />
+        <None Include=".github\agents\bmd-custom-cis-brainstorming-coach.agent.md" />
+        <None Include=".github\agents\bmd-custom-cis-creative-problem-solver.agent.md" />
+        <None Include=".github\agents\bmd-custom-cis-design-thinking-coach.agent.md" />
+        <None Include=".github\agents\bmd-custom-cis-innovation-strategist.agent.md" />
+        <None Include=".github\agents\bmd-custom-cis-presentation-master.agent.md" />
+        <None Include=".github\agents\bmd-custom-cis-storyteller.agent.md" />
+        <None Include=".github\agents\bmd-custom-core-bmad-master.agent.md" />
+        <None Include=".github\agents\module-agent-forge.agent.md" />
+        <None Include=".github\agents\module-brownfield-health-check.agent.md" />
+        <None Include=".github\agents\module-compliance-auditor.agent.md" />
+        <None Include=".github\agents\module-core-creator.agent.md" />
+        <None Include=".github\agents\module-core-maintainer.agent.md" />
+        <None Include=".github\agents\module-creator.agent.md" />
+        <None Include=".github\agents\module-doc-generator.agent.md" />
+        <None Include=".github\agents\module-integration-validator.agent.md" />
+        <None Include=".github\agents\module-privilege-code-generator.agent.md" />
+        <None Include=".github\agents\module-rebuilder.agent.md" />
+        <None Include=".github\agents\module-task-router.agent.md" />
+        <None Include=".github\agents\module-test-generator.agent.md" />
+        <None Include=".github\agents\mtm-docent.agent.md" />
+        <None Include=".github\agents\mtm-mcp-operator.agent.md" />
+        <None Include=".github\agents\speckit.analyze.agent.md" />
+        <None Include=".github\agents\speckit.checklist.agent.md" />
+        <None Include=".github\agents\speckit.clarify.agent.md" />
+        <None Include=".github\agents\speckit.constitution.agent.md" />
+        <None Include=".github\agents\speckit.implement.agent.md" />
+        <None Include=".github\agents\speckit.module-specify.agent.md" />
+        <None Include=".github\agents\speckit.plan.agent.md" />
+        <None Include=".github\agents\speckit.specify.agent.md" />
+        <None Include=".github\agents\speckit.tasks.agent.md" />
+        <None Include=".github\agents\speckit.taskstoissues.agent.md" />
+        <None Include=".github\copilot-instructions.md" />
+        <None Include=".github\FileReferences-Prompt.md" />
+        <None Include=".github\instructions\agent-skills.instructions.md" />
+        <None Include=".github\instructions\agents.instructions.md" />
+        <None Include=".github\instructions\arrogant-code-review.instructions.md" />
+        <None Include=".github\instructions\code-review-generic.instructions.md" />
+        <None Include=".github\instructions\comprehensive-research.instructions.md" />
+        <None Include=".github\instructions\cqrs_infrastructure.instructions.md" />
+        <None Include=".github\instructions\csharp.instructions.md" />
+        <None Include=".github\instructions\database-project-integration.instructions.md" />
+        <None Include=".github\instructions\dotnet-architecture-good-practices.instructions.md" />
+        <None Include=".github\instructions\dotnet-upgrade.instructions.md" />
+        <None Include=".github\instructions\instructions.instructions.md" />
+        <None Include=".github\instructions\joyride-workspace-automation.instructions.md" />
+        <None Include=".github\instructions\memory-bank.instructions.md" />
+        <None Include=".github\instructions\mermaid-diagrams.instructions.md" />
+        <None Include=".github\instructions\module-doc-maintenance.instructions.md" />
+        <None Include=".github\instructions\module-specification-generation.instructions.md" />
+        <None Include=".github\instructions\object-calisthenics.instructions.md" />
+        <None Include=".github\instructions\performance-optimization.instructions.md" />
+        <None Include=".github\instructions\powershell-pester-5.instructions.md" />
+        <None Include=".github\instructions\powershell-scripting-ai.instructions.md" />
+        <None Include=".github\instructions\powershell.instructions.md" />
+        <None Include=".github\instructions\prompt.instructions.md" />
+        <None Include=".github\instructions\python.instructions.md" />
+        <None Include=".github\instructions\security-and-owask.instructions.md" />
+        <None Include=".github\instructions\self-explanatory-code-commenting.instructions.md" />
+        <None Include=".github\instructions\serena-tools.instructions.md" />
+        <None Include=".github\instructions\shell.instructions.md" />
+        <None Include=".github\instructions\skill-authoring.instructions.md" />
+        <None Include=".github\instructions\spec-driven-workflow-v1.instructions.md" />
+        <None Include=".github\instructions\sql-sp-generation.instructions.md" />
+        <None Include=".github\instructions\taming-copilot.instructions.md" />
+        <None Include=".github\instructions\testing-strategy.instructions.md" />
+        <None Include=".github\instructions\update-docs-on-code-change.instructions.md" />
+        <None Include=".github\plans\app-xaml-refactoring-plan.md" />
+        <None Include=".github\plans\service-locator-elimination-plan.md" />
+        <None Include=".github\prompts\module-agent-forge.prompt.md" />
+        <None Include=".github\prompts\module-brownfield-health-check.prompt.md" />
+        <None Include=".github\prompts\module-compliance-auditor.prompt.md" />
+        <None Include=".github\prompts\module-core-creator.prompt.md" />
+        <None Include=".github\prompts\module-core-maintainer.prompt.md" />
+        <None Include=".github\prompts\module-creator.prompt.md" />
+        <None Include=".github\prompts\module-doc-generator.prompt.md" />
+        <None Include=".github\prompts\module-doc-maintainer.prompt.md" />
+        <None Include=".github\prompts\module-integration-validator.prompt.md" />
+        <None Include=".github\prompts\module-privilege-code-generator.prompt.md" />
+        <None Include=".github\prompts\module-rebuilder.prompt.md" />
+        <None Include=".github\prompts\module-task-router.prompt.md" />
+        <None Include=".github\prompts\module-test-generator.prompt.md" />
+        <None Include=".github\prompts\mtm-converter-unit-tests.prompt.md" />
+        <None Include=".github\prompts\mtm-dao-unit-tests.prompt.md" />
+        <None Include=".github\prompts\mtm-documentation.prepare.prompt.md" />
+        <None Include=".github\prompts\mtm-fix-database-issues.prompt.md" />
+        <None Include=".github\prompts\mtm-generate-all-tests.prompt.md" />
+        <None Include=".github\prompts\mtm-github-reset-documents.prompt.md" />
+        <None Include=".github\prompts\mtm-helper-unit-tests.prompt.md" />
+        <None Include=".github\prompts\mtm-mcp-implement.prompt.md" />
+        <None Include=".github\prompts\mtm-mcp-triage.prompt.md" />
+        <None Include=".github\prompts\mtm-model-unit-tests.prompt.md" />
+        <None Include=".github\prompts\mtm-module-code-review.prompt.md" />
+        <None Include=".github\prompts\mtm-module-models-optimize-and-test.prompt.md" />
+        <None Include=".github\prompts\mtm-ui-mockups.prompt.md" />
+        <None Include=".github\prompts\mtm-viewmodel-unit-tests.prompt.md" />
+        <None Include=".github\prompts\new-chat.prompt.md" />
+        <None Include=".github\prompts\repomix-config-setup.prompt.md" />
+        <None Include=".github\prompts\speckit.analyze.prompt.md" />
+        <None Include=".github\prompts\speckit.checklist.prompt.md" />
+        <None Include=".github\prompts\speckit.clarify.prompt.md" />
+        <None Include=".github\prompts\speckit.constitution.prompt.md" />
+        <None Include=".github\prompts\speckit.implement.prompt.md" />
+        <None Include=".github\prompts\speckit.module-specify.prompt.md" />
+        <None Include=".github\prompts\speckit.plan.prompt.md" />
+        <None Include=".github\prompts\speckit.specify.prompt.md" />
+        <None Include=".github\prompts\speckit.tasks.prompt.md" />
+        <None Include=".github\prompts\speckit.taskstoissues.prompt.md" />
+        <None Include=".github\skills\mvvm-architecture-enforcer\references\architecture-rules.md" />
+        <None Include=".github\skills\mvvm-architecture-enforcer\references\common-violations.md" />
         <None Include=".github\skills\mvvm-architecture-enforcer\scripts\validate-mvvm.ps1" />
+        <None Include=".github\skills\mvvm-architecture-enforcer\SKILL.md" />
+        <None Include=".github\skills\mvvm-architecture-enforcer\templates\service-template.md" />
+        <None Include=".github\skills\mvvm-architecture-enforcer\templates\viewmodel-template.md" />
+        <None Include=".github\summary\build-verification-summary.md" />
+        <None Include=".github\summary\refactoring-completion-summary.md" />
+        <None Include=".github\tasks\app-xaml-refactoring-tasks.md" />
+        <None Include=".github\tasks\service-locator-elimination-progress.md" />
+        <None Include=".github\tasks\service-locator-elimination-tasks.md" />
+        <None Include=".github\tasks\TASK-001-fix-build-output-issues.md" />
+        <None Include=".github\templates\service-instructions.template.md" />
         <None Include="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
@@ -65,72 +197,51 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-    <!-- Exclude .github folder from PRI generation -->
-    <ItemGroup>
-        <PRIResource Remove=".github\**" />
-    </ItemGroup>
-    <!-- Exclude test project files from compilation -->
-    <ItemGroup>
-        <Compile Remove="Properties\**" />
-        <EmbeddedResource Remove="Properties\**" />
-        <None Remove="Properties\**" />
-        <Page Remove="Properties\**" />
-    </ItemGroup>
+
     <!-- Keep icon files as None (source files only, icon embedded in exe via ApplicationIcon
     property) -->
     <ItemGroup>
         <!-- GitHub configuration and documentation files -->
-        <None Include=".github\**\*.json" />
-        <None Include=".github\**\*.md" />
-        <None Include=".github\**\*.sql" />
         <None Include=".github\.last-agent-run" />
         <!-- Assets -->
-        <None Include="Assets\app-icon.svg" />
     </ItemGroup>
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
     </ItemGroup>
     <!-- Exclude scripts folder from compilation -->
     <ItemGroup>
+        <Compile Remove="docs\**" />
         <Compile Remove="scripts\**" />
+        <Compile Remove="_bmad-output\**" />
+        <Compile Remove="_bmad\**" />
+        <EmbeddedResource Remove=".specify\**" />
+        <EmbeddedResource Remove=".vscode\**" />
+        <EmbeddedResource Remove="docs\**" />
         <EmbeddedResource Remove="scripts\**" />
+        <EmbeddedResource Remove="_bmad-output\**" />
+        <EmbeddedResource Remove="_bmad\**" />
+        <None Remove=".specify\**" />
+        <None Remove=".vscode\**" />
+        <None Remove="docs\**" />
         <None Remove="scripts\**" />
         <!-- Exclude specs from compilation but keep in project for visibility -->
-        <Compile Remove="specs\**" />
-        <EmbeddedResource Remove="specs\**" />
-        <Page Remove="specs\**" />
-        <ApplicationDefinition Remove="specs\**" />
-        <!-- Exclude additional non-source directories -->
-        <Compile Remove=".github\**" />
+        <Page Remove=".specify\**" />
+        <Page Remove=".vscode\**" />
+        <Page Remove="docs\**" />
+        <Page Remove="_bmad-output\**" />
+        <Page Remove="_bmad\**" />
+    <!-- Exclude additional non-source directories -->
         <Compile Remove=".specify\**" />
         <Compile Remove=".vscode\**" />
-        <Compile Remove="Database\**" />
         <!-- Exclude generated files from source control scanning -->
         <None Remove="obj\**" />
         <None Remove="bin\**" />
+        <None Remove="_bmad-output\**" />
+        <None Remove="_bmad\**" />
     </ItemGroup>
     <!-- Specify Configuration Files -->
-    <ItemGroup>
-        <None Include=".specify\memory\constitution.md" />
-        <None Include=".specify\scripts\powershell\check-prerequisites.ps1" />
-        <None Include=".specify\scripts\powershell\common.ps1" />
-        <None Include=".specify\scripts\powershell\create-new-feature.ps1" />
-        <None Include=".specify\scripts\powershell\setup-plan.ps1" />
-        <None Include=".specify\scripts\powershell\update-agent-context.ps1" />
-        <None Include=".specify\templates\agent-file-template.md" />
-        <None Include=".specify\templates\checklist-template.md" />
-        <None Include=".specify\templates\plan-template.md" />
-        <None Include=".specify\templates\spec-template.md" />
-        <None Include=".specify\templates\tasks-template.md" />
-    </ItemGroup>
     <!-- Specs Documentation -->
-    <ItemGroup>
-        <None Include="specs\**\*.md" />
-    </ItemGroup>
     <!-- VS Code Settings -->
-    <ItemGroup>
-        <None Include=".vscode\settings.json" />
-    </ItemGroup>
     <!-- Properties Files -->
     <ItemGroup>
         <None Include="Scripts\Add-AsyncSuffix.ps1" />
@@ -259,9 +370,6 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
     </PropertyGroup>
     <!-- Embed Infor Visual SQL query files as resources -->
-    <ItemGroup>
-        <EmbeddedResource Include="Database\InforVisualScripts\Queries\*.sql" />
-    </ItemGroup>
     <!-- Include Themes folder in published output -->
     <ItemGroup>
         <Content Include="Themes\**\*.xaml">
@@ -269,9 +377,19 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <PRIResource Remove="Properties\**" />
+      <PRIResource Remove="docs\**" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Module_Databases\Module_Receiving_Database\Import Script Logs\" />
+      <None Remove=".markdownlint.json" />
+      <None Remove=".repomixignore" />
+      <None Remove="AGENTS.md" />
+    </ItemGroup>
+    <ItemGroup>
+      <Page Remove="Module_Core\Themes\Converters.xaml" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Module_Core\Themes\Converters.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
     </ItemGroup>
 </Project>

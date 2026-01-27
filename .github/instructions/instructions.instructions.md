@@ -1,5 +1,5 @@
 ---
-description: 'Guidelines for creating high-quality custom instruction files for GitHub Copilot - Updated for 2026 standards'
+description: Guidelines for creating high-quality custom instruction files for GitHub Copilot
 applyTo: '**/*.instructions.md'
 ---
 
@@ -285,3 +285,4 @@ Description and example
 
 - [Custom Instructions Documentation](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
 - [Awesome Copilot Instructions](https://github.com/github/awesome-copilot/tree/main/instructions)
+

@@ -62,6 +62,10 @@ public partial class ViewModel_Receiving_Hub_Display_ModeSelection : ViewModel_S
     /// <summary>
     /// Initializes the mode selection display ViewModel.
     /// </summary>
+    /// <param name="mediator"></param>
+    /// <param name="errorHandler"></param>
+    /// <param name="logger"></param>
+    /// <param name="notificationService"></param>
     public ViewModel_Receiving_Hub_Display_ModeSelection(
         IMediator mediator,
         IService_ErrorHandler errorHandler,

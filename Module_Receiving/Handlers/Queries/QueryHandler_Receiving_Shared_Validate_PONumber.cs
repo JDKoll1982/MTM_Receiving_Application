@@ -7,7 +7,6 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
-using MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects;
 using MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 
 namespace MTM_Receiving_Application.Module_Receiving.Handlers.Queries;

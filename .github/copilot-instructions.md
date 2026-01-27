@@ -33,6 +33,65 @@ Manufacturing receiving operations desktop application for streamlined label gen
 7. **Error Handling:** DAOs return errors, Services handle them, ViewModels display them
 8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY
 
+### CRITICAL - Code Review Before Creation
+
+**🔍 BEFORE CREATING ANY FILE, YOU MUST:**
+
+1. **Review Existing Similar Files (MANDATORY)**
+   - Find at least 2 existing files of the same type in the same module
+   - Read their complete implementation to understand patterns
+   - Note: naming conventions, constructor signatures, using directives, base class patterns
+   - Verify: property naming (especially with acronyms), method signatures, error handling patterns
+
+2. **Verify Dependencies Exist**
+   - Check that referenced classes/interfaces actually exist (use file_search or code_search)
+   - Verify enum values are correct (read the enum definition)
+   - Confirm query/command names match actual codebase patterns (don't assume simplified names)
+   - Check DTO/Entity property names (read the class definition)
+
+3. **Check Base Class Requirements**
+   - Read base class constructor signature (e.g., `ViewModel_Shared_Base` requires 3 parameters)
+   - Verify interface contract requirements (e.g., `IService_ErrorHandler` API methods)
+   - Understand abstract method implementations needed
+
+4. **Document Patterns Found**
+   - If you discover patterns that differ from assumptions, note them
+   - Update task files if file names or class names are incorrect
+   - Create memory bank entries for complex patterns
+
+**Example Pre-Creation Workflow:**
+
+```markdown
+Task: Create ViewModel_Receiving_Wizard_Display_MyFeature
+
+Step 1: Review existing ViewModels
+  ✅ Read ViewModel_Receiving_Wizard_Display_PONumberEntry.cs
+  ✅ Read ViewModel_Receiving_Wizard_Display_PartSelection.cs
+  
+Step 2: Document patterns found
+  - Base class: ViewModel_Shared_Base(errorHandler, logger, notificationService) ← 3 params!
+  - Properties: _poNumber generates PoNumber (not PONumber)
+  - Queries: QueryRequest_Receiving_Shared_XXX (not simplified names)
+  - Error Handler: ShowUserErrorAsync (async), Enum_ErrorSeverity (not Enum_Shared_Severity)
+  
+Step 3: Verify dependencies
+  ✅ Query exists: QueryRequest_Receiving_Shared_Get_MyData
+  ✅ DTO exists: Model_Receiving_DataTransferObjects_MyData
+  ✅ Enum values: Verified in Enum_Receiving_XXX
+  
+Step 4: Create file with verified patterns
+```
+
+**⚠️ WARNING:** Skipping code review leads to:
+- Systematic compilation errors across multiple files
+- Incorrect naming patterns
+- Wrong base class constructors
+- Missing using directives
+- Type mismatches
+- Wasted time fixing preventable errors
+
+**This rule was added after fixing 86+ compilation errors caused by creating 6 ViewModels without reviewing existing code patterns.**
+
 ### Important - Follow These Guidelines
 
 1. **Reference Relevant Instruction Files:** Follow guidelines in `.github/instructions/` as applicable, making sure that you reference these as if the user had included them in their prompt.

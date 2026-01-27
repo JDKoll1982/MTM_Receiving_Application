@@ -1,0 +1,97 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_Step1Container"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step1"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Padding="40,32" MaxWidth="900" HorizontalAlignment="Center">
+            <StackPanel Spacing="24">
+                <!-- Page Title -->
+                <StackPanel Spacing="8" Margin="0,0,0,8">
+                    <TextBlock Text="Step 1: Order &amp; Part Information" 
+                               Style="{StaticResource TitleTextBlockStyle}" />
+                    <TextBlock Text="Enter the purchase order details and select the part you're receiving." 
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!-- Card 1: Purchase Order Number -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="24">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Purchase Order Number" 
+                                       Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="Enter or scan the PO number from your documentation" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       FontSize="12" />
+                        </StackPanel>
+                        <local:View_Receiving_Wizard_Display_PONumberEntry x:Name="PONumberEntry" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 2: Part Selection -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="24">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Part Selection" 
+                                       Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="Enter the part number - system will auto-detect type and defaults" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       FontSize="12" />
+                        </StackPanel>
+                        <local:View_Receiving_Wizard_Display_PartSelection x:Name="PartSelection" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 3: Number of Loads -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="24">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Number of Loads" 
+                                       Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="How many separate loads are you receiving? (1-999)" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       FontSize="12" />
+                        </StackPanel>
+                        <local:View_Receiving_Wizard_Display_LoadCountEntry x:Name="LoadCountEntry" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Card 4: Summary Panel -->
+                <Border Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="24">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <FontIcon Glyph="&#xE8FD;" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" FontSize="20" />
+                            <TextBlock Text="Step 1 Summary" 
+                                       FontWeight="SemiBold" 
+                                       FontSize="16"
+                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+                        </StackPanel>
+                        <local:View_Receiving_Wizard_Display_Step1Summary x:Name="Step1Summary" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

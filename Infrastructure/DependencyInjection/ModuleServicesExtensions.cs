@@ -102,7 +102,6 @@ public static class ModuleServicesExtensions
         });
 
         // Hub ViewModels (Transient - new instance per navigation)
-        services.AddTransient<Module_Receiving.ViewModels.Hub.ViewModel_Receiving_Hub_Orchestration_MainWorkflow>();
         services.AddTransient<Module_Receiving.ViewModels.Hub.ViewModel_Receiving_Hub_Display_ModeSelection>();
 
         // Wizard ViewModels (Transient)
@@ -112,6 +111,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_PONumberEntry>();
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_PartSelection>();
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_LoadCountEntry>();
+        services.AddTransient<Module_Receiving.ViewModels.Wizard.Step1.ViewModel_Receiving_Wizard_Display_Step1Summary>();
+        
         
         // Step 2 ViewModels
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step2.ViewModel_Receiving_Wizard_Display_LoadDetailsGrid>();
@@ -122,6 +123,27 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step3.ViewModel_Receiving_Wizard_Display_ReviewSummary>();
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step3.ViewModel_Receiving_Wizard_Orchestration_SaveOperation>();
         services.AddTransient<Module_Receiving.ViewModels.Wizard.Step3.ViewModel_Receiving_Wizard_Display_CompletionScreen>();
+
+        // Hub Views (Transient)
+        services.AddTransient<Module_Receiving.Views.Hub.View_Receiving_Hub_Display_ModeSelection>();
+
+        // Wizard Orchestration Views
+        services.AddTransient<Module_Receiving.Views.Wizard.Orchestration.View_Receiving_Wizard_Orchestration_MainWorkflow>();
+
+        // Wizard Step 1 Views
+        services.AddTransient<Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_Step1Container>();
+        services.AddTransient<Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_PONumberEntry>();
+        services.AddTransient<Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_PartSelection>();
+        services.AddTransient<Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_LoadCountEntry>();
+        services.AddTransient<Module_Receiving.Views.Wizard.Step1.View_Receiving_Wizard_Display_Step1Summary>();
+
+        // Wizard Step 2 Views
+        services.AddTransient<Module_Receiving.Views.Wizard.Step2.View_Receiving_Wizard_Display_Step2Container>();
+        services.AddTransient<Module_Receiving.Views.Wizard.Step2.View_Receiving_Wizard_Display_LoadDetailsGrid>();
+
+        // Wizard Step 3 Views
+        services.AddTransient<Module_Receiving.Views.Wizard.Step3.View_Receiving_Wizard_Display_Step3Container>();
+        services.AddTransient<Module_Receiving.Views.Wizard.Step3.View_Receiving_Wizard_Display_ReviewSummary>();
 
         // Services
         services.AddTransient<IService_Pagination, Service_Pagination>();

@@ -1,0 +1,83 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step2.View_Receiving_Wizard_Display_LoadDetailsGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Auto">
+            <StackPanel Spacing="12">
+                <!-- Column Headers -->
+                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="8,12" CornerRadius="4,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Load #" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="Part ID" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="2" Text="Quantity" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="3" Text="Heat/Lot" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="4" Text="Package Type" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="5" Text="Packages/Load" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="6" Text="Weight/Package" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="7" Text="Location" FontWeight="SemiBold" />
+                </Grid>
+
+        <!-- Data Rows (ItemsRepeater for performance) -->
+        <ItemsRepeater ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}">
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Load Number (Read-Only) -->
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" />
+
+                            <!-- Part ID (Read-Only) -->
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" />
+
+                            <!-- Quantity (Editable) -->
+                            <TextBox Grid.Column="2" />
+
+                            <!-- Heat/Lot (Editable) -->
+                            <TextBox Grid.Column="3" />
+
+                            <!-- Package Type (ComboBox) -->
+                            <ComboBox Grid.Column="4" />
+
+                            <!-- Packages Per Load (Editable) -->
+                            <TextBox Grid.Column="5" />
+
+                            <!-- Weight Per Package (Read-Only Calculated) -->
+                            <TextBlock Grid.Column="6" VerticalAlignment="Center" />
+
+                            <!-- Location (ComboBox) -->
+                            <ComboBox Grid.Column="7" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

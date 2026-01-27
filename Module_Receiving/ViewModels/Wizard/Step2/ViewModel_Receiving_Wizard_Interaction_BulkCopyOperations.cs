@@ -126,7 +126,7 @@ public partial class ViewModel_Receiving_Wizard_Interaction_BulkCopyOperations :
             if (CopyPackagesPerLoad) selectedFieldsList.Add(Enum_Receiving_CopyType_FieldSelection.PackagesPerLoad);
             if (CopyReceivingLocation) selectedFieldsList.Add(Enum_Receiving_CopyType_FieldSelection.ReceivingLocation);
 
-            var command = new BulkCopyFieldsCommand
+            var command = new CommandRequest_Receiving_Wizard_Copy_FieldsToEmptyLoads
             {
                 TransactionId = TransactionId,
                 SourceLoadNumber = SourceLoadNumber,
@@ -166,7 +166,7 @@ public partial class ViewModel_Receiving_Wizard_Interaction_BulkCopyOperations :
             IsBusy = true;
             StatusMessage = "Clearing auto-filled fields...";
 
-            var command = new ClearAutoFilledFieldsCommand
+            var command = new CommandRequest_Receiving_Wizard_Clear_AutoFilledFields
             {
                 TransactionId = TransactionId,
                 TargetLoadNumber = targetLoadNumber,
