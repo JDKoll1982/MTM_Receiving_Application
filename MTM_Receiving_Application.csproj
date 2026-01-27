@@ -211,23 +211,27 @@
     <!-- Exclude scripts folder from compilation -->
     <ItemGroup>
         <Compile Remove="docs\**" />
+        <Compile Remove="Old_Module_Receiving\**" />
         <Compile Remove="scripts\**" />
         <Compile Remove="_bmad-output\**" />
         <Compile Remove="_bmad\**" />
         <EmbeddedResource Remove=".specify\**" />
         <EmbeddedResource Remove=".vscode\**" />
         <EmbeddedResource Remove="docs\**" />
+        <EmbeddedResource Remove="Old_Module_Receiving\**" />
         <EmbeddedResource Remove="scripts\**" />
         <EmbeddedResource Remove="_bmad-output\**" />
         <EmbeddedResource Remove="_bmad\**" />
         <None Remove=".specify\**" />
         <None Remove=".vscode\**" />
         <None Remove="docs\**" />
+        <None Remove="Old_Module_Receiving\**" />
         <None Remove="scripts\**" />
         <!-- Exclude specs from compilation but keep in project for visibility -->
         <Page Remove=".specify\**" />
         <Page Remove=".vscode\**" />
         <Page Remove="docs\**" />
+        <Page Remove="Old_Module_Receiving\**" />
         <Page Remove="_bmad-output\**" />
         <Page Remove="_bmad\**" />
     <!-- Exclude additional non-source directories -->
@@ -391,5 +395,8 @@
       <None Update="Module_Core\Themes\Converters.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
+    </ItemGroup>
+    <ItemGroup>
+      <PRIResource Remove="Old_Module_Receiving\**" />
     </ItemGroup>
 </Project>
