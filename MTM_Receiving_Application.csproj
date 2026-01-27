@@ -108,6 +108,7 @@
         <None Include=".github\instructions\dotnet-upgrade.instructions.md" />
         <None Include=".github\instructions\instructions.instructions.md" />
         <None Include=".github\instructions\joyride-workspace-automation.instructions.md" />
+        <None Include=".github\instructions\md-file-structure-rules.instructions.md" />
         <None Include=".github\instructions\memory-bank.instructions.md" />
         <None Include=".github\instructions\mermaid-diagrams.instructions.md" />
         <None Include=".github\instructions\module-doc-maintenance.instructions.md" />
