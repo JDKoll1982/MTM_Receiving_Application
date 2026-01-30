@@ -87,7 +87,7 @@ Review the entire document with PRD purpose principles in mind:
 
 - Are ideas repeated across sections?
 - Is the same information stated multiple times?
-- Can redundant content be consolidated?
+- Can redundant content be Wizard?
 - Are there contradictory statements?
 
 **Header Structure:**

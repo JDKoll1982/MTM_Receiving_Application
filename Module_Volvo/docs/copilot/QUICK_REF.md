@@ -86,7 +86,7 @@ var result = await _mediator.Send(command);
 - `ShipmentDate` (DateTimeOffset) - Shipment date
 - `ShipmentNumber` (int) - Shipment number (auto-generated if 0)
 - `Notes` (string) - Optional notes for this shipment
-- `Parts` (List<ShipmentLineDto>) - List of parts in this shipment
+- `Parts` (List<ShipmentLineDataTransferObjects>) - List of parts in this shipment
 - `PONumber` (string) - PO number for requisition
 - `ReceiverNumber` (string) - Receiver number for tracking
 
@@ -168,7 +168,7 @@ var result = await _mediator.Send(command);
 - `ShipmentDate` (DateTimeOffset) - Shipment date
 - `ShipmentNumber` (int) - Shipment number (auto-generated if not provided)
 - `Notes` (string) - Optional notes for this shipment
-- `Parts` (List<ShipmentLineDto>) - List of parts in this shipment
+- `Parts` (List<ShipmentLineDataTransferObjects>) - List of parts in this shipment
 
 **Returns:** `Model_Dao_Result<int>` (Shipment ID)
 
@@ -193,7 +193,7 @@ var result = await _mediator.Send(command);
 - `Notes` (string) - Updated notes
 - `PONumber` (string) - Updated PO number (if completed)
 - `ReceiverNumber` (string) - Updated receiver number (if completed)
-- `Parts` (List<ShipmentLineDto>) - Updated shipment line items
+- `Parts` (List<ShipmentLineDataTransferObjects>) - Updated shipment line items
 
 **Returns:** `Model_Dao_Result`
 

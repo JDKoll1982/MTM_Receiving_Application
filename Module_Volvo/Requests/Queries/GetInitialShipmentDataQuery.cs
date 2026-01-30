@@ -13,7 +13,7 @@ public record GetInitialShipmentDataQuery : IRequest<Model_Dao_Result<InitialShi
 }
 
 /// <summary>
-/// Response DTO containing initial shipment data.
+/// Response DataTransferObjects containing initial shipment data.
 /// </summary>
 public record InitialShipmentData
 {

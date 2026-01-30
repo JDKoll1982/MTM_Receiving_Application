@@ -109,8 +109,8 @@ flowchart LR
 
   subgraph Guided[Guided wizard steps]
     direction TB
-    VC --> VMode[View_Receiving_ModeSelection] --> VMM[ViewModel_Receiving_ModeSelection]
-    VC --> VPO[View_Receiving_POEntry] --> VMPO[ViewModel_Receiving_POEntry]
+    VC --> VMode[View_Receiving_ModeSelection_Display_ModeSelection] --> VMM[ViewModel_Receiving_ModeSelection_Display_ModeSelection]
+    VC --> VPO[Old_View_Receiving_Wizard_Display_PoEntry] --> VMPO[Old_ViewModel_Receiving_Wizard_Display_PoEntry]
     VC --> VLoads[View_Receiving_LoadEntry] --> VMLoads[ViewModel_Receiving_LoadEntry]
     VC --> VWQ[View_Receiving_WeightQuantity] --> VMWQ[ViewModel_Receiving_WeightQuantity]
     VC --> VHL[View_Receiving_HeatLot] --> VMHL[ViewModel_Receiving_HeatLot]
@@ -120,8 +120,8 @@ flowchart LR
 
   subgraph Other[Other modes]
     direction TB
-    VC --> VMan[View_Receiving_ManualEntry] --> VMMan[ViewModel_Receiving_ManualEntry]
-    VC --> VEdit[View_Receiving_EditMode] --> VMEdit[ViewModel_Receiving_EditMode]
+    VC --> VMan[View_Receiving_Manual_Display_DataEntry] --> VMMan[ViewModel_Receiving_Manual_Display_DataEntry]
+    VC --> VEdit[View_Receiving_EditMode] --> VMEdit[ViewModel_Receiving_EditMode_Interaction_EditHandler]
   end
 
   %% Event note (keep readable): step VMs react to StepChanged when active

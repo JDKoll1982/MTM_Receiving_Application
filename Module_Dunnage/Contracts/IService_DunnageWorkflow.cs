@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
-using MTM_Receiving_Application.Module_Receiving.Models; // For Model_WorkflowStepResult if needed
-using MTM_Receiving_Application.Module_Core.Models.Enums; // For other enums if needed
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 {
@@ -18,14 +17,15 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public event EventHandler<string> StatusMessageRaised;
 
         public Task<bool> StartWorkflowAsync();
-        public Task<Model_WorkflowStepResult> AdvanceToNextStepAsync();
+        public Task<Model_Dunnage_Result_WorkflowStep> AdvanceToNextStepAsync();
+        public Task<Model_Dunnage_Result_CSVDelete> DeleteCSVAndResetAsync();
         public void GoToStep(Enum_DunnageWorkflowStep step);
-        public Task<Model_SaveResult> SaveSessionAsync();
-        public Task<Model_SaveResult> SaveToCSVOnlyAsync();
-        public Task<Model_SaveResult> SaveToDatabaseOnlyAsync();
+        public Task<Model_Dunnage_Result_Save> SaveSessionAsync();
+        public Task<Model_Dunnage_Result_Save> SaveToCSVOnlyAsync();
+        public Task<Model_Dunnage_Result_Save> SaveToDatabaseOnlyAsync();
         public void ClearSession();
 
-        public Task<Model_CSVDeleteResult> ResetCSVFilesAsync();
-        public void AddCurrentLoadToSession();
+        public Task<Model_Dunnage_Result_CSVDelete> ResetCSVFilesAsync();
+        public void AddCurrentLoaDataTransferObjectsession();
     }
 }

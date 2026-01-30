@@ -17,12 +17,12 @@ function onOpen() {
     .addItem('Test Progress Bar', 'testProgressBar')
     .addItem('Check History Table', 'checkHistoryTable')
     .addItem('Test Clearing Logic', 'testClearing')
-    .addToUi();
+    .adDataTransferObjectsUi();
       var ui2 = SpreadsheetApp.getUi();
   ui2.createMenu('Coil Tools')
       .addItem('Create Material Inventory Sheet', 'createMaterialInventorySheet')
       .addItem('Parse Descriptions', 'parseCoilDescriptions')
-      .addToUi();
+      .adDataTransferObjectsUi();
   
   // Batch calls for efficiency
   fillSelectSheet();

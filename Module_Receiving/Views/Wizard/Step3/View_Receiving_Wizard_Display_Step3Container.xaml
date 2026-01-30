@@ -1,0 +1,53 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step3.View_Receiving_Wizard_Display_Step3Container"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step3"
+    mc:Ignorable="d">
+
+    <Grid Padding="24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Spacing="4" Padding="0,0,0,16">
+            <TextBlock Text="Review &amp; Save" Style="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock
+                Text="Review all load details before saving. Transaction will be archived and CSV files generated."
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                FontSize="12"
+                TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Review Summary Grid -->
+        <local:View_Receiving_Wizard_Display_ReviewSummary
+            Grid.Row="1"
+            x:Name="ReviewSummary" />
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="20" CornerRadius="8" Margin="0,20,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                <Button Click="OnEditDetails">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE70F;" FontSize="16" />
+                        <TextBlock Text="Edit Details" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button
+                    Click="OnSaveTransaction"
+                    Style="{StaticResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE74E;" FontSize="16" />
+                        <TextBlock Text="Save Transaction" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

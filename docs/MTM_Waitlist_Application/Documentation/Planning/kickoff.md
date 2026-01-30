@@ -408,7 +408,7 @@ Use these placeholders as prompts/inputs when driving implementation via BMAD.
 ### BMAD task slices (repeat per module)
 
 - Define module scope + navigation entry
-- Define models (DTOs + persistence models)
+- Define models (DataTransferObjects + persistence models)
 - Define service contracts
 - Define stored procedures (MySQL) + DAO methods
 - Define ViewModels (state + commands)

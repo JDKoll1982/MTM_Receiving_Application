@@ -118,7 +118,7 @@ Algorithm:
 
 ## Affected Modules
 ### Module_Receiving
-- File: ViewModel_Receiving_POEntry.cs, Line 45
+- File: Old_ViewModel_Receiving_Wizard_Display_PoEntry.cs, Line 45
   - Current: `_errorHandler.ShowUserError(message, title, source)`
   - Impact: [Will break / Will continue to work / Needs update]
 
@@ -483,7 +483,7 @@ Impact Analysis:
   ❌ Found 30 call sites across 5 modules that will BREAK:
   
   Module_Receiving (12 call sites):
-    - ViewModel_Receiving_POEntry.cs:45
+    - Old_ViewModel_Receiving_Wizard_Display_PoEntry.cs:45
     - ViewModel_Receiving_Review.cs:78
     - ViewModel_Receiving_Workflow.cs:102
     - [... 9 more]

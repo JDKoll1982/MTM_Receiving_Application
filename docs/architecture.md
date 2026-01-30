@@ -216,7 +216,7 @@ The MTM Receiving Application is a WinUI 3 desktop application built for manufac
 
 - **XAML Views** (Page/UserControl):
   - Bind to ViewModels via DataContext.
-  - Use event handlers for lifecycle events (`OnLoaded`, `OnNavigatedTo`).
+  - Use event handlers for lifecycle events (`OnLoaded`, `OnNavigateDataTransferObjects`).
   - Use dependency injection to obtain ViewModels.
   - Attach focus management via `IService_Focus`.
 

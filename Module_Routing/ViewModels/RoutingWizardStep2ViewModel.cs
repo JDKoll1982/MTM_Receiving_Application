@@ -184,7 +184,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
         StatusMessage = $"Quick Add selected: {recipient.Name}";
 
         // Immediately proceed to Step 3
-        ProceedToStep3();
+        ProceeDataTransferObjectstep3();
     }
     #endregion
 
@@ -236,16 +236,16 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     /// <summary>
     /// Proceed to Step 3 (Review)
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanProceedToStep3))]
-    private void ProceedToStep3()
+    [RelayCommand(CanExecute = nameof(CanProceeDataTransferObjectstep3))]
+    private void ProceeDataTransferObjectstep3()
     {
         try
         {
-            _logger.LogInfo($"ProceedToStep3 called with recipient: {SelectedRecipient?.Name ?? "null"}");
+            _logger.LogInfo($"ProceeDataTransferObjectstep3 called with recipient: {SelectedRecipient?.Name ?? "null"}");
 
             if (SelectedRecipient == null)
             {
-                _logger.LogWarning("ProceedToStep3: No recipient selected");
+                _logger.LogWarning("ProceeDataTransferObjectstep3: No recipient selected");
                 StatusMessage = "Please select a recipient before proceeding";
                 return;
             }
@@ -260,11 +260,11 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in ProceedToStep3: {ex.Message}", ex);
+            _logger.LogError($"Error in ProceeDataTransferObjectstep3: {ex.Message}", ex);
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Error,
-                nameof(ProceedToStep3),
+                nameof(ProceeDataTransferObjectstep3),
                 nameof(RoutingWizardStep2ViewModel));
         }
     }
@@ -272,10 +272,10 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     /// <summary>
     /// Can proceed if recipient is selected
     /// </summary>
-    private bool CanProceedToStep3()
+    private bool CanProceeDataTransferObjectstep3()
     {
         var canProceed = SelectedRecipient != null;
-        _logger.LogInfo($"CanProceedToStep3: {canProceed} (SelectedRecipient: {SelectedRecipient?.Name ?? "null"})");
+        _logger.LogInfo($"CanProceeDataTransferObjectstep3: {canProceed} (SelectedRecipient: {SelectedRecipient?.Name ?? "null"})");
         return canProceed;
     }
 
@@ -305,7 +305,7 @@ public partial class RoutingWizardStep2ViewModel : ObservableObject
     partial void OnSelectedRecipientChanged(Model_RoutingRecipient? value)
     {
         _logger.LogInfo($"Selected recipient changed to: {value?.Name ?? "null"}");
-        ProceedToStep3Command.NotifyCanExecuteChanged();
+        ProceeDataTransferObjectstep3Command.NotifyCanExecuteChanged();
 
         if (value != null)
         {

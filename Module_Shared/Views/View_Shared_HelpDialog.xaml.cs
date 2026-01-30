@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -31,11 +31,11 @@ public sealed partial class View_Shared_HelpDialog : ContentDialog
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private async void RelatedTopics_ItemClick(object sender, Microsoft.UI.Xaml.Controls.ItemClickEventArgs e)
+    private async void RelateDataTransferObjectspics_ItemClick(object sender, Microsoft.UI.Xaml.Controls.ItemClickEventArgs e)
     {
         if (e.ClickedItem is Model_HelpContent relatedContent)
         {
-            await ViewModel.LoadRelatedTopicAsync(relatedContent);
+            await ViewModel.LoadRelateDataTransferObjectspicAsync(relatedContent);
         }
     }
 }

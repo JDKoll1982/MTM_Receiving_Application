@@ -1,0 +1,105 @@
+<svg width="1400" height="900" xmlns="http://www.w3.org/2000/svg">
+<!-- Filters -->
+<defs>
+  <filter id="cardShadow">
+    <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.12"/>
+  </filter>
+  <filter id="successGlow">
+    <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#107C10" flood-opacity="0.3"/>
+  </filter>
+</defs>
+  
+<!-- Background -->
+<rect width="1400" height="900" fill="#F3F3F3"/>
+  
+  <!-- MainWindow Title Bar -->
+  <rect x="0" y="0" width="1400" height="48" fill="#202020"/>
+  <rect x="8" y="8" width="32" height="32" fill="#2D2D2D" rx="4"/>
+  <text x="24" y="28" font-family="Segoe MDL2 Assets" font-size="16" fill="#FFFFFF" text-anchor="middle">&#xE700;</text>
+  <circle cx="60" cy="24" r="8" fill="#0078D4"/>
+  <text x="80" y="30" font-family="Segoe UI" font-size="16" fill="#FFFFFF" font-weight="600">MTM Receiving Application</text>
+  <rect x="800" y="12" width="400" height="32" fill="#2D2D2D" rx="4"/>
+  <text x="820" y="32" font-family="Segoe UI" font-size="14" fill="#8A8A8A">Search</text>
+  <circle cx="1320" cy="24" r="16" fill="#0078D4"/>
+  <text x="1350" y="30" font-family="Segoe UI" font-size="14" fill="#FFFFFF">John Doe</text>
+  
+  <!-- Navigation Pane -->
+  <rect x="0" y="48" width="280" height="852" fill="#F9F9F9"/>
+  <rect x="8" y="88" width="264" height="40" fill="#0078D4" rx="4"/>
+  <text x="56" y="113" font-family="Segoe MDL2 Assets" font-size="16" fill="#FFFFFF">&#xE74C;</text>
+  <text x="80" y="113" font-family="Segoe UI" font-size="14" fill="#FFFFFF">Receiving Labels</text>
+  
+  <!-- Main Content Area -->
+  <rect x="280" y="48" width="1120" height="852" fill="#FFFFFF"/>
+  
+  <!-- Centered Success Card Container -->
+  <g id="CompletionScreen" transform="translate(490, 200)">
+    <!-- Main Success Card -->
+    <rect x="0" y="0" width="600" height="620" fill="#FFFFFF" rx="12" stroke="#E0E0E0" stroke-width="1" filter="url(#cardShadow)"/>
+    
+    <!-- Success Icon with Glow -->
+    <g transform="translate(300, 80)">
+      <circle cx="0" cy="0" r="64" fill="#107C10" filter="url(#successGlow)"/>
+      <text x="0" y="22" font-family="Segoe MDL2 Assets" font-size="56" fill="#FFFFFF" text-anchor="middle">&#xE73E;</text>
+    </g>
+    
+    <!-- Success Message -->
+    <text x="300" y="200" font-family="Segoe UI" font-size="28" fill="#202020" font-weight="600" text-anchor="middle">Transaction Saved!</text>
+    <text x="300" y="230" font-family="Segoe UI" font-size="15" fill="#666666" text-anchor="middle">Your receiving transaction has been successfully processed</text>
+    
+    <!-- Transaction Details Section -->
+    <g transform="translate(40, 260)">
+      <rect x="0" y="0" width="520" height="110" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+      
+      <g transform="translate(30, 25)">
+        <text x="0" y="0" font-family="Segoe UI" font-size="13" fill="#666666">Transaction ID</text>
+        <text x="0" y="26" font-family="Segoe UI Mono" font-size="18" fill="#202020" font-weight="600">TX-20260125-001234</text>
+      </g>
+      
+      <g transform="translate(30, 70)">
+        <text x="0" y="0" font-family="Segoe UI" font-size="13" fill="#666666">Completed</text>
+        <text x="0" y="22" font-family="Segoe UI" font-size="15" fill="#202020">January 25, 2026 - 2:30 PM</text>
+      </g>
+    </g>
+    
+    <!-- CSV Export Section -->
+    <g transform="translate(40, 390)">
+      <text x="0" y="0" font-family="Segoe UI" font-size="15" fill="#202020" font-weight="600">Files Exported</text>
+      
+      <!-- Local Path Card -->
+      <g transform="translate(0, 20)">
+        <rect x="0" y="0" width="520" height="48" fill="#F9F9F9" stroke="#E0E0E0" stroke-width="1" rx="6"/>
+        <text x="16" y="14" font-family="Segoe UI" font-size="11" fill="#666666">Local</text>
+        <text x="16" y="32" font-family="Segoe UI" font-size="13" fill="#202020">C:\MTM_Receiving\Exports\TX-20260125-001234.csv</text>
+        
+        <rect x="450" y="10" width="56" height="28" fill="#0078D4" rx="4"/>
+        <text x="478" y="30" font-family="Segoe UI" font-size="13" fill="#FFFFFF" font-weight="600" text-anchor="middle">Copy</text>
+      </g>
+      
+      <!-- Network Path Card -->
+      <g transform="translate(0, 76)">
+        <rect x="0" y="0" width="520" height="48" fill="#F9F9F9" stroke="#E0E0E0" stroke-width="1" rx="6"/>
+        <text x="16" y="14" font-family="Segoe UI" font-size="11" fill="#666666">Network</text>
+        <text x="16" y="32" font-family="Segoe UI" font-size="13" fill="#202020">\\NetworkShare\Receiving\TX-20260125-001234.csv</text>
+        
+        <rect x="450" y="10" width="56" height="28" fill="#0078D4" rx="4"/>
+        <text x="478" y="30" font-family="Segoe UI" font-size="13" fill="#FFFFFF" font-weight="600" text-anchor="middle">Copy</text>
+      </g>
+    </g>
+    
+    <!-- Action Buttons -->
+    <g transform="translate(40, 545)">
+      <!-- New Transaction (Primary) -->
+      <rect x="0" y="0" width="180" height="50" fill="#0078D4" rx="6"/>
+      <text x="90" y="32" font-family="Segoe UI" font-size="15" fill="#FFFFFF" font-weight="600" text-anchor="middle">New Transaction</text>
+      
+      <!-- View History (Secondary) -->
+      <rect x="195" y="0" width="150" height="50" fill="#FFFFFF" rx="6" stroke="#D1D1D1" stroke-width="1"/>
+      <text x="270" y="32" font-family="Segoe UI" font-size="15" fill="#202020" text-anchor="middle">View History</text>
+      
+      <!-- Exit (Secondary) -->
+      <rect x="360" y="0" width="160" height="50" fill="#FFFFFF" rx="6" stroke="#D1D1D1" stroke-width="1"/>
+      <text x="440" y="32" font-family="Segoe UI" font-size="15" fill="#202020" text-anchor="middle">Return to Hub</text>
+    </g>
+  </g>
+</svg>

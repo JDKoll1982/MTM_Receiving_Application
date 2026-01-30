@@ -91,16 +91,16 @@ We will now map out the implementation plan for the new module.
 * **Analysis & Validation:**
   * **Source of Truth:** Analyze `Deploy-Database.ps1` to identify exactly which files are currently being deployed.
   * **Database Probing:** Use CLI scripts to probe the live database structure to ensure accuracy when creating new schema files.
-  * **Validation:** Ensure new consolidated schema files perfectly match the logic of the old files before deletion.
+  * **Validation:** Ensure new Wizard schema files perfectly match the logic of the old files before deletion.
 * **Consolidation & Structure:**
-  * **Schema:** Create consolidated schema files in `Database/Schemas/`:
+  * **Schema:** Create Wizard schema files in `Database/Schemas/`:
     * `01_core.sql` (Auth, Users, Common)
     * `02_receiving.sql`
     * `03_dunnage.sql`
     * `04_routing.sql`
   * **Stored Procedures:** Organize into `Database/StoredProcedures/{Module}/` with consistent naming (`sp_{module}_{entity}_{action}`).
 * **Deployment Update:**
-  * Update `Deploy-Database.ps1` to reference the new consolidated file structure.
+  * Update `Deploy-Database.ps1` to reference the new Wizard file structure.
   * Remove obsolete SQL files only after validation.
 
 **2. Core Logic (Services & DAOs)**

@@ -95,7 +95,7 @@
                     Command="{x:Bind ViewModel.NavigateBackToStep1Command}"
                     Visibility="{x:Bind ViewModel.IsEditingFromReview, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
             <Button Content="{x:Bind ViewModel.NavigationButtonText, Mode=OneWay}"
-                    Command="{x:Bind ViewModel.ProceedToStep3Command}"
+                    Command="{x:Bind ViewModel.ProceeDataTransferObjectstep3Command}"
                     Style="{StaticResource AccentButtonStyle}"/>
         </StackPanel>
     </Grid>

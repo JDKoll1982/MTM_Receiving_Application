@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Core.Converters;
 /// Returns red brush for restricted parts (MMFSR, MMCSR), transparent/default otherwise.
 /// Used in WinUI 3 DataGrid RowStyle for conditional row highlighting.
 /// </summary>
-public class Converter_PartIDToQualityHoldBrush : IValueConverter
+public class Converter_PartIDataTransferObjectsQualityHoldBrush : IValueConverter
 {
     private static readonly SolidColorBrush LightRedBrush = new(Windows.UI.Color.FromArgb(255, 255, 230, 230)); // #FFE6E6
     private static readonly SolidColorBrush TransparentBrush = new(Microsoft.UI.Colors.Transparent);
@@ -54,6 +54,6 @@ public class Converter_PartIDToQualityHoldBrush : IValueConverter
     /// <exception cref="NotImplementedException"></exception>
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-        throw new NotImplementedException("Converter_PartIDToQualityHoldBrush is one-way only");
+        throw new NotImplementedException("Converter_PartIDataTransferObjectsQualityHoldBrush is one-way only");
     }
 }

@@ -1,0 +1,28 @@
+Read the Following files, You are to respond with "File {<file name>} had {<number of articles>} articles." for each file. No additional commentary.
+An article is defined as that starts with 1 or more a markdown headers (#) at the beginning of a line.
+
+You May use #file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\.github\instructions\serena-tools.instructions.md' to help you read the files.
+
+### Instructions you MUST adhere to going forward:
+
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\.github\instructions\csharp.instructions.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\.github\instructions\dotnet.instructions.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\.github\instructions\taming-copilot.instructions.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\.github\instructions\cqrs_infrastructure.instructions.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\.github\instructions\update-docs-on-code-change.instructions.md'
+
+### Task Files:
+
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_master.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase1.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase2.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase3.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase4.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase5.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase6.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase7.md'
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\tasks_phase8.md'
+
+### The prompt I will use to respond to you, will have my responce in the beginning of the file:
+
+#file:'C:\Users\johnk\source\repos\MTM_Receiving_Application\Module_Receiving\UserPrompt.md'

@@ -129,8 +129,17 @@ public static class CoreServiceExtensions
             return new Dao_InforVisualPart(inforVisualConnectionString, logger);
         });
 
-        // Infor Visual Service (Singleton - Stateless integration service)
-        // Uses IOptions<InforVisualSettings> for mock data configuration
+        // Infor Visual PO DAO (Singleton - Stateless data access)
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetService<IService_LoggingUtility>();
+            var config = sp.GetRequiredService<IConfiguration>();
+            return new Dao_InforVisualPO(inforVisualConnectionString, config, logger);
+        });
+
+        // TODO: Infor Visual Service moved to individual modules as needed
+        // Each module should implement its own InforVisual integration
+        /* 
         services.AddSingleton<IService_InforVisual>(sp =>
         {
             var dao = sp.GetRequiredService<Dao_InforVisualConnection>();
@@ -139,5 +148,6 @@ public static class CoreServiceExtensions
                 ?? new InforVisualSettings();
             return new Service_InforVisualConnect(dao, settings.UseMockData, logger);
         });
+        */
     }
 }

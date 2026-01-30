@@ -1,0 +1,133 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step2.View_Receiving_Wizard_Display_LoadDetailsGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models.DataTransferObjects"
+    mc:Ignorable="d">
+
+    <Grid KeyboardAcceleratorPlacementMode="Hidden">
+        <!-- Trap Tab key within grid -->
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="Tab" Invoked="OnTabKeyPressed" />
+            <KeyboardAccelerator Key="Tab" Modifiers="Shift" Invoked="OnShiftTabKeyPressed" />
+        </Grid.KeyboardAccelerators>
+        
+        <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Auto">
+            <StackPanel Spacing="12">
+                <!-- Column Headers -->
+                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="8,12" CornerRadius="4,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Load #" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="Part ID" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="2" Text="Quantity" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="3" Text="Heat/Lot" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="4" Text="Package Type" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="5" Text="Packages/Load" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="6" Text="Weight/Package" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="7" Text="Location" FontWeight="SemiBold" />
+                </Grid>
+
+                <!-- Data Rows (ItemsRepeater for performance) -->
+                <ItemsRepeater x:Name="LoadsRepeater" ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_Receiving_DataTransferObjects_LoadGridRow">
+                            <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Load Number (Read-Only) -->
+                                    <TextBlock Grid.Column="0" 
+                                               Text="{x:Bind LoadNumber, Mode=OneWay}" 
+                                               VerticalAlignment="Center" 
+                                               FontWeight="SemiBold" />
+
+                                    <!-- Part ID (Read-Only) -->
+                                    <TextBlock Grid.Column="1" 
+                                               Text="{x:Bind PartNumber, Mode=OneWay}" 
+                                               VerticalAlignment="Center" />
+
+                                    <!-- Quantity (Editable) -->
+                                    <TextBox Grid.Column="2" 
+                                             x:Name="QuantityBox"
+                                             Text="{x:Bind Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                             PlaceholderText="Enter quantity" 
+                                             InputScope="Number"
+                                             TabIndex="0" />
+
+                                    <!-- Heat/Lot (Editable) -->
+                                    <TextBox Grid.Column="3" 
+                                             x:Name="HeatLotBox"
+                                             Text="{x:Bind HeatLot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                             PlaceholderText="Enter heat/lot #"
+                                             TabIndex="1" />
+
+                                    <!-- Package Type (ComboBox) -->
+                                    <ComboBox Grid.Column="4" 
+                                              x:Name="PackageTypeBox"
+                                              SelectedItem="{x:Bind PackageType, Mode=TwoWay}" 
+                                              PlaceholderText="Select type" 
+                                              HorizontalAlignment="Stretch"
+                                              TabIndex="2">
+                                        <x:String>Skid</x:String>
+                                        <x:String>Pallet</x:String>
+                                        <x:String>Box</x:String>
+                                        <x:String>Crate</x:String>
+                                        <x:String>Coils</x:String>
+                                        <x:String>Loose</x:String>
+                                    </ComboBox>
+
+                                    <!-- Packages Per Load (Editable) -->
+                                    <TextBox Grid.Column="5" 
+                                             x:Name="PackagesPerLoadBox"
+                                             Text="{x:Bind PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                             PlaceholderText="# packages" 
+                                             InputScope="Number"
+                                             TabIndex="3" />
+
+                                    <!-- Weight Per Package (Read-Only Calculated) -->
+                                    <TextBlock Grid.Column="6" 
+                                               Text="{x:Bind WeightPerPackage, Mode=OneWay}" 
+                                               VerticalAlignment="Center" 
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+                                    <!-- Location (ComboBox) -->
+                                    <ComboBox Grid.Column="7" 
+                                              x:Name="LocationBox"
+                                              SelectedItem="{x:Bind ReceivingLocation, Mode=TwoWay}" 
+                                              PlaceholderText="Select location" 
+                                              HorizontalAlignment="Stretch"
+                                              TabIndex="4">
+                                        <x:String>RECV</x:String>
+                                        <x:String>QC</x:String>
+                                        <x:String>DOCK</x:String>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

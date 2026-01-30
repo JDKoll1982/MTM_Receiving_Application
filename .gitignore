@@ -90,3 +90,9 @@ node_modules/
 dist/
 build/
 coverage/
+
+# SQL Server Database Project generated files
+*.dbmdl
+*.jfm
+*.dbmdl.bakupdate
+*.refactorlog

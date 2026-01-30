@@ -104,7 +104,6 @@ public partial class App : Application
     /// <typeparam name="T">The service type to retrieve.</typeparam>
     /// <returns>The requested service instance.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the service is not registered.</exception>
-    [Obsolete("Service Locator is an anti-pattern. Use constructor injection instead. See: https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/")]
     public static T GetService<T>() where T : class
     {
         if (Current is not App app)

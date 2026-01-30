@@ -127,7 +127,7 @@ Open `../Specifications/LeanKit_Integration_Specification.md` in any Markdown vi
 | Description | Description | HTML sanitization applied |
 | Status | LaneId | Configurable lane mapping |
 | Priority | Priority | 1-3 scale |
-| AssignedTo | AssignedUserIds[] | User lookup required |
+| AssigneDataTransferObjects | AssignedUserIds[] | User lookup required |
 | Notes | Comments | Separate comment API |
 
 ## LeanKit Board Information

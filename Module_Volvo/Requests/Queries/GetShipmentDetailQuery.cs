@@ -17,7 +17,7 @@ public record GetShipmentDetailQuery : IRequest<Model_Dao_Result<ShipmentDetail>
 }
 
 /// <summary>
-/// Response DTO containing complete shipment details including line items.
+/// Response DataTransferObjects containing complete shipment details including line items.
 /// </summary>
 public record ShipmentDetail
 {

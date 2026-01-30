@@ -1,3 +1,8 @@
+---
+description: Comprehensive testing strategy and best practices for unit, integration, and end-to-end tests
+applyTo: '**/*.{cs,ts,js,py,java,go}'
+---
+
 # Testing Strategy Instructions
 
 > **Last Updated:** 2026-01-16  

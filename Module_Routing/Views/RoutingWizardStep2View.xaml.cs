@@ -26,7 +26,7 @@ public sealed partial class RoutingWizardStep2View : Page
         if (e.Key == Windows.System.VirtualKey.Enter && ViewModel.SelectedRecipient != null)
         {
             e.Handled = true;
-            ViewModel.ProceedToStep3Command.Execute(null);
+            ViewModel.ProceeDataTransferObjectstep3Command.Execute(null);
         }
     }
 }
