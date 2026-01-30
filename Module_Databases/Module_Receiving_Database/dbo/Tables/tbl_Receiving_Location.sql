@@ -22,23 +22,23 @@ CREATE TABLE [dbo].[tbl_Receiving_Location]
     [Level] NVARCHAR(20) NULL,
     
     -- Integration
-    [InforVisualLocation] NVARCHAR(50) NULL,         -- Corresponding Infor Visual location code
-    [IsInforVisualSynced] BIT NOT NULL DEFAULT 0,    -- True if synced from Infor Visual
+    [InforVisualLocation] NVARCHAR(50) NULL,
+    [IsInforVisualSynced] BIT NOT NULL CONSTRAINT [DF_Receiving_Location_IsInforVisualSynced] DEFAULT 0,
     [LastSyncDate] DATETIME2 NULL,
     
     -- Capacity (optional)
-    [MaxCapacity] DECIMAL(18, 2) NULL,               -- Maximum weight capacity
-    [CurrentLoad] DECIMAL(18, 2) NULL,               -- Current weight stored
+    [MaxCapacity] DECIMAL(18, 2) NULL,
+    [CurrentLoad] DECIMAL(18, 2) NULL,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
-    [IsSystemDefault] BIT NOT NULL DEFAULT 0,        -- Cannot be deleted
-    [AllowReceiving] BIT NOT NULL DEFAULT 1,         -- Can be used for receiving
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_Location_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_Location_IsDeleted] DEFAULT 0,
+    [IsSystemDefault] BIT NOT NULL CONSTRAINT [DF_Receiving_Location_IsSystemDefault] DEFAULT 0,
+    [AllowReceiving] BIT NOT NULL CONSTRAINT [DF_Receiving_Location_AllowReceiving] DEFAULT 1,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_Location_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

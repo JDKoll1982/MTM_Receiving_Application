@@ -14,33 +14,33 @@ CREATE TABLE [dbo].[tbl_Receiving_PartPreference]
     [PartNumber] NVARCHAR(50) NOT NULL,              -- The part number these preferences apply to
     
     -- Part Type Assignment
-    [PartTypeId] INT NULL,                           -- Override part type (instead of prefix-based)
+    [PartTypeId] INT NULL,
     
     -- Default Values
-    [DefaultReceivingLocation] NVARCHAR(100) NULL,   -- Default location for this part
-    [DefaultPackageType] NVARCHAR(50) NULL,          -- Default package type for this part
-    [DefaultPackagesPerLoad] INT NULL,               -- Default packages per load for this part
+    [DefaultReceivingLocation] NVARCHAR(100) NULL,
+    [DefaultPackageType] NVARCHAR(50) NULL,
+    [DefaultPackagesPerLoad] INT NULL,
     
     -- Quality Hold
-    [RequiresQualityHold] BIT NOT NULL DEFAULT 0,    -- True if this part requires QH
-    [QualityHoldProcedure] NVARCHAR(MAX) NULL,       -- QH procedure text
+    [RequiresQualityHold] BIT NOT NULL CONSTRAINT [DF_Receiving_PartPreference_RequiresQualityHold] DEFAULT 0,
+    [QualityHoldProcedure] NVARCHAR(MAX) NULL,
     
     -- Integration
-    [InforVisualPartNumber] NVARCHAR(50) NULL,       -- Corresponding Infor Visual part
-    [IsInforVisualSynced] BIT NOT NULL DEFAULT 0,    -- True if synced from Infor Visual
+    [InforVisualPartNumber] NVARCHAR(50) NULL,
+    [IsInforVisualSynced] BIT NOT NULL CONSTRAINT [DF_Receiving_PartPreference_IsInforVisualSynced] DEFAULT 0,
     [LastSyncDate] DATETIME2 NULL,
     
     -- Scope
-    [Scope] NVARCHAR(20) NOT NULL DEFAULT 'System',  -- 'System' or 'User'
-    [ScopeUserId] NVARCHAR(100) NULL,                -- If user-specific
+    [Scope] NVARCHAR(20) NOT NULL CONSTRAINT [DF_Receiving_PartPreference_Scope] DEFAULT 'System',
+    [ScopeUserId] NVARCHAR(100) NULL,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_PartPreference_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_PartPreference_IsDeleted] DEFAULT 0,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_PartPreference_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

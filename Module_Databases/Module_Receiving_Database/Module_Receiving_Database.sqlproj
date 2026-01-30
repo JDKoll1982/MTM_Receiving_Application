@@ -70,6 +70,9 @@
     <Folder Include="dbo\StoredProcedures\Settings" />
     <Folder Include="dbo\StoredProcedures\Transaction" />
     <Folder Include="dbo\StoredProcedures\WorkflowSession" />
+    <Folder Include="dbo\StoredProcedures\QualityHold" />
+    <Folder Include="dbo\Functions" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
@@ -121,6 +124,14 @@
     <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_SelectById.sql" />
     <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_SelectByUser.sql" />
     <Build Include="dbo\StoredProcedures\WorkflowSession\sp_Receiving_WorkflowSession_Update.sql" />
+    <Build Include="dbo\StoredProcedures\QualityHold\sp_Receiving_QualityHold_Insert.sql" />
+    <Build Include="dbo\StoredProcedures\QualityHold\sp_Receiving_QualityHold_SelectByLineID.sql" />
+    <Build Include="dbo\StoredProcedures\QualityHold\sp_Receiving_QualityHold_UpdateFinalAcknowledgment.sql" />
+    <Build Include="dbo\Tables\tbl_Receiving_QualityHold.sql" />
+    <Build Include="dbo\Functions\fn_Receiving_CalculateTotalWeight.sql" />
+    <Build Include="dbo\Functions\fn_Receiving_CalculateWeightPerPackage.sql" />
+    <Build Include="dbo\Views\vw_Receiving_LineWithTransactionDetails.sql" />
+    <Build Include="dbo\Views\vw_Receiving_TransactionSummary.sql" />
   </ItemGroup>
   <Import Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" Condition="'$(NetCoreBuild)' == 'true'" />
   <Target Name="BeforeBuild">

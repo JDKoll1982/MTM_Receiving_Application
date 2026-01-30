@@ -12,40 +12,40 @@ CREATE TABLE [dbo].[tbl_Receiving_WorkflowSession]
     
     -- Session Information
     [WorkflowMode] NVARCHAR(20) NOT NULL,            -- 'Wizard', 'Manual'
-    [CurrentStep] INT NOT NULL DEFAULT 1,            -- Current step number (1, 2, 3)
-    [SessionStatus] NVARCHAR(20) NOT NULL DEFAULT 'Active', -- 'Active', 'Completed', 'Abandoned'
+    [CurrentStep] INT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_CurrentStep] DEFAULT 1,
+    [SessionStatus] NVARCHAR(20) NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_SessionStatus] DEFAULT 'Active',
     
     -- Business Data (Step 1)
     [PONumber] NVARCHAR(50) NULL,
     [PartNumber] NVARCHAR(50) NULL,
     [LoadCount] INT NULL,
-    [IsNonPO] BIT NOT NULL DEFAULT 0,
+    [IsNonPO] BIT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_IsNonPO] DEFAULT 0,
     
     -- Session Preferences (persisted across steps)
-    [DefaultReceivingLocation] NVARCHAR(100) NULL,   -- Session override
-    [DefaultPackageType] NVARCHAR(50) NULL,          -- Session override
-    [DefaultPackagesPerLoad] INT NULL,               -- Session override
+    [DefaultReceivingLocation] NVARCHAR(100) NULL,
+    [DefaultPackageType] NVARCHAR(50) NULL,
+    [DefaultPackagesPerLoad] INT NULL,
     
     -- Load Details JSON (Step 2 - all load data serialized)
-    [LoadDetailsJson] NVARCHAR(MAX) NULL,            -- JSON array of load details
+    [LoadDetailsJson] NVARCHAR(MAX) NULL,
     
     -- Validation State
-    [Step1Valid] BIT NOT NULL DEFAULT 0,
-    [Step2Valid] BIT NOT NULL DEFAULT 0,
-    [AllStepsValid] BIT NOT NULL DEFAULT 0,
+    [Step1Valid] BIT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_Step1Valid] DEFAULT 0,
+    [Step2Valid] BIT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_Step2Valid] DEFAULT 0,
+    [AllStepsValid] BIT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_AllStepsValid] DEFAULT 0,
     
     -- Session Timing
-    [SessionStartDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [SessionStartDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_SessionStartDate] DEFAULT GETUTCDATE(),
     [SessionEndDate] DATETIME2 NULL,
-    [LastActivityDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [LastActivityDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_LastActivityDate] DEFAULT GETUTCDATE(),
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_IsDeleted] DEFAULT 0,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_WorkflowSession_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

@@ -19,16 +19,16 @@ CREATE TABLE [dbo].[tbl_Receiving_PackageType]
     [DefaultPackagesPerLoad] INT NULL,               -- Typical number per load (e.g., 1 for skids, 4 for pallets)
     
     -- Display Order
-    [SortOrder] INT NOT NULL DEFAULT 0,
+    [SortOrder] INT NOT NULL CONSTRAINT [DF_Receiving_PackageType_SortOrder] DEFAULT 0,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
-    [IsSystemDefault] BIT NOT NULL DEFAULT 0,        -- Cannot be deleted
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_PackageType_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_PackageType_IsDeleted] DEFAULT 0,
+    [IsSystemDefault] BIT NOT NULL CONSTRAINT [DF_Receiving_PackageType_IsSystemDefault] DEFAULT 0,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_PackageType_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

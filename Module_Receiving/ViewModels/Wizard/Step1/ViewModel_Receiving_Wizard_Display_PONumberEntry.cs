@@ -1,11 +1,16 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Requests.Queries;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -14,10 +19,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels.Wizard.Step1;
 /// <summary>
 /// Manages PO Number entry and validation for Wizard Step 1.
 /// Provides real-time validation with auto-standardization.
+/// ENHANCED: Loads parts list from Infor Visual ERP after PO validation.
 /// </summary>
 public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly Dao_InforVisualPO _inforVisualDao;
+    private readonly IConfiguration _configuration;
     private readonly DispatcherQueue _dispatcherQueue;
     private DispatcherQueueTimer? _validationTimer;
 
@@ -59,6 +67,18 @@ public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewMode
     [ObservableProperty]
     private string _poNumberPlaceholder = "Enter PO Number (e.g., PO-123456)";
 
+    /// <summary>
+    /// Parts available on the entered PO (loaded from Infor Visual ERP).
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<Model_InforVisualPO> _availablePartsOnPo = new();
+
+    /// <summary>
+    /// Indicates if parts are currently being loaded from Infor Visual.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isLoadingParts = false;
+
     #endregion
 
     #region Constructor
@@ -68,13 +88,20 @@ public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewMode
     /// </summary>
     public ViewModel_Receiving_Wizard_Display_PONumberEntry(
         IMediator mediator,
+        Dao_InforVisualPO inforVisualDao,
+        IConfiguration configuration,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator;
+        _inforVisualDao = inforVisualDao;
+        _configuration = configuration;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _logger.LogInfo("PO Number Entry ViewModel initialized");
+        
+        // Auto-fill PO number if using mock data
+        _ = InitializeWithMockDataAsync();
     }
 
     #endregion
@@ -187,10 +214,14 @@ public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewMode
                 {
                     _logger.LogInfo($"PO Number validated successfully: {PoNumber}");
                     StatusMessage = "PO Number valid";
+                    
+                    // Load parts from Infor Visual ERP after successful validation
+                    await LoadPartsFromPoAsync();
                 }
                 else
                 {
                     _logger.LogWarning($"PO Number validation failed: {PoValidationMessage}");
+                    AvailablePartsOnPo.Clear();
                 }
             }
             else
@@ -225,6 +256,7 @@ public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewMode
         PoNumber = string.Empty;
         IsPoValid = false;
         PoValidationMessage = string.Empty;
+        AvailablePartsOnPo.Clear();
         _logger.LogInfo("PO Number cleared");
         StatusMessage = "PO Number cleared";
     }
@@ -258,6 +290,96 @@ public partial class ViewModel_Receiving_Wizard_Display_PONumberEntry : ViewMode
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads parts list from Infor Visual ERP for the validated PO Number.
+    /// CRITICAL: This method queries the ERP system to get available parts on the PO.
+    /// </summary>
+    private async Task LoadPartsFromPoAsync()
+    {
+        if (string.IsNullOrWhiteSpace(PoNumber))
+        {
+            AvailablePartsOnPo.Clear();
+            return;
+        }
+
+        IsLoadingParts = true;
+        try
+        {
+            _logger.LogInfo($"Loading parts from Infor Visual for PO: {PoNumber}");
+            StatusMessage = "Loading parts from ERP...";
+
+            var result = await _inforVisualDao.GetByPoNumberAsync(PoNumber);
+            
+            if (result.IsSuccess && result.Data != null)
+            {
+                AvailablePartsOnPo.Clear();
+                
+                foreach (var part in result.Data.OrderBy(p => p.PoLine))
+                {
+                    AvailablePartsOnPo.Add(part);
+                }
+
+                _logger.LogInfo($"Loaded {AvailablePartsOnPo.Count} parts for PO {PoNumber}");
+                StatusMessage = $"Loaded {AvailablePartsOnPo.Count} parts from PO";
+            }
+            else
+            {
+                AvailablePartsOnPo.Clear();
+                var errorMsg = result.ErrorMessage ?? "No parts found on PO";
+                _logger.LogWarning($"Failed to load parts for PO {PoNumber}: {errorMsg}");
+                StatusMessage = errorMsg;
+                
+                await _errorHandler.ShowUserErrorAsync(
+                    errorMsg,
+                    "Parts Loading Error",
+                    nameof(LoadPartsFromPoAsync));
+            }
+        }
+        catch (Exception ex)
+        {
+            AvailablePartsOnPo.Clear();
+            _logger.LogError($"Exception loading parts for PO {PoNumber}: {ex.Message}", ex);
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(LoadPartsFromPoAsync),
+                nameof(ViewModel_Receiving_Wizard_Display_PONumberEntry));
+        }
+        finally
+        {
+            IsLoadingParts = false;
+        }
+    }
+
+    /// <summary>
+    /// Initialize component - autofill PO if mock data enabled.
+    /// Matches Old_Module_Receiving behavior.
+    /// </summary>
+    private async Task InitializeWithMockDataAsync()
+    {
+        try
+        {
+            var useMockData = _configuration.GetValue<bool>("InforVisual:UseMockData");
+
+            if (useMockData)
+            {
+                var defaultPO = _configuration.GetValue<string>("AppSettings:DefaultMockPONumber") ?? "PO-066868";
+                _logger.LogInfo($"[MOCK DATA MODE] Auto-filling PO number: {defaultPO}");
+
+                PoNumber = defaultPO;
+                StatusMessage = $"[MOCK DATA] Auto-filled PO: {defaultPO}";
+
+                // Auto-load mock data
+                await Task.Delay(500); // Small delay for UI update
+                await ValidatePoNumberAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error during mock data initialization: {ex.Message}", ex);
         }
     }
 

@@ -212,6 +212,7 @@
     <!-- Exclude scripts folder from compilation -->
     <ItemGroup>
         <Compile Remove="docs\**" />
+        <Compile Remove="MTM_Receiving_Application.Tests\**" />
         <Compile Remove="Old_Module_Receiving\**" />
         <Compile Remove="scripts\**" />
         <Compile Remove="_bmad-output\**" />
@@ -219,6 +220,7 @@
         <EmbeddedResource Remove=".specify\**" />
         <EmbeddedResource Remove=".vscode\**" />
         <EmbeddedResource Remove="docs\**" />
+        <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
         <EmbeddedResource Remove="Old_Module_Receiving\**" />
         <EmbeddedResource Remove="scripts\**" />
         <EmbeddedResource Remove="_bmad-output\**" />
@@ -226,12 +228,14 @@
         <None Remove=".specify\**" />
         <None Remove=".vscode\**" />
         <None Remove="docs\**" />
+        <None Remove="MTM_Receiving_Application.Tests\**" />
         <None Remove="Old_Module_Receiving\**" />
         <None Remove="scripts\**" />
         <!-- Exclude specs from compilation but keep in project for visibility -->
         <Page Remove=".specify\**" />
         <Page Remove=".vscode\**" />
         <Page Remove="docs\**" />
+        <Page Remove="MTM_Receiving_Application.Tests\**" />
         <Page Remove="Old_Module_Receiving\**" />
         <Page Remove="_bmad-output\**" />
         <Page Remove="_bmad\**" />
@@ -399,5 +403,8 @@
     </ItemGroup>
     <ItemGroup>
       <PRIResource Remove="Old_Module_Receiving\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
     </ItemGroup>
 </Project>

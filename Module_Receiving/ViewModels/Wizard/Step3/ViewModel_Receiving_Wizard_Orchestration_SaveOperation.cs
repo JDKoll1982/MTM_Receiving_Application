@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -6,16 +8,19 @@ using MediatR;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Requests.Commands;
+using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels.Wizard.Step3;
 
 /// <summary>
 /// Orchestrates the save operation for Wizard Step 3.
+/// ENHANCED: Quality Hold final validation with Step 2 acknowledgment dialogs (P0 CRITICAL)
 /// </summary>
 public partial class ViewModel_Receiving_Wizard_Orchestration_SaveOperation : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_Receiving_QualityHoldDetection _qualityHoldService;
 
     #region Observable Properties
 

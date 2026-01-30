@@ -101,6 +101,29 @@ public static class ModuleServicesExtensions
             return new Module_Receiving.Data.Dao_Receiving_Repository_Settings(mySqlConnectionString, logger);
         });
 
+        // Quality Hold DAO (P0 CRITICAL)
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Data.Dao_Receiving_Repository_QualityHold(mySqlConnectionString, logger);
+        });
+
+        // Quality Hold Validator (P0 CRITICAL) - Requires Settings DAO
+        services.AddSingleton(sp =>
+        {
+            var settingsDao = sp.GetRequiredService<Module_Receiving.Data.Dao_Receiving_Repository_Settings>();
+            return new Module_Receiving.Validators.Validator_Receiving_Shared_ValidateIf_RestrictedPart(settingsDao);
+        });
+
+        // Quality Hold Service (P0 CRITICAL) - Requires Validator, IService_Window, Logger
+        services.AddSingleton<Module_Receiving.Services.IService_Receiving_QualityHoldDetection>(sp =>
+        {
+            var restrictedPartValidator = sp.GetRequiredService<Module_Receiving.Validators.Validator_Receiving_Shared_ValidateIf_RestrictedPart>();
+            var windowService = sp.GetRequiredService<IService_Window>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Receiving.Services.Service_Receiving_QualityHoldDetection(restrictedPartValidator, windowService, logger);
+        });
+
         // Hub ViewModels (Transient - new instance per navigation)
         services.AddTransient<Module_Receiving.ViewModels.Hub.ViewModel_Receiving_Hub_Display_ModeSelection>();
 

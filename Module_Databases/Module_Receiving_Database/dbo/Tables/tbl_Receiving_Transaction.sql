@@ -18,33 +18,33 @@ CREATE TABLE [dbo].[tbl_Receiving_Transaction]
     [TotalQuantity] INT NULL,                        -- Sum of all quantities
     
     -- Workflow Information
-    [WorkflowMode] NVARCHAR(20) NOT NULL,            -- 'Wizard', 'Manual', 'Edit'
-    [Status] NVARCHAR(20) NOT NULL DEFAULT 'Draft',  -- 'Draft', 'Completed', 'Cancelled'
-    [CompletedDate] DATETIME2 NULL,                  -- When transaction was completed
+    [WorkflowMode] NVARCHAR(20) NOT NULL,
+    [Status] NVARCHAR(20) NOT NULL CONSTRAINT [DF_Receiving_Transaction_Status] DEFAULT 'Draft',
+    [CompletedDate] DATETIME2 NULL,
     
     -- Non-PO Receiving
-    [IsNonPO] BIT NOT NULL DEFAULT 0,                -- True if no PO number
+    [IsNonPO] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_IsNonPO] DEFAULT 0,
     
     -- Quality Hold
-    [RequiresQualityHold] BIT NOT NULL DEFAULT 0,    -- True if part requires QH
-    [QualityHoldAcknowledged] BIT NOT NULL DEFAULT 0,-- User acknowledged QH procedures
+    [RequiresQualityHold] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_RequiresQualityHold] DEFAULT 0,
+    [QualityHoldAcknowledged] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_QualityHoldAcknowledged] DEFAULT 0,
     
     -- Save Status
-    [SaveDataTransferObjectsCSV] BIT NOT NULL DEFAULT 0,             -- Successfully saved to network CSV
-    [SaveDataTransferObjectsDatabase] BIT NOT NULL DEFAULT 1,        -- Successfully saved locally
-    [CSVFilePath] NVARCHAR(500) NULL,                -- Path to generated CSV file
-    [CSVExportDate] DATETIME2 NULL,                  -- When CSV was exported
+    [SaveDataTransferObjectsCSV] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_SaveDataTransferObjectsCSV] DEFAULT 0,
+    [SaveDataTransferObjectsDatabase] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_SaveDataTransferObjectsDatabase] DEFAULT 1,
+    [CSVFilePath] NVARCHAR(500) NULL,
+    [CSVExportDate] DATETIME2 NULL,
     
     -- Session Information
-    [SessionId] CHAR(36) NULL,                       -- Link to workflow session
+    [SessionId] CHAR(36) NULL,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_Transaction_IsDeleted] DEFAULT 0,
     
     -- Audit Fields (Standard across all tables)
-    [CreatedBy] NVARCHAR(100) NOT NULL,              -- Windows username
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedBy] NVARCHAR(100) NOT NULL,
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_Transaction_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

@@ -25,6 +25,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels.Wizard.Orchestra
 public partial class ViewModel_Receiving_Wizard_Orchestration_MainWorkflow : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_UserSessionManager _sessionManager;
 
     #region Observable Properties
 
@@ -109,12 +110,17 @@ public partial class ViewModel_Receiving_Wizard_Orchestration_MainWorkflow : Vie
     /// </summary>
     public ViewModel_Receiving_Wizard_Orchestration_MainWorkflow(
         IMediator mediator,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator;
+        _sessionManager = sessionManager;
         _logger.LogInfo($"Wizard Orchestration ViewModel initialized. SessionId: {SessionId}");
+        
+        // Subscribe to CurrentStep changes to initialize step data
+        PropertyChanged += OnPropertyChanged;
         
         UpdateNavigationState();
         UpdateProgressIndicator();
@@ -464,6 +470,60 @@ public partial class ViewModel_Receiving_Wizard_Orchestration_MainWorkflow : Vie
             Enum_Receiving_State_WorkflowStep.ReviewAndSave => 100,
             _ => 0
         };
+    }
+
+    /// <summary>
+    /// Handles property changes to initialize step-specific data.
+    /// </summary>
+    private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(CurrentStep))
+        {
+            InitializeStepDataAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Initializes data when entering a new step.
+    /// </summary>
+    private async Task InitializeStepDataAsync()
+    {
+        try
+        {
+            if (CurrentStep == Enum_Receiving_State_WorkflowStep.LoadDetailsEntry)
+            {
+                // Initialize load grid rows when entering Step 2
+                if (Loads.Count == 0 && LoadCount > 0)
+                {
+                    _logger.LogInfo($"Initializing {LoadCount} load rows for Step 2");
+                    
+                    Loads.Clear();
+                    for (int i = 1; i <= LoadCount; i++)
+                    {
+                        Loads.Add(new Model_Receiving_DataTransferObjects_LoadGridRow
+                        {
+                            LoadNumber = i,
+                            PONumber = PoNumber,
+                            PartNumber = PartNumber,
+                            Quantity = null,
+                            HeatLot = string.Empty,
+                            PackageType = string.Empty,
+                            PackagesPerLoad = null,
+                            Weight = null,
+                            ReceivingLocation = "RECV"
+                        });
+                    }
+                    
+                    _logger.LogInfo($"Initialized {Loads.Count} load rows");
+                }
+            }
+            
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error initializing step data: {ex.Message}");
+        }
     }
 
     #endregion

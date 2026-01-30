@@ -18,23 +18,23 @@ CREATE TABLE [dbo].[tbl_Receiving_Settings]
     [Description] NVARCHAR(500) NULL,
     
     -- Scope
-    [Scope] NVARCHAR(20) NOT NULL DEFAULT 'System',  -- 'System' or 'User'
-    [ScopeUserId] NVARCHAR(100) NULL,                -- If user-specific
+    [Scope] NVARCHAR(20) NOT NULL CONSTRAINT [DF_Receiving_Settings_Scope] DEFAULT 'System',
+    [ScopeUserId] NVARCHAR(100) NULL,
     
     -- Validation
-    [ValidValues] NVARCHAR(500) NULL,                -- CSV of valid values (for dropdowns)
-    [MinValue] DECIMAL(18, 2) NULL,                  -- For numeric settings
-    [MaxValue] DECIMAL(18, 2) NULL,                  -- For numeric settings
+    [ValidValues] NVARCHAR(500) NULL,
+    [MinValue] DECIMAL(18, 2) NULL,
+    [MaxValue] DECIMAL(18, 2) NULL,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
-    [IsSystemDefault] BIT NOT NULL DEFAULT 0,        -- Cannot be deleted
-    [RequiresRestart] BIT NOT NULL DEFAULT 0,        -- True if changing requires app restart
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_Settings_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_Settings_IsDeleted] DEFAULT 0,
+    [IsSystemDefault] BIT NOT NULL CONSTRAINT [DF_Receiving_Settings_IsSystemDefault] DEFAULT 0,
+    [RequiresRestart] BIT NOT NULL CONSTRAINT [DF_Receiving_Settings_RequiresRestart] DEFAULT 0,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_Settings_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

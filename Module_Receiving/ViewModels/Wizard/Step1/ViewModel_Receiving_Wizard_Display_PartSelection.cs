@@ -1,6 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,38 +8,49 @@ using MediatR;
 using Microsoft.UI.Dispatching;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models.Entities;
 using MTM_Receiving_Application.Module_Receiving.Requests.Queries;
+using MTM_Receiving_Application.Module_Receiving.Services;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels.Wizard.Step1;
 
 /// <summary>
-/// Manages Part Number selection and validation for Wizard Step 1.
-/// Provides auto-padding, part type detection, and default value population.
+/// Manages Part selection from PO for Wizard Step 1.
+/// User SELECTS part from dropdown list (not manual entry).
+/// Provides package type auto-detection and default value population.
+/// ENHANCED: Quality Hold detection with first acknowledgment dialog (P0 CRITICAL)
 /// </summary>
 public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_Receiving_QualityHoldDetection _qualityHoldService;
     private readonly DispatcherQueue _dispatcherQueue;
     private DispatcherQueueTimer? _validationTimer;
 
     #region Observable Properties
 
     /// <summary>
-    /// Part Number entered by user (auto-padded to 6 digits).
+    /// Parts available on the PO (passed from PONumberEntry ViewModel).
     /// </summary>
     [ObservableProperty]
-    private string _partNumber = string.Empty;
+    private ObservableCollection<Model_InforVisualPO> _availablePartsOnPo = new();
 
     /// <summary>
-    /// Indicates if the entered Part Number is valid.
+    /// Part selected by user from the dropdown list.
+    /// </summary>
+    [ObservableProperty]
+    private Model_InforVisualPO? _selectedPartFromPo;
+
+    /// <summary>
+    /// Indicates if part selection is valid.
     /// </summary>
     [ObservableProperty]
     private bool _isPartValid = false;
 
     /// <summary>
-    /// Validation message for Part Number (empty if valid).
+    /// Validation message for Part selection (empty if valid).
     /// </summary>
     [ObservableProperty]
     private string _partValidationMessage = string.Empty;
@@ -69,10 +80,11 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
     private string _defaultReceivingLocation = string.Empty;
 
     /// <summary>
-    /// Default package type for this part.
+    /// Default package type for this part (auto-detected from Part ID prefix).
+    /// MMC* = Coils, MMF* = Sheets, others = Skids
     /// </summary>
     [ObservableProperty]
-    private string _defaultPackageType = string.Empty;
+    private string _defaultPackageType = "Skids";
 
     /// <summary>
     /// Indicates if part details are currently being loaded.
@@ -81,10 +93,58 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
     private bool _isLoadingPartDetails = false;
 
     /// <summary>
-    /// Placeholder text for Part Number entry field.
+    /// Placeholder text for Part selection.
     /// </summary>
     [ObservableProperty]
-    private string _partNumberPlaceholder = "Enter Part Number (e.g., MMC0001000)";
+    private string _partSelectionPlaceholder = "Select part from PO...";
+
+    /// <summary>
+    /// Available package types for user selection.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> _availablePackageTypes = new() { "Coils", "Sheets", "Skids", "Custom" };
+
+    /// <summary>
+    /// Currently selected package type (auto-detected or manually overridden).
+    /// </summary>
+    [ObservableProperty]
+    private string _selectedPackageType = "Skids";
+
+    /// <summary>
+    /// Custom package type name (when user selects "Custom").
+    /// </summary>
+    [ObservableProperty]
+    private string _customPackageTypeName = string.Empty;
+
+    /// <summary>
+    /// Whether custom package type name field is visible.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isCustomPackageTypeVisible = false;
+
+    /// <summary>
+    /// Whether this part requires quality hold (detected from configurable patterns)
+    /// </summary>
+    [ObservableProperty]
+    private bool _isQualityHoldRequired = false;
+
+    /// <summary>
+    /// Type of quality hold restriction (e.g., "Weight Sensitive", "Quality Control")
+    /// </summary>
+    [ObservableProperty]
+    private string? _qualityHoldRestrictionType;
+
+    /// <summary>
+    /// Matched pattern that triggered quality hold
+    /// </summary>
+    [ObservableProperty]
+    private string? _qualityHoldMatchedPattern;
+
+    /// <summary>
+    /// Whether user acknowledged quality hold (Step 1 of 2)
+    /// </summary>
+    [ObservableProperty]
+    private bool _userAcknowledgedQualityHold = false;
 
     #endregion
 
@@ -95,11 +155,13 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
     /// </summary>
     public ViewModel_Receiving_Wizard_Display_PartSelection(
         IMediator mediator,
+        IService_Receiving_QualityHoldDetection qualityHoldService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService) : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator;
+        _qualityHoldService = qualityHoldService;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _logger.LogInfo("Part Selection ViewModel initialized");
 
@@ -112,23 +174,12 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
     #region Property Change Handlers
 
     /// <summary>
-    /// Handles Part Number changes with auto-padding and debounced validation.
+    /// Handles part selection from dropdown list.
+    /// Auto-detects package type and triggers quality hold check.
     /// </summary>
-    partial void OnPartNumberChanged(string value)
+    partial void OnSelectedPartFromPoChanged(Model_InforVisualPO? value)
     {
-        // Auto-pad the part number
-        var padded = AutoPadPartNumber(value);
-        if (PartNumber != padded)
-        {
-            PartNumber = padded;
-            return; // Will trigger this handler again with padded value
-        }
-
-        // Cancel previous validation timer
-        _validationTimer?.Stop();
-
-        // Don't validate empty input
-        if (string.IsNullOrWhiteSpace(PartNumber))
+        if (value is null)
         {
             IsPartValid = false;
             PartValidationMessage = string.Empty;
@@ -136,19 +187,46 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
             return;
         }
 
-        // Debounced validation and part details loading (500ms delay)
-        _validationTimer = _dispatcherQueue.CreateTimer();
-        _validationTimer.Interval = TimeSpan.FromMilliseconds(500);
-        _validationTimer.Tick += async (s, e) =>
+        // Part selected - mark as valid
+        IsPartValid = true;
+        PartValidationMessage = string.Empty;
+        PartDescription = value.PartDescription;
+
+        // Auto-detect package type from Part Number prefix
+        var upperPart = value.PartNumber.ToUpperInvariant().Trim();
+        if (upperPart.StartsWith("MMC"))
         {
-            _validationTimer.Stop();
-            await ValidatePartNumberAsync();
-            if (IsPartValid)
-            {
-                await LoadPartDetailsAsync();
-            }
-        };
-        _validationTimer.Start();
+            SelectedPackageType = "Coils";
+            DefaultPackageType = "Coils";
+            _logger.LogInfo($"Part {value.PartNumber}: Auto-detected package type = Coils");
+        }
+        else if (upperPart.StartsWith("MMF"))
+        {
+            SelectedPackageType = "Sheets";
+            DefaultPackageType = "Sheets";
+            _logger.LogInfo($"Part {value.PartNumber}: Auto-detected package type = Sheets");
+        }
+        else
+        {
+            SelectedPackageType = "Skids";
+            DefaultPackageType = "Skids";
+            _logger.LogInfo($"Part {value.PartNumber}: Auto-detected package type = Skids (default)");
+        }
+
+        StatusMessage = $"Part selected: {value.PartNumber} - {value.PartDescription}";
+        _logger.LogInfo($"Part selected from PO: {value.PartNumber}");
+
+        // Load additional part details and check quality hold
+        _ = LoadPartDetailsAsync(value.PartNumber);
+    }
+
+    /// <summary>
+    /// Handles manual package type selection - shows/hides custom name field.
+    /// </summary>
+    partial void OnSelectedPackageTypeChanged(string value)
+    {
+        IsCustomPackageTypeVisible = value == "Custom";
+        _logger.LogInfo($"Package type changed to: {value}");
     }
 
     #endregion
@@ -156,77 +234,40 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
     #region Commands
 
     /// <summary>
-    /// Validates the entered Part Number.
+    /// Loads part details (part type, receiving location, package preferences) from part master.
+    /// Also triggers quality hold detection for restricted parts.
     /// </summary>
-    [RelayCommand]
-    private async Task ValidatePartNumberAsync()
+    private async Task LoadPartDetailsAsync(string partNumber)
     {
-        if (string.IsNullOrWhiteSpace(PartNumber))
-        {
-            IsPartValid = false;
-            PartValidationMessage = "Part Number is required";
-            return;
-        }
-
-        try
-        {
-            // Basic format validation (can be enhanced with actual validation logic)
-            var regex = new Regex(@"^[A-Z]{3}\d{6}$");
-            if (!regex.IsMatch(PartNumber))
-            {
-                IsPartValid = false;
-                PartValidationMessage = "Part Number must be 3 letters followed by 6 digits";
-                _logger.LogWarning($"Invalid part number format: {PartNumber}");
-                return;
-            }
-
-            IsPartValid = true;
-            PartValidationMessage = string.Empty;
-            _logger.LogInfo($"Part Number validated: {PartNumber}");
-            StatusMessage = "Part Number valid";
-        }
-        catch (Exception ex)
-        {
-            IsPartValid = false;
-            PartValidationMessage = "Validation error occurred";
-            _errorHandler.HandleException(
-                ex,
-                Enum_ErrorSeverity.Low,
-                nameof(ValidatePartNumberAsync),
-                nameof(ViewModel_Receiving_Wizard_Display_PartSelection));
-        }
-    }
-
-    /// <summary>
-    /// Loads part details (description, defaults) from part master query.
-    /// </summary>
-    [RelayCommand]
-    private async Task LoadPartDetailsAsync()
-    {
-        if (!IsPartValid || string.IsNullOrWhiteSpace(PartNumber)) return;
+        if (string.IsNullOrWhiteSpace(partNumber)) return;
 
         IsLoadingPartDetails = true;
         try
         {
-            var query = new QueryRequest_Receiving_Shared_Get_PartDetails { PartNumber = PartNumber };
+            var query = new QueryRequest_Receiving_Shared_Get_PartDetails { PartNumber = partNumber };
             var result = await _mediator.Send(query);
 
             if (result.IsSuccess && result.Data != null)
             {
                 SelectedPartType = result.Data.PartType;
                 DefaultReceivingLocation = result.Data.DefaultLocation ?? "RECV";
-                DefaultPackageType = result.Data.DefaultPackageType ?? "Skid";
-                PartDescription = result.Data.Description ?? string.Empty;
-
-                _logger.LogInfo($"Part details loaded for {PartNumber}: Type={SelectedPartType?.PartTypeName}, Location={DefaultReceivingLocation}");
+                // Note: Package type already set by OnSelectedPartFromPoChanged, don't override
+                
+                _logger.LogInfo($"Part details loaded for {partNumber}: Type={SelectedPartType?.PartTypeName}, Location={DefaultReceivingLocation}");
                 StatusMessage = "Part details loaded";
+                
+                // Check for quality hold after part details loaded
+                await DetectQualityHoldAsync(partNumber);
             }
             else
             {
                 // Part not found in master - use defaults
-                ClearPartDetails();
-                _logger.LogWarning($"Part details not found for {PartNumber}");
+                DefaultReceivingLocation = "RECV";
+                _logger.LogWarning($"Part details not found for {partNumber}");
                 StatusMessage = "Part not found in master - using defaults";
+                
+                // Still check quality hold even if not in master
+                await DetectQualityHoldAsync(partNumber);
             }
         }
         catch (Exception ex)
@@ -287,33 +328,29 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
         StatusMessage = $"Part type: {partType.PartTypeName}";
     }
 
+    /// <summary>
+    /// Receives parts list from PONumberEntry ViewModel.
+    /// Called by orchestration after PO is loaded.
+    /// </summary>
+    public void SetAvailablePartsFromPo(ObservableCollection<Model_InforVisualPO> partsFromPo)
+    {
+        ArgumentNullException.ThrowIfNull(partsFromPo);
+        
+        AvailablePartsOnPo.Clear();
+        foreach (var part in partsFromPo)
+        {
+            AvailablePartsOnPo.Add(part);
+        }
+        
+        _logger.LogInfo($"Received {AvailablePartsOnPo.Count} parts from PO for selection");
+        StatusMessage = AvailablePartsOnPo.Count > 0 
+            ? $"{AvailablePartsOnPo.Count} parts available - select one" 
+            : "No parts found on PO";
+    }
+
     #endregion
 
     #region Helper Methods
-
-    /// <summary>
-    /// Auto-pads the part number to standard format (3 letters + 6 digits).
-    /// Examples: MMC1 → MMC000001, MMC123 → MMC000123, MMC123456 → MMC123456
-    /// </summary>
-    private static string AutoPadPartNumber(string partNumber)
-    {
-        if (string.IsNullOrWhiteSpace(partNumber)) return string.Empty;
-
-        // Standardize to uppercase
-        partNumber = partNumber.ToUpperInvariant().Trim();
-
-        // Match pattern: 3 letters followed by digits
-        var match = Regex.Match(partNumber, @"^([A-Z]{3})(\d+)$");
-        if (match.Success)
-        {
-            var prefix = match.Groups[1].Value;
-            var number = match.Groups[2].Value.PadLeft(6, '0');
-            return $"{prefix}{number}";
-        }
-
-        // Return as-is if doesn't match expected pattern
-        return partNumber;
-    }
 
     /// <summary>
     /// Loads available part types from reference data.
@@ -348,8 +385,68 @@ public partial class ViewModel_Receiving_Wizard_Display_PartSelection : ViewMode
     {
         SelectedPartType = null;
         DefaultReceivingLocation = "RECV";
-        DefaultPackageType = "Skid";
+        DefaultPackageType = "Skids";
         PartDescription = string.Empty;
+        
+        // Clear quality hold flags
+        IsQualityHoldRequired = false;
+        QualityHoldRestrictionType = null;
+        QualityHoldMatchedPattern = null;
+        UserAcknowledgedQualityHold = false;
+    }
+
+    /// <summary>
+    /// Detects if part requires quality hold and shows first acknowledgment dialog
+    /// STEP 1 OF 2 - User Acknowledgment on Part Selection
+    /// User Requirement: Configurable patterns, two-step acknowledgment
+    /// </summary>
+    private async Task DetectQualityHoldAsync(string partNumber)
+    {
+        try
+        {
+            var (isRestricted, userAcknowledged, matchedPattern, restrictionType) = 
+                await _qualityHoldService.DetectAndShowFirstWarningAsync(partNumber);
+
+            if (isRestricted)
+            {
+                IsQualityHoldRequired = true;
+                QualityHoldMatchedPattern = matchedPattern;
+                QualityHoldRestrictionType = restrictionType;
+                UserAcknowledgedQualityHold = userAcknowledged;
+
+                if (userAcknowledged)
+                {
+                    _logger.LogInfo($"Quality hold acknowledged (Step 1 of 2) for part {partNumber}");
+                    StatusMessage = $"⚠️ Quality Hold: {restrictionType} - Step 1 acknowledged";
+                }
+                else
+                {
+                    _logger.LogWarning($"Quality hold cancelled for part {partNumber}");
+                    StatusMessage = "Quality hold cancelled - part selection cancelled";
+                    
+                    // Clear part selection if user cancels acknowledgment
+                    SelectedPartFromPo = null;
+                    ClearPartDetails();
+                }
+            }
+            else
+            {
+                // No quality hold required
+                IsQualityHoldRequired = false;
+                QualityHoldRestrictionType = null;
+                QualityHoldMatchedPattern = null;
+                UserAcknowledgedQualityHold = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error detecting quality hold: {ex.Message}", ex);
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(DetectQualityHoldAsync),
+                nameof(ViewModel_Receiving_Wizard_Display_PartSelection));
+        }
     }
 
     #endregion

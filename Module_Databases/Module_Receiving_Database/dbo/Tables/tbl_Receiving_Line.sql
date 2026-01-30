@@ -32,26 +32,26 @@ CREATE TABLE [dbo].[tbl_Receiving_Line]
     [PartType] NVARCHAR(50) NULL,                    -- Coil, Flat Stock, Tubing, etc.
     
     -- Non-PO Receiving
-    [IsNonPO] BIT NOT NULL DEFAULT 0,
+    [IsNonPO] BIT NOT NULL CONSTRAINT [DF_Receiving_Line_IsNonPO] DEFAULT 0,
     
     -- Auto-Fill Tracking
-    [IsAutoFilled] BIT NOT NULL DEFAULT 0,           -- True if populated by bulk copy
-    [AutoFillSource] INT NULL,                       -- Source load number if auto-filled
+    [IsAutoFilled] BIT NOT NULL CONSTRAINT [DF_Receiving_Line_IsAutoFilled] DEFAULT 0,
+    [AutoFillSource] INT NULL,
     
     -- Quality Hold
-    [OnQualityHold] BIT NOT NULL DEFAULT 0,
+    [OnQualityHold] BIT NOT NULL CONSTRAINT [DF_Receiving_Line_OnQualityHold] DEFAULT 0,
     [QualityHoldReason] NVARCHAR(500) NULL,
     [QualityHoldDate] DATETIME2 NULL,
     [QualityHoldReleasedBy] NVARCHAR(100) NULL,
     [QualityHoldReleaseDate] DATETIME2 NULL,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_Line_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_Line_IsDeleted] DEFAULT 0,
     
     -- Audit Fields (Standard across all tables)
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_Line_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

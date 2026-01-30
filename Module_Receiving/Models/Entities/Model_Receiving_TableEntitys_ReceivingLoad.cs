@@ -82,6 +82,27 @@ public class Model_Receiving_TableEntitys_ReceivingLoad
     public DateTime? QualityHoldAcknowledgedAt { get; set; }
 
     /// <summary>
+    /// Whether this load requires quality hold based on part pattern
+    /// </summary>
+    public bool IsQualityHoldRequired { get; set; }
+
+    /// <summary>
+    /// Type of quality hold restriction (e.g., "Weight Sensitive", "Quality Control")
+    /// </summary>
+    public string? QualityHoldRestrictionType { get; set; }
+
+    /// <summary>
+    /// Whether user acknowledged quality hold (step 1 of 2)
+    /// </summary>
+    public bool UserAcknowledgedQualityHold { get; set; }
+
+    /// <summary>
+    /// Whether final acknowledgment was completed (step 2 of 2)
+    /// Hard block: Cannot save without this being true
+    /// </summary>
+    public bool FinalAcknowledgedQualityHold { get; set; }
+
+    /// <summary>
     /// Record creation timestamp
     /// </summary>
     public DateTime CreatedAt { get; set; }

@@ -12,20 +12,20 @@
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Database Infrastructure** | | | Required foundation |
-| | | - [ ] Full audit trail (all acknowledgments tracked) | tasks_phase2.md ? Tasks 2.59-2.65 | Recommended: Complete compliance |
+| - [x] | **Database Infrastructure** | | | Required foundation |
+| | | - [x] Full audit trail (all acknowledgments tracked) | tasks_phase2.md ? Tasks 2.59-2.65 | Recommended: Complete compliance |
 | | | - [ ] Minimal (user acknowledgment only) | tasks_phase2.md ? Modified Tasks 2.59-2.65 | Faster to implement |
-| - [ ] | **Detection Service** | | | Core business logic |
+| - [x] | **Detection Service** | | | Core business logic |
 | | | - [ ] MMFSR + MMCSR detection (sheet + coil) | tasks_phase4.md ? Task 4.XX | Matches old system |
-| | | - [ ] Configurable part patterns (future-proof) | tasks_phase4.md ? Enhanced Task 4.XX | More flexible |
-| - [ ] | **Warning Dialogs** | | | User interaction |
-| | | - [ ] Two-step acknowledgment (1 of 2, 2 of 2) | tasks_phase4.md ? Service_Receiving_QualityHoldDetection | Old system pattern |
+| | | - [x] Configurable part patterns (future-proof) | tasks_phase4.md ? Enhanced Task 4.XX | More flexible |
+| - [x] | **Warning Dialogs** | | | User interaction |
+| | | - [x] Two-step acknowledgment (1 of 2, 2 of 2) | tasks_phase4.md ? Service_Receiving_QualityHoldDetection | Old system pattern |
 | | | - [ ] Single confirmation before save | tasks_phase4.md ? Simplified approach | Faster UX |
-| - [ ] | **Save Blocking** | | | Prevents non-compliant saves |
-| | | - [ ] Hard block (cannot save without acknowledgment) | tasks_phase3.md ? Validator enhancement | Strict compliance |
+| - [x] | **Save Blocking** | | | Prevents non-compliant saves |
+| | | - [x] Hard block (cannot save without acknowledgment) | tasks_phase3.md ? Validator enhancement | Strict compliance |
 | | | - [ ] Soft warning (warn but allow override) | tasks_phase3.md ? Modified validator | More flexible |
-| - [ ] | **Quality Hold Records** | | | Database tracking |
-| | | - [ ] Create record for every restricted part | tasks_phase4.md ? SaveOperation integration | Complete audit trail |
+| - [x] | **Quality Hold Records** | | | Database tracking |
+| | | - [x] Create record for every restricted part | tasks_phase4.md ? SaveOperation integration | Complete audit trail |
 | | | - [ ] Flag on load only (no separate table) | Entity model update only | Simpler implementation |
 
 **Estimated Effort:** 33-40 hours (full) | 15-20 hours (minimal)  
@@ -36,29 +36,31 @@
 
 ## P1 HIGH PRIORITY FEATURES
 
+UPDATE: CSV is for printing purposes only, no "Local CSV" needed, only a single CSV path that can be set by the user via the settings menu, so the "Dual-path" option is not needed.
+
 ### 2. CSV Export (Business Requirement)
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Export Service** | | | Core export logic |
+| - [x] | **Export Service** | | | Core export logic |
 | | | - [ ] Dual-path (local + network) with fallback | tasks_phase4.md ? Service_Receiving_CSVExport | Old system pattern |
 | | | - [ ] Local only (simplified) | tasks_phase4.md ? Simplified service | Network often fails |
-| | | - [ ] Configurable destinations (user choice) | tasks_phase4.md ? Enhanced service | Most flexible |
-| - [ ] | **Export Timing** | | | When to export |
-| | | - [ ] Automatic on every save | tasks_phase4.md ? SaveOperation integration | Old system behavior |
+| | | - [x] Configurable destinations (user choice) | tasks_phase4.md ? Enhanced service | Most flexible |
+| - [x] | **Export Timing** | | | When to export |
+| | | - [x] Automatic on every save | tasks_phase4.md ? SaveOperation integration | Old system behavior |
 | | | - [ ] Manual export button (user initiated) | tasks_phase6.md ? Add export button | User control |
 | | | - [ ] Both automatic + manual option | Both modifications | Best of both |
 | - [ ] | **CSV Format** | | | File structure |
 | | | - [ ] Match old system format (compatibility) | Service with ReceivingLineCSVMap | Ensures compatibility |
-| | | - [ ] Enhanced format (more fields) | Modified CSVMap | Future-proof |
-| - [ ] | **Failure Handling** | | | When export fails |
+| | | - [x] Enhanced format (more fields) | Modified CSVMap | Future-proof |
+| - [x] | **Failure Handling** | | | When export fails |
 | | | - [ ] Non-blocking (save succeeds, CSV is bonus) | tasks_phase4.md ? Current design | Database is source of truth |
-| | | - [ ] Blocking (save fails if CSV fails) | Modified SaveOperation | Stricter validation |
-| - [ ] | **Result Display** | | | User feedback |
-| | | - [ ] Detailed results (local path, network path, status) | tasks_phase6.md ? Completion screen enhancement | Full transparency |
+| | | - [x] Blocking (save fails if CSV fails) | Modified SaveOperation | Stricter validation |
+| - [x] | **Result Display** | | | User feedback |
+| | | - [x] Detailed results (CSV path, SQL DB, status) | tasks_phase6.md ? Completion screen enhancement | Full transparency |
 | | | - [ ] Simple success/fail message | Minimal UI update | Cleaner UI |
-| - [ ] | **Folder Access** | | | User convenience |
-| | | - [ ] "Open Folder" buttons for local and network | tasks_phase6.md ? Commands added | Helpful for users |
+| - [x] | **Folder Access** | | | User convenience |
+| | | - [x] "Open Folder" buttons for local and network | tasks_phase6.md ? Commands added | Helpful for users |
 | | | - [ ] No folder access (just show paths) | Display only | Simpler |
 
 **Estimated Effort:** 13-15 hours (full) | 6-8 hours (local only)  
@@ -71,15 +73,15 @@
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Auto-Fill from Preference** | | | Load saved preference |
-| | | - [ ] Auto-fill on part selection (silent) | tasks_phase4.md ? PartSelection ViewModel | Old system behavior |
+| - [x] | **Auto-Fill from Preference** | | | Load saved preference |
+| | | - [x] Auto-fill on part selection (silent) | tasks_phase4.md ? PartSelection ViewModel | Old system behavior |
 | | | - [ ] Suggest preference (user confirms) | tasks_phase4.md ? Enhanced with prompt | More transparent |
-| - [ ] | **Save Preference Timing** | | | When to save |
+| - [x] | **Save Preference Timing** | | | When to save |
 | | | - [ ] On every transaction save | tasks_phase4.md ? SaveOperation integration | Always learns |
-| | | - [ ] Only when user explicitly changes | User-initiated save | Prevents accidental updates |
-| - [ ] | **Preference Override** | | | User control |
+| | | - [x] Only when user explicitly changes | User-initiated save | Prevents accidental updates |
+| - [x] | **Preference Override** | | | User control |
 | | | - [ ] Allow override without saving preference | Standard behavior | User can change per transaction |
-| | | - [ ] Prompt to update preference on override | Enhanced UX | Helps users maintain preferences |
+| | | - [x] Prompt to update preference on override | Enhanced UX | Helps users maintain preferences |
 
 **Estimated Effort:** 3-5 hours  
 **Dependencies:** DAO already exists (Phase 2 complete)  
@@ -89,21 +91,23 @@
 
 ## P2 MEDIUM PRIORITY FEATURES
 
+UPDATE: for "Display only (no entity field) | UI-only calculation | Lighter implementation |", this field should be calculated once but allow the user to edit/override it if needed.
+
 ### 4. Auto-Defaults and Calculations
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **PackagesPerLoad Default** | | | Convenience feature |
+| - [x] | **PackagesPerLoad Default** | | | Convenience feature |
 | | | - [ ] Auto-set to 1 when Part entered (if 0) | tasks_phase4.md ? LoadDetailsGrid ViewModel | Old system behavior |
-| | | - [ ] Always default to 1 (no 0 state) | Entity model default value | Simpler |
-| - [ ] | **Package Type Auto-Detection** | | | MMC/MMF logic |
-| | | - [ ] Auto-detect based on part prefix (MMC=Coil, MMF=Sheet) | tasks_phase4.md ? LoadDetailsGrid ViewModel | Old system pattern |
+| | | - [x] Always default to 1 (no 0 state) | Entity model default value | Simpler |
+| - [x] | **Package Type Auto-Detection** | | | MMC/MMF logic |
+| | | - [x] Auto-detect based on part prefix (MMC=Coil, MMF=Sheet) | tasks_phase4.md ? LoadDetailsGrid ViewModel | Old system pattern |
 | | | - [ ] No auto-detection (user always selects) | No change needed | Manual only |
-| - [ ] | **Weight Per Package Calculation** | | | Automatic calculation |
+| - [x] | **Weight Per Package Calculation** | | | Automatic calculation |
 | | | - [ ] Auto-calculate (Weight divided by PackagesPerLoad) | tasks_phase4.md ? Add calculated property | Helpful for users |
-| | | - [ ] Display only (no entity field) | UI-only calculation | Lighter implementation |
-| - [ ] | **Heat/Lot Placeholder** | | | Handle blank values |
-| | | - [ ] Replace blank with "Nothing Entered" on save | tasks_phase4.md ? SaveOperation logic | Old system behavior |
+| | | - [x] Display only (no entity field) | UI-only calculation | Lighter implementation |
+| - [x] | **Heat/Lot Placeholder** | | | Handle blank values |
+| | | - [x] Replace blank with "Nothing Entered" on save | tasks_phase4.md ? SaveOperation logic | Old system behavior |
 | | | - [ ] Require Heat/Lot (no blanks allowed) | Validator enhancement | Stricter data quality |
 | | | - [ ] Allow blank (no placeholder) | No change needed | Cleanest data |
 
@@ -115,18 +119,20 @@
 
 ### 5. Session Management Enhancements
 
+UPDATE: needs a "Reset Session" button to clear current session if user desires it.  Will only reset session for current module, not all modules.
+
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Session Cleanup on Save** | | | Prevent stale data |
-| | | - [ ] Auto-clear session file after successful save | tasks_phase4.md ? SaveOperation enhancement | Old system behavior |
+| - [x] | **Session Cleanup on Save** | | | Prevent stale data |
+| | | - [x] Auto-clear session file after successful save | tasks_phase4.md ? SaveOperation enhancement | Old system behavior |
 | | | - [ ] Keep session until user exits | No change needed | Allows review |
-| - [ ] | **Session Restoration on Startup** | | | Crash recovery |
+| - [x] | **Session Restoration on Startup** | | | Crash recovery |
 | | | - [ ] Prompt user to resume session | tasks_phase7.md ? Startup lifecycle integration | Old system pattern |
-| | | - [ ] Auto-resume without prompt | Modified startup logic | Seamless recovery |
+| | | - [x] Auto-resume without prompt | Modified startup logic | Seamless recovery |
 | | | - [ ] No restoration (start fresh always) | No change needed | Simplest |
-| - [ ] | **Session Expiration** | | | Handle old sessions |
+| - [x] | **Session Expiration** | | | Handle old sessions |
 | | | - [ ] Expire sessions older than X days | tasks_phase7.md ? Enhanced logic | Prevents old data |
-| | | - [ ] No expiration (always offer restore) | Current design | Simpler |
+| | | - [x] No expiration (always offer restore) | Current design | Simpler |
 
 **Estimated Effort:** 3-4 hours  
 **Dependencies:** Session handlers already exist (Phase 3 complete)  
@@ -136,18 +142,20 @@
 
 ### 6. User Preferences (Default Receiving Mode)
 
+UPDATE: Each of the 3 Module_Receiving Modes MUST have a button that can be accessed at all times in order to return to the "Mode Selection" screen, even if the user has set a preference to skip the mode selection.  This is to allow the user to change modes at any time.
+
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Preference Storage** | | | Where to store |
-| | | - [ ] Database table (tbl_Settings_Receiving_UserPreferences) | tasks_phase7.md ? Task 7.XX | Old system approach |
+| - [x] | **Preference Storage** | | | Where to store |
+| | | - [x] Database table (tbl_Settings_Receiving_UserPreferences) | tasks_phase7.md ? Task 7.XX | Old system approach |
 | | | - [ ] User settings file (JSON) | Module_Core approach | Simpler |
-| - [ ] | **Mode Selection Skip** | | | Bypass hub |
-| | | - [ ] Skip mode selection if preference set | tasks_phase7.md ? Hub orchestration modification | Old system behavior |
+| - [x] | **Mode Selection Skip** | | | Bypass hub |
+| | | - [x] Skip mode selection if preference set | tasks_phase7.md ? Hub orchestration modification | Old system behavior |
 | | | - [ ] Always show mode selection (preference as default) | Hub shows selection but pre-selects | More transparent |
 | - [ ] | **Preference Management UI** | | | User control |
 | | | - [ ] Settings page in Module_Settings.Receiving | tasks_phase7.md ? Settings module integration | Full featured |
 | | | - [ ] Quick toggle on mode selection screen | Hub view modification | Simpler |
-| | | - [ ] No UI (set programmatically only) | Minimal implementation | For power users |
+| | | - [x] No UI (set programmatically only) | Minimal implementation | For power users |
 
 **Estimated Effort:** 4-6 hours (full) | 2-3 hours (minimal)  
 **Dependencies:** Settings infrastructure (Phase 7)  
@@ -159,17 +167,17 @@
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Validation Timing** | | | When to validate |
-| | | - [ ] All textboxes validate on LostFocus only | tasks_phase6.md ? All view modifications | Old system + better UX |
+| - [x] | **Validation Timing** | | | When to validate |
+| | | - [x] All textboxes validate on LostFocus only | tasks_phase6.md ? All view modifications | Old system + better UX |
 | | | - [ ] Critical fields only (PO, Part) | Selective view modifications | Lighter implementation |
 | | | - [ ] Keep current (PropertyChanged validation) | No change needed | Real-time feedback |
 | - [ ] | **Error Display** | | | How to show errors |
-| | | - [ ] Inline error message below field | View XAML modifications | Clear and immediate |
+| | | - [x] Inline error message below field | View XAML modifications | Clear and immediate |
 | | | - [ ] InfoBar at top of form | Minimal view changes | Less intrusive |
 | | | - [ ] Notification service only | No view changes | Simplest |
 | - [ ] | **Validation Scope** | | | What to validate |
 | | | - [ ] Format only (basic validation) | Lightweight validators | Fast |
-| | | - [ ] Format + business rules (comprehensive) | Full validators | More thorough |
+| | | - [x] Format + business rules (comprehensive) | Full validators | More thorough |
 
 **Estimated Effort:** 4-6 hours (all fields) | 2-3 hours (critical only)  
 **Dependencies:** None  
@@ -183,12 +191,12 @@
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
-| - [ ] | **Help Content** | | | Documentation |
-| | | - [ ] Contextual help per workflow step | tasks_phase6.md ? All views + content generation | Old system approach |
+| - [x] | **Help Content** | | | Documentation |
+| | | - [x] Contextual help per workflow step | tasks_phase6.md ? All views + content generation | Old system approach |
 | | | - [ ] Single help page (generic) | Minimal implementation | Simpler |
 | | | - [ ] External documentation link | No implementation needed | Easiest |
-| - [ ] | **Help Panel** | | | UI integration |
-| | | - [ ] Expandable panel on each view | IService_Help integration | Full featured |
+| - [x] | **Help Panel** | | | UI integration |
+| | | - [x] Expandable panel on each view | IService_Help integration | Full featured |
 | | | - [ ] Help button ? dialog | Simple dialog implementation | Moderate |
 | | | - [ ] No in-app help | No change needed | External docs only |
 
@@ -198,7 +206,9 @@
 
 ---
 
-### 9. Settings Localization (Future i18n)
+### 9. Settings Localization (Future i18n) - DO NOT IMPLEMENT
+
+UPDATE: DO NOT IMPLEMENT THIS FEATURE
 
 | Implement? | Feature Component | Implementation Options | Files to Modify | Notes |
 |------------|-------------------|------------------------|-----------------|-------|
@@ -221,15 +231,15 @@
 
 | Feature | Priority | Estimated Effort | Recommendation | Phase Impact |
 |---------|----------|------------------|----------------|--------------|
-| - [ ] Quality Hold Management | P0 CRITICAL | 33-40 hours | **MUST IMPLEMENT** | Phase 2,3,4,8 |
-| - [ ] CSV Export | P1 HIGH | 13-15 hours | **STRONGLY RECOMMENDED** | Phase 3,4,6,7,8 |
-| - [ ] Package Type Preferences | P1 HIGH | 3-5 hours | Recommended | Phase 4 |
-| - [ ] Auto-Defaults | P2 MEDIUM | 3-5 hours | Recommended | Phase 4 |
-| - [ ] Session Management Enhancements | P2 MEDIUM | 3-4 hours | Recommended | Phase 4,7 |
-| - [ ] User Preferences (Default Mode) | P2 MEDIUM | 4-6 hours | Optional | Phase 7 |
-| - [ ] Validation on LostFocus | P2 MEDIUM | 4-6 hours | Recommended | Phase 6 |
-| - [ ] Help System | P3 LOW | 6-10 hours | **SKIP** | N/A |
-| - [ ] Settings Localization | P3 LOW | 8-12 hours | **SKIP** | N/A |
+| - [x] Quality Hold Management | P0 CRITICAL | 33-40 hours | **MUST IMPLEMENT** | Phase 2,3,4,8 |
+| - [x] CSV Export | P1 HIGH | 13-15 hours | **STRONGLY RECOMMENDED** | Phase 3,4,6,7,8 |
+| - [x] Package Type Preferences | P1 HIGH | 3-5 hours | Recommended | Phase 4 |
+| - [x] Auto-Defaults | P2 MEDIUM | 3-5 hours | Recommended | Phase 4 |
+| - [x] Session Management Enhancements | P2 MEDIUM | 3-4 hours | Recommended | Phase 4,7 |
+| - [x] User Preferences (Default Mode) | P2 MEDIUM | 4-6 hours | Optional | Phase 7 |
+| - [x] Validation on LostFocus | P2 MEDIUM | 4-6 hours | Recommended | Phase 6 |
+| - [x] Help System | P3 LOW | 6-10 hours | **SKIP** | N/A |
+| - [ NO ] Settings Localization | P3 LOW | 8-12 hours | **SKIP** | N/A |
 
 **Total if ALL implemented:** 77-103 hours  
 **Recommended subset (P0+P1+critical P2):** 60-75 hours

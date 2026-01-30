@@ -22,7 +22,7 @@ CREATE TABLE [dbo].[tbl_Receiving_CompletedTransaction]
     [WorkflowMode] NVARCHAR(20) NOT NULL,
     
     -- Completion Information
-    [CompletedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CompletedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_CompletedDate] DEFAULT GETUTCDATE(),
     [CompletedBy] NVARCHAR(100) NOT NULL,
     
     -- CSV Export Information
@@ -31,31 +31,32 @@ CREATE TABLE [dbo].[tbl_Receiving_CompletedTransaction]
     [CSVRowCount] INT NULL,
     
     -- Complete Transaction JSON (full details)
-    [TransactionDataJson] NVARCHAR(MAX) NULL,        -- JSON snapshot of entire transaction
-    [LinesDataJson] NVARCHAR(MAX) NULL,              -- JSON snapshot of all lines
+    [TransactionDataJson] NVARCHAR(MAX) NULL,
+    [LinesDataJson] NVARCHAR(MAX) NULL,
     
     -- Quality Hold Summary
-    [HasQualityHold] BIT NOT NULL DEFAULT 0,
-    [QualityHoldCount] INT NOT NULL DEFAULT 0,
+    [HasQualityHold] BIT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_HasQualityHold] DEFAULT 0,
+    [QualityHoldCount] INT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_QualityHoldCount] DEFAULT 0,
     
     -- Modification Tracking
-    [HasBeenModified] BIT NOT NULL DEFAULT 0,        -- True if modified in Edit Mode
+    [HasBeenModified] BIT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_HasBeenModified] DEFAULT 0,
     [LastModifiedDate] DATETIME2 NULL,
     [LastModifiedBy] NVARCHAR(100) NULL,
-    [ModificationCount] INT NOT NULL DEFAULT 0,
+    [ModificationCount] INT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_ModificationCount] DEFAULT 0,
     
     -- Re-Export Tracking
-    [ReExportCount] INT NOT NULL DEFAULT 0,
+    [ReExportCount] INT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_ReExportCount] DEFAULT 0,
     [LastReExportDate] DATETIME2 NULL,
     [LastReExportBy] NVARCHAR(100) NULL,
     
+    
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_IsDeleted] DEFAULT 0,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_CompletedTransaction_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     

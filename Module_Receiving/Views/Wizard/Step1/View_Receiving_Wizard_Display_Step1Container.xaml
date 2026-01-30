@@ -9,14 +9,15 @@
     Background="Transparent">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Padding="40,32" MaxWidth="900" HorizontalAlignment="Center">
-            <StackPanel Spacing="24">
+        <Grid Padding="24,16" MaxWidth="1350" HorizontalAlignment="Center">
+            <StackPanel Spacing="16">
                 <!-- Page Title -->
-                <StackPanel Spacing="8" Margin="0,0,0,8">
+                <StackPanel Spacing="4" Margin="0,0,0,4">
                     <TextBlock Text="Step 1: Order &amp; Part Information" 
                                Style="{StaticResource TitleTextBlockStyle}" />
-                    <TextBlock Text="Enter the purchase order details and select the part you're receiving." 
+                    <TextBlock Text="Enter PO number to load parts, then select the part from the list below." 
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               FontSize="12"
                                TextWrapping="Wrap" />
                 </StackPanel>
 
@@ -25,34 +26,34 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="24">
-                    <StackPanel Spacing="16">
-                        <StackPanel Spacing="4">
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="2">
                             <TextBlock Text="Purchase Order Number" 
                                        Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <TextBlock Text="Enter or scan the PO number from your documentation" 
+                            <TextBlock Text="Enter or scan the PO number" 
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       FontSize="12" />
+                                       FontSize="11" />
                         </StackPanel>
-                        <local:View_Receiving_Wizard_Display_PONumberEntry x:Name="PONumberEntry" />
+                        <local:View_Receiving_Wizard_Display_PONumberEntry x:Name="PONumberEntry" x:FieldModifier="public" />
                     </StackPanel>
                 </Border>
 
-                <!-- Card 2: Part Selection -->
+                <!-- Card 2: Part Selection with Package Type -->
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="24">
-                    <StackPanel Spacing="16">
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="Part Selection" 
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Part Selection &amp; Package Type" 
                                        Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <TextBlock Text="Enter the part number - system will auto-detect type and defaults" 
+                            <TextBlock Text="Select part from list - package type auto-detects but can be overridden" 
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       FontSize="12" />
+                                       FontSize="11" />
                         </StackPanel>
-                        <local:View_Receiving_Wizard_Display_PartSelection x:Name="PartSelection" />
+                        <local:View_Receiving_Wizard_Display_PartSelection x:Name="PartSelection" x:FieldModifier="public" />
                     </StackPanel>
                 </Border>
 
@@ -61,16 +62,16 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="24">
-                    <StackPanel Spacing="16">
-                        <StackPanel Spacing="4">
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="2">
                             <TextBlock Text="Number of Loads" 
                                        Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <TextBlock Text="How many separate loads are you receiving? (1-999)" 
+                            <TextBlock Text="How many loads? (1-999)" 
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       FontSize="12" />
+                                       FontSize="11" />
                         </StackPanel>
-                        <local:View_Receiving_Wizard_Display_LoadCountEntry x:Name="LoadCountEntry" />
+                        <local:View_Receiving_Wizard_Display_LoadCountEntry x:Name="LoadCountEntry" x:FieldModifier="public" />
                     </StackPanel>
                 </Border>
 
@@ -79,13 +80,13 @@
                         BorderBrush="{ThemeResource AccentControlElevationBorderBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="24">
-                    <StackPanel Spacing="12">
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <FontIcon Glyph="&#xE8FD;" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" FontSize="20" />
+                        Padding="20">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE8FD;" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" FontSize="18" />
                             <TextBlock Text="Step 1 Summary" 
                                        FontWeight="SemiBold" 
-                                       FontSize="16"
+                                       FontSize="15"
                                        Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
                         </StackPanel>
                         <local:View_Receiving_Wizard_Display_Step1Summary x:Name="Step1Summary" />

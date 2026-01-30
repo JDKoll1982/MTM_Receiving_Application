@@ -1,3 +1,4 @@
+using System.Linq;
 using FluentValidation;
 using MTM_Receiving_Application.Module_Receiving.Requests.Commands;
 
@@ -6,6 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Validators;
 /// <summary>
 /// Validator for CommandRequest_Receiving_Shared_Save_Transaction
 /// Ensures all required fields are present and valid before saving
+/// ENHANCED: Quality Hold hard blocking (User Requirement P0 CRITICAL)
 /// </summary>
 public class Validator_Receiving_Shared_ValidateOn_SaveTransaction : AbstractValidator<CommandRequest_Receiving_Shared_Save_Transaction>
 {
@@ -56,6 +58,41 @@ public class Validator_Receiving_Shared_ValidateOn_SaveTransaction : AbstractVal
             load.RuleFor(l => l.PackagesPerLoad)
                 .GreaterThan(0)
                 .WithMessage("Packages per load must be greater than zero");
+
+            // QUALITY HOLD HARD BLOCKING (P0 CRITICAL)
+            // User Requirement: Cannot save without full two-step acknowledgment
+            load.RuleFor(l => l)
+                .Must(l => !l.IsQualityHoldRequired || l.FinalAcknowledgedQualityHold)
+                .WithMessage(l => $"Load {l.LoadNumber}: Quality hold requires FULL acknowledgment (Step 2 of 2) before saving. " +
+                                  $"You must complete both acknowledgment dialogs.")
+                .When(l => l.IsQualityHoldRequired);
+
+            // Validate acknowledgment sequence (Step 1 must be completed before Step 2)
+            load.RuleFor(l => l)
+                .Must(l => !l.FinalAcknowledgedQualityHold || l.UserAcknowledgedQualityHold)
+                .WithMessage(l => $"Load {l.LoadNumber}: Final acknowledgment (Step 2) requires initial acknowledgment (Step 1) to be completed first.")
+                .When(l => l.IsQualityHoldRequired);
         });
+
+        // TRANSACTION-LEVEL QUALITY HOLD VALIDATION
+        // Ensure NO loads with unacknowledged quality holds
+        RuleFor(x => x)
+            .Must(request =>
+            {
+                return request.Loads.All(load =>
+                    !load.IsQualityHoldRequired || load.FinalAcknowledgedQualityHold);
+            })
+            .WithMessage(request =>
+            {
+                var unacknowledgedLoads = request.Loads
+                    .Where(l => l.IsQualityHoldRequired && !l.FinalAcknowledgedQualityHold)
+                    .Select(l => l.LoadNumber)
+                    .ToList();
+
+                return $"SAVE BLOCKED: {unacknowledgedLoads.Count} load(s) require quality hold acknowledgment: " +
+                       $"Load(s) {string.Join(", ", unacknowledgedLoads)}. " +
+                       $"Complete BOTH acknowledgment dialogs (Step 1 AND Step 2) for each load before saving.";
+            });
     }
 }
+

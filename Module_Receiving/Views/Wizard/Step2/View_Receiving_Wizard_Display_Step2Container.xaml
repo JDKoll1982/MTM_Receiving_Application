@@ -7,7 +7,7 @@
     xmlns:local="using:MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step2"
     mc:Ignorable="d">
 
-    <Grid Padding="20">
+    <Grid Padding="24,16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
 
         <!-- Bulk Operations Toolbar -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Padding="0,0,0,16">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Padding="0,0,0,12">
             <Button Click="OnShowBulkCopyDialog">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE8C8;" FontSize="16" />

@@ -7,7 +7,7 @@
     xmlns:local="using:MTM_Receiving_Application.Module_Receiving.Views.Wizard.Step3"
     mc:Ignorable="d">
 
-    <Grid Padding="20">
+    <Grid Padding="24,16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -15,11 +15,12 @@
         </Grid.RowDefinitions>
 
         <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="8" Padding="0,0,0,20">
+        <StackPanel Grid.Row="0" Spacing="4" Padding="0,0,0,16">
             <TextBlock Text="Review &amp; Save" Style="{StaticResource SubtitleTextBlockStyle}" />
             <TextBlock
-                Text="Review all load details before saving. Once saved, the transaction will be archived and CSV files generated."
+                Text="Review all load details before saving. Transaction will be archived and CSV files generated."
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                FontSize="12"
                 TextWrapping="Wrap" />
         </StackPanel>
 

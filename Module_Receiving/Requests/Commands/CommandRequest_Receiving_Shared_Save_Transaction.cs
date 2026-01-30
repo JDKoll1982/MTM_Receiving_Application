@@ -55,6 +55,11 @@ public record CommandRequest_Receiving_Shared_Save_Transaction : IRequest<Model_
         public int PackagesPerLoad { get; init; } = 1;
         public decimal? WeightPerPackage { get; init; }
         public string? ReceivingLocation { get; init; }
+        
+        // Quality Hold fields (two-step acknowledgment)
         public bool QualityHoldAcknowledged { get; init; }
+        public bool IsQualityHoldRequired { get; init; }
+        public bool UserAcknowledgedQualityHold { get; init; }
+        public bool FinalAcknowledgedQualityHold { get; init; }
     }
 }

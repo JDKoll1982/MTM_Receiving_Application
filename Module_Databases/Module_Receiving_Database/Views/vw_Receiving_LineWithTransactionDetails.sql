@@ -1,4 +1,4 @@
--- ==============================================================================
+    -- ==============================================================================
 -- View: vw_Receiving_LineWithTransactionDetails
 -- Purpose: Denormalized view of receiving lines with parent transaction info
 -- Module: Module_Receiving
@@ -56,4 +56,5 @@ EXEC sys.sp_addextendedproperty
     @name = N'MS_Description', 
     @value = N'Denormalized view of receiving lines with parent transaction details. Used for detailed reporting and CSV export.',
     @level0type = N'SCHEMA', @level0name = N'dbo',
-    @level1type = N'VIEW', @level1name = N'vw_Receiving_LineWithTransactionDetails
+    @level1type = N'VIEW', @level1name = N'vw_Receiving_LineWithTransactionDetails';
+GO

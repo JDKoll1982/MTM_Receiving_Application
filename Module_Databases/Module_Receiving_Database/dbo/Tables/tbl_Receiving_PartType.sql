@@ -19,23 +19,23 @@ CREATE TABLE [dbo].[tbl_Receiving_PartType]
     [PartPrefixes] NVARCHAR(200) NULL,               -- CSV: 'MMC,MMCCS,MMCSR' for Coils
     
     -- Expected Measurements
-    [RequiresDiameter] BIT NOT NULL DEFAULT 0,
-    [RequiresWidth] BIT NOT NULL DEFAULT 0,
-    [RequiresLength] BIT NOT NULL DEFAULT 0,
-    [RequiresThickness] BIT NOT NULL DEFAULT 0,
-    [RequiresWeight] BIT NOT NULL DEFAULT 1,         -- Most types require weight
+    [RequiresDiameter] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_RequiresDiameter] DEFAULT 0,
+    [RequiresWidth] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_RequiresWidth] DEFAULT 0,
+    [RequiresLength] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_RequiresLength] DEFAULT 0,
+    [RequiresThickness] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_RequiresThickness] DEFAULT 0,
+    [RequiresWeight] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_RequiresWeight] DEFAULT 1,
     
     -- Display Order
-    [SortOrder] INT NOT NULL DEFAULT 0,
+    [SortOrder] INT NOT NULL CONSTRAINT [DF_Receiving_PartType_SortOrder] DEFAULT 0,
     
     -- Flags
-    [IsActive] BIT NOT NULL DEFAULT 1,
-    [IsDeleted] BIT NOT NULL DEFAULT 0,
-    [IsSystemDefault] BIT NOT NULL DEFAULT 0,        -- Cannot be deleted
+    [IsActive] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_IsActive] DEFAULT 1,
+    [IsDeleted] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_IsDeleted] DEFAULT 0,
+    [IsSystemDefault] BIT NOT NULL CONSTRAINT [DF_Receiving_PartType_IsSystemDefault] DEFAULT 0,
     
     -- Audit Fields
     [CreatedBy] NVARCHAR(100) NOT NULL,
-    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [CreatedDate] DATETIME2 NOT NULL CONSTRAINT [DF_Receiving_PartType_CreatedDate] DEFAULT GETUTCDATE(),
     [ModifiedBy] NVARCHAR(100) NULL,
     [ModifiedDate] DATETIME2 NULL,
     
