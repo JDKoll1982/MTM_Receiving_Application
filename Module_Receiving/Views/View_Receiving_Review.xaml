@@ -7,8 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
-    mc:Ignorable="d"
-    Loaded="UserControl_Loaded">
+    mc:Ignorable="d">
 
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter"/>
@@ -59,7 +58,7 @@
                            BorderThickness="1,0,1,1"
                            CornerRadius="0,0,8,8"
                            Padding="20">
-                        <Grid MaxWidth="900">
+                        <Grid HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -226,28 +225,28 @@
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnLoadNumberText, Mode=OneWay}" 
                                                         Binding="{Binding LoadNumber}" 
                                                         IsReadOnly="True" 
-                                                        Width="80"/>
+                                                        Width="1*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnPoNumberText, Mode=OneWay}" 
                                                         Binding="{Binding PoNumber, TargetNullValue='N/A'}" 
-                                                        Width="120"/>
+                                                        Width="1.5*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnPartIdText, Mode=OneWay}" 
                                                         Binding="{Binding PartID}" 
-                                                        Width="150"/>
+                                                        Width="2*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnRemainingQtyText, Mode=OneWay}" 
                                                         Binding="{Binding RemainingQuantity}" 
-                                                        Width="120"/>
+                                                        Width="1.5*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnWeightQtyText, Mode=OneWay}" 
                                                         Binding="{Binding WeightQuantity}" 
-                                                        Width="120"/>
+                                                        Width="1.5*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnHeatLotText, Mode=OneWay}" 
                                                         Binding="{Binding HeatLotNumber}" 
-                                                        Width="150"/>
+                                                        Width="2*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnPkgsText, Mode=OneWay}" 
                                                         Binding="{Binding PackagesPerLoad}" 
-                                                        Width="80"/>
+                                                        Width="1*"/>
                             <controls:DataGridTextColumn Header="{x:Bind ViewModel.ReviewColumnPkgTypeText, Mode=OneWay}" 
                                                         Binding="{Binding PackageTypeName}" 
-                                                        Width="100"/>
+                                                        Width="1.5*"/>
                         </controls:DataGrid.Columns>
                     </controls:DataGrid>
                 </Border>

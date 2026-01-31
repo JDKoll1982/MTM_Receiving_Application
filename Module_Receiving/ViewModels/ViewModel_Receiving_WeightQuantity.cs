@@ -34,6 +34,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _poQuantityInfo = string.Empty;
 
+        [ObservableProperty]
+        private string _currentPartId = string.Empty;
+
+        [ObservableProperty]
+        private string _currentPartDescription = string.Empty;
+
+        [ObservableProperty]
+        private int _currentNumberOfLoads;
+
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
         private string _weightQuantityHeaderText = "Weight/Quantity";
@@ -93,6 +102,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public async Task OnNavigatedToAsync()
         {
+            UpdateHeaderInfo();
             // Refresh loads from session
             Loads.Clear();
             if (_workflowService.CurrentSession?.Loads != null)
@@ -105,6 +115,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             await UpdatePOQuantityInfoAsync();
             await CheckSameDayReceivingAsync();
+        }
+
+        /// <summary>
+        /// Refreshes header values for part and load counts.
+        /// </summary>
+        private void UpdateHeaderInfo()
+        {
+            var part = _workflowService.CurrentPart;
+            CurrentPartId = part?.PartID ?? string.Empty;
+            CurrentPartDescription = part?.Description ?? string.Empty;
+            CurrentNumberOfLoads = _workflowService.NumberOfLoads;
         }
 
         private async Task UpdatePOQuantityInfoAsync()

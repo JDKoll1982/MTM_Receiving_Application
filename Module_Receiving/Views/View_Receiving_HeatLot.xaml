@@ -15,7 +15,7 @@
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid Padding="16">
+    <Grid Padding="20">
         <!-- Content Section -->
         <Grid>
             <StackPanel Spacing="16">
@@ -24,47 +24,59 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind ViewModel.HeatLotHeaderText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center"/>
-                    <Button Grid.Column="1" 
+
+                    <TextBlock Text="{x:Bind ViewModel.HeatLotHeaderText, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" FontSize="16" VerticalAlignment="Center"/>
+
+                    <Button CornerRadius="8"  Margin="2" Grid.Column="1" 
                             Content="{x:Bind ViewModel.HeatLotAutoFillText, Mode=OneWay}" 
                             Command="{x:Bind ViewModel.AutoFillCommand}"
                             Style="{StaticResource AccentButtonStyle}"
+                            FontSize="16"
                             ToolTipService.ToolTip="{x:Bind ViewModel.HeatLotAutoFillTooltipText, Mode=OneWay}"/>
                 </Grid>
-            
-                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="500">
-                    <ItemsControl ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}">
+
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding ElementName=Root, Path=ViewModel.Loads}" 
+                         FlowDirection="LeftToRight"
+                         VerticalAlignment="Top">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <controls:UniformGrid Columns="3" VerticalAlignment="Top"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="models:Model_ReceivingLoad">
-                                <Border Margin="0,0,0,12" 
-                                       Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
-                                       Padding="16" 
-                                       CornerRadius="8" 
-                                       BorderThickness="1" 
-                                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                                    <Grid ColumnSpacing="16">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Width="100">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <FontIcon Glyph="&#xE7B8;" 
-                                                         FontSize="16"
-                                                         Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                                <TextBlock Text="{Binding Path=LoadDisplayText}" 
-                                                          Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                            </StackPanel>
+                            <DataTemplate>
+                                <Grid Margin="0,0,4,4" 
+                                      MinHeight="90"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Top"
+                                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                      Padding="16,12" 
+                                      CornerRadius="8" 
+                                      BorderThickness="1" 
+                                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon Glyph="&#xE7B8;" 
+                                                     FontSize="14"
+                                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                            <TextBlock Text="{Binding LoadNumber, Converter={StaticResource StringFormatConverter}, ConverterParameter='Load #{0}'}" 
+                                                      Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                         </StackPanel>
-                                        
-                                        <TextBox Grid.Column="1"
-                                                Header="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldHeaderText}"
-                                                Text="{x:Bind HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                PlaceholderText="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldPlaceholderText}"
-                                                AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.HeatLotAccessibilityName}"/>
-                                    </Grid>
-                                </Border>
+                                    </StackPanel>
+                                    
+                                    <TextBox Grid.Column="1"
+                                            Header="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldHeaderText}"
+                                            Text="{Binding HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            PlaceholderText="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldPlaceholderText}"
+                                            AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.HeatLotAccessibilityName}"
+                                            VerticalAlignment="Center"/>
+                                </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

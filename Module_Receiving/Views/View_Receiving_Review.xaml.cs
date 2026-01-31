@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
@@ -8,15 +8,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     {
         public ViewModel_Receiving_Review ViewModel { get; }
 
-        public View_Receiving_Review()
+        public View_Receiving_Review(ViewModel_Receiving_Review viewModel)
         {
-            ViewModel = App.GetService<ViewModel_Receiving_Review>();
-            this.InitializeComponent();
-        }
+            ArgumentNullException.ThrowIfNull(viewModel);
 
-        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            await ViewModel.OnNavigatedToAsync();
+            ViewModel = viewModel;
+            DataContext = ViewModel;
+            this.InitializeComponent();
         }
     }
 }

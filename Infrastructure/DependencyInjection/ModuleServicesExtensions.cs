@@ -9,6 +9,7 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
+using MTM_Receiving_Application.Module_Dunnage.Views;
 using MTM_Receiving_Application.Module_Routing.Data;
 using MTM_Receiving_Application.Module_Routing.Services;
 using MTM_Receiving_Application.Module_Routing.ViewModels;
@@ -121,6 +122,18 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Receiving_PackageType>();
         services.AddTransient<ViewModel_Receiving_Review>();
 
+        // Views (Transient - Per-navigation instances)
+        services.AddTransient<Module_Receiving.Views.View_Receiving_Workflow>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_ModeSelection>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_ManualEntry>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_EditMode>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_POEntry>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_LoadEntry>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_WeightQuantity>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_HeatLot>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_PackageType>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_Review>();
+
         return services;
     }
 
@@ -167,6 +180,29 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Dunnage_AdminParts>();
         services.AddTransient<ViewModel_Dunnage_AdminInventory>();
         services.AddTransient<ViewModel_Dunnage_AddTypeDialog>();
+
+        // Views (Transient - Per-navigation instances)
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_WorkflowView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_ModeSelectionView>();
+        services.AddTransient<Module_Dunnage.Views.View_dunnage_typeselectionView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_PartSelectionView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuantityEntryView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_DetailsEntryView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_ReviewView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_ManualEntryView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_EditModeView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminMainView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminTypesView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminPartsView>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_AdminInventoryView>();
+        
+        // Dialogs (Transient - Created on demand)
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_Dunnage_AddTypeDialog>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddMultipleRowsDialog>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_Dialog_AddToInventoriedListDialog>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddTypeDialog>();
+        services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog>();
+
 
         return services;
     }
@@ -247,6 +283,15 @@ public static class ModuleServicesExtensions
         services.AddTransient<RoutingEditModeViewModel>();
         services.AddTransient<RoutingModeSelectionViewModel>();
 
+        // Views (Transient - Per-navigation instances)
+        services.AddTransient<Module_Routing.Views.RoutingWizardContainerView>();
+        services.AddTransient<Module_Routing.Views.RoutingWizardStep1View>();
+        services.AddTransient<Module_Routing.Views.RoutingWizardStep2View>();
+        services.AddTransient<Module_Routing.Views.RoutingWizardStep3View>();
+        services.AddTransient<Module_Routing.Views.RoutingManualEntryView>();
+        services.AddTransient<Module_Routing.Views.RoutingEditModeView>();
+        services.AddTransient<Module_Routing.Views.RoutingModeSelectionView>();
+
         return services;
     }
 
@@ -282,6 +327,15 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_Settings>();
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_History>();
 
+        // Views (Transient - Per-navigation instances)
+        services.AddTransient<Module_Volvo.Views.View_Volvo_ShipmentEntry>();
+        services.AddTransient<Module_Volvo.Views.View_Volvo_Settings>();
+        services.AddTransient<Module_Volvo.Views.View_Volvo_History>();
+        
+        // Dialogs (Transient - Created on demand)
+        services.AddTransient<Module_Volvo.Views.VolvoPartAddEditDialog>();
+        services.AddTransient<Module_Volvo.Views.VolvoShipmentEditDialog>();
+
         return services;
     }
 
@@ -311,6 +365,9 @@ public static class ModuleServicesExtensions
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Reporting_Main>();
+
+        // Views (Transient - Per-navigation instances)
+        services.AddTransient<Module_Reporting.Views.View_Reporting_Main>();
 
         return services;
     }
@@ -436,7 +493,19 @@ public static class ModuleServicesExtensions
     /// <param name="services"></param>
     private static void RegisterSettingsViews(IServiceCollection services)
     {
+        // Core Settings Views
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_CoreWindow>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_CoreNavigationHub>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_SharedPaths>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_Users>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_Logging>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_System>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_Database>();
+
         // Routing Settings Views
+        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_NavigationHub>();
+        services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_SettingsOverview>();
         services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_FileIO>();
         services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_UiUx>();
         services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_BusinessRules>();
@@ -444,11 +513,17 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Routing.Views.View_Settings_Routing_UserPreferences>();
 
         // Reporting Settings Views
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_SettingsOverview>();
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_FileIO>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Csv>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_BusinessRules>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailUx>();
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_Permissions>();
 
         // Dunnage Settings Views
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_NavigationHub>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_SettingsOverview>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Permissions>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_Workflow>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UiUx>();
@@ -456,28 +531,31 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_UserPreferences>();
 
         // Receiving Settings Views
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_NavigationHub>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_SettingsOverview>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_BusinessRules>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Validation>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Defaults>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Integrations>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_UserPreferences>();
 
         // Volvo Settings Views
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_SettingsOverview>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ExternalizationBacklog>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_DatabaseSettings>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_ConnectionStrings>();
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_FilePaths>();
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_UiConfiguration>();
 
         // DeveloperTools Settings Views
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureC>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_SettingsDeveloperTools_DatabaseTest>();
+        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_NavigationHub>();
         services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_SettingsOverview>();
-        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureD>();
+        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureA>();
         services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureB>();
-
-        // Core Settings Views
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_SharedPaths>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_Users>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_Logging>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
-        services.AddTransient<Module_Settings.Core.Views.View_Settings_System>();
+        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureC>();
+        services.AddTransient<Module_Settings.DeveloperTools.Views.View_Settings_DeveloperTools_FeatureD>();
+        services.AddTransient<Module_Settings.DeveloperTools.Views.View_SettingsDeveloperTools_DatabaseTest>();
     }
 
     /// <summary>
@@ -511,6 +589,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Shared.Views.View_Shared_HelpDialog>();
         services.AddTransient<Module_Shared.Views.View_Shared_SharedTerminalLoginDialog>();
         services.AddTransient<Module_Shared.Views.View_Shared_NewUserSetupDialog>();
+        services.AddTransient<Module_Shared.Views.View_Shared_IconSelectorWindow>();
 
         return services;
     }

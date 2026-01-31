@@ -17,7 +17,7 @@
         <converters:Converter_PartIDToQualityHoldTextColor x:Key="PartIDToQualityHoldTextColorConverter"/>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Padding="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

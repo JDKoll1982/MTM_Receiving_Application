@@ -23,7 +23,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private int _numberOfLoads = 1;
 
         [ObservableProperty]
-        private string _selectedPartInfo = string.Empty;
+        private string _selectedPartId = string.Empty;
+
+        [ObservableProperty]
+        private string _selectedPartDescription = string.Empty;
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
@@ -66,7 +69,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 LoadEntryHeaderText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryHeader);
                 LoadEntryInstructionText = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.UiText.LoadEntryInstruction);
                 NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads);
-
                 _logger.LogInfo("Load Entry UI text loaded from settings successfully");
             }
             catch (Exception ex)
@@ -78,7 +80,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public void ResetToDefaults()
         {
             NumberOfLoads = 1;
-            SelectedPartInfo = string.Empty;
+            SelectedPartId = string.Empty;
+            SelectedPartDescription = string.Empty;
         }
 
         private void OnStepChanged(object? sender, System.EventArgs e)
@@ -86,6 +89,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.LoadEntry)
             {
                 NumberOfLoads = _workflowService.NumberOfLoads;
+                var part = _workflowService.CurrentPart;
+                if (part is not null)
+                {
+                    UpdatePartInfo(part.PartID, part.Description);
+                }
+                else
+                {
+                    SelectedPartId = string.Empty;
+                    SelectedPartDescription = string.Empty;
+                }
             }
         }
 
@@ -110,7 +123,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public void UpdatePartInfo(string partId, string description)
         {
-            SelectedPartInfo = $"{partId} - {description}";
+            SelectedPartId = partId;
+            SelectedPartDescription = description;
         }
 
         /// <summary>

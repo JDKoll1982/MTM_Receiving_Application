@@ -37,20 +37,29 @@
                     <TextBlock Text="{x:Bind ViewModel.PackageTypeHeaderText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                 </StackPanel>
                 
-                <StackPanel Orientation="Horizontal" Spacing="16">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
                     <ComboBox x:Name="PackageTypeComboBox"
+                              Grid.Column="0"
                               Header="{x:Bind ViewModel.PackageTypeComboHeaderText, Mode=OneWay}"
                               ItemsSource="{x:Bind ViewModel.PackageTypes, Mode=OneWay}"
                               SelectedItem="{x:Bind ViewModel.SelectedPackageType, Mode=TwoWay}"
-                              Width="200"
+                              MinWidth="240"
+                              HorizontalAlignment="Stretch"
                               AutomationProperties.Name="{x:Bind ViewModel.PackageTypeComboAccessibilityName, Mode=OneWay}"/>
                     
-                    <TextBox Header="{x:Bind ViewModel.PackageTypeCustomHeaderText, Mode=OneWay}"
+                    <TextBox Grid.Column="1"
+                             Header="{x:Bind ViewModel.PackageTypeCustomHeaderText, Mode=OneWay}"
                              Text="{x:Bind ViewModel.CustomPackageTypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Visibility="{x:Bind ViewModel.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                             Width="200"
+                             MinWidth="240"
+                             HorizontalAlignment="Stretch"
                              AutomationProperties.Name="{x:Bind ViewModel.PackageTypeCustomAccessibilityName, Mode=OneWay}"/>
-                </StackPanel>
+                </Grid>
                 
                 <CheckBox Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}" 
                           IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}"/>
@@ -64,9 +73,9 @@
                     <DataTemplate x:DataType="models:Model_ReceivingLoad">
                         <Grid Margin="0,0,0,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="16,12" CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="250"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
                             
                             <StackPanel Grid.Column="0" VerticalAlignment="Center">

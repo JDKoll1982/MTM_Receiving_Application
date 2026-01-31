@@ -41,6 +41,7 @@ public partial class RoutingWizardContainerViewModel : ObservableObject
         _logger = logger;
         _sessionManager = sessionManager;
     }
+
     #endregion
 
     #region Observable Properties

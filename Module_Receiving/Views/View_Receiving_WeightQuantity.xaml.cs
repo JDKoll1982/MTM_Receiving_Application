@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -21,19 +22,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 new PropertyMetadata(null));
         private readonly IService_Focus _focusService;
 
-        public View_Receiving_WeightQuantity()
+        public View_Receiving_WeightQuantity(
+            ViewModel_Receiving_WeightQuantity viewModel,
+            IService_Focus focusService)
         {
-            ViewModel = App.GetService<ViewModel_Receiving_WeightQuantity>();
-            _focusService = App.GetService<IService_Focus>();
+            ArgumentNullException.ThrowIfNull(viewModel);
+            ArgumentNullException.ThrowIfNull(focusService);
+
+            ViewModel = viewModel;
+            _focusService = focusService;
+            DataContext = ViewModel;
             this.InitializeComponent();
-
-            this.Loaded += WeightQuantityView_Loaded;
             _focusService.AttachFocusOnVisibility(this);
-        }
-
-        private async void WeightQuantityView_Loaded(object sender, RoutedEventArgs e)
-        {
-            await ViewModel.OnNavigatedToAsync();
         }
     }
 }

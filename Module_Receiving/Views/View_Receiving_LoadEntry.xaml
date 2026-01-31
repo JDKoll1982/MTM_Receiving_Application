@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_LoadEntry"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,24 +7,41 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid Padding="24">
         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="32"
-                MinWidth="500">
-            <StackPanel Spacing="24" HorizontalAlignment="Center">
-                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                HorizontalAlignment="Stretch">
+            <StackPanel Spacing="24" HorizontalAlignment="Stretch">
+                <StackPanel Spacing="8" HorizontalAlignment="Center" FlowDirection="LeftToRight">
                     <FontIcon Glyph="&#xE7B8;" 
                              FontSize="48"
                              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                              HorizontalAlignment="Center"/>
-                    <TextBlock Text="{x:Bind ViewModel.SelectedPartInfo, Mode=OneWay}" 
-                               Style="{StaticResource SubtitleTextBlockStyle}"
-                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                               HorizontalAlignment="Center"
-                               TextAlignment="Center"/>
+                    <StackPanel Spacing="2" HorizontalAlignment="Center">
+                        <TextBox Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 IsTabStop="False"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                 FontSize="16"
+                                 FontWeight="SemiBold"
+                                 TextAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                        <TextBox Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 IsTabStop="False"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                 FontSize="12"
+                                 FontWeight="Normal"
+                                 TextAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                    </StackPanel>
                 </StackPanel>
 
                 <NumberBox x:Name="NumberOfLoadsNumberBox"
@@ -35,8 +52,9 @@
                            SmallChange="1"
                            LargeChange="10"
                            SpinButtonPlacementMode="Inline"
-                           Width="250"
-                           HorizontalAlignment="Center"
+                           MinWidth="240"
+                           MaxWidth="480"
+                           HorizontalAlignment="Stretch"
                            AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"/>
                        
                 <TextBlock Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}" 

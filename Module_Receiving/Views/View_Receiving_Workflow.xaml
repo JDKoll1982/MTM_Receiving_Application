@@ -1,11 +1,10 @@
-﻿<Page
+<Page
     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_Workflow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
-    xmlns:views="using:MTM_Receiving_Application.Module_Receiving.Views"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     mc:Ignorable="d">
 
@@ -25,21 +24,27 @@
         <!-- Content Area -->
         <Grid Grid.Row="1" Margin="16,12,16,16">
             <!-- Mode Selection View -->
-            <views:View_Receiving_ModeSelection Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ModeSelectionHost" Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             
             <!-- Manual Entry View -->
-            <views:View_Receiving_ManualEntry Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ManualEntryHost" Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <!-- Edit Mode View -->
-            <views:View_Receiving_EditMode Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="EditModeHost" Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
+            <!-- Guided Wizard Views -->
             <!-- PO Entry View -->
-            <views:View_Receiving_POEntry Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <views:View_Receiving_LoadEntry Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <views:View_Receiving_WeightQuantity Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <views:View_Receiving_HeatLot Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <views:View_Receiving_PackageType Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <views:View_Receiving_Review Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="POEntryHost" Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!-- Load Entry View -->
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="LoadEntryHost" Visibility="{x:Bind ViewModel.IsLoadEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!-- Weight/Quantity Entry View -->
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="WeightQuantityHost" Visibility="{x:Bind ViewModel.IsWeightQuantityEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!-- Heat/Lot Entry View -->
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="HeatLotHost" Visibility="{x:Bind ViewModel.IsHeatLotEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!-- Package Type Entry View -->
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="PackageTypeHost" Visibility="{x:Bind ViewModel.IsPackageTypeEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!-- Review View -->
+            <ContentControl HorizontalContentAlignment="Center" VerticalContentAlignment="Center" x:Name="ReviewHost" Visibility="{x:Bind ViewModel.IsReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             
             <!-- Saving Progress -->
             <StackPanel Visibility="{x:Bind ViewModel.IsSavingVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -48,12 +53,12 @@
                 <TextBlock Text="{x:Bind ViewModel.SaveProgressMessage, Mode=OneWay}" 
                            Style="{StaticResource SubtitleTextBlockStyle}"
                            HorizontalAlignment="Center"/>
-                <ProgressBar Value="{x:Bind ViewModel.SaveProgressValue, Mode=OneWay}" Maximum="100" Width="300"/>
+                <ProgressBar Value="{x:Bind ViewModel.SaveProgressValue, Mode=OneWay}" Maximum="100" MinWidth="300" MaxWidth="600" HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <!-- Completion Summary -->
             <StackPanel Visibility="{x:Bind ViewModel.IsCompleteVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="24" MaxWidth="600">
+                    VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="24" MaxWidth="900">
                 
                 <FontIcon Glyph="&#xE930;" FontSize="64" Foreground="{ThemeResource SystemFillColorSuccessBrush}" 
                           Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>

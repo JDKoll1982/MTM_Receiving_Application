@@ -99,10 +99,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _columnDescriptionHeaderText = "Description";
 
         [ObservableProperty]
-        private string _columnRemainingQtyHeaderText = "Remaining Qty";
+        private string _columnRemainingQtyHeaderText = "Remaining";
 
         [ObservableProperty]
-        private string _columnQtyOrderedHeaderText = "Qty Ordered";
+        private string _columnQtyOrderedHeaderText = "Ordered";
 
         [ObservableProperty]
         private string _columnLineNumberHeaderText = "Line #";

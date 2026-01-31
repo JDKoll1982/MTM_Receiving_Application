@@ -7,6 +7,7 @@ using System;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Input;
 using Windows.Graphics;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MTM_Receiving_Application
 {
@@ -19,6 +20,7 @@ namespace MTM_Receiving_Application
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IService_SettingsWindowHost _settingsWindowHost;
+        private readonly IServiceProvider _serviceProvider;
         private bool _hasNavigatedOnStartup = false;
 
         /// <summary>
@@ -30,13 +32,18 @@ namespace MTM_Receiving_Application
             ViewModel_Shared_MainWindow viewModel,
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
-            IService_SettingsWindowHost settingsWindowHost)
+            IService_SettingsWindowHost settingsWindowHost,
+            IServiceProvider serviceProvider)
         {
             InitializeComponent();
             ViewModel = viewModel;
             _sessionManager = sessionManager;
             _logger = logger;
             _settingsWindowHost = settingsWindowHost;
+            _serviceProvider = serviceProvider;
+
+            // Configure Frame to use DI for view activation
+            ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
 
             // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1450, 900));
@@ -116,7 +123,7 @@ namespace MTM_Receiving_Application
                 {
                     _hasNavigatedOnStartup = true;
                     // Title will be set by ContentFrame_Navigated
-                    ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
+                    NavigateWithDI(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                 }
             }
         }
@@ -145,7 +152,7 @@ namespace MTM_Receiving_Application
                 {
                     case "ReceivingWorkflowView":
                         // Title will be set by ContentFrame_Navigated
-                        ContentFrame.Navigate(typeof(Module_Receiving.Views.View_Receiving_Workflow));
+                        NavigateWithDI(typeof(Module_Receiving.Views.View_Receiving_Workflow));
                         break;
                     case "DunnageLabelPage":
                         // Title will be set by ContentFrame_Navigated
@@ -550,6 +557,48 @@ namespace MTM_Receiving_Application
                 _Height: (int)Math.Round(bounds.Height * scale)
             );
         }
+
+        /// <summary>
+        /// Navigate to a page type using dependency injection for view instantiation
+        /// </summary>
+        private bool NavigateWithDI(Type pageType)
+        {
+            try
+            {
+                // Resolve the view from DI container
+                var page = _serviceProvider.GetService(pageType);
+                if (page == null)
+                {
+                    _logger.LogError($"Failed to resolve view type: {pageType.Name}", null, "MainWindow");
+                    return false;
+                }
+
+                // Set the content directly instead of using Navigate
+                ContentFrame.Content = page;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Navigation failed for {pageType.Name}: {ex.Message}", ex, "MainWindow");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Handle navigation failures
+        /// </summary>
+        private void ContentFrame_NavigationFailed(object sender, Microsoft.UI.Xaml.Navigation.NavigationFailedEventArgs e)
+        {
+            _logger.LogError($"Navigation failed: {e.Exception?.Message}", e.Exception, "MainWindow");
+            e.Handled = true;
+
+            // Try to resolve using DI as fallback
+            if (e.SourcePageType != null)
+            {
+                NavigateWithDI(e.SourcePageType);
+            }
+        }
     }
+
 }
 

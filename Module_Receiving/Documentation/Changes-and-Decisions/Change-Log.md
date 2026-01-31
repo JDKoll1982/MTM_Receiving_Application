@@ -1,8 +1,40 @@
 # Change Log - Module_Receiving
 
-**Last Updated: 2025-01-15**
+**Last Updated: 2026-01-30**
 
 This file tracks all meaningful changes to Module_Receiving. Each entry should explain what changed, why, and any impact on users or operations.
+
+---
+
+## 2026-01-30: [ARCH] Receiving workflow DI and navigation cleanup
+
+**What changed**:
+- Removed deprecated service lookups from Receiving views
+- Centralized workflow start in the Receiving workflow ViewModel
+- Routed step views through DI-managed hosts
+
+**Why**:
+- Eliminate service locator usage and make dependencies explicit
+- Keep navigation decisions in the workflow layer
+
+**Impact**:
+- No user-facing workflow changes intended
+- Improves consistency and testability of the workflow steps
+
+---
+
+## 2026-01-30: [DOCS] Added per-view DI and navigation reviews
+
+**What changed**:
+- Added one summary file per receiving view covering dependency setup and navigation gaps
+- Included simple diagrams to visualize current setup and navigation flow
+
+**Why**:
+- Provide a plain-language audit of deprecated global lookups and unclear navigation ownership
+
+**Impact**:
+- No functional changes
+- Documentation now highlights issues view-by-view for review and prioritization
 
 ---
 

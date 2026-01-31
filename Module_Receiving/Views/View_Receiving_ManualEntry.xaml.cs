@@ -1,20 +1,20 @@
-using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Receiving.ViewModels;
-using Microsoft.UI.Xaml.Input;
+using System;
+using System.Collections;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using Windows.System;
 using Windows.UI.Core;
-using CommunityToolkit.WinUI.UI.Controls;
-using System.Linq;
-using System.Collections;
-using System;
-using System.Diagnostics;
-using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Receiving.Models;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
@@ -25,11 +25,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private readonly IService_QualityHoldWarning _qualityHoldWarning;
         private string? _lastCheckedPartID;
 
-        public View_Receiving_ManualEntry()
+        public View_Receiving_ManualEntry(
+            ViewModel_Receiving_ManualEntry viewModel,
+            IService_Focus focusService,
+            IService_QualityHoldWarning qualityHoldWarning)
         {
-            ViewModel = App.GetService<ViewModel_Receiving_ManualEntry>();
-            _focusService = App.GetService<IService_Focus>();
-            _qualityHoldWarning = App.GetService<IService_QualityHoldWarning>();
+            ArgumentNullException.ThrowIfNull(viewModel);
+            ArgumentNullException.ThrowIfNull(focusService);
+            ArgumentNullException.ThrowIfNull(qualityHoldWarning);
+
+            ViewModel = viewModel;
+            _focusService = focusService;
+            _qualityHoldWarning = qualityHoldWarning;
             this.DataContext = ViewModel;
             this.InitializeComponent();
 

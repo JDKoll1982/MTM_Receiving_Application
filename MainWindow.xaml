@@ -166,7 +166,7 @@
 
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame" />
+            <Frame x:Name="ContentFrame" HorizontalContentAlignment="Center"  />
         </NavigationView>
     </Grid>
 </Window>

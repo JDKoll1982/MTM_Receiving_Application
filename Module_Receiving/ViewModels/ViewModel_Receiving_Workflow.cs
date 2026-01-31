@@ -142,10 +142,30 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService.StepChanged += OnWorkflowStepChanged;
             _workflowService.StatusMessageRaised += (_, message) => ShowStatus(message);
 
+            _ = InitializeWorkflowAsync();
             _ = InitializeTextAsync();
 
             // Initialize visibility based on current step
             OnWorkflowStepChanged(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Initialize the workflow to apply default mode and restore session state.
+        /// </summary>
+        private async Task InitializeWorkflowAsync()
+        {
+            try
+            {
+                await _workflowService.StartWorkflowAsync();
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Medium,
+                    nameof(InitializeWorkflowAsync),
+                    nameof(ViewModel_Receiving_Workflow));
+            }
         }
 
         private async Task InitializeTextAsync()

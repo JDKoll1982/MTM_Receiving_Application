@@ -25,7 +25,14 @@ public sealed partial class View_Dunnage_ModeSelectionView : UserControl
     /// </summary>
     public View_Dunnage_ModeSelectionView()
     {
-        ViewModel = App.GetService<ViewModel_Dunnage_ModeSelection>();
+        var viewModel = App.GetService<ViewModel_Dunnage_ModeSelection>();
+        if (viewModel == null)
+        {
+            throw new InvalidOperationException(
+                "ViewModel_Dunnage_ModeSelection could not be resolved from DI container. " +
+                "Ensure the ViewModel and all its dependencies are registered in ModuleServicesExtensions.cs");
+        }
+        ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;
     }

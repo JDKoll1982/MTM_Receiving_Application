@@ -46,11 +46,13 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_Window, Service_Window>();
         services.AddSingleton<IService_Help, Service_Help>();
 
+
         // Dispatcher Service (Singleton - Wraps the UI thread dispatcher)
-        services.AddSingleton<IService_Dispatcher>(_ =>
+        // Note: Dispatcher is lazy-initialized on first use since it requires UI thread
+        services.AddSingleton<IService_Dispatcher>(sp =>
         {
-            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-            return new Service_Dispatcher(dispatcherQueue);
+            // Defer dispatcher queue retrieval until first use (when UI thread is available)
+            return new Service_Dispatcher();
         });
 
         // Navigation Service (Singleton - Manages application navigation state)

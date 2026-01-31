@@ -20,41 +20,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 typeof(ViewModel_Receiving_PackageType),
                 typeof(View_Receiving_PackageType),
                 new PropertyMetadata(null));
-        
+
         private readonly IService_Focus _focusService;
 
-    public View_Receiving_PackageType(
-        ViewModel_Receiving_PackageType viewModel,
-        IService_Focus focusService)
-    {
-        ArgumentNullException.ThrowIfNull(viewModel);
-        ArgumentNullException.ThrowIfNull(focusService);
-
-        ViewModel = viewModel;
-        _focusService = focusService;
-        
-        this.InitializeComponent();
-
-        this.Loaded += PackageTypeView_Loaded;
-        _focusService.AttachFocusOnVisibility(this, PackageTypeComboBox);
-    }
-
-    /// <summary>
-    /// Parameterless constructor for XAML instantiation.
-    /// Uses Service Locator temporarily until XAML supports constructor injection.
-    /// </summary>
-    public View_Receiving_PackageType()
-    {
-        ViewModel = App.GetService<ViewModel_Receiving_PackageType>();
-        _focusService = App.GetService<IService_Focus>();
-        this.InitializeComponent();
-        this.Loaded += PackageTypeView_Loaded;
-        _focusService.AttachFocusOnVisibility(this, PackageTypeComboBox);
-    }
-
-        private async void PackageTypeView_Loaded(object sender, RoutedEventArgs e)
+        public View_Receiving_PackageType(
+            ViewModel_Receiving_PackageType viewModel,
+            IService_Focus focusService)
         {
-            await ViewModel.OnNavigatedToAsync();
+            ArgumentNullException.ThrowIfNull(viewModel);
+            ArgumentNullException.ThrowIfNull(focusService);
+
+            ViewModel = viewModel;
+            _focusService = focusService;
+            DataContext = ViewModel;
+
+            this.InitializeComponent();
+
+            _focusService.AttachFocusOnVisibility(this, PackageTypeComboBox);
         }
     }
 }
